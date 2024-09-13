@@ -1,5 +1,7 @@
 Feature: BceID User Tests
 
+  Deals with BCeID Business user scenarios
+
   @loginAsBCeID
   Scenario: BceID User Login
     Given I am a "BceID" user    
@@ -21,6 +23,12 @@ Feature: BceID User Tests
     Then I click on next
     And I type "2255522552" into the "Phone number" form input
     Then I select "Billing" from the "Primary role" form input
+    And I add a new contact called "John Wick"
+    And I fill the "John Wick" information with the following
+      | Field name    | Value                   | Type   |
+      | Email address | jwick@thecontinental.ca | text   |
+      | Phone number  | 2501234568              | text   |
+      | Primary role  | Director                | select |
     And I click on next
     Then I submit
     And I can read "Application submitted!"
@@ -41,12 +49,14 @@ Feature: BceID User Tests
     And I click on next
     And I type "2255522552" into the "Phone number" form input
     Then I select "Billing" from the "Primary role" form input
-    #And I fill the "Additional contact" information with the following
-    #  | Field name      | Value              | Type          |
-    #  | Email address   | garyveitch@mail.ca | text          |
-    #  | Phone number    | 7787787778         | text          |      
-    #  | Primary role    | Director           | select        |
-    
+    And I fill the "GARY VEITCH" information with the following
+      | Field name      | Value              | Type          |
+      | Email address   | garyveitch@mail.ca | text          |
+      | Phone number    | 7787787778         | text          |      
+      | Primary role    | Director           | select        |
+    And I click on next
+    Then I submit
+    And I can read "Application submitted!"
 
   @loginAsBCeID
   Scenario: BceID Unregistered User already registered
@@ -54,4 +64,7 @@ Feature: BceID User Tests
     When I can read "New client application"
     And I select "DMH - 100 Mile House Natural Resource District" from the "District" form input
     Then I mark "I have an unregistered sole proprietorship" on the "Type of business" "radio" input
-    #And I should see the "error" message "Client already exists" on the "Business information"
+    And I should see the "error" message "Client already exists" on the "Business information"
+    And The "District" component is using the font "BCSans"
+    And The "Business information" has weight "400" inside the "form"
+    And The "Business information" size is "28px" inside the "form"
