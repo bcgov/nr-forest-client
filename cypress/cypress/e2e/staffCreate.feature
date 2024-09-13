@@ -24,7 +24,7 @@ Feature: Staff Screens
       | Primary phone number            | 2501231568      | text          |
       | Secondary phone number          | 2501233568      | text          |
       | Fax                             | 2501239568      | text          |
-      | Street address or PO box        | 2975 Jutland Rd | autocomplete  |    
+      | Street address or PO box        | 1520 Blanshard St | autocomplete  |    
     Then I click on next
     And I fill the "Primary contact" information with the following
       | Field name                      | Value           | Type          |      
@@ -50,9 +50,8 @@ Feature: Staff Screens
       | Field name                      | Value           | Type          |      
       | Street address or PO box        | 1515 Blanshard  | autocomplete  |
       | Email address                   | mail2@mail.ca   | text          |
-      | Primary phone number            | 2501234568      | text          |
-      | Secondary phone number          | 2501234568      | text          |
-      | Fax                             | 2501234568      | text          |
+      | Primary phone number            | 7780000001      | text          |
+      | Secondary phone number          | 7780000002      | text          |
       | Notes                           | This is a test  | textbox       |
     And I add a new location called "Home"
     And I fill the "Home" address with the following
@@ -62,18 +61,14 @@ Feature: Staff Screens
     And I fill the "Primary contact" information with the following
       | Field name                      | Value           | Type          |      
       | Email address                   | mail3@mail.ca   | text          |
-      | Primary phone number            | 2501234568      | text          |
-      | Secondary phone number          | 2501234568      | text          |
-      | Fax                             | 2501234568      | text          |
+      | Primary phone number            | 7780000003      | text          |      
       | Contact type                    | Billing         | select        |
       | Location name                   | Home            | multiselect   |
       | Location name                   | Mailing address | multiselect   |
     And I fill the "MARCEL ST. AMANT" information with the following
       | Field name                      | Value           | Type          |      
       | Email address                   | mail3@mail.ca   | text          |
-      | Primary phone number            | 2501234568      | text          |
-      | Secondary phone number          | 2501234568      | text          |
-      | Fax                             | 2501234568      | text          |
+      | Primary phone number            | 7780000004      | text          |
       | Contact type                    | Billing         | select        |
       | Location name                   | Home            | multiselect   |
       | Last name                       | ST AMANT        | textreplace   |

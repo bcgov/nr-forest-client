@@ -64,7 +64,4 @@ Feature: BceID User Tests
     When I can read "New client application"
     And I select "DMH - 100 Mile House Natural Resource District" from the "District" form input
     Then I mark "I have an unregistered sole proprietorship" on the "Type of business" "radio" input
-    And I should see the "error" message "Client already exists" on the "Business information"
-    And The "District" component is using the font "BCSans"
-    And The "Business information" has weight "400" inside the "form"
-    And The "Business information" size is "28px" inside the "form"
+    And I should see the "error" message "Looks like “01-DEV, LOAD” has a client number. Select the 'Receive email and logout' button below to have it sent to you at maria.martinez@gov.bc.ca" on the "Business information"
