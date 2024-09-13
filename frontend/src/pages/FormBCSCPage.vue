@@ -488,6 +488,7 @@ watch(submissionLimitError, () => {
           open="true"
           kind="info"
           hide-close-button="true"
+          data-text="Read-only"
           title="">
           <p class="cds--inline-notification-content">
             <strong>Read-only: </strong>

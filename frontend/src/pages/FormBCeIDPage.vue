@@ -495,7 +495,7 @@ watch(submissionLimitError, () => {
     -->
       <div data-scroll="top-notification" class="header-offset"></div>
       <error-notification-grouping-component
-        data-tex="top"
+        data-text="top"
         :form-data="formData"
         :scroll-to-element-fn="scrollToNewContact"
       />
