@@ -11,7 +11,7 @@
 		Content-Security-Policy "default-src 'self'; script-src 'self' {$BACKEND_URL} 'sha256-78ZXazjC54Vyx/bLgKdM8JyK8U1O4A8TfYVLwFADf5o=' 'sha256-Qs6++yhvyp3S1k2F02oXxvTs1oQRWRgd1/4EUgvgWlc=' 'sha256-{$ENTRY_CHKSM}' 'sha256-{$DATA_CHKSM}'; img-src 'self'; connect-src 'self' {$BACKEND_URL} https://cognito-idp.{$COGNITO_REGION}.amazonaws.com https://{$COGNITO_DOMAIN}.auth.{$COGNITO_REGION}.amazoncognito.com; frame-ancestors 'none'; form-action 'self' {$BACKEND_URL}; frame-src 'none'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;"
 		Permissions-Policy "geolocation=(), microphone=(), camera=(), speaker=(), usb=(), bluetooth=(), payment=(), interest-cohort=()"
 		Strict-Transport-Security "max-age=2592000; includeSubDomains;"
-		Cache-Control "public, max-age=172800, s-maxage=86400, stale-while-revalidate=3600, stale-if-error=86400"
+		Cache-Control "public, max-age=1800, s-maxage=1800, stale-while-revalidate=600, stale-if-error=3600"
 		Referrer-Policy "no-referrer, strict-origin-when-cross-origin"
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"
@@ -47,10 +47,6 @@
 	}
 	handle @unspecified_path {
 		try_files {path} {path}/ /?_url={uri}
-	}
-
-	tls {
-		alpn h2 http/1.1
 	}
 
 	encode {
