@@ -20,7 +20,9 @@ COPY setenv.sh /app/setenv.sh
 
 # Packages and caddy format
 RUN apk add --no-cache ca-certificates coreutils && \
-    caddy fmt --overwrite /etc/caddy/Caddyfile 
+    caddy fmt --overwrite /etc/caddy/Caddyfile && \
+    mkdir -p /config/caddy /data/caddy && \
+    chown -R 1001:1001 /config/caddy /data/caddy
 
 # Port, health check and non-root user
 EXPOSE 3000
