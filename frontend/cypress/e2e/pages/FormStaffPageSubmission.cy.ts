@@ -49,11 +49,16 @@ describe("Staff Form Submission", () => {
   };
 
   const fillContactWithoutName = (extraData: any = {}) => {
-    fillContact(0, extraData, true);
+    return fillContact(0, extraData, true);
   };
 
+  /**
+   * @returns Cypress chainable whose subject is the resulting contact data.
+   */
   const fillContact = (index: number, extraData: any = {}, skipName = false) => {
-    cy.fixture("testdata/contactBaseData").then((fixtureData: any) => {
+    return cy
+      .fixture<Record<string, string>>("testdata/contactBaseData")
+      .then((fixtureData: any) => {
       const data = { ...fixtureData, ...extraData };
       if (!skipName) {
         cy.fillFormEntry(`#firstName_${index}`, data.firstName);
@@ -66,6 +71,9 @@ describe("Staff Form Submission", () => {
       cy.wait("@getRoles");
       cy.selectFormEntry(`#role_${index}`, data.role, false);
       cy.selectFormEntry(`#addressname_${index}`, data.addressname, true);
+
+      // Yelds the contact data
+      cy.wrap(data);
     });
   };
 
@@ -235,17 +243,25 @@ describe("Staff Form Submission", () => {
     fillLocation(0);
     clickNext();
     cy.contains("h2", "Contacts");
-    fillContactWithoutName();
-    clickNext();
-    cy.contains("h2", "Review");
+    fillContactWithoutName().then((contactData) => {
+      clickNext();
+      cy.contains("h2", "Review");
+  
+      cy.fillFormEntry("cds-textarea", "error", 10, true);
+  
+      cy.get("[data-test='wizard-submit-button']").click();
+      cy.wait("@submitForm").then((interception) => {
+        cy.wait(5000);
+        cy.get("h1").should("contain", "This submission is being processed");
 
-    cy.fillFormEntry("cds-textarea", "error", 10, true);
+        // message contains the email address
+        cy.contains(
+          `We’ll send the client number and submission details to ${contactData.emailAddress} when the process is complete.`,
+        );
 
-    cy.get("[data-test='wizard-submit-button']").click();
-    cy.wait("@submitForm").then((interception) => {
-      cy.wait(5000);
-      cy.get("h1").should("contain", "This submission is being processed");
-      cy.get("cds-button[href='/submissions/4444']").should("exist");
+        // button contains the submission id
+        cy.get("cds-button[href='/submissions/4444']").should("exist");
+      });
     });
   });
 

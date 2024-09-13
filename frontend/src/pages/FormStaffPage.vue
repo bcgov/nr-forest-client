@@ -450,6 +450,8 @@ const submit = () => {
         name: "staff-processing",
         params: {
           submissionId: error.value.response.headers["x-sub-id"],
+        },
+        state: {
           clientEmail: formData.location.contacts[0].email,
         },
       });
