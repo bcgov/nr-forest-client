@@ -115,6 +115,11 @@
   box-sizing: unset;
 }
 
+//This ensures that the BC Sans font applies to all text elements across the entire application
+body {
+  font-family: BC Sans, sans-serif !important;
+}
+
 b {
   font-weight: 700;
 }
@@ -1585,6 +1590,11 @@ div.internal-grouping-01 span.body-compact-01 ~ svg.good {
 
 div.internal-grouping-01 span.body-compact-01 ~ svg.warning {
   fill: var(--cds-support-warning);
+}
+
+div.internal-grouping-01 span.body-compact-01 ~ svg.warning path[data-icon-path="inner-path"] {
+  fill: #000000;
+  opacity: 1;
 }
 
 div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
