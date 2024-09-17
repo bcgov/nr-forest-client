@@ -260,8 +260,8 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
         class="unbolded" 
         @click.prevent="helpModalActive = true"
       >
-        <span class="body-compact-02 disabled">Need help?</span>
-        <Help16 slot="title-icon" class="disabled" />
+        <span class="body-compact-02">Need help?</span>
+        <Help16 slot="title-icon" />
       </cds-side-nav-link>
     </cds-side-nav-items>
   
@@ -283,8 +283,8 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
     </cds-modal-header>
     <cds-modal-body id="help-modal-body">
       <p>
-        Can’t proceed with your application? Let us know by emailing your issue to 
-        <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span>
+        Email your issue to <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> 
+        and we'll get back to you.
       </p>
     </cds-modal-body>
   </cds-modal>
