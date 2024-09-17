@@ -22,4 +22,4 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}-config
     data:
       params.js: |
-        window.localStorage.setItem('VITE_FEATURE_FLAGS','{"STAFF_CREATE":true}');
+        window.localStorage.setItem('VITE_FEATURE_FLAGS','{}');
