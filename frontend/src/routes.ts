@@ -140,7 +140,10 @@ export const routes = [
     path: "/client-submitted/:submissionId",
     name: "staff-processing",
     component: () => import("@/pages/FormStaffProcessingPage.vue"),
-    props: true,
+    props: (route) => ({
+      submissionId: route.params.submissionId,
+      clientEmail: history.state.clientEmail,
+    }),
     meta: {
       format: "full-centered",
       hideHeader: false,
