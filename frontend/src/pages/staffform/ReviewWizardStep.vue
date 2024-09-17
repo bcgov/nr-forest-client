@@ -20,8 +20,7 @@ import Information16 from "@carbon/icons-vue/es/information/16";
 import { useFetchTo } from "@/composables/useFetch";
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
-import { codeConversionFn } from "@/services/ForestClientService";
-import { testGroup } from '../../../tests/unittests/TestConstant';
+import { codeConversionFn, getFormattedHtml } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
@@ -212,7 +211,7 @@ watch([validation], () => {
         <span v-if="address.notes  && 
                     address.notes.length"
               class="body-compact-01">
-          {{ address.notes }}
+          <span v-html="getFormattedHtml(address.notes)"></span>
         </span>
       </div>
     </div>

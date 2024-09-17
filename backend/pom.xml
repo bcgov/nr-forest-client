@@ -45,7 +45,7 @@
         <junit-platform.version>1.9.1</junit-platform.version>
         <netty.version>4.1.113.Final</netty.version>
         <oci.revision>${project.version}</oci.revision>
-        <nimbus-jose-jwt.version>9.40</nimbus-jose-jwt.version>
+        <nimbus-jose-jwt.version>9.41</nimbus-jose-jwt.version>
     </properties>
 
     <dependencies>

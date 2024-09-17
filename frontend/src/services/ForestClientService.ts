@@ -89,3 +89,7 @@ export const adminEmail = "forhvap.cliadmin@gov.bc.ca";
 export const getObfuscatedEmailLink = email => {
   return `<a target="_blank" href="mailto:${email}">${getObfuscatedEmail(email)}</a>`;
 };
+
+export const getFormattedHtml = ((value: string) => {
+  return value ? value.replace(/\n/g, '<br>') : '';
+});
