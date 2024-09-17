@@ -200,8 +200,7 @@ export const routes = [
       style: "content-stretched",
       headersStyle: "headers-compact",
       sideMenu: true,
-      profile: true,
-      featureFlagged: "STAFF_CREATE",
+      profile: true
     },
   },
   {
