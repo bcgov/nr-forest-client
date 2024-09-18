@@ -85,7 +85,7 @@ const session = instance?.appContext.config.globalProperties.$session;
 
 const logout = () => {
   session?.logOut();
-}
+};
 
 const route = useRoute();
 
@@ -98,14 +98,26 @@ const onClickLogout = () => {
 };
 
 const headerBarButtonsSize = computed(() =>
-  isSmallScreen.value || isMediumScreen.value ? "lg" : "sm",
+  isSmallScreen.value || isMediumScreen.value ? "lg" : "sm"
 );
 
 const logoutBtnKind = computed(() =>
-  isSmallScreen.value || isMediumScreen.value ? "ghost" : "tertiary",
+  isSmallScreen.value || isMediumScreen.value ? "ghost" : "tertiary"
 );
 
-const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
+const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some((authority) =>
+  ForestClientUserSession.authorities.includes(authority)
+);
+
+const handleLogoutClick = (event) => {
+  event.preventDefault();
+
+  if (route.name === "staff-form") {
+    logoutModalActive.value = true;
+  } else {
+    logout();
+  }
+};
 </script>
 
 <template>
@@ -206,7 +218,7 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
         <div class="grouping-21" id="panel-content--links">
           <cds-side-nav-items>
             <cds-side-nav-link title="Options" class="unbolded side-nav-link--non-link" />
-            <cds-side-nav-link href="#" title="Logout" @click.prevent="logoutModalActive = true">            
+            <cds-side-nav-link href="#" title="Logout" @click.prevent="handleLogoutClick">            
               <Logout16 slot="title-icon" />
             </cds-side-nav-link>
           </cds-side-nav-items>
