@@ -1,0 +1,49 @@
+name: Create Gherkin Feature from Issue
+on:
+  issues:
+    types:
+      - opened
+
+jobs:
+  create-feature:
+    if: contains(github.event.issue.labels.*.name, 'gherkin')
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Extract feature content
+        id: feature
+        uses: bcgov-nr/action-gherkin-issue-processor@v0.0.2
+        with:
+          issue: ${{ github.event.issue.number }}
+          default_title: "[Test Case]: REPLACE WITH YOUR TEST CASE TITLE"
+          update_title: true
+
+      - name: Create feature file
+        run: echo "${{ steps.feature.outputs.feature }}" > cypress/cypress/e2e/upt_${{ github.event.issue.number }}.feature
+
+      - name: Commit & Push changes
+        uses: Andro999b/push@v1.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: test/upt_${{ github.event.issue.number }}
+          force: true
+          message: |
+            test(upt #${{ github.event.issue.number }}): ${{ steps.feature.outputs.title }}
+
+            Closes #${{ github.event.issue.number }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: test/upt_${{ github.event.issue.number }}
+          title: "test(upt #${{ github.event.issue.number }}): ${{ steps.feature.outputs.title }}"
+          body: |
+            ${{ github.event.issue.body }}
+
+            Closes #${{ github.event.issue.number }}
