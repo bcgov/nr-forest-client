@@ -27,8 +27,6 @@ import Avatar16 from "@carbon/icons-vue/es/user--avatar/24";
 // @ts-ignore
 import Result16 from "@carbon/icons-vue/es/result/16";
 // @ts-ignore
-import SignOut16 from "@carbon/icons-vue/es/user--follow/16";
-// @ts-ignore
 import Close16 from "@carbon/icons-vue/es/close/16";
 // @ts-ignore
 import TaskAdd16 from "@carbon/icons-vue/es/task--add/16";
