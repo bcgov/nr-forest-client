@@ -27,8 +27,6 @@ import Avatar16 from "@carbon/icons-vue/es/user--avatar/24";
 // @ts-ignore
 import Result16 from "@carbon/icons-vue/es/result/16";
 // @ts-ignore
-import SignOut16 from "@carbon/icons-vue/es/user--follow/16";
-// @ts-ignore
 import Close16 from "@carbon/icons-vue/es/close/16";
 // @ts-ignore
 import TaskAdd16 from "@carbon/icons-vue/es/task--add/16";
@@ -209,7 +207,7 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
           <cds-side-nav-items>
             <cds-side-nav-link title="Options" class="unbolded side-nav-link--non-link" />
             <cds-side-nav-link href="#" title="Logout" @click.prevent="logoutModalActive = true">            
-              <SignOut16 slot="title-icon" />
+              <Logout16 slot="title-icon" />
             </cds-side-nav-link>
           </cds-side-nav-items>
         </div>
