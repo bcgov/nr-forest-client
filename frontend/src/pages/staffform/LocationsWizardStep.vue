@@ -292,7 +292,7 @@ const cdsAccordionItemBeingtoggled = (event: any, address: Address) => {
       ></div>
       <cds-accordion-item
         :open="open[address.index]"
-        :title="address.locationName || 'Additional location'"
+        :title="locationNames[address.index] || 'Additional location'"
         size="lg"
         class="grouping-13"
         :data-focus="`address-${index + 1}-heading`"
