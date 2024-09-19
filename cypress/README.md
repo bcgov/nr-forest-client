@@ -45,7 +45,7 @@ Scenario: Successful user registration
 ```
 
     Be aware that each step should be a level deeper than the Scenario itself. You can use tab or two spaces
-    Also, keep in mind that this should be at least one level deeper than the scenario above it.
+    Also, keep in mind that this should be at least one level deeper than the feature above it.
 
 Here's the final product of the above feature and scenario combined.
 
