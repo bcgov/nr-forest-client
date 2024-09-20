@@ -23,7 +23,8 @@ import {
 import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
 // Importing helper functions
-import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
+import { retrieveClientType, retrieveLegalTypeDesc } from "@/helpers/DataConverters";
+import { formatAddresses } from "@/dto/ApplyClientNumberDto";
 // Importing validators
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
@@ -92,19 +93,8 @@ const standingMessage = computed(() => {
   return "Unknown";
 });
 
-//TODO: Either load from BE or add to DataConversors.ts
-const legalTypeText = computed(() => {
-  if (formData.value.businessInformation.legalType === "C") {
-    return "Corporation";
-  }
-  if (formData.value.businessInformation.legalType === "SP") {
-    return "Sole proprietorship";
-  }
-  if (formData.value.businessInformation.legalType === "GP") {
-    return "General Partnership";
-  }
-  return formData.value.businessInformation.legalType + " (Unknown)";
-});
+//We're using DataConverters.ts for this since it's not being saved to the database, so creating a table isn't necessary.
+const legalTypeText = retrieveLegalTypeDesc(formData.value.businessInformation.legalType);
 
 const autoCompleteUrl = computed(
   () =>
@@ -280,7 +270,7 @@ watch([detailsData], () => {
       address.emailAddress = null;
       address.notes = null;
     });
-    formData.value.location.addresses = exportAddress(receivedAddresses);
+    formData.value.location.addresses = formatAddresses(receivedAddresses);
     
     formData.value.businessInformation.goodStandingInd = standingValue(
       forestClientDetails.goodStanding
@@ -565,3 +555,5 @@ onMounted(() => {
   gap: 0.5rem;
 }
 </style>
+@/helpers/DataConverter
+@/helpers/DataConverters

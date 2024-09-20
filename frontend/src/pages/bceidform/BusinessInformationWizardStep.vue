@@ -15,7 +15,7 @@ import {
   ProgressNotification,
 } from "@/dto/CommonTypesDto";
 import { BusinessTypeEnum, CodeNameType } from "@/dto/CommonTypesDto";
-import { locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
+import { locationName as defaultLocation, formatAddresses } from "@/dto/ApplyClientNumberDto";
 import type {
   FormDataDto,
   ForestClientDetailsDto,
@@ -24,7 +24,7 @@ import type {
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // Importing helper functions
-import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
+import { retrieveClientType } from "@/helpers/DataConverters";
 import {
   getEnumKeyByEnumValue,
   adminEmail,
@@ -285,7 +285,7 @@ watch([detailsData], () => {
       ...forestClientDetails.contacts,
     ];
 
-    formData.value.location.addresses = exportAddress(
+    formData.value.location.addresses = formatAddresses(
       forestClientDetails.addresses
     );
 
@@ -631,3 +631,4 @@ onMounted(() => {
     </div>
   </div>
 </template>
+@/helpers/DataConverter

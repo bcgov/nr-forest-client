@@ -10,7 +10,7 @@ import type {
   FormDataDto,
 } from "@/dto/ApplyClientNumberDto";
 import type { BusinessSearchResult } from "@/dto/CommonTypesDto";
-import { exportAddress } from "@/helpers/DataConversors";
+import { formatAddresses } from "@/dto/ApplyClientNumberDto";
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 
@@ -85,7 +85,7 @@ const parseSelectedNation = (
 ) => {
   if (selectedNation) {
     validation.businessName = true;
-    formData.value.location.addresses = exportAddress(
+    formData.value.location.addresses = formatAddresses(
       selectedNation.addresses
     );
     formData.value.businessInformation.registrationNumber = `DINA${selectedNation.id}`;
@@ -167,3 +167,5 @@ const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[] = []) => {
     />
   </div>
 </template>
+@/helpers/DataConverter
+@/helpers/DataConverters
