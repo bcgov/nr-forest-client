@@ -167,5 +167,3 @@ const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[] = []) => {
     />
   </div>
 </template>
-@/helpers/DataConverter
-@/helpers/DataConverters
