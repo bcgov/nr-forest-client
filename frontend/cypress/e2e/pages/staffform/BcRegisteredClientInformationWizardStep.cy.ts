@@ -445,21 +445,21 @@ describe("Bc Registered Staff Wizard Step", () => {
         }
 
         if (scenario.showData) {
-          const success = Object.entries(scenario)
-            .filter(
-              ([key, value]) =>
-                key.startsWith("show") && key.endsWith("Notification")
-            )
-            .map(([key, value]) => value)
-            .every((value) => value === false);
+          /*
+          This variable might be useful in the future to test the button Next gets enabled on
+          success. But we'll probably need to fix FSADT1-1496 first.
+          */
+          // const success = Object.entries(scenario)
+          //   .filter(
+          //     ([key, value]) =>
+          //       key.startsWith("show") && key.endsWith("Notification")
+          //   )
+          //   .map(([key, value]) => value)
+          //   .every((value) => value === false);
 
           cy.get(
             ".read-only-box > cds-inline-notification#readOnlyNotification"
-          ).should(
-            success || scenario.showDuplicatedNotification
-              ? "exist"
-              : "not.exist"
-          );
+          ).should("exist");
 
           cy.get(`.read-only-box > #legalType > .title-group-01 > .label-01`)
             .should("exist")
