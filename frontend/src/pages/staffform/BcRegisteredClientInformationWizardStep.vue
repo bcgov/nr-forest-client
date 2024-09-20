@@ -94,7 +94,9 @@ const standingMessage = computed(() => {
 });
 
 //We're using DataConverters.ts for this since it's not being saved to the database, so creating a table isn't necessary.
-const legalTypeText = retrieveLegalTypeDesc(formData.value.businessInformation.legalType);
+const legalTypeText = computed(() =>
+  retrieveLegalTypeDesc(formData.value.businessInformation.legalType)
+);
 
 const autoCompleteUrl = computed(
   () =>
