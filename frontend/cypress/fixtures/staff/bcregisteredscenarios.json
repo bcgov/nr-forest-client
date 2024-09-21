@@ -25,7 +25,7 @@
     "showBcRegDownNotification": false,
     "showDuplicatedNotification": false,
     "showNotOwnedByPersonError": false,
-    "type": "Sole proprietorship",
+    "type": "Sole Proprietorship",
     "standing": "Good standing",
     "dba": "Soleprop"
   },
@@ -126,7 +126,7 @@
     "showBcRegDownNotification": false,
     "showDuplicatedNotification": false,
     "showNotOwnedByPersonError": true,
-    "type": "Sole proprietorship",
+    "type": "Sole Proprietorship",
     "standing": "Good standing",
     "dba": "Soleprop"
   }
