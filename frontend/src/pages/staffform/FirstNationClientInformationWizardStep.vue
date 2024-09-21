@@ -75,11 +75,6 @@ watch([autoCompleteResult], () => {
   firstNationControl.value = false;
 });
 
-const updateModelValue = ($event) => {
-  validation.businessName =
-    !!$event && $event === autoCompleteResult.value?.name;
-};
-
 const parseSelectedNation = (
   selectedNation: FirstNationDetailsDto
 ) => {
@@ -129,7 +124,7 @@ const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[] = []) => {
         enabled
         :loading="loading"
         @update:selected-value="autoCompleteResult = parseSelectedNation($event)"
-        @update:model-value="updateModelValue"
+        @update:model-value="validation.businessName = false"
       />
       <cds-inline-loading status="active" v-if="loading">Loading first nation details...</cds-inline-loading>
     </data-fetcher>
