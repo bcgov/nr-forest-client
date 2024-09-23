@@ -41,19 +41,9 @@ Then(
         Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
       });
     } else {
-      
-      if(idir){
-        cy.get('cds-accordion cds-accordion-item')
-        .shadow()
-        .contains('div', sectionTitle).parent().parent().within(() => {
-          Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
-        });
-      } else {
-        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
-          Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
-        });
-      }
-
+      cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
+        Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
+      });
     }
 });
 
@@ -80,16 +70,8 @@ Then(
         Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
       });
     } else {      
-      if(idir){
-        cy.get('cds-accordion cds-accordion-item')
-        .shadow()
-        .contains('div', sectionTitle).parent().parent().within(() => {
-          Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
-        });
-      } else {
-        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
-          Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
-        });
-      }
+      cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
+        Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
+      });      
     }
 });
