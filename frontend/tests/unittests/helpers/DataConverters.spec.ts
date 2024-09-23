@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { retrieveClientType } from '@/helpers/DataConversors'
+import { retrieveClientType } from '@/helpers/DataConverters'
 
-describe('DataConversors.ts', () => {
+describe('DataConverters.ts', () => {
   it('retrieveClientType should return C when legalType is A', () => {
     const result = retrieveClientType('A')
     expect(result).toEqual('C')
@@ -29,6 +29,6 @@ describe('DataConversors.ts', () => {
   it('throw an error when legalType is unknown', () => {
     expect(() => {
       retrieveClientType('Z')
-    }).toThrow('Unknown Legal Type Z')
+    }).toThrow('Unsupported Legal Type Z')
   })
 })

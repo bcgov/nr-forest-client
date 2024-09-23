@@ -1,4 +1,5 @@
 import type { CodeDescrType, IdentificationCodeDescrType } from "@/dto/CommonTypesDto";
+import { toSentenceCase } from "@/services/ForestClientService";
 
 export interface Address {
   streetAddress: string;
@@ -95,6 +96,16 @@ export const indexedEmptyAddress = (index: number): Address =>
   );
 
 export const emptyAddress = (): Address => indexedEmptyAddress(0);
+
+export const formatAddresses = (addresses: Address[]): Address[] => {
+  if (addresses && addresses.length > 0) {
+    return addresses.map(address => ({
+      ...address,
+      locationName: toSentenceCase(address.locationName),
+    }));
+  }
+  return [{ ...emptyAddress(), locationName: locationName.text }];
+};
 
 export const indexedEmptyContact = (index: number): Contact =>
   JSON.parse(
