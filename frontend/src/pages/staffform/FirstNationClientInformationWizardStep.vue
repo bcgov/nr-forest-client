@@ -10,7 +10,7 @@ import type {
   FormDataDto,
 } from "@/dto/ApplyClientNumberDto";
 import type { BusinessSearchResult } from "@/dto/CommonTypesDto";
-import { exportAddress } from "@/helpers/DataConversors";
+import { formatAddresses } from "@/dto/ApplyClientNumberDto";
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 
@@ -75,17 +75,12 @@ watch([autoCompleteResult], () => {
   firstNationControl.value = false;
 });
 
-const updateModelValue = ($event) => {
-  validation.businessName =
-    !!$event && $event === autoCompleteResult.value?.name;
-};
-
 const parseSelectedNation = (
   selectedNation: FirstNationDetailsDto
 ) => {
   if (selectedNation) {
     validation.businessName = true;
-    formData.value.location.addresses = exportAddress(
+    formData.value.location.addresses = formatAddresses(
       selectedNation.addresses
     );
     formData.value.businessInformation.registrationNumber = `DINA${selectedNation.id}`;
@@ -129,7 +124,7 @@ const mapFirstNationInfo = (firstNations: ForestClientDetailsDto[] = []) => {
         enabled
         :loading="loading"
         @update:selected-value="autoCompleteResult = parseSelectedNation($event)"
-        @update:model-value="updateModelValue"
+        @update:model-value="validation.businessName = false"
       />
       <cds-inline-loading status="active" v-if="loading">Loading first nation details...</cds-inline-loading>
     </data-fetcher>

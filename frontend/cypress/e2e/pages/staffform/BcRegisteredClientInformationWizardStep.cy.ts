@@ -1,7 +1,7 @@
 import testCases from "../../../fixtures/staff/bcregisteredscenarios.json";
 
 /* eslint-disable no-undef */
-describe("Bc Registered Staff Wizard Step", () => {
+describe("BC Registered Staff Wizard Step", () => {
   beforeEach(() => {
     cy.viewport(1920, 1080);
 

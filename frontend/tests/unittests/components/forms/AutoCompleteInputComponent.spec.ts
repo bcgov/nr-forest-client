@@ -223,12 +223,28 @@ describe("Auto Complete Input Component", () => {
 
     it('emits the "update:selected-value" with undefined when user types something in the input field', async () => {
       // adding a 'Z' character to the end of the original value so to trigger an update:model-value
-      await wrapper.setProps({ modelValue: "TANGOZ" });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      wrapper.find<CDSComboBox>(`#${id}`).element._filterInputValue = "TANGOZ";
+      await wrapper.find(`#${id}`).trigger("input");
 
       expect(wrapper.emitted("update:selected-value")).toHaveLength(2);
       expect(wrapper.emitted("update:selected-value")![1][0]).toEqual(
         undefined
       );
+    });
+
+    it('doesn\'t emit the "update:selected-value" when the value has been changed from outside', async () => {
+      const expectedCount = 1;
+
+      // Expected count before the update
+      expect(wrapper.emitted("update:selected-value")).toHaveLength(expectedCount);
+
+      // adding a 'Z' character to the end of the original value so to trigger an update:model-value
+      await wrapper.setProps({ modelValue: "TANGOZ" });
+
+      // Expected count after the update
+      expect(wrapper.emitted("update:selected-value")).toHaveLength(expectedCount);
     });
 
     it('emits the "update:selected-value" with the newly selected value', async () => {
