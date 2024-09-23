@@ -90,14 +90,15 @@ const inputList = computed<Array<BusinessSearchResult>>(() => {
   return [];
 });
 
-let selectedValue: BusinessSearchResult | undefined = undefined;
-
 //This function emits the events on update
-const emitValueChange = (newValue: string): void => {
-  // Prevent selecting the empty value included when props.contents is empty.
-  selectedValue = newValue
-    ? inputList.value.find((entry) => entry.code === newValue)
-    : undefined;
+const emitValueChange = (newValue: string, isSelectEvent = false): void => {
+  let selectedValue: BusinessSearchResult | undefined;
+  if (isSelectEvent) {
+    // Prevent selecting the empty value included when props.contents is empty.
+    selectedValue = newValue
+      ? inputList.value.find((entry) => entry.code === newValue)
+      : undefined;
+  }
 
   emit("update:model-value", selectedValue?.name ?? newValue);
   emit("update:selected-value", selectedValue);
@@ -124,7 +125,9 @@ watch(
   }
 );
 watch([inputValue], () => {
-  emitValueChange(inputValue.value);
+  if (isUserEvent.value) {
+    emitValueChange(inputValue.value);
+  }
 });
 
 /**
@@ -168,7 +171,7 @@ const validateInput = (newValue: string) => {
 
 const selectAutocompleteItem = (event: any) => {
   const newValue = event?.detail?.item?.getAttribute("data-id");
-  emitValueChange(newValue);
+  emitValueChange(newValue, true);
   validateInput(newValue);
 };
 
