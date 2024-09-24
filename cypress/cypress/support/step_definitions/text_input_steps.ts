@@ -70,7 +70,7 @@ Then(
         Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
       });
     } else {      
-      cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
+      cy.get(`cds-accordion-item[data-text="${sectionTitle}"]`).within(() => {
         Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
       });      
     }
