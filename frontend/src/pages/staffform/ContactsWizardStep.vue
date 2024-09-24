@@ -253,6 +253,7 @@ const contactName = (contact: Contact) => {
       <cds-accordion-item
         :open="open[contact.index]"
         :title="contactName(contact)"
+        :data-text="`${contactName(contact) || ''}`"
         size="lg"
         class="grouping-13"
         :data-focus="`contact-${index + 1}-heading`"
