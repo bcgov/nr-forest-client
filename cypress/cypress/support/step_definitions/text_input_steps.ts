@@ -41,7 +41,7 @@ Then(
         Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
       });
     } else {
-      cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
+      cy.get(`cds-accordion-item[data-text="${sectionTitle}"]`).within(() => {
         Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
       });
     }
