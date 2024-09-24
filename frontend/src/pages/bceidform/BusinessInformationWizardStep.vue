@@ -25,6 +25,7 @@ import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // Importing helper functions
 import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
+import { formDataDto } from '../../dto/ApplyClientNumberDto';
 import {
   getEnumKeyByEnumValue,
   adminEmail,
@@ -159,6 +160,7 @@ const autoCompleteResult = ref<BusinessSearchResult>();
 watch([autoCompleteResult], () => {
   // reset business validation state
   validation.business = false;
+  formData.value.businessInformation.doingBusinessAs = null;
 
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
     toggleErrorMessages(false, false, false);
@@ -171,6 +173,10 @@ watch([autoCompleteResult], () => {
       autoCompleteResult.value.legalType
     );
     showAutoCompleteInfo.value = false;
+
+    if (formData.value.businessInformation.clientType === 'RSP') {
+      formData.value.businessInformation.doingBusinessAs = autoCompleteResult.value.name;
+    }
 
     emit("update:data", formData.value);
 

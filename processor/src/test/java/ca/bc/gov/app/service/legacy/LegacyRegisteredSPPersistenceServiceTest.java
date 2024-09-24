@@ -428,7 +428,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                 .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
                 .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
                 .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
-                    "Baxter Corp")
+                    "BAXTER CORP")
                 .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "FM00184546")
                 .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, true)
                 .withParameter(ApplicationConstant.DOING_BUSINESS_AS, "BAXTER CORP"),
@@ -497,7 +497,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                 .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
                 .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
                 .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
-                    "Baxter Corp")
+                    "BAXTER CORP")
                 .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "FM00184546")
                 .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, true)
                 .withParameter(ApplicationConstant.DOING_BUSINESS_AS, "BAXTER CORP"),
@@ -638,7 +638,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                     .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
                     .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
                     .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
-                        "Baxter Corp")
+                        "BAXTER CORP")
                     .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "FM00184546")
                     .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, true)
                     .withParameter(ApplicationConstant.DOING_BUSINESS_AS, "BAXTER CORP")
