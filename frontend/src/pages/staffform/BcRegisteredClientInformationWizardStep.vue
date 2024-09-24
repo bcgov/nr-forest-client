@@ -397,7 +397,6 @@ onMounted(() => {
       <cds-inline-notification
       id="readOnlyNotification"
       v-shadow="2"
-      v-if="formData.businessInformation.goodStandingInd === 'Y' || showOnError"
       low-contrast="true"
       open="true"
       kind="info"
