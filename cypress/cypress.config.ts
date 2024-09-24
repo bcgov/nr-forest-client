@@ -59,6 +59,6 @@ export default defineConfig({
   viewportWidth: 1920,
   retries: {    
     runMode: 3,
-    openMode: 1,
+    openMode: 0,
   },
 });
