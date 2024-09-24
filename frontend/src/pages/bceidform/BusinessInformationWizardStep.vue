@@ -174,7 +174,7 @@ watch([autoCompleteResult], () => {
     );
     showAutoCompleteInfo.value = false;
 
-    if(formData.value.businessInformation.clientType === 'RSP') {
+    if (formData.value.businessInformation.clientType === 'RSP') {
       formData.value.businessInformation.doingBusinessAs = autoCompleteResult.value.name;
     }
 
