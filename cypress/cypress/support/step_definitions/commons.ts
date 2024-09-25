@@ -13,39 +13,19 @@ BeforeStep({ tags: "@loginAsEditor or @loginAsViewer or @loginAsAdmin" }, functi
 
 Then('I add a new location called {string}', (location: string) => {
   Step(this,'I click on the "Add another location" button');
-
-  cy.get('cds-accordion cds-accordion-item')
-  .shadow()
-  .contains('div', "Additional location").should('be.visible');
-
+  cy.get(`[data-text="Additional location"]`).should('be.visible');
   Step(this,`I type "${location}" into the "Location name" form input for the "Additional location"`);  
-  cy.get('cds-accordion cds-accordion-item')
-  .shadow()
-  .contains('div', location).should('be.visible');
+  cy.get(`[data-text="${location}"]`).should('be.visible');
 });
 
 Then('I add a new contact called {string}', (contactName: string) => {
   Step(this,'I click on the "Add another contact" button');
 
-  if(idir){
-    
-    cy.get('cds-accordion cds-accordion-item')
-    .shadow()
-    .contains('div', "Additional location").should('be.visible');
-
-    Step(this,`I type "${contactName}" into the "Location name" form input for the "Additional location"`);  
-    cy.get('cds-accordion cds-accordion-item')
-    .shadow()
-    .contains('div', contactName).should('be.visible');
-
-  } else {
-    cy.get('div.frame-01[data-text="Additional contact"]').should('be.visible');
+    cy.get('[data-text="Additional contact"]').should('be.visible');
     const [firstName, ...lastName] = contactName.split(' ');
     Step(this,`I type "${firstName}" into the "First name" form input for the "Additional contact"`);  
-    cy.get(`div.frame-01[data-text="${firstName} "]`).should('be.visible');
+    cy.get(`[data-text="${firstName} "]`).should('be.visible');
     Step(this,`I type "${lastName.join(' ')}" into the "Last name" form input for the "${firstName} "`);  
-
-  }
 
 });
 

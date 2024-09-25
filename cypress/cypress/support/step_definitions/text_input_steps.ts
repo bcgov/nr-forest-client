@@ -41,7 +41,7 @@ Then(
         Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
       });
     } else {
-      cy.get(`cds-accordion-item[data-text="${sectionTitle}"]`).within(() => {
+      cy.get(`[data-text="${sectionTitle}"]`).within(() => {
         Step(this, `I type "${value}" into the "${fieldLabel}" form input`);        
       });
     }
@@ -70,7 +70,7 @@ Then(
         Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
       });
     } else {      
-      cy.get(`cds-accordion-item[data-text="${sectionTitle}"]`).within(() => {
+      cy.get(`[data-text="${sectionTitle}"]`).within(() => {
         Step(this, `I replace the "${fieldLabel}" with "${value}" form input`);        
       });      
     }

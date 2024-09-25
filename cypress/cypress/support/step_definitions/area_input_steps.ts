@@ -36,17 +36,9 @@ Then(
         Step(this, `I type "${value}" into the "${fieldLabel}" form input area`);        
       });
     } else {
-      if(idir){
-        cy.get('cds-accordion cds-accordion-item')
-        .shadow()
-        .contains('div', sectionTitle).parent().parent().within(() => {
-          Step(this, `I type "${value}" into the "${fieldLabel}" form input area`);        
-        });
-      } else {
-        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
-          Step(this, `I type "${value}" into the "${fieldLabel}" form input area`);        
-        });
-      }
+      cy.get(`[data-text="${sectionTitle}"]`).within(() => {
+        Step(this, `I type "${value}" into the "${fieldLabel}" form input area`);        
+      });    
     }
 
 });

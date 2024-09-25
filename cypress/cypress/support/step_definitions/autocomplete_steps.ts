@@ -54,17 +54,9 @@ Then(
         Step(this, `I type "${search}" and select "${value}" from the "${fieldLabel}" form autocomplete`);        
       });
     } else {
-      if(idir){
-        cy.get('cds-accordion cds-accordion-item')
-        .shadow()
-        .contains('div', sectionTitle).parent().parent().within(() => {
-          Step(this, `I type "${search}" and select "${value}" from the "${fieldLabel}" form autocomplete`);        
-        });
-      } else {
-        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
-          Step(this, `I type "${search}" and select "${value}" from the "${fieldLabel}" form autocomplete`);        
-        });
-      }
+      cy.get(`[data-text="${sectionTitle}"]`).within(() => {
+        Step(this, `I type "${search}" and select "${value}" from the "${fieldLabel}" form autocomplete`);        
+      });      
     }
 
 });

@@ -28,18 +28,9 @@ Then(
         Step(this, `I select "${value}" from the "${fieldLabel}" form input`);
       });
     } else {
-      
-      if(idir){
-        cy.get('cds-accordion cds-accordion-item')
-        .shadow()
-        .contains('div', sectionTitle).parent().parent().within(() => {
-          Step(this, `I select "${value}" from the "${fieldLabel}" form input`);
-        });
-      } else {
-        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
-          Step(this, `I select "${value}" from the "${fieldLabel}" form input`);
-        });
-      }
+      cy.get(`[data-text="${sectionTitle}"]`).within(() => {
+        Step(this, `I select "${value}" from the "${fieldLabel}" form input`);
+      });
     }
 
 });
@@ -60,18 +51,10 @@ Then(
       cy.get('div.frame-01:first').within(() => {
         Step(this, `I select "${value}" from the "${fieldLabel}" multiselect`);
       });
-    } else {    
-      if(idir){
-        cy.get('cds-accordion cds-accordion-item')
-        .shadow()
-        .contains('div', sectionTitle).parent().parent().within(() => {
-          Step(this, `I select "${value}" from the "${fieldLabel}" multiselect`);
-        });
-      } else {
-        cy.get(`div.frame-01[data-text="${sectionTitle}"]`).within(() => {
-          Step(this, `I select "${value}" from the "${fieldLabel}" multiselect`);
-        });
-      }
+    } else {  
+      cy.get(`[data-text="${sectionTitle}"]`).within(() => {
+        Step(this, `I select "${value}" from the "${fieldLabel}" multiselect`);
+      });      
     }
 
 });
