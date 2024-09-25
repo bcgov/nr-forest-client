@@ -21,7 +21,8 @@ import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.exception.UnableToProcessRequestException;
-import ca.bc.gov.app.exception.UnsuportedClientTypeException;
+import ca.bc.gov.app.exception.UnsupportedClientTypeException;
+import ca.bc.gov.app.exception.UnsupportedLegalTypeException;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.CountryCodeRepository;
@@ -220,87 +221,82 @@ public class ClientService {
       String businessId,
       String provider
   ) {
-    log.info("Loading details for {}", clientNumber);
-    return
-        bcRegistryService
-            .requestDocumentData(clientNumber)
-            .next()
-            .doOnNext(document ->
-                log.info("Searching on Oracle legacy db for {} {}",
-                    document.business().identifier(),
-                    document.business().getResolvedLegalName()
-                )
-            )
-            .flatMap(document ->
-                legacyService
-                    .searchLegacy(
-                        document.business().identifier(),
-                        document.business().getResolvedLegalName(),
-                        userId,
-                        businessId
-                    )
-                    .next()
-                    .filter(isMatchWith(document))
-                    .doOnNext(legacy ->
-                        log.info("Found legacy entry for {} {}",
-                            document.business().identifier(),
-                            document.business().getResolvedLegalName()
-                        )
-                    )
-                    .flatMap(legacy -> Mono
-                        .error(
-                            new ClientAlreadyExistException(
-                                legacy.clientNumber(),
-                                document.business().identifier(),
-                                document.business().getResolvedLegalName())
-                        )
-                    )
-                    .defaultIfEmpty(document)
-                    .doOnNext(value ->
-                        log.info("No entry found on legacy for {} {}",
-                            document.business().identifier(),
-                            document.business().getResolvedLegalName()
-                        )
-                    )
-            )
-            .map(BcRegistryDocumentDto.class::cast)
+      log.info("Loading details for {}", clientNumber);
+      return bcRegistryService
+          .requestDocumentData(clientNumber)
+          .next()
+          .doOnNext(document ->
+              log.info("Searching on Oracle legacy db for {} {}",
+                  document.business().identifier(),
+                  document.business().getResolvedLegalName()
+              )
+          )
+          .flatMap(document -> legacyService
+              .searchLegacy(
+                  document.business().identifier(),
+                  document.business().getResolvedLegalName(),
+                  userId,
+                  businessId
+              )
+              .next()
+              .filter(isMatchWith(document))
+              .doOnNext(legacy ->
+                  log.info("Found legacy entry for {} {}",
+                      document.business().identifier(),
+                      document.business().getResolvedLegalName()
+                  )
+              )
+              .flatMap(legacy -> Mono.error(
+                  new ClientAlreadyExistException(
+                      legacy.clientNumber(),
+                      document.business().identifier(),
+                      document.business().getResolvedLegalName())
+              ))
+              .defaultIfEmpty(document)
+              .doOnNext(value ->
+                  log.info("No entry found on legacy for {} {}",
+                      document.business().identifier(),
+                      document.business().getResolvedLegalName()
+                  )
+              )
+          )
+          .map(BcRegistryDocumentDto.class::cast)
 
-            .flatMap(client -> {
+          .flatMap(client -> {
               // FSADT1-1388: Allow IDIR users to search for any client type
               if (provider.equalsIgnoreCase("idir")) {
-                return Mono.just(client);
+                  return Mono.just(client);
+              }
+
+              // Check for unsupported legal type
+              LegalTypeEnum legalType = LegalTypeEnum.fromValue(client.business().legalType());
+              if (legalType == null) {
+                  return Mono.error(
+                      new UnsupportedLegalTypeException(client.business().legalType())
+                  );
               }
 
               if (ApplicationConstant.AVAILABLE_CLIENT_TYPES.contains(
-                  ClientValidationUtils.getClientType(
-                          LegalTypeEnum.valueOf(client.business().legalType())
-                      )
-                      .toString()
-              )
-              ) {
-                return Mono.just(client);
+                  ClientValidationUtils.getClientType(legalType).toString()
+              )) {
+                  return Mono.just(client);
               }
-              return Mono.error(
-                  new UnsuportedClientTypeException(ClientValidationUtils.getClientType(
-                          LegalTypeEnum.valueOf(client.business().legalType())
-                      )
-                      .toString()
-                  ));
-            })
 
-            //if document type is SP and party contains only one entry that is not a person, fail
-            .filter(document ->
-                // FSADT1-1388: Allow IDIR users to search for any client type
-                provider.equalsIgnoreCase("idir") ||
-                    !("SP".equalsIgnoreCase(document.business().legalType())
-                        && document.parties().size() == 1
-                        && !document.parties().get(0).isPerson()
-                    )
-            )
-            .flatMap(buildDetails())
-            .switchIfEmpty(Mono.error(new UnableToProcessRequestException(
-                "Unable to process request. This sole proprietor is not owner by a person"
-            )));
+              return Mono.error(new UnsupportedClientTypeException(
+                  ClientValidationUtils.getClientType(legalType).toString()
+              ));
+          })
+
+          // If document type is SP and party contains only one entry that is not a person, fail
+          .filter(document -> provider.equalsIgnoreCase("idir") ||
+              !("SP".equalsIgnoreCase(document.business().legalType()) &&
+                  document.parties().size() == 1 &&
+                  !document.parties().get(0).isPerson())
+          )
+          .flatMap(buildDetails())
+          .switchIfEmpty(Mono.error(new UnableToProcessRequestException(
+              "Unable to process request. This sole proprietor is not owned by a person"
+          )));
   }
 
   /**

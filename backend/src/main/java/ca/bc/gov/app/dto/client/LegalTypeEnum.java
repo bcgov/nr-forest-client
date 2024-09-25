@@ -1,6 +1,7 @@
 package ca.bc.gov.app.dto.client;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import ca.bc.gov.app.exception.UnsupportedLegalTypeException;
 import java.util.HashMap;
 import java.util.Map;
 

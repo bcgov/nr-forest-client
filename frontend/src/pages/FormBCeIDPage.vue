@@ -360,7 +360,7 @@ exitBus.on((event: Record<string, boolean | null>) => {
   endAndLogOut.value = event.nonPersonSP
     ? event.nonPersonSP
     : endAndLogOut.value;
-  endAndLogOut.value = event.unsupportedClientType || endAndLogOut.value;
+  endAndLogOut.value = event.unsupportedClientType || event.unsupportedLegalType || endAndLogOut.value;
 });
 
 progressIndicatorBus.on((event: ProgressNotification) => {

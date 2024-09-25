@@ -25,7 +25,7 @@ export const retrieveClientType = (legalType: string): string => {
       case "XP":
         return "L";
       default:
-        throw new Error("Unsupported Legal Type " + legalType);
+        return null;
     }
   } else {
     return "";
