@@ -18,7 +18,8 @@ import {
   type FormDataDto,
   type ForestClientDetailsDto,
   indexedEmptyAddress,
-  indexedEmptyContact
+  indexedEmptyContact,
+  newFormDataDto,
 } from "@/dto/ApplyClientNumberDto";
 import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
 import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
@@ -116,6 +117,12 @@ watch([autoCompleteResult], () => {
   detailsData.value = null;
   bcRegistryError.value = false;
   showOnError.value = false;
+
+  // reset businessInformation
+  Object.assign(formData.value.businessInformation, {
+    ...newFormDataDto().businessInformation,
+    businessName: formData.value.businessInformation.businessName,
+  });
 
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
     formData.value.businessInformation.registrationNumber = autoCompleteResult.value.code;
@@ -393,7 +400,6 @@ onMounted(() => {
       data-text="Client information"
       id="readOnlyNotification"
       v-shadow="2"
-      v-if="formData.businessInformation.goodStandingInd === 'Y' || showOnError"
       low-contrast="true"
       open="true"
       kind="info"
