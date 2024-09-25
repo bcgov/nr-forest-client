@@ -495,6 +495,7 @@ watch(submissionLimitError, () => {
     -->
       <div data-scroll="top-notification" class="header-offset"></div>
       <error-notification-grouping-component
+        data-text="top"
         :form-data="formData"
         :scroll-to-element-fn="scrollToNewContact"
       />
@@ -613,6 +614,7 @@ watch(submissionLimitError, () => {
               :disabled="isFirst"
               v-on:click="onBack"
               data-test="wizard-back-button"
+              data-text="Back"
             >
             <span>Back</span>
           </cds-button>
@@ -625,6 +627,7 @@ watch(submissionLimitError, () => {
               v-on:click="onNext"
               :disabled="progressData[currentTab].valid === false || nextBtnDisabled"
               data-test="wizard-next-button"
+              data-text="Next"
               >
               <span>Next</span>
               <ArrowRight16 slot="icon" />
@@ -637,6 +640,7 @@ watch(submissionLimitError, () => {
           <cds-button
             v-if="isLast && !endAndLogOut && !mailAndLogOut"
               data-test="wizard-submit-button"
+              data-text="Submit"
               kind="primary"
               size="lg"
               @click.prevent="submit"
@@ -652,6 +656,7 @@ watch(submissionLimitError, () => {
             size="lg"
             v-show="!isLast && (endAndLogOut || mailAndLogOut)"
             @click.prevent="processAndLogOut"
+            :data-text="`${endAndLogOut ? 'End application' : 'Receive email'} and logout`"
           >
             <span
               >{{ endAndLogOut ? 'End application' : 'Receive email' }} and

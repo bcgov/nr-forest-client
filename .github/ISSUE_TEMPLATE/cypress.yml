@@ -1,0 +1,65 @@
+name: User provided automated tests
+description: Submit Gherkin scenarios to generate .feature files for our test suite.
+title: '[Test Case]: REPLACE WITH YOUR TEST CASE TITLE'
+labels: gherkin, automated test
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📝 Gherkin Scenario Submission
+
+        Thank you for contributing! Please provide your Gherkin scenario in the format below. 
+
+        ### Gherkin/Cucumber Test Scenario
+        - ✍️ **Write or paste your Gherkin scenario in the first block**:  
+          - Ensure the scenario follows the structure of **Given**, **When**, **Then**.
+          - Ensure the scenario contains a **Feature** and **Scenario** instruction.
+          - You can have multiple **Scenarios** in a single **Feature**.
+          - Pay attention to the **indentation** and **keywords**, as misconfigured files will cause issues when executed.
+          - Pay attention to the data you're using in your scenario. Make sure it don't pose a security risk or exposes any **REAL** [personal identifiable information](https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/privacy/personal-information).
+          - If you're unsure how to format your scenario, [click here for a guide](https://github.com/bcgov/nr-forest-client/tree/main/cypress#readme).
+        - 🧩 **Additional instructions**:  
+          - Use the second block to provide any **non-default** steps or custom behavior that doesn’t fit into our predefined instructions. You can find a list of ready-made instructions in [our documentation](https://github.com/bcgov/nr-forest-client/tree/main/cypress#readme).
+
+        ### Example
+
+        ```gherkin
+        Feature: Guess the word
+
+          # The first example has two steps
+          Scenario: Maker starts a game
+            When the Maker starts a game
+            Then the Maker waits for a Breaker to join
+
+          # The second example has three steps
+          Scenario: Breaker joins a game
+            Given the Maker has started a game with the word "silky"
+            When the Breaker joins the Maker's game
+            Then the Breaker must guess a word with 5 characters
+        ```
+  - type: textarea
+    id: gherkin_scenario
+    attributes:
+      label: Test Scenario
+      description: 'Please write or paste your Gherkin scenario here.'
+      render: gherkin
+      placeholder: |        
+        Feature: [Feature Name]
+          Scenario: [Scenario Name]
+            Given [some initial context]
+            When [some event occurs]
+            Then [some outcome should occur]
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_instructions
+    attributes:
+      label: Additional Instructions
+      description: 'Please provide any additional instructions or custom behavior that doesn’t fit into our predefined instructions.'      
+      render: shell
+      placeholder: |        
+        - [Instruction 1] - [Description]
+        - [I can choose "rock" as the word] - User can provide a custom word to guess.
+    validations:
+      required: false

@@ -82,9 +82,36 @@ jobs:
           build_args: |
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
 
+  pre-tools:
+    name: Pre Deploy Tools
+    needs: [build-legacydb, vars]
+    environment: dev
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scale down legacy
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=0 -n ${{ secrets.OC_NAMESPACE }}
+          undesired_replicas=0  
+
+          while true; do
+            available_replicas=$(oc get dc/nr-forest-client-${{ github.event.number }}-legacy -n ${{ secrets.OC_NAMESPACE }} -o jsonpath='{.status.availableReplicas}')
+            
+            if [[ "$available_replicas" -ge "$undesired_replicas" ]]; then
+              echo "DeploymentConfig ${{ secrets.OC_NAMESPACE }}-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
+              break
+            fi
+            
+            echo "Waiting... ($available_replicas pods available)"
+            sleep 5
+          done
+
   deploy-tools:
     name: Deploy Tools
-    needs: [build-legacydb, vars]
+    needs: [pre-tools, build-legacydb, vars]
     environment: tools
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -106,6 +133,28 @@ jobs:
             -p ORACLEDB_USER_W=THE
             -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p TAG=latest
+
+      - name: Remove the PR database
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This removes a new pluggable database, user and service for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/removeDatabase "THE" "PR_${{ github.event.number }}"
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
 
       - name: Create the PR database
         continue-on-error: true
@@ -160,7 +209,7 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           oc create job --from=cronjob/nr-forest-client-tools-migratedb migrate-pr${{ github.event.number }}-${{ github.run_attempt }}-$(date +%s) --dry-run=client -o yaml | sed "s/value: main/value: ${ESCAPED_BRANCH_NAME}/" | sed "s/value: \"0\"/value: \"${{ github.event.number }}\"/" | oc apply -f -
-            
+
   deploy:
     name: Deploy Application
     needs: [deploy-tools, builds, vars]
@@ -339,7 +388,7 @@ jobs:
     name: "User flow test"
     runs-on: ubuntu-22.04
     needs: [deploy, vars]
-    environment: dev
+    environment: tools
     env:
       URL: ${{ needs.vars.outputs.url }}
     steps:
@@ -358,6 +407,16 @@ jobs:
         env:
           CYPRESS_baseUrl: https://${{ env.URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_editor_password: ${{ secrets.UAT_EDITOR_PASSWORD }}
+          CYPRESS_editor_username: ${{ secrets.UAT_EDITOR_USERNAME }}
+          CYPRESS_admin_password: ${{ secrets.UAT_ADMIN_PASSWORD }}
+          CYPRESS_admin_username: ${{ secrets.UAT_ADMIN_USERNAME }}
+          CYPRESS_viewer_password: ${{ secrets.UAT_VIEWER_PASSWORD }}
+          CYPRESS_viewer_username: ${{ secrets.UAT_VIEWER_USERNAME }}
+          CYPRESS_bceid_password: ${{ secrets.UAT_BCEID_PASSWORD }}
+          CYPRESS_bceid_username: ${{ secrets.UAT_BCEID_USERNAME }}
+          CYPRESS_bcsc_password: ${{ secrets.UAT_BCSC_PASSWORD }}
+          CYPRESS_bcsc_username: ${{ secrets.UAT_BCSC_USERNAME }}
 
       - name: Publish Cypress Results
         uses: mikepenz/action-junit-report@v4
@@ -370,18 +429,168 @@ jobs:
           detailed_summary: true
           job_name: User Journeys
 
+      - name: Check for Cypress Screenshots and Videos
+        run: |
+          if [ -d "cypress/cypress/screenshots" ] && [ "$(ls -A cypress/cypress/screenshots)" ]; then
+            echo "Screenshots folder is not empty, uploading artifacts."            
+            echo "screenshots=true" >> $GITHUB_OUTPUT
+
+          else
+            echo "Screenshots folder is empty or does not exist."
+            echo "screenshots=false" >> $GITHUB_OUTPUT
+          fi
+
+          if [ -d "cypress/cypress/videos" ] && [ "$(ls -A cypress/cypress/videos)" ]; then
+            echo "Videos folder is not empty, uploading artifacts."            
+            echo "videos=true" >> $GITHUB_OUTPUT
+
+          else
+            echo "Videos folder is empty or does not exist."
+            echo "videos=false" >> $GITHUB_OUTPUT
+          fi
+        id: check_artifacts
+
       - uses: actions/upload-artifact@v4
-        name: Upload Cypress Screenshots with error
-        if: failure()
+        name: Upload Cypress Screenshots
+        if: always()
         with:
           name: cypress-screenshots
           path: cypress/cypress/screenshots
           retention-days: 7
 
       - uses: actions/upload-artifact@v4
-        name: Upload Cypress Videos with error
-        if: failure()
+        name: Upload Cypress Videos
+        if: always()
         with:
           name: cypress-videos
           path: cypress/cypress/videos
           retention-days: 7
+
+  scale-down-after:
+    name: Scale down legacy
+    needs: [cypress-run]
+    environment: dev
+    if: always()    
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stop the Legacy Service
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=0
+          undesired_replicas=0
+          while true; do
+            available_replicas=$(oc get dc/nr-forest-client-${{ github.event.number }}-legacy -n ${{ secrets.OC_NAMESPACE }} -o jsonpath='{.status.availableReplicas}')
+            
+            if [[ "$available_replicas" -ge "$undesired_replicas" ]]; then
+              echo "DeploymentConfig ${{ secrets.OC_NAMESPACE }}-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
+              break
+            fi
+            
+            echo "Waiting... ($available_replicas pods available)"
+            sleep 5
+          done
+
+  recreate-database:
+    name: Recreate database
+    needs: [scale-down-after]
+    environment: tools
+    if: always()    
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove the PR database
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This removes a new pluggable database, user and service for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/removeDatabase "THE" "PR_${{ github.event.number }}"
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+
+      - name: Create the PR database
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This creates a new pluggable database for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools  -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/createDatabase PR_${{ github.event.number }}
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+
+      - name: Create the PR user
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This creates a new pluggable database for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/createAppUser "THE" "${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}" "PR_${{ github.event.number }}"
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+
+      - name: Migrate the PR database
+        continue-on-error: true
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          # Escape slashes and other special characters
+          ESCAPED_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[\/&]/\\&/g')
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc create job --from=cronjob/nr-forest-client-tools-migratedb migrate-pr${{ github.event.number }}-${{ github.run_attempt }}-$(date +%s) --dry-run=client -o yaml | sed "s/value: main/value: ${ESCAPED_BRANCH_NAME}/" | sed "s/value: \"0\"/value: \"${{ github.event.number }}\"/" | oc apply -f -
+  
+  scale-up-legacy:
+    name: Scale up legacy
+    needs: [recreate-database]
+    environment: dev
+    if: always()    
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start the Legacy Service
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=1

@@ -363,6 +363,7 @@ onMounted(() => {
         <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
         
         <cds-inline-notification
+          data-text="Client information"
           v-shadow="2"
           id="bcRegistryDownNotification"
           v-if="bcRegistryError || (error?.response?.status ?? false)"
@@ -376,6 +377,7 @@ onMounted(() => {
     </data-fetcher>
 
     <cds-inline-notification
+    data-text="Client information"
       v-shadow="2"
       id="bcRegistrySearchNotification"
       v-if="!formData.businessInformation.clientType"
@@ -395,6 +397,7 @@ onMounted(() => {
     <div v-if="showFields || showOnError" class="read-only-box">
 
       <cds-inline-notification
+      data-text="Client information"
       id="readOnlyNotification"
       v-shadow="2"
       low-contrast="true"
@@ -420,6 +423,7 @@ onMounted(() => {
       <hr class="divider" />
 
       <cds-inline-notification
+      data-text="Client information"
         v-shadow="2"
         id="notGoodStandingNotification"
         v-if="formData.businessInformation.goodStandingInd === 'N'"
@@ -438,6 +442,7 @@ onMounted(() => {
       </cds-inline-notification>
 
       <cds-inline-notification
+      data-text="Client information"
         v-shadow="2"
         id="unknownStandingNotification"
         v-if="formData.businessInformation.goodStandingInd !== 'N' && formData.businessInformation.goodStandingInd !== 'Y'"

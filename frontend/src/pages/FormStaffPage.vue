@@ -673,6 +673,7 @@ watch(submissionLimitError, () => {
                 :disabled="!isFirst"
                 v-on:click="onCancel"
                 data-test="wizard-cancel-button"
+                data-text="Cancel"
               >
                 <span>Cancel</span>
               </cds-button>
@@ -684,6 +685,7 @@ watch(submissionLimitError, () => {
                 :disabled="isFirst"
                 v-on:click="onBack"
                 data-test="wizard-back-button"
+                data-text="Back"
               >
                 <span>Back</span>
               </cds-button>
@@ -691,6 +693,7 @@ watch(submissionLimitError, () => {
               <cds-button
                 v-if="isLast"
                   data-test="wizard-submit-button"
+                  data-text="Submit"
                   kind="primary"
                   size="lg"
                   @click.prevent="submit"
@@ -708,6 +711,7 @@ watch(submissionLimitError, () => {
                   :disabled="progressData[currentTab].valid === false || nextBtnDisabled"
                   v-on:click="onNext"
                   data-test="wizard-next-button"
+                  data-text="Next"
                 >
                   <span>Next</span>
                   <ArrowRight16 slot="icon" />
