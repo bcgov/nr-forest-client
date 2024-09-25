@@ -21,7 +21,7 @@ import {
   indexedEmptyContact,
   newFormDataDto,
 } from "@/dto/ApplyClientNumberDto";
-import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
+import { adminEmail, getEnumKeyByEnumValue, getObfuscatedEmailLink } from "@/services/ForestClientService";
 import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
 // Importing helper functions
 import { retrieveClientType, retrieveLegalTypeDesc } from "@/helpers/DataConverters";
@@ -59,6 +59,8 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 
 // Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data);
+const showUnsupportedLegalTypeError = ref<boolean>(false); 
+
 watch(
   () => formData.value,
   () => emit("update:data", formData.value)
@@ -134,6 +136,24 @@ watch([autoCompleteResult], () => {
 
     emit("update:data", formData.value);
 
+    const toggleErrorMessages = (
+      unsupportedLegalType: boolean | null = null,
+    ) => {
+      showUnsupportedLegalTypeError.value = unsupportedLegalType ?? false;
+
+      if (unsupportedLegalType) {
+        progressIndicatorBus.emit({ kind: "disabled", value: true });
+        exitBus.emit({
+          unsupportedLegalType
+        });
+      } else {
+        progressIndicatorBus.emit({ kind: "disabled", value: false });
+        exitBus.emit({
+          unsupportedLegalType: false
+        });
+      }
+    };
+
     //Also, we will load the backend data to fill all the other information as well
     const {
       error,
@@ -189,6 +209,11 @@ watch([autoCompleteResult], () => {
       ) {
         handleErrorDefault();
         bcRegistryError.value = true;
+        return;
+      }
+
+      if (error.value.response?.status === 406) {
+        toggleErrorMessages(true);
         return;
       }
 
@@ -265,7 +290,7 @@ watch([detailsData], () => {
 
     formData.value.location.contacts = receivedContacts;
 
-    if(formData.value.location.contacts.length == 0){
+    if (formData.value.location.contacts.length == 0) {
       formData.value.location.contacts = [ indexedEmptyContact(0) ];
     }
 
@@ -372,6 +397,20 @@ onMounted(() => {
           hide-close-button="true"
           title="BC Registries is down">
             <span class="body-compact-01"> You'll need to try again later.</span>      
+        </cds-inline-notification>
+
+        <cds-inline-notification
+          v-if="showUnsupportedLegalTypeError"
+          hide-close-button="true"
+          low-contrast="true"
+          open="true"
+          kind="error"
+          title="Legal type not supported"
+        >
+          <p class="cds--inline-notification-content">
+            The legal type of this client is not supported. Please email
+            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+          </p>
         </cds-inline-notification>
     </data-fetcher>
 

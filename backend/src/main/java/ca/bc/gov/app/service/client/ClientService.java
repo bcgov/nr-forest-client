@@ -263,17 +263,17 @@ public class ClientService {
           .map(BcRegistryDocumentDto.class::cast)
 
           .flatMap(client -> {
-              // FSADT1-1388: Allow IDIR users to search for any client type
-              if (provider.equalsIgnoreCase("idir")) {
-                  return Mono.just(client);
-              }
-
               // Check for unsupported legal type
               LegalTypeEnum legalType = LegalTypeEnum.fromValue(client.business().legalType());
               if (legalType == null) {
                   return Mono.error(
                       new UnsupportedLegalTypeException(client.business().legalType())
                   );
+              }
+              
+        	  // FSADT1-1388: Allow IDIR users to search for any client type
+              if (provider.equalsIgnoreCase("idir")) {
+                  return Mono.just(client);
               }
 
               if (ApplicationConstant.AVAILABLE_CLIENT_TYPES.contains(

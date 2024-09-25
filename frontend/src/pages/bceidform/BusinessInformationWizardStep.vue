@@ -199,8 +199,6 @@ watch([autoCompleteResult], () => {
         toggleErrorMessages(null, null, true);
         return;
       }
-      
-      console.log(error.value.response?.data);
 
       if (error.value.response?.status === 406) {
         if (error.value.response?.data.toLowerCase().includes("legal type")) {
