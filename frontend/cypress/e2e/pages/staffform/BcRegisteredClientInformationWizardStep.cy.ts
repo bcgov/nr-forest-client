@@ -629,6 +629,57 @@ describe("BC Registered Staff Wizard Step", () => {
     });
   });
 
+  // See FSADT1-1511 (https://apps.nrs.gov.bc.ca/int/jira/browse/FSADT1-1511)
+  describe("when the selected Client name is replaced from a Sole proprietorship to something else", () => {
+    it("clears the Doing Business As field", () => {
+      loginAndNavigateToStaffForm();
+
+      cy.get("cds-inline-notification#bcRegistrySearchNotification").should(
+        "exist"
+      );
+
+      const sppSearch = "spp";
+      const sppCode = "FM123123";
+
+      interceptClientsApi(sppSearch, sppCode);
+
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        sppSearch,
+        sppCode,
+        `@clientSearch${sppSearch}`
+      );
+
+      cy.get(`.read-only-box > #legalType`)
+        .should("exist")
+        .and("contains.text", "Sole Proprietorship");
+
+      cy.clearFormEntry("#businessName");
+
+      const cmpSearch = "cmp";
+      const cmpCode = "C1231231";
+
+      interceptClientsApi(cmpSearch, cmpCode);
+
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        cmpSearch,
+        cmpCode,
+        `@clientSearch${cmpSearch}`
+      );
+
+      cy.get(`.read-only-box > #legalType`)
+        .should("exist")
+        .and("contains.text", "Continued In Corporation");
+
+      /*
+      Doing Business As is cleared, instead of holding the name of the previously selected Sole
+      proprietorship.
+      */
+      cy.get("#doingBusinessAs").should("exist").and("have.value", "");
+    });
+  });
+
   const loginAndNavigateToStaffForm = () => {
     cy.visit("/");
 
