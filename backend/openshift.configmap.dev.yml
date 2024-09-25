@@ -28,3 +28,9 @@ objects:
         info:
           app:
             component: ${COMPONENT}
+        ca:
+          bc:
+            gov:
+              nrs:                
+                idirMaxSubmissions: 65535                
+                otherMaxSubmissions: 65535

@@ -465,6 +465,7 @@ watch(submissionLimitError, () => {
     -->
       <div data-scroll="top-notification" class="header-offset"></div>
       <error-notification-grouping-component
+        data-text="top"
         :form-data="formData"
         :scroll-to-element-fn="scrollToNewContact"
       />
@@ -487,6 +488,7 @@ watch(submissionLimitError, () => {
           open="true"
           kind="info"
           hide-close-button="true"
+          data-text="Read-only"
           title="">
           <p class="cds--inline-notification-content">
             <strong>Read-only: </strong>
@@ -646,6 +648,7 @@ watch(submissionLimitError, () => {
           size="lg"
           v-on:click="submit"
           :disabled="submitBtnDisabled"
+          data-text="Submit"
         >
           <span>Submit application</span>
           <Check16 slot="icon" />

@@ -1,6 +1,9 @@
 FROM gvenzl/oracle-free:23.5-slim-faststart
 
+# Copy the custom scripts we need to the image
 COPY --chown=oracle:oracle removeDatabase ${ORACLE_BASE}/removeDatabase
+
+# Give permission to the scripts
 RUN chmod +x ${ORACLE_BASE}/removeDatabase
 
 USER root
