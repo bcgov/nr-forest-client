@@ -31,6 +31,6 @@ jobs:
   results:
     name: Analysis Results
     needs: [tests-java, tests-frontend, repo-reports]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - run: echo "Workflow completed successfully!"

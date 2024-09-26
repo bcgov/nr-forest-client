@@ -43,7 +43,7 @@ jobs:
 
   builds:
     name: Builds
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [vars]
     permissions:
       packages: write
@@ -65,7 +65,7 @@ jobs:
 
   build-legacydb:
     name: Builds (legacydb)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [vars]
     permissions:
       packages: write    
@@ -89,7 +89,7 @@ jobs:
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       PREFIX: ${{ needs.vars.outputs.url }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -168,7 +168,7 @@ jobs:
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       PREFIX: ${{ needs.vars.outputs.url }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -337,7 +337,7 @@ jobs:
 
   cypress-run:
     name: "User flow test"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [deploy, vars]
     environment: dev
     env:

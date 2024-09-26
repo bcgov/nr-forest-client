@@ -11,7 +11,7 @@ concurrency:
 jobs:
   vars:
     name: Variables
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       url: ${{ steps.calculate.outputs.url }}
     steps:
@@ -73,6 +73,6 @@ jobs:
   results:
     name: Validate Results
     needs: [changelog, validate]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - run: echo "Workflow completed successfully!"

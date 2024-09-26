@@ -17,7 +17,7 @@ jobs:
     name: Set Variables
     outputs:
       pr: ${{ steps.pr.outputs.pr }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       # Get PR number for squash merges to main
@@ -28,7 +28,7 @@ jobs:
   images-test:
     name: Promote images to TEST
     needs: [vars]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         component: [backend, database, frontend, legacy, processor]
@@ -47,7 +47,7 @@ jobs:
       ZONE: test
       URL: forestclient-tst.nrs.gov.bc.ca
     environment: test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Deploys
@@ -108,7 +108,7 @@ jobs:
       URL: forestclient-tst.nrs.gov.bc.ca
       ZONE: test
     environment: test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -251,7 +251,7 @@ jobs:
   images-prod:
     name: Promote images to PROD
     needs: [test-deploy]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         component: [backend, frontend, legacy, database, processor]
@@ -270,7 +270,7 @@ jobs:
       URL: forestclient.nrs.gov.bc.ca
       ZONE: prod
     environment: prod
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Deploys
@@ -309,7 +309,7 @@ jobs:
       ZONE: prod
       URL: forestclient.nrs.gov.bc.ca
     environment: prod
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
