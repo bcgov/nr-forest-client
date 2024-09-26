@@ -619,6 +619,7 @@ onMounted(() => {
         </cds-inline-notification>
 
         <cds-inline-notification
+          data-text="Business information"
           v-if="showUnsupportedLegalTypeError"
           hide-close-button="true"
           low-contrast="true"
