@@ -18,7 +18,6 @@ import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -320,13 +319,12 @@ public abstract class LegacyAbstractPersistenceService {
         .just(clientNumber)
         //FSADT1-1388: Allow doing business as based on parameter
         .filter(
-            forestClientNumber -> BooleanUtils
-                .toBoolean(
-                    message
-                        .getParameter(
-                            ApplicationConstant.IS_DOING_BUSINESS_AS,
-                            String.class
-                        )
+            forestClientNumber ->
+                Boolean.TRUE.equals(message
+                    .getParameter(
+                        ApplicationConstant.IS_DOING_BUSINESS_AS,
+                        Boolean.class
+                    )
                 )
         )
         .doOnNext(forestClientNumber ->
