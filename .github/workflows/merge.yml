@@ -124,6 +124,10 @@ jobs:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
 
+      - uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4"
+
       - name: Backup database before update
         continue-on-error: true
         run: |
@@ -324,6 +328,10 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
+
+      - uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4"
 
       - name: Backup database before update
         continue-on-error: true

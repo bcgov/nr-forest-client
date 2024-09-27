@@ -26,6 +26,10 @@ jobs:
     environment: tools
     runs-on: ubuntu-22.04
     steps:
+      - uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4"
+
       - name: Remove the PR database
         continue-on-error: true
         run: |
