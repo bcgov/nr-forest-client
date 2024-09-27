@@ -7,7 +7,7 @@ jobs:
   tests-frontend:
     name: Frontend Unit Tests
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: bcgov-nr/action-test-and-analyse@v1.2.1
         env:
