@@ -300,7 +300,7 @@ describe("Date Input Component", () => {
         const inputWrapper = globalWrapper.find<HTMLInputElement>(`#${id}${scenario.partName}`);
         await setInputValue(inputWrapper, scenario.validBeginning);
       });
-      it.only("updates the modelValue properly and emits error falsy (valid) after blurring", async () => {
+      it("updates the modelValue properly and emits error falsy (valid) after blurring", async () => {
         test(true);
       });
     });
