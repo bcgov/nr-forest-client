@@ -164,6 +164,7 @@ const autoCompleteResult = ref<BusinessSearchResult>();
 watch([autoCompleteResult], () => {
   // reset business validation state
   validation.business = false;
+  formData.value.businessInformation.doingBusinessAs = null;
 
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
     toggleErrorMessages(false, false, false, false, false);
@@ -176,6 +177,10 @@ watch([autoCompleteResult], () => {
       autoCompleteResult.value.legalType
     );
     showAutoCompleteInfo.value = false;
+
+    if (formData.value.businessInformation.clientType === 'RSP') {
+      formData.value.businessInformation.doingBusinessAs = autoCompleteResult.value.name;
+    }
 
     emit("update:data", formData.value);
 
@@ -619,6 +624,7 @@ onMounted(() => {
         </cds-inline-notification>
 
         <cds-inline-notification
+          data-text="Business information"
           v-if="showUnsupportedLegalTypeError"
           hide-close-button="true"
           low-contrast="true"

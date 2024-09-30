@@ -12,7 +12,7 @@ concurrency:
 jobs:
   vars:
     name: Variables
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       semver: ${{ steps.semver.outputs.tag }}
       url: ${{ steps.calculate.outputs.url }}
@@ -43,7 +43,7 @@ jobs:
 
   builds:
     name: Builds
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [vars]
     permissions:
       packages: write
@@ -65,7 +65,7 @@ jobs:
 
   build-legacydb:
     name: Builds (legacydb)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [vars]
     permissions:
       packages: write    
@@ -86,9 +86,13 @@ jobs:
     name: Pre Deploy Tools
     needs: [build-legacydb, vars]
     environment: dev
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:        
+          oc: "4.13"
       - name: Scale down legacy
         continue-on-error: true
         run: |
@@ -116,24 +120,28 @@ jobs:
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       PREFIX: ${{ needs.vars.outputs.url }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
       - name: Initializing Deployment
-        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: legacydb/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: false
           parameters:
             -p ZONE=tools            
             -p ORACLEDB_USER_W=THE
             -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p TAG=latest
-
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:        
+          oc: "4.13"
       - name: Remove the PR database
         continue-on-error: true
         run: |
@@ -217,17 +225,18 @@ jobs:
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
       PREFIX: ${{ needs.vars.outputs.url }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
       - name: Initializing Deployment
-        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           parameters:
             -p ZONE=${{ github.event.number }}
@@ -250,17 +259,21 @@ jobs:
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Deploy Database Backup
-        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: database/openshift.backup.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           parameters:
             -p ZONE=${{ github.event.number }}
             -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
-
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:        
+          oc: "4.13"
       - name: Backup database before update
         continue-on-error: true
         run: |
@@ -272,24 +285,26 @@ jobs:
             ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
 
       - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: false
           parameters:
             -p ZONE=${{ github.event.number }}
             -p PROMOTE=${{ github.repository }}/database:${{ github.event.number }}
 
       - name: Deploy Legacy
-        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           verification_path: health
           parameters:
@@ -299,12 +314,13 @@ jobs:
             -p ORACLEDB_PORT=1521
 
       - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: processor/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           verification_path: health
           parameters:
@@ -313,23 +329,25 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
       - name: Deploy Backend ConfigMap
-        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: backend/openshift.configmap.dev.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true          
           parameters:
             -p ZONE=${{ github.event.number }}            
 
       - name: Deploy Backend
-        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           verification_path: health
           parameters:
@@ -342,33 +360,36 @@ jobs:
             -p FRONTEND_URL=${{ needs.vars.outputs.url }}
 
       - name: Dev data replacement
-        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: database/openshift.dev.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           parameters: -p ZONE=${{ github.event.number }}
 
       - name: Deploy Frontend ConfigMap
-        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: frontend/openshift.configmap.dev.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true          
           parameters:
             -p ZONE=${{ github.event.number }}  
 
       - name: Deploy Frontend
-        uses: bcgov-nr/action-deployer-openshift@v3.0.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           parameters:
             -p ZONE=${{ github.event.number }}
@@ -386,7 +407,7 @@ jobs:
 
   cypress-run:
     name: "User flow test"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [deploy, vars]
     environment: tools
     env:
@@ -471,10 +492,13 @@ jobs:
     needs: [cypress-run]
     environment: dev
     if: always()    
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:        
+          oc: "4.13"
       - name: Stop the Legacy Service
         continue-on-error: true
         run: |
@@ -499,10 +523,13 @@ jobs:
     needs: [scale-down-after]
     environment: tools
     if: always()    
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:        
+          oc: "4.13"
       - name: Remove the PR database
         continue-on-error: true
         run: |
@@ -584,10 +611,13 @@ jobs:
     needs: [recreate-database]
     environment: dev
     if: always()    
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:        
+          oc: "4.13"
       - name: Start the Legacy Service
         continue-on-error: true
         run: |

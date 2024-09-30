@@ -76,9 +76,12 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
 
             //if Staff submitted, get the client name from the submission as doing business as
             .doOnNext(submissionDetail -> {
-              if (isStaffSubmitted(message)) {
-                atomicClientName.set(submissionDetail.getDoingBusinessAs());
-              }
+              atomicClientName.set(
+                  Optional
+                      .ofNullable(submissionDetail.getDoingBusinessAs())
+                      .filter(StringUtils::isNotBlank)
+                      .orElse(submissionDetail.getOrganizationName())
+              );
             })
 
             .map(submissionDetail ->
@@ -139,15 +142,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     message.parameters()
                 )
                     .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
-                        BooleanUtils.toString(
-                            isStaffSubmitted(message),
-                            atomicClientName.get(),
-                            Optional
-                                .ofNullable(forestClient.clientComment())
-                                .filter(StringUtils::isNotBlank)
-                                .map(comment -> comment.split("and company name ")[1])
-                                .orElse(StringUtils.EMPTY)
-                        )
+                            atomicClientName.get().toUpperCase()
                     )
                     .withParameter(ApplicationConstant.REGISTRATION_NUMBER,
                         String.join(StringUtils.EMPTY,
@@ -161,16 +156,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     )
                     .withParameter(
                         ApplicationConstant.DOING_BUSINESS_AS,
-                        BooleanUtils.toString(
-                            isStaffSubmitted(message),
-                            atomicClientName.get().toUpperCase(),
-                            Optional
-                                .ofNullable(forestClient.clientComment())
-                                .filter(StringUtils::isNotBlank)
-                                .map(comment -> comment.split("and company name ")[1])
-                                .orElse(StringUtils.EMPTY)
-                                .toUpperCase()
-                        )
+                        atomicClientName.get().toUpperCase()
                     )
             );
 

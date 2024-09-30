@@ -401,6 +401,7 @@ onMounted(() => {
         </cds-inline-notification>
 
         <cds-inline-notification
+          data-text="Client information"
           v-if="showUnsupportedLegalTypeError"
           hide-close-button="true"
           low-contrast="true"
@@ -416,7 +417,7 @@ onMounted(() => {
     </data-fetcher>
 
     <cds-inline-notification
-    data-text="Client information"
+      data-text="Client information"
       v-shadow="2"
       id="bcRegistrySearchNotification"
       v-if="!formData.businessInformation.clientType"
