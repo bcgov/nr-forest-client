@@ -362,7 +362,9 @@ revalidateBus.on((keys: string[] | undefined) => {
     validation[DatePart.year] = validatePart(DatePart.year);
     validation[DatePart.month] = validatePart(DatePart.month);
     validation[DatePart.day] = validatePart(DatePart.day);
-    validateFullDate(selectedValue.value);
+    if (areAllPartsValid()) {
+      validateFullDate(selectedValue.value);
+    }
   }
 });
 
