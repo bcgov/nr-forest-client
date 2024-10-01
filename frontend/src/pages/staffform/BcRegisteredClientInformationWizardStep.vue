@@ -66,12 +66,21 @@ watch(
   () => emit("update:data", formData.value)
 );
 
-const validation = reactive<Record<string, boolean>>({
+const getNewValidation = () => ({
   business: false,
   workSafeBCNumber: true,
   doingBusinessAs: true,
   acronym: true,
 });
+
+const validation = reactive<Record<string, boolean>>(getNewValidation());
+
+const resetValidation = () => {
+  for (const key in validation) {
+    delete validation[key];
+  }
+  Object.assign(validation, getNewValidation());
+};
 
 const showDetailsLoading = ref<boolean>(false);
 const detailsData = ref(null);
@@ -115,7 +124,8 @@ const standingValue = (goodStanding: boolean | null | undefined) => {
 const autoCompleteResult = ref<BusinessSearchResult>();
 watch([autoCompleteResult], () => {
   // reset business validation state
-  validation.business = false;
+  resetValidation();
+
   detailsData.value = null;
   bcRegistryError.value = false;
   showOnError.value = false;
@@ -135,6 +145,10 @@ watch([autoCompleteResult], () => {
     formData.value.businessInformation.businessType = getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.R);
 
     emit("update:data", formData.value);
+
+    if (formData.value.businessInformation.clientType === "RSP") {
+      validation.birthdate = false;
+    }
 
     const toggleErrorMessages = (
       unsupportedLegalType: boolean | null = null,
