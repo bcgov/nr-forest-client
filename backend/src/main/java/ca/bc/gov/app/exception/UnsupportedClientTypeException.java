@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-public class UnsuportedClientTypeException extends ResponseStatusException {
+public class UnsupportedClientTypeException extends ResponseStatusException {
 
-  public UnsuportedClientTypeException(String clientType) {
+  public UnsupportedClientTypeException(String clientType) {
     super(HttpStatus.NOT_ACCEPTABLE,
         String.format("Client type %s is not supported at the moment",
             ClientTypeCodeEnum.as(clientType)));

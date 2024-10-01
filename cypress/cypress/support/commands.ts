@@ -1,71 +1,42 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
+Cypress.Commands.add("logout", () => {
+  cy.get("[data-id=logout-btn]").should("be.visible");
+});
 
-const generateRandomHex = (length: number): string => {
-  const characters = '0123456789abcdef'
-  let result = ''
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length)
-    result += characters.charAt(randomIndex)
-  }
-  return result
-}
+Cypress.Commands.add("checkAutoCompleteErrorMessage", (field: string, message: string) => {
+  cy.get(field)          
+      .should('have.attr', 'aria-invalid', 'true')
+      .should('have.attr', 'invalid-text', message);
 
-Cypress.Commands.add('addCookie', (name: string, value: string) => {
-  cy.setCookie(name, value, {
-    domain: 'localhost',
-    path: '/',
-    httpOnly: true,
-    secure: true,
-    expiry: Date.now() + 86400000
-  })
-})
+      cy.get(field)
+      .shadow()
+      .find('svg').should('exist');
 
-Cypress.Commands.add('expireCookie', (name: string) => {
-  cy.setCookie(name, '', {
-    domain: 'localhost',
-    path: '/',
-    httpOnly: true,
-    secure: true,
-    expiry: Date.now() - 86400000 * 2
-  })
-})
+      cy.get(field)
+      .shadow()
+      .find('div.cds--form__helper-text > slot#helper-text')
+      .invoke('text')
+      .should('contains', message);
+});
 
-Cypress.Commands.add('addToSessionStorage', (key: string, value: any) => {
-  cy.window().then((win) => {
-    win.sessionStorage.setItem(key, JSON.stringify(value))
-  })
-})
+Cypress.Commands.add("checkAccordionItemState", (additionalSelector: string, open: boolean) => {
+  cy.get(`cds-accordion-item${additionalSelector}`).should(
+    `${open ? "" : "not."}have.attr`,
+    "open",
+  );
+});
 
-Cypress.Commands.add('expireSessionStorage', (key: string) => {
-  cy.window().then((win) => {
-    win.sessionStorage.removeItem(key)
-  })
-})
+Cypress.Commands.add('waitForPageLoad', (element: string) => {
+  cy.get(element).should('be.visible').then(() => {
+    cy.log('Page loaded');
+  });
+});
 
-Cypress.Commands.add('addToLocalStorage', (key: string, value: any) => {
-  cy.window().then((win) => {
-    win.localStorage.setItem(key, JSON.stringify(value))
-  })
-})
-
-Cypress.Commands.add('expireLocalStorage', (key: string) => {
-  cy.window().then((win) => {
-    win.localStorage.removeItem(key)
-  })
-})
-
-Cypress.Commands.add('login', (email: string, name: string) => {
-  cy.get('.landing-button').should('be.visible')
-  cy.addToSessionStorage('user', {
-    name,
-    provider: 'idir',
-    userId: generateRandomHex(32),
-    email,
-    firstName: 'UAT',
-    lastName: 'Test'
-  })
-  cy.reload()
-  cy.wait(1000)
-})
+Cypress.Commands.add('logAndScreenshot', (message: string) => {
+  cy.log(message).then(() => {
+    console.log(message);
+    cy.screenshot(`log-${Date.now()}`);  // Takes a screenshot with a timestamp
+  });
+});

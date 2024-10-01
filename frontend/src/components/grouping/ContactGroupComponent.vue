@@ -109,10 +109,18 @@ const logoutAndRedirect = () => {
   window.open("https://www.bceid.ca/", "_blank", "noopener");
   session?.logOut();
 }
+
+const contactName = (contact: Contact, contactId: number) => {
+  if(contactId === 0) return "Primary contact";
+  if (!contact) return "Additional contact";
+  const name = `${contact.firstName} ${contact.lastName}`;
+  if (!name.trim()) return "Additional contact";
+  return name;
+};
 </script>
 
 <template>
-  <div class="frame-01">
+  <div class="frame-01" :data-text="`${contactName(selectedValue,id)}`">
     <div v-if="id === 0" class="card">
       <div>
         <cds-inline-notification

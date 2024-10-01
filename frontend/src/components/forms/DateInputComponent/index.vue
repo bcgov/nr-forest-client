@@ -169,15 +169,15 @@ const getDatePart = (datePart: DatePart) =>
     ? regex.exec(props.modelValue)[datePartPositions[datePart]]
     : "";
 
-// We set it as a separated ref due to props not being updatable
-const selectedValue = ref<string | null>(props.modelValue);
-
 const selectedYear = ref<string>(getDatePart(DatePart.year));
 const selectedMonth = ref<string>(getDatePart(DatePart.month));
 const selectedDay = ref<string>(getDatePart(DatePart.day));
 
 const buildFullDate = () =>
   `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`;
+
+// We set it as a separated ref due to props not being updatable
+const selectedValue = ref<string | null>(buildFullDate());
 
 const areAllPartsValid = () =>
   validation[DatePart.year] &&
@@ -204,15 +204,17 @@ const emitValueChange = (newValue: string): void => {
   emit("update:model-value", newValue);
   const someEmpty = isAnyPartEmpty();
   emit("empty", someEmpty);
-  let possiblyValid = false;
-  if (!someEmpty && focusedPart.value !== null) {
-    const otherParts = getPartsExcept(focusedPart.value);
-    const allOtherAreValid = otherParts.every((part) => validation[part]);
-    if (allOtherAreValid) {
-      possiblyValid = true;
+  if (focusedPart.value !== null) {
+    let possiblyValid = false;
+    if (!someEmpty) {
+      const otherParts = getPartsExcept(focusedPart.value);
+      const allOtherAreValid = otherParts.every((part) => validation[part]);
+      if (allOtherAreValid) {
+        possiblyValid = true;
+      }
     }
+    emit("possibly-valid", possiblyValid);
   }
-  emit("possibly-valid", possiblyValid);
 };
 
 // Watch for changes on the input
@@ -325,8 +327,8 @@ const partValidators = computed(() => ({
 
 // Update validation status on setup
 validation[DatePart.year] = selectedYear.value && validatePart(DatePart.year);
-validation[DatePart.month] = selectedYear.value && validatePart(DatePart.month);
-validation[DatePart.day] = selectedYear.value && validatePart(DatePart.day);
+validation[DatePart.month] = selectedMonth.value && validatePart(DatePart.month);
+validation[DatePart.day] = selectedDay.value && validatePart(DatePart.day);
 
 if (areAllPartsValid()) {
   validationFullDate.value = validateFullDate(selectedValue.value);
@@ -347,10 +349,10 @@ const onBlurPart = (datePart: DatePart) => (partNewValue: string) => {
     validation[DatePart.day] = validatePart(DatePart.day);
   }
 
+  selectedValue.value = buildFullDate();
   if (areAllPartsValid()) {
     validateFullDate(selectedValue.value);
   }
-  isUserEvent.value = true;
 };
 
 const onBlurYear = onBlurPart(DatePart.year);
@@ -362,7 +364,9 @@ revalidateBus.on((keys: string[] | undefined) => {
     validation[DatePart.year] = validatePart(DatePart.year);
     validation[DatePart.month] = validatePart(DatePart.month);
     validation[DatePart.day] = validatePart(DatePart.day);
-    validateFullDate(selectedValue.value);
+    if (areAllPartsValid()) {
+      validateFullDate(selectedValue.value);
+    }
   }
 });
 

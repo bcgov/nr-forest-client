@@ -1,7 +1,7 @@
 import testCases from "../../../fixtures/staff/bcregisteredscenarios.json";
 
 /* eslint-disable no-undef */
-describe("Bc Registered Staff Wizard Step", () => {
+describe("BC Registered Staff Wizard Step", () => {
   beforeEach(() => {
     cy.viewport(1920, 1080);
 
@@ -445,21 +445,21 @@ describe("Bc Registered Staff Wizard Step", () => {
         }
 
         if (scenario.showData) {
-          const success = Object.entries(scenario)
-            .filter(
-              ([key, value]) =>
-                key.startsWith("show") && key.endsWith("Notification")
-            )
-            .map(([key, value]) => value)
-            .every((value) => value === false);
+          /*
+          This variable might be useful in the future to test the button Next gets enabled on
+          success. But we'll probably need to fix FSADT1-1496 first.
+          */
+          // const success = Object.entries(scenario)
+          //   .filter(
+          //     ([key, value]) =>
+          //       key.startsWith("show") && key.endsWith("Notification")
+          //   )
+          //   .map(([key, value]) => value)
+          //   .every((value) => value === false);
 
           cy.get(
             ".read-only-box > cds-inline-notification#readOnlyNotification"
-          ).should(
-            success || scenario.showDuplicatedNotification
-              ? "exist"
-              : "not.exist"
-          );
+          ).should("exist");
 
           cy.get(`.read-only-box > #legalType > .title-group-01 > .label-01`)
             .should("exist")
@@ -626,6 +626,156 @@ describe("Bc Registered Staff Wizard Step", () => {
         cy.get("#workSafeBCNumber").should("not.exist");
         cy.get("#acronym").should("not.exist");
       });
+    });
+  });
+
+  // See FSADT1-1511 (https://apps.nrs.gov.bc.ca/int/jira/browse/FSADT1-1511)
+  describe("when the selected Client name is replaced from a Sole proprietorship to something else", () => {
+    it("clears the Doing Business As field", () => {
+      loginAndNavigateToStaffForm();
+
+      cy.get("cds-inline-notification#bcRegistrySearchNotification").should(
+        "exist"
+      );
+
+      const sppSearch = "spp";
+      const sppCode = "FM123123";
+
+      interceptClientsApi(sppSearch, sppCode);
+
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        sppSearch,
+        sppCode,
+        `@clientSearch${sppSearch}`
+      );
+
+      cy.get(`.read-only-box > #legalType`)
+        .should("exist")
+        .and("contains.text", "Sole Proprietorship");
+
+      cy.clearFormEntry("#businessName");
+
+      const cmpSearch = "cmp";
+      const cmpCode = "C1231231";
+
+      interceptClientsApi(cmpSearch, cmpCode);
+
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        cmpSearch,
+        cmpCode,
+        `@clientSearch${cmpSearch}`
+      );
+
+      cy.get(`.read-only-box > #legalType`)
+        .should("exist")
+        .and("contains.text", "Continued In Corporation");
+
+      /*
+      Doing Business As is cleared, instead of holding the name of the previously selected Sole
+      proprietorship.
+      */
+      cy.get("#doingBusinessAs").should("exist").and("have.value", "");
+    });
+  });
+
+  describe("when the selected Client name is a Sole proprietorship", () => {
+    beforeEach(() => {
+      loginAndNavigateToStaffForm();
+
+      cy.get("cds-inline-notification#bcRegistrySearchNotification").should("exist");
+
+      const sppSearch = "spp";
+      const sppCode = "FM123123";
+
+      interceptClientsApi(sppSearch, sppCode);
+
+      cy.selectAutocompleteEntry("#businessName", sppSearch, sppCode, `@clientSearch${sppSearch}`);
+
+      cy.get(".read-only-box > #legalType")
+        .should("exist")
+        .and("contains.text", "Sole Proprietorship");
+    });
+    it("should not enable the button Next while Date of birth is empty", () => {
+      cy.get("[data-test='wizard-next-button']").find("button").should("be.disabled");
+    });
+    it("should enable the button Next when Date of birth is filled in", () => {
+      cy.fillFormEntry("#birthdateYear", "2001");
+      cy.fillFormEntry("#birthdateMonth", "10");
+      cy.fillFormEntry("#birthdateDay", "25");
+      cy.get("[data-test='wizard-next-button']").find("button").should("be.enabled");
+    });
+    describe("and there is an error on the Date of birth", () => {
+      beforeEach(() => {
+        cy.get("#birthdateYear").find("input").focus().blur();
+
+        cy.contains("#birthdate + .field-error", "Date of birth must include a year");
+      });
+      it("enables the button Next when a new Client name from a different type gets selected", () => {
+        cy.clearFormEntry("#businessName");
+
+        const cmpSearch = "cmp";
+        const cmpCode = "C1231231";
+
+        interceptClientsApi(cmpSearch, cmpCode);
+
+        cy.selectAutocompleteEntry(
+          "#businessName",
+          cmpSearch,
+          cmpCode,
+          `@clientSearch${cmpSearch}`,
+        );
+
+        cy.get(".read-only-box > #legalType")
+          .should("exist")
+          .and("contains.text", "Continued In Corporation");
+
+        cy.get("[data-test='wizard-next-button']").find("button").should("be.enabled");
+      });
+    });
+  });
+
+  describe("when the selected Client name is not a Sole proprietorship and there is an error on the Doing business as", () => {
+    beforeEach(() => {
+      loginAndNavigateToStaffForm();
+
+      cy.get("cds-inline-notification#bcRegistrySearchNotification").should("exist");
+
+      const cmpSearch = "cmp";
+      const cmpCode = "C1231231";
+
+      interceptClientsApi(cmpSearch, cmpCode);
+
+      cy.selectAutocompleteEntry("#businessName", cmpSearch, cmpCode, `@clientSearch${cmpSearch}`);
+
+      cy.get(".read-only-box > #legalType")
+        .should("exist")
+        .and("contains.text", "Continued In Corporation");
+
+      cy.fillFormEntry("#doingBusinessAs", "Enchanté");
+
+      cy.checkInputErrorMessage("#doingBusinessAs", "The doing business as can only contain");
+    });
+    it("enables the button Next when a new Client name with type Sole proprietorship gets selected", () => {
+      cy.clearFormEntry("#businessName");
+
+      const sppSearch = "spp";
+      const sppCode = "FM123123";
+
+      interceptClientsApi(sppSearch, sppCode);
+
+      cy.selectAutocompleteEntry("#businessName", sppSearch, sppCode, `@clientSearch${sppSearch}`);
+
+      cy.get(".read-only-box > #legalType")
+        .should("exist")
+        .and("contains.text", "Sole Proprietorship");
+
+      cy.fillFormEntry("#birthdateYear", "2001");
+      cy.fillFormEntry("#birthdateMonth", "10");
+      cy.fillFormEntry("#birthdateDay", "23");
+
+      cy.get("[data-test='wizard-next-button']").find("button").should("be.enabled");
     });
   });
 

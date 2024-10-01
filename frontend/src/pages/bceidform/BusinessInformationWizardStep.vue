@@ -15,7 +15,7 @@ import {
   ProgressNotification,
 } from "@/dto/CommonTypesDto";
 import { BusinessTypeEnum, CodeNameType } from "@/dto/CommonTypesDto";
-import { locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
+import { locationName as defaultLocation, formatAddresses } from "@/dto/ApplyClientNumberDto";
 import type {
   FormDataDto,
   ForestClientDetailsDto,
@@ -24,8 +24,7 @@ import type {
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // Importing helper functions
-import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
-import { formDataDto } from '../../dto/ApplyClientNumberDto';
+import { retrieveClientType, exportAddress } from "@/helpers/DataConverters";
 import {
   getEnumKeyByEnumValue,
   adminEmail,
@@ -118,6 +117,7 @@ const showGoodStandingError = ref<boolean>(false);
 const showDuplicatedError = ref<boolean>(false);
 const showNonPersonSPError = ref<boolean>(false);
 const showUnsupportedClientTypeError = ref<boolean>(false);
+const showUnsupportedLegalTypeError = ref<boolean>(false);
 const showDetailsLoading = ref<boolean>(false);
 const detailsData = ref(null);
 const soleProprietorOwner = ref<string>("");
@@ -126,20 +126,23 @@ const toggleErrorMessages = (
   goodStanding: boolean | null = null,
   duplicated: boolean | null = null,
   nonPersonSP: boolean | null = null,
-  unsupportedClientType: boolean | null = null
+  unsupportedClientType: boolean | null = null,
+  unsupportedLegalType: boolean | null = null,
 ) => {
   showGoodStandingError.value = goodStanding ?? false;
   showDuplicatedError.value = duplicated ?? false;
   showNonPersonSPError.value = nonPersonSP ?? false;
   showUnsupportedClientTypeError.value = unsupportedClientType ?? false;
+  showUnsupportedLegalTypeError.value = unsupportedLegalType ?? false;
 
-  if (goodStanding || duplicated || nonPersonSP || unsupportedClientType) {
+  if (goodStanding || duplicated || nonPersonSP || unsupportedClientType || unsupportedLegalType) {
     progressIndicatorBus.emit({ kind: "disabled", value: true });
     exitBus.emit({
       goodStanding,
       duplicated,
       nonPersonSP,
       unsupportedClientType,
+      unsupportedLegalType
     });
   } else {
     progressIndicatorBus.emit({ kind: "disabled", value: false });
@@ -148,6 +151,7 @@ const toggleErrorMessages = (
       duplicated: false,
       nonPersonSP: false,
       unsupportedClientType: false,
+      unsupportedLegalType: false
     });
   }
 };
@@ -163,7 +167,7 @@ watch([autoCompleteResult], () => {
   formData.value.businessInformation.doingBusinessAs = null;
 
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
-    toggleErrorMessages(false, false, false);
+    toggleErrorMessages(false, false, false, false, false);
 
     formData.value.businessInformation.registrationNumber =
       autoCompleteResult.value.code;
@@ -195,19 +199,28 @@ watch([autoCompleteResult], () => {
         toggleErrorMessages(null, true, null);
         return;
       }
+      
       if (error.value.response?.status === 422) {
         toggleErrorMessages(null, null, true);
         return;
       }
+
       if (error.value.response?.status === 406) {
-        toggleErrorMessages(null, null, null, true);
-        receivedClientType.value = null;
-        useFetchTo(
-          `/api/codes/client-types/${formData.value.businessInformation.clientType}`,
-          receivedClientType
-        );
-        return;
+        if (error.value.response?.data.toLowerCase().includes("legal type")) {
+          toggleErrorMessages(null, null, null, null, true);
+          return;
+        }
+        else {
+          toggleErrorMessages(null, null, null, true, null);
+          receivedClientType.value = null;
+          useFetchTo(
+            `/api/codes/client-types/${formData.value.businessInformation.clientType}`,
+            receivedClientType
+          );
+          return;
+        }
       }
+
       if (error.value.response?.status === 404) {
         toggleErrorMessages();
         validation.business = true;
@@ -291,7 +304,7 @@ watch([detailsData], () => {
       ...forestClientDetails.contacts,
     ];
 
-    formData.value.location.addresses = exportAddress(
+    formData.value.location.addresses = formatAddresses(
       forestClientDetails.addresses
     );
 
@@ -507,10 +520,12 @@ onMounted(() => {
           showGoodStandingError ||
           showDuplicatedError ||
           showNonPersonSPError ||
-          showUnsupportedClientTypeError
+          showUnsupportedClientTypeError ||
+          showUnsupportedLegalTypeError
         "
       >
         <cds-inline-notification
+          data-text="Business information"
           v-shadow="2"
           v-if="showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R"
           low-contrast="true"
@@ -540,6 +555,7 @@ onMounted(() => {
         </cds-inline-notification>
 
         <cds-inline-notification
+          data-text="Business information"
           v-if="showGoodStandingError"
           hide-close-button="true"
           low-contrast="true"
@@ -562,6 +578,7 @@ onMounted(() => {
         </cds-inline-notification>
 
         <cds-inline-notification
+          data-text="Business information"
           v-if="showDuplicatedError"
           hide-close-button="true"
           low-contrast="true"
@@ -577,6 +594,7 @@ onMounted(() => {
         </cds-inline-notification>
 
         <cds-inline-notification
+          data-text="Business information"
           v-if="showNonPersonSPError"
           hide-close-button="true"
           low-contrast="true"
@@ -591,6 +609,7 @@ onMounted(() => {
         </cds-inline-notification>
 
         <cds-inline-notification
+          data-text="Business information"
           v-if="showUnsupportedClientTypeError && receivedClientType"
           hide-close-button="true"
           low-contrast="true"
@@ -600,6 +619,21 @@ onMounted(() => {
         >
           <p class="cds--inline-notification-content">
             {{ receivedClientType.name }} client type is not supported. Please email
+            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+          </p>
+        </cds-inline-notification>
+
+        <cds-inline-notification
+          data-text="Business information"
+          v-if="showUnsupportedLegalTypeError"
+          hide-close-button="true"
+          low-contrast="true"
+          open="true"
+          kind="error"
+          title="Legal type not supported"
+        >
+          <p class="cds--inline-notification-content">
+            The legal type of this client is not supported. Please email
             <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
           </p>
         </cds-inline-notification>

@@ -1,9 +1,2 @@
-import { Then, Given } from "@badeball/cypress-cucumber-preprocessor";
-
-Given("I am on the form page", () => {
-  cy.visit('/');
-});
-
-Then("I can see the title", () => {
-  cy.contains('Client Management System')
-});
+import { Then, Given, Step } from "@badeball/cypress-cucumber-preprocessor";
+//This file is left intentionally empty

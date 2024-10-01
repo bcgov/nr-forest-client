@@ -18,12 +18,14 @@ import {
   type FormDataDto,
   type ForestClientDetailsDto,
   indexedEmptyAddress,
-  indexedEmptyContact
+  indexedEmptyContact,
+  newFormDataDto,
 } from "@/dto/ApplyClientNumberDto";
-import { getEnumKeyByEnumValue } from "@/services/ForestClientService";
+import { adminEmail, getEnumKeyByEnumValue, getObfuscatedEmailLink } from "@/services/ForestClientService";
 import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
 // Importing helper functions
-import { retrieveClientType, exportAddress } from "@/helpers/DataConversors";
+import { retrieveClientType, retrieveLegalTypeDesc } from "@/helpers/DataConverters";
+import { formatAddresses } from "@/dto/ApplyClientNumberDto";
 // Importing validators
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
@@ -57,17 +59,28 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 
 // Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data);
+const showUnsupportedLegalTypeError = ref<boolean>(false); 
+
 watch(
   () => formData.value,
   () => emit("update:data", formData.value)
 );
 
-const validation = reactive<Record<string, boolean>>({
+const getNewValidation = () => ({
   business: false,
   workSafeBCNumber: true,
   doingBusinessAs: true,
   acronym: true,
 });
+
+const validation = reactive<Record<string, boolean>>(getNewValidation());
+
+const resetValidation = () => {
+  for (const key in validation) {
+    delete validation[key];
+  }
+  Object.assign(validation, getNewValidation());
+};
 
 const showDetailsLoading = ref<boolean>(false);
 const detailsData = ref(null);
@@ -92,19 +105,10 @@ const standingMessage = computed(() => {
   return "Unknown";
 });
 
-//TODO: Either load from BE or add to DataConversors.ts
-const legalTypeText = computed(() => {
-  if (formData.value.businessInformation.legalType === "C") {
-    return "Corporation";
-  }
-  if (formData.value.businessInformation.legalType === "SP") {
-    return "Sole proprietorship";
-  }
-  if (formData.value.businessInformation.legalType === "GP") {
-    return "General Partnership";
-  }
-  return formData.value.businessInformation.legalType + " (Unknown)";
-});
+//We're using DataConverters.ts for this since it's not being saved to the database, so creating a table isn't necessary.
+const legalTypeText = computed(() =>
+  retrieveLegalTypeDesc(formData.value.businessInformation.legalType)
+);
 
 const autoCompleteUrl = computed(
   () =>
@@ -120,10 +124,17 @@ const standingValue = (goodStanding: boolean | null | undefined) => {
 const autoCompleteResult = ref<BusinessSearchResult>();
 watch([autoCompleteResult], () => {
   // reset business validation state
-  validation.business = false;
+  resetValidation();
+
   detailsData.value = null;
   bcRegistryError.value = false;
   showOnError.value = false;
+
+  // reset businessInformation
+  Object.assign(formData.value.businessInformation, {
+    ...newFormDataDto().businessInformation,
+    businessName: formData.value.businessInformation.businessName,
+  });
 
   if (autoCompleteResult.value && autoCompleteResult.value.code) {
     formData.value.businessInformation.registrationNumber = autoCompleteResult.value.code;
@@ -134,6 +145,28 @@ watch([autoCompleteResult], () => {
     formData.value.businessInformation.businessType = getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.R);
 
     emit("update:data", formData.value);
+
+    if (formData.value.businessInformation.clientType === "RSP") {
+      validation.birthdate = false;
+    }
+
+    const toggleErrorMessages = (
+      unsupportedLegalType: boolean | null = null,
+    ) => {
+      showUnsupportedLegalTypeError.value = unsupportedLegalType ?? false;
+
+      if (unsupportedLegalType) {
+        progressIndicatorBus.emit({ kind: "disabled", value: true });
+        exitBus.emit({
+          unsupportedLegalType
+        });
+      } else {
+        progressIndicatorBus.emit({ kind: "disabled", value: false });
+        exitBus.emit({
+          unsupportedLegalType: false
+        });
+      }
+    };
 
     //Also, we will load the backend data to fill all the other information as well
     const {
@@ -190,6 +223,11 @@ watch([autoCompleteResult], () => {
       ) {
         handleErrorDefault();
         bcRegistryError.value = true;
+        return;
+      }
+
+      if (error.value.response?.status === 406) {
+        toggleErrorMessages(true);
         return;
       }
 
@@ -266,7 +304,7 @@ watch([detailsData], () => {
 
     formData.value.location.contacts = receivedContacts;
 
-    if(formData.value.location.contacts.length == 0){
+    if (formData.value.location.contacts.length == 0) {
       formData.value.location.contacts = [ indexedEmptyContact(0) ];
     }
 
@@ -280,7 +318,7 @@ watch([detailsData], () => {
       address.emailAddress = null;
       address.notes = null;
     });
-    formData.value.location.addresses = exportAddress(receivedAddresses);
+    formData.value.location.addresses = formatAddresses(receivedAddresses);
     
     formData.value.businessInformation.goodStandingInd = standingValue(
       forestClientDetails.goodStanding
@@ -364,6 +402,7 @@ onMounted(() => {
         <cds-inline-loading status="active" v-if="showDetailsLoading">Loading client details...</cds-inline-loading>
         
         <cds-inline-notification
+          data-text="Client information"
           v-shadow="2"
           id="bcRegistryDownNotification"
           v-if="bcRegistryError || (error?.response?.status ?? false)"
@@ -374,9 +413,25 @@ onMounted(() => {
           title="BC Registries is down">
             <span class="body-compact-01"> You'll need to try again later.</span>      
         </cds-inline-notification>
+
+        <cds-inline-notification
+          data-text="Client information"
+          v-if="showUnsupportedLegalTypeError"
+          hide-close-button="true"
+          low-contrast="true"
+          open="true"
+          kind="error"
+          title="Legal type not supported"
+        >
+          <p class="cds--inline-notification-content">
+            The legal type of this client is not supported. Please email
+            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+          </p>
+        </cds-inline-notification>
     </data-fetcher>
 
     <cds-inline-notification
+      data-text="Client information"
       v-shadow="2"
       id="bcRegistrySearchNotification"
       v-if="!formData.businessInformation.clientType"
@@ -396,9 +451,9 @@ onMounted(() => {
     <div v-if="showFields || showOnError" class="read-only-box">
 
       <cds-inline-notification
+      data-text="Client information"
       id="readOnlyNotification"
       v-shadow="2"
-      v-if="formData.businessInformation.goodStandingInd === 'Y' || showOnError"
       low-contrast="true"
       open="true"
       kind="info"
@@ -422,6 +477,7 @@ onMounted(() => {
       <hr class="divider" />
 
       <cds-inline-notification
+      data-text="Client information"
         v-shadow="2"
         id="notGoodStandingNotification"
         v-if="formData.businessInformation.goodStandingInd === 'N'"
@@ -440,6 +496,7 @@ onMounted(() => {
       </cds-inline-notification>
 
       <cds-inline-notification
+      data-text="Client information"
         v-shadow="2"
         id="unknownStandingNotification"
         v-if="formData.businessInformation.goodStandingInd !== 'N' && formData.businessInformation.goodStandingInd !== 'Y'"

@@ -10,7 +10,7 @@
     "showBcRegDownNotification": false,
     "showDuplicatedNotification": true,
     "showNotOwnedByPersonError": false,
-    "type": "Corporation",
+    "type": "Continued In Corporation",
     "standing": "Unknown",
     "dba": ""
   },
@@ -25,7 +25,7 @@
     "showBcRegDownNotification": false,
     "showDuplicatedNotification": false,
     "showNotOwnedByPersonError": false,
-    "type": "Sole proprietorship",
+    "type": "Sole Proprietorship",
     "standing": "Good standing",
     "dba": "Soleprop"
   },
@@ -40,7 +40,7 @@
     "showBcRegDownNotification": true,
     "showDuplicatedNotification": false,
     "showNotOwnedByPersonError": false,
-    "type": "Corporation",
+    "type": "Continued In Corporation",
     "standing": "Good Standing",
     "dba": ""
   },      
@@ -53,12 +53,12 @@
     "showUnknowNotification": false,
     "showNotGoodStandingNotification": true,
     "showBcRegDownNotification": false,
-    "type": "Corporation",
+    "type": "Continued In Corporation",
     "standing": "Not in good standing",
     "dba": ""
   },
   {
-    "scenarioName": "OK State - Corporation",
+    "scenarioName": "OK State - Continued In Corporation",
     "companySearch": "cmp",
     "companyCode": "C1231231",
     "showData": true,
@@ -68,12 +68,12 @@
     "showBcRegDownNotification": false,
     "showDuplicatedNotification": false,
     "showNotOwnedByPersonError": false,
-    "type": "Corporation",
+    "type": "Continued In Corporation",
     "standing": "Good standing",
     "dba": ""
   },
   {
-    "scenarioName": "OK State - Corporation not found",
+    "scenarioName": "OK State - Continued In Corporation not found",
     "companySearch": "cnf",
     "companyCode": "C9999999",
     "showData": true,
@@ -83,7 +83,7 @@
     "showBcRegDownNotification": false,
     "showDuplicatedNotification": false,
     "showNotOwnedByPersonError": false,
-    "type": "Corporation",
+    "type": "Continued In Corporation",
     "standing": "Unknown",
     "dba": ""
   },      
@@ -111,7 +111,7 @@
     "showBcRegDownNotification": false,
     "showDuplicatedNotification": false,
     "showNotOwnedByPersonError": false,
-    "type": "Corporation",
+    "type": "Continued In Corporation",
     "standing": "Unknown",
     "dba": ""
   },
@@ -126,7 +126,7 @@
     "showBcRegDownNotification": false,
     "showDuplicatedNotification": false,
     "showNotOwnedByPersonError": true,
-    "type": "Sole proprietorship",
+    "type": "Sole Proprietorship",
     "standing": "Good standing",
     "dba": "Soleprop"
   }

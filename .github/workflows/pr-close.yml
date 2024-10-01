@@ -24,8 +24,13 @@ jobs:
     name: Cleanup tools environment
     needs: [cleanup]
     environment: tools
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:        
+          oc: "4.13"
+          
       - name: Remove the PR database
         continue-on-error: true
         run: |
