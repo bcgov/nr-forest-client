@@ -169,15 +169,15 @@ const getDatePart = (datePart: DatePart) =>
     ? regex.exec(props.modelValue)[datePartPositions[datePart]]
     : "";
 
-// We set it as a separated ref due to props not being updatable
-const selectedValue = ref<string | null>(props.modelValue);
-
 const selectedYear = ref<string>(getDatePart(DatePart.year));
 const selectedMonth = ref<string>(getDatePart(DatePart.month));
 const selectedDay = ref<string>(getDatePart(DatePart.day));
 
 const buildFullDate = () =>
   `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`;
+
+// We set it as a separated ref due to props not being updatable
+const selectedValue = ref<string | null>(buildFullDate());
 
 const areAllPartsValid = () =>
   validation[DatePart.year] &&
