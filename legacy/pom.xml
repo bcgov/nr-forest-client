@@ -44,14 +44,14 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
 
-    <testcontainers.version>1.20.1</testcontainers.version>
+    <testcontainers.version>1.20.2</testcontainers.version>
 
     <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
     <junit-platform.version>1.9.1</junit-platform.version>
 
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.5.5.Fina</mapstruct.version>
-    <netty.version>4.1.113.Final</netty.version>
+    <netty.version>4.1.114.Final</netty.version>
     <flyway.version>10.13.0</flyway.version>
   </properties>
 
@@ -153,7 +153,7 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>oracle-xe</artifactId>
-      <version>1.20.1</version>
+      <version>1.20.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -408,7 +408,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.10.0</version>
+        <version>3.10.1</version>
         <configuration>
           <source>8</source>
           <doctitle>Javadoc Documentation for ${project.name} ${project.version}
