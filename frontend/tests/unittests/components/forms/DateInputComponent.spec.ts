@@ -1,7 +1,7 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, afterEach, beforeEach } from "vitest";
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 import DateInputComponent from "@/components/forms/DateInputComponent/index.vue";
-import { isMinimumYearsAgo } from "@/helpers/validators/GlobalValidators";
+import { isDateInThePast, isMinimumYearsAgo } from "@/helpers/validators/GlobalValidators";
 
 describe("Date Input Component", () => {
   let globalWrapper: VueWrapper;
@@ -176,5 +176,142 @@ describe("Date Input Component", () => {
 
     expect(wrapper.emitted("empty")).toBeTruthy();
     expect(wrapper.emitted("empty")![0][0]).toBe(true);
+  });
+
+  it("emits possibly-valid true when focused part is not empty and the two other parts are valid", async () => {
+    const wrapper = mount(DateInputComponent, {
+      props: {
+        id,
+        title: "My date",
+        modelValue: "2000-12-", // missing the Day part
+        validations: [],
+        enabled: true,
+      },
+      directives: {
+        masked: () => {},
+      },
+      attachTo: document.body,
+    });
+    globalWrapper = wrapper;
+
+    const inputWrapper = wrapper.find<HTMLInputElement>(`#${id}Day`);
+    await setInputValue(inputWrapper, "1");
+
+    expect(wrapper.emitted("possibly-valid")).toBeTruthy();
+    expect(wrapper.emitted("possibly-valid")![0][0]).toBe(true);
+  });
+
+  it("emits possibly-valid false when the focused part gets cleared", async () => {
+    const wrapper = mount(DateInputComponent, {
+      props: {
+        id,
+        title: "My date",
+        modelValue: "2000-12-25",
+        validations: [],
+        enabled: true,
+      },
+      directives: {
+        masked: () => {},
+      },
+      attachTo: document.body,
+    });
+    globalWrapper = wrapper;
+
+    const inputWrapper = wrapper.find<HTMLInputElement>(`#${id}Day`);
+    await setInputValue(inputWrapper, ""); // clears the Day part
+
+    expect(wrapper.emitted("possibly-valid")).toBeTruthy();
+    expect(wrapper.emitted("possibly-valid")![0][0]).toBe(false);
+  });
+
+  describe.each([
+    {
+      partName: "Year",
+      partIndex: 0,
+      expectedLength: 4,
+      validBeginning: "20019",
+      invalidBeginning: "21019",
+    },
+    {
+      partName: "Month",
+      partIndex: 1,
+      expectedLength: 2,
+      validBeginning: "120",
+      invalidBeginning: "130",
+    },
+    {
+      partName: "Day",
+      partIndex: 2,
+      expectedLength: 2,
+      validBeginning: "250",
+      invalidBeginning: "400",
+    },
+  ])("when a value that doesn't fit the $partName part is pasted on it", (scenario) => {
+    const baseValue = "2000-11-24";
+    const test = async (valid: boolean) => {
+      const inputWrapper = globalWrapper.find<HTMLInputElement>(`#${id}${scenario.partName}`);
+      await inputWrapper.trigger("blur");
+
+      const baseParts = baseValue.split("-");
+      const { validBeginning, invalidBeginning } = scenario;
+      const newPartValue = valid ? validBeginning : invalidBeginning;
+
+      // first expected number of digits only
+      baseParts[scenario.partIndex] = newPartValue.slice(0, scenario.expectedLength);
+
+      const expectedModelValue = baseParts.join("-");
+
+      expect(globalWrapper.emitted("update:model-value")).toBeTruthy();
+      const lastUpdateEvent = globalWrapper.emitted("update:model-value").slice(-1)[0];
+
+      expect(lastUpdateEvent[0]).toEqual(expectedModelValue);
+
+      expect(globalWrapper.emitted("error")).toBeTruthy();
+      const lastErrorEvent = globalWrapper.emitted("error").slice(-1)[0];
+
+      if (valid) {
+        expect(lastErrorEvent[0]).toBeFalsy();
+      } else {
+        expect(lastErrorEvent[0]).toBeTruthy();
+        expect(lastErrorEvent[0]).toEqual(expect.any(String));
+      }
+    };
+    beforeEach(() => {
+      const baseParts = baseValue.split("-");
+      baseParts[scenario.partIndex] = ""; // clear the part to be tested
+      const modelValue = baseParts.join("-");
+      const wrapper = mount(DateInputComponent, {
+        props: {
+          id,
+          title: "My date",
+          modelValue,
+          validations: [isDateInThePast("sample error message")],
+          enabled: true,
+        },
+        directives: {
+          masked: () => {},
+        },
+        attachTo: document.body,
+      });
+      globalWrapper = wrapper;
+    });
+    describe(`but the first ${scenario.expectedLength} digits are valid`, () => {
+      beforeEach(async () => {
+        const inputWrapper = globalWrapper.find<HTMLInputElement>(`#${id}${scenario.partName}`);
+        await setInputValue(inputWrapper, scenario.validBeginning);
+      });
+      it("updates the modelValue properly and emits error falsy (valid) after blurring", async () => {
+        test(true);
+      });
+    });
+    describe(`and the first ${scenario.expectedLength} digits are invalid`, () => {
+      beforeEach(async () => {
+        const inputWrapper = globalWrapper.find<HTMLInputElement>(`#${id}${scenario.partName}`);
+        await setInputValue(inputWrapper, scenario.invalidBeginning);
+      });
+      it("updates the modelValue properly and emits error truthy (invalid) after blurring", async () => {
+        test(false);
+      });
+    });
   });
 });
