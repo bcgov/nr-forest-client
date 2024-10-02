@@ -27,7 +27,7 @@ const keyword = ref("");
 // Request data that changes based on the pagination
 const uri = computed(
   () =>
-    `/api/clients/search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(keyword.value)}${tableReference.value || ''}`
+    `/api/clients/full-search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(keyword.value)}${tableReference.value || ''}`
 );
 
 const search = () => {

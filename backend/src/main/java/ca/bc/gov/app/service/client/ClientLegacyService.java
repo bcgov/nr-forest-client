@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
@@ -308,5 +309,15 @@ public class ClientLegacyService {
             );
   }
 
-
+  public Flux<ClientListDto> fullSearch(int page, int size, String keyword) {
+    log.info(
+        "Searching clients by Page {} Size {} keyword {}",
+        page,
+        size,
+        keyword
+    );
+    //TODO:
+    return null;
+  }
+  
 }

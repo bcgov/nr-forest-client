@@ -3,10 +3,9 @@ package ca.bc.gov.app.controller.client;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
-import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
-import ca.bc.gov.app.models.client.SubmissionStatusEnum;
+import ca.bc.gov.app.service.client.ClientLegacyService;
 import ca.bc.gov.app.service.client.ClientService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
@@ -33,6 +32,7 @@ import reactor.core.publisher.Mono;
 public class ClientController {
 
   private final ClientService clientService;
+  private final ClientLegacyService clientLegacyService;
 
   @GetMapping("/{clientNumber}")
   public Mono<ClientDetailsDto> getClientDetails(
@@ -52,15 +52,15 @@ public class ClientController {
         );
   }
   
-  @GetMapping("/search")
-  public Flux<ClientListDto> listSubmissions(
+  @GetMapping("/full-search")
+  public Flux<ClientListDto> fullSearch(
       @RequestParam(required = false, defaultValue = "0") int page,
       @RequestParam(required = false, defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "") String keyword,
       ServerHttpResponse serverResponse) {
     log.info("Listing clients: page={}, size={}, keyword={}", page, size, keyword);
-    return clientService
-        .findClients(
+    return clientLegacyService
+        .fullSearch(
             page,
             size,
             keyword
