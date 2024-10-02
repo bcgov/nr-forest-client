@@ -7,6 +7,9 @@ import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientServi
 import summit from "@carbon/pictograms/es/summit";
 import useSvg from "@/composables/useSvg";
 
+// @ts-ignore
+import Search16 from "@carbon/icons-vue/es/search/16";
+
 const summitSvg = useSvg(summit);
 
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
@@ -38,6 +41,10 @@ const selectEntry = (entry: ClientList) => {
   //TODO
 };
 
+const search = () => {
+  //TODO
+};
+
 const tagColor = (status: string) => {
   switch (status) {
     case "Active":
@@ -66,6 +73,17 @@ const paginate = (event: any) => {
     </div>
     
     <div id="datatable" v-if="userhasAuthority">
+
+      <div style="float: right;">
+        <cds-button
+          kind="primary"
+          @click.prevent="search"
+        >
+          <span>Search</span>
+          <Search16 slot="icon" />
+        </cds-button>
+      </div>
+      
       <cds-table use-zebra-styles v-if="!loading">
         <cds-table-head>
           <cds-table-header-row>
