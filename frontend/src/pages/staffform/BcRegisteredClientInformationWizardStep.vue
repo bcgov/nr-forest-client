@@ -523,86 +523,85 @@ onMounted(() => {
 
     </div>
 
-    <div v-if="formData.businessInformation.clientType === 'RSP'">
-      <div class="label-with-icon parent-label">
-        <div class="cds-text-input-label">
-          <span class="cds-text-input-required-label">* </span>
-          <span>Date of birth</span>
+    <template v-if="showFields || bcRegistryError || showOnError">
+      <div v-if="formData.businessInformation.clientType === 'RSP'">
+        <div class="label-with-icon parent-label">
+          <div class="cds-text-input-label">
+            <span class="cds-text-input-required-label">* </span>
+            <span>Date of birth</span>
+          </div>
+          <cds-tooltip>
+            <Information16 />
+            <cds-tooltip-content>
+              We need the applicant's birthdate to confirm their identity
+            </cds-tooltip-content>
+          </cds-tooltip>
         </div>
-        <cds-tooltip>
-          <Information16 />
-          <cds-tooltip-content>
-            We need the applicant's birthdate to confirm their identity
-          </cds-tooltip-content>
-        </cds-tooltip>
+        <date-input-component
+          id="birthdate"
+          title="Date of birth"
+          :autocomplete="['bday-year', 'bday-month', 'bday-day']"
+          v-model="formData.businessInformation.birthdate"
+          :enabled="true"
+          :validations="[
+            ...getValidations('businessInformation.birthdate'),
+            submissionValidation('businessInformation.birthdate'),
+          ]"
+          :year-validations="[...getValidations('businessInformation.birthdate.year')]"
+          @error="validation.birthdate = !$event"
+          @possibly-valid="validation.birthdate = $event"
+          required
+        />
       </div>
-      <date-input-component
-        id="birthdate"
-        title="Date of birth"
-        :autocomplete="['bday-year', 'bday-month', 'bday-day']"
-        v-model="formData.businessInformation.birthdate"
-        :enabled="true"
+
+      <text-input-component
+        id="workSafeBCNumber"
+        label="WorkSafeBC number"
+        mask="######"
+        placeholder=""
+        autocomplete="off"
+        v-model="formData.businessInformation.workSafeBcNumber"
         :validations="[
-          ...getValidations('businessInformation.birthdate'),
-          submissionValidation('businessInformation.birthdate'),
+          ...getValidations('businessInformation.workSafeBcNumber'),
+          submissionValidation(`businessInformation.workSafeBcNumber`),
         ]"
-        :year-validations="[...getValidations('businessInformation.birthdate.year')]"
-        @error="validation.birthdate = !$event"
-        @possibly-valid="validation.birthdate = $event"
-        required
+        enabled
+        @empty="validation.workSafeBCNumber = true"
+        @error="validation.workSafeBCNumber = !$event"
       />
-    </div>
 
-    <text-input-component
-      id="workSafeBCNumber"
-      v-if="showFields || bcRegistryError || showOnError"
-      label="WorkSafeBC number"
-      mask="######"
-      placeholder=""
-      autocomplete="off"
-      v-model="formData.businessInformation.workSafeBcNumber"
-      :validations="[
-        ...getValidations('businessInformation.workSafeBcNumber'),
-        submissionValidation(`businessInformation.workSafeBcNumber`),
-      ]"
-      enabled
-      @empty="validation.workSafeBCNumber = true"
-      @error="validation.workSafeBCNumber = !$event"
-    />
+      <text-input-component
+        id="doingBusinessAs"
+        v-if="formData.businessInformation.clientType !== 'RSP'"
+        label="Doing business as"
+        placeholder=""
+        autocomplete="off"
+        v-model="formData.businessInformation.doingBusinessAs"
+        :validations="[
+          ...getValidations('businessInformation.doingBusinessAs'),
+          submissionValidation(`businessInformation.doingBusinessAs`),
+        ]"
+        enabled
+        @empty="validation.doingBusinessAs = true"
+        @error="validation.doingBusinessAs = !$event"
+      />
 
-    <text-input-component
-      id="doingBusinessAs"
-      v-if="(showFields || bcRegistryError || showOnError) && formData.businessInformation.clientType !== 'RSP'"
-      label="Doing business as"
-      placeholder=""
-      autocomplete="off"
-      v-model="formData.businessInformation.doingBusinessAs"
-      :validations="[
-        ...getValidations('businessInformation.doingBusinessAs'),
-        submissionValidation(`businessInformation.doingBusinessAs`),
-      ]"
-      enabled
-      @empty="validation.doingBusinessAs = true"
-      @error="validation.doingBusinessAs = !$event"
-    />
-
-    <text-input-component
-      id="acronym"
-      v-if="showFields || bcRegistryError || showOnError"
-      label="Acronym"
-      placeholder=""
-      mask="NNNNNNNN"
-      autocomplete="off"
-      v-model="formData.businessInformation.clientAcronym"
-      :validations="[
-        ...getValidations('businessInformation.clientAcronym'),
-        submissionValidation(`businessInformation.clientAcronym`),
-      ]"
-      enabled
-      @empty="validation.acronym = true"
-      @error="validation.acronym = !$event"
-    />
-
+      <text-input-component
+        id="acronym"
+        label="Acronym"
+        placeholder=""
+        mask="NNNNNNNN"
+        autocomplete="off"
+        v-model="formData.businessInformation.clientAcronym"
+        :validations="[
+          ...getValidations('businessInformation.clientAcronym'),
+          submissionValidation(`businessInformation.clientAcronym`),
+        ]"
+        enabled
+        @empty="validation.acronym = true"
+        @error="validation.acronym = !$event"
+      />
+    </template>
   </div>
 </template>
 
