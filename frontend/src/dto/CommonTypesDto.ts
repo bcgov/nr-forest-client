@@ -176,6 +176,15 @@ export interface SubmissionList {
   district: string
 }
 
+export interface ClientList {
+  clientNumber: string
+  acronym: string
+  clientName: string
+  clientType: string
+  city: string
+  clientStatus: string
+}
+
 export interface SubmissionDetails {
   submissionId: number
   submissionStatus: string

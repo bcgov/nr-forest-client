@@ -1382,7 +1382,7 @@ cds-side-nav-items.lower-side-nav {
   align-items: stretch;
 }
 
-.submission-list,
+.table-list,
 .submission-content {
   padding: 2.5rem 0rem 2.5rem 16rem;
   display: flex;
@@ -1570,7 +1570,7 @@ But it's not working on Safari with dynamic updates.
   overflow: hidden;
 }
 
-.empty-submission-list {
+.empty-table-list {
   height: 16rem;
   background: var(--light-theme-layer-layer-01, #f3f3f5);
   display: flex;
@@ -1586,7 +1586,7 @@ But it's not working on Safari with dynamic updates.
   fill: var(--cds-button-primary, #0073e6);
 }
 
-.empty-submission-list .body-compact-01 {
+.empty-table-list .body-compact-01 {
   width: 22.5rem;
   text-align: center;
 }
@@ -1797,7 +1797,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     margin: 0rem 1rem 2rem 1rem;
   }
 
-  .submission-list {
+  .table-list {
     padding: 2.5rem 0rem;
   }
 
@@ -1909,7 +1909,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     margin-left: 1rem;
   }
 
-  .submission-list {
+  .table-list {
     padding: 2.5rem 0rem;
   }
 
