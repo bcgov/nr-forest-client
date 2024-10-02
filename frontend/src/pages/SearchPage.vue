@@ -22,12 +22,16 @@ const pageNumber = ref(1);
 const totalItems = ref(0);
 const pageSize = ref(10);
 
+const criteria = ref("");
+
 // Request data that changes based on the pagination
 const uri = computed(
   () =>
-    `/api/clients/search?page=${pageNumber.value - 1}&size=${
-      pageSize.value
-    }${tableReference.value}`
+    `/api/clients/search?
+        page=${pageNumber.value - 1}&
+        size=${pageSize.value}&
+        criteria=${criteria.value}
+        ${tableReference.value}`
 );
 
 const { response, fetch, loading } = useFetchTo(uri, tableData);
@@ -83,7 +87,7 @@ const paginate = (event: any) => {
           <Search16 slot="icon" />
         </cds-button>
       </div>
-      
+
       <cds-table use-zebra-styles v-if="!loading">
         <cds-table-head>
           <cds-table-header-row>
@@ -116,11 +120,11 @@ const paginate = (event: any) => {
       </cds-table>
 
       <cds-table-skeleton
-      v-else
-      ref="skeletonReference"
-      zebra
-      :row-count="pageSize"
-      :headers="['Client name', 'Client type', 'District', 'Submitted on', 'Submission status']"
+        v-else
+        ref="skeletonReference"
+        zebra
+        :row-count="pageSize"
+        :headers="['Client number', 'Acronym', 'Name', 'Type', 'City', 'Status']"
       />
     </div>
 
