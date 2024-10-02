@@ -1,8 +1,11 @@
 package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
+import ca.bc.gov.app.dto.client.ClientListDto;
+import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
+import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.service.client.ClientService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
@@ -10,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.WordUtils;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +48,16 @@ public class ClientController {
             JwtPrincipalUtil.getBusinessId(principal),
             JwtPrincipalUtil.getProvider(principal)
         );
+  }
+  
+  @GetMapping("/search")
+  public Flux<ClientListDto> listSubmissions(
+      @RequestParam(required = false, defaultValue = "0") int page,
+      @RequestParam(required = false, defaultValue = "10") int size,
+      @RequestParam(required = false, defaultValue = "") String criteria,
+      ServerHttpResponse serverResponse) {
+    log.info("Listing clients: page={}, size={}, criteria={}", page, size, criteria);
+    return null;
   }
 
   /**

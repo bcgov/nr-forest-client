@@ -27,25 +27,15 @@ const criteria = ref("");
 // Request data that changes based on the pagination
 const uri = computed(
   () =>
-    `/api/clients/search?
-        page=${pageNumber.value - 1}&
-        size=${pageSize.value}&
-        criteria=${criteria.value}
-        ${tableReference.value}`
+    `/api/clients/search?page=${pageNumber.value - 1}&size=${pageSize.value}&criteria=${encodeURIComponent(criteria.value)}${tableReference.value || ''}`
 );
 
-const { response, fetch, loading } = useFetchTo(uri, tableData);
-
-// Watch for changes on the uri to fetch the new data
-watch(uri, () => {
+const search = () => {
+  const { response, fetch, loading } = useFetchTo(uri, tableData);
   if (!loading.value) fetch();
-});
-
-const selectEntry = (entry: ClientList) => {
-  //TODO
 };
 
-const search = () => {
+const selectEntry = (entry: ClientList) => {
   //TODO
 };
 
