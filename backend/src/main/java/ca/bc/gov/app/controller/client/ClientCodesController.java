@@ -3,9 +3,13 @@ package ca.bc.gov.app.controller.client;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.DistrictDto;
 import ca.bc.gov.app.dto.client.IdentificationTypeDto;
+import ca.bc.gov.app.service.client.ClientCodeService;
+import ca.bc.gov.app.service.client.ClientCountryProvinceService;
+import ca.bc.gov.app.service.client.ClientDistrictService;
 import ca.bc.gov.app.service.client.ClientService;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -25,11 +29,14 @@ import reactor.core.publisher.Mono;
 public class ClientCodesController {
 
   private final ClientService clientService;
+  private final ClientDistrictService clientDistrictService;
+  private final ClientCountryProvinceService clientCountryProvinceService;
+  private final ClientCodeService clientCodeService;
 
   @GetMapping("/client-types")
   public Flux<CodeNameDto> findActiveClientTypeCodes() {
     log.info("Requesting a list of active client type codes from the client service.");
-    return clientService
+    return clientCodeService
         .findActiveClientTypeCodes(LocalDate.now());
   }
 
@@ -37,7 +44,7 @@ public class ClientCodesController {
   public Mono<CodeNameDto> getClientTypeByCode(
       @PathVariable String code) {
     log.info("Requesting a client type by code {} from the client service.", code);
-    return clientService.getClientTypeByCode(code);
+    return clientCodeService.getClientTypeByCode(code);
   }
 
   @GetMapping("/contact-types")
@@ -48,7 +55,7 @@ public class ClientCodesController {
       Integer size
   ) {
     log.info("Requesting a list of active client contact type codes from the client service.");
-    return clientService
+    return clientCodeService
         .listClientContactTypeCodes(LocalDate.now(), page, size);
   }
   
@@ -59,13 +66,13 @@ public class ClientCodesController {
       @RequestParam(value = "size", required = false, defaultValue = "10")
       Integer size) {
     log.info("Requesting a list of districts from the client service.");
-    return clientService.getActiveDistrictCodes(page, size);
+    return clientDistrictService.getActiveDistrictCodes(page, size, LocalDate.now());
   }
 
   @GetMapping("/districts/{districtCode}")
   public Mono<DistrictDto> getDistrictByCode(@PathVariable String districtCode) {
     log.info("Requesting a district by code {} from the client service.", districtCode);
-    return clientService.getDistrictByCode(districtCode);
+    return clientDistrictService.getDistrictByCode(districtCode);
   }
   
   @GetMapping("/countries")
@@ -75,14 +82,14 @@ public class ClientCodesController {
       @RequestParam(value = "size", required = false, defaultValue = "10")
       Integer size) {
     log.info("Requesting a list of countries from the client service.");
-    return clientService.listCountries(page, size);
+    return clientCountryProvinceService.listCountries(page, size, LocalDate.now());
   }
 
   @GetMapping("/countries/{countryCode}")
   public Mono<CodeNameDto> getCountryByCode(
       @PathVariable String countryCode) {
     log.info("Requesting a country by code {} from the client service.", countryCode);
-    return clientService.getCountryByCode(countryCode);
+    return clientCountryProvinceService.getCountryByCode(countryCode);
   }
 
   @GetMapping("/countries/{countryCode}/provinces")
@@ -94,7 +101,7 @@ public class ClientCodesController {
       Integer size) {
     log.info("Requesting a list of provinces by country code {} from the client service.",
         countryCode);
-    return clientService
+    return clientCountryProvinceService
         .listProvinces(countryCode, page, size);
   }
   
@@ -105,20 +112,21 @@ public class ClientCodesController {
     log.info("Requesting a province by country and province code {} {} from the client service.",
              countryCode, 
              provinceCode);
-    return clientService.getProvinceByCountryAndProvinceCode(countryCode, provinceCode);
+    return clientCountryProvinceService.getProvinceByCountryAndProvinceCode(countryCode, provinceCode);
   }
   
   @GetMapping("/identification-types")
   public Flux<IdentificationTypeDto> identificationTypes() {
     log.info("Requesting a list of identification type codes.");
-    return clientService.getAllActiveIdentificationTypes(LocalDate.now());
+    return clientCodeService.getAllActiveIdentificationTypes(LocalDate.now());
   }
 
+  //TODO: This endpoint needs to be updated to properly reflect what code is returning
   @GetMapping("{idCode}")
   public Mono<CodeNameDto> getIdentificationTypeByCode(
       @PathVariable String idCode) {
     log.info("Requesting an identification type by code {}.", idCode);
-    return clientService.getIdentificationTypeByCode(idCode);
+    return clientCodeService.getIdentificationTypeByCode(idCode);
   }
 
 }
