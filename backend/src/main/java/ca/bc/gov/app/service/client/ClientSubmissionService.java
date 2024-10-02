@@ -75,38 +75,41 @@ import reactor.util.retry.Retry;
 @Observed
 public class ClientSubmissionService {
 
+  private final ClientCodeService codeService;
+  private final ClientDistrictService districtService;
   private final SubmissionRepository submissionRepository;
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionLocationRepository submissionLocationRepository;
   private final SubmissionContactRepository submissionContactRepository;
   private final SubmissionLocationContactRepository submissionLocationContactRepository;
   private final SubmissionMatchDetailRepository submissionMatchDetailRepository;
-  private final DistrictCodeRepository districtCodeRepository;
   private final ChesService chesService;
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
   private final WebClient processorApi;
 
   public ClientSubmissionService(
+      ClientCodeService codeService,
+      ClientDistrictService districtService,
       SubmissionRepository submissionRepository,
       SubmissionDetailRepository submissionDetailRepository,
       SubmissionLocationRepository submissionLocationRepository,
       SubmissionContactRepository submissionContactRepository,
       SubmissionLocationContactRepository submissionLocationContactRepository,
       SubmissionMatchDetailRepository submissionMatchDetailRepository,
-      DistrictCodeRepository districtCodeRepository,
       ChesService chesService,
       R2dbcEntityTemplate template,
       ForestClientConfiguration configuration,
       @Qualifier("processorApi") WebClient processorApi
   ) {
+    this.codeService = codeService;
+    this.districtService = districtService;
     this.submissionRepository = submissionRepository;
     this.submissionDetailRepository = submissionDetailRepository;
     this.submissionLocationRepository = submissionLocationRepository;
     this.submissionContactRepository = submissionContactRepository;
     this.submissionLocationContactRepository = submissionLocationContactRepository;
     this.submissionMatchDetailRepository = submissionMatchDetailRepository;
-    this.districtCodeRepository = districtCodeRepository;
     this.chesService = chesService;
     this.template = template;
     this.configuration = configuration;
@@ -135,13 +138,14 @@ public class ClientSubmissionService {
         submittedAt
     );
 
-    return getClientTypes()
+    return
+        codeService.getClientTypes()
         .flatMapMany(clientTypes ->
             loadSubmissions(page, size, requestStatus, submittedAt)
                 .flatMapSequential(submissionPair ->
                     loadSubmissionDetail(clientType, name, submissionPair.getRight())
                         .flatMap(submissionDetail ->
-                            getDistrictFullDescByCode(submissionDetail.getDistrictCode())
+                            districtService.getDistrictFullDescByCode(submissionDetail.getDistrictCode())
                                 .map(districtFullDesc ->
                                     new ClientListSubmissionDto(
                                         submissionPair.getRight().getSubmissionId(),
@@ -520,22 +524,6 @@ public class ClientSubmissionService {
             );
   }
 
-  private Mono<String> getDistrictFullDescByCode(String districtCode) {
-    return Mono.justOrEmpty(districtCode)
-        .flatMap(districtCodeRepository::findByCode)
-        .map(districtCodeEntity -> districtCodeEntity.getCode() + " - "
-            + districtCodeEntity.getDescription())
-        .defaultIfEmpty("");
-  }
-
-  private Mono<DistrictDto> getDistrictByCode(String districtCode) {
-    return Mono.justOrEmpty(districtCode).flatMap(districtCodeRepository::findByCode)
-        .map(districtCodeEntity -> new DistrictDto(
-            districtCodeEntity.getCode(),
-            districtCodeEntity.getDescription(),
-            districtCodeEntity.getEmailAddress()));
-  }
-
   private void cleanMatchers(SubmissionMatchDetailEntity entity) {
     entity.getMatchers().entrySet().forEach(entry -> {
       if (entry.getValue() instanceof String value) {
@@ -588,7 +576,7 @@ public class ClientSubmissionService {
       String userName
   ) {
     return
-        getDistrictByCode(clientSubmissionDto.businessInformation().district())
+        districtService.getDistrictByCode(clientSubmissionDto.businessInformation().district())
             .map(district -> registrationParameters(
                     clientSubmissionDto.description(userName),
                     district.description(),
@@ -619,29 +607,6 @@ public class ClientSubmissionService {
     descMap.put("districtEmail", StringUtils.defaultString(districtEmail));
     return descMap;
   }
-
-  private Mono<Map<String, String>> getClientTypes() {
-    return template
-        .select(
-            query(
-                QueryPredicates.isBefore(LocalDateTime.now(), "effectiveAt")
-                    .and(
-                        QueryPredicates.isAfter(LocalDateTime.now(), "expiredAt")
-                            .or(QueryPredicates.isNull("expiredAt"))
-                    )
-            ),
-            ClientTypeCodeEntity.class
-        )
-        .collectList()
-        //Convert the list into a map using code as the key and description as value
-        .map(clientTypeCodeEntities ->
-            clientTypeCodeEntities
-                .stream()
-                .collect(Collectors.toMap(ClientTypeCodeEntity::getCode,
-                    ClientTypeCodeEntity::getDescription))
-        );
-  }
-
 
   private Mono<SubmissionDetailEntity> loadSubmissionDetail(String[] clientType,
       String[] name, SubmissionEntity submission) {
