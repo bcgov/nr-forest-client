@@ -22,12 +22,12 @@ const pageNumber = ref(1);
 const totalItems = ref(0);
 const pageSize = ref(10);
 
-const criteria = ref("");
+const keyword = ref("");
 
 // Request data that changes based on the pagination
 const uri = computed(
   () =>
-    `/api/clients/search?page=${pageNumber.value - 1}&size=${pageSize.value}&criteria=${encodeURIComponent(criteria.value)}${tableReference.value || ''}`
+    `/api/clients/search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(keyword.value)}${tableReference.value || ''}`
 );
 
 const search = () => {

@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller.client;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
@@ -11,6 +12,7 @@ import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 import org.apache.commons.text.WordUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -54,10 +56,29 @@ public class ClientController {
   public Flux<ClientListDto> listSubmissions(
       @RequestParam(required = false, defaultValue = "0") int page,
       @RequestParam(required = false, defaultValue = "10") int size,
-      @RequestParam(required = false, defaultValue = "") String criteria,
+      @RequestParam(required = false, defaultValue = "") String keyword,
       ServerHttpResponse serverResponse) {
-    log.info("Listing clients: page={}, size={}, criteria={}", page, size, criteria);
-    return null;
+    log.info("Listing clients: page={}, size={}, keyword={}", page, size, keyword);
+    return clientService
+        .findClients(
+            page,
+            size,
+            keyword
+        )
+        .doOnNext(dto -> serverResponse
+            .getHeaders()
+            .putIfAbsent(
+                ApplicationConstant.X_TOTAL_COUNT,
+                List.of(dto.count().toString())
+            )
+        )
+        .doFinally(signalType -> serverResponse
+            .getHeaders()
+            .putIfAbsent(
+                ApplicationConstant.X_TOTAL_COUNT,
+                List.of("0")
+            )
+        );
   }
 
   /**
