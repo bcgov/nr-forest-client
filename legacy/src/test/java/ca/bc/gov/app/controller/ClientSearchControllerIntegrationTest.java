@@ -276,6 +276,43 @@ class ClientSearchControllerIntegrationTest extends
 
   }
 
+  @ParameterizedTest
+  @MethodSource("byPredictive")
+  @DisplayName("Search using the predictive search")
+  void shouldSearchPredicatively(
+      String searchValue,
+      String expectedClientNumber,
+      String expectedClientName
+  ) {
+
+    ResponseSpec response =
+        client
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/search/predictive")
+                    .queryParam("value", Optional.ofNullable(searchValue))
+                    .build(new HashMap<>())
+            )
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .exchange();
+
+    if (StringUtils.isNotBlank(expectedClientNumber)) {
+      response
+          .expectStatus().isOk()
+          .expectBody()
+          .jsonPath("$[0].clientNumber").isNotEmpty()
+          .jsonPath("$[0].clientNumber").isEqualTo(expectedClientNumber)
+          .jsonPath("$[0].clientName").isNotEmpty()
+          .jsonPath("$[0].name").isEqualTo(expectedClientName)
+          .consumeWith(System.out::println);
+    }else{
+      response.expectStatus().isOk()
+      .expectBody().isEmpty();
+    }
+
+  }
+
   private static Stream<Arguments> byEmail() {
     return
         Stream.concat(
@@ -483,6 +520,16 @@ class ClientSearchControllerIntegrationTest extends
                   Arguments.of("ELACHO", true, StringUtils.EMPTY, null),
                   Arguments.of("ELARICO", false, StringUtils.EMPTY, null)
               );
+  }
+
+  private static Stream<Arguments> byPredictive() {
+    return Stream
+        .of(
+            Arguments.of("indian canada", "00000006", "INDIAN CANADA"),
+            Arguments.of("kilback", "00000123", "REICHERT, KILBACK AND EMARD"),
+            Arguments.of("darbie", "00000145", "DARBIE BLIND"),
+            Arguments.of("pietro", StringUtils.EMPTY, StringUtils.EMPTY)
+        );
   }
 
 }
