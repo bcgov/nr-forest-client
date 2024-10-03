@@ -22,16 +22,15 @@ const pageNumber = ref(1);
 const totalItems = ref(0);
 const pageSize = ref(10);
 
-const keyword = ref("");
+const fullSearchKeyword = ref("");
 
-// Request data that changes based on the pagination
-const uri = computed(
+const fullSearchUri = computed(
   () =>
-    `/api/clients/full-search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(keyword.value)}${tableReference.value || ''}`
+    `/api/clients/full-search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(fullSearchKeyword.value)}${tableReference.value || ''}`
 );
 
 const search = () => {
-  const { response, fetch, loading } = useFetchTo(uri, tableData);
+  const { response, fetch, loading } = useFetchTo(fullSearchUri, tableData);
   if (!loading.value) fetch();
 };
 
