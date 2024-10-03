@@ -311,12 +311,11 @@ public class ClientLegacyService {
 
   public Flux<ClientListDto> fullSearch(int page, int size, String keyword) {
     log.info(
-        "Searching clients by Page {} Size {} keyword {}",
+        "Searching clients by keyword {} with page {} and size {}",
+        keyword,
         page,
-        size,
-        keyword
+        size
     );
-    //TODO:
     return null;
   }
   
