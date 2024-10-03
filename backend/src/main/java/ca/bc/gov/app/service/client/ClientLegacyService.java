@@ -319,4 +319,14 @@ public class ClientLegacyService {
     return null;
   }
   
+  public Flux<ClientListDto> predictiveSearch(int page, int size, String keyword) {
+    log.info(
+        "Searching clients by keyword {} with page {} and size {}",
+        keyword,
+        page,
+        size
+    );
+    return null;
+  }
+  
 }

@@ -22,7 +22,13 @@ const pageNumber = ref(1);
 const totalItems = ref(0);
 const pageSize = ref(10);
 
+const predictiveSearchKeyword = ref("");
 const fullSearchKeyword = ref("");
+
+const predictiveSearchUri = computed(
+  () =>
+    `/api/clients/predictive-search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(predictiveSearchKeyword.value)}${tableReference.value || ''}`
+);
 
 const fullSearchUri = computed(
   () =>
