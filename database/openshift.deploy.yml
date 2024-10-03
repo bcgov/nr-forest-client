@@ -27,6 +27,9 @@ parameters:
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
+  - name: ORG
+    description: Organization name
+    value: bcgov
   ### Backup-Container starts here ###
   - name: BACKUP_COMPONENT
     description: BACKUP_COMPONENT name
@@ -143,7 +146,7 @@ objects:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
           containers:
             - name: ${NAME}
-              image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+              image: ${REGISTRY}/${ORG}/${NAME}/${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               ports:
                 - containerPort: 5432
                   protocol: TCP
