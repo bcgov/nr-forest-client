@@ -109,7 +109,7 @@ const logoutBtnKind = computed(() =>
 
 const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some((authority) =>
   ForestClientUserSession.authorities.includes(authority)
-);
+) && featureFlags.STAFF_SEARCH;
 
 const handleLogoutClick = (event) => {
   event.preventDefault();

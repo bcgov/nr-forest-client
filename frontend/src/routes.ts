@@ -200,6 +200,7 @@ export const routes = [
       style: "content-stretched",
       headersStyle: "headers-compact",
       sideMenu: true,
+      featureFlagged: "STAFF_SEARCH",
       profile: true,
     },
   },
