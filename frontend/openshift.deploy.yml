@@ -24,9 +24,6 @@ parameters:
     value: latest
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
-  - name: REGISTRY
-    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
-    value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-frontend
@@ -73,24 +70,13 @@ parameters:
   - name: FRONTEND_URL
     description: Frontend URL
     required: true
+  - name: REGISTRY
+    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
+    value: ghcr.io
+  - name: ORG
+    description: Organization name
+    value: bcgov
 objects:
-objects:
-  - kind: ImageStream
-    apiVersion: v1
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    spec:
-      lookupPolicy:
-        local: false
-      tags:
-        - name: ${IMAGE_TAG}
-          from:
-            kind: DockerImage
-            name: ${REGISTRY}/${PROMOTE}
-          referencePolicy:
-            type: Local
   - kind: ConfigMap
     apiVersion: v1
     metadata:
@@ -142,7 +128,7 @@ objects:
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}-config
           containers:
-            - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+            - image: ${REGISTRY}/${ORG}/${NAME}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}
               securityContext:
                 capabilities:
                   add: ["NET_BIND_SERVICE"]

@@ -101,22 +101,6 @@ objects:
         requests:
           storage: ${DB_PVC_SIZE}
       storageClassName: netapp-file-standard
-  - kind: ImageStream
-    apiVersion: v1
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
-    spec:
-      lookupPolicy:
-        local: false
-      tags:
-        - name: ${IMAGE_TAG}
-          from:
-            kind: DockerImage
-            name: ${REGISTRY}/${PROMOTE}
-          referencePolicy:
-            type: Local
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
@@ -146,7 +130,7 @@ objects:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
           containers:
             - name: ${NAME}
-              image: ${REGISTRY}/${ORG}/${NAME}/${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+              image: ${REGISTRY}/${ORG}/${NAME}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}
               ports:
                 - containerPort: 5432
                   protocol: TCP

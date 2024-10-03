@@ -18,9 +18,6 @@ parameters:
     value: latest
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
-  - name: REGISTRY
-    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
-    value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-old-growth:prod-backend
@@ -35,23 +32,13 @@ parameters:
   - name: BCREGISTRY_URI
     description: Bc Registry API address
     required: true
+  - name: REGISTRY
+    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
+    value: ghcr.io
+  - name: ORG
+    description: Organization name
+    value: bcgov
 objects:
-  - apiVersion: v1
-    kind: ImageStream
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    spec:
-      lookupPolicy:
-        local: false
-      tags:
-        - name: ${IMAGE_TAG}
-          from:
-            kind: DockerImage
-            name: ${REGISTRY}/${PROMOTE}
-          referencePolicy:
-            type: Local
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
@@ -76,7 +63,7 @@ objects:
             deployment: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           containers:
-            - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+            - image: ${REGISTRY}/${ORG}/${NAME}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}
               imagePullPolicy: Always
               name: ${NAME}
               env:

@@ -21,9 +21,6 @@ parameters:
     value: latest
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
-  - name: REGISTRY
-    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
-    value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-forest-client-legacy:prod
@@ -43,23 +40,13 @@ parameters:
   - name: CERT_PVC_SIZE
     description: The amount of storage the cert PVC should have
     value: 25Mi
+  - name: REGISTRY
+    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
+    value: ghcr.io
+  - name: ORG
+    description: Organization name
+    value: bcgov
 objects:  
-  - kind: ImageStream
-    apiVersion: v1
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    spec:
-      lookupPolicy:
-        local: false
-      tags:
-        - name: ${IMAGE_TAG}
-          from:
-            kind: DockerImage
-            name: ${REGISTRY}/${PROMOTE}
-          referencePolicy:
-            type: Local
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
@@ -129,7 +116,7 @@ objects:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
           containers:
-            - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
+            - image: ${REGISTRY}/${ORG}/${NAME}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}
               imagePullPolicy: Always
               name: ${NAME}
               env:

@@ -13,6 +13,12 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - name: REGISTRY
+    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
+    value: ghcr.io
+  - name: ORG
+    description: Organization name
+    value: bcgov
 objects: 
   - kind: Job
     apiVersion: batch/v1
