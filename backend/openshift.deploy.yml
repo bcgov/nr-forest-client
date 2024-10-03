@@ -53,6 +53,10 @@ parameters:
   - name: CONFIG_MAP_NAME
     description: ConfigMap name specific to each environment
     value: ${NAME}-${ZONE}-${COMPONENT}-config
+  - name: RANDOM_EXPRESSION
+    description: Random expression to make sure deployments update
+    from: "[a-zA-Z0-9]{32}"
+    generate: expression
 objects:
   - kind: Deployment
     apiVersion: apps/v1
@@ -181,6 +185,8 @@ objects:
                   value: ${COMPONENT}
                 - name: FEATURES_BCREGISTRY_MULTIADDRESS
                   value: "false"
+                - name: RANDOM_EXPRESSION
+                  value: ${RANDOM_EXPRESSION}
               ports:
                 - containerPort: 8080
                   protocol: TCP
