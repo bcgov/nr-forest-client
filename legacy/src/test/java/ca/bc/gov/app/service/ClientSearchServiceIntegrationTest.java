@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.List;
@@ -95,6 +96,31 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
 
     verifyTestData(expected, exception, test);
 
+  }
+
+  @DisplayName("should do predictive search")
+  @ParameterizedTest
+  @MethodSource("byPredictive")
+  void shouldSearchWithPredictiveSearch(
+      String searchValue,
+      String expectedClientNumber,
+      String expectedClientName
+  ) {
+
+    FirstStep<PredictiveSearchResultDto> test =
+        service
+            .predictiveSearch(searchValue)
+            .as(StepVerifier::create);
+
+    if(StringUtils.isNotBlank(expectedClientNumber)) {
+      test
+          .assertNext(dto -> {
+            assertNotNull(dto);
+            assertEquals(expectedClientNumber, dto.clientNumber());
+            assertEquals(expectedClientName, dto.name());
+          });
+    }
+          test.verifyComplete();
   }
 
   private void verifyTestData(
@@ -292,5 +318,16 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
             Arguments.of("  ", null, MissingRequiredParameterException.class)
         );
   }
+
+  private static Stream<Arguments> byPredictive() {
+    return Stream
+        .of(
+            Arguments.of("indian canada", "00000006", "INDIAN CANADA"),
+            Arguments.of("kilback", "00000123", "REICHERT, KILBACK AND EMARD"),
+            Arguments.of("darbie", "00000145", "DARBIE BLIND"),
+            Arguments.of("pietro", StringUtils.EMPTY, StringUtils.EMPTY)
+        );
+  }
+
 
 }
