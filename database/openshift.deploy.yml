@@ -91,6 +91,10 @@ parameters:
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
     generate: expression
+  - name: RANDOM_EXPRESSION
+    description: Random expression to make sure deployments update
+    from: "[a-zA-Z0-9]{32}"
+    generate: expression
 objects:
   - kind: PersistentVolumeClaim
     apiVersion: v1

@@ -76,6 +76,10 @@ parameters:
   - name: FRONTEND_URL
     description: Frontend URL
     required: true
+  - name: RANDOM_EXPRESSION
+    description: Random expression to make sure deployments update
+    from: "[a-zA-Z0-9]{32}"
+    generate: expression
 objects:
 objects:
   - kind: ConfigMap
@@ -144,6 +148,8 @@ objects:
                   value: ${COGNITO_REGION}
                 - name: COGNITO_DOMAIN
                   value: ${COGNITO_DOMAIN}
+                - name: RANDOM_EXPRESSION
+                  value: ${RANDOM_EXPRESSION}
               imagePullPolicy: Always
               name: ${NAME}
               volumeMounts:

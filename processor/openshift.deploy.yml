@@ -38,6 +38,10 @@ parameters:
   - name: BCREGISTRY_URI
     description: Bc Registry API address
     required: true
+  - name: RANDOM_EXPRESSION
+    description: Random expression to make sure deployments update
+    from: "[a-zA-Z0-9]{32}"
+    generate: expression
 objects:
 
   - kind: Deployment
@@ -115,6 +119,8 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
                       key: processor-service-account-secret
+                - name: RANDOM_EXPRESSION
+                  value: ${RANDOM_EXPRESSION}
               ports:
                 - containerPort: 3000
                   protocol: TCP
