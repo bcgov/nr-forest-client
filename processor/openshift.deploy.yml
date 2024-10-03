@@ -63,7 +63,7 @@ objects:
             deployment: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           containers:
-            - image: ${REGISTRY}/${ORG}/${NAME}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}
+            - image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${ZONE}
               imagePullPolicy: Always
               name: ${NAME}
               env:

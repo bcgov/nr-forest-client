@@ -128,7 +128,7 @@ objects:
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}-config
           containers:
-            - image: ${REGISTRY}/${ORG}/${NAME}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}
+            - image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${ZONE}
               securityContext:
                 capabilities:
                   add: ["NET_BIND_SERVICE"]

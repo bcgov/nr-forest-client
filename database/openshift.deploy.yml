@@ -130,7 +130,7 @@ objects:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
           containers:
             - name: ${NAME}
-              image: ${REGISTRY}/${ORG}/${NAME}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}
+              image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${ZONE}
               ports:
                 - containerPort: 5432
                   protocol: TCP
