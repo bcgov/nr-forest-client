@@ -308,8 +308,7 @@ class ClientSearchControllerIntegrationTest extends
           .consumeWith(System.out::println);
     }else{
       response.expectStatus().isOk()
-      .expectBody()
-          .consumeWith(System.out::println).json("[]");
+      .expectBody().isEmpty();
     }
 
   }
