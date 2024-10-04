@@ -6,6 +6,7 @@ import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.entity.ForestClientEntity;
@@ -531,6 +532,20 @@ public class ClientSearchService {
         );
   }
 
+  public Flux<PredictiveSearchResultDto> predictiveSearch(String value){
+    log.info("Predictive search for value {}", value);
+    if (StringUtils.isBlank(value)) {
+      return Flux.error(new MissingRequiredParameterException("value"));
+    }
+    return forestClientRepository
+        .findByPredictiveSearch(value.toUpperCase())
+        .doOnNext(dto -> log.info("Found predictive search for value {} as {} {} with score {}",
+            value,
+            dto.clientNumber(), dto.name(), dto.score()
+            )
+        );
+  }
+
   /**
    * This method is used to search for clients based on a given query criteria, page number, and
    * page size. It first creates a query based on the provided query criteria. Then, it counts the
@@ -562,6 +577,5 @@ public class ClientSearchService {
         )
         .doOnNext(client -> log.info("Found client for query {}", queryCriteria));
   }
-
 
 }

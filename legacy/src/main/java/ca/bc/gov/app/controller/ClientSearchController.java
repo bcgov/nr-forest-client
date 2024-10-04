@@ -3,6 +3,7 @@ package ca.bc.gov.app.controller;
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
@@ -134,6 +135,14 @@ public class ClientSearchController {
   ) {
     log.info("Receiving request to match by company name {}", clientName);
     return service.findByClientName(clientName);
+  }
+
+  @GetMapping("/predictive")
+  public Flux<PredictiveSearchResultDto> findByPredictiveSearch(
+      @RequestParam String value
+  ){
+    log.info("Receiving request to search by predictive search {}", value);
+    return service.predictiveSearch(value);
   }
 
 
