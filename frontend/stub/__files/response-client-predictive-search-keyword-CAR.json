@@ -1,0 +1,26 @@
+[
+  {
+    "clientNumber": "00001294",
+    "clientAcronym": "CARNEY",
+    "clientName": "B.J. CARNEY & COMPANY, LIMITED",
+    "clientType": "Corporation",
+    "city": "CHASE",
+    "clientStatus": "Active"
+  },
+  {
+    "clientNumber": "00001297",
+    "clientAcronym": "CARIER",
+    "clientName": "CARRIER LUMBER LTD.",
+    "clientType": "Corporation",
+    "city": "PRINCE GEORGE",
+    "clientStatus": "Active"
+  },
+  {
+    "clientNumber": "00001302",
+    "clientAcronym": "CARTER",
+    "clientName": "CARTER",
+    "clientType": "Individual",
+    "city": "MISSION",
+    "clientStatus": "Active"
+  }
+]
