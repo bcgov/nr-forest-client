@@ -27,7 +27,7 @@ const fullSearchKeyword = ref("");
 
 const predictiveSearchUri = computed(
   () =>
-    `/api/clients/predictive-search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(predictiveSearchKeyword.value)}${tableReference.value || ''}`
+    `/api/clients/predictive-search?keyword=${encodeURIComponent(predictiveSearchKeyword.value)}${tableReference.value || ''}`
 );
 
 const fullSearchUri = computed(
@@ -100,7 +100,7 @@ const paginate = (event: any) => {
           <cds-table-row v-for="row in tableData" :key="row.clientNumber" @click="selectEntry(row)">
             <cds-table-cell />
             <cds-table-cell><span>{{ row.clientNumber }}</span></cds-table-cell>
-            <cds-table-cell><span>{{ row.acronym }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ row.clientAcronym }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientName }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientType }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.city }}</span></cds-table-cell>

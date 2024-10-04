@@ -178,7 +178,7 @@ export interface SubmissionList {
 
 export interface ClientList {
   clientNumber: string
-  acronym: string
+  clientAcronym: string
   clientName: string
   clientType: string
   city: string
