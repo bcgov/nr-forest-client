@@ -526,9 +526,9 @@ class ClientSearchControllerIntegrationTest extends
   private static Stream<Arguments> byPredictive() {
     return Stream
         .of(
-            Arguments.of("indian canada", "00000006", "INDIAN CANADA"),
+            Arguments.of("pollich", "00000114", "POLLICH-ABERNATHY"),
             Arguments.of("kilback", "00000123", "REICHERT, KILBACK AND EMARD"),
-            Arguments.of("darbie", "00000145", "DARBIE BLIND"),
+            Arguments.of("darbie", "00000145", "DARBIE BLIND (MINYX)"),
             Arguments.of("pietro", StringUtils.EMPTY, StringUtils.EMPTY)
         );
   }
