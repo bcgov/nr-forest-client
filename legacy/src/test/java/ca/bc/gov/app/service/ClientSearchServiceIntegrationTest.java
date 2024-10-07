@@ -102,7 +102,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
   @DisplayName("should do predictive search")
   @ParameterizedTest
   @MethodSource("byPredictive")
-  void shouldSearchWithPredictiveSearch(
+  void shouldSearchWithComplexSearch(
       String searchValue,
       String expectedClientNumber,
       String expectedClientName
@@ -110,7 +110,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
 
     FirstStep<PredictiveSearchResultDto> test =
         service
-            .predictiveSearch(searchValue, PageRequest.of(0, 5))
+            .complexSearch(searchValue, PageRequest.of(0, 5))
             .as(StepVerifier::create);
 
     if(StringUtils.isNotBlank(expectedClientNumber)) {

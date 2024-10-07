@@ -281,6 +281,8 @@ class ClientSearchControllerIntegrationTest extends
   @DisplayName("Search using the predictive search")
   void shouldSearchPredicatively(
       String searchValue,
+      Integer page,
+      Integer size,
       String expectedClientNumber,
       String expectedClientName
   ) {
@@ -290,8 +292,10 @@ class ClientSearchControllerIntegrationTest extends
             .get()
             .uri(uriBuilder ->
                 uriBuilder
-                    .path("/api/search/predictive")
-                    .queryParam("value", Optional.ofNullable(searchValue))
+                    .path("/api/search")
+                    .queryParamIfPresent("value", Optional.ofNullable(searchValue))
+                    .queryParamIfPresent("page", Optional.ofNullable(page))
+                    .queryParamIfPresent("size", Optional.ofNullable(size))
                     .build(new HashMap<>())
             )
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -306,11 +310,39 @@ class ClientSearchControllerIntegrationTest extends
           .jsonPath("$[0].clientName").isNotEmpty()
           .jsonPath("$[0].name").isEqualTo(expectedClientName)
           .consumeWith(System.out::println);
-    }else{
+    } else {
       response.expectStatus().isOk()
-      .expectBody()
+          .expectBody()
           .consumeWith(System.out::println).json("[]");
     }
+
+  }
+
+  @ParameterizedTest
+  @MethodSource("byPredictive")
+  @DisplayName("Search using the predictive search")
+  void shouldSearchEmpty() {
+
+    ResponseSpec response =
+        client
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/search/predictive")
+                    .queryParam("page", 0)
+                    .queryParam("size", 10)
+                    .build(new HashMap<>())
+            )
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .exchange();
+
+      response
+          .expectStatus().isOk()
+          .expectBody()
+          .jsonPath("$[0].clientNumber").isNotEmpty()
+          .jsonPath("$[0].clientName").isNotEmpty()
+          .jsonPath("$.length()").isEqualTo(10)
+          .consumeWith(System.out::println);
 
   }
 
@@ -497,39 +529,48 @@ class ClientSearchControllerIntegrationTest extends
 
   private static Stream<Arguments> doingBusinessAs() {
     return
-          Stream
-              .of(
-                  Arguments.of(null,null, null, MissingRequiredParameterException.class),
-                  Arguments.of(null,false, null, MissingRequiredParameterException.class),
-                  Arguments.of(null,true, null, MissingRequiredParameterException.class),
-                  Arguments.of(StringUtils.EMPTY, null, null, MissingRequiredParameterException.class),
-                  Arguments.of(StringUtils.EMPTY, false, null, MissingRequiredParameterException.class),
-                  Arguments.of(StringUtils.EMPTY, true, null, MissingRequiredParameterException.class),
-                  Arguments.of("  ", null, null, MissingRequiredParameterException.class),
-                  Arguments.of("  ", false, null, MissingRequiredParameterException.class),
-                  Arguments.of("  ", true, null, MissingRequiredParameterException.class),
+        Stream
+            .of(
+                Arguments.of(null, null, null, MissingRequiredParameterException.class),
+                Arguments.of(null, false, null, MissingRequiredParameterException.class),
+                Arguments.of(null, true, null, MissingRequiredParameterException.class),
+                Arguments.of(StringUtils.EMPTY, null, null,
+                    MissingRequiredParameterException.class),
+                Arguments.of(StringUtils.EMPTY, false, null,
+                    MissingRequiredParameterException.class),
+                Arguments.of(StringUtils.EMPTY, true, null,
+                    MissingRequiredParameterException.class),
+                Arguments.of("  ", null, null, MissingRequiredParameterException.class),
+                Arguments.of("  ", false, null, MissingRequiredParameterException.class),
+                Arguments.of("  ", true, null, MissingRequiredParameterException.class),
 
-                  Arguments.of("BORIS AND BORIS INC.", null, "00000003", null),
-                  Arguments.of("BORIS AND BORIS INC.", false, "00000003", null),
-                  Arguments.of("BORIS AND BORIS", true, "00000003", null),
+                Arguments.of("BORIS AND BORIS INC.", null, "00000003", null),
+                Arguments.of("BORIS AND BORIS INC.", false, "00000003", null),
+                Arguments.of("BORIS AND BORIS", true, "00000003", null),
 
-                  Arguments.of("ELARICHO", null, "00000005", null),
-                  Arguments.of("ELARICHO", false, "00000005", null),
-                  Arguments.of("ELARICHO", true, "00000005", null),
+                Arguments.of("ELARICHO", null, "00000005", null),
+                Arguments.of("ELARICHO", false, "00000005", null),
+                Arguments.of("ELARICHO", true, "00000005", null),
 
-                  Arguments.of("ELARICO", true, "00000005", null),
-                  Arguments.of("ELACHO", true, StringUtils.EMPTY, null),
-                  Arguments.of("ELARICO", false, StringUtils.EMPTY, null)
-              );
+                Arguments.of("ELARICO", true, "00000005", null),
+                Arguments.of("ELACHO", true, StringUtils.EMPTY, null),
+                Arguments.of("ELARICO", false, StringUtils.EMPTY, null)
+            );
   }
 
   private static Stream<Arguments> byPredictive() {
     return Stream
         .of(
-            Arguments.of("pollich", "00000114", "POLLICH-ABERNATHY"),
-            Arguments.of("kilback", "00000123", "REICHERT, KILBACK AND EMARD"),
-            Arguments.of("darbie", "00000145", "DARBIE BLIND (MINYX)"),
-            Arguments.of("pietro", StringUtils.EMPTY, StringUtils.EMPTY)
+            Arguments.of("pollich", null, null, "00000114", "POLLICH-ABERNATHY"),
+            Arguments.of("pollich", 0, 2, "00000114", "POLLICH-ABERNATHY"),
+            Arguments.of("pollich", 4, 10, StringUtils.EMPTY, StringUtils.EMPTY),
+            Arguments.of("kilback", null, null, "00000123", "REICHERT, KILBACK AND EMARD"),
+            Arguments.of("kilback", 0, 1, "00000123", "REICHERT, KILBACK AND EMARD"),
+            Arguments.of("darbie", null, null, "00000145", "DARBIE BLIND (MINYX)"),
+            Arguments.of("darbie", 0, 4, "00000145", "DARBIE BLIND (MINYX)"),
+            Arguments.of("pietro", null, null, StringUtils.EMPTY, StringUtils.EMPTY),
+            Arguments.of("pietro", 0, 5, StringUtils.EMPTY, StringUtils.EMPTY),
+            Arguments.of("pietro", 4, 10, StringUtils.EMPTY, StringUtils.EMPTY)
         );
   }
 

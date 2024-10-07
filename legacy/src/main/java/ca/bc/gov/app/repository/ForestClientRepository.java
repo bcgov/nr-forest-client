@@ -104,4 +104,27 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
   Flux<PredictiveSearchResultDto> findByPredictiveSearch(String value, int limit, long offset);
 
+  @Query("""
+      SELECT
+          c.client_number,
+          c.CLIENT_ACRONYM as client_acronym,
+          c.client_name,
+          c.legal_first_name as client_first_name,
+          dba.doing_business_as_name as doing_business_as,
+          c.client_identification,
+          c.legal_middle_name as client_middle_name,
+          cl.city as city,
+          ctc.description as client_type,
+          csc.description as status_code
+      FROM the.forest_client c
+      LEFT JOIN the.CLIENT_DOING_BUSINESS_AS dba ON c.client_number = dba.client_number
+      LEFT JOIN the.CLIENT_TYPE_CODE ctc ON c.client_type_code = ctc.client_type_code
+      LEFT JOIN the.CLIENT_LOCATION cl ON c.client_number = cl.client_number
+      LEFT JOIN the.CLIENT_STATUS_CODE csc ON c.client_status_code = csc.client_status_code
+      WHERE
+        cl.CLIENT_LOCN_CODE = '00'
+      ORDER BY c.ADD_TIMESTAMP DESC
+      OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
+  Flux<PredictiveSearchResultDto> findByEmptyFullSearch(int limit, long offset);
+
 }
