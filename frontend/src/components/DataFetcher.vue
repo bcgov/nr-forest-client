@@ -3,14 +3,19 @@ import { ref, watch, computed } from "vue";
 // Composables
 import { useFetchTo } from "@/composables/useFetch";
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   url: string;
   params?: object;
   minLength: number;
   initValue: object;
   initFetch?: boolean;
   disabled?: boolean;
-}>();
+  debounce: number;
+}>(),
+  {
+    debounce: 300,
+  }
+);
 
 // Set the initial value to the content
 const content = ref<any>(props.initValue);
@@ -43,19 +48,27 @@ if (!props.disabled && props.initFetch) {
     content.value = response.value;
   });
 }
+let debounceTimer: number | null = null;
 
 // Watch for changes in the url, and if the difference is greater than the min length, fetch
 watch([() => props.url, () => props.disabled], () => {
   if (!props.disabled && calculateStringDifference(initialUrlValue, props.url) >= props.minLength) {
-    const curRequestTime = Date.now();
+    
 
-    fetch().then(() => {
-      // Discard the response from old request when a newer one was already responded.
-      if (curRequestTime >= lastUpdateRequestTime.value) {
-        content.value = response.value;
-        lastUpdateRequestTime.value = curRequestTime;
-      }
-    });
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
+    debounceTimer = window.setTimeout(() => {
+      const curRequestTime = Date.now();
+
+      fetch().then(() => {
+        // Discard the response from old request when a newer one was already responded.
+        if (curRequestTime >= lastUpdateRequestTime.value) {
+          content.value = response.value;
+          lastUpdateRequestTime.value = curRequestTime;
+        }
+      });
+    }, props.debounce); // Debounce time
   }
 });
 </script>
