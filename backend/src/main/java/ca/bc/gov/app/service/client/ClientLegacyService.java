@@ -320,6 +320,19 @@ public class ClientLegacyService {
     return null;
   }
   
+  /**
+   * Performs a predictive search for clients based on the provided keyword.
+   * <p>
+   * This method sends an API request to search for clients using the given keyword. If the keyword 
+   * is blank, an error is returned. The results are streamed back as a {@link Flux} of 
+   * {@link ClientListDto} objects. The method logs the results of the search.
+   * </p>
+   * 
+   * @param keyword the search keyword used for predictive client search. 
+   *                If the keyword is blank or empty, an error is returned.
+   * @return a {@link Flux} stream of {@link ClientListDto} objects that match the search keyword.
+   * @throws MissingRequiredParameterException if the keyword is blank.
+   */
   public Flux<ClientListDto> predictiveSearch(String keyword) {
     log.info("Searching clients by keyword {}", keyword);
     
