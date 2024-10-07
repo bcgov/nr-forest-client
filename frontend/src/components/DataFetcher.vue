@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<{
   debounce: number;
 }>(),
   {
+    disabled: false,
     debounce: 300,
   }
 );
