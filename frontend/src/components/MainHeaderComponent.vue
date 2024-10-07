@@ -162,7 +162,7 @@ const handleLogoutClick = (event) => {
       @click.prevent="helpModalActive = true"
     >
       <template v-if="!isSmallScreen && !isMediumScreen">
-        <span>Help with application</span>
+        <span>Need help?</span>
         <Help16 slot="icon" />
       </template>
       <template v-else>
@@ -299,7 +299,7 @@ const handleLogoutClick = (event) => {
     <cds-modal-header>
       <cds-modal-close-button></cds-modal-close-button>
       <cds-modal-heading id="help-modal-heading">
-        Help with application
+        Need help?
       </cds-modal-heading>
     </cds-modal-header>
     <cds-modal-body id="help-modal-body">
