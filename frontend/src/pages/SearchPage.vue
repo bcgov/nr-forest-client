@@ -64,6 +64,8 @@ const paginate = (event: any) => {
   pageNumber.value = event.detail.page;
   pageSize.value = event.detail.pageSize;
 };
+
+const placeholder = "Search by client number, name or acronym";
 </script>
 
 <template>
@@ -87,11 +89,11 @@ const paginate = (event: any) => {
       >
         <AutoCompleteInputComponent
           id="search-box"
-          label="Client name"
+          label=""
+          :ariaLabel="placeholder"
           autocomplete="off"
-          required
-          required-label
           tip=""
+          :placeholder="placeholder"
           v-model="searchKeyword"
           :contents="content?.map(searchResultToCodeNameType)"
           :validations="[]"

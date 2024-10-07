@@ -15,6 +15,7 @@ const props = withDefaults(
   defineProps<{
     id: string;
     label: string;
+    ariaLabel?: string;
     tip?: string;
     placeholder?: string;
     modelValue: string;
@@ -242,7 +243,7 @@ watch(
       if (input) {
         // Propagate attributes to the input
         input.required = props.required;
-        input.ariaLabel = props.label;
+        input.ariaLabel = props.ariaLabel || props.label;
         input.ariaInvalid = ariaInvalidString.value;
 
         // Use the helper text as a field description
@@ -265,7 +266,7 @@ const safeHelperText = computed(() => props.tip || " ");
         :class="warning ? 'warning' : ''"
         :autocomplete="autocomplete"
         :title-text="label"
-        :aria-label="label"
+        :aria-label="ariaLabel || label"
         :clear-selection-label="`Clear ${label}`"
         :required="required"
         :data-required-label="requiredLabel"
