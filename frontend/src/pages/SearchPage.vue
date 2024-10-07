@@ -2,7 +2,7 @@
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import { ref, computed, watch } from "vue";
 import { useFetchTo } from "@/composables/useFetch";
-import type { ClientList, CodeNameType } from "@/dto/CommonTypesDto";
+import type { ClientSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
 import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
 import summit from "@carbon/pictograms/es/summit";
 import useSvg from "@/composables/useSvg";
@@ -15,7 +15,7 @@ const summitSvg = useSvg(summit);
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 
 // Table data
-const tableData = ref<ClientList[]>([]);
+const tableData = ref<ClientSearchResult[]>([]);
 const pageNumber = ref(1);
 const totalItems = ref(0);
 const pageSize = ref(10);
@@ -26,8 +26,8 @@ const predictiveSearchUri = computed(
   () => `/api/clients/predictive-search?keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
 
-const clientToCodeNameType = (client: ClientList): CodeNameType => {
-  const { clientNumber, clientName, clientType, city, clientStatus } = client;
+const searchResultToCodeNameType = (searchResult: ClientSearchResult): CodeNameType => {
+  const { clientNumber, clientName, clientType, city, clientStatus } = searchResult;
   const result = {
     code: clientNumber,
     name: `${clientNumber}, ${clientName}, ${clientType}, ${city} (${clientStatus})`,
@@ -45,7 +45,7 @@ const search = () => {
   if (!loading.value) fetch();
 };
 
-const selectEntry = (entry: ClientList) => {
+const selectEntry = (entry: ClientSearchResult) => {
   //TODO
 };
 
@@ -93,7 +93,7 @@ const paginate = (event: any) => {
           required-label
           tip=""
           v-model="searchKeyword"
-          :contents="content?.map(clientToCodeNameType)"
+          :contents="content?.map(searchResultToCodeNameType)"
           :validations="[]"
           :loading="loading"
         />
