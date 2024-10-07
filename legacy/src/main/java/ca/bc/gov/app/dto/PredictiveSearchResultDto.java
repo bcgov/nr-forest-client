@@ -15,7 +15,7 @@ public record PredictiveSearchResultDto(
     String clientMiddleName,
     String city,
     String clientType,
-    String statusCode,
+    String clientStatus,
     long score
 ) {
 
