@@ -72,15 +72,15 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           cl.city as city,
           ctc.description as client_type,
           csc.description as client_status,
-      	(
-      		CASE WHEN c.client_number = :value THEN 112 ELSE 0 END +
-      		CASE WHEN c.CLIENT_ACRONYM = :value THEN 111 ELSE 0 END +
-      		(UTL_MATCH.JARO_WINKLER_SIMILARITY(c.client_name, :value)+10) +
-      		(UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_first_name, :value)+9) +
-      		(UTL_MATCH.JARO_WINKLER_SIMILARITY(dba.doing_business_as_name, :value)+7) +
-      		CASE WHEN c.client_identification = :value THEN 106 ELSE 0 END +
-      		UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_middle_name, :value)
-      	) AS score
+          (
+              CASE WHEN c.client_number = :value THEN 112 ELSE 0 END +
+              CASE WHEN c.CLIENT_ACRONYM = :value THEN 111 ELSE 0 END +
+              (UTL_MATCH.JARO_WINKLER_SIMILARITY(c.client_name, :value)+10) +
+              (UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_first_name, :value)+9) +
+              (UTL_MATCH.JARO_WINKLER_SIMILARITY(dba.doing_business_as_name, :value)+7) +
+              CASE WHEN c.client_identification = :value THEN 106 ELSE 0 END +
+              UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_middle_name, :value)
+          ) AS score
       FROM the.forest_client c
       LEFT JOIN the.CLIENT_DOING_BUSINESS_AS dba ON c.client_number = dba.client_number
       LEFT JOIN the.CLIENT_TYPE_CODE ctc ON c.client_type_code = ctc.client_type_code
@@ -115,7 +115,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           c.legal_middle_name as client_middle_name,
           cl.city as city,
           ctc.description as client_type,
-          csc.description as status_code
+          csc.description as status_code,
+          100 as score
       FROM the.forest_client c
       LEFT JOIN the.CLIENT_DOING_BUSINESS_AS dba ON c.client_number = dba.client_number
       LEFT JOIN the.CLIENT_TYPE_CODE ctc ON c.client_type_code = ctc.client_type_code

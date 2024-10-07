@@ -543,7 +543,7 @@ public class ClientSearchService {
     }
     return forestClientRepository
         .findByPredictiveSearch(value.toUpperCase(),page.getPageSize(),page.getOffset())
-        .doOnNext(dto -> log.info("Found predictive search for value {} as {} {} with score {}",
+        .doOnNext(dto -> log.info("Found complex search for value {} as {} {} with score {}",
                 value,
                 dto.clientNumber(), dto.name(), dto.score()
             )
@@ -553,8 +553,7 @@ public class ClientSearchService {
   public Flux<PredictiveSearchResultDto> latestEntries(Pageable page){
     return forestClientRepository
         .findByEmptyFullSearch(page.getPageSize(),page.getOffset())
-        .doOnNext(dto -> log.info("Found predictive search for value {} as {} {} with score {}",
-                value,
+        .doOnNext(dto -> log.info("Found complex empty search as {} {} with score {}",
                 dto.clientNumber(), dto.name(), dto.score()
             )
         );
