@@ -71,7 +71,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           c.legal_middle_name as client_middle_name,
           cl.city as city,
           ctc.description as client_type,
-          csc.description as status_code,
+          csc.description as client_status,
       	(
       		CASE WHEN c.client_number = :value THEN 112 ELSE 0 END +
       		CASE WHEN c.CLIENT_ACRONYM = :value THEN 111 ELSE 0 END +
