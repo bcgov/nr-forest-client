@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -139,10 +140,12 @@ public class ClientSearchController {
 
   @GetMapping("/predictive")
   public Flux<PredictiveSearchResultDto> findByPredictiveSearch(
-      @RequestParam String value
+      @RequestParam String value,
+      @RequestParam(required = false,defaultValue = "0") Integer page,
+      @RequestParam(required = false,defaultValue = "5") Integer size
   ){
     log.info("Receiving request to search by predictive search {}", value);
-    return service.predictiveSearch(value);
+    return service.predictiveSearch(value, PageRequest.of(page,size));
   }
 
 

@@ -97,10 +97,11 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           OR dba.doing_business_as_name LIKE '%' || :value || '%'
           OR c.client_identification = :value
           OR UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_middle_name,:value) >= 90
+          OR c.legal_middle_name LIKE '%' || :value || '%'
         )  AND
         cl.CLIENT_LOCN_CODE = '00'
       ORDER BY score DESC
-      FETCH FIRST 5 ROWS ONLY""")
-  Flux<PredictiveSearchResultDto> findByPredictiveSearch(String value);
+      OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
+  Flux<PredictiveSearchResultDto> findByPredictiveSearch(String value, int limit, long offset);
 
 }

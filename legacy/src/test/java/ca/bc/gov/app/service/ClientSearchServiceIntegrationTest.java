@@ -17,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
@@ -109,7 +110,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
 
     FirstStep<PredictiveSearchResultDto> test =
         service
-            .predictiveSearch(searchValue)
+            .predictiveSearch(searchValue, PageRequest.of(0, 5))
             .as(StepVerifier::create);
 
     if(StringUtils.isNotBlank(expectedClientNumber)) {

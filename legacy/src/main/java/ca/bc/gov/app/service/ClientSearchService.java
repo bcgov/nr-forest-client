@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
@@ -532,13 +533,16 @@ public class ClientSearchService {
         );
   }
 
-  public Flux<PredictiveSearchResultDto> predictiveSearch(String value){
+  public Flux<PredictiveSearchResultDto> predictiveSearch(
+      String value,
+      Pageable page
+  ){
     log.info("Predictive search for value {}", value);
     if (StringUtils.isBlank(value)) {
       return Flux.error(new MissingRequiredParameterException("value"));
     }
     return forestClientRepository
-        .findByPredictiveSearch(value.toUpperCase())
+        .findByPredictiveSearch(value.toUpperCase(),page.getPageSize(),page.getOffset())
         .doOnNext(dto -> log.info("Found predictive search for value {} as {} {} with score {}",
             value,
             dto.clientNumber(), dto.name(), dto.score()
