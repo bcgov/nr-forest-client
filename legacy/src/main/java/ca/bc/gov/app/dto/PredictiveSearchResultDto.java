@@ -19,8 +19,8 @@ public record PredictiveSearchResultDto(
     long score
 ) {
 
-  @JsonProperty("name")
-  public String name() {
+  @JsonProperty("fullName")
+  public String fullName() {
     String finalName = Stream.of(this.clientFirstName, this.clientMiddleName, this.clientName)
         .filter(StringUtils::isNotBlank)
         .map(String::trim)
