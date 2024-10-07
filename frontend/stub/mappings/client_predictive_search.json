@@ -3,7 +3,7 @@
     {
       "name": "Autocompete Predictive Search",
       "request": {
-        "urlPattern": "/api/clients/predictive-search",
+        "urlPath": "/api/clients/predictive-search",
         "method": "GET",
         "queryParameters": {
           "keyword": {
@@ -16,27 +16,27 @@
         "headers": {
           "content-type": "application/json;charset=UTF-8"
         },
-        "bodyFileName": "response-predictive-search.json",
+        "bodyFileName": "response-client-predictive-search.json",
         "transformers": [
           "response-template"
         ],
-        "fixedDelayMilliseconds": 2500
+        "fixedDelayMilliseconds": 1000
       }
     },
     {
       "name": "Autocompete Predictive Search CAR",
       "request": {
-        "urlPattern": "/api/clients/predictive-search",
+        "urlPath": "/api/clients/predictive-search",
         "method": "GET",
         "queryParameters": {
           "keyword": {
-            "matches": "CAR"
+            "matches": "(?i)car"
           }
         }
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-predictive-search-keyword-CAR.json"
+        "bodyFileName": "response-client-predictive-search-keyword-CAR.json"
       }
     }
   ]
