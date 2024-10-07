@@ -140,11 +140,9 @@ public class ClientSearchController {
   @GetMapping("/predictive")
   public Flux<PredictiveSearchResultDto> findByPredictiveSearch(
       @RequestParam String value
-  ){
+  ) {
     log.info("Receiving request to search by predictive search {}", value);
     return service.predictiveSearch(value);
   }
-
-
-
+  
 }

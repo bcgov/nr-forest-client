@@ -4,6 +4,7 @@ import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.List;
@@ -321,6 +322,11 @@ public class ClientLegacyService {
   
   public Flux<ClientListDto> predictiveSearch(String keyword) {
     log.info("Searching clients by keyword {}", keyword);
+    
+    if (StringUtils.isBlank(keyword)) {
+      return Flux.error(new MissingRequiredParameterException("value"));
+    }
+    
     return legacyApi
       .get()
       .uri(builder -> 
