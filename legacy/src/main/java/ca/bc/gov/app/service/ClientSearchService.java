@@ -541,7 +541,7 @@ public class ClientSearchService {
         .findByPredictiveSearch(value.toUpperCase())
         .doOnNext(dto -> log.info("Found predictive search for value {} as {} {} with score {}",
             value,
-            dto.clientNumber(), dto.name(), dto.score()
+            dto.clientNumber(), dto.fullName(), dto.score()
             )
         );
   }
