@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -318,8 +319,7 @@ class ClientSearchControllerIntegrationTest extends
 
   }
 
-  @ParameterizedTest
-  @MethodSource("byPredictive")
+  @Test
   @DisplayName("Search using the predictive search")
   void shouldSearchEmpty() {
 
@@ -328,7 +328,7 @@ class ClientSearchControllerIntegrationTest extends
             .get()
             .uri(uriBuilder ->
                 uriBuilder
-                    .path("/api/search/predictive")
+                    .path("/api/search")
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .build(new HashMap<>())
