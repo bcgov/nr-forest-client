@@ -347,10 +347,30 @@ public class ClientLegacyService {
             .path("/api/search/predictive")
             .queryParam("value", keyword)
             .build(Map.of()))
-        .exchangeToFlux(response -> 
-          response.bodyToFlux(ClientListDto.class))
-        .doOnNext(dto -> 
+      .exchangeToFlux(response -> response.bodyToFlux(Map.class))
+      .map(this::mapToClientListDto)
+      .doOnNext(dto -> 
           log.info("Found clients by keyword {}", dto.clientNumber()));
+  }
+  
+  private ClientListDto mapToClientListDto(Map<String, Object> json) {
+    String clientNumber = (String) json.get("clientNumber");
+    String clientAcronym = (String) json.get("clientAcronym");
+    String clientName = (String) json.get("name");
+    String clientType = (String) json.get("clientType");
+    String city = (String) json.get("city");
+    String clientStatus = (String) json.get("clientStatus");
+    Long count = 0L;
+
+    return new ClientListDto(
+        clientNumber, 
+        clientAcronym, 
+        clientName, 
+        clientType, 
+        city,
+        clientStatus, 
+        count
+    );
   }
 
 }
