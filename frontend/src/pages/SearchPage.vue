@@ -2,7 +2,7 @@
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import { ref, computed, watch } from "vue";
 import { useFetchTo } from "@/composables/useFetch";
-import type { ClientList } from "@/dto/CommonTypesDto";
+import type { ClientList, CodeNameType } from "@/dto/CommonTypesDto";
 import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
 import summit from "@carbon/pictograms/es/summit";
 import useSvg from "@/composables/useSvg";
@@ -14,25 +14,30 @@ const summitSvg = useSvg(summit);
 
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 
-const tableReference = ref("");
-
 // Table data
 const tableData = ref<ClientList[]>([]);
 const pageNumber = ref(1);
 const totalItems = ref(0);
 const pageSize = ref(10);
 
-const predictiveSearchKeyword = ref("");
-const fullSearchKeyword = ref("");
+const searchKeyword = ref("");
 
 const predictiveSearchUri = computed(
-  () =>
-    `/api/clients/predictive-search?keyword=${encodeURIComponent(predictiveSearchKeyword.value)}${tableReference.value || ''}`
+  () => `/api/clients/predictive-search?keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
+
+const clientToCodeNameType = (client: ClientList): CodeNameType => {
+  const { clientNumber, clientName, clientType, city, clientStatus } = client;
+  const result = {
+    code: clientNumber,
+    name: `${clientNumber}, ${clientName}, ${clientType}, ${city} (${clientStatus})`,
+  };
+  return result;
+};
 
 const fullSearchUri = computed(
   () =>
-    `/api/clients/full-search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(fullSearchKeyword.value)}${tableReference.value || ''}`
+    `/api/clients/full-search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
 
 const search = () => {
@@ -70,18 +75,35 @@ const paginate = (event: any) => {
         </div>        
       </div>
     </div>
-    
-    <div id="datatable" v-if="userhasAuthority">
 
-      <div style="float: right;">
-        <cds-button
-          kind="primary"
-          @click.prevent="search"
-        >
-          <span>Search</span>
-          <Search16 slot="icon" />
-        </cds-button>
-      </div>
+    <div id="search-line">
+      <data-fetcher
+        v-model:url="predictiveSearchUri"
+        :min-length="3"
+        :init-value="[]"
+        :init-fetch="false"
+        :disabled="!searchKeyword"
+        #="{ content, loading, error }"
+      >
+        <AutoCompleteInputComponent
+          id="search-box"
+          label="Client name"
+          autocomplete="off"
+          required
+          required-label
+          tip=""
+          v-model="searchKeyword"
+          :contents="content?.map(clientToCodeNameType)"
+          :validations="[]"
+          :loading="loading"
+        />
+      </data-fetcher>
+      <cds-button kind="primary" @click.prevent="search" id="search-button">
+        <span>Search</span>
+        <Search16 slot="icon" />
+      </cds-button>
+    </div>
+    <div id="datatable" v-if="userhasAuthority">
 
       <cds-table use-zebra-styles v-if="!loading">
         <cds-table-head>
