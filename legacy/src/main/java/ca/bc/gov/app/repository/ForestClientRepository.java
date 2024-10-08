@@ -72,15 +72,15 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           cl.city as city,
           ctc.description as client_type,
           csc.description as client_status,
-      	(
-      		CASE WHEN c.client_number = :value THEN 112 ELSE 0 END +
-      		CASE WHEN c.CLIENT_ACRONYM = :value THEN 111 ELSE 0 END +
-      		(UTL_MATCH.JARO_WINKLER_SIMILARITY(c.client_name, :value)+10) +
-      		(UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_first_name, :value)+9) +
-      		(UTL_MATCH.JARO_WINKLER_SIMILARITY(dba.doing_business_as_name, :value)+7) +
-      		CASE WHEN c.client_identification = :value THEN 106 ELSE 0 END +
-      		UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_middle_name, :value)
-      	) AS score
+          (
+              CASE WHEN c.client_number = :value THEN 112 ELSE 0 END +
+              CASE WHEN c.CLIENT_ACRONYM = :value THEN 111 ELSE 0 END +
+              (UTL_MATCH.JARO_WINKLER_SIMILARITY(c.client_name, :value)+10) +
+              (UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_first_name, :value)+9) +
+              (UTL_MATCH.JARO_WINKLER_SIMILARITY(dba.doing_business_as_name, :value)+7) +
+              CASE WHEN c.client_identification = :value THEN 106 ELSE 0 END +
+              UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_middle_name, :value)
+          ) AS score
       FROM the.forest_client c
       LEFT JOIN the.CLIENT_DOING_BUSINESS_AS dba ON c.client_number = dba.client_number
       LEFT JOIN the.CLIENT_TYPE_CODE ctc ON c.client_type_code = ctc.client_type_code
@@ -97,10 +97,35 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           OR dba.doing_business_as_name LIKE '%' || :value || '%'
           OR c.client_identification = :value
           OR UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_middle_name,:value) >= 90
+          OR c.legal_middle_name LIKE '%' || :value || '%'
         )  AND
         cl.CLIENT_LOCN_CODE = '00'
       ORDER BY score DESC
-      FETCH FIRST 5 ROWS ONLY""")
-  Flux<PredictiveSearchResultDto> findByPredictiveSearch(String value);
+      OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
+  Flux<PredictiveSearchResultDto> findByPredictiveSearch(String value, int limit, long offset);
+
+  @Query("""
+      SELECT
+          c.client_number,
+          c.CLIENT_ACRONYM as client_acronym,
+          c.client_name,
+          c.legal_first_name as client_first_name,
+          dba.doing_business_as_name as doing_business_as,
+          c.client_identification,
+          c.legal_middle_name as client_middle_name,
+          cl.city as city,
+          ctc.description as client_type,
+          csc.description as client_status,
+          100 as score
+      FROM the.forest_client c
+      LEFT JOIN the.CLIENT_DOING_BUSINESS_AS dba ON c.client_number = dba.client_number
+      LEFT JOIN the.CLIENT_TYPE_CODE ctc ON c.client_type_code = ctc.client_type_code
+      LEFT JOIN the.CLIENT_LOCATION cl ON c.client_number = cl.client_number
+      LEFT JOIN the.CLIENT_STATUS_CODE csc ON c.client_status_code = csc.client_status_code
+      WHERE
+        cl.CLIENT_LOCN_CODE = '00'
+      ORDER BY c.ADD_TIMESTAMP DESC
+      OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
+  Flux<PredictiveSearchResultDto> findByEmptyFullSearch(int limit, long offset);
 
 }

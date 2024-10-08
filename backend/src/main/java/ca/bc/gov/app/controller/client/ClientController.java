@@ -81,6 +81,18 @@ public class ClientController {
         );
   }
   
+  /**
+   * Handles HTTP GET requests for predictive search of clients.
+   * <p>
+   * This method processes a request to perform a predictive search using the provided keyword. 
+   * If no keyword is provided, the search defaults to an empty string.
+   * </p>
+   * 
+   * @param keyword        the search keyword to use for predictive search. 
+   *                       If not provided, it defaults to an empty string.
+   * @param serverResponse the HTTP response object to be used in the request.
+   * @return a {@link Flux} stream of {@link ClientListDto} objects that match the search criteria.
+   */
   @GetMapping("/predictive-search")
   public Flux<ClientListDto> predictiveSearch(
       @RequestParam(required = false, defaultValue = "") String keyword,

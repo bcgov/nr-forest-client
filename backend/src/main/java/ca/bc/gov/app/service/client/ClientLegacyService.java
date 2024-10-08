@@ -317,9 +317,34 @@ public class ClientLegacyService {
         page,
         size
     );
-    return null;
+    return legacyApi
+        .get()
+        .uri(builder -> 
+              builder
+              .path("/api/search")
+              .queryParam("page", page)
+              .queryParam("size", size)
+              .queryParam("value", keyword)
+              .build(Map.of()))
+        .exchangeToFlux(response -> response.bodyToFlux(Map.class))
+        .map(this::mapToClientListDto)
+        .doOnNext(dto -> 
+            log.info("Found clients by keyword {}", dto.clientNumber()));
   }
   
+  /**
+   * Performs a predictive search for clients based on the provided keyword.
+   * <p>
+   * This method sends an API request to search for clients using the given keyword. If the keyword 
+   * is blank, an error is returned. The results are streamed back as a {@link Flux} of 
+   * {@link ClientListDto} objects. The method logs the results of the search.
+   * </p>
+   * 
+   * @param keyword the search keyword used for predictive client search. 
+   *                If the keyword is blank or empty, an error is returned.
+   * @return a {@link Flux} stream of {@link ClientListDto} objects that match the search keyword.
+   * @throws MissingRequiredParameterException if the keyword is blank.
+   */
   public Flux<ClientListDto> predictiveSearch(String keyword) {
     log.info("Searching clients by keyword {}", keyword);
     
@@ -331,13 +356,33 @@ public class ClientLegacyService {
       .get()
       .uri(builder -> 
             builder
-            .path("/api/search/predictive")
+            .path("/api/search")
             .queryParam("value", keyword)
             .build(Map.of()))
-        .exchangeToFlux(response -> 
-          response.bodyToFlux(ClientListDto.class))
-        .doOnNext(dto -> 
+      .exchangeToFlux(response -> response.bodyToFlux(Map.class))
+      .map(this::mapToClientListDto)
+      .doOnNext(dto -> 
           log.info("Found clients by keyword {}", dto.clientNumber()));
+  }
+  
+  private ClientListDto mapToClientListDto(Map<String, Object> json) {
+    String clientNumber = (String) json.get("clientNumber");
+    String clientAcronym = (String) json.get("clientAcronym");
+    String clientName = (String) json.get("name");
+    String clientType = (String) json.get("clientType");
+    String city = (String) json.get("city");
+    String clientStatus = (String) json.get("clientStatus");
+    Long count = 0L;
+
+    return new ClientListDto(
+        clientNumber, 
+        clientAcronym, 
+        clientName, 
+        clientType, 
+        city,
+        clientStatus, 
+        count
+    );
   }
 
 }
