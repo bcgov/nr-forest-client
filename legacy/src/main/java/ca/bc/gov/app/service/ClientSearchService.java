@@ -533,30 +533,22 @@ public class ClientSearchService {
         );
   }
 
-  public Flux<PredictiveSearchResultDto> complexSearch(
-      String value,
-      Pageable page
-  ){
+  public Flux<PredictiveSearchResultDto> complexSearch(String value, Pageable page) {
     // This condition is for predictive search, and we will stop here if no query param is provided
     if (StringUtils.isBlank(value)) {
       return Flux.error(new MissingRequiredParameterException("value"));
     }
     return forestClientRepository
-        .findByPredictiveSearch(value.toUpperCase(),page.getPageSize(),page.getOffset())
-        .doOnNext(dto -> log.info("Found complex search for value {} as {} {} with score {}",
-                value,
-                dto.clientNumber(), dto.name(), dto.score()
-            )
-        );
+        .findByPredictiveSearch(value.toUpperCase(), page.getPageSize(), page.getOffset())
+        .doOnNext(dto -> log.info("Found complex search for value {} as {} {} with score {}", 
+            value, dto.clientNumber(), dto.name(), dto.score()));
   }
 
-  public Flux<PredictiveSearchResultDto> latestEntries(Pageable page){
+  public Flux<PredictiveSearchResultDto> latestEntries(Pageable page) {
     return forestClientRepository
-        .findByEmptyFullSearch(page.getPageSize(),page.getOffset())
+        .findByEmptyFullSearch(page.getPageSize(), page.getOffset())
         .doOnNext(dto -> log.info("Found complex empty search as {} {} with score {}",
-                dto.clientNumber(), dto.name(), dto.score()
-            )
-        );
+            dto.clientNumber(), dto.name(), dto.score()));
   }
 
   /**

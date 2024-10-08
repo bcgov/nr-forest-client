@@ -142,19 +142,16 @@ public class ClientSearchController {
   @GetMapping
   public Flux<PredictiveSearchResultDto> findByComplexSearch(
       @RequestParam(required = false) String value,
-      @RequestParam(required = false,defaultValue = "0") Integer page,
-      @RequestParam(required = false,defaultValue = "5") Integer size
-  ){
-    if(StringUtils.isNotBlank(value)){
+      @RequestParam(required = false, defaultValue = "0") Integer page,
+      @RequestParam(required = false, defaultValue = "5") Integer size) {
+    if (StringUtils.isNotBlank(value)) {
       log.info("Receiving request to do a complex search by {}", value);
-      return service.complexSearch(value, PageRequest.of(page,size));
-    }else{
+      return service.complexSearch(value, PageRequest.of(page, size));
+    } else {
       log.info("Receiving request to search the latest entries");
-      return service.latestEntries(PageRequest.of(page,size));
+      return service.latestEntries(PageRequest.of(page, size));
     }
 
   }
-
-
-
+  
 }
