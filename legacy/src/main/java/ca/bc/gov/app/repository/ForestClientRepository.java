@@ -115,7 +115,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           c.legal_middle_name as client_middle_name,
           cl.city as city,
           ctc.description as client_type,
-          csc.description as status_code,
+          csc.description as client_status,
           100 as score
       FROM the.forest_client c
       LEFT JOIN the.CLIENT_DOING_BUSINESS_AS dba ON c.client_number = dba.client_number
