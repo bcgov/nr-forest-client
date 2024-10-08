@@ -160,7 +160,7 @@ const handleLogoutClick = (event) => {
       @click.prevent="helpModalActive = true"
     >
       <template v-if="!isSmallScreen && !isMediumScreen">
-        <span>Need help?</span>
+        <span>Help with application</span>
         <Help16 slot="icon" />
       </template>
       <template v-else>
