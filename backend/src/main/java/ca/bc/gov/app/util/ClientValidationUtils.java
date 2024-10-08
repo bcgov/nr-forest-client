@@ -97,7 +97,7 @@ public class ClientValidationUtils {
       case XCP -> ClientTypeEnum.A;
       case SP -> ClientTypeEnum.RSP;
       case GP -> ClientTypeEnum.P;
-      case LP, XL, XP -> ClientTypeEnum.L;
+      case LL, LP, XL, XP -> ClientTypeEnum.L;
     };
   }
 }
