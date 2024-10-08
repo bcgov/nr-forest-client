@@ -20,6 +20,7 @@ export const retrieveClientType = (legalType: string): string => {
         return "RSP";
       case "GP":
         return "P";
+      case "LL":
       case "LP":
       case "XL":
       case "XP":
@@ -51,6 +52,8 @@ export const retrieveLegalTypeDesc = (legalType: string): string => {
       return "General Partnership";
     case "LIC":
       return "Licensed (Extra-Pro)";
+    case "LL":
+      return "Limited Liability Partnership";
     case "LP":
       return "Limited Partnership";
     case "S":
