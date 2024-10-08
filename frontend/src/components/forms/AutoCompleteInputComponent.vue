@@ -27,6 +27,7 @@ const props = withDefaults(
     required?: boolean;
     requiredLabel?: boolean;
     autocomplete?: string;
+    validationsOnChange?: boolean | Array<Function>;
   }>(),
   {
     showLoadingAfterTime: 2000,
@@ -91,6 +92,15 @@ const inputList = computed<Array<BusinessSearchResult>>(() => {
   return [];
 });
 
+const validationsOnChange = computed(() => {
+  if (props.validationsOnChange) {
+    return typeof props.validationsOnChange === "boolean"
+      ? props.validations
+      : props.validationsOnChange;
+  }
+  return false;
+});
+
 //This function emits the events on update
 const emitValueChange = (newValue: string, isSelectEvent = false): void => {
   let selectedValue: BusinessSearchResult | undefined;
@@ -128,6 +138,9 @@ watch(
 watch([inputValue], () => {
   if (isUserEvent.value) {
     emitValueChange(inputValue.value);
+    if (validationsOnChange.value) {
+      validateInput(inputValue.value, validationsOnChange.value);
+    }
   }
 });
 
@@ -156,10 +169,10 @@ const setError = (errorObject: string | ValidationMessageType | undefined) => {
 };
 
 //We call all the validations
-const validateInput = (newValue: string) => {
-  if (props.validations) {
+const validateInput = (newValue: string, validations = props.validations) => {
+  if (validations) {
     setError(
-      props.validations
+      validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
           if (errorMessage) return true;
