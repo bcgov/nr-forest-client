@@ -17,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
@@ -101,7 +102,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
   @DisplayName("should do predictive search")
   @ParameterizedTest
   @MethodSource("byPredictive")
-  void shouldSearchWithPredictiveSearch(
+  void shouldSearchWithComplexSearch(
       String searchValue,
       String expectedClientNumber,
       String expectedClientName
@@ -109,7 +110,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
 
     FirstStep<PredictiveSearchResultDto> test =
         service
-            .predictiveSearch(searchValue)
+            .complexSearch(searchValue, PageRequest.of(0, 5))
             .as(StepVerifier::create);
 
     if(StringUtils.isNotBlank(expectedClientNumber)) {
@@ -322,7 +323,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
   private static Stream<Arguments> byPredictive() {
     return Stream
         .of(
-            Arguments.of("indian canada", "00000006", "INDIAN CANADA"),
+            Arguments.of("pollich", "00000114", "POLLICH-ABERNATHY"),
             Arguments.of("kilback", "00000123", "REICHERT, KILBACK AND EMARD"),
             Arguments.of("darbie", "00000145", "DARBIE BLIND (MINYX)"),
             Arguments.of("pietro", StringUtils.EMPTY, StringUtils.EMPTY)

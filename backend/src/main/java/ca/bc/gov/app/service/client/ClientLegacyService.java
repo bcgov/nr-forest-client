@@ -317,7 +317,19 @@ public class ClientLegacyService {
         page,
         size
     );
-    return null;
+    return legacyApi
+        .get()
+        .uri(builder -> 
+              builder
+              .path("/api/search")
+              .queryParam("page", page)
+              .queryParam("size", size)
+              .queryParam("value", keyword)
+              .build(Map.of()))
+        .exchangeToFlux(response -> response.bodyToFlux(Map.class))
+        .map(this::mapToClientListDto)
+        .doOnNext(dto -> 
+            log.info("Found clients by keyword {}", dto.clientNumber()));
   }
   
   /**
@@ -344,7 +356,7 @@ public class ClientLegacyService {
       .get()
       .uri(builder -> 
             builder
-            .path("/api/search/predictive")
+            .path("/api/search")
             .queryParam("value", keyword)
             .build(Map.of()))
       .exchangeToFlux(response -> response.bodyToFlux(Map.class))
