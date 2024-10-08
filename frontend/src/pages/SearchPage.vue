@@ -9,6 +9,7 @@ import useSvg from "@/composables/useSvg";
 
 // @ts-ignore
 import Search16 from "@carbon/icons-vue/es/search/16";
+import { greenDomain } from "@/CoreConstants";
 
 const summitSvg = useSvg(summit);
 
@@ -66,6 +67,15 @@ const paginate = (event: any) => {
 };
 
 const placeholder = "Search by client number, name or acronym";
+
+const selectedClient = ref<CodeNameType>();
+
+const goToClientDetails = (client: CodeNameType) => {
+  if (client) {
+    selectedClient.value = client;
+    window.location.href = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${client.code}`;
+  }
+};
 </script>
 
 <template>
@@ -84,7 +94,7 @@ const placeholder = "Search by client number, name or acronym";
         :min-length="3"
         :init-value="[]"
         :init-fetch="false"
-        :disabled="!searchKeyword"
+        :disabled="!searchKeyword || searchKeyword === selectedClient?.name"
         #="{ content, loading, error }"
       >
         <AutoCompleteInputComponent
@@ -98,6 +108,7 @@ const placeholder = "Search by client number, name or acronym";
           :contents="content?.map(searchResultToCodeNameType)"
           :validations="[]"
           :loading="loading"
+          @update:selected-value="goToClientDetails"
         />
       </data-fetcher>
       <cds-button kind="primary" @click.prevent="search" id="search-button">
