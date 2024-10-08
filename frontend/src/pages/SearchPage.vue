@@ -10,6 +10,12 @@ import useSvg from "@/composables/useSvg";
 // @ts-ignore
 import Search16 from "@carbon/icons-vue/es/search/16";
 import { greenDomain } from "@/CoreConstants";
+import {
+  isAscii,
+  isMaxSizeMsg,
+  isMinSizeMsg,
+  optional,
+} from "@/helpers/validators/GlobalValidators";
 
 const summitSvg = useSvg(summit);
 
@@ -66,8 +72,6 @@ const paginate = (event: any) => {
   pageSize.value = event.detail.pageSize;
 };
 
-const placeholder = "Search by client number, name or acronym";
-
 const selectedClient = ref<CodeNameType>();
 
 const goToClientDetails = (client: CodeNameType) => {
@@ -76,6 +80,16 @@ const goToClientDetails = (client: CodeNameType) => {
     window.location.href = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${client.code}`;
   }
 };
+
+const ariaLabel = "Search terms";
+
+const lowerCaseLabel = ariaLabel.toLowerCase();
+
+const validationsOnChange = [isAscii(lowerCaseLabel), isMaxSizeMsg(lowerCaseLabel, 50)];
+
+const validations = [optional(isMinSizeMsg(lowerCaseLabel, 3)), ...validationsOnChange];
+
+const valid = ref(!!searchKeyword.value);
 </script>
 
 <template>
@@ -94,21 +108,24 @@ const goToClientDetails = (client: CodeNameType) => {
         :min-length="3"
         :init-value="[]"
         :init-fetch="false"
-        :disabled="!searchKeyword || searchKeyword === selectedClient?.name"
+        :disabled="!searchKeyword || !valid || searchKeyword === selectedClient?.name"
         #="{ content, loading, error }"
       >
         <AutoCompleteInputComponent
           id="search-box"
           label=""
-          :ariaLabel="placeholder"
+          :aria-label="ariaLabel"
           autocomplete="off"
           tip=""
-          :placeholder="placeholder"
+          placeholder="Search by client number, name or acronym"
           v-model="searchKeyword"
           :contents="content?.map(searchResultToCodeNameType)"
-          :validations="[]"
+          :validations="validations"
+          :validations-on-change="validationsOnChange"
           :loading="loading"
           @update:selected-value="goToClientDetails"
+          @update:model-value="valid = false"
+          @error="valid = !$event"
         />
       </data-fetcher>
       <cds-button kind="primary" @click.prevent="search" id="search-button">
