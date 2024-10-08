@@ -36,6 +36,9 @@
       },
       "response": {
         "status": 200,
+        "headers": {
+          "content-type": "application/json;charset=UTF-8"
+        },
         "bodyFileName": "response-client-predictive-search-keyword-CAR.json"
       }
     }
