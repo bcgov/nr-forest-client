@@ -153,7 +153,7 @@ public class ClientSearchController {
       return service
           .complexSearch(value, PageRequest.of(page, size))
           .doOnNext(pair -> serverResponse.getHeaders()
-              .putIfAbsent("X-Total", List.of(pair.getValue().toString()))
+              .putIfAbsent("X-Total-Count", List.of(pair.getValue().toString()))
           )
           .map(Pair::getKey);
     } else {
@@ -161,7 +161,7 @@ public class ClientSearchController {
       return service
           .latestEntries(PageRequest.of(page, size))
           .doOnNext(pair -> serverResponse.getHeaders()
-              .putIfAbsent("X-Total", List.of(pair.getValue().toString()))
+              .putIfAbsent("X-Total-Count", List.of(pair.getValue().toString()))
           )
           .map(Pair::getKey);
     }
