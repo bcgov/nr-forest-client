@@ -4,7 +4,6 @@ import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
-import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.List;
@@ -310,13 +309,15 @@ public class ClientLegacyService {
             );
   }
 
-  public Flux<ClientListDto> fullSearch(int page, int size, String keyword) {
+  @SuppressWarnings("unchecked")
+  public Flux<ClientListDto> search(int page, int size, String keyword) {
     log.info(
         "Searching clients by keyword {} with page {} and size {}",
         keyword,
         page,
         size
     );
+    
     return legacyApi
         .get()
         .uri(builder -> 
@@ -327,52 +328,23 @@ public class ClientLegacyService {
               .queryParam("value", keyword)
               .build(Map.of()))
         .exchangeToFlux(response -> response.bodyToFlux(Map.class))
-        .map(this::mapToClientListDto)
+        .collectList()
+        .flatMapMany(clients -> {
+            long totalCount = clients.size();
+            return Flux.fromIterable(clients)
+                       .map(clientJson -> mapToClientListDto(clientJson, totalCount));
+        })
         .doOnNext(dto -> 
-            log.info("Found clients by keyword {}", dto.clientNumber()));
+            log.info("Found client with clientNumber {} and total count: {}", dto.clientNumber(), dto.count()));
   }
-  
-  /**
-   * Performs a predictive search for clients based on the provided keyword.
-   * <p>
-   * This method sends an API request to search for clients using the given keyword. If the keyword 
-   * is blank, an error is returned. The results are streamed back as a {@link Flux} of 
-   * {@link ClientListDto} objects. The method logs the results of the search.
-   * </p>
-   * 
-   * @param keyword the search keyword used for predictive client search. 
-   *                If the keyword is blank or empty, an error is returned.
-   * @return a {@link Flux} stream of {@link ClientListDto} objects that match the search keyword.
-   * @throws MissingRequiredParameterException if the keyword is blank.
-   */
-  public Flux<ClientListDto> predictiveSearch(String keyword) {
-    log.info("Searching clients by keyword {}", keyword);
-    
-    if (StringUtils.isBlank(keyword)) {
-      return Flux.error(new MissingRequiredParameterException("value"));
-    }
-    
-    return legacyApi
-      .get()
-      .uri(builder -> 
-            builder
-            .path("/api/search")
-            .queryParam("value", keyword)
-            .build(Map.of()))
-      .exchangeToFlux(response -> response.bodyToFlux(Map.class))
-      .map(this::mapToClientListDto)
-      .doOnNext(dto -> 
-          log.info("Found clients by keyword {}", dto.clientNumber()));
-  }
-  
-  private ClientListDto mapToClientListDto(Map<String, Object> json) {
+
+  private ClientListDto mapToClientListDto(Map<String, Object> json, Long totalCount) {
     String clientNumber = (String) json.get("clientNumber");
     String clientAcronym = (String) json.get("clientAcronym");
     String clientName = (String) json.get("name");
     String clientType = (String) json.get("clientType");
     String city = (String) json.get("city");
     String clientStatus = (String) json.get("clientStatus");
-    Long count = 0L;
 
     return new ClientListDto(
         clientNumber, 
@@ -381,7 +353,7 @@ public class ClientLegacyService {
         clientType, 
         city,
         clientStatus, 
-        count
+        totalCount
     );
   }
 

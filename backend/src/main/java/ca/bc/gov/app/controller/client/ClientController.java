@@ -52,7 +52,7 @@ public class ClientController {
         );
   }
   
-  @GetMapping("/full-search")
+  @GetMapping("/search")
   public Flux<ClientListDto> fullSearch(
       @RequestParam(required = false, defaultValue = "0") int page,
       @RequestParam(required = false, defaultValue = "10") int size,
@@ -60,7 +60,7 @@ public class ClientController {
       ServerHttpResponse serverResponse) {
     log.info("Listing clients: page={}, size={}, keyword={}", page, size, keyword);
     return clientLegacyService
-        .fullSearch(
+        .search(
             page,
             size,
             keyword
@@ -81,26 +81,6 @@ public class ClientController {
         );
   }
   
-  /**
-   * Handles HTTP GET requests for predictive search of clients.
-   * <p>
-   * This method processes a request to perform a predictive search using the provided keyword. 
-   * If no keyword is provided, the search defaults to an empty string.
-   * </p>
-   * 
-   * @param keyword        the search keyword to use for predictive search. 
-   *                       If not provided, it defaults to an empty string.
-   * @param serverResponse the HTTP response object to be used in the request.
-   * @return a {@link Flux} stream of {@link ClientListDto} objects that match the search criteria.
-   */
-  @GetMapping("/predictive-search")
-  public Flux<ClientListDto> predictiveSearch(
-      @RequestParam(required = false, defaultValue = "") String keyword,
-      ServerHttpResponse serverResponse) {
-    log.info("Receiving request to search by predictive search {}", keyword);
-    return clientLegacyService.predictiveSearch(keyword);
-  }
-
   /**
    * Retrieve a Flux of ClientLookUpDto objects by searching for clients with a specific name.
    *
