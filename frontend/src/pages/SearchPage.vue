@@ -15,6 +15,7 @@ const summitSvg = useSvg(summit);
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 
 const tableReference = ref("");
+let networkErrorMsg = ref("");
 
 // Table data
 const tableData = ref<ClientList[]>([]);
@@ -27,17 +28,31 @@ const fullSearchKeyword = ref("");
 
 const predictiveSearchUri = computed(
   () =>
-    `/api/clients/predictive-search?keyword=${encodeURIComponent(predictiveSearchKeyword.value)}${tableReference.value || ''}`
+    `/api/clients/search?keyword=${encodeURIComponent(predictiveSearchKeyword.value)}${tableReference.value || ''}`
 );
 
 const fullSearchUri = computed(
   () =>
-    `/api/clients/full-search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(fullSearchKeyword.value)}${tableReference.value || ''}`
+    `/api/clients/search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(fullSearchKeyword.value)}${tableReference.value || ''}`
 );
 
 const search = () => {
-  const { response, fetch, loading } = useFetchTo(fullSearchUri, tableData);
+  const { response, fetch, loading, error: fetchError } = useFetchTo(fullSearchUri, tableData);
   if (!loading.value) fetch();
+
+  watch(
+    response,
+    () => {
+      const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
+      totalItems.value = totalCount;
+    }
+  );
+
+  watch([fetchError], () => {
+    if (fetchError.value.message) {
+      networkErrorMsg.value = fetchError.value.message;
+    }
+  });
 };
 
 const selectEntry = (entry: ClientList) => {
@@ -63,11 +78,29 @@ const paginate = (event: any) => {
 
 <template>
   <div id="screen" class="table-list">
+
     <div id="title" v-if="userhasAuthority">
       <div>
         <div class="form-header-title mg-sd-25">
           <h1>Client search</h1>
-        </div>        
+
+          <div class="hide-when-less-than-two-children">
+	          <div data-scroll="top-notification" class="header-offset"></div>
+	          <cds-actionable-notification
+              v-if="networkErrorMsg !== '' && userhasAuthority"
+              v-shadow="true"
+              low-contrast="true"
+              hide-close-button="true"
+              open="true"
+              kind="error"
+              title="Something went wrong:">    
+              <div>
+                We're working to fix a problem with our network. Please try searching later.
+                If this error persistent, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+              </div>
+            </cds-actionable-notification>
+          </div>   
+        </div>      
       </div>
     </div>
     
