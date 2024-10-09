@@ -106,6 +106,30 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
 
   @Query("""
       SELECT
+          count(c.client_number)
+      FROM the.forest_client c
+      LEFT JOIN the.CLIENT_DOING_BUSINESS_AS dba ON c.client_number = dba.client_number
+      LEFT JOIN the.CLIENT_TYPE_CODE ctc ON c.client_type_code = ctc.client_type_code
+      LEFT JOIN the.CLIENT_LOCATION cl ON c.client_number = cl.client_number
+      LEFT JOIN the.CLIENT_STATUS_CODE csc ON c.client_status_code = csc.client_status_code
+      WHERE
+        (
+          c.client_number = :value
+          OR c.CLIENT_ACRONYM = :value
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(c.client_name,:value) >= 90
+          OR c.client_name LIKE '%' || :value || '%'
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_first_name,:value) >= 90
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(dba.doing_business_as_name,:value) >= 90
+          OR dba.doing_business_as_name LIKE '%' || :value || '%'
+          OR c.client_identification = :value
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(c.legal_middle_name,:value) >= 90
+          OR c.legal_middle_name LIKE '%' || :value || '%'
+        )  AND
+        cl.CLIENT_LOCN_CODE = '00'""")
+  Mono<Long> countByPredictiveSearch(String value);
+
+  @Query("""
+      SELECT
           c.client_number,
           c.CLIENT_ACRONYM as client_acronym,
           c.client_name,
@@ -127,5 +151,17 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       ORDER BY c.ADD_TIMESTAMP DESC
       OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
   Flux<PredictiveSearchResultDto> findByEmptyFullSearch(int limit, long offset);
+
+  @Query("""
+      SELECT
+          count(c.client_number)
+      FROM the.forest_client c
+      LEFT JOIN the.CLIENT_DOING_BUSINESS_AS dba ON c.client_number = dba.client_number
+      LEFT JOIN the.CLIENT_TYPE_CODE ctc ON c.client_type_code = ctc.client_type_code
+      LEFT JOIN the.CLIENT_LOCATION cl ON c.client_number = cl.client_number
+      LEFT JOIN the.CLIENT_STATUS_CODE csc ON c.client_status_code = csc.client_status_code
+      WHERE
+        cl.CLIENT_LOCN_CODE = '00'""")
+  Mono<Long> countByEmptyFullSearch();
 
 }

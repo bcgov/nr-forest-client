@@ -7,12 +7,15 @@ import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -143,13 +146,24 @@ public class ClientSearchController {
   public Flux<PredictiveSearchResultDto> findByComplexSearch(
       @RequestParam(required = false) String value,
       @RequestParam(required = false, defaultValue = "0") Integer page,
-      @RequestParam(required = false, defaultValue = "5") Integer size) {
+      @RequestParam(required = false, defaultValue = "5") Integer size,
+      ServerHttpResponse serverResponse) {
     if (StringUtils.isNotBlank(value)) {
       log.info("Receiving request to do a complex search by {}", value);
-      return service.complexSearch(value, PageRequest.of(page, size));
+      return service
+          .complexSearch(value, PageRequest.of(page, size))
+          .doOnNext(pair -> serverResponse.getHeaders()
+              .putIfAbsent("X-Total", List.of(pair.getValue().toString()))
+          )
+          .map(Pair::getKey);
     } else {
       log.info("Receiving request to search the latest entries");
-      return service.latestEntries(PageRequest.of(page, size));
+      return service
+          .latestEntries(PageRequest.of(page, size))
+          .doOnNext(pair -> serverResponse.getHeaders()
+              .putIfAbsent("X-Total", List.of(pair.getValue().toString()))
+          )
+          .map(Pair::getKey);
     }
 
   }
