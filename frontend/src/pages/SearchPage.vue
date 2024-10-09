@@ -30,30 +30,22 @@ const pageSize = ref(10);
 const searchKeyword = ref("");
 
 const predictiveSearchUri = computed(
-  () => `/api/clients/predictive-search?keyword=${encodeURIComponent(searchKeyword.value)}`,
+  () => `/api/clients/search?keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
-
-const searchResultToCodeNameType = (searchResult: ClientSearchResult): CodeNameType => {
-  const { clientNumber, clientName, clientType, city, clientStatus } = searchResult;
-  const result = {
-    code: clientNumber,
-    name: `${clientNumber}, ${clientName}, ${clientType}, ${city} (${clientStatus})`,
-  };
-  return result;
-};
 
 const fullSearchUri = computed(
   () =>
-    `/api/clients/full-search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(searchKeyword.value)}`,
+    `/api/clients/search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
 
 const search = () => {
   const { response, fetch, loading } = useFetchTo(fullSearchUri, tableData);
   if (!loading.value) fetch();
-};
 
-const selectEntry = (entry: ClientSearchResult) => {
-  //TODO
+  watch(response, () => {
+    const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
+    totalItems.value = totalCount;
+  });
 };
 
 const tagColor = (status: string) => {
@@ -72,12 +64,23 @@ const paginate = (event: any) => {
   pageSize.value = event.detail.pageSize;
 };
 
-const selectedClient = ref<CodeNameType>();
+/**
+ * Converts a client search result to a code/name representation.
+ * @param searchResult The client search result
+ */
+const searchResultToCodeName = (searchResult: ClientSearchResult): CodeNameType => {
+  const { clientNumber, clientName, clientType, city, clientStatus } = searchResult;
+  const result = {
+    code: clientNumber,
+    name: `${clientNumber}, ${clientName}, ${clientType}, ${city} (${clientStatus})`,
+  };
+  return result;
+};
 
-const goToClientDetails = (client: CodeNameType) => {
-  if (client) {
-    selectedClient.value = client;
-    window.location.href = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${client.code}`;
+const openClientDetails = (clientCode: string) => {
+  if (clientCode) {
+    const url = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientCode}`;
+    window.open(url, "_blank", "noopener");
   }
 };
 
@@ -108,7 +111,7 @@ const valid = ref(!!searchKeyword.value);
         :min-length="3"
         :init-value="[]"
         :init-fetch="false"
-        :disabled="!searchKeyword || !valid || searchKeyword === selectedClient?.name"
+        :disabled="!searchKeyword || !valid"
         #="{ content, loading, error }"
       >
         <AutoCompleteInputComponent
@@ -119,11 +122,12 @@ const valid = ref(!!searchKeyword.value);
           tip=""
           placeholder="Search by client number, name or acronym"
           v-model="searchKeyword"
-          :contents="content?.map(searchResultToCodeNameType)"
+          :contents="content?.map(searchResultToCodeName)"
           :validations="validations"
           :validations-on-change="validationsOnChange"
           :loading="loading"
-          @update:selected-value="goToClientDetails"
+          prevent-selection
+          @click="openClientDetails"
           @update:model-value="valid = false"
           @error="valid = !$event"
         />
