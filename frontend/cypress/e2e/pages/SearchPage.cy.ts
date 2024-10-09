@@ -1,7 +1,9 @@
 import type { ClientSearchResult } from "@/dto/CommonTypesDto";
 
 describe("Search Page", () => {
-  let predictiveSearchCount = 0;
+  const predictiveSearchCounter = {
+    count: 0,
+  };
 
   const checkDisplayedResults = (clientList: ClientSearchResult[]) => {
     clientList.forEach((client) => {
@@ -11,19 +13,11 @@ describe("Search Page", () => {
     });
   };
   beforeEach(() => {
-    cy.intercept("https://green-domain.com/**", {
-      body: `<html>
-        <body>
-          <h1>Green interface stub</h1>
-        </body>
-      </html>`,
-    });
-
     // reset counter
-    predictiveSearchCount = 0;
+    predictiveSearchCounter.count = 0;
 
-    cy.intercept("/api/clients/predictive-search?keyword=*", (req) => {
-      predictiveSearchCount++;
+    cy.intercept("/api/clients/search?keyword=*", (req) => {
+      predictiveSearchCounter.count++;
       req.continue();
     }).as("predictiveSearch");
 
@@ -40,6 +34,10 @@ describe("Search Page", () => {
     cy.get("#menu-list-search").should("be.visible").click();
 
     cy.get("h1").should("be.visible").should("contain", "Client search");
+
+    cy.window().then((win) => {
+      cy.stub(win, "open").as("windowOpen");
+    });
   });
 
   describe("when user fills in the search box with a valid value", () => {
@@ -47,11 +45,11 @@ describe("Search Page", () => {
       cy.fillFormEntry("#search-box", "car", { skipBlur: true });
     });
 
-    it("makes the API call", () => {
+    it("makes the API call with the entered keywords", () => {
       cy.wait("@predictiveSearch").then((interception) => {
         expect(interception.request.query.keyword).to.eq("car");
       });
-      cy.wrap(predictiveSearchCount).should("eq", 1);
+      cy.wrap(predictiveSearchCounter).its("count").should("eq", 1);
     });
 
     it("displays autocomplete results", () => {
@@ -80,18 +78,16 @@ describe("Search Page", () => {
         cy.fillFormEntry("#search-box", "d", { skipBlur: true });
       });
 
-      it("makes another the API call", () => {
+      it("makes another the API call with the updated keywords", () => {
         cy.wait("@predictiveSearch").then((interception) => {
           expect(interception.request.query.keyword).to.eq("card");
         });
-        cy.wrap(predictiveSearchCount).should("eq", 2);
+        cy.wrap(predictiveSearchCounter).its("count").should("eq", 2);
       });
 
       it("updates the autocomplete results", () => {
         cy.wait("@predictiveSearch").then((interception) => {
           const data = interception.response.body;
-          cy.log(interception.response.body);
-          console.log(interception.response.body);
 
           cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 3);
 
@@ -116,12 +112,13 @@ describe("Search Page", () => {
         cy.get("#search-box").find(`cds-combo-box-item[data-value^="${clientNumber}"]`).click();
       });
       it("navigates to the client details", () => {
-        cy.origin("https://green-domain.com", { args: { clientNumber } }, ({ clientNumber }) => {
-          cy.url().should(
-            "include",
-            `/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
-          );
-        });
+        const greenDomain = "green-domain.com";
+        cy.get("@windowOpen").should(
+          "be.calledWith",
+          `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
+          "_blank",
+          "noopener",
+        );
       });
     });
   });
@@ -136,7 +133,7 @@ describe("Search Page", () => {
     });
     it("makes no API call", () => {
       cy.wait(500); // This time has to be greater than the debouncing time
-      cy.wrap(predictiveSearchCount).should("eq", 0);
+      cy.wrap(predictiveSearchCounter).its("count").should("eq", 0);
     });
   });
 });
