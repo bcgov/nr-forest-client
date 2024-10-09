@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
-import { VueWrapper, mount, type DOMWrapper } from "@vue/test-utils";
+import { VueWrapper, mount as baseMount, type DOMWrapper } from "@vue/test-utils";
 import AutoCompleteInputComponent from "@/components/forms/AutoCompleteInputComponent.vue";
-import CDSComboBox from "@carbon/web-components/es/components/combo-box/combo-box";
 import { isMinSize } from "@/helpers/validators/GlobalValidators";
 
 describe("Auto Complete Input Component", () => {
@@ -28,6 +27,17 @@ describe("Auto Complete Input Component", () => {
     inputWrapper.element._filterInputValue = value;
 
     await inputWrapper.trigger("input");
+  };
+
+  const mount: typeof baseMount = function (inputComponent, options) {
+    const wrapper = baseMount(inputComponent, options);
+    const comboBox = wrapper.find(`#${id}`);
+    comboBox.element.addEventListener("cds-combo-box-beingselected", async (event: any) => {
+      if (!event.defaultPrevented) {
+        await comboBox.trigger("cds-combo-box-selected", { detail: event?.detail });
+      }
+    });
+    return wrapper;
   };
 
   it("renders the input field with the provided id", () => {
@@ -269,6 +279,58 @@ describe("Auto Complete Input Component", () => {
 
       expect(wrapper.emitted("empty")).toHaveLength(2);
     });
+  });
+
+  it('emits the "click" event with the code of the clicked row and selects it', async () => {
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: "",
+        contents,
+        validations: [],
+        label: id,
+        tip: "",
+      },
+    });
+
+    await wrapper.setProps({ modelValue: "T" });
+    await wrapper.find(`#${id}`).trigger("input");
+
+    const code = "TB";
+    await wrapper.find(`#${id}`).trigger("cds-combo-box-beingselected", eventSelectContent(code));
+
+    expect(wrapper.emitted("click")).toBeTruthy();
+    expect(wrapper.emitted("click")![0][0]).toEqual(code);
+
+    expect(wrapper.emitted("update:selected-value")).toBeTruthy();
+
+    const selectedContent = contents.find((value) => value.code === code);
+    expect(wrapper.emitted("update:selected-value")![0][0]).toEqual(selectedContent);
+  });
+
+  it('emits the "click" event with the code of the clicked row and prevents selecting it', async () => {
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: "",
+        contents,
+        validations: [],
+        label: id,
+        tip: "",
+        preventSelection: true,
+      },
+    });
+
+    await wrapper.setProps({ modelValue: "T" });
+    await wrapper.find(`#${id}`).trigger("input");
+
+    const code = "TB";
+    await wrapper.find(`#${id}`).trigger("cds-combo-box-beingselected", eventSelectContent(code));
+
+    expect(wrapper.emitted("click")).toBeTruthy();
+    expect(wrapper.emitted("click")![0][0]).toEqual(code);
+
+    expect(wrapper.emitted("update:selected-value")).toBeFalsy();
   });
 
   it('emits the "update:selected-value" event when an option from the list is clicked', async () => {

@@ -28,6 +28,7 @@ const props = withDefaults(
     requiredLabel?: boolean;
     autocomplete?: string;
     validationsOnChange?: boolean | Array<Function>;
+    preventSelection?: boolean;
   }>(),
   {
     showLoadingAfterTime: 2000,
@@ -40,6 +41,7 @@ const emit = defineEmits<{
   (e: "empty", value: boolean): void;
   (e: "update:model-value", value: string): void;
   (e: "update:selected-value", value: BusinessSearchResult | undefined): void;
+  (e: "click", value: string): void;
 }>();
 
 //We initialize the error message handling for validation
@@ -189,6 +191,14 @@ const selectAutocompleteItem = (event: any) => {
   validateInput(newValue);
 };
 
+const preSelectAutocompleteItem = (event: any) => {
+  const newValue = event?.detail?.item?.getAttribute("data-id");
+  emit("click", newValue);
+  if (props.preventSelection) {
+    event?.preventDefault();
+  }
+};
+
 const onTyping = (event: any) => {
   isUserEvent.value = true;
   inputValue.value = event.srcElement._filterInputValue;
@@ -293,6 +303,7 @@ const safeHelperText = computed(() => props.tip || " ");
         :warn="warning"
         :warn-text="warning && error"
         @cds-combo-box-selected="selectAutocompleteItem"
+        @cds-combo-box-beingselected="preSelectAutocompleteItem"
         v-on:input="onTyping"
         @focus="isFocused = true"
         @blur="
