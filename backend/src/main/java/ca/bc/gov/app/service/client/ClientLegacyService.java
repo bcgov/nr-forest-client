@@ -308,34 +308,36 @@ public class ClientLegacyService {
                     client.clientNumber())
             );
   }
-
+  
   @SuppressWarnings("unchecked")
   public Flux<ClientListDto> search(int page, int size, String keyword) {
     log.info(
-        "Searching clients by keyword {} with page {} and size {}",
-        keyword,
-        page,
+        "Searching clients by keyword {} with page {} and size {}", 
+        keyword, 
+        page, 
         size
     );
-    
+
     return legacyApi
         .get()
         .uri(builder -> 
               builder
-              .path("/api/search")
-              .queryParam("page", page)
-              .queryParam("size", size)
-              .queryParam("value", keyword)
-              .build(Map.of()))
-        .exchangeToFlux(response -> response.bodyToFlux(Map.class))
-        .collectList()
-        .flatMapMany(clients -> {
-            long totalCount = clients.size();
-            return Flux.fromIterable(clients)
-                       .map(clientJson -> mapToClientListDto(clientJson, totalCount));
+                .path("/api/search")
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .queryParam("value", keyword)
+                .build(Map.of())
+        )
+        .exchangeToFlux(response -> {
+          List<String> totalCountHeader = response.headers().header("X-Total-Count");
+          Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
+
+          return response
+              .bodyToFlux(Map.class)
+              .map(json -> mapToClientListDto(json, count));
         })
         .doOnNext(dto -> 
-            log.info("Found client with clientNumber {} and total count: {}", dto.clientNumber(), dto.count()));
+          log.info("Found client with clientNumber {} and total count: {}", dto.clientNumber(), dto.count()));
   }
 
   private ClientListDto mapToClientListDto(Map<String, Object> json, Long totalCount) {
