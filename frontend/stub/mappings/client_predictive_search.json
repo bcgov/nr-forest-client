@@ -3,7 +3,7 @@
     {
       "name": "Autocompete Predictive Search",
       "request": {
-        "urlPath": "/api/clients/predictive-search",
+        "urlPath": "/api/clients/search",
         "method": "GET",
         "queryParameters": {
           "keyword": {
@@ -26,7 +26,7 @@
     {
       "name": "Autocompete Predictive Search CAR",
       "request": {
-        "urlPath": "/api/clients/predictive-search",
+        "urlPath": "/api/clients/search",
         "method": "GET",
         "queryParameters": {
           "keyword": {
