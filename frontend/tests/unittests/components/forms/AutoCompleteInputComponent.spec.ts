@@ -34,6 +34,7 @@ describe("Auto Complete Input Component", () => {
     const comboBox = wrapper.find(`#${id}`);
     comboBox.element.addEventListener("cds-combo-box-beingselected", async (event: any) => {
       if (!event.defaultPrevented) {
+        // propagates the event as it would happen normally
         await comboBox.trigger("cds-combo-box-selected", { detail: event?.detail });
       }
     });
@@ -281,7 +282,7 @@ describe("Auto Complete Input Component", () => {
     });
   });
 
-  it('emits the "click" event with the code of the clicked row and selects it', async () => {
+  it('emits the "click:option" event with the code of the clicked option and selects it', async () => {
     const wrapper = mount(AutoCompleteInputComponent, {
       props: {
         id,
@@ -299,8 +300,8 @@ describe("Auto Complete Input Component", () => {
     const code = "TB";
     await wrapper.find(`#${id}`).trigger("cds-combo-box-beingselected", eventSelectContent(code));
 
-    expect(wrapper.emitted("click")).toBeTruthy();
-    expect(wrapper.emitted("click")![0][0]).toEqual(code);
+    expect(wrapper.emitted("click:option")).toBeTruthy();
+    expect(wrapper.emitted("click:option")![0][0]).toEqual(code);
 
     expect(wrapper.emitted("update:selected-value")).toBeTruthy();
 
@@ -308,7 +309,7 @@ describe("Auto Complete Input Component", () => {
     expect(wrapper.emitted("update:selected-value")![0][0]).toEqual(selectedContent);
   });
 
-  it('emits the "click" event with the code of the clicked row and prevents selecting it', async () => {
+  it('emits the "click:option" event with the code of the clicked option and prevents selecting it', async () => {
     const wrapper = mount(AutoCompleteInputComponent, {
       props: {
         id,
@@ -327,8 +328,8 @@ describe("Auto Complete Input Component", () => {
     const code = "TB";
     await wrapper.find(`#${id}`).trigger("cds-combo-box-beingselected", eventSelectContent(code));
 
-    expect(wrapper.emitted("click")).toBeTruthy();
-    expect(wrapper.emitted("click")![0][0]).toEqual(code);
+    expect(wrapper.emitted("click:option")).toBeTruthy();
+    expect(wrapper.emitted("click:option")![0][0]).toEqual(code);
 
     expect(wrapper.emitted("update:selected-value")).toBeFalsy();
   });

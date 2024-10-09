@@ -153,7 +153,7 @@ const valid = ref(!!searchKeyword.value);
           :validations-on-change="validationsOnChange"
           :loading="loading"
           prevent-selection
-          @click="openClientDetails"
+          @click:option="openClientDetails"
           @update:model-value="valid = false"
           @error="valid = !$event"
         />

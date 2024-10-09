@@ -41,7 +41,7 @@ const emit = defineEmits<{
   (e: "empty", value: boolean): void;
   (e: "update:model-value", value: string): void;
   (e: "update:selected-value", value: BusinessSearchResult | undefined): void;
-  (e: "click", value: string): void;
+  (e: "click:option", value: string): void;
 }>();
 
 //We initialize the error message handling for validation
@@ -193,7 +193,7 @@ const selectAutocompleteItem = (event: any) => {
 
 const preSelectAutocompleteItem = (event: any) => {
   const newValue = event?.detail?.item?.getAttribute("data-id");
-  emit("click", newValue);
+  emit("click:option", newValue);
   if (props.preventSelection) {
     event?.preventDefault();
   }
