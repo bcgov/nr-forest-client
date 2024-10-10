@@ -1,7 +1,7 @@
 {
   "mappings": [    
     {
-      "name": "Autocompete Predictive Search",
+      "name": "Autocompete Predictive Search (keyword param only)",
       "request": {
         "urlPath": "/api/clients/search",
         "method": "GET",
@@ -16,7 +16,7 @@
         "headers": {
           "content-type": "application/json;charset=UTF-8"
         },
-        "bodyFileName": "response-client-predictive-search.json",
+        "bodyFileName": "response-client-search.json",
         "transformers": [
           "response-template"
         ],
@@ -24,7 +24,7 @@
       }
     },
     {
-      "name": "Autocompete Predictive Search CAR",
+      "name": "Autocompete Predictive Search CAR (keyword param only)",
       "request": {
         "urlPath": "/api/clients/search",
         "method": "GET",
@@ -39,7 +39,7 @@
         "headers": {
           "content-type": "application/json;charset=UTF-8"
         },
-        "bodyFileName": "response-client-predictive-search-keyword-CAR.json"
+        "bodyFileName": "response-client-search-keyword-CAR.json"
       }
     }
   ]
