@@ -1,0 +1,92 @@
+[
+  {
+      "clientNumber": "00191068",
+      "clientAcronym": null,
+      "clientName": "GREG RESTERMALL",
+      "clientType": "Individual",
+      "city": "VICTORIA",
+      "clientStatus": "Active",
+      "count": 147963
+  },
+  {
+      "clientNumber": "00191067",
+      "clientAcronym": null,
+      "clientName": "ANDREW LEE",
+      "clientType": "Individual",
+      "city": "RICHMOND",
+      "clientStatus": "Active",
+      "count": 147963
+  },
+  {
+      "clientNumber": "00191066",
+      "clientAcronym": null,
+      "clientName": "GGHHH",
+      "clientType": "Ministry of Forests and Range",
+      "city": "NORTH YORK",
+      "clientStatus": "Active",
+      "count": 147963
+  },
+  {
+      "clientNumber": "00191065",
+      "clientAcronym": null,
+      "clientName": "ANTONIO ESPINOZA",
+      "clientType": "Individual",
+      "city": "VANCOUVER",
+      "clientStatus": "Active",
+      "count": 147963
+  },
+  {
+      "clientNumber": "00191064",
+      "clientAcronym": null,
+      "clientName": "MARISOL ANDRADE",
+      "clientType": "Individual",
+      "city": "NEPEAN",
+      "clientStatus": "Active",
+      "count": 147963
+  },
+  {
+      "clientNumber": "00191063",
+      "clientAcronym": null,
+      "clientName": "PAUL MCCARTNEY",
+      "clientType": "Individual",
+      "city": "DELACOUR",
+      "clientStatus": "Active",
+      "count": 147963
+  },
+  {
+      "clientNumber": "00191061",
+      "clientAcronym": null,
+      "clientName": "GOVERNMENT OF ZIAD",
+      "clientType": "Government",
+      "city": "EDMONTON",
+      "clientStatus": "Active",
+      "count": 147963
+  },
+  {
+      "clientNumber": "00191062",
+      "clientAcronym": null,
+      "clientName": "GOVERNMENT OF ZIAD",
+      "clientType": "Government",
+      "city": "EDMONTON",
+      "clientStatus": "Active",
+      "count": 147963
+  },
+  {
+      "clientNumber": "00191060",
+      "clientAcronym": null,
+      "clientName": "BRANCH LINE STABLES",
+      "clientType": "General Partnership",
+      "city": "NORTH SAANICH",
+      "clientStatus": "Active",
+      "count": 147963
+  },
+  {
+      "clientNumber": "00191059",
+      "clientAcronym": null,
+      "clientName": "DR. FRED DYCK INC.",
+      "clientType": "Corporation",
+      "city": "DUNCAN",
+      "clientStatus": "Active",
+      "count": 147963
+  }
+]

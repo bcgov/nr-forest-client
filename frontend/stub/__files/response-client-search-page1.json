@@ -1,0 +1,92 @@
+[
+    {
+      "clientNumber": "00191078",
+      "clientAcronym": "678678",
+      "clientName": "MY MINISTRY",
+      "clientType": "Ministry of Forests and Range",
+      "city": "CALGARY",
+      "clientStatus": "Active",
+      "count": 147963
+    },
+    {
+      "clientNumber": "00191077",
+      "clientAcronym": null,
+      "clientName": "SHANNON MARIE WEINHARDT",
+      "clientType": "Individual",
+      "city": "VANDERHOOF",
+      "clientStatus": "Active",
+      "count": 147963
+    },
+    {
+      "clientNumber": "00191076",
+      "clientAcronym": null,
+      "clientName": "GREG JONES",
+      "clientType": "Individual",
+      "city": "VICTORIA ",
+      "clientStatus": "Active",
+      "count": 147963
+    },
+    {
+      "clientNumber": "00191075",
+      "clientAcronym": null,
+      "clientName": "BOWER HENGER",
+      "clientType": "Individual",
+      "city": "VICTORIA",
+      "clientStatus": "Active",
+      "count": 147963
+    },
+    {
+      "clientNumber": "00191074",
+      "clientAcronym": null,
+      "clientName": "LA NATION INNU MATIMEKUSH-LAC JOHN",
+      "clientType": "First Nation Band",
+      "city": "SPRUCE GROVE",
+      "clientStatus": "Active",
+      "count": 147963
+    },
+    {
+      "clientNumber": "00191073",
+      "clientAcronym": null,
+      "clientName": "324424",
+      "clientType": "Ministry of Forests and Range",
+      "city": "SASKATOON",
+      "clientStatus": "Active",
+      "count": 147963
+    },
+    {
+      "clientNumber": "00191072",
+      "clientAcronym": null,
+      "clientName": "YRTYRYT",
+      "clientType": "Government",
+      "city": "OTTAWA",
+      "clientStatus": "Active",
+      "count": 147963
+    },
+    {
+      "clientNumber": "00191071",
+      "clientAcronym": null,
+      "clientName": "TETERTET",
+      "clientType": "Government",
+      "city": "BRANTFORD",
+      "clientStatus": "Active",
+      "count": 147963
+    },
+    {
+      "clientNumber": "00191070",
+      "clientAcronym": null,
+      "clientName": "DFSFSFSF",
+      "clientType": "Unregistered Company",
+      "city": "CALGARY",
+      "clientStatus": "Active",
+      "count": 147963
+    },
+    {
+      "clientNumber": "00191069",
+      "clientAcronym": null,
+      "clientName": "GREG SMITH",
+      "clientType": "Individual",
+      "city": "VICTORIA",
+      "clientStatus": "Active",
+      "count": 147963
+    }
+  ]

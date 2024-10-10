@@ -70,6 +70,7 @@ const tagColor = (status: string) => {
 const paginate = (event: any) => {
   pageNumber.value = event.detail.page;
   pageSize.value = event.detail.pageSize;
+  search();
 };
 
 /**
@@ -112,8 +113,8 @@ const valid = ref(!!searchKeyword.value);
           <h1>Client search</h1>
 
           <div class="hide-when-less-than-two-children">
-	          <div data-scroll="top-notification" class="header-offset"></div>
-	          <cds-actionable-notification
+            <div data-scroll="top-notification" class="header-offset"></div>
+            <cds-actionable-notification
               v-if="networkErrorMsg !== '' && userhasAuthority"
               v-shadow="true"
               low-contrast="true"
