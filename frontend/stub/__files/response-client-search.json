@@ -5,7 +5,8 @@
     "clientName": "AINSWORTH LUMBER CO. LTD.",
     "clientType": "Corporation",
     "city": "100 MILE HOUSE",
-    "clientStatus": "Deactivated"
+    "clientStatus": "Deactivated",
+    "count": 50
   },
   {
     "clientNumber": "00001012",
@@ -13,7 +14,8 @@
     "clientName": "BELL LUMBER & POLE CANADA, ULC",
     "clientType": "Corporation",
     "city": "VERNON",
-    "clientStatus": "Active"
+    "clientStatus": "Active",
+    "count": 50
   },
   {
     "clientNumber": "00001056",
@@ -21,7 +23,8 @@
     "clientName": "APOLLO FOREST PRODUCTS LTD.",
     "clientType": "Corporation",
     "city": "FORT ST JAMES",
-    "clientStatus": "Active"
+    "clientStatus": "Active",
+    "count": 50
   },
   {
     "clientNumber": "00001064",
@@ -29,7 +32,8 @@
     "clientName": "ASPEN PLANERS LTD.",
     "clientType": "Corporation",
     "city": "SURREY",
-    "clientStatus": "Active"
+    "clientStatus": "Active",
+    "count": 50
   },
   {
     "clientNumber": "00001065",
@@ -37,7 +41,8 @@
     "clientName": "ATCO LUMBER LTD.",
     "clientType": "Corporation",
     "city": "FRUITVALE",
-    "clientStatus": "Active"
+    "clientStatus": "Active",
+    "count": 50
   },
   {
     "clientNumber": "00001071",
@@ -45,7 +50,8 @@
     "clientName": "BRITISH COLUMBIA HYDRO AND POWER AUTHORITY",
     "clientType": "Government",
     "city": "BURNABY",
-    "clientStatus": "Active"
+    "clientStatus": "Active",
+    "count": 50
   },
   {
     "clientNumber": "00001074",
@@ -53,7 +59,8 @@
     "clientName": "NORSKE SKOG CANADA LIMITED",
     "clientType": "Corporation",
     "city": "VANCOUVER",
-    "clientStatus": "Deactivated"
+    "clientStatus": "Deactivated",
+    "count": 50
   },
   {
     "clientNumber": "00001086",
@@ -61,7 +68,8 @@
     "clientName": "TOLKO INDUSTRIES LTD.",
     "clientType": "Corporation",
     "city": "KAMLOOPS",
-    "clientStatus": "Deactivated"
+    "clientStatus": "Deactivated",
+    "count": 50
   },
   {
     "clientNumber": "00001109",
@@ -69,7 +77,8 @@
     "clientName": "LP ENGINEERED WOOD PRODUCTS LTD",
     "clientType": "Corporation",
     "city": "GOLDEN",
-    "clientStatus": "Deactivated"
+    "clientStatus": "Deactivated",
+    "count": 50
   },
   {
     "clientNumber": "00001166",
@@ -77,7 +86,8 @@
     "clientName": "BOND BROTHERS SAWMILL LTD.",
     "clientType": "Corporation",
     "city": "HOUSTON",
-    "clientStatus": "Deactivated"
+    "clientStatus": "Deactivated",
+    "count": 50
   },
   {
     "clientNumber": "00001188",
@@ -85,7 +95,8 @@
     "clientName": "BOYLE & DEAN LOGGING LTD.",
     "clientType": "Corporation",
     "city": "LANGLEY",
-    "clientStatus": "Deactivated"
+    "clientStatus": "Deactivated",
+    "count": 50
   },
   {
     "clientNumber": "00001216",
@@ -93,7 +104,8 @@
     "clientName": "BROUGHTON",
     "clientType": "Individual",
     "city": "QUESNEL",
-    "clientStatus": "Active"
+    "clientStatus": "Active",
+    "count": 50
   },
   {
     "clientNumber": "00001227",
@@ -101,7 +113,8 @@
     "clientName": "WEST FRASER MILLS LTD.",
     "clientType": "Corporation",
     "city": "QUESNEL",
-    "clientStatus": "Deactivated"
+    "clientStatus": "Deactivated",
+    "count": 50
   },
   {
     "clientNumber": "00001238",
@@ -109,7 +122,8 @@
     "clientName": "BUECKERT",
     "clientType": "Individual",
     "city": "CECIL LAKE",
-    "clientStatus": "Deceased"
+    "clientStatus": "Deceased",
+    "count": 50
   },
   {
     "clientNumber": "00001255",
@@ -117,7 +131,8 @@
     "clientName": "C.R.B. LOGGING CO. LTD.",
     "clientType": "Corporation",
     "city": "SQUAMISH",
-    "clientStatus": "Deactivated"
+    "clientStatus": "Deactivated",
+    "count": 50
   },
   {
     "clientNumber": "00001271",
@@ -125,7 +140,8 @@
     "clientName": "CANADIAN FOREST PRODUCTS LTD.",
     "clientType": "Corporation",
     "city": "VANCOUVER",
-    "clientStatus": "Active"
+    "clientStatus": "Active",
+    "count": 50
   },
   {
     "clientNumber": "00001278",
@@ -133,7 +149,8 @@
     "clientName": "WESTAR TIMBER LTD.",
     "clientType": "Corporation",
     "city": "TERRACE",
-    "clientStatus": "Deactivated"
+    "clientStatus": "Deactivated",
+    "count": 50
   },
   {
     "clientNumber": "00001294",
@@ -141,7 +158,8 @@
     "clientName": "B.J. CARNEY & COMPANY, LIMITED",
     "clientType": "Corporation",
     "city": "CHASE",
-    "clientStatus": "Active"
+    "clientStatus": "Active",
+    "count": 50
   },
   {
     "clientNumber": "00001297",
@@ -149,7 +167,8 @@
     "clientName": "CARRIER LUMBER LTD.",
     "clientType": "Corporation",
     "city": "PRINCE GEORGE",
-    "clientStatus": "Active"
+    "clientStatus": "Active",
+    "count": 50
   },
   {
     "clientNumber": "00001302",
@@ -157,7 +176,8 @@
     "clientName": "CARTER",
     "clientType": "Individual",
     "city": "MISSION",
-    "clientStatus": "Active"
+    "clientStatus": "Active",
+    "count": 50
   },
   {
     "clientNumber": "00001310",
@@ -165,7 +185,8 @@
     "clientName": "CATTERMOLE TIMBER LTD.",
     "clientType": "Corporation",
     "city": "VANCOUVER",
-    "clientStatus": "Active"
+    "clientStatus": "Active",
+    "count": 50
   },
   {
     "clientNumber": "00001318",
@@ -173,7 +194,8 @@
     "clientName": "CELCREST TIMBER LTD",
     "clientType": "Corporation",
     "city": "WYNNDEL",
-    "clientStatus": "Deactivated"
+    "clientStatus": "Deactivated",
+    "count": 50
   },
   {
     "clientNumber": "00001391",
@@ -181,7 +203,8 @@
     "clientName": "COULSON FOREST PRODUCTS LIMITED",
     "clientType": "Corporation",
     "city": "PORT ALBERNI",
-    "clientStatus": "Suspended"
+    "clientStatus": "Suspended",
+    "count": 50
   },
   {
     "clientNumber": "00001402",
@@ -189,6 +212,7 @@
     "clientName": "TEMBEC INDUSTRIES INC.",
     "clientType": "Corporation",
     "city": "FERNIE",
-    "clientStatus": "Deactivated"
+    "clientStatus": "Deactivated",
+    "count": 50
   }
 ]
