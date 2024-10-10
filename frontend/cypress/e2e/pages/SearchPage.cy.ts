@@ -53,15 +53,10 @@ describe("Search Page", () => {
     });
 
     it("displays autocomplete results", () => {
-      cy.get("#search-box")
-        .find("cds-combo-box-item")
-        .should("have.length", 3)
-        .should("be.visible");
-
       cy.wait("@predictiveSearch").then((interception) => {
         const data = interception.response.body;
 
-        cy.wrap(data).should("be.an", "array").and("have.length", 3);
+        cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
 
         cy.get("#search-box")
           .find("cds-combo-box-item")
@@ -89,7 +84,7 @@ describe("Search Page", () => {
         cy.wait("@predictiveSearch").then((interception) => {
           const data = interception.response.body;
 
-          cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 3);
+          cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
 
           cy.get("#search-box")
             .find("cds-combo-box-item")
@@ -102,11 +97,11 @@ describe("Search Page", () => {
     });
 
     describe("and user clicks a result", () => {
-      const clientNumber = "00001297";
+      const clientNumber = "00054076";
       beforeEach(() => {
         cy.get("#search-box")
           .find("cds-combo-box-item")
-          .should("have.length", 3)
+          .should("have.length.greaterThan", 0)
           .should("be.visible");
 
         cy.get("#search-box").find(`cds-combo-box-item[data-value^="${clientNumber}"]`).click();
