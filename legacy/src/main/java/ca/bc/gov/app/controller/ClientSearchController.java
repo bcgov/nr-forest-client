@@ -141,7 +141,7 @@ public class ClientSearchController {
     log.info("Receiving request to match by company name {}", clientName);
     return service.findByClientName(clientName);
   }
-
+  
   @GetMapping
   public Flux<PredictiveSearchResultDto> findByComplexSearch(
       @RequestParam(required = false) String value,
@@ -165,7 +165,6 @@ public class ClientSearchController {
           )
           .map(Pair::getKey);
     }
-
   }
   
 }

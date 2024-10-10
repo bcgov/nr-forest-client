@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
@@ -307,6 +308,55 @@ public class ClientLegacyService {
                     client.clientNumber())
             );
   }
+  
+  @SuppressWarnings("unchecked")
+  public Flux<ClientListDto> search(int page, int size, String keyword) {
+    log.info(
+        "Searching clients by keyword {} with page {} and size {}", 
+        keyword, 
+        page, 
+        size
+    );
 
+    return legacyApi
+        .get()
+        .uri(builder -> 
+              builder
+                .path("/api/search")
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .queryParam("value", keyword)
+                .build(Map.of())
+        )
+        .exchangeToFlux(response -> {
+          List<String> totalCountHeader = response.headers().header("X-Total-Count");
+          Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
+
+          return response
+              .bodyToFlux(Map.class)
+              .map(json -> mapToClientListDto(json, count));
+        })
+        .doOnNext(dto -> 
+          log.info("Found client with clientNumber {} and total count: {}", dto.clientNumber(), dto.count()));
+  }
+
+  private ClientListDto mapToClientListDto(Map<String, Object> json, Long totalCount) {
+    String clientNumber = (String) json.get("clientNumber");
+    String clientAcronym = (String) json.get("clientAcronym");
+    String clientName = (String) json.get("name");
+    String clientType = (String) json.get("clientType");
+    String city = (String) json.get("city");
+    String clientStatus = (String) json.get("clientStatus");
+
+    return new ClientListDto(
+        clientNumber, 
+        clientAcronym, 
+        clientName, 
+        clientType, 
+        city,
+        clientStatus, 
+        totalCount
+    );
+  }
 
 }

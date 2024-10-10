@@ -30,6 +30,8 @@ import Result16 from "@carbon/icons-vue/es/result/16";
 import Close16 from "@carbon/icons-vue/es/close/16";
 // @ts-ignore
 import TaskAdd16 from "@carbon/icons-vue/es/task--add/16";
+// @ts-ignore
+import Search16 from "@carbon/icons-vue/es/search--locate/16"
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
@@ -107,7 +109,7 @@ const logoutBtnKind = computed(() =>
 
 const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some((authority) =>
   ForestClientUserSession.authorities.includes(authority)
-);
+) && featureFlags.STAFF_SEARCH;
 
 const handleLogoutClick = (event) => {
   event.preventDefault();
@@ -242,9 +244,18 @@ const handleLogoutClick = (event) => {
         :active="$route.name == 'internal'" 
         href="/submissions" 
         large 
-        id="menu-list-submission-list">
+        id="menu-list-table-list">
         <span>Submissions</span>
         <Result16 slot="title-icon" />
+      </cds-side-nav-link>
+
+      <cds-side-nav-link 
+        :active="$route.name == 'search'" 
+        href="/search" 
+        large  
+        id="menu-list-search">
+        <span>Client search</span>
+        <Search16 slot="title-icon" />
       </cds-side-nav-link>
 
       <cds-side-nav-link 

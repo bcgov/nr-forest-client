@@ -470,6 +470,15 @@ export const optional =
     return value === "" || value === null || value === undefined ? "" : validator(value);
   };
 
+export const isMinSizeMsg = (fieldName: string, minSize: number): ((value: string) => string) =>
+  isMinSize(`The ${fieldName} must contain at least ${minSize} characters`)(minSize);
+
+export const isMaxSizeMsg = (fieldName: string, maxSize: number): ((value: string) => string) =>
+  isMaxSize(`The ${fieldName} has a ${maxSize} character limit`)(maxSize);
+
+export const isExactSizMsg = (fieldName: string, size: number): ((value: string) => string) =>
+  isExactSize(`The ${fieldName} must contain ${size} characters`)(size);
+
 /**
  * Retrieves the value of a field in an object or array based on a given path.
  * If the field is an array, it returns an array of values.
