@@ -176,7 +176,10 @@ export interface SubmissionList {
   district: string
 }
 
-export interface ClientList {
+/**
+ * Each item resulting from the client search.
+ */
+export interface ClientSearchResult {
   clientNumber: string
   clientAcronym: string
   clientName: string

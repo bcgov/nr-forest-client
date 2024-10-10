@@ -2,61 +2,58 @@
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import { ref, computed, watch } from "vue";
 import { useFetchTo } from "@/composables/useFetch";
-import type { ClientList } from "@/dto/CommonTypesDto";
+import type { ClientSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
 import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
 import summit from "@carbon/pictograms/es/summit";
 import useSvg from "@/composables/useSvg";
 
 // @ts-ignore
 import Search16 from "@carbon/icons-vue/es/search/16";
+import { greenDomain } from "@/CoreConstants";
+import {
+  isAscii,
+  isMaxSizeMsg,
+  isMinSizeMsg,
+  optional,
+} from "@/helpers/validators/GlobalValidators";
 
 const summitSvg = useSvg(summit);
 
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 
-const tableReference = ref("");
 let networkErrorMsg = ref("");
 
 // Table data
-const tableData = ref<ClientList[]>([]);
+const tableData = ref<ClientSearchResult[]>([]);
 const pageNumber = ref(1);
 const totalItems = ref(0);
 const pageSize = ref(10);
 
-const predictiveSearchKeyword = ref("");
-const fullSearchKeyword = ref("");
+const searchKeyword = ref("");
 
 const predictiveSearchUri = computed(
-  () =>
-    `/api/clients/search?keyword=${encodeURIComponent(predictiveSearchKeyword.value)}${tableReference.value || ''}`
+  () => `/api/clients/search?keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
 
 const fullSearchUri = computed(
   () =>
-    `/api/clients/search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(fullSearchKeyword.value)}${tableReference.value || ''}`
+    `/api/clients/search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
 
 const search = () => {
   const { response, fetch, loading, error: fetchError } = useFetchTo(fullSearchUri, tableData);
   if (!loading.value) fetch();
 
-  watch(
-    response,
-    () => {
-      const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
-      totalItems.value = totalCount;
-    }
-  );
+  watch(response, () => {
+    const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
+    totalItems.value = totalCount;
+  });
 
   watch([fetchError], () => {
     if (fetchError.value.message) {
       networkErrorMsg.value = fetchError.value.message;
     }
   });
-};
-
-const selectEntry = (entry: ClientList) => {
-  //TODO
 };
 
 const tagColor = (status: string) => {
@@ -74,6 +71,36 @@ const paginate = (event: any) => {
   pageNumber.value = event.detail.page;
   pageSize.value = event.detail.pageSize;
 };
+
+/**
+ * Converts a client search result to a code/name representation.
+ * @param searchResult The client search result
+ */
+const searchResultToCodeName = (searchResult: ClientSearchResult): CodeNameType => {
+  const { clientNumber, clientName, clientType, city, clientStatus } = searchResult;
+  const result = {
+    code: clientNumber,
+    name: `${clientNumber}, ${clientName}, ${clientType}, ${city} (${clientStatus})`,
+  };
+  return result;
+};
+
+const openClientDetails = (clientCode: string) => {
+  if (clientCode) {
+    const url = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientCode}`;
+    window.open(url, "_blank", "noopener");
+  }
+};
+
+const ariaLabel = "Search terms";
+
+const lowerCaseLabel = ariaLabel.toLowerCase();
+
+const validationsOnChange = [isAscii(lowerCaseLabel), isMaxSizeMsg(lowerCaseLabel, 50)];
+
+const validations = [optional(isMinSizeMsg(lowerCaseLabel, 3)), ...validationsOnChange];
+
+const valid = ref(!!searchKeyword.value);
 </script>
 
 <template>
@@ -103,18 +130,40 @@ const paginate = (event: any) => {
         </div>      
       </div>
     </div>
-    
-    <div id="datatable" v-if="userhasAuthority">
 
-      <div style="float: right;">
-        <cds-button
-          kind="primary"
-          @click.prevent="search"
-        >
-          <span>Search</span>
-          <Search16 slot="icon" />
-        </cds-button>
-      </div>
+    <div id="search-line">
+      <data-fetcher
+        v-model:url="predictiveSearchUri"
+        :min-length="3"
+        :init-value="[]"
+        :init-fetch="false"
+        :disabled="!searchKeyword || !valid"
+        #="{ content, loading, error }"
+      >
+        <AutoCompleteInputComponent
+          id="search-box"
+          label=""
+          :aria-label="ariaLabel"
+          autocomplete="off"
+          tip=""
+          placeholder="Search by client number, name or acronym"
+          v-model="searchKeyword"
+          :contents="content?.map(searchResultToCodeName)"
+          :validations="validations"
+          :validations-on-change="validationsOnChange"
+          :loading="loading"
+          prevent-selection
+          @click:option="openClientDetails"
+          @update:model-value="valid = false"
+          @error="valid = !$event"
+        />
+      </data-fetcher>
+      <cds-button kind="primary" @click.prevent="search" id="search-button">
+        <span>Search</span>
+        <Search16 slot="icon" />
+      </cds-button>
+    </div>
+    <div id="datatable" v-if="userhasAuthority">
 
       <cds-table use-zebra-styles v-if="!loading">
         <cds-table-head>

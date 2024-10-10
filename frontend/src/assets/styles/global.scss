@@ -1609,6 +1609,25 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   background-color: color-mix(in srgb, var(--cds-support-warning) 40%, white);
 }
 
+#datatable {
+  position: relative;
+  right: 0;
+  overflow-x: scroll;
+}
+
+#search-line {
+  display: flex;
+  align-items: flex-end;
+
+  .grouping-02 {
+    flex-grow: 1;
+  }
+}
+
+#search-button {
+  width: 7.875rem;
+}
+
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
   :root {
@@ -1807,11 +1826,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   .submission-details--title svg {
     width: 5rem;
   }
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
-  }
   cds-table {
     width: 82rem;
   }
@@ -1920,11 +1934,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   .paginator {
     width: 100vw;
   }
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
-  }
   cds-table {
     width: 82rem;
   }
@@ -1999,11 +2008,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     );
   }
 
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
-  }
   cds-table {
     min-width: 66rem;
   }
