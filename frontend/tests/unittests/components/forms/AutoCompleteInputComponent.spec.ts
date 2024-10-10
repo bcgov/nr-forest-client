@@ -13,10 +13,19 @@ describe("Auto Complete Input Component", () => {
     { code: "TC", name: "TAMCADA" },
     { code: "TD", name: "TADANARA" },
   ];
+
   const eventSelectContent = (value: string) => {
     return {
       detail: {
         item: { "data-id": value, getAttribute: (key: string) => value },
+      },
+    };
+  };
+
+  const eventClearContent = () => {
+    return {
+      detail: {
+        item: undefined,
       },
     };
   };
@@ -309,29 +318,46 @@ describe("Auto Complete Input Component", () => {
     expect(wrapper.emitted("update:selected-value")![0][0]).toEqual(selectedContent);
   });
 
-  it('emits the "click:option" event with the code of the clicked option and prevents selecting it', async () => {
-    const wrapper = mount(AutoCompleteInputComponent, {
-      props: {
-        id,
-        modelValue: "",
-        contents,
-        validations: [],
-        label: id,
-        tip: "",
-        preventSelection: true,
-      },
+  describe("when preventSelection is true", () => {
+    let wrapper: VueWrapper;
+    beforeEach(() => {
+      wrapper = mount(AutoCompleteInputComponent, {
+        props: {
+          id,
+          modelValue: "",
+          contents,
+          validations: [],
+          label: id,
+          tip: "",
+          preventSelection: true,
+        },
+      });
     });
 
-    await wrapper.setProps({ modelValue: "T" });
-    await wrapper.find(`#${id}`).trigger("input");
+    it('emits the "click:option" event with the code of the clicked option and prevents selecting it', async () => {
+      await wrapper.setProps({ modelValue: "T" });
+      await wrapper.find(`#${id}`).trigger("input");
 
-    const code = "TB";
-    await wrapper.find(`#${id}`).trigger("cds-combo-box-beingselected", eventSelectContent(code));
+      const code = "TB";
+      await wrapper.find(`#${id}`).trigger("cds-combo-box-beingselected", eventSelectContent(code));
 
-    expect(wrapper.emitted("click:option")).toBeTruthy();
-    expect(wrapper.emitted("click:option")![0][0]).toEqual(code);
+      expect(wrapper.emitted("click:option")).toBeTruthy();
+      expect(wrapper.emitted("click:option")![0][0]).toEqual(code);
 
-    expect(wrapper.emitted("update:selected-value")).toBeFalsy();
+      expect(wrapper.emitted("update:selected-value")).toBeFalsy();
+    });
+
+    it("doesn't prevent the clearing action", async () => {
+      await wrapper.setProps({ modelValue: "T" });
+      await wrapper.find(`#${id}`).trigger("input");
+
+      // User initiated event to clear the value
+      await wrapper.find(`#${id}`).trigger("cds-combo-box-beingselected", eventClearContent());
+
+      // Clears the value
+      expect(wrapper.emitted("update:selected-value")).toBeTruthy();
+      expect(wrapper.emitted("update:selected-value")![0][0]).toEqual(undefined);
+    });
   });
 
   it('emits the "update:selected-value" event when an option from the list is clicked', async () => {

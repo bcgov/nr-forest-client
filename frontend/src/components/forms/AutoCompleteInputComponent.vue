@@ -192,10 +192,12 @@ const selectAutocompleteItem = (event: any) => {
 };
 
 const preSelectAutocompleteItem = (event: any) => {
-  const newValue = event?.detail?.item?.getAttribute("data-id");
-  emit("click:option", newValue);
-  if (props.preventSelection) {
-    event?.preventDefault();
+  if (event?.detail?.item) {
+    const newValue = event?.detail?.item?.getAttribute("data-id");
+    emit("click:option", newValue);
+    if (props.preventSelection) {
+      event?.preventDefault();
+    }
   }
 };
 
