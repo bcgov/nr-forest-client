@@ -109,7 +109,7 @@ const logoutBtnKind = computed(() =>
 
 const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some((authority) =>
   ForestClientUserSession.authorities.includes(authority)
-) && featureFlags.STAFF_SEARCH;
+);
 
 const handleLogoutClick = (event) => {
   event.preventDefault();
@@ -253,6 +253,7 @@ const handleLogoutClick = (event) => {
         :active="$route.name == 'search'" 
         href="/search" 
         large  
+        v-if="featureFlags.STAFF_SEARCH"
         id="menu-list-search">
         <span>Client search</span>
         <Search16 slot="title-icon" />
