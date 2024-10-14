@@ -62,7 +62,9 @@
       "response": {
         "status": 200,
         "headers": {
-          "content-type": "application/json;charset=UTF-8"
+          "x-total-count": "30",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
         },
         "bodyFileName": "response-client-search-page{{request.query.page}}.json"
       }
