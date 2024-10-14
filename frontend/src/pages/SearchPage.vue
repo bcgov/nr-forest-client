@@ -3,7 +3,7 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import { ref, computed, watch } from "vue";
 import { useFetchTo } from "@/composables/useFetch";
 import type { ClientSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
-import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
+import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
 import summit from "@carbon/pictograms/es/summit";
 import useSvg from "@/composables/useSvg";
 
@@ -60,10 +60,16 @@ const tagColor = (status: string) => {
   switch (status) {
     case "Active":
       return "green";
-    case "Inactive":
-      return "red";
-    default:
+    case "Deactivated":
       return "purple";
+    case "Receivership":
+      return "magenta";
+    case "Suspended":
+      return "red";
+    case "Deceased":
+      return "gray";
+    default:
+      return "";
   }
 };
 
@@ -184,9 +190,9 @@ const valid = ref(!!searchKeyword.value);
             <cds-table-cell />
             <cds-table-cell><span>{{ row.clientNumber }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientAcronym }}</span></cds-table-cell>
-            <cds-table-cell><span>{{ row.clientName }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ toTitleCase(row.clientName) }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientType }}</span></cds-table-cell>
-            <cds-table-cell><span>{{ row.city }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ toTitleCase(row.city) }}</span></cds-table-cell>
             <cds-table-cell>
               <div>
                 <cds-tag :type="tagColor(row.clientStatus)" title=""><span>{{ row.clientStatus }}</span></cds-tag>
