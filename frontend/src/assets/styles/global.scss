@@ -1,8 +1,20 @@
 @use "sass:map";
 @use "@carbon/styles";
+@use '@carbon/styles/scss/theme';
+@use '@carbon/styles/scss/components/tag/tokens' as tag-tokens;
+@use '@carbon/themes';
+@use '@carbon/themes/scss/utilities';
 @use "@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss" as typeFamily;
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/light-tags.scss' as light-tag-overrides;
+
+$tag-tokens: utilities.merge(
+  tag-tokens.$tag-tokens,
+  light-tag-overrides.$light-tag-token-overrides
+);
+@include theme.add-component-tokens($tag-tokens);
 
 :root {
+  @include themes.theme();
   --others-transparent-transparent: rgba(255, 255, 255, 0);
   --light-theme-border-subtle-01: #dfdfe1;
   --light-theme-button-button-primary: #0073e6;
