@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import org.apache.commons.text.WordUtils;
+import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -58,21 +59,29 @@ public class ClientController {
       @RequestParam(required = false, defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "") String keyword,
       ServerHttpResponse serverResponse) {
+    
     log.info("Listing clients: page={}, size={}, keyword={}", page, size, keyword);
+    
     return clientLegacyService
         .search(
             page,
             size,
             keyword
         )
-        .doOnNext(dto -> serverResponse
+        .doOnNext(pair -> {
+          Long count = pair.getSecond();
+
+          serverResponse
             .getHeaders()
             .putIfAbsent(
-                ApplicationConstant.X_TOTAL_COUNT,
-                List.of(dto.count().toString())
-            )
+                ApplicationConstant.X_TOTAL_COUNT, 
+                List.of(count.toString())
+            );
+          }
         )
-        .doFinally(signalType -> serverResponse
+        .map(Pair::getFirst)
+        .doFinally(signalType -> 
+          serverResponse
             .getHeaders()
             .putIfAbsent(
                 ApplicationConstant.X_TOTAL_COUNT,

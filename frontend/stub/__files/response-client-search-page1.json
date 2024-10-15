@@ -2,7 +2,7 @@
     {
       "clientNumber": "00191078",
       "clientAcronym": "678678",
-      "clientName": "MY MINISTRY",
+      "clientFullName": "MY MINISTRY",
       "clientType": "Ministry of Forests and Range",
       "city": "CALGARY",
       "clientStatus": "Active",
@@ -11,7 +11,7 @@
     {
       "clientNumber": "00191077",
       "clientAcronym": null,
-      "clientName": "SHANNON MARIE WEINHARDT",
+      "clientFullName": "SHANNON MARIE WEINHARDT",
       "clientType": "Individual",
       "city": "VANDERHOOF",
       "clientStatus": "Active",
@@ -20,7 +20,7 @@
     {
       "clientNumber": "00191076",
       "clientAcronym": null,
-      "clientName": "GREG JONES",
+      "clientFullName": "GREG JONES",
       "clientType": "Individual",
       "city": "VICTORIA ",
       "clientStatus": "Active",
@@ -29,7 +29,7 @@
     {
       "clientNumber": "00191075",
       "clientAcronym": null,
-      "clientName": "BOWER HENGER",
+      "clientFullName": "BOWER HENGER",
       "clientType": "Individual",
       "city": "VICTORIA",
       "clientStatus": "Active",
@@ -38,7 +38,7 @@
     {
       "clientNumber": "00191074",
       "clientAcronym": null,
-      "clientName": "LA NATION INNU MATIMEKUSH-LAC JOHN",
+      "clientFullName": "LA NATION INNU MATIMEKUSH-LAC JOHN",
       "clientType": "First Nation Band",
       "city": "SPRUCE GROVE",
       "clientStatus": "Active",
@@ -47,7 +47,7 @@
     {
       "clientNumber": "00191073",
       "clientAcronym": null,
-      "clientName": "324424",
+      "clientFullName": "324424",
       "clientType": "Ministry of Forests and Range",
       "city": "SASKATOON",
       "clientStatus": "Active",
@@ -56,7 +56,7 @@
     {
       "clientNumber": "00191072",
       "clientAcronym": null,
-      "clientName": "YRTYRYT",
+      "clientFullName": "YRTYRYT",
       "clientType": "Government",
       "city": "OTTAWA",
       "clientStatus": "Active",
@@ -65,7 +65,7 @@
     {
       "clientNumber": "00191071",
       "clientAcronym": null,
-      "clientName": "TETERTET",
+      "clientFullName": "TETERTET",
       "clientType": "Government",
       "city": "BRANTFORD",
       "clientStatus": "Active",
@@ -74,7 +74,7 @@
     {
       "clientNumber": "00191070",
       "clientAcronym": null,
-      "clientName": "DFSFSFSF",
+      "clientFullName": "DFSFSFSF",
       "clientType": "Unregistered Company",
       "city": "CALGARY",
       "clientStatus": "Active",
@@ -83,7 +83,7 @@
     {
       "clientNumber": "00191069",
       "clientAcronym": null,
-      "clientName": "GREG SMITH",
+      "clientFullName": "GREG SMITH",
       "clientType": "Individual",
       "city": "VICTORIA",
       "clientStatus": "Active",

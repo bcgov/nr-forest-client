@@ -182,7 +182,7 @@ export interface SubmissionList {
 export interface ClientSearchResult {
   clientNumber: string
   clientAcronym: string
-  clientName: string
+  clientFullName: string
   clientType: string
   city: string
   clientStatus: string

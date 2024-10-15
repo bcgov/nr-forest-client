@@ -78,10 +78,10 @@ const paginate = (event: any) => {
  * @param searchResult The client search result
  */
 const searchResultToCodeName = (searchResult: ClientSearchResult): CodeNameType => {
-  const { clientNumber, clientName, clientType, city, clientStatus } = searchResult;
+  const { clientNumber, clientFullName, clientType, city, clientStatus } = searchResult;
   const result = {
     code: clientNumber,
-    name: `${clientNumber}, ${clientName}, ${clientType}, ${city} (${clientStatus})`,
+    name: `${clientNumber}, ${clientFullName}, ${clientType}, ${city} (${clientStatus})`,
   };
   return result;
 };
@@ -188,7 +188,7 @@ const valid = ref(!!searchKeyword.value);
             <cds-table-cell />
             <cds-table-cell><span>{{ row.clientNumber }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientAcronym }}</span></cds-table-cell>
-            <cds-table-cell><span>{{ row.clientName }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ row.clientFullName }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientType }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.city }}</span></cds-table-cell>
             <cds-table-cell>
