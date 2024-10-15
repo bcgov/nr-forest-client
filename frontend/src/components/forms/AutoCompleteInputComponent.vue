@@ -42,6 +42,7 @@ const emit = defineEmits<{
   (e: "update:model-value", value: string): void;
   (e: "update:selected-value", value: BusinessSearchResult | undefined): void;
   (e: "click:option", value: string): void;
+  (e: "press:enter"): void;
 }>();
 
 //We initialize the error message handling for validation
@@ -113,7 +114,7 @@ const emitValueChange = (newValue: string, isSelectEvent = false): void => {
       : undefined;
   }
 
-  emit("update:model-value", selectedValue?.name ?? newValue);
+  emit("update:model-value", selectedValue?.name ?? newValue ?? "");
   emit("update:selected-value", selectedValue);
   emit("empty", isEmpty(newValue));
 };
@@ -314,6 +315,7 @@ const safeHelperText = computed(() => props.tip || " ");
             validateInput(event.srcElement._filterInputValue);
           }
         "
+        @keypress.enter="emit('press:enter')"
         :data-focus="id"
         :data-scroll="id"
         :data-id="'input-' + id"

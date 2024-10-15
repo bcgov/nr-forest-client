@@ -440,5 +440,21 @@ describe("Auto Complete Input Component", () => {
         contents[1]
       );
     });
+
+    it('emits the "press:enter" event', async () => {
+      const wrapper = mount(AutoCompleteInputComponent, {
+        props: {
+          id,
+          modelValue: "",
+          contents,
+          validations: [],
+          label: id,
+        },
+      });
+
+      await wrapper.find(`#${id}`).trigger("keypress.enter");
+
+      expect(wrapper.emitted("press:enter")).toHaveLength(1);
+    });
   });
 });
