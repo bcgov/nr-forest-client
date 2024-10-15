@@ -9,7 +9,6 @@ import ca.bc.gov.app.service.client.ClientDistrictService;
 import ca.bc.gov.app.service.client.ClientService;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
