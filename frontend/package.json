@@ -84,7 +84,7 @@
     "eslint-config-standard": "^17.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-cypress": "^2.12.1",
-    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-vue": "^9.17.0",
     "istanbul-lib-coverage": "^3.2.0",
     "istanbul-lib-instrument": "^6.0.0",
