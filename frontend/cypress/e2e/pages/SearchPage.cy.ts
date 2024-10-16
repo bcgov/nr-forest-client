@@ -289,9 +289,20 @@ describe("Search Page", () => {
     it("shows an error message", () => {
       cy.contains("The search terms can only contain: A-Z, a-z, 0-9, space or common symbols");
     });
+
     it("makes no API call", () => {
       cy.wait(500); // This time has to be greater than the debouncing time
       cy.wrap(predictiveSearchCounter).its("count").should("eq", 0);
+    });
+
+    describe("and clicks the Search button", () => {
+      beforeEach(() => {
+        cy.get("#search-button").click();
+      });
+      it("makes no API call", () => {
+        cy.wait(500); // This time has to be greater than the debouncing time
+        cy.wrap(fullSearchCounter).its("count").should("eq", 0);
+      });
     });
   });
 });

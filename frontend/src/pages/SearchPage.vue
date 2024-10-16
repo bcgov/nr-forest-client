@@ -39,6 +39,8 @@ const pageSize = ref(10);
 
 const searchKeyword = ref("");
 
+const valid = ref(!!searchKeyword.value);
+
 const predictiveSearchUri = computed(
   () => `/api/clients/search?keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
@@ -56,6 +58,9 @@ const {
 } = useFetchTo(fullSearchUri, tableData, { skip: true });
 
 const search = (skipResetPage = false) => {
+  if (!valid.value) {
+    return;
+  }
   if (!skipResetPage) {
     pageNumber.value = 1;
   }
@@ -126,8 +131,6 @@ const lowerCaseLabel = ariaLabel.toLowerCase();
 const validationsOnChange = [isAscii(lowerCaseLabel), isMaxSizeMsg(lowerCaseLabel, 50)];
 
 const validations = [optional(isMinSizeMsg(lowerCaseLabel, 3)), ...validationsOnChange];
-
-const valid = ref(!!searchKeyword.value);
 
 const skeletonReference = ref(null);
 
