@@ -10,16 +10,34 @@ describe("Search Page", () => {
   };
 
   const checkAutocompleteResults = (clientList: ClientSearchResult[]) => {
-    clientList.forEach((client) => {
+    clientList.forEach((client, index) => {
       cy.get("#search-box")
-        .find(`cds-combo-box-item[data-value^="${client.clientNumber}"]`)
-        .should("exist");
+        .find("cds-combo-box-item")
+        .eq(index)
+        .should("exist")
+        .should("have.attr", "data-id", client.clientNumber);
     });
   };
 
   const checkTableResults = (clientList: ClientSearchResult[]) => {
-    clientList.forEach((client) => {
-      cy.get("cds-table").contains("cds-table-row", client.clientNumber).should("be.visible");
+    clientList.forEach((client, index) => {
+      cy.get("cds-table")
+        .find("cds-table-row")
+        .eq(index)
+        .contains(client.clientNumber)
+        .should("be.visible");
+
+      const acronymColumnIndex = 3;
+
+      // only the first client has an acronym
+      const expectedValue = index === 0 ? client.clientAcronym : "-";
+
+      cy.get("cds-table")
+        .find("cds-table-row")
+        .eq(index)
+        .find(`cds-table-cell:nth-child(${acronymColumnIndex})`)
+        .contains(expectedValue)
+        .should("be.visible");
     });
   };
 
