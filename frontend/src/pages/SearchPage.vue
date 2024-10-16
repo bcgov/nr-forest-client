@@ -213,13 +213,14 @@ onMounted(() => {
         <cds-table-head>
           <cds-table-header-row>
             <cds-table-header-cell />
-            <cds-table-header-cell>Client number</cds-table-header-cell>
-            <cds-table-header-cell>Acronym</cds-table-header-cell>
-            <cds-table-header-cell>Name</cds-table-header-cell>
-            <cds-table-header-cell>Type</cds-table-header-cell>
-            <cds-table-header-cell>City</cds-table-header-cell>
-            <cds-table-header-cell>Status</cds-table-header-cell>
-            <cds-table-header-cell />
+            <cds-table-header-cell class="client-number-column">
+              Client number
+            </cds-table-header-cell>
+            <cds-table-header-cell class="acronym-column">Acronym</cds-table-header-cell>
+            <cds-table-header-cell class="name-column">Name</cds-table-header-cell>
+            <cds-table-header-cell class="type-column">Type</cds-table-header-cell>
+            <cds-table-header-cell class="city-column">City</cds-table-header-cell>
+            <cds-table-header-cell class="status-column">Status</cds-table-header-cell>
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
@@ -230,7 +231,7 @@ onMounted(() => {
           >
             <cds-table-cell />
             <cds-table-cell><span>{{ row.clientNumber }}</span></cds-table-cell>
-            <cds-table-cell><span>{{ row.clientAcronym }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ row.clientAcronym || "-" }}</span></cds-table-cell>
             <cds-table-cell><span>{{ toTitleCase(row.clientFullName) }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientType }}</span></cds-table-cell>
             <cds-table-cell><span>{{ toTitleCase(row.city) }}</span></cds-table-cell>
@@ -239,7 +240,6 @@ onMounted(() => {
                 <cds-tag :type="tagColor(row.clientStatus)" title=""><span>{{ row.clientStatus }}</span></cds-tag>
               </div>
             </cds-table-cell>
-            <cds-table-cell />
           </cds-table-row>
         </cds-table-body>
       </cds-table>
