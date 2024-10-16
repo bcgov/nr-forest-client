@@ -166,7 +166,7 @@ const goToStep = (step: number) => {
     >    
       <div>
         We're working to fix a problem with our network. Please try re-submitting your application later.
-        If this error persistent, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+        If this error persists, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
       </div>    
     </cds-actionable-notification>
 
