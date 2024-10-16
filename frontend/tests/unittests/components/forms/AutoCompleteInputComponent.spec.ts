@@ -38,6 +38,29 @@ describe("Auto Complete Input Component", () => {
     await inputWrapper.trigger("input");
   };
 
+  const selectItemWithKeyboard = async (
+    inputWrapper: DOMWrapper<HTMLInputElement>,
+    value: string,
+  ) => {
+    /*
+    This reproduces artificially what happens when an item is selected using the keyboard.
+    A cds-combo-box-beingselected happens before the corresponding keypress event.
+    */
+    await inputWrapper.trigger("cds-combo-box-beingselected", eventSelectContent(value));
+
+    await inputWrapper.trigger("keypress.enter");
+  };
+
+  const selectItemWithMouse = async (inputWrapper: DOMWrapper<HTMLInputElement>, value: string) => {
+    /*
+    This reproduces artificially what happens when an item is selected using the mouse.
+    The click event on the item happens before the cds-combo-box-beingselected.
+    */
+    await inputWrapper.find(`cds-combo-box-item[data-id="${value}"]`).trigger("click");
+
+    await inputWrapper.trigger("cds-combo-box-beingselected", eventSelectContent(value));
+  };
+
   const mount: typeof baseMount = function (inputComponent, options) {
     const wrapper = baseMount(inputComponent, options);
     const comboBox = wrapper.find(`#${id}`);
@@ -440,9 +463,45 @@ describe("Auto Complete Input Component", () => {
         contents[1]
       );
     });
+  });
 
-    it('emits the "press:enter" event', async () => {
-      const wrapper = mount(AutoCompleteInputComponent, {
+  it('emits the "press:enter" event', async () => {
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: "",
+        contents,
+        validations: [],
+        label: id,
+      },
+    });
+
+    await wrapper.find(`#${id}`).trigger("keypress.enter");
+
+    expect(wrapper.emitted("press:enter")).toHaveLength(1);
+  });
+
+  it("doesn't emit the \"press:enter\" event when it's a selection with the keyboard", async () => {
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: "",
+        contents,
+        validations: [],
+        label: id,
+      },
+    });
+
+    selectItemWithKeyboard(wrapper.find(`#${id}`), "TB");
+
+    expect(wrapper.emitted("press:enter")).toBeFalsy();
+  });
+
+  describe("when user selects an item using the enter key on the keyboard", () => {
+    let wrapper: VueWrapper<any, any>;
+
+    beforeEach(async () => {
+      wrapper = mount(AutoCompleteInputComponent, {
         props: {
           id,
           modelValue: "",
@@ -452,9 +511,48 @@ describe("Auto Complete Input Component", () => {
         },
       });
 
-      await wrapper.find(`#${id}`).trigger("keypress.enter");
+      selectItemWithKeyboard(wrapper.find(`#${id}`), "TB");
 
-      expect(wrapper.emitted("press:enter")).toHaveLength(1);
+      // sanity check
+      expect(wrapper.emitted("press:enter")).toBeFalsy();
+    });
+
+    describe("and later hits enter on the input field", () => {
+      beforeEach(async () => {
+        await wrapper.find(`#${id}`).trigger("keypress.enter");
+      });
+
+      it('emits the "press:enter" event', async () => {
+        expect(wrapper.emitted("press:enter")).toHaveLength(1);
+      });
+    });
+  });
+
+  describe("when user selects an item with a click", () => {
+    let wrapper: VueWrapper<any, any>;
+
+    beforeEach(async () => {
+      wrapper = mount(AutoCompleteInputComponent, {
+        props: {
+          id,
+          modelValue: "",
+          contents,
+          validations: [],
+          label: id,
+        },
+      });
+
+      selectItemWithMouse(wrapper.find(`#${id}`), "TA");
+    });
+
+    describe("and later hits enter on the input field", () => {
+      beforeEach(async () => {
+        await wrapper.find(`#${id}`).trigger("keypress.enter");
+      });
+
+      it('emits the "press:enter" event', async () => {
+        expect(wrapper.emitted("press:enter")).toHaveLength(1);
+      });
     });
   });
 });
