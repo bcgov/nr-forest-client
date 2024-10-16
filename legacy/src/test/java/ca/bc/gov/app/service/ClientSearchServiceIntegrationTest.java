@@ -119,7 +119,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
           .assertNext(dto -> {
             assertNotNull(dto);
             assertEquals(expectedClientNumber, dto.getKey().clientNumber());
-            assertEquals(expectedClientName, dto.getKey().name());
+            assertEquals(expectedClientName, dto.getKey().clientFullName());
             assertNotNull(dto.getValue());
             assertEquals(1, dto.getValue());
           });

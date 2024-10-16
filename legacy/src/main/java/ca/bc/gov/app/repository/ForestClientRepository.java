@@ -151,7 +151,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       ORDER BY c.ADD_TIMESTAMP DESC
       OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
   Flux<PredictiveSearchResultDto> findByEmptyFullSearch(int limit, long offset);
-
+  
   @Query("""
       SELECT
           count(c.client_number)
@@ -163,5 +163,5 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       WHERE
         cl.CLIENT_LOCN_CODE = '00'""")
   Mono<Long> countByEmptyFullSearch();
-
+  
 }

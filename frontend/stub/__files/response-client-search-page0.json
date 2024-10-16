@@ -1,0 +1,92 @@
+[
+  {
+    "clientNumber": "00191088",
+    "clientAcronym": null,
+    "clientFullName": "MABELINV LIMITED LIABILITY PARTNERSHIP",
+    "clientType": "Limited Partnership",
+    "city": "TORONTO",
+    "clientStatus": "Active",
+    "count": 147963
+  },
+  {
+    "clientNumber": "00191087",
+    "clientAcronym": null,
+    "clientFullName": "LITHIA MASTER LP COMPANY, LP",
+    "clientType": "Limited Partnership",
+    "city": "MAPLE RIDGE",
+    "clientStatus": "Active",
+    "count": 147963
+  },
+  {
+    "clientNumber": "00191086",
+    "clientAcronym": null,
+    "clientFullName": "TEST DATA",
+    "clientType": "Limited Partnership",
+    "city": "ANAHIM LAKE",
+    "clientStatus": "Active",
+    "count": 147963
+  },
+  {
+    "clientNumber": "00191085",
+    "clientAcronym": null,
+    "clientFullName": "CANAB AQUACULTURE LIMITED PARNERSHIP",
+    "clientType": "Limited Partnership",
+    "city": "PICKERING",
+    "clientStatus": "Active",
+    "count": 147963
+  },
+  {
+    "clientNumber": "00191084",
+    "clientAcronym": null,
+    "clientFullName": "TSAY KEH DENE TIMBER LIMITED PARTNERSHIP",
+    "clientType": "Limited Partnership",
+    "city": "GOULDS",
+    "clientStatus": "Active",
+    "count": 147963
+  },
+  {
+    "clientNumber": "00191083",
+    "clientAcronym": null,
+    "clientFullName": "TSAY KEH DENE TIMBER LIMITED PARTNERSHIP",
+    "clientType": "Limited Partnership",
+    "city": "GOULDS",
+    "clientStatus": "Active",
+    "count": 147963
+  },
+  {
+    "clientNumber": "00191082",
+    "clientAcronym": null,
+    "clientFullName": "TSAY KEH DENE TIMBER LIMITED PARTNERSHIP",
+    "clientType": "Limited Partnership",
+    "city": "GOULDS",
+    "clientStatus": "Active",
+    "count": 147963
+  },
+  {
+    "clientNumber": "00191081",
+    "clientAcronym": null,
+    "clientFullName": "DFGDGDFG",
+    "clientType": "Ministry of Forests and Range",
+    "city": "CALGARY",
+    "clientStatus": "Active",
+    "count": 147963
+  },
+  {
+    "clientNumber": "00191080",
+    "clientAcronym": null,
+    "clientFullName": "EDMOND KAAUA",
+    "clientType": "Individual",
+    "city": "VICTORIA",
+    "clientStatus": "Active",
+    "count": 147963
+  },
+  {
+    "clientNumber": "00191079",
+    "clientAcronym": null,
+    "clientFullName": "GREG COLE",
+    "clientType": "Individual",
+    "city": "VICTORIA",
+    "clientStatus": "Active",
+    "count": 147963
+  }
+]

@@ -548,7 +548,7 @@ public class ClientSearchService {
                         page.getOffset())
                     .doOnNext(
                         dto -> log.info("Found complex search for value {} as {} {} with score {}",
-                            value, dto.clientNumber(), dto.name(), dto.score())
+                            value, dto.clientNumber(), dto.clientFullName(), dto.score())
                     )
                     .map(dto -> Pair.of(dto, count))
             );
@@ -562,7 +562,7 @@ public class ClientSearchService {
                 forestClientRepository
                     .findByEmptyFullSearch(page.getPageSize(), page.getOffset())
                     .doOnNext(dto -> log.info("Found complex empty search as {} {} with score {}",
-                        dto.clientNumber(), dto.name(), dto.score()))
+                        dto.clientNumber(), dto.clientFullName(), dto.score()))
                     .map(dto -> Pair.of(dto, count))
             );
   }

@@ -176,6 +176,18 @@ export interface SubmissionList {
   district: string
 }
 
+/**
+ * Each item resulting from the client search.
+ */
+export interface ClientSearchResult {
+  clientNumber: string
+  clientAcronym: string
+  clientFullName: string
+  clientType: string
+  city: string
+  clientStatus: string
+}
+
 export interface SubmissionDetails {
   submissionId: number
   submissionStatus: string

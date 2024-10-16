@@ -1,0 +1,71 @@
+{
+  "mappings": [    
+    {
+      "name": "Autocompete Predictive Search (keyword param only)",
+      "request": {
+        "urlPath": "/api/clients/search",
+        "method": "GET",
+        "queryParameters": {
+          "keyword": {
+            "matches": "^(.*)$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "application/json;charset=UTF-8"
+        },
+        "bodyFileName": "response-client-search.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 1000
+      }
+    },
+    {
+      "name": "Autocompete Predictive Search CAR (keyword param only)",
+      "request": {
+        "urlPath": "/api/clients/search",
+        "method": "GET",
+        "queryParameters": {
+          "keyword": {
+            "matches": "(?i)car"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "application/json;charset=UTF-8"
+        },
+        "bodyFileName": "response-client-search-keyword-CAR.json"
+      }
+    },
+    {
+      "name": "Full Search pageable (keyword, page and size)",
+      "request": {
+        "urlPath": "/api/clients/search",
+        "method": "GET",
+        "queryParameters": {
+          "keyword": {
+            "matches": "^(.*)$"
+          },
+          "page": {
+            "matches": "^[0-5]$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "application/json;charset=UTF-8"
+        },
+        "bodyFileName": "response-client-search-page{{request.query.page}}.json"
+      }
+    }
+  ]
+}

@@ -146,15 +146,45 @@ Cypress.Commands.add("getMany", (names: string[]): Cypress.Chainable<any[]> => {
   return cy.wrap(values);
 });
 
-Cypress.Commands.add("fillFormEntry",(field: string, value: string, delayMS: number = 10, area: boolean = false) =>{
+interface FillFormEntryOptions {
+  delayMS?: number;
+  area?: boolean;
+  skipBlur?: boolean;
+}
+
+interface FillFormEntry {
+  (field: string, value: string, delayMS?: number, area?: boolean): void;
+  (field: string, value: string, options?: FillFormEntryOptions): void;
+}
+
+const fillFormEntry: FillFormEntry = (
+  field: string,
+  value: string,
+  arg3: number | FillFormEntryOptions = 10,
+  arg4: boolean | never = false,
+) => {
+  const options =
+    typeof arg3 === "object"
+      ? arg3
+      : {
+          delayMS: arg3,
+          area: arg4,
+        };
+  const { delayMS, area, skipBlur } = options;
   cy.get(field)
-  .should("exist")
-  .shadow()
-  .find(area ? "textarea" : "input")
-  .focus()
-  .type(value,{ delay: delayMS })
-  .blur();
-});
+    .should("exist")
+    .shadow()
+    .find(area ? "textarea" : "input")
+    .focus()
+    .type(value, { delay: delayMS })
+    .then((subject) => {
+      if (!skipBlur) {
+        cy.wrap(subject).blur();
+      }
+    });
+};
+
+Cypress.Commands.add("fillFormEntry", fillFormEntry);
 
 Cypress.Commands.add("clearFormEntry",(field: string, area: boolean = false) =>{
   cy.get(field)
