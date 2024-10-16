@@ -305,4 +305,45 @@ describe("Search Page", () => {
       });
     });
   });
+
+  describe("when the API is returning errors", () => {
+    beforeEach(() => {
+      // The "error" value actually triggers the error response
+      cy.fillFormEntry("#search-box", "error");
+    });
+    describe("and user clicks the Search button", () => {
+      beforeEach(() => {
+        cy.get("#search-button").click();
+      });
+
+      it("displays an error notification", () => {
+        cy.wait("@fullSearch");
+
+        cy.get("cds-actionable-notification")
+          .shadow()
+          .contains("Something went wrong")
+          .should("be.visible");
+      });
+
+      describe("and the API stops returning errors", () => {
+        beforeEach(() => {
+          cy.wait("@fullSearch");
+
+          // Replacing the "error" value actually triggers a successful response
+          cy.fillFormEntry("#search-box", "okay");
+        });
+        describe("and user clicks the Search button", () => {
+          beforeEach(() => {
+            cy.get("#search-button").click();
+          });
+
+          it("hides the error notification", () => {
+            cy.wait("@fullSearch");
+
+            cy.get("cds-actionable-notification").should("not.exist");
+          });
+        });
+      });
+    });
+  });
 });

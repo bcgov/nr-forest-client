@@ -29,10 +29,10 @@ const summitSvg = useSvg(summit);
 
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 
-let networkErrorMsg = ref("");
+const networkErrorMsg = ref("");
 
 // Table data
-const tableData = ref<ClientSearchResult[]>([]);
+const tableData = ref<ClientSearchResult[]>();
 const pageNumber = ref(1);
 const totalItems = ref(0);
 const pageSize = ref(10);
@@ -61,6 +61,10 @@ const search = (skipResetPage = false) => {
   if (!valid.value) {
     return;
   }
+
+  // resets any error message
+  networkErrorMsg.value = "";
+
   if (!skipResetPage) {
     pageNumber.value = 1;
   }
@@ -167,7 +171,7 @@ onMounted(() => {
               title="Something went wrong:">    
               <div>
                 We're working to fix a problem with our network. Please try searching later.
-                If this error persistent, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+                If this error persists, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
               </div>
             </cds-actionable-notification>
           </div>   
@@ -254,15 +258,16 @@ onMounted(() => {
       />
     </div>
 
-    <div class="empty-table-list" 
-        v-if="totalItems == 0 && userhasAuthority && !loadingSearch">
-        <summit-svg alt="Summit pictogram" 
-                    class="standard-svg"/>
-        <p class="heading-02">Nothing to show yet!</p>
-        <p class="body-compact-01">Enter at least one criteria to start the search.</p>
-        <p class="body-compact-01">The list will display here.</p>
+    <div
+      class="empty-table-list"
+      v-if="(!tableData || totalItems == 0) && userhasAuthority && !loadingSearch"
+    >
+      <summit-svg alt="Summit pictogram" class="standard-svg" />
+      <p class="heading-02">Nothing to show yet!</p>
+      <p class="body-compact-01">Enter at least one criteria to start the search.</p>
+      <p class="body-compact-01">The list will display here.</p>
     </div>
-    
+
     <div class="paginator" v-if="totalItems && userhasAuthority">
       <cds-pagination
         items-per-page-text="Clients per page"
