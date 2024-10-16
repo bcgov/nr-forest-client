@@ -124,7 +124,7 @@ const valid = ref(!!searchKeyword.value);
               title="Something went wrong:">    
               <div>
                 We're working to fix a problem with our network. Please try searching later.
-                If this error persistent, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+                If this error persists, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
               </div>
             </cds-actionable-notification>
           </div>   
