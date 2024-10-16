@@ -66,7 +66,8 @@
           "content-type": "application/json;charset=UTF-8",
           "Access-Control-Expose-Headers": "x-total-count"
         },
-        "bodyFileName": "response-client-search-page{{request.query.page}}.json"
+        "bodyFileName": "response-client-search-page{{request.query.page}}.json",
+        "fixedDelayMilliseconds": 2000
       }
     }
   ]

@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
+
+// Carbon
+import "@carbon/web-components/es/components/data-table/index";
+import "@carbon/web-components/es/components/button/index";
+import "@carbon/web-components/es/components/pagination/index";
+import "@carbon/web-components/es/components/select/index";
+import "@carbon/web-components/es/components/tag/index";
+
 import { useFetchTo } from "@/composables/useFetch";
 import type { ClientSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
@@ -40,21 +48,30 @@ const fullSearchUri = computed(
     `/api/clients/search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
 
-const search = () => {
-  const { response, fetch, loading, error: fetchError } = useFetchTo(fullSearchUri, tableData);
-  if (!loading.value) fetch();
+const {
+  response: searchResponse,
+  fetch,
+  loading: loadingSearch,
+  error: searchError,
+} = useFetchTo(fullSearchUri, tableData, { skip: true });
 
-  watch(response, () => {
-    const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
-    totalItems.value = totalCount;
-  });
-
-  watch([fetchError], () => {
-    if (fetchError.value.message) {
-      networkErrorMsg.value = fetchError.value.message;
-    }
-  });
+const search = (skipResetPage = false) => {
+  if (!skipResetPage) {
+    pageNumber.value = 1;
+  }
+  fetch();
 };
+
+watch(searchResponse, () => {
+  const totalCount = parseInt(searchResponse.value.headers["x-total-count"] || "0");
+  totalItems.value = totalCount;
+});
+
+watch([searchError], () => {
+  if (searchError.value.message) {
+    networkErrorMsg.value = searchError.value.message;
+  }
+});
 
 const tagColor = (status: string) => {
   switch (status) {
@@ -74,9 +91,12 @@ const tagColor = (status: string) => {
 };
 
 const paginate = (event: any) => {
+  const hasPageChanged = event.detail.page !== pageNumber.value;
   pageNumber.value = event.detail.page;
   pageSize.value = event.detail.pageSize;
-  search();
+  if (hasPageChanged) {
+    search(true);
+  }
 };
 
 /**
@@ -108,6 +128,20 @@ const validationsOnChange = [isAscii(lowerCaseLabel), isMaxSizeMsg(lowerCaseLabe
 const validations = [optional(isMinSizeMsg(lowerCaseLabel, 3)), ...validationsOnChange];
 
 const valid = ref(!!searchKeyword.value);
+
+const skeletonReference = ref(null);
+
+const disableSkelleton = () => {
+  if (skeletonReference.value) {
+    skeletonReference.value.showHeader = false;
+    skeletonReference.value.showToolbar = false;
+  }
+};
+// This is to make the skelleton data-table to hide some elements
+onMounted(() => {
+  disableSkelleton();
+  watch(skeletonReference, disableSkelleton);
+});
 </script>
 
 <template>
@@ -163,16 +197,17 @@ const valid = ref(!!searchKeyword.value);
           @click:option="openClientDetails"
           @update:model-value="valid = false"
           @error="valid = !$event"
+          @press:enter="search()"
         />
       </data-fetcher>
-      <cds-button kind="primary" @click.prevent="search" id="search-button">
+      <cds-button kind="primary" @click.prevent="search()" id="search-button">
         <span>Search</span>
         <Search16 slot="icon" />
       </cds-button>
     </div>
     <div id="datatable" v-if="userhasAuthority">
 
-      <cds-table use-zebra-styles v-if="!loading">
+      <cds-table use-zebra-styles v-if="!loadingSearch">
         <cds-table-head>
           <cds-table-header-row>
             <cds-table-header-cell />
@@ -186,7 +221,11 @@ const valid = ref(!!searchKeyword.value);
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
-          <cds-table-row v-for="row in tableData" :key="row.clientNumber" @click="selectEntry(row)">
+          <cds-table-row
+            v-for="row in tableData"
+            :key="row.clientNumber"
+            @click="openClientDetails(row.clientNumber)"
+          >
             <cds-table-cell />
             <cds-table-cell><span>{{ row.clientNumber }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientAcronym }}</span></cds-table-cell>
@@ -213,7 +252,7 @@ const valid = ref(!!searchKeyword.value);
     </div>
 
     <div class="empty-table-list" 
-        v-if="totalItems == 0 && userhasAuthority && !loading">
+        v-if="totalItems == 0 && userhasAuthority && !loadingSearch">
         <summit-svg alt="Summit pictogram" 
                     class="standard-svg"/>
         <p class="heading-02">Nothing to show yet!</p>
@@ -223,16 +262,20 @@ const valid = ref(!!searchKeyword.value);
     
     <div class="paginator" v-if="totalItems && userhasAuthority">
       <cds-pagination
-          items-per-page-text="Submissions per page"        
-          :page-size="pageSize" 
-          :total-items="totalItems"
-          @cds-pagination-changed-current="paginate"
-          >
-            <cds-select-item :value="10" selected>10</cds-select-item>
-            <cds-select-item :value="20">20</cds-select-item>
-            <cds-select-item :value="30">30</cds-select-item>
-            <cds-select-item :value="40">40</cds-select-item>
-            <cds-select-item :value="50">50</cds-select-item>
+        items-per-page-text="Clients per page"
+        :page="pageNumber"
+        :page-size="pageSize"
+        :total-items="totalItems"
+        @cds-pagination-changed-current="paginate"
+        :formatStatusWithDeterminateTotal="
+          ({ start, end, count }) => `${start}–${end} of ${count} client${count <= 1 ? '' : 's'}`
+        "
+      >
+        <cds-select-item :value="10" selected>10</cds-select-item>
+        <cds-select-item :value="20">20</cds-select-item>
+        <cds-select-item :value="30">30</cds-select-item>
+        <cds-select-item :value="40">40</cds-select-item>
+        <cds-select-item :value="50">50</cds-select-item>
       </cds-pagination>
     </div>
 
