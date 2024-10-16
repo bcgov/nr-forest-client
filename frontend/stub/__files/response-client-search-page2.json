@@ -2,7 +2,7 @@
   {
       "clientNumber": "00191068",
       "clientAcronym": null,
-      "clientName": "GREG RESTERMALL",
+      "clientFullName": "GREG RESTERMALL",
       "clientType": "Individual",
       "city": "VICTORIA",
       "clientStatus": "Active",
@@ -11,7 +11,7 @@
   {
       "clientNumber": "00191067",
       "clientAcronym": null,
-      "clientName": "ANDREW LEE",
+      "clientFullName": "ANDREW LEE",
       "clientType": "Individual",
       "city": "RICHMOND",
       "clientStatus": "Active",
@@ -20,7 +20,7 @@
   {
       "clientNumber": "00191066",
       "clientAcronym": null,
-      "clientName": "GGHHH",
+      "clientFullName": "GGHHH",
       "clientType": "Ministry of Forests and Range",
       "city": "NORTH YORK",
       "clientStatus": "Active",
@@ -29,7 +29,7 @@
   {
       "clientNumber": "00191065",
       "clientAcronym": null,
-      "clientName": "ANTONIO ESPINOZA",
+      "clientFullName": "ANTONIO ESPINOZA",
       "clientType": "Individual",
       "city": "VANCOUVER",
       "clientStatus": "Active",
@@ -38,7 +38,7 @@
   {
       "clientNumber": "00191064",
       "clientAcronym": null,
-      "clientName": "MARISOL ANDRADE",
+      "clientFullName": "MARISOL ANDRADE",
       "clientType": "Individual",
       "city": "NEPEAN",
       "clientStatus": "Active",
@@ -47,7 +47,7 @@
   {
       "clientNumber": "00191063",
       "clientAcronym": null,
-      "clientName": "PAUL MCCARTNEY",
+      "clientFullName": "PAUL MCCARTNEY",
       "clientType": "Individual",
       "city": "DELACOUR",
       "clientStatus": "Active",
@@ -56,7 +56,7 @@
   {
       "clientNumber": "00191061",
       "clientAcronym": null,
-      "clientName": "GOVERNMENT OF ZIAD",
+      "clientFullName": "GOVERNMENT OF ZIAD",
       "clientType": "Government",
       "city": "EDMONTON",
       "clientStatus": "Active",
@@ -65,7 +65,7 @@
   {
       "clientNumber": "00191062",
       "clientAcronym": null,
-      "clientName": "GOVERNMENT OF ZIAD",
+      "clientFullName": "GOVERNMENT OF ZIAD",
       "clientType": "Government",
       "city": "EDMONTON",
       "clientStatus": "Active",
@@ -74,7 +74,7 @@
   {
       "clientNumber": "00191060",
       "clientAcronym": null,
-      "clientName": "BRANCH LINE STABLES",
+      "clientFullName": "BRANCH LINE STABLES",
       "clientType": "General Partnership",
       "city": "NORTH SAANICH",
       "clientStatus": "Active",
@@ -83,7 +83,7 @@
   {
       "clientNumber": "00191059",
       "clientAcronym": null,
-      "clientName": "DR. FRED DYCK INC.",
+      "clientFullName": "DR. FRED DYCK INC.",
       "clientType": "Corporation",
       "city": "DUNCAN",
       "clientStatus": "Active",

@@ -6,10 +6,8 @@ import ca.bc.gov.app.dto.client.IdentificationTypeDto;
 import ca.bc.gov.app.service.client.ClientCodeService;
 import ca.bc.gov.app.service.client.ClientCountryProvinceService;
 import ca.bc.gov.app.service.client.ClientDistrictService;
-import ca.bc.gov.app.service.client.ClientService;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -28,7 +26,6 @@ import reactor.core.publisher.Mono;
 @Observed
 public class ClientCodesController {
 
-  private final ClientService clientService;
   private final ClientDistrictService clientDistrictService;
   private final ClientCountryProvinceService clientCountryProvinceService;
   private final ClientCodeService clientCodeService;

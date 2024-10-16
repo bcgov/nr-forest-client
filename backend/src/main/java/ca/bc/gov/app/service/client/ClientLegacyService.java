@@ -12,6 +12,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -309,8 +310,7 @@ public class ClientLegacyService {
             );
   }
   
-  @SuppressWarnings("unchecked")
-  public Flux<ClientListDto> search(int page, int size, String keyword) {
+  public Flux<Pair<ClientListDto, Long>> search(int page, int size, String keyword) {
     log.info(
         "Searching clients by keyword {} with page {} and size {}", 
         keyword, 
@@ -333,30 +333,14 @@ public class ClientLegacyService {
           Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
 
           return response
-              .bodyToFlux(Map.class)
-              .map(json -> mapToClientListDto(json, count));
+              .bodyToFlux(ClientListDto.class)
+              .map(dto -> Pair.of(dto, count));
         })
-        .doOnNext(dto -> 
-          log.info("Found client with clientNumber {} and total count: {}", dto.clientNumber(), dto.count()));
-  }
-
-  private ClientListDto mapToClientListDto(Map<String, Object> json, Long totalCount) {
-    String clientNumber = (String) json.get("clientNumber");
-    String clientAcronym = (String) json.get("clientAcronym");
-    String clientName = (String) json.get("name");
-    String clientType = (String) json.get("clientType");
-    String city = (String) json.get("city");
-    String clientStatus = (String) json.get("clientStatus");
-
-    return new ClientListDto(
-        clientNumber, 
-        clientAcronym, 
-        clientName, 
-        clientType, 
-        city,
-        clientStatus, 
-        totalCount
-    );
+        .doOnNext(pair -> {
+          ClientListDto dto = pair.getFirst();
+          Long totalCount = pair.getSecond();
+          log.info("Found clients by keyword {}, total count: {}", dto.clientNumber(), totalCount);
+        });
   }
 
 }
