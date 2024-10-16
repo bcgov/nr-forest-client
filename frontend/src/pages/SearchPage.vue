@@ -18,12 +18,7 @@ import useSvg from "@/composables/useSvg";
 // @ts-ignore
 import Search16 from "@carbon/icons-vue/es/search/16";
 import { greenDomain } from "@/CoreConstants";
-import {
-  isAscii,
-  isMaxSizeMsg,
-  isMinSizeMsg,
-  optional,
-} from "@/helpers/validators/GlobalValidators";
+import { isAscii, isMaxSizeMsg, isMinSizeMsg } from "@/helpers/validators/GlobalValidators";
 
 const summitSvg = useSvg(summit);
 
@@ -134,7 +129,7 @@ const lowerCaseLabel = ariaLabel.toLowerCase();
 
 const validationsOnChange = [isAscii(lowerCaseLabel), isMaxSizeMsg(lowerCaseLabel, 50)];
 
-const validations = [optional(isMinSizeMsg(lowerCaseLabel, 3)), ...validationsOnChange];
+const validations = [isMinSizeMsg(lowerCaseLabel, 3), ...validationsOnChange];
 
 const skeletonReference = ref(null);
 
