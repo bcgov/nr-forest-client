@@ -1382,7 +1382,7 @@ cds-side-nav-items.lower-side-nav {
   align-items: stretch;
 }
 
-.submission-list,
+.table-list,
 .submission-content {
   padding: 2.5rem 0rem 2.5rem 16rem;
   display: flex;
@@ -1570,7 +1570,7 @@ But it's not working on Safari with dynamic updates.
   overflow: hidden;
 }
 
-.empty-submission-list {
+.empty-table-list {
   height: 16rem;
   background: var(--light-theme-layer-layer-01, #f3f3f5);
   display: flex;
@@ -1586,7 +1586,7 @@ But it's not working on Safari with dynamic updates.
   fill: var(--cds-button-primary, #0073e6);
 }
 
-.empty-submission-list .body-compact-01 {
+.empty-table-list .body-compact-01 {
   width: 22.5rem;
   text-align: center;
 }
@@ -1607,6 +1607,25 @@ div.internal-grouping-01 span.body-compact-01 ~ svg.warning path[data-icon-path=
 div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   font-weight: 900;
   background-color: color-mix(in srgb, var(--cds-support-warning) 40%, white);
+}
+
+#datatable {
+  position: relative;
+  right: 0;
+  overflow-x: scroll;
+}
+
+#search-line {
+  display: flex;
+  align-items: flex-end;
+
+  .grouping-02 {
+    flex-grow: 1;
+  }
+}
+
+#search-button {
+  width: 7.875rem;
 }
 
 /* Small (up to 671px) */
@@ -1797,7 +1816,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     margin: 0rem 1rem 2rem 1rem;
   }
 
-  .submission-list {
+  .table-list {
     padding: 2.5rem 0rem;
   }
 
@@ -1806,11 +1825,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   }
   .submission-details--title svg {
     width: 5rem;
-  }
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
   }
   cds-table {
     width: 82rem;
@@ -1909,7 +1923,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     margin-left: 1rem;
   }
 
-  .submission-list {
+  .table-list {
     padding: 2.5rem 0rem;
   }
 
@@ -1919,11 +1933,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
 
   .paginator {
     width: 100vw;
-  }
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
   }
   cds-table {
     width: 82rem;
@@ -1999,11 +2008,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     );
   }
 
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
-  }
   cds-table {
     min-width: 66rem;
   }

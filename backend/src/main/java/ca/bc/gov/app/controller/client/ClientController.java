@@ -1,15 +1,21 @@
 package ca.bc.gov.app.controller.client;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
+import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
+import ca.bc.gov.app.service.client.ClientLegacyService;
 import ca.bc.gov.app.service.client.ClientService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 import org.apache.commons.text.WordUtils;
+import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +33,7 @@ import reactor.core.publisher.Mono;
 public class ClientController {
 
   private final ClientService clientService;
+  private final ClientLegacyService clientLegacyService;
 
   @GetMapping("/{clientNumber}")
   public Mono<ClientDetailsDto> getClientDetails(
@@ -45,7 +52,44 @@ public class ClientController {
             JwtPrincipalUtil.getProvider(principal)
         );
   }
+  
+  @GetMapping("/search")
+  public Flux<ClientListDto> fullSearch(
+      @RequestParam(required = false, defaultValue = "0") int page,
+      @RequestParam(required = false, defaultValue = "10") int size,
+      @RequestParam(required = false, defaultValue = "") String keyword,
+      ServerHttpResponse serverResponse) {
+    
+    log.info("Listing clients: page={}, size={}, keyword={}", page, size, keyword);
+    
+    return clientLegacyService
+        .search(
+            page,
+            size,
+            keyword
+        )
+        .doOnNext(pair -> {
+          Long count = pair.getSecond();
 
+          serverResponse
+            .getHeaders()
+            .putIfAbsent(
+                ApplicationConstant.X_TOTAL_COUNT, 
+                List.of(count.toString())
+            );
+          }
+        )
+        .map(Pair::getFirst)
+        .doFinally(signalType -> 
+          serverResponse
+            .getHeaders()
+            .putIfAbsent(
+                ApplicationConstant.X_TOTAL_COUNT,
+                List.of("0")
+            )
+        );
+  }
+  
   /**
    * Retrieve a Flux of ClientLookUpDto objects by searching for clients with a specific name.
    *

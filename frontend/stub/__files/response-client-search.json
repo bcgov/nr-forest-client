@@ -1,0 +1,218 @@
+[
+  {
+    "clientNumber": "00001009",
+    "clientAcronym": "AINSLC",
+    "clientFullName": "AINSWORTH LUMBER CO. LTD.",
+    "clientType": "Corporation",
+    "city": "100 MILE HOUSE",
+    "clientStatus": "Deactivated",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001012",
+    "clientAcronym": "BELL",
+    "clientFullName": "BELL LUMBER & POLE CANADA, ULC",
+    "clientType": "Corporation",
+    "city": "VERNON",
+    "clientStatus": "Active",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001056",
+    "clientAcronym": "APOLLOFP",
+    "clientFullName": "APOLLO FOREST PRODUCTS LTD.",
+    "clientType": "Corporation",
+    "city": "FORT ST JAMES",
+    "clientStatus": "Active",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001064",
+    "clientAcronym": "ASPEN2",
+    "clientFullName": "ASPEN PLANERS LTD.",
+    "clientType": "Corporation",
+    "city": "SURREY",
+    "clientStatus": "Active",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001065",
+    "clientAcronym": "ATCOLTD",
+    "clientFullName": "ATCO LUMBER LTD.",
+    "clientType": "Corporation",
+    "city": "FRUITVALE",
+    "clientStatus": "Active",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001071",
+    "clientAcronym": "BCHYDRO",
+    "clientFullName": "BRITISH COLUMBIA HYDRO AND POWER AUTHORITY",
+    "clientType": "Government",
+    "city": "BURNABY",
+    "clientStatus": "Active",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001074",
+    "clientAcronym": "FCC",
+    "clientFullName": "NORSKE SKOG CANADA LIMITED",
+    "clientType": "Corporation",
+    "city": "VANCOUVER",
+    "clientStatus": "Deactivated",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001086",
+    "clientAcronym": "TOLKOL",
+    "clientFullName": "TOLKO INDUSTRIES LTD.",
+    "clientType": "Corporation",
+    "city": "KAMLOOPS",
+    "clientStatus": "Deactivated",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001109",
+    "clientAcronym": "LPENG",
+    "clientFullName": "LP ENGINEERED WOOD PRODUCTS LTD",
+    "clientType": "Corporation",
+    "city": "GOLDEN",
+    "clientStatus": "Deactivated",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001166",
+    "clientAcronym": "BBROS",
+    "clientFullName": "BOND BROTHERS SAWMILL LTD.",
+    "clientType": "Corporation",
+    "city": "HOUSTON",
+    "clientStatus": "Deactivated",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001188",
+    "clientAcronym": "BD",
+    "clientFullName": "BOYLE & DEAN LOGGING LTD.",
+    "clientType": "Corporation",
+    "city": "LANGLEY",
+    "clientStatus": "Deactivated",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001216",
+    "clientAcronym": "FBROUGHT",
+    "clientFullName": "BROUGHTON",
+    "clientType": "Individual",
+    "city": "QUESNEL",
+    "clientStatus": "Active",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001227",
+    "clientAcronym": "WFML",
+    "clientFullName": "WEST FRASER MILLS LTD.",
+    "clientType": "Corporation",
+    "city": "QUESNEL",
+    "clientStatus": "Deactivated",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001238",
+    "clientAcronym": "BUECKERT",
+    "clientFullName": "BUECKERT",
+    "clientType": "Individual",
+    "city": "CECIL LAKE",
+    "clientStatus": "Deceased",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001255",
+    "clientAcronym": "CRBLOG",
+    "clientFullName": "C.R.B. LOGGING CO. LTD.",
+    "clientType": "Corporation",
+    "city": "SQUAMISH",
+    "clientStatus": "Deactivated",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001271",
+    "clientAcronym": "CANFOR",
+    "clientFullName": "CANADIAN FOREST PRODUCTS LTD.",
+    "clientType": "Corporation",
+    "city": "VANCOUVER",
+    "clientStatus": "Active",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001278",
+    "clientAcronym": "WESTAR",
+    "clientFullName": "WESTAR TIMBER LTD.",
+    "clientType": "Corporation",
+    "city": "TERRACE",
+    "clientStatus": "Deactivated",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001294",
+    "clientAcronym": "CARNEY",
+    "clientFullName": "B.J. CARNEY & COMPANY, LIMITED",
+    "clientType": "Corporation",
+    "city": "CHASE",
+    "clientStatus": "Active",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001297",
+    "clientAcronym": "CARIER",
+    "clientFullName": "CARRIER LUMBER LTD.",
+    "clientType": "Corporation",
+    "city": "PRINCE GEORGE",
+    "clientStatus": "Active",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001302",
+    "clientAcronym": "CARTER",
+    "clientFullName": "CARTER",
+    "clientType": "Individual",
+    "city": "MISSION",
+    "clientStatus": "Active",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001310",
+    "clientAcronym": "CATERM",
+    "clientFullName": "CATTERMOLE TIMBER LTD.",
+    "clientType": "Corporation",
+    "city": "VANCOUVER",
+    "clientStatus": "Active",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001318",
+    "clientAcronym": "CELCREST",
+    "clientFullName": "CELCREST TIMBER LTD",
+    "clientType": "Corporation",
+    "city": "WYNNDEL",
+    "clientStatus": "Deactivated",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001391",
+    "clientAcronym": "COULSO",
+    "clientFullName": "COULSON FOREST PRODUCTS LIMITED",
+    "clientType": "Corporation",
+    "city": "PORT ALBERNI",
+    "clientStatus": "Suspended",
+    "count": 50
+  },
+  {
+    "clientNumber": "00001402",
+    "clientAcronym": "TEMBEC",
+    "clientFullName": "TEMBEC INDUSTRIES INC.",
+    "clientType": "Corporation",
+    "city": "FERNIE",
+    "clientStatus": "Deactivated",
+    "count": 50
+  }
+]

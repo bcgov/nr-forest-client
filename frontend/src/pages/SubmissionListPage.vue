@@ -118,7 +118,7 @@ const summitSvg = useSvg(summit);
 </script>
 
 <template>
-  <div id="screen" class="submission-list">
+  <div id="screen" class="table-list">
     <div id="title" v-if="userhasAuthority">
       <div>
         <div class="form-header-title mg-sd-25">
@@ -167,7 +167,7 @@ const summitSvg = useSvg(summit);
       />
     </div>
 
-    <div class="empty-submission-list" 
+    <div class="empty-table-list" 
         v-if="totalItems == 0 && userhasAuthority && !loading">
         <summit-svg alt="Summit pictogram" 
                     class="standard-svg"/>
