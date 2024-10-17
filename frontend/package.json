@@ -52,7 +52,7 @@
     "@carbon/icons-vue": "^10.99.1",
     "@carbon/pictograms": "^12.41.0",
     "@carbon/styles": "^1.67.0",
-    "@carbon/web-components": "^2.12.0",
+    "@carbon/web-components": "^2.14.0",
     "@vueuse/core": "^11.1.0",
     "aws-amplify": "^6.6.4",
     "axios": "^1.7.2",
