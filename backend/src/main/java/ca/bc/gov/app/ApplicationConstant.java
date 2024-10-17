@@ -106,6 +106,7 @@ public final class ApplicationConstant {
   public static final String ROLE_VIEWER = "CLIENT_VIEWER";
   public static final String ROLE_EDITOR = "CLIENT_EDITOR";
   public static final String ROLE_ADMIN = "CLIENT_ADMIN";
+  public static final String ROLE_SUSPEND = "CLIENT_SUSPEND";
 
   public static final String OPENDATA_FILTER = "<Filter><Or><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike></Or></Filter>";
 
