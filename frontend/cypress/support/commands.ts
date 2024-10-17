@@ -78,7 +78,7 @@ Cypress.Commands.add(
 
     const userId = generateRandomHex(32);
 
-    const roles = provider === "idir" ? ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"] : ["USER"];
+    const roles = provider === "idir" ? ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN", "CLIENT_SUSPEND"] : ["USER"];
 
     const jwtBody = {
       "custom:idp_display_name": name,
