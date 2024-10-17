@@ -213,14 +213,13 @@ onMounted(() => {
         <cds-table-head>
           <cds-table-header-row>
             <cds-table-header-cell />
-            <cds-table-header-cell class="client-number-column">
-              Client number
-            </cds-table-header-cell>
-            <cds-table-header-cell class="acronym-column">Acronym</cds-table-header-cell>
-            <cds-table-header-cell class="name-column">Name</cds-table-header-cell>
-            <cds-table-header-cell class="type-column">Type</cds-table-header-cell>
-            <cds-table-header-cell class="city-column">City</cds-table-header-cell>
-            <cds-table-header-cell class="status-column">Status</cds-table-header-cell>
+            <cds-table-header-cell class="col-6_75rem">Client number</cds-table-header-cell>
+            <cds-table-header-cell class="col-6_75rem">Acronym</cds-table-header-cell>
+            <cds-table-header-cell class="col-19_4375rem">Name</cds-table-header-cell>
+            <cds-table-header-cell class="col-14_75rem">Type</cds-table-header-cell>
+            <cds-table-header-cell class="col-14_75rem">City</cds-table-header-cell>
+            <cds-table-header-cell class="col-7_0625rem">Status</cds-table-header-cell>
+            <cds-table-header-cell />
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
@@ -240,6 +239,7 @@ onMounted(() => {
                 <cds-tag :type="tagColor(row.clientStatus)" title=""><span>{{ row.clientStatus }}</span></cds-tag>
               </div>
             </cds-table-cell>
+            <cds-table-cell />
           </cds-table-row>
         </cds-table-body>
       </cds-table>
