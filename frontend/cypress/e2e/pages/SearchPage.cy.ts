@@ -175,12 +175,14 @@ describe("Search Page", () => {
         cy.wait("@predictiveSearch");
         cy.get("#search-button").click();
       });
-      it("makes the API call with the entered keywords", () => {
+      it("makes one API call with the entered keywords", () => {
         cy.wait("@fullSearch").then((interception) => {
           const { query } = interception.request;
           expect(query.keyword).to.eq("car");
           expect(query.page).to.eq("0");
         });
+
+        cy.wait(100); // Waits additional time for a possible second API call
         cy.wrap(fullSearchCounter).its("count").should("eq", 1);
       });
 

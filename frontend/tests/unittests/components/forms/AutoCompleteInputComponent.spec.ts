@@ -137,8 +137,6 @@ describe("Auto Complete Input Component", () => {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     await setInputValue(wrapper.find(`#${id}`), "a");
     await wrapper.find(`#${id}`).trigger("blur");
 
@@ -146,8 +144,6 @@ describe("Auto Complete Input Component", () => {
     expect(wrapper.emitted("error")).toHaveLength(1);
     expect(wrapper.emitted("error")![0][0]).toBe(errorMessage);
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     await setInputValue(wrapper.find(`#${id}`), "ab"); // adds another character
     await wrapper.find(`#${id}`).trigger("blur");
 
@@ -275,8 +271,6 @@ describe("Auto Complete Input Component", () => {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     await setInputValue(wrapper.find(`#${id}`), "a");
     await wrapper.find(`#${id}`).trigger("blur");
 
@@ -297,8 +291,6 @@ describe("Auto Complete Input Component", () => {
         },
       });
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       await setInputValue(wrapper.find(`#${id}`), "");
 
       expect(wrapper.emitted("empty")).toBeTruthy();
@@ -383,6 +375,29 @@ describe("Auto Complete Input Component", () => {
     });
   });
 
+  it("sets the model value to an empty string, not undefined", async () => {
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: "",
+        contents,
+        validations: [],
+        label: id,
+        tip: "",
+      },
+    });
+
+    await wrapper.setProps({ modelValue: "T" });
+    await wrapper.find(`#${id}`).trigger("input");
+
+    // User initiated event to clear the value
+    await wrapper.find(`#${id}`).trigger("cds-combo-box-beingselected", eventClearContent());
+
+    expect(wrapper.emitted("update:model-value")).toBeTruthy();
+    expect(wrapper.emitted("update:model-value")).toHaveLength(2);
+    expect(wrapper.emitted("update:model-value")![1][0]).toEqual("");
+  });
+
   it('emits the "update:selected-value" event when an option from the list is clicked', async () => {
     const wrapper = mount(AutoCompleteInputComponent, {
       props: {
@@ -430,8 +445,6 @@ describe("Auto Complete Input Component", () => {
 
     it('emits the "update:selected-value" with undefined when user types something in the input field', async () => {
       // adding a 'Z' character to the end of the original value so to trigger an update:model-value
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       await setInputValue(wrapper.find(`#${id}`), "TANGOZ");
 
       expect(wrapper.emitted("update:selected-value")).toHaveLength(2);
