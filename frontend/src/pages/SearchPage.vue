@@ -18,7 +18,12 @@ import useSvg from "@/composables/useSvg";
 // @ts-ignore
 import Search16 from "@carbon/icons-vue/es/search/16";
 import { greenDomain } from "@/CoreConstants";
-import { isAscii, isMaxSizeMsg, isMinSizeMsg } from "@/helpers/validators/GlobalValidators";
+import {
+  isAscii,
+  isMaxSizeMsg,
+  isMinSizeMsg,
+  optional,
+} from "@/helpers/validators/GlobalValidators";
 
 const summitSvg = useSvg(summit);
 
@@ -34,7 +39,8 @@ const pageSize = ref(10);
 
 const searchKeyword = ref("");
 
-const valid = ref(!!searchKeyword.value);
+// empty is valid
+const valid = ref(true);
 
 const predictiveSearchUri = computed(
   () => `/api/clients/search?keyword=${encodeURIComponent(searchKeyword.value)}`,
@@ -129,7 +135,7 @@ const lowerCaseLabel = ariaLabel.toLowerCase();
 
 const validationsOnChange = [isAscii(lowerCaseLabel), isMaxSizeMsg(lowerCaseLabel, 50)];
 
-const validations = [isMinSizeMsg(lowerCaseLabel, 3), ...validationsOnChange];
+const validations = [optional(isMinSizeMsg(lowerCaseLabel, 3)), ...validationsOnChange];
 
 const skeletonReference = ref(null);
 
