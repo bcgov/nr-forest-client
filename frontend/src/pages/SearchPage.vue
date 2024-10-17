@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
+
+// Carbon
+import "@carbon/web-components/es/components/data-table/index";
+import "@carbon/web-components/es/components/button/index";
+import "@carbon/web-components/es/components/pagination/index";
+import "@carbon/web-components/es/components/select/index";
+import "@carbon/web-components/es/components/tag/index";
+
 import { useFetchTo } from "@/composables/useFetch";
 import type { ClientSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
-import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
+import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
 import summit from "@carbon/pictograms/es/summit";
 import useSvg from "@/composables/useSvg";
 
@@ -21,15 +29,18 @@ const summitSvg = useSvg(summit);
 
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN", "CLIENT_SUSPEND"].some(authority => ForestClientUserSession.authorities.includes(authority));
 
-let networkErrorMsg = ref("");
+const networkErrorMsg = ref("");
 
 // Table data
-const tableData = ref<ClientSearchResult[]>([]);
+const tableData = ref<ClientSearchResult[]>();
 const pageNumber = ref(1);
 const totalItems = ref(0);
 const pageSize = ref(10);
 
 const searchKeyword = ref("");
+
+// empty is valid
+const valid = ref(true);
 
 const predictiveSearchUri = computed(
   () => `/api/clients/search?keyword=${encodeURIComponent(searchKeyword.value)}`,
@@ -40,37 +51,62 @@ const fullSearchUri = computed(
     `/api/clients/search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
 
-const search = () => {
-  const { response, fetch, loading, error: fetchError } = useFetchTo(fullSearchUri, tableData);
-  if (!loading.value) fetch();
+const {
+  response: searchResponse,
+  fetch,
+  loading: loadingSearch,
+  error: searchError,
+} = useFetchTo(fullSearchUri, tableData, { skip: true });
 
-  watch(response, () => {
-    const totalCount = parseInt(response.value.headers["x-total-count"] || "0");
-    totalItems.value = totalCount;
-  });
+const search = (skipResetPage = false) => {
+  if (!valid.value) {
+    return;
+  }
 
-  watch([fetchError], () => {
-    if (fetchError.value.message) {
-      networkErrorMsg.value = fetchError.value.message;
-    }
-  });
+  // resets any error message
+  networkErrorMsg.value = "";
+
+  if (!skipResetPage) {
+    pageNumber.value = 1;
+  }
+  fetch();
 };
+
+watch(searchResponse, () => {
+  const totalCount = parseInt(searchResponse.value.headers["x-total-count"] || "0");
+  totalItems.value = totalCount;
+});
+
+watch([searchError], () => {
+  if (searchError.value.message) {
+    networkErrorMsg.value = searchError.value.message;
+  }
+});
 
 const tagColor = (status: string) => {
   switch (status) {
     case "Active":
       return "green";
-    case "Inactive":
-      return "red";
-    default:
+    case "Deactivated":
       return "purple";
+    case "Receivership":
+      return "magenta";
+    case "Suspended":
+      return "red";
+    case "Deceased":
+      return "gray";
+    default:
+      return "";
   }
 };
 
 const paginate = (event: any) => {
+  const hasPageChanged = event.detail.page !== pageNumber.value;
   pageNumber.value = event.detail.page;
   pageSize.value = event.detail.pageSize;
-  search();
+  if (hasPageChanged) {
+    search(true);
+  }
 };
 
 /**
@@ -101,7 +137,19 @@ const validationsOnChange = [isAscii(lowerCaseLabel), isMaxSizeMsg(lowerCaseLabe
 
 const validations = [optional(isMinSizeMsg(lowerCaseLabel, 3)), ...validationsOnChange];
 
-const valid = ref(!!searchKeyword.value);
+const skeletonReference = ref(null);
+
+const disableSkelleton = () => {
+  if (skeletonReference.value) {
+    skeletonReference.value.showHeader = false;
+    skeletonReference.value.showToolbar = false;
+  }
+};
+// This is to make the skelleton data-table to hide some elements
+onMounted(() => {
+  disableSkelleton();
+  watch(skeletonReference, disableSkelleton);
+});
 </script>
 
 <template>
@@ -157,25 +205,26 @@ const valid = ref(!!searchKeyword.value);
           @click:option="openClientDetails"
           @update:model-value="valid = false"
           @error="valid = !$event"
+          @press:enter="search()"
         />
       </data-fetcher>
-      <cds-button kind="primary" @click.prevent="search" id="search-button">
+      <cds-button kind="primary" @click.prevent="search()" id="search-button">
         <span>Search</span>
         <Search16 slot="icon" />
       </cds-button>
     </div>
     <div id="datatable" v-if="userhasAuthority">
 
-      <cds-table use-zebra-styles v-if="!loading">
+      <cds-table use-zebra-styles v-if="!loadingSearch">
         <cds-table-head>
           <cds-table-header-row>
             <cds-table-header-cell />
-            <cds-table-header-cell>Client number</cds-table-header-cell>
-            <cds-table-header-cell>Acronym</cds-table-header-cell>
-            <cds-table-header-cell>Name</cds-table-header-cell>
-            <cds-table-header-cell>Type</cds-table-header-cell>
-            <cds-table-header-cell>City</cds-table-header-cell>
-            <cds-table-header-cell>Status</cds-table-header-cell>
+            <cds-table-header-cell class="col-6_75rem">Client number</cds-table-header-cell>
+            <cds-table-header-cell class="col-6_75rem">Acronym</cds-table-header-cell>
+            <cds-table-header-cell class="col-19_4375rem">Name</cds-table-header-cell>
+            <cds-table-header-cell class="col-14_75rem">Type</cds-table-header-cell>
+            <cds-table-header-cell class="col-14_75rem">City</cds-table-header-cell>
+            <cds-table-header-cell class="col-7_0625rem">Status</cds-table-header-cell>
             <cds-table-header-cell />
           </cds-table-header-row>
         </cds-table-head>
@@ -187,10 +236,10 @@ const valid = ref(!!searchKeyword.value);
           >
             <cds-table-cell />
             <cds-table-cell><span>{{ row.clientNumber }}</span></cds-table-cell>
-            <cds-table-cell><span>{{ row.clientAcronym }}</span></cds-table-cell>
-            <cds-table-cell><span>{{ row.clientFullName }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ row.clientAcronym || "-" }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ toTitleCase(row.clientFullName) }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientType }}</span></cds-table-cell>
-            <cds-table-cell><span>{{ row.city }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ toTitleCase(row.city) }}</span></cds-table-cell>
             <cds-table-cell>
               <div>
                 <cds-tag :type="tagColor(row.clientStatus)" title=""><span>{{ row.clientStatus }}</span></cds-tag>
@@ -210,27 +259,32 @@ const valid = ref(!!searchKeyword.value);
       />
     </div>
 
-    <div class="empty-table-list" 
-        v-if="totalItems == 0 && userhasAuthority && !loading">
-        <summit-svg alt="Summit pictogram" 
-                    class="standard-svg"/>
-        <p class="heading-02">Nothing to show yet!</p>
-        <p class="body-compact-01">Enter at least one criteria to start the search.</p>
-        <p class="body-compact-01">The list will display here.</p>
+    <div
+      class="empty-table-list"
+      v-if="(!tableData || totalItems == 0) && userhasAuthority && !loadingSearch"
+    >
+      <summit-svg alt="Summit pictogram" class="standard-svg" />
+      <p class="heading-02">Nothing to show yet!</p>
+      <p class="body-compact-01">Enter at least one criteria to start the search.</p>
+      <p class="body-compact-01">The list will display here.</p>
     </div>
-    
+
     <div class="paginator" v-if="totalItems && userhasAuthority">
       <cds-pagination
-          items-per-page-text="Submissions per page"        
-          :page-size="pageSize" 
-          :total-items="totalItems"
-          @cds-pagination-changed-current="paginate"
-          >
-            <cds-select-item :value="10" selected>10</cds-select-item>
-            <cds-select-item :value="20">20</cds-select-item>
-            <cds-select-item :value="30">30</cds-select-item>
-            <cds-select-item :value="40">40</cds-select-item>
-            <cds-select-item :value="50">50</cds-select-item>
+        items-per-page-text="Clients per page"
+        :page="pageNumber"
+        :page-size="pageSize"
+        :total-items="totalItems"
+        @cds-pagination-changed-current="paginate"
+        :formatStatusWithDeterminateTotal="
+          ({ start, end, count }) => `${start}–${end} of ${count} client${count <= 1 ? '' : 's'}`
+        "
+      >
+        <cds-select-item :value="10" selected>10</cds-select-item>
+        <cds-select-item :value="20">20</cds-select-item>
+        <cds-select-item :value="30">30</cds-select-item>
+        <cds-select-item :value="40">40</cds-select-item>
+        <cds-select-item :value="50">50</cds-select-item>
       </cds-pagination>
     </div>
 

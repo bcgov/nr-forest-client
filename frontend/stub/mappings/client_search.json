@@ -43,6 +43,25 @@
       }
     },
     {
+      "name": "Autocompete Predictive Search empty",
+      "request": {
+        "urlPath": "/api/clients/search",
+        "method": "GET",
+        "queryParameters": {
+          "keyword": {
+            "matches": "empty"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "content-type": "application/json;charset=UTF-8"
+        },
+        "body": "[]"
+      }
+    },
+    {
       "name": "Full Search pageable (keyword, page and size)",
       "request": {
         "urlPath": "/api/clients/search",
@@ -62,9 +81,68 @@
       "response": {
         "status": 200,
         "headers": {
-          "content-type": "application/json;charset=UTF-8"
+          "x-total-count": "30",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
         },
-        "bodyFileName": "response-client-search-page{{request.query.page}}.json"
+        "bodyFileName": "response-client-search-page{{request.query.page}}.json",
+        "fixedDelayMilliseconds": 2000
+      }
+    },
+    {
+      "name": "Full Search empty results",
+      "request": {
+        "urlPath": "/api/clients/search",
+        "method": "GET",
+        "queryParameters": {
+          "keyword": {
+            "matches": "empty"
+          },
+          "page": {
+            "matches": "^[0-5]$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "0",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "body": "[]",
+        "fixedDelayMilliseconds": 2000
+      }
+    },
+    {
+      "name": "Full Search error",
+      "request": {
+        "urlPath": "/api/clients/search",
+        "method": "GET",
+        "queryParameters": {
+          "keyword": {
+            "matches": "error"
+          },
+          "page": {
+            "matches": "^[0-5]$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "x-total-count": "0",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "body": "Page not found",
+        "fixedDelayMilliseconds": 500
       }
     }
   ]

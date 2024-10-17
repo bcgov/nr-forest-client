@@ -5,21 +5,73 @@ describe("Search Page", () => {
     count: 0,
   };
 
-  const checkDisplayedResults = (clientList: ClientSearchResult[]) => {
-    clientList.forEach((client) => {
+  const fullSearchCounter = {
+    count: 0,
+  };
+
+  const checkAutocompleteResults = (clientList: ClientSearchResult[]) => {
+    clientList.forEach((client, index) => {
       cy.get("#search-box")
-        .find(`cds-combo-box-item[data-value^="${client.clientNumber}"]`)
-        .should("exist");
+        .find("cds-combo-box-item")
+        .eq(index)
+        .should("exist")
+        .should("have.attr", "data-id", client.clientNumber);
     });
   };
-  beforeEach(() => {
-    // reset counter
-    predictiveSearchCounter.count = 0;
 
-    cy.intercept("/api/clients/search?keyword=*", (req) => {
-      predictiveSearchCounter.count++;
-      req.continue();
-    }).as("predictiveSearch");
+  const checkTableResults = (clientList: ClientSearchResult[]) => {
+    clientList.forEach((client, index) => {
+      cy.get("cds-table")
+        .find("cds-table-row")
+        .eq(index)
+        .contains(client.clientNumber)
+        .should("be.visible");
+
+      const acronymColumnIndex = 3;
+
+      // only the first client has an acronym
+      const expectedValue = index === 0 ? client.clientAcronym : "-";
+
+      cy.get("cds-table")
+        .find("cds-table-row")
+        .eq(index)
+        .find(`cds-table-cell:nth-child(${acronymColumnIndex})`)
+        .contains(expectedValue)
+        .should("be.visible");
+    });
+  };
+
+  beforeEach(() => {
+    // reset counters
+    predictiveSearchCounter.count = 0;
+    fullSearchCounter.count = 0;
+
+    cy.intercept(
+      {
+        pathname: "/api/clients/search",
+        query: {
+          keyword: "*",
+        },
+      },
+      (req) => {
+        predictiveSearchCounter.count++;
+        req.continue();
+      },
+    ).as("predictiveSearch");
+
+    cy.intercept(
+      {
+        pathname: "/api/clients/search",
+        query: {
+          page: "*",
+          size: "*",
+        },
+      },
+      (req) => {
+        fullSearchCounter.count++;
+        req.continue();
+      },
+    ).as("fullSearch");
 
     cy.viewport(1920, 1080);
     cy.visit("/");
@@ -63,7 +115,7 @@ describe("Search Page", () => {
           .should("have.length", data.length)
           .should("be.visible");
 
-        checkDisplayedResults(data);
+        checkAutocompleteResults(data);
       });
     });
 
@@ -91,12 +143,12 @@ describe("Search Page", () => {
             .should("have.length", data.length)
             .should("be.visible");
 
-          checkDisplayedResults(data);
+          checkAutocompleteResults(data);
         });
       });
     });
 
-    describe("and user clicks a result", () => {
+    describe("and user clicks an Autocomplete result", () => {
       const clientNumber = "00054076";
       beforeEach(() => {
         cy.get("#search-box")
@@ -116,6 +168,136 @@ describe("Search Page", () => {
         );
       });
     });
+
+    describe("and clicks the Search button", () => {
+      beforeEach(() => {
+        cy.wait("@predictiveSearch");
+        cy.get("#search-button").click();
+      });
+      it("makes one API call with the entered keywords", () => {
+        cy.wait("@fullSearch").then((interception) => {
+          const { query } = interception.request;
+          expect(query.keyword).to.eq("car");
+          expect(query.page).to.eq("0");
+        });
+
+        cy.wait(100); // Waits additional time to make sure there's no duplicate API calls.
+        cy.wrap(fullSearchCounter).its("count").should("eq", 1);
+      });
+
+      it("displays the results on the table", () => {
+        cy.wait("@fullSearch").then((interception) => {
+          const data = interception.response.body;
+
+          cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
+
+          cy.get("cds-table")
+            .find("cds-table-row")
+            .should("have.length", data.length)
+            .should("be.visible");
+
+          checkTableResults(data);
+        });
+      });
+
+      describe("and user clicks a result on the table", () => {
+        const clientNumber = "00191086";
+        beforeEach(() => {
+          cy.get("cds-table").contains("cds-table-row", clientNumber).click();
+        });
+        it("navigates to the client details", () => {
+          const greenDomain = "green-domain.com";
+          cy.get("@windowOpen").should(
+            "be.calledWith",
+            `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
+            "_blank",
+            "noopener",
+          );
+        });
+      });
+
+      describe("and clicks the Next page button on the table footer", () => {
+        beforeEach(() => {
+          cy.wait("@fullSearch");
+          cy.get('[tooltip-text="Next page"]').click();
+        });
+        it("makes an API call for the second page of results", () => {
+          cy.wait("@fullSearch").then((interception) => {
+            const { query } = interception.request;
+            expect(query.keyword).to.eq("car");
+            expect(query.page).to.eq("1");
+          });
+          cy.wrap(fullSearchCounter).its("count").should("eq", 2);
+        });
+
+        it("updates the results on the table", () => {
+          cy.wait("@fullSearch").then((interception) => {
+            const data = interception.response.body;
+
+            cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
+
+            cy.get("cds-table")
+              .find("cds-table-row")
+              .should("have.length", data.length)
+              .should("be.visible");
+
+            checkTableResults(data);
+          });
+        });
+
+        describe("and clicks the Search button again", () => {
+          beforeEach(() => {
+            cy.wait("@fullSearch");
+
+            // sanity check
+            cy.get("#pages-select").should("have.value", "2");
+
+            cy.get("#search-button").click();
+          });
+          it("makes a new API call for the first page of results", () => {
+            cy.wait("@fullSearch").then((interception) => {
+              const { query } = interception.request;
+              expect(query.keyword).to.eq("car");
+              expect(query.page).to.eq("0");
+            });
+            cy.wrap(fullSearchCounter).its("count").should("eq", 3);
+          });
+
+          it("updates the results on the table", () => {
+            cy.wait("@fullSearch").then((interception) => {
+              // reset to page 1
+              cy.get("#pages-select").should("have.value", "1");
+
+              const data = interception.response.body;
+
+              cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
+
+              cy.get("cds-table")
+                .find("cds-table-row")
+                .should("have.length", data.length)
+                .should("be.visible");
+
+              checkTableResults(data);
+            });
+          });
+        });
+      });
+    });
+
+    describe("and hits enter on the search box", () => {
+      beforeEach(() => {
+        cy.wait("@predictiveSearch");
+        cy.fillFormEntry("#search-box", "{enter}", { skipBlur: true });
+      });
+      it("makes the API call with the entered keywords", () => {
+        cy.wait("@fullSearch").then((interception) => {
+          const { query } = interception.request;
+          expect(query.keyword).to.eq("car");
+          expect(query.page).to.eq("0");
+        });
+        cy.wrap(fullSearchCounter).its("count").should("eq", 1);
+      });
+    });
   });
 
   describe("when user fills in the search box with an invalid value", () => {
@@ -129,6 +311,70 @@ describe("Search Page", () => {
     it("makes no API call", () => {
       cy.wait(500); // This time has to be greater than the debouncing time
       cy.wrap(predictiveSearchCounter).its("count").should("eq", 0);
+    });
+
+    describe("and clicks the Search button", () => {
+      beforeEach(() => {
+        cy.get("#search-button").click();
+      });
+      it("makes no API call", () => {
+        cy.wait(500); // This time has to be greater than the debouncing time
+        cy.wrap(fullSearchCounter).its("count").should("eq", 0);
+      });
+    });
+  });
+
+  describe("Search with no keywords", () => {
+    beforeEach(() => {
+      cy.get("#search-button").click();
+    });
+    it("makes an API call even without any keywords", () => {
+      cy.wait("@fullSearch").then((interception) => {
+        const { query } = interception.request;
+        expect(query.keyword).to.eq("");
+        expect(query.page).to.eq("0");
+      });
+    });
+  });
+
+  describe("when the API is returning errors", () => {
+    beforeEach(() => {
+      // The "error" value actually triggers the error response
+      cy.fillFormEntry("#search-box", "error");
+    });
+    describe("and user clicks the Search button", () => {
+      beforeEach(() => {
+        cy.get("#search-button").click();
+      });
+
+      it("displays an error notification", () => {
+        cy.wait("@fullSearch");
+
+        cy.get("cds-actionable-notification")
+          .shadow()
+          .contains("Something went wrong")
+          .should("be.visible");
+      });
+
+      describe("and the API stops returning errors", () => {
+        beforeEach(() => {
+          cy.wait("@fullSearch");
+
+          // Replacing the "error" value actually triggers a successful response
+          cy.fillFormEntry("#search-box", "okay");
+        });
+        describe("and user clicks the Search button", () => {
+          beforeEach(() => {
+            cy.get("#search-button").click();
+          });
+
+          it("hides the error notification", () => {
+            cy.wait("@fullSearch");
+
+            cy.get("cds-actionable-notification").should("not.exist");
+          });
+        });
+      });
     });
   });
 });

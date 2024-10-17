@@ -38,6 +38,29 @@ describe("Auto Complete Input Component", () => {
     await inputWrapper.trigger("input");
   };
 
+  const selectItemWithKeyboard = async (
+    inputWrapper: DOMWrapper<HTMLInputElement>,
+    value: string,
+  ) => {
+    /*
+    This reproduces artificially what happens when an item is selected using the keyboard.
+    A cds-combo-box-beingselected happens before the corresponding keypress event.
+    */
+    await inputWrapper.trigger("cds-combo-box-beingselected", eventSelectContent(value));
+
+    await inputWrapper.trigger("keypress.enter");
+  };
+
+  const selectItemWithMouse = async (inputWrapper: DOMWrapper<HTMLInputElement>, value: string) => {
+    /*
+    This reproduces artificially what happens when an item is selected using the mouse.
+    The click event on the item happens before the cds-combo-box-beingselected.
+    */
+    await inputWrapper.find(`cds-combo-box-item[data-id="${value}"]`).trigger("click");
+
+    await inputWrapper.trigger("cds-combo-box-beingselected", eventSelectContent(value));
+  };
+
   const mount: typeof baseMount = function (inputComponent, options) {
     const wrapper = baseMount(inputComponent, options);
     const comboBox = wrapper.find(`#${id}`);
@@ -114,8 +137,6 @@ describe("Auto Complete Input Component", () => {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     await setInputValue(wrapper.find(`#${id}`), "a");
     await wrapper.find(`#${id}`).trigger("blur");
 
@@ -123,8 +144,6 @@ describe("Auto Complete Input Component", () => {
     expect(wrapper.emitted("error")).toHaveLength(1);
     expect(wrapper.emitted("error")![0][0]).toBe(errorMessage);
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     await setInputValue(wrapper.find(`#${id}`), "ab"); // adds another character
     await wrapper.find(`#${id}`).trigger("blur");
 
@@ -252,8 +271,6 @@ describe("Auto Complete Input Component", () => {
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     await setInputValue(wrapper.find(`#${id}`), "a");
     await wrapper.find(`#${id}`).trigger("blur");
 
@@ -274,8 +291,6 @@ describe("Auto Complete Input Component", () => {
         },
       });
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       await setInputValue(wrapper.find(`#${id}`), "");
 
       expect(wrapper.emitted("empty")).toBeTruthy();
@@ -360,6 +375,29 @@ describe("Auto Complete Input Component", () => {
     });
   });
 
+  it("sets the model value to an empty string, not undefined", async () => {
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: "",
+        contents,
+        validations: [],
+        label: id,
+        tip: "",
+      },
+    });
+
+    await wrapper.setProps({ modelValue: "T" });
+    await wrapper.find(`#${id}`).trigger("input");
+
+    // User initiated event to clear the value
+    await wrapper.find(`#${id}`).trigger("cds-combo-box-beingselected", eventClearContent());
+
+    expect(wrapper.emitted("update:model-value")).toBeTruthy();
+    expect(wrapper.emitted("update:model-value")).toHaveLength(2);
+    expect(wrapper.emitted("update:model-value")![1][0]).toEqual("");
+  });
+
   it('emits the "update:selected-value" event when an option from the list is clicked', async () => {
     const wrapper = mount(AutoCompleteInputComponent, {
       props: {
@@ -407,8 +445,6 @@ describe("Auto Complete Input Component", () => {
 
     it('emits the "update:selected-value" with undefined when user types something in the input field', async () => {
       // adding a 'Z' character to the end of the original value so to trigger an update:model-value
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       await setInputValue(wrapper.find(`#${id}`), "TANGOZ");
 
       expect(wrapper.emitted("update:selected-value")).toHaveLength(2);
@@ -439,6 +475,97 @@ describe("Auto Complete Input Component", () => {
       expect(wrapper.emitted("update:selected-value")![1][0]).toEqual(
         contents[1]
       );
+    });
+  });
+
+  it('emits the "press:enter" event', async () => {
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: "",
+        contents,
+        validations: [],
+        label: id,
+      },
+    });
+
+    await wrapper.find(`#${id}`).trigger("keypress.enter");
+
+    expect(wrapper.emitted("press:enter")).toHaveLength(1);
+  });
+
+  it("doesn't emit the \"press:enter\" event when it's a selection with the keyboard", async () => {
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: "",
+        contents,
+        validations: [],
+        label: id,
+      },
+    });
+
+    selectItemWithKeyboard(wrapper.find(`#${id}`), "TB");
+
+    expect(wrapper.emitted("press:enter")).toBeFalsy();
+  });
+
+  describe("when user selects an item using the enter key on the keyboard", () => {
+    let wrapper: VueWrapper<any, any>;
+
+    beforeEach(async () => {
+      wrapper = mount(AutoCompleteInputComponent, {
+        props: {
+          id,
+          modelValue: "",
+          contents,
+          validations: [],
+          label: id,
+        },
+      });
+
+      selectItemWithKeyboard(wrapper.find(`#${id}`), "TB");
+
+      // sanity check
+      expect(wrapper.emitted("press:enter")).toBeFalsy();
+    });
+
+    describe("and later hits enter on the input field", () => {
+      beforeEach(async () => {
+        await wrapper.find(`#${id}`).trigger("keypress.enter");
+      });
+
+      it('emits the "press:enter" event', async () => {
+        expect(wrapper.emitted("press:enter")).toHaveLength(1);
+      });
+    });
+  });
+
+  describe("when user selects an item with a click", () => {
+    let wrapper: VueWrapper<any, any>;
+
+    beforeEach(async () => {
+      wrapper = mount(AutoCompleteInputComponent, {
+        props: {
+          id,
+          modelValue: "",
+          contents,
+          validations: [],
+          label: id,
+        },
+      });
+
+      selectItemWithMouse(wrapper.find(`#${id}`), "TA");
+    });
+
+    describe("and later hits enter on the input field", () => {
+      beforeEach(async () => {
+        await wrapper.find(`#${id}`).trigger("keypress.enter");
+      });
+
+      it('emits the "press:enter" event', async () => {
+        expect(wrapper.emitted("press:enter")).toHaveLength(1);
+      });
     });
   });
 });

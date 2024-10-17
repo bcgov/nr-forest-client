@@ -42,6 +42,7 @@ const emit = defineEmits<{
   (e: "update:model-value", value: string): void;
   (e: "update:selected-value", value: BusinessSearchResult | undefined): void;
   (e: "click:option", value: string): void;
+  (e: "press:enter"): void;
 }>();
 
 //We initialize the error message handling for validation
@@ -113,7 +114,7 @@ const emitValueChange = (newValue: string, isSelectEvent = false): void => {
       : undefined;
   }
 
-  emit("update:model-value", selectedValue?.name ?? newValue);
+  emit("update:model-value", selectedValue?.name ?? newValue ?? "");
   emit("update:selected-value", selectedValue);
   emit("empty", isEmpty(newValue));
 };
@@ -185,6 +186,9 @@ const validateInput = (newValue: string, validations = props.validations) => {
   }
 };
 
+const isClickSelectEvent = ref(false);
+const isKeyboardSelectEvent = ref(false);
+
 const selectAutocompleteItem = (event: any) => {
   const newValue = event?.detail?.item?.getAttribute("data-id");
   emitValueChange(newValue, true);
@@ -192,6 +196,13 @@ const selectAutocompleteItem = (event: any) => {
 };
 
 const preSelectAutocompleteItem = (event: any) => {
+  if (!isClickSelectEvent.value) {
+    isKeyboardSelectEvent.value = true;
+  }
+
+  // resets the flag
+  isClickSelectEvent.value = false;
+
   if (event?.detail?.item) {
     const newValue = event?.detail?.item?.getAttribute("data-id");
     emit("click:option", newValue);
@@ -199,6 +210,20 @@ const preSelectAutocompleteItem = (event: any) => {
       event?.preventDefault();
     }
   }
+};
+
+const onPressEnter = () => {
+  // prevents emitting the event when this is a selection with the keyboard
+  if (!isKeyboardSelectEvent.value) {
+    emit("press:enter");
+  }
+
+  // resets the flag
+  isKeyboardSelectEvent.value = false;
+};
+
+const onItemClick = () => {
+  isClickSelectEvent.value = true;
 };
 
 const onTyping = (event: any) => {
@@ -314,6 +339,7 @@ const safeHelperText = computed(() => props.tip || " ");
             validateInput(event.srcElement._filterInputValue);
           }
         "
+        @keypress.enter="onPressEnter"
         :data-focus="id"
         :data-scroll="id"
         :data-id="'input-' + id"
@@ -327,6 +353,7 @@ const safeHelperText = computed(() => props.tip || " ");
           :value="getComboBoxItemValue(item)"
           v-shadow
           :data-loading="item.name === loadingName"
+          @click="onItemClick"
         >
           <template v-if="item.name === loadingName">
             <cds-inline-loading />

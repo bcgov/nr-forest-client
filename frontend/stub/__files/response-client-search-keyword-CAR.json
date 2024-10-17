@@ -2,7 +2,7 @@
   {
     "clientNumber": "00049695",
     "clientAcronym": null,
-    "clientName": "CARLY Carleton CARGO",
+    "clientFullName": "CARLY Carleton CARGO",
     "clientType": "Individual",
     "city": "WILLIAMS LAKE",
     "clientStatus": "Active",
@@ -11,7 +11,7 @@
   {
     "clientNumber": "00054076",
     "clientAcronym": null,
-    "clientName": "CARYL Cassie CARLOW",
+    "clientFullName": "CARYL Cassie CARLOW",
     "clientType": "Individual",
     "city": "CAMPBELL RIVER",
     "clientStatus": "Active",
@@ -20,7 +20,7 @@
   {
     "clientNumber": "00025941",
     "clientAcronym": null,
-    "clientName": "CAREY Calista CARDON",
+    "clientFullName": "CAREY Calista CARDON",
     "clientType": "Individual",
     "city": "WILLIAMS LAKE",
     "clientStatus": "Active",
@@ -29,7 +29,7 @@
   {
     "clientNumber": "00010998",
     "clientAcronym": null,
-    "clientName": "CARLO Carri CAMERO",
+    "clientFullName": "CARLO Carri CAMERO",
     "clientType": "Individual",
     "city": "VANCOUVER",
     "clientStatus": "Active",
@@ -38,7 +38,7 @@
   {
     "clientNumber": "00116666",
     "clientAcronym": null,
-    "clientName": "CARMA Carie CARRILO",
+    "clientFullName": "CARMA Carie CARRILO",
     "clientType": "Individual",
     "city": "WESTBRIDGE",
     "clientStatus": "Active",
@@ -47,7 +47,7 @@
   {
     "clientNumber": "00153340",
     "clientAcronym": null,
-    "clientName": "CHARIS Chucho CARSON",
+    "clientFullName": "CHARIS Chucho CARSON",
     "clientType": "Individual",
     "city": "PORT MCNEILL",
     "clientStatus": "Active",
@@ -56,7 +56,7 @@
   {
     "clientNumber": "00015449",
     "clientAcronym": null,
-    "clientName": "CATHERINE Chaim CAREY",
+    "clientFullName": "CATHERINE Chaim CAREY",
     "clientType": "Individual",
     "city": "CAMPBELL RIVER",
     "clientStatus": "Active",
@@ -65,7 +65,7 @@
   {
     "clientNumber": "00142058",
     "clientAcronym": null,
-    "clientName": "CARROLL Carrie CARRICK",
+    "clientFullName": "CARROLL Carrie CARRICK",
     "clientType": "Individual",
     "city": "WINFIELD",
     "clientStatus": "Active",
@@ -74,7 +74,7 @@
   {
     "clientNumber": "00131543",
     "clientAcronym": null,
-    "clientName": "CAROLYN Casey CARCAMO",
+    "clientFullName": "CAROLYN Casey CARCAMO",
     "clientType": "Individual",
     "city": "TAPPEN",
     "clientStatus": "Active",
@@ -83,7 +83,7 @@
   {
     "clientNumber": "00112109",
     "clientAcronym": null,
-    "clientName": "CARLITOS Candi CARRETTA",
+    "clientFullName": "CARLITOS Candi CARRETTA",
     "clientType": "Individual",
     "city": "WHONNOCK",
     "clientStatus": "Active",
