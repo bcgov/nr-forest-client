@@ -63,7 +63,6 @@ describe("Search Page", () => {
       {
         pathname: "/api/clients/search",
         query: {
-          keyword: "*",
           page: "*",
           size: "*",
         },
@@ -182,7 +181,7 @@ describe("Search Page", () => {
           expect(query.page).to.eq("0");
         });
 
-        cy.wait(100); // Waits additional time for a possible second API call
+        cy.wait(100); // Waits additional time to make sure there's no duplicate API calls.
         cy.wrap(fullSearchCounter).its("count").should("eq", 1);
       });
 
@@ -321,6 +320,19 @@ describe("Search Page", () => {
       it("makes no API call", () => {
         cy.wait(500); // This time has to be greater than the debouncing time
         cy.wrap(fullSearchCounter).its("count").should("eq", 0);
+      });
+    });
+  });
+
+  describe("Search with no keywords", () => {
+    beforeEach(() => {
+      cy.get("#search-button").click();
+    });
+    it("makes an API call even without any keywords", () => {
+      cy.wait("@fullSearch").then((interception) => {
+        const { query } = interception.request;
+        expect(query.keyword).to.eq("");
+        expect(query.page).to.eq("0");
       });
     });
   });
