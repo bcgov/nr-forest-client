@@ -51,6 +51,7 @@ describe("Search Page", () => {
         pathname: "/api/clients/search",
         query: {
           keyword: "*",
+          size: "5", // Asserts we only ask for 5 results in the predictive search
         },
       },
       (req) => {

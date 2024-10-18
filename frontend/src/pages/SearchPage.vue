@@ -47,7 +47,7 @@ const searchKeyword = ref("");
 const valid = ref(true);
 
 const predictiveSearchUri = computed(
-  () => `/api/clients/search?keyword=${encodeURIComponent(searchKeyword.value)}`,
+  () => `/api/clients/search?size=5&keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
 
 const fullSearchUri = computed(
@@ -123,7 +123,7 @@ const searchResultToCodeName = (searchResult: ClientSearchResult): CodeNameType 
   const { clientNumber, clientFullName, clientType, city, clientStatus } = searchResult;
   const result = {
     code: clientNumber,
-    name: `${clientNumber}, ${clientFullName}, ${clientType}, ${city} (${clientStatus})`,
+    name: `${toTitleCase(`${clientNumber}, ${clientFullName}, ${clientType}, ${city}`)} (${clientStatus})`,
   };
   return result;
 };
