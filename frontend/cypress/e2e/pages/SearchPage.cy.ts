@@ -324,6 +324,24 @@ describe("Search Page", () => {
     });
   });
 
+  describe("when user fills in the search box with less than 3 characters", () => {
+    beforeEach(() => {
+      cy.fillFormEntry("#search-box", "12", { skipBlur: true });
+    });
+
+    describe("and hits enter on the search box", () => {
+      beforeEach(() => {
+        cy.fillFormEntry("#search-box", "{enter}", { skipBlur: true });
+      });
+      it("shows error message and makes no API call", () => {
+        cy.contains("The search terms must contain at least 3 characters");
+
+        cy.wait(500); // This time has to be greater than the debouncing time
+        cy.wrap(fullSearchCounter).its("count").should("eq", 0);
+      });
+    });
+  });
+
   describe("Search with no keywords", () => {
     beforeEach(() => {
       cy.get("#search-button").click();

@@ -10,6 +10,8 @@ import "@carbon/web-components/es/components/select/index";
 import "@carbon/web-components/es/components/tag/index";
 
 import { useFetchTo } from "@/composables/useFetch";
+import { useEventBus } from "@vueuse/core";
+
 import type { ClientSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
 import summit from "@carbon/pictograms/es/summit";
@@ -24,6 +26,8 @@ import {
   isMinSizeMsg,
   optional,
 } from "@/helpers/validators/GlobalValidators";
+
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const summitSvg = useSvg(summit);
 
@@ -53,12 +57,14 @@ const fullSearchUri = computed(
 
 const {
   response: searchResponse,
-  fetch,
+  fetch: fetchSearch,
   loading: loadingSearch,
   error: searchError,
 } = useFetchTo(fullSearchUri, tableData, { skip: true });
 
 const search = (skipResetPage = false) => {
+  revalidateBus.emit();
+
   if (!valid.value) {
     return;
   }
@@ -69,7 +75,7 @@ const search = (skipResetPage = false) => {
   if (!skipResetPage) {
     pageNumber.value = 1;
   }
-  fetch();
+  fetchSearch();
 };
 
 watch(searchResponse, () => {
