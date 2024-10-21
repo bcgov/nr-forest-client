@@ -29,12 +29,14 @@ const openClientDetails = (clientNumber: string) => {
       </p>
       <div class="form-group-buttons">
         <cds-button
+          id="openClientDtlsBtnId"
           kind="tertiary"
           v-on:click="openClientDetails(clientNumber)"
           size="field">
           <span>View client details</span>
         </cds-button>
         <cds-button
+          id="createAnotherClientBtnId"
           kind="primary"
           href="/new-client-staff"
           size="field">
