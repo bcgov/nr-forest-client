@@ -42,7 +42,7 @@ if (query.ref && query.ref === "individual") {
   
     <div class="spacing"></div>
   
-    <div class="form-footer-group-buttons" v-if="!hideIdirBtnInd">
+    <div class="form-group-buttons" v-if="!hideIdirBtnInd">
       <cds-button
         kind="primary"
         iconLayout=""
@@ -106,7 +106,7 @@ if (query.ref && query.ref === "individual") {
   object-position: 50% 0;
 }
 
-.form-footer-group-buttons {
+.form-group-buttons {
   flex-wrap: wrap;
 }
 
@@ -122,7 +122,7 @@ if (query.ref && query.ref === "individual") {
     flex: auto;
   }
 
-  .login-content .form-footer-group-buttons {
+  .login-content .form-group-buttons {
     flex-direction: column;
   }
 }
@@ -139,7 +139,7 @@ if (query.ref && query.ref === "individual") {
     flex: auto;
   }
 
-  .login-content .form-footer-group-buttons {
+  .login-content .form-group-buttons {
     flex-direction: column;
   }
 }

@@ -803,7 +803,7 @@ cds-actionable-notification * {
   gap: 1rem;
 }
 
-.form-footer-group-buttons {
+.form-group-buttons {
   display: flex;
   gap: 1rem;
 }
@@ -1762,7 +1762,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     align-self: stretch;
   }
 
-  .form-footer-group-buttons {
+  .form-group-buttons {
     flex-direction: column-reverse;
     justify-content: flex-end;
     align-items: stretch;
@@ -2041,11 +2041,11 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     margin-left: 16rem;
   }
 
-  div.form-footer-group-buttons {
+  div.form-group-buttons {
     gap: 0.5rem;
   }
 
-  div.form-footer-group-buttons cds-button {
+  div.form-group-buttons cds-button {
     margin-top: 1rem;
   }
 

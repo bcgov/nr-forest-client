@@ -3,6 +3,7 @@
 import useSvg from "@/composables/useSvg";
 // @ts-ignore
 import badgePictogram from "@carbon/pictograms/es/badge";
+import { greenDomain } from "@/CoreConstants";
 
 defineProps<{
   clientNumber: string;
@@ -10,6 +11,12 @@ defineProps<{
 }>();
 const SVG = useSvg(badgePictogram);
 
+const openClientDetails = (clientNumber: string) => {
+  if (clientNumber) {
+    const url = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`;
+    window.open(url, "_blank", "noopener");
+  }
+};
 </script>
 
 <template>
@@ -20,12 +27,20 @@ const SVG = useSvg(badgePictogram);
       <p class="fluid-paragraph-01">
         We’ll send the client number and details submitted to <strong>{{ clientEmail }}</strong>
       </p>
-      <cds-button
-        kind="primary"
-        href="/new-client-staff"
-        size="field">
-        <span>Create another client</span>
-      </cds-button>
+      <div class="form-group-buttons">
+        <cds-button
+          kind="tertiary"
+          v-on:click="openClientDetails(clientNumber)"
+          size="field">
+          <span>View client details</span>
+        </cds-button>
+        <cds-button
+          kind="primary"
+          href="/new-client-staff"
+          size="field">
+          <span>Create another client</span>
+        </cds-button>
+      </div>
     </div>
   </div>
 </template>

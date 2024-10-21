@@ -20,7 +20,7 @@ const SVG = useSvg(badgePictogram);
       <p class="fluid-paragraph-01">
         We’ll send the client number and submission details to <strong>{{ clientEmail }}</strong> when the process is complete.
       </p>
-      <div class="form-footer-group-buttons">
+      <div class="form-group-buttons">
         <cds-button
           kind="tertiary"
           :href="`/submissions/${submissionId}`"
