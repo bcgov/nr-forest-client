@@ -148,9 +148,10 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       LEFT JOIN the.CLIENT_STATUS_CODE csc ON c.client_status_code = csc.client_status_code
       WHERE
         cl.CLIENT_LOCN_CODE = '00'
+        AND (c.update_timestamp >= :date OR c.add_timestamp >= :date)
       ORDER BY c.ADD_TIMESTAMP DESC
       OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
-  Flux<PredictiveSearchResultDto> findByEmptyFullSearch(int limit, long offset);
+  Flux<PredictiveSearchResultDto> findByEmptyFullSearch(int limit, long offset, LocalDateTime date);
   
   @Query("""
       SELECT
@@ -161,7 +162,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       LEFT JOIN the.CLIENT_LOCATION cl ON c.client_number = cl.client_number
       LEFT JOIN the.CLIENT_STATUS_CODE csc ON c.client_status_code = csc.client_status_code
       WHERE
-        cl.CLIENT_LOCN_CODE = '00'""")
-  Mono<Long> countByEmptyFullSearch();
+        cl.CLIENT_LOCN_CODE = '00'
+        AND (c.update_timestamp >= :date OR c.add_timestamp >= :date)""")
+  Mono<Long> countByEmptyFullSearch(LocalDateTime date);
   
 }
