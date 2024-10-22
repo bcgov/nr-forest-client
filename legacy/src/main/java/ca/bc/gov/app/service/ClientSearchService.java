@@ -3,6 +3,7 @@ package ca.bc.gov.app.service;
 import static org.springframework.data.relational.core.query.Criteria.where;
 
 import ca.bc.gov.app.ApplicationConstants;
+import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDto;
@@ -19,6 +20,7 @@ import ca.bc.gov.app.repository.ForestClientLocationRepository;
 import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,6 +58,7 @@ public class ClientSearchService {
   private final ForestClientLocationRepository locationRepository;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> forestClientMapper;
   private final R2dbcEntityTemplate template;
+  private final ForestClientConfiguration configuration;
 
   /**
    * This method is used to find clients based on their registration number or company name. It
@@ -557,10 +560,18 @@ public class ClientSearchService {
   public Flux<Pair<PredictiveSearchResultDto, Long>> latestEntries(Pageable page) {
     return
         forestClientRepository
-            .countByEmptyFullSearch()
+            .countByEmptyFullSearch(
+                LocalDateTime
+                    .now()
+                    .minus(configuration.getData().getPredictiveCap())
+            )
             .flatMapMany(count ->
                 forestClientRepository
-                    .findByEmptyFullSearch(page.getPageSize(), page.getOffset())
+                    .findByEmptyFullSearch(
+                        page.getPageSize(),
+                        page.getOffset(),
+                        LocalDateTime.now().minus(configuration.getData().getPredictiveCap())
+                    )
                     .doOnNext(dto -> log.info("Found complex empty search as {} {} with score {}",
                         dto.clientNumber(), dto.clientFullName(), dto.score()))
                     .map(dto -> Pair.of(dto, count))

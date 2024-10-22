@@ -95,6 +95,8 @@ ca:
           password: ${ORACLEDB_PASSWORD:passwd}
           keystore: ${ORACLEDB_KEYSTORE:jssecacerts.jks}
           secret: ${ORACLEDB_SECRET:changeit}
+        data:
+          predictiveCap: ${PREDICTIVE_CAP:7D}
 
 logging:
   pattern:
