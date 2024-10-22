@@ -101,6 +101,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           OR (c.client_type_code = 'I' AND (
               UTL_MATCH.JARO_WINKLER_SIMILARITY(TRIM(COALESCE(c.legal_first_name || ' ', '') || COALESCE(c.legal_middle_name || ' ', '') || COALESCE(c.client_name, '')),:value) >= 90
               OR UTL_MATCH.JARO_WINKLER_SIMILARITY(TRIM(COALESCE(c.legal_first_name || ' ', '') || COALESCE(c.client_name, '')),:value) >= 90
+              OR UTL_MATCH.JARO_WINKLER_SIMILARITY(TRIM(COALESCE(c.client_name || ' ', '') || COALESCE(c.legal_middle_name || ' ', '') || COALESCE(c.legal_first_name, '')),:value) >= 90
+      		    OR UTL_MATCH.JARO_WINKLER_SIMILARITY(TRIM(COALESCE(c.client_name || ' ', '') || COALESCE(c.legal_first_name, '')),:value) >= 90
             )
           )
         )  AND
