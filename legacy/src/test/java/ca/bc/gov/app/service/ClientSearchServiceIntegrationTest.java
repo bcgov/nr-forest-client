@@ -12,6 +12,7 @@ import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.List;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -108,7 +109,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
       String expectedClientName
   ) {
 
-    FirstStep<PredictiveSearchResultDto> test =
+    FirstStep<Pair<PredictiveSearchResultDto,Long>> test =
         service
             .complexSearch(searchValue, PageRequest.of(0, 5))
             .as(StepVerifier::create);
@@ -117,8 +118,10 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
       test
           .assertNext(dto -> {
             assertNotNull(dto);
-            assertEquals(expectedClientNumber, dto.clientNumber());
-            assertEquals(expectedClientName, dto.name());
+            assertEquals(expectedClientNumber, dto.getKey().clientNumber());
+            assertEquals(expectedClientName, dto.getKey().clientFullName());
+            assertNotNull(dto.getValue());
+            assertEquals(1, dto.getValue());
           });
     }
           test.verifyComplete();

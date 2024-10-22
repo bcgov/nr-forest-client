@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -533,22 +534,37 @@ public class ClientSearchService {
         );
   }
 
-  public Flux<PredictiveSearchResultDto> complexSearch(String value, Pageable page) {
+  public Flux<Pair<PredictiveSearchResultDto, Long>> complexSearch(String value, Pageable page) {
     // This condition is for predictive search, and we will stop here if no query param is provided
     if (StringUtils.isBlank(value)) {
       return Flux.error(new MissingRequiredParameterException("value"));
     }
-    return forestClientRepository
-        .findByPredictiveSearch(value.toUpperCase(), page.getPageSize(), page.getOffset())
-        .doOnNext(dto -> log.info("Found complex search for value {} as {} {} with score {}", 
-            value, dto.clientNumber(), dto.name(), dto.score()));
+    return
+        forestClientRepository
+            .countByPredictiveSearch(value.toUpperCase())
+            .flatMapMany(count ->
+                forestClientRepository
+                    .findByPredictiveSearch(value.toUpperCase(), page.getPageSize(),
+                        page.getOffset())
+                    .doOnNext(
+                        dto -> log.info("Found complex search for value {} as {} {} with score {}",
+                            value, dto.clientNumber(), dto.clientFullName(), dto.score())
+                    )
+                    .map(dto -> Pair.of(dto, count))
+            );
   }
 
-  public Flux<PredictiveSearchResultDto> latestEntries(Pageable page) {
-    return forestClientRepository
-        .findByEmptyFullSearch(page.getPageSize(), page.getOffset())
-        .doOnNext(dto -> log.info("Found complex empty search as {} {} with score {}",
-            dto.clientNumber(), dto.name(), dto.score()));
+  public Flux<Pair<PredictiveSearchResultDto, Long>> latestEntries(Pageable page) {
+    return
+        forestClientRepository
+            .countByEmptyFullSearch()
+            .flatMapMany(count ->
+                forestClientRepository
+                    .findByEmptyFullSearch(page.getPageSize(), page.getOffset())
+                    .doOnNext(dto -> log.info("Found complex empty search as {} {} with score {}",
+                        dto.clientNumber(), dto.clientFullName(), dto.score()))
+                    .map(dto -> Pair.of(dto, count))
+            );
   }
 
   /**

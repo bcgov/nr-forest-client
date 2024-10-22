@@ -17,6 +17,7 @@ import LandingPage from "@/pages/LandingPage.vue";
 import ErrorPage from "@/pages/ErrorPage.vue";
 import NotFoundPage from "@/pages/NotFoundPage.vue";
 import LogoutPage from "@/pages/LogoutPage.vue";
+import SearchPage from "@/pages/SearchPage.vue";
 
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -178,6 +179,28 @@ export const routes = [
       style: "content-stretched",
       headersStyle: "headers-compact",
       sideMenu: true,
+      profile: true,
+    },
+  },
+  {
+    path: "/search",
+    name: "search",
+    component: SearchPage,
+    props: true,
+    meta: {
+      format: "full",
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ["idir"],
+      redirectTo: {
+        bceidbusiness: "form",
+        bcsc: "form",
+      },
+      style: "content-stretched",
+      headersStyle: "headers-compact",
+      sideMenu: true,
+      featureFlagged: "STAFF_SEARCH",
       profile: true,
     },
   },

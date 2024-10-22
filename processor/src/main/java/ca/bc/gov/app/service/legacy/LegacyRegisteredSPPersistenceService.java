@@ -75,14 +75,14 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
             )
 
             //if Staff submitted, get the client name from the submission as doing business as
-            .doOnNext(submissionDetail -> {
+            .doOnNext(submissionDetail ->
               atomicClientName.set(
                   Optional
                       .ofNullable(submissionDetail.getDoingBusinessAs())
                       .filter(StringUtils::isNotBlank)
                       .orElse(submissionDetail.getOrganizationName())
-              );
-            })
+              )
+            )
 
             .map(submissionDetail ->
                 getBaseForestClient(

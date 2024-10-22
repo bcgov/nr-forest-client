@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -307,6 +309,38 @@ public class ClientLegacyService {
                     client.clientNumber())
             );
   }
+  
+  public Flux<Pair<ClientListDto, Long>> search(int page, int size, String keyword) {
+    log.info(
+        "Searching clients by keyword {} with page {} and size {}", 
+        keyword, 
+        page, 
+        size
+    );
 
+    return legacyApi
+        .get()
+        .uri(builder -> 
+              builder
+                .path("/api/search")
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .queryParam("value", keyword)
+                .build(Map.of())
+        )
+        .exchangeToFlux(response -> {
+          List<String> totalCountHeader = response.headers().header("X-Total-Count");
+          Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
+
+          return response
+              .bodyToFlux(ClientListDto.class)
+              .map(dto -> Pair.of(dto, count));
+        })
+        .doOnNext(pair -> {
+          ClientListDto dto = pair.getFirst();
+          Long totalCount = pair.getSecond();
+          log.info("Found clients by keyword {}, total count: {}", dto.clientNumber(), totalCount);
+        });
+  }
 
 }

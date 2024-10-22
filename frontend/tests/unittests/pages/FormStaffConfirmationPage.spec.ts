@@ -31,9 +31,9 @@ describe('FormStaffConfirmationPage.vue', () => {
 	expect(svg.exists()).toBe(true);
   });
 
-  it('checks button existence and href attribute', () => {
+  it('checks create another client button existence and href attribute', () => {
 	const wrapper = createComponent({ clientNumber: '123', clientEmail: 'test@example.com' });
-	const button = wrapper.find('cds-button');
+	const button = wrapper.find('#createAnotherClientBtnId');
 	expect(button.exists()).toBe(true);
 	expect(button.attributes('href')).toBe('/new-client-staff');
   });

@@ -15,6 +15,7 @@ const props = withDefaults(
   defineProps<{
     id: string;
     label: string;
+    ariaLabel?: string;
     tip?: string;
     placeholder?: string;
     modelValue: string;
@@ -26,6 +27,8 @@ const props = withDefaults(
     required?: boolean;
     requiredLabel?: boolean;
     autocomplete?: string;
+    validationsOnChange?: boolean | Array<Function>;
+    preventSelection?: boolean;
   }>(),
   {
     showLoadingAfterTime: 2000,
@@ -38,6 +41,8 @@ const emit = defineEmits<{
   (e: "empty", value: boolean): void;
   (e: "update:model-value", value: string): void;
   (e: "update:selected-value", value: BusinessSearchResult | undefined): void;
+  (e: "click:option", value: string): void;
+  (e: "press:enter"): void;
 }>();
 
 //We initialize the error message handling for validation
@@ -90,6 +95,15 @@ const inputList = computed<Array<BusinessSearchResult>>(() => {
   return [];
 });
 
+const validationsOnChange = computed(() => {
+  if (props.validationsOnChange) {
+    return typeof props.validationsOnChange === "boolean"
+      ? props.validations
+      : props.validationsOnChange;
+  }
+  return false;
+});
+
 //This function emits the events on update
 const emitValueChange = (newValue: string, isSelectEvent = false): void => {
   let selectedValue: BusinessSearchResult | undefined;
@@ -100,7 +114,7 @@ const emitValueChange = (newValue: string, isSelectEvent = false): void => {
       : undefined;
   }
 
-  emit("update:model-value", selectedValue?.name ?? newValue);
+  emit("update:model-value", selectedValue?.name ?? newValue ?? "");
   emit("update:selected-value", selectedValue);
   emit("empty", isEmpty(newValue));
 };
@@ -127,6 +141,9 @@ watch(
 watch([inputValue], () => {
   if (isUserEvent.value) {
     emitValueChange(inputValue.value);
+    if (validationsOnChange.value) {
+      validateInput(inputValue.value, validationsOnChange.value);
+    }
   }
 });
 
@@ -155,10 +172,10 @@ const setError = (errorObject: string | ValidationMessageType | undefined) => {
 };
 
 //We call all the validations
-const validateInput = (newValue: string) => {
-  if (props.validations) {
+const validateInput = (newValue: string, validations = props.validations) => {
+  if (validations) {
     setError(
-      props.validations
+      validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
           if (errorMessage) return true;
@@ -169,10 +186,44 @@ const validateInput = (newValue: string) => {
   }
 };
 
+const isClickSelectEvent = ref(false);
+const isKeyboardSelectEvent = ref(false);
+
 const selectAutocompleteItem = (event: any) => {
   const newValue = event?.detail?.item?.getAttribute("data-id");
   emitValueChange(newValue, true);
   validateInput(newValue);
+};
+
+const preSelectAutocompleteItem = (event: any) => {
+  if (!isClickSelectEvent.value) {
+    isKeyboardSelectEvent.value = true;
+  }
+
+  // resets the flag
+  isClickSelectEvent.value = false;
+
+  if (event?.detail?.item) {
+    const newValue = event?.detail?.item?.getAttribute("data-id");
+    emit("click:option", newValue);
+    if (props.preventSelection) {
+      event?.preventDefault();
+    }
+  }
+};
+
+const onPressEnter = () => {
+  // prevents emitting the event when this is a selection with the keyboard
+  if (!isKeyboardSelectEvent.value) {
+    emit("press:enter");
+  }
+
+  // resets the flag
+  isKeyboardSelectEvent.value = false;
+};
+
+const onItemClick = () => {
+  isClickSelectEvent.value = true;
 };
 
 const onTyping = (event: any) => {
@@ -242,7 +293,7 @@ watch(
       if (input) {
         // Propagate attributes to the input
         input.required = props.required;
-        input.ariaLabel = props.label;
+        input.ariaLabel = props.ariaLabel || props.label;
         input.ariaInvalid = ariaInvalidString.value;
 
         // Use the helper text as a field description
@@ -265,7 +316,7 @@ const safeHelperText = computed(() => props.tip || " ");
         :class="warning ? 'warning' : ''"
         :autocomplete="autocomplete"
         :title-text="label"
-        :aria-label="label"
+        :aria-label="ariaLabel || label"
         :clear-selection-label="`Clear ${label}`"
         :required="required"
         :data-required-label="requiredLabel"
@@ -279,6 +330,7 @@ const safeHelperText = computed(() => props.tip || " ");
         :warn="warning"
         :warn-text="warning && error"
         @cds-combo-box-selected="selectAutocompleteItem"
+        @cds-combo-box-beingselected="preSelectAutocompleteItem"
         v-on:input="onTyping"
         @focus="isFocused = true"
         @blur="
@@ -287,6 +339,7 @@ const safeHelperText = computed(() => props.tip || " ");
             validateInput(event.srcElement._filterInputValue);
           }
         "
+        @keypress.enter="onPressEnter"
         :data-focus="id"
         :data-scroll="id"
         :data-id="'input-' + id"
@@ -300,6 +353,7 @@ const safeHelperText = computed(() => props.tip || " ");
           :value="getComboBoxItemValue(item)"
           v-shadow
           :data-loading="item.name === loadingName"
+          @click="onItemClick"
         >
           <template v-if="item.name === loadingName">
             <cds-inline-loading />

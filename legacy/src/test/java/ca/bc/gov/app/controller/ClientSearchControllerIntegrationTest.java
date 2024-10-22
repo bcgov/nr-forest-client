@@ -305,11 +305,13 @@ class ClientSearchControllerIntegrationTest extends
     if (StringUtils.isNotBlank(expectedClientNumber)) {
       response
           .expectStatus().isOk()
+          .expectHeader()
+          .exists("X-Total-Count")
           .expectBody()
           .jsonPath("$[0].clientNumber").isNotEmpty()
           .jsonPath("$[0].clientNumber").isEqualTo(expectedClientNumber)
           .jsonPath("$[0].clientName").isNotEmpty()
-          .jsonPath("$[0].name").isEqualTo(expectedClientName)
+          .jsonPath("$[0].clientFullName").isEqualTo(expectedClientName)
           .consumeWith(System.out::println);
     } else {
       response.expectStatus().isOk()
@@ -338,6 +340,8 @@ class ClientSearchControllerIntegrationTest extends
 
       response
           .expectStatus().isOk()
+          .expectHeader()
+          .exists("X-Total-Count")
           .expectBody()
           .jsonPath("$[0].clientNumber").isNotEmpty()
           .jsonPath("$[0].clientName").isNotEmpty()

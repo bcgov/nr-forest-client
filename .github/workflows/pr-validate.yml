@@ -22,7 +22,7 @@ jobs:
   validate:
     name: Validate PR
     needs: [vars]
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.7.1
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.8.1
     with:
       markdown_links: |
         Any successful deployments (not always required) will be available [here](https://${{ github.event.repository.name }}-${{ needs.vars.outputs.url }}-frontend.apps.silver.devops.gov.bc.ca/)
@@ -60,7 +60,7 @@ jobs:
 
       - name: Comment PR
         continue-on-error: true
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         with:
           message: |

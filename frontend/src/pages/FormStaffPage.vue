@@ -665,7 +665,7 @@ watch(submissionLimitError, () => {
             <span class="body-compact-01" v-if="!isLast && !progressData[currentTab].valid">
               All required fields must be filled out correctly to enable the "Next" button below
             </span>
-            <div class="form-footer-group-buttons">
+            <div class="form-group-buttons">
               <cds-button
                 v-if="isFirst"
                 kind="secondary"

@@ -1,8 +1,17 @@
 @use "sass:map";
 @use "@carbon/styles";
+@use '@carbon/styles/scss/theme';
+@use '@carbon/themes';
 @use "@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss" as typeFamily;
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/light-tags.scss' as light-tag-overrides;
+
+// adds cds-tag related tokens
+@include theme.add-component-tokens(light-tag-overrides.$light-tag-token-overrides);
 
 :root {
+  // the empty list passed in prevents from emitting the full theme
+  @include themes.theme(());
+
   --others-transparent-transparent: rgba(255, 255, 255, 0);
   --light-theme-border-subtle-01: #dfdfe1;
   --light-theme-button-button-primary: #0073e6;
@@ -794,7 +803,7 @@ cds-actionable-notification * {
   gap: 1rem;
 }
 
-.form-footer-group-buttons {
+.form-group-buttons {
   display: flex;
   gap: 1rem;
 }
@@ -1382,7 +1391,7 @@ cds-side-nav-items.lower-side-nav {
   align-items: stretch;
 }
 
-.submission-list,
+.table-list,
 .submission-content {
   padding: 2.5rem 0rem 2.5rem 16rem;
   display: flex;
@@ -1486,6 +1495,22 @@ cds-table-header-cell {
   width: 1.5rem;
 }
 
+.col-6_75rem {
+  width: 6.75rem;
+}
+
+.col-19_4375rem {
+  width: 19.4375rem;
+}
+
+.col-14_75rem {
+  width: 14.75rem;
+}
+
+.col-7_0625rem {
+  width: 7.0625rem;
+}
+
 cds-pagination {
   border-radius: 0px 0px 4px 4px;
   border-top: 1px solid var(--light-theme-border-border-subtle-01, #dfdfe1);
@@ -1570,7 +1595,7 @@ But it's not working on Safari with dynamic updates.
   overflow: hidden;
 }
 
-.empty-submission-list {
+.empty-table-list {
   height: 16rem;
   background: var(--light-theme-layer-layer-01, #f3f3f5);
   display: flex;
@@ -1586,7 +1611,7 @@ But it's not working on Safari with dynamic updates.
   fill: var(--cds-button-primary, #0073e6);
 }
 
-.empty-submission-list .body-compact-01 {
+.empty-table-list .body-compact-01 {
   width: 22.5rem;
   text-align: center;
 }
@@ -1607,6 +1632,25 @@ div.internal-grouping-01 span.body-compact-01 ~ svg.warning path[data-icon-path=
 div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   font-weight: 900;
   background-color: color-mix(in srgb, var(--cds-support-warning) 40%, white);
+}
+
+#datatable {
+  position: relative;
+  right: 0;
+  overflow-x: scroll;
+}
+
+#search-line {
+  display: flex;
+  align-items: flex-end;
+
+  .grouping-02 {
+    flex-grow: 1;
+  }
+}
+
+#search-button {
+  width: 7.875rem;
 }
 
 /* Small (up to 671px) */
@@ -1718,7 +1762,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     align-self: stretch;
   }
 
-  .form-footer-group-buttons {
+  .form-group-buttons {
     flex-direction: column-reverse;
     justify-content: flex-end;
     align-items: stretch;
@@ -1797,7 +1841,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     margin: 0rem 1rem 2rem 1rem;
   }
 
-  .submission-list {
+  .table-list {
     padding: 2.5rem 0rem;
   }
 
@@ -1806,11 +1850,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   }
   .submission-details--title svg {
     width: 5rem;
-  }
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
   }
   cds-table {
     width: 82rem;
@@ -1909,7 +1948,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     margin-left: 1rem;
   }
 
-  .submission-list {
+  .table-list {
     padding: 2.5rem 0rem;
   }
 
@@ -1919,11 +1958,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
 
   .paginator {
     width: 100vw;
-  }
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
   }
   cds-table {
     width: 82rem;
@@ -1999,11 +2033,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     );
   }
 
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
-  }
   cds-table {
     min-width: 66rem;
   }
@@ -2012,11 +2041,11 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     margin-left: 16rem;
   }
 
-  div.form-footer-group-buttons {
+  div.form-group-buttons {
     gap: 0.5rem;
   }
 
-  div.form-footer-group-buttons cds-button {
+  div.form-group-buttons cds-button {
     margin-top: 1rem;
   }
 

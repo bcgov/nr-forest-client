@@ -57,8 +57,7 @@ public class LegacyService {
             null,
             "N",
             StringUtils.defaultString(detail.getNotes()),
-            ApplicationConstant.PROCESSOR_USER_NAME,
-            ApplicationConstant.PROCESSOR_USER_NAME,
+            user, user,
             ApplicationConstant.ORG_UNIT,
             ApplicationConstant.ORG_UNIT
         );
@@ -71,8 +70,6 @@ public class LegacyService {
     return postRequestToLegacy(
         "/api/contacts",
         dto
-            .withCreatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
-            .withUpdatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
     )
         .thenReturn(dto.clientNumber());
   }
@@ -81,8 +78,6 @@ public class LegacyService {
     return postRequestToLegacy(
         "/api/clients",
         dto
-            .withCreatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
-            .withUpdatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
     );
   }
 
@@ -97,8 +92,8 @@ public class LegacyService {
         new ClientDoingBusinessAsDto(
             clientNumber,
             doingBusinessAsName,
-            Objects.toString(createdBy,ApplicationConstant.PROCESSOR_USER_NAME),
-            Objects.toString(updatedBy,ApplicationConstant.PROCESSOR_USER_NAME),
+            Objects.toString(createdBy, ApplicationConstant.PROCESSOR_USER_NAME),
+            Objects.toString(updatedBy, ApplicationConstant.PROCESSOR_USER_NAME),
             ApplicationConstant.ORG_UNIT
         )
     )

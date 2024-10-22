@@ -262,8 +262,8 @@ public abstract class LegacyAbstractPersistenceService {
                     StringUtils.EMPTY
                 ),
                 submissionContact.getEmailAddress(),
-                ApplicationConstant.PROCESSOR_USER_NAME,
-                ApplicationConstant.PROCESSOR_USER_NAME,
+                getUser(message, ApplicationConstant.CREATED_BY),
+                getUser(message, ApplicationConstant.UPDATED_BY),
                 ApplicationConstant.ORG_UNIT
             )
         )

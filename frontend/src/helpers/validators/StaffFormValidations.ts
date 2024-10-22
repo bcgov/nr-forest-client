@@ -10,7 +10,6 @@ import {
   hasOnlyNamingCharacters,
   isNoSpecialCharacters,
   isIdCharacters,
-  isExactSize,
   formFieldValidations as externalFormFieldValidations,
   isAscii,
   isEmail,
@@ -20,6 +19,9 @@ import {
   isNotEmptyArray,
   validate as globalValidate,
   runValidation as globalRunValidation,
+  isMaxSizeMsg,
+  isMinSizeMsg,
+  isExactSizMsg,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -36,15 +38,6 @@ const fieldValidations: Record<string, ((value: any) => string)[]> = {
 // This function will return all validators for the field
 export const getValidations = (key: string): ((value: any) => string)[] =>
   key ? fieldValidations[key] || [] : [];
-
-const isMinSizeMsg = (fieldName: string, minSize: number) =>
-  isMinSize(`The ${fieldName} must contain at least ${minSize} characters`)(minSize);
-
-const isMaxSizeMsg = (fieldName: string, maxSize: number) =>
-  isMaxSize(`The ${fieldName} has a ${maxSize} character limit`)(maxSize);
-
-const isExactSizMsg = (fieldName: string, size: number) => 
-  isExactSize(`The ${fieldName} must contain ${size} characters`)(size);
 
 // Step 1: Business Information
 fieldValidations["businessInformation.clientType"] = [
