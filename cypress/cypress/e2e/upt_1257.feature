@@ -12,7 +12,7 @@ Feature: Client Type Code
     Then I select "BC registered business" from the "Client type" form input
     And I type "strucan" and select "STRUCAN LLP" from the "Client name" form autocomplete
     Then I wait for the text "This information is from BC Registries" to appear
-    Then I click on the "Next" button
+    Then I click on next
     And I fill the "Primary location" address with the following
       | Field name                      | Value           | Type          |      
       | Street address or PO box        | 1015 Johnson    | autocomplete  |
@@ -20,7 +20,7 @@ Feature: Client Type Code
       | Primary phone number            | 7780000001      | text          |
       | Secondary phone number          | 7780000002      | text          |
       | Notes                           | This is a test  | textbox       |
-    Then I click on the "Next" button
+    Then I click on next
     And I fill the "Primary contact" information with the following
       | Field name                      | Value           | Type          |  
       | First name                      | Testy           | text          | 
@@ -30,6 +30,6 @@ Feature: Client Type Code
       | Contact type                    | Billing         | select        |
       | Location name                   | Home            | multiselect   |
       | Location name                   | Mailing address | multiselect   |
-    And I click on the "Next" button
+    And I click on next
     Then I click on "Create client"
     And I wait for the text "has been created!" to appear
