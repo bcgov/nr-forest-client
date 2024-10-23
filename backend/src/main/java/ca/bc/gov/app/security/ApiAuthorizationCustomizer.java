@@ -35,6 +35,7 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN,
             ApplicationConstant.USERTYPE_SERVICE_USER);
+    
     authorize
         .pathMatchers(HttpMethod.OPTIONS, "/api/clients/matches/**")
         .hasAnyRole(
@@ -152,14 +153,6 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
             ApplicationConstant.USERTYPE_BCSC_USER);
 
-    // Viewer, editor and admin can GET from the clients submissions endpoint
-    authorize
-        .pathMatchers(HttpMethod.GET, "/api/clients/submissions/**")
-        .hasAnyRole(
-            ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN);
-
     // BCeIDBusiness, BCSC, viewer, editor and admin users can GET from the clients endpoint
     authorize
         .pathMatchers(HttpMethod.GET, "/api/clients/**")
@@ -168,9 +161,18 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.USERTYPE_BCSC_USER,
             ApplicationConstant.ROLE_VIEWER,
             ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
+    
+    // Viewer, editor and admin can GET from the clients submissions endpoint
+    authorize
+        .pathMatchers(HttpMethod.GET, "/api/clients/submissions/**")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN);
     
-    // Viewer, editor, suspend and admin users can GET from the clients endpoint
+    // Viewer, editor, suspend and admin users can GET from the clients search endpoint
     authorize
         .pathMatchers(HttpMethod.GET, "/api/clients/search/**")
         .hasAnyRole(
