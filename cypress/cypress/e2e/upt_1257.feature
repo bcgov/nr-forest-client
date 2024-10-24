@@ -30,5 +30,5 @@ Feature: Client Type Code
       | Contact type                    | Billing         | select        |
       | Location name                   | Mailing address | multiselect   |
     And I click on next
-    Then I click on "Create client"
+    Then I submit
     And I wait for the text "has been created!" to appear
