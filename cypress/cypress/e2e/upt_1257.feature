@@ -28,7 +28,6 @@ Feature: Client Type Code
       | Email address                   | mail5@mail.ca   | text          |
       | Primary phone number            | 7780000007      | text          |      
       | Contact type                    | Billing         | select        |
-      | Location name                   | Home            | multiselect   |
       | Location name                   | Mailing address | multiselect   |
     And I click on next
     Then I click on "Create client"
