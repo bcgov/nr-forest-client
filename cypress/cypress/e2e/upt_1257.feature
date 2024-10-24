@@ -16,17 +16,17 @@ Feature: Client Type Code
     And I fill the "Primary location" address with the following
       | Field name                      | Value           | Type          |      
       | Street address or PO box        | 1015 Johnson    | autocomplete  |
-      | Email address                   | mail2@mail.ca   | text          |
-      | Primary phone number            | 7780000001      | text          |
-      | Secondary phone number          | 7780000002      | text          |
+      | Email address                   | mail4@mail.ca   | text          |
+      | Primary phone number            | 7780000005      | text          |
+      | Secondary phone number          | 7780000006      | text          |
       | Notes                           | This is a test  | textbox       |
     Then I click on next
     And I fill the "Primary contact" information with the following
       | Field name                      | Value           | Type          |  
       | First name                      | Testy           | text          | 
 	    | Last name                       | Tester          | text          |
-      | Email address                   | mail3@mail.ca   | text          |
-      | Primary phone number            | 7780000003      | text          |      
+      | Email address                   | mail5@mail.ca   | text          |
+      | Primary phone number            | 7780000007      | text          |      
       | Contact type                    | Billing         | select        |
       | Location name                   | Home            | multiselect   |
       | Location name                   | Mailing address | multiselect   |
