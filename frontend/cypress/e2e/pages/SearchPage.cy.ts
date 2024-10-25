@@ -157,7 +157,7 @@ describe("Search Page", () => {
           .should("have.length.greaterThan", 0)
           .should("be.visible");
 
-        cy.get("#search-box").find(`cds-combo-box-item[data-value^="${clientNumber}"]`).click();
+        cy.get("#search-box").find(`cds-combo-box-item[data-id="${clientNumber}"]`).click();
       });
       it("navigates to the client details", () => {
         const greenDomain = "green-domain.com";

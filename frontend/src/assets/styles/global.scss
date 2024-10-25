@@ -1642,11 +1642,35 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
 
 #search-line {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
+  min-height: 4.5rem;
 
   .grouping-02 {
     flex-grow: 1;
   }
+}
+
+#search-box {
+  --row-height: 2.875rem;
+
+  cds-combo-box-item {
+    block-size: var(--row-height);
+  }
+
+  &::part(menu-body) {
+    max-block-size: calc(5 * var(--row-height));
+  }
+
+  &::part(cds--combo-box), &::part(input) {
+    border-bottom-width: 0;
+  }
+}
+
+.search-result-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: -0.0625rem 0;
 }
 
 #search-button {

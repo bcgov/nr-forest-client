@@ -12,7 +12,7 @@ import "@carbon/web-components/es/components/tag/index";
 import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
 
-import type { ClientSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
+import type { ClientSearchResult, CodeNameValue } from "@/dto/CommonTypesDto";
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
 import summit from "@carbon/pictograms/es/summit";
 import useSvg from "@/composables/useSvg";
@@ -116,15 +116,26 @@ const paginate = (event: any) => {
 };
 
 /**
- * Converts a client search result to a code/name representation.
+ * Converts a client search result to a code/name/value representation.
  * @param searchResult The client search result
  */
-const searchResultToCodeName = (searchResult: ClientSearchResult): CodeNameType => {
-  const { clientNumber, clientFullName, clientType, city, clientStatus } = searchResult;
+const searchResultToCodeNameValue = (
+  searchResult: ClientSearchResult,
+): CodeNameValue<ClientSearchResult> => {
+  const { clientNumber, clientFullName } = searchResult;
   const result = {
     code: clientNumber,
-    name: `${toTitleCase(`${clientNumber}, ${clientFullName}, ${clientType}, ${city}`)} (${clientStatus})`,
+    name: clientFullName,
+    value: searchResult,
   };
+  return result;
+};
+
+const searchResultToCodeNameValueList = (list: ClientSearchResult[]) => list.map(searchResultToCodeNameValue);
+
+const searchResultToText = (searchResult: ClientSearchResult): string => {
+  const { clientNumber, clientFullName, clientType, city } = searchResult;
+  const result = toTitleCase(`${clientNumber}, ${clientFullName}, ${clientType}, ${city}`);
   return result;
 };
 
@@ -160,7 +171,6 @@ onMounted(() => {
 
 <template>
   <div id="screen" class="table-list">
-
     <div id="title" v-if="userhasAuthority">
       <div>
         <div class="form-header-title mg-sd-25">
@@ -203,7 +213,7 @@ onMounted(() => {
           tip=""
           placeholder="Search by client number, name or acronym"
           v-model="searchKeyword"
-          :contents="content?.map(searchResultToCodeName)"
+          :contents="searchResultToCodeNameValueList(content)"
           :validations="validations"
           :validations-on-change="validationsOnChange"
           :loading="loading"
@@ -212,7 +222,15 @@ onMounted(() => {
           @update:model-value="valid = false"
           @error="valid = !$event"
           @press:enter="search()"
-        />
+          #="{ value }"
+        >
+          <div class="search-result-item">
+            {{ searchResultToText(value) }}
+            <cds-tag :type="tagColor(value.clientStatus)" title="">
+              <span>{{ value.clientStatus }}</span>
+            </cds-tag>
+          </div>
+        </AutoCompleteInputComponent>
       </data-fetcher>
       <cds-button kind="primary" @click.prevent="search()" id="search-button">
         <span>Search</span>
