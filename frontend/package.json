@@ -107,7 +107,7 @@
     "vue-eslint-parser": "^9.3.1",
     "vue-svg-loader": "^0.16.0",
     "vue-tsc": "^2.0.0",
-    "wiremock": "^3.9.1"
+    "wiremock": "^3.9.2"
   },
   "overrides": {
     "follow-redirects@<1.15.6": "1.15.6"
