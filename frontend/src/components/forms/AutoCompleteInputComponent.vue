@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 import { ref, computed, watch, nextTick } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/combo-box/index";
@@ -7,7 +7,7 @@ import type { CDSComboBox } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
-import type { BusinessSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
+import type { BusinessSearchResult, CodeNameType, CodeNameValue } from "@/dto/CommonTypesDto";
 import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
@@ -19,7 +19,7 @@ const props = withDefaults(
     tip?: string;
     placeholder?: string;
     modelValue: string;
-    contents: Array<BusinessSearchResult>;
+    contents: Array<CodeNameValue<T>>;
     validations: Array<Function>;
     errorMessage?: string;
     loading?: boolean;
@@ -82,15 +82,15 @@ watch(
 );
 
 // This is to make the input list contains the selected value to show when component render
-const inputList = computed<Array<BusinessSearchResult>>(() => {
+const inputList = computed<Array<CodeNameValue<T>>>(() => {
   if (props.contents?.length > 0) {
     return props.contents.filter((entry) => entry.name);
   } else if (props.modelValue !== userValue.value) {
     // Needed when the component mounts with a pre-filled value.
-    return [{ name: props.modelValue, code: "", status: "", legalType: "" }];
+    return [{ name: props.modelValue, code: "", value: undefined }];
   } else if (props.modelValue && showLoading.value) {
     // Just to give a "loading" feedback.
-    return [{ name: loadingName, code: "", status: "", legalType: "" }];
+    return [{ name: loadingName, code: "", value: undefined }];
   }
   return [];
 });
@@ -359,7 +359,9 @@ const safeHelperText = computed(() => props.tip || " ");
             <cds-inline-loading />
           </template>
           <template v-else>
-            {{ item.name }}
+            <slot :value="item.value">
+              {{ item.name }}
+            </slot>
           </template>
         </cds-combo-box-item>
       </cds-combo-box>
