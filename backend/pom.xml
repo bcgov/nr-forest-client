@@ -45,7 +45,7 @@
         <junit-platform.version>1.9.1</junit-platform.version>
         <netty.version>4.1.114.Final</netty.version>
         <oci.revision>${project.version}</oci.revision>
-        <nimbus-jose-jwt.version>9.41.2</nimbus-jose-jwt.version>
+        <nimbus-jose-jwt.version>9.42</nimbus-jose-jwt.version>
     </properties>
 
     <dependencies>
@@ -511,7 +511,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.0</version>
                 <configuration>
                     <skip>${checkstyle.skip}</skip>
                     <configLocation>google_checks.xml</configLocation>
