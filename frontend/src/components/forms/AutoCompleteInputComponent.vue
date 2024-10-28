@@ -9,6 +9,7 @@ import { useEventBus } from "@vueuse/core";
 // Types
 import type { BusinessSearchResult, CodeNameType, CodeNameValue } from "@/dto/CommonTypesDto";
 import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
+import type { DROPDOWN_SIZE } from "@carbon/web-components/es/components/dropdown/defs";
 
 //Define the input properties for this component
 const props = withDefaults(
@@ -18,6 +19,7 @@ const props = withDefaults(
     ariaLabel?: string;
     tip?: string;
     placeholder?: string;
+    size?: `${DROPDOWN_SIZE}`;
     modelValue: string;
     contents: Array<CodeNameValue<T>>;
     validations: Array<Function>;
@@ -313,6 +315,7 @@ const safeHelperText = computed(() => props.tip || " ");
       <cds-combo-box
         ref="cdsComboBoxRef"
         :id="id"
+        :size="size"
         :class="warning ? 'warning' : ''"
         :autocomplete="autocomplete"
         :title-text="label"

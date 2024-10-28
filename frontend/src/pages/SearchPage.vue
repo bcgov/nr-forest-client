@@ -212,6 +212,7 @@ onMounted(() => {
           autocomplete="off"
           tip=""
           placeholder="Search by client number, name or acronym"
+          size="lg"
           v-model="searchKeyword"
           :contents="searchResultToCodeNameValueList(content)"
           :validations="validations"
