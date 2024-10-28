@@ -1668,6 +1668,10 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   &::part(cds--combo-box), &::part(input) {
     border-bottom-width: 0;
   }
+
+  &::part(input)::placeholder {
+    color: var(--light-theme-text-text-primary);
+  }
 }
 
 .search-result-item {
