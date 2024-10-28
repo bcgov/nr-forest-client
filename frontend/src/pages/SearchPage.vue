@@ -15,6 +15,7 @@ import { useEventBus } from "@vueuse/core";
 import type { ClientSearchResult, CodeNameValue } from "@/dto/CommonTypesDto";
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
 import summit from "@carbon/pictograms/es/summit";
+import userSearch from "@carbon/pictograms/es/user--search";
 import useSvg from "@/composables/useSvg";
 
 // @ts-ignore
@@ -30,6 +31,7 @@ import {
 const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const summitSvg = useSvg(summit);
+const userSearchSvg = useSvg(userSearch);
 
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN", "CLIENT_SUSPEND"].some(authority => ForestClientUserSession.authorities.includes(authority));
 
@@ -42,6 +44,7 @@ const totalItems = ref(0);
 const pageSize = ref(10);
 
 const searchKeyword = ref("");
+const lastSearchKeyword = ref("");
 
 // empty is valid
 const valid = ref(true);
@@ -75,6 +78,8 @@ const search = (skipResetPage = false) => {
   if (!skipResetPage) {
     pageNumber.value = 1;
   }
+
+  lastSearchKeyword.value = searchKeyword.value;
   fetchSearch();
 };
 
@@ -284,14 +289,20 @@ onMounted(() => {
       />
     </div>
 
-    <div
-      class="empty-table-list"
-      v-if="(!tableData || totalItems == 0) && userhasAuthority && !loadingSearch"
-    >
+    <div class="empty-table-list" v-if="!tableData && userhasAuthority && !loadingSearch">
       <summit-svg alt="Summit pictogram" class="standard-svg" />
       <p class="heading-02">Nothing to show yet!</p>
       <p class="body-compact-01">Enter at least one criteria to start the search.</p>
       <p class="body-compact-01">The list will display here.</p>
+    </div>
+
+    <div
+      class="empty-table-list"
+      v-if="tableData && totalItems == 0 && userhasAuthority && !loadingSearch"
+    >
+      <user-search-svg alt="User search pictogram" class="standard-svg" />
+      <p class="heading-02">No results for “{{ lastSearchKeyword }}”</p>
+      <p class="body-compact-01">Consider adjusting your search term(s) and try again.</p>
     </div>
 
     <div class="paginator" v-if="totalItems && userhasAuthority">
