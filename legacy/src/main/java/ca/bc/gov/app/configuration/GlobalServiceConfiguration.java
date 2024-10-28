@@ -7,6 +7,7 @@ import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.dto.ForestClientLocationDto;
+import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
     ClientDoingBusinessAsDto.class,
     ClientNameCodeDto.class,
     ForestClientContactDto.class,
-    ForestClientLocationDto.class
+    ForestClientLocationDto.class,
+    PredictiveSearchResultDto.class
 })
 public class GlobalServiceConfiguration {
   @Bean

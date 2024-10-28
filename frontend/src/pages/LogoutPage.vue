@@ -88,7 +88,7 @@ logout(userProviderInfo.value);
     flex: auto;
   }
 
-  .login-content .form-footer-group-buttons {
+  .login-content .form-group-buttons {
     flex-direction: column;
   }
 }
@@ -105,7 +105,7 @@ logout(userProviderInfo.value);
     flex: auto;
   }
 
-  .login-content .form-footer-group-buttons {
+  .login-content .form-group-buttons {
     flex-direction: column;
   }
 }
