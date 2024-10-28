@@ -230,7 +230,7 @@ onMounted(() => {
           @press:enter="search()"
           #="{ value }"
         >
-          <div class="search-result-item">
+          <div class="search-result-item" v-if="value">
             {{ searchResultToText(value) }}
             <cds-tag :type="tagColor(value.clientStatus)" title="">
               <span>{{ value.clientStatus }}</span>
