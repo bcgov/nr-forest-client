@@ -100,3 +100,19 @@ export const getObfuscatedEmailLink = email => {
 export const getFormattedHtml = ((value: string) => {
   return value ? value.replace(/\n/g, '<br>') : '';
 });
+
+export const highlightMatch = (itemName: string, searchTerm: string): string => {
+  const trimmedSearchTerm = searchTerm.trim();
+  if (!trimmedSearchTerm) return itemName;
+
+  const regex = new RegExp(`(${trimmedSearchTerm})`, 'i'); // Case-insensitive search
+  const parts = itemName.split(regex);
+
+  return parts
+    .map(part =>
+      part.toLowerCase() === trimmedSearchTerm.toLowerCase()
+        ? `<span>${part}</span>` // Leave search term unbolded
+        : `<strong>${part}</strong>` // Bold the rest
+    )
+    .join('');
+};
