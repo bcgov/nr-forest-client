@@ -314,9 +314,10 @@ const rejectValidation = reactive<Record<string, boolean>>({
 });
 
 const cleanedRejectionReason = computed(() => {
-  return data.value.rejectionReason.replace(/<div>&nbsp;<\/div>/g, '').replace(/<p>/g, ' ').replace(/<\/p>/g, '');
+  return data.value.rejectionReason 
+    ? "Client " + data.value.rejectionReason.replace(/<div>&nbsp;<\/div>/g, '').replace(/<p>/g, ' ').replace(/<\/p>/g, '') 
+    : '';
 });
-
 
 const isProcessing = computed(() => {
   const processingStatus = (
@@ -330,9 +331,6 @@ const isProcessing = computed(() => {
 
   return processingStatus;
 });
-
-
-
 </script>
 
 <template>
@@ -579,7 +577,7 @@ const isProcessing = computed(() => {
               <read-only-component label="Reason for rejection" v-if="data.submissionStatus === 'Rejected'">
                 <span class="body-compact-01" 
                       style="width: 40rem" 
-                      v-dompurify-html="'Client' + cleanedRejectionReason">
+                      v-dompurify-html="cleanedRejectionReason">
                 </span>
               </read-only-component>
 
