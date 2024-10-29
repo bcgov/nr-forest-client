@@ -577,7 +577,10 @@ const isProcessing = computed(() => {
               </read-only-component>
 
               <read-only-component label="Reason for rejection" v-if="data.submissionStatus === 'Rejected'">
-                <span class="body-compact-01" style="width: 40rem" v-html="'Client' + cleanedRejectionReason"></span>
+                <span class="body-compact-01" 
+                      style="width: 40rem" 
+                      v-dompurify-html="'Client' + cleanedRejectionReason">
+                </span>
               </read-only-component>
 
             </div>
