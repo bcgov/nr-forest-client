@@ -157,7 +157,7 @@ describe("Search Page", () => {
           .should("have.length.greaterThan", 0)
           .should("be.visible");
 
-        cy.get("#search-box").find(`cds-combo-box-item[data-value^="${clientNumber}"]`).click();
+        cy.get("#search-box").find(`cds-combo-box-item[data-id="${clientNumber}"]`).click();
       });
       it("navigates to the client details", () => {
         const greenDomain = "green-domain.com";
@@ -392,6 +392,38 @@ describe("Search Page", () => {
 
             cy.get("cds-actionable-notification").should("not.exist");
           });
+        });
+      });
+    });
+  });
+
+  describe("when the API finds no matching results", () => {
+    beforeEach(() => {
+      // The "empty" value actually triggers the empty array response
+      cy.fillFormEntry("#search-box", "empty");
+    });
+    describe("and user clicks the Search button", () => {
+      beforeEach(() => {
+        cy.get("#search-button").click();
+      });
+
+      it('displays a "No results" message that includes the submitted search value', () => {
+        cy.wait("@fullSearch");
+
+        cy.contains("No results for “empty”");
+      });
+
+      describe("and the user types something else in the search box but does not re-submit the full search", () => {
+        beforeEach(() => {
+          cy.wait("@fullSearch");
+
+          cy.fillFormEntry("#search-box", "other");
+        });
+
+        it('still displays the "No results" message with the value that was previously submitted', () => {
+          cy.wait(200);
+
+          cy.contains("No results for “empty”");
         });
       });
     });

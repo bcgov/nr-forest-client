@@ -12,9 +12,10 @@ import "@carbon/web-components/es/components/tag/index";
 import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
 
-import type { ClientSearchResult, CodeNameType } from "@/dto/CommonTypesDto";
+import type { ClientSearchResult, CodeNameValue } from "@/dto/CommonTypesDto";
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
 import summit from "@carbon/pictograms/es/summit";
+import userSearch from "@carbon/pictograms/es/user--search";
 import useSvg from "@/composables/useSvg";
 
 // @ts-ignore
@@ -30,6 +31,7 @@ import {
 const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const summitSvg = useSvg(summit);
+const userSearchSvg = useSvg(userSearch);
 
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN", "CLIENT_SUSPEND"].some(authority => ForestClientUserSession.authorities.includes(authority));
 
@@ -42,6 +44,7 @@ const totalItems = ref(0);
 const pageSize = ref(10);
 
 const searchKeyword = ref("");
+const lastSearchKeyword = ref("");
 
 // empty is valid
 const valid = ref(true);
@@ -75,6 +78,8 @@ const search = (skipResetPage = false) => {
   if (!skipResetPage) {
     pageNumber.value = 1;
   }
+
+  lastSearchKeyword.value = searchKeyword.value;
   fetchSearch();
 };
 
@@ -116,15 +121,26 @@ const paginate = (event: any) => {
 };
 
 /**
- * Converts a client search result to a code/name representation.
+ * Converts a client search result to a code/name/value representation.
  * @param searchResult The client search result
  */
-const searchResultToCodeName = (searchResult: ClientSearchResult): CodeNameType => {
-  const { clientNumber, clientFullName, clientType, city, clientStatus } = searchResult;
+const searchResultToCodeNameValue = (
+  searchResult: ClientSearchResult,
+): CodeNameValue<ClientSearchResult> => {
+  const { clientNumber, clientFullName } = searchResult;
   const result = {
     code: clientNumber,
-    name: `${toTitleCase(`${clientNumber}, ${clientFullName}, ${clientType}, ${city}`)} (${clientStatus})`,
+    name: clientFullName,
+    value: searchResult,
   };
+  return result;
+};
+
+const searchResultToCodeNameValueList = (list: ClientSearchResult[]) => list.map(searchResultToCodeNameValue);
+
+const searchResultToText = (searchResult: ClientSearchResult): string => {
+  const { clientNumber, clientFullName, clientType, city } = searchResult;
+  const result = toTitleCase(`${clientNumber}, ${clientFullName}, ${clientType}, ${city}`);
   return result;
 };
 
@@ -160,7 +176,6 @@ onMounted(() => {
 
 <template>
   <div id="screen" class="table-list">
-
     <div id="title" v-if="userhasAuthority">
       <div>
         <div class="form-header-title mg-sd-25">
@@ -202,8 +217,9 @@ onMounted(() => {
           autocomplete="off"
           tip=""
           placeholder="Search by client number, name or acronym"
+          size="lg"
           v-model="searchKeyword"
-          :contents="content?.map(searchResultToCodeName)"
+          :contents="searchResultToCodeNameValueList(content)"
           :validations="validations"
           :validations-on-change="validationsOnChange"
           :loading="loading"
@@ -212,7 +228,15 @@ onMounted(() => {
           @update:model-value="valid = false"
           @error="valid = !$event"
           @press:enter="search()"
-        />
+          #="{ value }"
+        >
+          <div class="search-result-item" v-if="value">
+            {{ searchResultToText(value) }}
+            <cds-tag :type="tagColor(value.clientStatus)" title="">
+              <span>{{ value.clientStatus }}</span>
+            </cds-tag>
+          </div>
+        </AutoCompleteInputComponent>
       </data-fetcher>
       <cds-button kind="primary" @click.prevent="search()" id="search-button">
         <span>Search</span>
@@ -265,14 +289,20 @@ onMounted(() => {
       />
     </div>
 
-    <div
-      class="empty-table-list"
-      v-if="(!tableData || totalItems == 0) && userhasAuthority && !loadingSearch"
-    >
+    <div class="empty-table-list" v-if="!tableData && userhasAuthority && !loadingSearch">
       <summit-svg alt="Summit pictogram" class="standard-svg" />
       <p class="heading-02">Nothing to show yet!</p>
       <p class="body-compact-01">Enter at least one criteria to start the search.</p>
       <p class="body-compact-01">The list will display here.</p>
+    </div>
+
+    <div
+      class="empty-table-list"
+      v-if="tableData && totalItems == 0 && userhasAuthority && !loadingSearch"
+    >
+      <user-search-svg alt="User search pictogram" class="standard-svg" />
+      <p class="heading-02">No results for “{{ lastSearchKeyword }}”</p>
+      <p class="body-compact-01">Consider adjusting your search term(s) and try again.</p>
     </div>
 
     <div class="paginator" v-if="totalItems && userhasAuthority">
