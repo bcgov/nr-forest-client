@@ -72,6 +72,7 @@ watch([() => props.url, () => props.disabled], () => {
       clearTimeout(debounceTimer);
     }
     debounceTimer = setTimeout(() => {
+      content.value = [];
       fetch().then(() => {
         // Discard the response from old request when a newer one was already responded.
         if (curRequestTime >= lastUpdateRequestTime.value) {

@@ -136,7 +136,8 @@ const searchResultToCodeNameValue = (
   return result;
 };
 
-const searchResultToCodeNameValueList = (list: ClientSearchResult[]) => list.map(searchResultToCodeNameValue);
+const searchResultToCodeNameValueList = (list: ClientSearchResult[]) =>
+  list?.map(searchResultToCodeNameValue);
 
 const searchResultToText = (searchResult: ClientSearchResult): string => {
   const { clientNumber, clientFullName, clientType, city } = searchResult;
