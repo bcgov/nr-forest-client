@@ -45,11 +45,18 @@ export const getContactDescription = (contact: Contact, index: number): string =
 
 export const toTitleCase = (inputString: string): string => {
   if (inputString === undefined) return "";
-  return inputString
-    .toLowerCase()
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+
+  const splitMapJoin = (currentString: string, separator: string) =>
+    currentString
+      .split(separator)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(separator);
+
+  let result = inputString.toLowerCase();
+  result = splitMapJoin(result, " ");
+  result = splitMapJoin(result, "(");
+  result = splitMapJoin(result, ".");
+  return result;
 };
 
 export const toSentenceCase = (inputString: string): string => {

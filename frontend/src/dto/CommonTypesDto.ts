@@ -11,6 +11,10 @@ export interface CodeNameType {
   name: string;
 }
 
+export interface CodeNameValue<T> extends CodeNameType {
+  value: T;
+}
+
 export interface BusinessSearchResult {
   code: string;
   name: string;
