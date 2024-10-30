@@ -8,6 +8,7 @@ import type { CDSComboBox } from "@carbon/web-components";
 import { useEventBus } from "@vueuse/core";
 // Types
 import type { BusinessSearchResult, CodeNameType, CodeNameValue } from "@/dto/CommonTypesDto";
+import { highlightMatch } from "@/services/ForestClientService";
 import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
 import type { DROPDOWN_SIZE } from "@carbon/web-components/es/components/dropdown/defs";
 
@@ -363,7 +364,7 @@ const safeHelperText = computed(() => props.tip || " ");
           </template>
           <template v-else>
             <slot :value="item.value">
-              {{ item.name }}
+              <span v-dompurify-html="highlightMatch(item.name, inputValue)"></span>
             </slot>
           </template>
         </cds-combo-box-item>

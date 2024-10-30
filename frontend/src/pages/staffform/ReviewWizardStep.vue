@@ -211,7 +211,7 @@ watch([validation], () => {
         <span v-if="address.notes  && 
                     address.notes.length"
               class="body-compact-01">
-          <span v-html="getFormattedHtml(address.notes)"></span>
+          <span v-dompurify-html="getFormattedHtml(address.notes)"></span>
         </span>
       </div>
     </div>
