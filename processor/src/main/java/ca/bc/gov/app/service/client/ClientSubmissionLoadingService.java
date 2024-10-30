@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -77,8 +78,32 @@ public class ClientSubmissionLoadingService {
         .flatMap(details ->
             contactRepository
                 .findFirstBySubmissionId(message.payload())
+                .doOnNext(
+                    submissionContact -> log.info("Submission contact loaded for mail purpose {} [{} {}]",
+                        submissionContact.getSubmissionId(),
+                        submissionContact.getFirstName(),
+                        submissionContact.getLastName()
+                    )
+                )
                 .flatMap(
-                    submissionContact -> getDistrictEmailsAndDescription(details.getDistrictCode())
+                    submissionContact ->
+                        getDistrictEmailsAndDescription(details.getDistrictCode())
+                            .doOnNext(
+                                districtInfo -> log.info("District email and description loaded for mail purpose {} {} [{}]",
+                                    message.payload(),
+                                    districtInfo.getLeft(),
+                                    districtInfo.getRight()
+                                )
+                            )
+                            .switchIfEmpty(
+                                Mono.just(Pair.of(StringUtils.EMPTY, StringUtils.EMPTY))
+                                    .doOnNext(
+                                        districtInfo -> log.info("No district email and description found for mail purpose {} [{}]",
+                                            message.payload(),
+                                            details.getDistrictCode()
+                                        )
+                                    )
+                            )
                         .map(districtInfo ->
                             new EmailRequestDto(
                                 details.getRegistrationNumber(),
@@ -111,14 +136,20 @@ public class ClientSubmissionLoadingService {
   }
 
   private Mono<Pair<String, String>> getDistrictEmailsAndDescription(String districtCode) {
-    return forestClientApi
-        .get()
-        .uri("/districts/{districtCode}", districtCode)
-        .exchangeToMono(clientResponse -> clientResponse.bodyToMono(DistrictDto.class))
-        .doOnNext(district -> log.info("Loaded district details {} {}",
-            district.code(),
-            district.description()))
-        .map(district -> Pair.of(district.emails(), district.description()));
+    return
+        StringUtils.isBlank(districtCode) ?
+            Mono.just(Pair.of(StringUtils.EMPTY, StringUtils.EMPTY))
+            :
+                forestClientApi
+                    .get()
+                    .uri("/codes/districts/{districtCode}", districtCode)
+                    .exchangeToMono(clientResponse -> clientResponse.bodyToMono(DistrictDto.class))
+                    .doOnNext(district -> log.info("Loaded district details {} {}",
+                        district.code(),
+                        district.description()))
+                    .map(district -> Pair.of(district.emails(), district.description()))
+                    .onErrorReturn(Pair.of(StringUtils.EMPTY, StringUtils.EMPTY))
+        ;
   }
 
   private String getTemplate(MessagingWrapper<Integer> message) {
@@ -154,7 +185,7 @@ public class ClientSubmissionLoadingService {
     };
 
     return emails
-        .filter(Objects::nonNull)
+        .filter(StringUtils::isNotBlank)
         .collect(Collectors.joining(","));
   }
 

@@ -1,6 +1,8 @@
 package ca.bc.gov.app.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represents a validation error for a specific field in a data structure.
@@ -11,4 +13,8 @@ import java.io.Serializable;
  * @param errorMsg The error message describing the validation failure.
  */
 public record ValidationError(String fieldId, String errorMsg) implements Serializable {
+  @JsonIgnore
+  public boolean isValid() {
+    return !StringUtils.isAllBlank(fieldId, errorMsg);
+  }
 }

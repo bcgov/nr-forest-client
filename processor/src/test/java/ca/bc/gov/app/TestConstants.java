@@ -167,6 +167,8 @@ public class TestConstants {
       null,
       null,
       null,
+      null,
+      null,
       null
   ).withClientNumber("00001000")
       .withClientTypeCode("C");

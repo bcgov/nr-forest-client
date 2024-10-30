@@ -29,13 +29,20 @@ public class ForestClientConfiguration {
   @NestedConfigurationProperty
   private LegacyConfiguration legacy;
   @NestedConfigurationProperty
+  private LegacyConfiguration processor;
+  @NestedConfigurationProperty
   private BcRegistryConfiguration bcregistry;
   @NestedConfigurationProperty
   private AddressCompleteConfiguration addressComplete;
   @NestedConfigurationProperty
   private SecurityConfiguration security;
-
   private Duration submissionLimit;
+  private Duration idirSubmissionTimeWindow;
+  private int idirMaxSubmissions;
+  private Duration otherSubmissionTimeWindow;
+  private int otherMaxSubmissions;
+  @NestedConfigurationProperty
+  private OpenDataConfiguration openData;
 
   /**
    * The Common hosted email service configuration.
@@ -143,6 +150,21 @@ public class ForestClientConfiguration {
     public String getJwksUrl() {
       return String.format("%s%s/.well-known/jwks.json", getDomainUrl(), userPool);
     }
+  }
+
+  /**
+   * The Open Data configuration.
+   */
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class OpenDataConfiguration {
+
+    private String sacBandUrl;
+    private String sacTribeUrl;
+    private String openMapsBandUrl;
+    private String openMapsTribeUrl;
   }
 
   public record NameSecretDto(String name, String secret) {}

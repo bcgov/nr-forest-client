@@ -1,0 +1,33 @@
+{
+  "name": "Thiel, Wintheiser and Vandervort",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "45365 Springview Center",
+      "country": {
+        "value": "US",
+        "text": "United States"
+      },
+      "province": {
+        "value": "NM",
+        "text": "New Mexico"
+      },
+      "city": "Albuquerque",
+      "postalCode": "87105",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "DI",
+        "text": null
+      },
+      "firstName": "Horatia",
+      "lastName": "Wingeat",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}

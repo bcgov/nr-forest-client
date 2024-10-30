@@ -1,5 +1,6 @@
 import ContactGroupComponent from "@/components/grouping/ContactGroupComponent.vue";
 import type { Contact } from "@/dto/ApplyClientNumberDto";
+import type { CodeNameType } from "@/dto/CommonTypesDto";
 
 // load app validations
 import "@/helpers/validators/BCeIDFormValidations";
@@ -14,6 +15,8 @@ Cypress.on("fail", (error, runnable) => {
 
   throw error; // throw error to have test still fail
 });
+
+let featureEnabled = false;
 
 describe("<ContactGroupComponent />", () => {
   const dummyValidation = (): ((
@@ -30,17 +33,8 @@ describe("<ContactGroupComponent />", () => {
     cy.fixture("contact.json").as("contactFixture");
     cy.fixture("roles.json").as("rolesFixture");
     cy.fixture("addresses.json").as("addressesFixture");
+    featureEnabled = false;
   });
-
-  const globalDefault = {
-    config: {
-      globalProperties: {
-        $features: {
-          BCEID_MULTI_ADDRESS: false,
-        },
-      },
-    },
-  };
 
   it("should render the component", () => {
     cy.get("@contactFixture").then((contact: Contact) => {
@@ -55,7 +49,15 @@ describe("<ContactGroupComponent />", () => {
               addressList: addresses,
               validations: [],
             },
-            global: globalDefault,
+            global: {
+              config: {
+                globalProperties: {
+                  $features: {
+                    BCEID_MULTI_ADDRESS: featureEnabled,
+                  },
+                },
+              },
+            },
           });
         });
       });
@@ -91,7 +93,15 @@ describe("<ContactGroupComponent />", () => {
               addressList: addresses,
               validations: [dummyValidation()],
             },
-            global: globalDefault,
+            global: {
+              config: {
+                globalProperties: {
+                  $features: {
+                    BCEID_MULTI_ADDRESS: featureEnabled,
+                  },
+                },
+              },
+            },
           });
         });
       });
@@ -126,16 +136,55 @@ describe("<ContactGroupComponent />", () => {
     });
   });
 
-  describe("when feature BCEID_MULTI_ADDRESS is enabled", () => {
-    const global = {
-      config: {
-        globalProperties: {
-          $features: {
-            BCEID_MULTI_ADDRESS: true,
-          },
-        },
-      },
+  it("should logout and redirect to BCeID", () => {
+    const $session = {
+      logOut() {},
     };
+    cy.get("@contactFixture").then((contact: Contact) => {
+      cy.get("@rolesFixture").then((roles) => {
+        cy.get("@addressesFixture").then((addresses) => {          
+          cy.mount(ContactGroupComponent, {
+            props: {
+              id: 0,
+              modelValue: {
+                ...contact,
+                addresses: [addresses[0], addresses[1]],
+              },
+              enabled: true,
+              roleList: roles,
+              addressList: addresses,
+              validations: [],
+            },
+            global: {
+              config: {
+                globalProperties: {
+                  $features: {
+                    BCEID_MULTI_ADDRESS: featureEnabled,
+                  },
+                  $session,
+                },
+              },
+            },
+          });
+        });
+      });
+    });
+
+    cy.get("#change-personal-info-link").click();
+
+    cy.get("#logout-and-redirect-modal").should("be.visible");
+
+    cy.spy(window, "open").as("windowOpen");
+    cy.spy($session, "logOut").as("sessionLogOut");
+
+    cy.get('#logout-and-redirect-modal > cds-modal-footer > .cds--modal-submit-btn').click();
+
+    cy.get("@windowOpen").should("be.calledWith", "https://www.bceid.ca/", "_blank", "noopener");
+    cy.get("@sessionLogOut").should("be.called");
+  });
+
+  describe("when feature BCEID_MULTI_ADDRESS is enabled", () => {
+    beforeEach(() => { featureEnabled = true; });
 
     it("should render the field 'Location or address name'", () => {
       cy.get("@contactFixture").then((contact: Contact) => {
@@ -153,7 +202,15 @@ describe("<ContactGroupComponent />", () => {
                 addressList: addresses,
                 validations: [],
               },
-              global,
+              global:{
+                config: {
+                  globalProperties: {
+                    $features: {
+                      BCEID_MULTI_ADDRESS: featureEnabled,
+                    },
+                  },
+                },
+              },
             });
           });
         });
@@ -178,7 +235,15 @@ describe("<ContactGroupComponent />", () => {
                 addressList: addresses,
                 validations: [],
               },
-              global,
+              global:{
+                config: {
+                  globalProperties: {
+                    $features: {
+                      BCEID_MULTI_ADDRESS: featureEnabled,
+                    },
+                  },
+                },
+              },
             });
           });
         });
@@ -217,7 +282,15 @@ describe("<ContactGroupComponent />", () => {
                 addressList: addresses,
                 validations: [],
               },
-              global,
+              global:{
+                config: {
+                  globalProperties: {
+                    $features: {
+                      BCEID_MULTI_ADDRESS: featureEnabled,
+                    },
+                  },
+                },
+              },
             });
           });
         });
@@ -266,7 +339,15 @@ describe("<ContactGroupComponent />", () => {
                 addressList: addresses,
                 validations: [],
               },
-              global,
+              global:{
+                config: {
+                  globalProperties: {
+                    $features: {
+                      BCEID_MULTI_ADDRESS: featureEnabled,
+                    },
+                  },
+                },
+              },
             });
           });
         });
@@ -303,15 +384,7 @@ describe("<ContactGroupComponent />", () => {
   });
 
   describe("when feature BCEID_MULTI_ADDRESS is disabled", () => {
-    const global = {
-      config: {
-        globalProperties: {
-          $features: {
-            BCEID_MULTI_ADDRESS: false,
-          },
-        },
-      },
-    };
+    beforeEach(() => { featureEnabled = false; });
 
     it("should not render the field 'Location or address name'", () => {
       cy.get("@contactFixture").then((contact: Contact) => {
@@ -329,7 +402,15 @@ describe("<ContactGroupComponent />", () => {
                 addressList: addresses,
                 validations: [],
               },
-              global,
+              global:{
+                config: {
+                  globalProperties: {
+                    $features: {
+                      BCEID_MULTI_ADDRESS: featureEnabled,
+                    },
+                  },
+                },
+              },
             });
           });
         });
@@ -337,48 +418,6 @@ describe("<ContactGroupComponent />", () => {
 
       cy.get("#addressname_0").should("not.exist");
     });
-  });
-
-  it("should logout and redirect to BCeID", () => {
-    const $session = {
-      logOut() {},
-    };
-    cy.get("@contactFixture").then((contact: Contact) => {
-      cy.get("@rolesFixture").then((roles) => {
-        cy.get("@addressesFixture").then((addresses) => {
-          const globalLogout = {
-            ...globalDefault,
-          };
-          globalLogout.config.globalProperties.$session = $session;
-          cy.mount(ContactGroupComponent, {
-            props: {
-              id: 0,
-              modelValue: {
-                ...contact,
-                addresses: [addresses[0], addresses[1]],
-              },
-              enabled: true,
-              roleList: roles,
-              addressList: addresses,
-              validations: [],
-            },
-            global: globalLogout,
-          });
-        });
-      });
-    });
-
-    cy.get("#change-personal-info-link").click();
-
-    cy.get("#logout-and-redirect-modal").should("be.visible");
-
-    cy.spy(window, "open").as("windowOpen");
-    cy.spy($session, "logOut").as("sessionLogOut");
-
-    cy.get('#logout-and-redirect-modal > cds-modal-footer > .cds--modal-submit-btn').click();
-
-    cy.get("@windowOpen").should("be.calledWith", "https://www.bceid.ca/", "_blank", "noopener");
-    cy.get("@sessionLogOut").should("be.called");
   });
 
   describe('when it has last emitted "valid" with false due to a single, not empty, invalid field', () => {
@@ -404,7 +443,7 @@ describe("<ContactGroupComponent />", () => {
                 id: 1,
                 modelValue: {
                   ...contact,
-                  locationNames: addresses.map((a) => ({
+                  locationNames: addresses.map((a: CodeNameType) => ({
                     value: a.code,
                     text: a.name,
                   })),
@@ -418,7 +457,15 @@ describe("<ContactGroupComponent />", () => {
                 validations: [],
                 onValid,
               },
-              global: globalDefault,
+              global: {
+                config: {
+                  globalProperties: {
+                    $features: {
+                      BCEID_MULTI_ADDRESS: featureEnabled,
+                    },
+                  },
+                },
+              },
             })
               .its("wrapper")
               .as("vueWrapper");
@@ -445,6 +492,7 @@ describe("<ContactGroupComponent />", () => {
 
       return calls;
     };
+
     const checkValidFalseAgain = (calls: boolean[]) => {
       cy.wrap(calls).then((value) => {
         const last1 = value.pop();
@@ -463,6 +511,7 @@ describe("<ContactGroupComponent />", () => {
         expect(last1).to.equal(true);
       });
     };
+
     describe("First name", () => {
       it('should emit "valid" with false again', () => {
         const calls = genericTest("#firstName_1", "A", "{backspace}", "");
@@ -475,6 +524,7 @@ describe("<ContactGroupComponent />", () => {
         checkValidTrue(calls);
       });
     });
+    
     describe("Last name", () => {
       it('should emit "valid" with false again', () => {
         const calls = genericTest("#lastName_1", "A", "{backspace}", "");
@@ -487,6 +537,7 @@ describe("<ContactGroupComponent />", () => {
         checkValidTrue(calls);
       });
     });
+
     describe("Email address", () => {
       it('should emit "valid" with false again', () => {
         const calls = genericTest("#email_1", "a@", "b");
@@ -499,6 +550,7 @@ describe("<ContactGroupComponent />", () => {
         checkValidTrue(calls);
       });
     });
+
     describe("Phone number", () => {
       it('should emit "valid" with false again', () => {
         const calls = genericTest("#phoneNumber_1", "(123) 123", "-1");
@@ -512,4 +564,6 @@ describe("<ContactGroupComponent />", () => {
       });
     });
   });
+  
+
 });

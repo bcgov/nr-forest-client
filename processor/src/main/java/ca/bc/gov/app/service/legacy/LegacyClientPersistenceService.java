@@ -11,7 +11,9 @@ import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -51,6 +53,9 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
   @Override
   public Mono<MessagingWrapper<ForestClientDto>> generateForestClient(
       MessagingWrapper<String> message) {
+
+    AtomicReference<String> atomicClientName = new AtomicReference<>(StringUtils.EMPTY);
+
     return
         getSubmissionDetailRepository()
             .findBySubmissionId(
@@ -59,15 +64,22 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
                         .parameters()
                         .get(ApplicationConstant.SUBMISSION_ID)
             )
+            .doOnNext(submissionDetail ->
+                atomicClientName.set(submissionDetail.getDoingBusinessAs())
+            )
             .map(submissionDetail ->
                 getBaseForestClient(
                     getUser(message, ApplicationConstant.CREATED_BY),
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
                     .withClientComment(
-                        getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
-                        " submitted the client details acquired from BC Registry " +
-                        submissionDetail.getRegistrationNumber()
+                        BooleanUtils.toString(
+                            isStaffSubmitted(message),
+                            submissionDetail.getNotes(),
+                            getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
+                                " submitted the client details acquired from BC Registry " +
+                                submissionDetail.getRegistrationNumber()
+                        )
                     )
                     .withClientName(submissionDetail.getOrganizationName().toUpperCase())
                     .withClientTypeCode(submissionDetail.getClientTypeCode())
@@ -78,6 +90,8 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
                         ProcessorUtil.extractNumbers(submissionDetail.getRegistrationNumber())
                     )
                     .withClientNumber(message.payload())
+                    .withAcronym(submissionDetail.getClientAcronym())
+                    .withWcbFirmNumber(submissionDetail.getWorkSafeBCNumber())
             )
             .map(forestClient ->
                 new MessagingWrapper<>(
@@ -92,6 +106,12 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
                             forestClient.registryCompanyTypeCode(),
                             forestClient.corpRegnNmbr()
                         )
+                    )
+                    .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS,
+                        StringUtils.isNotBlank(atomicClientName.get())
+                    )
+                    .withParameter(ApplicationConstant.DOING_BUSINESS_AS,
+                        StringUtils.defaultString(atomicClientName.get())
                     )
             );
 

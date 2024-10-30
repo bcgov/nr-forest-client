@@ -78,7 +78,7 @@ Cypress.Commands.add(
 
     const userId = generateRandomHex(32);
 
-    const roles = provider === "idir" ? ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"] : ["USER"];
+    const roles = provider === "idir" ? ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN", "CLIENT_SUSPEND"] : ["USER"];
 
     const jwtBody = {
       "custom:idp_display_name": name,
@@ -126,7 +126,6 @@ Cypress.Commands.add(
     cy.addCookie(`${baseUserCookieName}.idToken`,`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${jwtfy(jwtBody)}.`);
     
     cy.reload();
-    cy.wait(1000);
   }
 );
 
@@ -145,4 +144,121 @@ Cypress.Commands.add("getMany", (names: string[]): Cypress.Chainable<any[]> => {
   }
 
   return cy.wrap(values);
+});
+
+interface FillFormEntryOptions {
+  delayMS?: number;
+  area?: boolean;
+  skipBlur?: boolean;
+}
+
+interface FillFormEntry {
+  (field: string, value: string, delayMS?: number, area?: boolean): void;
+  (field: string, value: string, options?: FillFormEntryOptions): void;
+}
+
+const fillFormEntry: FillFormEntry = (
+  field: string,
+  value: string,
+  arg3: number | FillFormEntryOptions = 10,
+  arg4: boolean | never = false,
+) => {
+  const options =
+    typeof arg3 === "object"
+      ? arg3
+      : {
+          delayMS: arg3,
+          area: arg4,
+        };
+  const { delayMS, area, skipBlur } = options;
+  cy.get(field)
+    .should("exist")
+    .shadow()
+    .find(area ? "textarea" : "input")
+    .focus()
+    .type(value, { delay: delayMS })
+    .then((subject) => {
+      if (!skipBlur) {
+        cy.wrap(subject).blur();
+      }
+    });
+};
+
+Cypress.Commands.add("fillFormEntry", fillFormEntry);
+
+Cypress.Commands.add("clearFormEntry",(field: string, area: boolean = false) =>{
+  cy.get(field)
+  .should("exist")
+  .shadow()
+  .find(area ? "textarea" : "input")
+  .focus()
+  .clear()
+  .blur();
+});
+
+Cypress.Commands.add("selectFormEntry", (field: string, value: string, box: boolean) => {
+  cy.get(field).find("[part='trigger-button']").click();
+
+  if (!box) {
+    cy.get(field).find(`cds-combo-box-item[data-value="${value}"]`).click();
+  } else {
+    cy.get(field)
+      .find(`cds-multi-select-item[data-value="${value}"]`)
+      .click();
+    cy.get(field).click();
+  }
+});
+
+Cypress.Commands.add("selectAutocompleteEntry", (field: string, value: string, dataid: string,delayTarget: string = '') => {
+  cy.get(field).should("exist").shadow().find("input").type(value);
+  if(delayTarget)
+    cy.wait(delayTarget);
+  else
+    cy.wait(10);
+  cy.get(field).find(`cds-combo-box-item[data-id="${dataid}"]`).click();
+});
+
+Cypress.Commands.add("markCheckbox", (field: string) => {
+  cy.get(field)
+    .shadow()
+    .find("input")
+    .check({ force: true });
+});
+
+Cypress.Commands.add("unmarkCheckbox", (field: string) => {
+  cy.get(field)
+    .shadow()
+    .find("input")
+    .uncheck({ force: true });
+});
+
+Cypress.Commands.add("checkInputErrorMessage", (field: string, message: string) => {
+  cy.get(field)
+  .shadow()
+  .find('#invalid-text')
+  .invoke('text')
+  .should('contains',message);
+});
+
+Cypress.Commands.add("checkAutoCompleteErrorMessage", (field: string, message: string) => {
+  cy.get(field)          
+      .should('have.attr', 'aria-invalid', 'true')
+      .should('have.attr', 'invalid-text', message);
+
+      cy.get(field)
+      .shadow()
+      .find('svg').should('exist');
+
+      cy.get(field)
+      .shadow()
+      .find('div.cds--form__helper-text > slot#helper-text')
+      .invoke('text')
+      .should('contains', message);
+});
+
+Cypress.Commands.add("checkAccordionItemState", (additionalSelector: string, open: boolean) => {
+  cy.get(`cds-accordion-item${additionalSelector}`).should(
+    `${open ? "" : "not."}have.attr`,
+    "open",
+  );
 });

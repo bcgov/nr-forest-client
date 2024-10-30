@@ -250,6 +250,25 @@ public class TestConstants {
         ]
       }""";
 
+  public static final String BCREG_RESPONSE_NOCONTACTOK = """
+      {
+        "name": "SAMPLE COMPANY",
+        "id": "AA0000001",
+        "goodStanding": true,
+        "addresses": [
+          {
+            "locationName": "MAILING ADDRESS",
+            "streetAddress": "501 Belleville Street",
+            "country": {"value":"CA","text":"Canada"},
+            "province": {"value":"BC","text":"British Columbia"},
+            "city": "VICTORIA",
+            "postalCode": "V8V1X4",
+            "index": 0
+          }
+        ],
+        "contacts": []
+      }""";
+
   public static final String BCREG_RESPONSE_NOK = "No data found for client number AA0000001";
 
   public static final String BCREG_400 = """
@@ -281,7 +300,7 @@ public class TestConstants {
           "documents": [
               {
                   "documentKey": "aa0a00a0a",
-                  "documentType": "BUSINESS_SUMMARY_FILING_HISTORY",                  
+                  "documentType": "BUSINESS_SUMMARY_FILING_HISTORY",
                   "id": 18315
               }
           ]
@@ -365,6 +384,94 @@ public class TestConstants {
               "title": "Registrar of Companies"
           }
       }""";
+
+  public static final String BCREG_DOC_DATA_SPORG = """
+      {
+         "business": {
+           "alternateNames": [
+             {
+               "entityType": "SP",
+               "identifier": "FM00004455",
+               "name": "JAMES BAXTER WOOD HANDCRAFTED FURNITURE",
+               "registeredDate": "2009-11-30T08:00:00+00:00",
+               "startDate": "2009-10-01"
+             }
+           ],
+           "goodStanding": true,
+           "identifier": "FM00004455",
+           "legalName": "SAMPLE HOLDINGS LTD.",
+           "legalType": "SP",
+           "state": "ACTIVE"
+         },
+         "offices": {
+           "businessOffice": {
+             "deliveryAddress": {
+               "addressCity": "VICTORIA",
+               "addressCountry": "Canada",
+               "addressCountryDescription": "Canada",
+               "addressRegion": "BC",
+               "deliveryInstructions": "",
+               "postalCode": "V8V1X4",
+               "streetAddress": "501 Belleville Street",
+               "streetAddressAdditional": ""
+             },
+             "mailingAddress": {
+               "addressCity": "VICTORIA",
+               "addressCountry": "Canada",
+               "addressCountryDescription": "Canada",
+               "addressRegion": "BC",
+               "deliveryInstructions": "",
+               "postalCode": "V8V1X4",
+               "streetAddress": "501 Belleville Street",
+               "streetAddressAdditional": ""
+             }
+           }
+         },
+         "parties": [
+           {
+             "deliveryAddress": {
+               "addressCity": "VICTORIA",
+               "addressCountry": "Canada",
+               "addressCountryDescription": "Canada",
+               "addressRegion": "BC",
+               "deliveryInstructions": "",
+               "postalCode": "V8V1X4",
+               "streetAddress": "501 Belleville Street",
+               "streetAddressAdditional": ""
+             },
+             "mailingAddress": {
+               "addressCity": "VICTORIA",
+               "addressCountry": "Canada",
+               "addressCountryDescription": "Canada",
+               "addressRegion": "BC",
+               "deliveryInstructions": "",
+               "postalCode": "V8V1X4",
+               "streetAddress": "501 Belleville Street",
+               "streetAddressAdditional": ""
+             },
+             "officer": {
+               "email": "",
+               "identifier": "BC0000001",
+               "organizationName": "SAMPLE HOLDINGS LTD.",
+               "partyType": "organization"
+             },
+             "roles": [
+               {
+                 "appointmentDate": "1985-07-23",
+                 "cessationDate": null,
+                 "roleType": "Proprietor"
+               }
+             ]
+           }
+         ],
+         "registrarInfo": {
+           "endDate": null,
+           "name": "Wattles",
+           "startDate": "2022-06-01T00:00:00",
+           "title": "Registrar of Companies"
+         }
+       }""";
+
   public static final String SUBMISSION_LIST_CONTENT = """
       [
         {
@@ -463,8 +570,7 @@ public class TestConstants {
                   )
               )
           ),
-          "ABC123",
-          "Bond"
+          "IDIR\\ABC123"
       );
 
   public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_DTO =
@@ -527,8 +633,7 @@ public class TestConstants {
                   )
               )
           ),
-          "ABC123",
-          "Bond"
+          "IDIR\\ABC123"
       );
 
   public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_MULTI_DTO =
@@ -607,8 +712,7 @@ public class TestConstants {
                   )
               )
           ),
-          "ABC123",
-          "Bond"
+          "IDIR\\ABC123"
       );
 
   public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_BROKEN_DTO =
@@ -617,7 +721,7 @@ public class TestConstants {
               "",
               "forest1",
               "U",
-              "I",
+              "USP",
               "",
               "SP",
               LocalDate.of(1975, 1, 31),
@@ -671,8 +775,7 @@ public class TestConstants {
                   )
               )
           ),
-          "ABC123",
-          "Bond"
+          "IDIR\\ABC123"
       );
 
   public static final EmailRequestDto EMAIL_REQUEST =
@@ -760,35 +863,36 @@ public class TestConstants {
       }""";
 
 
-  public static Map<String,Object> getClaims(String idpName) {
+  public static Map<String, Object> getClaims(String idpName) {
 
-    Map<String,Object> idir = Map.of(
+    Map<String, Object> idir = Map.of(
         "custom:idp_user_id", UUID.randomUUID().toString(),
         "custom:idp_username", "jdoe",
         "custom:idp_name", "idir",
         "custom:idp_display_name", "Doe, Jhon UAT:EX",
-        "email","jdoe@mail.ca"
+        "email", "jdoe@mail.ca"
     );
 
-    Map<String,Object> bceid = Map.of(
+    Map<String, Object> bceid = Map.of(
         "custom:idp_user_id", UUID.randomUUID().toString(),
         "custom:idp_username", "jdoe",
         "custom:idp_name", "bceidbusiness",
         "custom:idp_display_name", "Jhon Doe",
-        "email","jdoe@mail.ca",
+        "email", "jdoe@mail.ca",
         "custom:idp_business_id", UUID.randomUUID().toString(),
         "custom:idp_business_name", "Example Inc.",
         "given_name", "Jhon",
         "family_name", "Doe"
     );
 
-    Map<String,Object> bcsc = Map.of(
+    Map<String, Object> bcsc = Map.of(
         "custom:idp_user_id", UUID.randomUUID().toString(),
         "custom:idp_username", "jdoe",
         "custom:idp_name", "idir",
         "custom:idp_display_name", "Jhon Doe",
-        "email","jdoe@mail.ca",
-        "address", Map.of("formatted", "{\\\"street_address\\\":\\\"4000 SEYMOUR PLACE\\\",\\\"country\\\":\\\"CA\\\",\\\"locality\\\":\\\"VICTORIA\\\",\\\"region\\\":\\\"BC\\\",\\\"postal_code\\\":\\\"V8Z 1C8\\\"}" ),
+        "email", "jdoe@mail.ca",
+        "address", Map.of("formatted",
+            "{\\\"street_address\\\":\\\"4000 SEYMOUR PLACE\\\",\\\"country\\\":\\\"CA\\\",\\\"locality\\\":\\\"VICTORIA\\\",\\\"region\\\":\\\"BC\\\",\\\"postal_code\\\":\\\"V8Z 1C8\\\"}"),
         "birthdate", "1986-11-12",
         "given_name", "Jhon",
         "family_name", "Doe"
@@ -801,4 +905,286 @@ public class TestConstants {
     };
 
   }
+
+  public static final String OPENMAPS_SAC_DATA = """
+      {
+        "type": "FeatureCollection",
+        "crs": {
+            "type": "name",
+            "properties": {
+                "name": "EPSG:4326"
+            }
+        },
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        -87.35969666,
+                        52.98282376
+                    ]
+                },
+                "properties": {
+                    "GmlID": "Première_Nation___First_Nation.1351416",
+                    "OBJECTID": 1351416,
+                    "Numéro_de_bande___Band_Number": 240,
+                    "Nom_de_bande___Band_Name": "Webequie"
+                }
+            }
+        ]
+      }""";
+
+  public static final String OPENMAPS_SAC_NODATA = """
+      {
+         "type": "FeatureCollection",
+         "crs": {
+             "type": "name",
+             "properties": {
+                 "name": "EPSG:4326"
+             }
+         },
+         "features": []
+       }""";
+
+  public static final String OPENMAPS_SACT_DATA = """
+      {
+          "type": "FeatureCollection",
+          "crs": {
+              "type": "name",
+              "properties": {
+                  "name": "EPSG:4326"
+              }
+          },
+          "features": [
+              {
+                  "type": "Feature",
+                  "geometry": {
+                      "type": "Point",
+                      "coordinates": [
+                          -72.785381,
+                          47.44122729
+                      ]
+                  },
+                  "properties": {
+                      "GmlID": "Conseil_tribal___Tribal_Council.272501",
+                      "OBJECTID": 272501,
+                      "Numéro_du_conseil_tribal___Tribal_Council_Number": 1064,
+                      "Nom_du_conseil_tribal___Tribal_Council_Name": "ATIKAMEKW SIPI - CONSEIL DE LA NATION ATIKAMEKW",
+                      "CPC_CODE": "QC"
+                  }
+              }
+          ]
+      }""";
+
+  public static final String OPENMAPS_BCMAPS_DATA = """
+       {
+          "type": "FeatureCollection",
+          "features": [
+              {
+                  "type": "Feature",
+                  "id": "WHSE_HUMAN_CULTURAL_ECONOMIC.FN_COMMUNITY_LOCATIONS_SP.29",
+                  "geometry": {
+                      "type": "Point",
+                      "coordinates": [
+                          1208415.942,
+                          482549.267
+                      ]
+                  },
+                  "geometry_name": "SHAPE",
+                  "properties": {
+                      "COMMUNITY_LOCATION_ID": 29,
+                      "FIRST_NATION_BC_NAME": "Squamish Nation",
+                      "FIRST_NATION_FEDERAL_NAME": "Squamish",
+                      "FIRST_NATION_FEDERAL_ID": 555,
+                      "URL_TO_BC_WEBSITE": "http://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/consulting-with-first-nations/first-nations-negotiations/first-nations-a-z-listing/squamish-nation",
+                      "URL_TO_FEDERAL_WEBSITE": "http://fnp-ppn.aadnc-aandc.gc.ca/fnp/Main/Search/FNMain.aspx?BAND_NUMBER=555&lang=eng",
+                      "URL_TO_FIRST_NATION_WEBSITE": "http://www.squamish.net/",
+                      "MEMBER_ORGANIZATION_NAMES": "Independent",
+                      "LANGUAGE_GROUP": "Sḵwx̱wú7mesh sníchim",
+                      "BC_REGIONAL_OFFICE": "South Coast (Surrey)",
+                      "MAPSHEET_NUMBER": "92G",
+                      "PREFERRED_NAME": "Squamish",
+                      "ALTERNATIVE_NAME_1": "variation SKWAMISH, SKWAWAMISH; alternate CH'CH'ELXWIKW; SEYMOUR; includes FALSE CREEK (pre-1914); includes CAPILANO (variation KAPILANO - 1923; CAPITANO CREEK - circa 1917; alternate HOMULCHSEAN); includes KITSILANO (1923) (alternate SENAKW)),",
+                      "ALTERNATIVE_NAME_2": "K'IK'ELXEN, SEAICHEM (1923), CHEAKAMUS, CHEKWELP, WAIWAKUM, MISSION (traditional name USTLAWN), KOWTAIN, POQUIOSIN, POYAM, SHELTER ISLAND (alternate SXAALTXW), STAWAMUS, SKOWISHIN, YOOKWITZ; includes HOWE SOUND",
+                      "ADDRESS_LINE1": "P.O. Box 86131",
+                      "ADDRESS_LINE2": "320 Seymour Boulevard",
+                      "OFFICE_CITY": "NORTH VANCOUVER",
+                      "OFFICE_PROVINCE": "BC",
+                      "OFFICE_POSTAL_CODE": "V7L 4J5",
+                      "LOCATION_DESCRIPTION": "NEW WESTMINSTER DISTRICT ON NORTH SHORE OF BURRARD INLET AT FIRST NARROWS, N. END OF LIONS GATE BRIDGE",
+                      "SITE_NAME": "Capilano 5",
+                      "SITE_NUMBER": "07969",
+                      "COMMENTS": "Moved to reflect largest community",
+                      "OBJECTID": 543,
+                      "SE_ANNO_CAD_DATA": null
+                  }
+              }
+          ],
+          "totalFeatures": 1,
+          "numberMatched": 1,
+          "numberReturned": 1,
+          "timeStamp": "2024-05-16T21:45:54.500Z",
+          "crs": {
+              "type": "name",
+              "properties": {
+                  "name": "urn:ogc:def:crs:EPSG::3005"
+              }
+          }
+      }""";
+
+  public static final String OPENMAPS_BCMAPS_NODATA = """
+      {
+        "type": "FeatureCollection",
+        "features": [],
+        "totalFeatures": 0,
+        "numberMatched": 0,
+        "numberReturned": 0,
+        "timeStamp": "2024-07-05T16:10:50.847Z",
+        "crs": null
+      }""";
+
+  public static final String STAFF_SUBMITTED_INDIVIDUAL_JSON = """
+      {
+          "businessInformation": {
+              "district": "",
+              "businessType": "U",
+              "legalType": "SP",
+              "clientType": "I",
+              "registrationNumber": "",
+              "businessName": "John Wick",
+              "goodStandingInd": "Y",
+              "birthdate": "1974-08-12",
+              "firstName": "John",
+              "lastName": "Wick",
+              "identificationType": {
+                  "value": "CDDL",
+                  "text": "Canadian driver's licence",
+                  "countryCode": "CA"
+              },
+              "identificationCountry": "CA",
+              "clientIdentification": "54621654",
+              "identificationProvince": "BC"
+          },
+          "location": {
+              "addresses": [
+                  {
+                      "locationName": "Hangar",
+                      "complementaryAddressOne": "",
+                      "complementaryAddressTwo": null,
+                      "streetAddress": "1234 Nowhere St",
+                      "country": {
+                          "value": "CA",
+                          "text": "Canada"
+                      },
+                      "province": {
+                          "value": "BC",
+                          "text": "British Columbia"
+                      },
+                      "city": "Victoria",
+                      "postalCode": "V8V8V8",
+                      "businessPhoneNumber": "",
+                      "secondaryPhoneNumber": "",
+                      "faxNumber": "",
+                      "emailAddress": "",
+                      "notes": "",
+                      "index": 0
+                  }
+              ],
+              "contacts": [
+                  {
+                      "locationNames": [
+                          {
+                              "value": "0",
+                              "text": "Hangar"
+                          }
+                      ],
+                      "contactType": {
+                          "value": "BL",
+                          "text": "Billing"
+                      },
+                      "firstName": "John",
+                      "lastName": "Wick",
+                      "phoneNumber": "(250) 445-4540",
+                      "secondaryPhoneNumber": "",
+                      "faxNumber": "",
+                      "email": "thatmail@maila.ca",
+                      "index": 0
+                  }
+              ]
+          }
+      }""";
+
+  public static final String STAFF_SUBMITTED_SPORG_JSON = """
+      {
+          "businessInformation": {
+              "district": "",
+              "businessType": "R",
+              "legalType": "SP",
+              "clientType": "RSP",
+              "registrationNumber": "FM00004455",
+              "businessName": "JAMES BAXTER WOOD HANDCRAFTED FURNITURE",
+              "goodStandingInd": "Y",
+              "birthdate": "1974-08-12",
+              "firstName": "John",
+              "lastName": "Wick",
+              "identificationType": {
+                  "value": "CDDL",
+                  "text": "Canadian driver's licence",
+                  "countryCode": "CA"
+              },
+              "identificationCountry": "CA",
+              "clientIdentification": "54621654",
+              "identificationProvince": "BC"
+          },
+          "location": {
+              "addresses": [
+                  {
+                      "locationName": "Hangar",
+                      "complementaryAddressOne": "",
+                      "complementaryAddressTwo": null,
+                      "streetAddress": "1234 Nowhere St",
+                      "country": {
+                          "value": "CA",
+                          "text": "Canada"
+                      },
+                      "province": {
+                          "value": "BC",
+                          "text": "British Columbia"
+                      },
+                      "city": "Victoria",
+                      "postalCode": "V8V8V8",
+                      "businessPhoneNumber": "",
+                      "secondaryPhoneNumber": "",
+                      "faxNumber": "",
+                      "emailAddress": "",
+                      "notes": "",
+                      "index": 0
+                  }
+              ],
+              "contacts": [
+                  {
+                      "locationNames": [
+                          {
+                              "value": "0",
+                              "text": "Hangar"
+                          }
+                      ],
+                      "contactType": {
+                          "value": "BL",
+                          "text": "Billing"
+                      },
+                      "firstName": "John",
+                      "lastName": "Wick",
+                      "phoneNumber": "(250) 445-4540",
+                      "secondaryPhoneNumber": "",
+                      "faxNumber": "",
+                      "email": "thatmail@maila.ca",
+                      "index": 0
+                  }
+              ]
+          }
+      }""";
+
+
 }

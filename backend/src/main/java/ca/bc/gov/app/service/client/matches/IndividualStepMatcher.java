@@ -1,10 +1,12 @@
 package ca.bc.gov.app.service.client.matches;
 
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.IdentificationTypeEnum;
 import ca.bc.gov.app.dto.client.StepMatchEnum;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import io.micrometer.observation.annotation.Observed;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -29,14 +31,14 @@ public class IndividualStepMatcher implements StepMatcher {
   private final ClientLegacyService legacyService;
 
   /**
- * This method is used to get the logger for this class.
- * This is just to allow the default methods to access the logger.
- *
- * @return The Logger object used for logging in this class.
- */
-public Logger getLogger() {
-  return log;
-}
+   * This method is used to get the logger for this class. This is just to allow the default methods
+   * to access the logger.
+   *
+   * @return The Logger object used for logging in this class.
+   */
+  public Logger getLogger() {
+    return log;
+  }
 
   /**
    * This method returns the step matcher enumeration value for individual steps.
@@ -69,7 +71,7 @@ public Logger getLogger() {
         legacyService
             .searchIndividual(
                 dto.businessInformation().firstName(),
-                dto.businessInformation().businessName(),
+                dto.businessInformation().lastName(),
                 dto.businessInformation().birthdate(),
                 null
             )
@@ -82,7 +84,7 @@ public Logger getLogger() {
         legacyService
             .searchIndividual(
                 dto.businessInformation().firstName(),
-                dto.businessInformation().businessName(),
+                dto.businessInformation().lastName(),
                 dto.businessInformation().birthdate(),
                 dto.businessInformation().clientIdentification()
             )
@@ -92,8 +94,13 @@ public Logger getLogger() {
 
     // Search for document itself
     Flux<ForestClientDto> documentFullMatch =
-        legacyService.searchDocument(dto.businessInformation().idType(),
-                dto.businessInformation().clientIdentification()
+        Mono
+            .justOrEmpty(dto.businessInformation().idType())
+            .filter(Objects::nonNull)
+            .filter(idType -> !IdentificationTypeEnum.OTHR.name().equalsIgnoreCase(idType))
+            .flatMapMany(idType ->
+                legacyService.searchDocument(idType,
+                    dto.businessInformation().clientIdentification())
             )
             .doOnNext(client -> log.info("Match found for individual document full match: {}",
                 client.clientNumber())
@@ -105,17 +112,24 @@ public Logger getLogger() {
                 .concat(
                     processResult(
                         individualFuzzyMatch,
-                        "businessInformation.businessName",
+                        //using this name for reference only to denote that is only the individual
+                        //information that was matched
+                        "businessInformation.individual",
+                        true,
                         true
                     ),
                     processResult(
                         individualFullMatch,
-                        "businessInformation.businessName",
+                        //using this name for reference only to denote that is the individual data
+                        //plus the document id that was matched
+                        "businessInformation.individualAndDocument",
+                        false,
                         false
                     ),
                     processResult(
                         documentFullMatch,
-                        "businessInformation.identification",
+                        "businessInformation.clientIdentification",
+                        false,
                         false
                     )
                 )

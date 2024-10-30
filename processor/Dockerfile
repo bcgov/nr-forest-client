@@ -12,8 +12,8 @@ RUN microdnf update --nodocs -y && \
     microdnf clean all
 
 # Add Maven to the PATH environment variable
-ENV MAVEN_HOME /opt/maven
-ENV PATH $MAVEN_HOME/bin:$PATH
+ENV MAVEN_HOME=/opt/maven
+ENV PATH=$MAVEN_HOME/bin:$PATH
 
 # Receiving app version
 ARG APP_VERSION=0.0.1

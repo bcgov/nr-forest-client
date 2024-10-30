@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, toRef } from "vue";
 import {
-  newFormDataDto,
+  newFormDataDtoExternal,
   emptyContact,
   locationName as defaultLocation,
 } from "@/dto/ApplyClientNumberDto";
@@ -53,7 +53,7 @@ const submitterContact: Contact = {
   email: submitterInformation?.email ?? "",
 };
 
-let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
+let formDataDto = ref<FormDataDto>({ ...newFormDataDtoExternal() });
 
 const figmaFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
@@ -98,15 +98,15 @@ let formData = reactive<FormDataDto>({
   },
 });
 
-const receviedCountry = ref({} as CodeNameType);
+const receivedCountry = ref({} as CodeNameType);
 
 useFetchTo(
-  `/api/countries/${submitterInformation?.address?.country?.value}`,
-  receviedCountry
+  `/api/codes/countries/${submitterInformation?.address?.country?.value}`,
+  receivedCountry
 );
 
 const country = computed(() => {
-  return codeConversionFn(receviedCountry.value);
+  return codeConversionFn(receivedCountry.value);
 });
 
 watch(country, (newValue) => {
@@ -135,7 +135,7 @@ const scrollToNewContact = () => {
 //Role related data
 const roleList = ref([]);
 const fetch = () => {
-  useFetchTo("/api/codes/contactTypes?page=0&size=250", roleList);
+  useFetchTo("/api/codes/contact-types?page=0&size=250", roleList);
 };
 fetch();
 
@@ -403,7 +403,7 @@ watch([validationError], () => {
 });
 
 const districtsList = ref([]);
-useFetchTo("/api/districts?page=0&size=250", districtsList);
+useFetchTo("/api/codes/districts?page=0&size=250", districtsList);
 
 const formattedDistrictsList = computed(() =>
   districtsList.value.map((district) => ({
@@ -421,6 +421,36 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     formData.businessInformation.district = value.code;
   }
 };
+
+const submissionLimitCheck = ref([]);
+
+const { error: submissionLimitError, 
+        handleErrorDefault: submissionLimitHandleError 
+      } = useFetchTo(
+  "/api/submission-limit",
+  submissionLimitCheck,
+  {
+    skipDefaultErrorHandling: true,
+  }
+);
+
+watch(submissionLimitError, () => {
+  if (submissionLimitError.value.response?.status === 400) {
+    const validationErrors: ValidationMessageType[] =
+      submissionLimitError.value.response?.data;
+
+    validationErrors.forEach((errorItem: ValidationMessageType) =>
+      notificationBus.emit({
+        fieldId: "server.validation.error",
+        fieldName: "",
+        errorMsg: errorItem.errorMsg,
+      })
+    );
+
+    return;
+  }
+  submissionLimitHandleError();
+});
 </script>
 
 <template>
@@ -435,6 +465,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
     -->
       <div data-scroll="top-notification" class="header-offset"></div>
       <error-notification-grouping-component
+        data-text="top"
         :form-data="formData"
         :scroll-to-element-fn="scrollToNewContact"
       />
@@ -457,6 +488,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
           open="true"
           kind="info"
           hide-close-button="true"
+          data-text="Read-only"
           title="">
           <p class="cds--inline-notification-content">
             <strong>Read-only: </strong>
@@ -616,6 +648,7 @@ const updateDistrict = (value: CodeNameType | undefined) => {
           size="lg"
           v-on:click="submit"
           :disabled="submitBtnDisabled"
+          data-text="Submit"
         >
           <span>Submit application</span>
           <Check16 slot="icon" />

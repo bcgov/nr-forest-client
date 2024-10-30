@@ -2,20 +2,26 @@ package ca.bc.gov.app.service.legacy;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Named.named;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
+import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -63,9 +69,13 @@ class LegacyIndividualPersistenceServiceTest {
         .submissionId(2)
         .submissionDetailId(2)
         .organizationName("James Baxter")
+        .firstName("James")
+        .lastName("Baxter")
         .businessTypeCode("U")
         .clientTypeCode("I")
         .goodStandingInd("Y")
+        .identificationTypeCode("OTHR")
+        .clientIdentification("ABC:123")
         .build();
 
     when(submissionDetailRepository.findBySubmissionId(eq(2)))
@@ -98,8 +108,7 @@ class LegacyIndividualPersistenceServiceTest {
                   "Jhon Snow submitted the individual with data acquired from BC Services Card")
               .hasFieldOrPropertyWithValue("clientTypeCode", "I")
               .hasFieldOrPropertyWithValue("clientIdTypeCode", "OTHR")
-              .hasFieldOrPropertyWithValue("clientIdentification",
-                  "ottomated");
+              .hasFieldOrPropertyWithValue("clientIdentification", "ABC:123");
 
           assertThat(message.parameters().get(ApplicationConstant.SUBMISSION_ID))
               .isNotNull()
@@ -128,12 +137,181 @@ class LegacyIndividualPersistenceServiceTest {
         .verifyComplete();
   }
 
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("generateForestClient")
+  @DisplayName("All kinds of forest clients")
+  void shouldCreateIndividualFromStaff(
+      MessagingWrapper<String> wrapper,
+      SubmissionDetailEntity entity,
+      ForestClientDto dto
+  ) {
+    when(
+        submissionDetailRepository
+            .findBySubmissionId(
+                wrapper
+                    .getParameter(
+                        ApplicationConstant.SUBMISSION_ID, Integer.class
+                    )
+            )
+    )
+        .thenReturn(Mono.just(entity));
+
+    service
+        .generateForestClient(wrapper)
+        .as(StepVerifier::create)
+        .expectNext(new MessagingWrapper<>(
+                dto,
+                wrapper.parameters()
+            )
+        )
+        .verifyComplete();
+
+  }
+
   private static Stream<Arguments> byType() {
     return Stream.of(
         Arguments.of("I", true),
         Arguments.of("C", false),
         Arguments.of("USP", false),
         Arguments.of("RSP", false)
+    );
+  }
+
+  private static Stream<Arguments> generateForestClient() {
+    Integer submissionId = 9999;
+    String clientNumber = null;
+
+    return Stream.of(
+        Arguments.of(
+            named("Staff-submitted Individual",
+            new MessagingWrapper<>(
+                clientNumber,
+                Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+            )
+                .withParameter(ApplicationConstant.SUBMISSION_STARTER,
+                    SubmissionProcessTypeEnum.STAFF)
+                .withParameter(ApplicationConstant.MATCHING_INFO,
+                    Map.of(
+                        "name", "John Wick",
+                        "email", "jhon.wick@gov.bc.ca",
+                        "userId", "IDIR\\JWICK",
+                        "businessId", StringUtils.EMPTY,
+                        "businessName", StringUtils.EMPTY
+                    )
+                )
+                .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
+                .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.SUBMISSION_NAME, "Johnathan Valelono Wick")
+                .withParameter(ApplicationConstant.MATCHING_REASON, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.CLIENT_TYPE_CODE, "I")
+                .withParameter(ApplicationConstant.MATCHED_USER, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Johnathan Valelono Wick")
+                .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
+                .withParameter(ApplicationConstant.FOREST_CLIENT_NAME, "JOHNATHAN WICK")
+                .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "not applicable")
+            ),
+            SubmissionDetailEntity.builder()
+                .submissionId(submissionId)
+                .submissionDetailId(submissionId)
+                .organizationName("Johnathan Valelono Wick")
+                .firstName("Johnathan")
+                .middleName("Valelono")
+                .lastName("Wick")
+                .businessTypeCode("U")
+                .clientTypeCode("I")
+                .goodStandingInd("Y")
+                .birthdate(LocalDate.of(1962, 3, 12))
+                .identificationTypeCode("CDDL")
+                .countryCode("CA")
+                .provinceCode("BC")
+                .clientIdentification("12345678")
+                .build(),
+            new ForestClientDto(
+                clientNumber,
+                "WICK",
+                "JOHNATHAN",
+                "VALELONO",
+                "ACT",
+                "I",
+                LocalDate.of(1962, 3, 12),
+                "BCDL",
+                "12345678",
+                StringUtils.EMPTY,
+                StringUtils.EMPTY,
+                null,
+                "IDIR\\JWICK",
+                "IDIR\\JWICK",
+                ApplicationConstant.ORG_UNIT,
+                null,
+                StringUtils.EMPTY
+            )
+        ),
+        Arguments.of(
+            named("BCSC-submitted Individual",
+            new MessagingWrapper<>(
+                clientNumber,
+                Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+            )
+                .withParameter(ApplicationConstant.SUBMISSION_STARTER,
+                    SubmissionProcessTypeEnum.EXTERNAL)
+                .withParameter(ApplicationConstant.MATCHING_INFO,
+                    Map.of(
+                        "name", "John Wick",
+                        "email", "jhon.wick@gov.bc.ca",
+                        "userId", "IDIR\\JWICK",
+                        "businessId", StringUtils.EMPTY,
+                        "businessName", StringUtils.EMPTY
+                    )
+                )
+                .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
+                .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.SUBMISSION_NAME, "Johnathan Wick")
+                .withParameter(ApplicationConstant.MATCHING_REASON, StringUtils.EMPTY)
+                .withParameter(ApplicationConstant.CLIENT_TYPE_CODE, "I")
+                .withParameter(ApplicationConstant.MATCHED_USER, "idir\\ottomated")
+                .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Johnathan Wick")
+                .withParameter(ApplicationConstant.CREATED_BY,
+                    "BCSC\\83JB4SM0MGI9KXYFFHBT2Y2F76AIYBYQ")
+                .withParameter(ApplicationConstant.UPDATED_BY,
+                    "idir\\ottomated")
+                .withParameter(ApplicationConstant.FOREST_CLIENT_NAME, "JOHNATHAN WICK")
+                .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "not applicable")
+            ),
+            SubmissionDetailEntity.builder()
+                .submissionId(submissionId)
+                .submissionDetailId(submissionId)
+                .organizationName("Johnathan Wick")
+                .firstName(null)
+                .middleName(null)
+                .lastName(null)
+                .businessTypeCode("U")
+                .clientTypeCode("I")
+                .goodStandingInd("Y")
+                .birthdate(LocalDate.of(1962, 3, 12))
+                .identificationTypeCode(null)
+                .clientIdentification(null)
+                .build(),
+            new ForestClientDto(
+                clientNumber,
+                "WICK",
+                "JOHNATHAN",
+                StringUtils.EMPTY,
+                "ACT",
+                "I",
+                LocalDate.of(1962, 3, 12),
+                "BCSC",
+                "83JB4SM0MGI9KXYFFHBT2Y2F76AIYB",
+                StringUtils.EMPTY,
+                StringUtils.EMPTY,
+                "Johnathan Wick submitted the individual with data acquired from BC Services Card",
+                "BCSC\\83JB4SM0MGI9KXYFFHBT2Y2F7",
+                "idir\\ottomated",
+                ApplicationConstant.ORG_UNIT,
+                null,
+                StringUtils.EMPTY
+            )
+        )
     );
   }
 

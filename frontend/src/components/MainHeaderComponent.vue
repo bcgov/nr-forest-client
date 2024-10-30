@@ -14,8 +14,6 @@ import { useRoute } from "vue-router";
 // Types
 import { nodeEnv, appVersion, featureFlags } from "@/CoreConstants";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-// Routes
-import { CONFIRMATION_ROUTE_NAME } from "@/routes";
 // @ts-ignore
 import Logout16 from "@carbon/icons-vue/es/logout/16";
 // @ts-ignore
@@ -29,11 +27,11 @@ import Avatar16 from "@carbon/icons-vue/es/user--avatar/24";
 // @ts-ignore
 import Result16 from "@carbon/icons-vue/es/result/16";
 // @ts-ignore
-import SignOut16 from "@carbon/icons-vue/es/user--follow/16";
-// @ts-ignore
 import Close16 from "@carbon/icons-vue/es/close/16";
 // @ts-ignore
 import TaskAdd16 from "@carbon/icons-vue/es/task--add/16";
+// @ts-ignore
+import Search16 from "@carbon/icons-vue/es/search--locate/16"
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
@@ -89,12 +87,12 @@ const session = instance?.appContext.config.globalProperties.$session;
 
 const logout = () => {
   session?.logOut();
-}
+};
 
 const route = useRoute();
 
 const onClickLogout = () => {
-  if (route.name === CONFIRMATION_ROUTE_NAME) {
+  if (route.name.includes("confirmation")) {
     logout();
   } else {
     logoutModalActive.value = true;
@@ -102,14 +100,26 @@ const onClickLogout = () => {
 };
 
 const headerBarButtonsSize = computed(() =>
-  isSmallScreen.value || isMediumScreen.value ? "lg" : "sm",
+  isSmallScreen.value || isMediumScreen.value ? "lg" : "sm"
 );
 
 const logoutBtnKind = computed(() =>
-  isSmallScreen.value || isMediumScreen.value ? "ghost" : "tertiary",
+  isSmallScreen.value || isMediumScreen.value ? "ghost" : "tertiary"
 );
 
-const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority)) && featureFlags.STAFF_CREATE;
+const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some((authority) =>
+  ForestClientUserSession.authorities.includes(authority)
+);
+
+const handleLogoutClick = (event) => {
+  event.preventDefault();
+
+  if (route.name === "staff-form") {
+    logoutModalActive.value = true;
+  } else {
+    logout();
+  }
+};
 </script>
 
 <template>
@@ -133,8 +143,7 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
         src="/img/BCID_H_rgb_rev.svg"
         alt="Go to the Government of British Columbia website"
         v-else
-      />
-      <logo />
+      />      
     </a>
     
     <cds-header-name @click.prevent>
@@ -211,8 +220,8 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
         <div class="grouping-21" id="panel-content--links">
           <cds-side-nav-items>
             <cds-side-nav-link title="Options" class="unbolded side-nav-link--non-link" />
-            <cds-side-nav-link href="#" title="Logout" @click.prevent="logoutModalActive = true">            
-              <SignOut16 slot="title-icon" />
+            <cds-side-nav-link href="#" title="Logout" @click.prevent="handleLogoutClick">            
+              <Logout16 slot="title-icon" />
             </cds-side-nav-link>
           </cds-side-nav-items>
         </div>
@@ -227,14 +236,36 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
     ></div>
   </cds-header>
 
-  <cds-side-nav v-if="$route.meta.sideMenu" v-shadow=1>
+  <cds-side-nav 
+    v-if="$route.meta.sideMenu" 
+    v-shadow=1>
     <cds-side-nav-items v-shadow=1>      
-      <cds-side-nav-link active href="/submissions" large id="menu-list-submission-list">
+      <cds-side-nav-link 
+        :active="$route.name == 'internal'" 
+        href="/submissions" 
+        large 
+        id="menu-list-table-list">
         <span>Submissions</span>
         <Result16 slot="title-icon" />
       </cds-side-nav-link>
 
-      <cds-side-nav-link active href="/new-client-staff" large v-if="userHasAuthority" v-shadow=1 id="menu-list-staff-form">
+      <cds-side-nav-link 
+        :active="$route.name == 'search'" 
+        href="/search" 
+        large  
+        v-if="featureFlags.STAFF_SEARCH"
+        id="menu-list-search">
+        <span>Client search</span>
+        <Search16 slot="title-icon" />
+      </cds-side-nav-link>
+
+      <cds-side-nav-link 
+        :active="$route.name == 'staff-form'" 
+        href="/new-client-staff" 
+        large 
+        v-if="userHasAuthority" 
+        v-shadow=1 
+        id="menu-list-staff-form">
         <span>Create client</span>
         <TaskAdd16 slot="title-icon" />
       </cds-side-nav-link>
@@ -251,8 +282,8 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
         class="unbolded" 
         @click.prevent="helpModalActive = true"
       >
-        <span class="body-compact-02 disabled">Need help?</span>
-        <Help16 slot="title-icon" class="disabled" />
+        <span class="body-compact-02">Need help?</span>
+        <Help16 slot="title-icon" />
       </cds-side-nav-link>
     </cds-side-nav-items>
   
@@ -269,13 +300,13 @@ const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => For
     <cds-modal-header>
       <cds-modal-close-button></cds-modal-close-button>
       <cds-modal-heading id="help-modal-heading">
-        Help with application
+        Need help?
       </cds-modal-heading>
     </cds-modal-header>
     <cds-modal-body id="help-modal-body">
       <p>
-        Can’t proceed with your application? Let us know by emailing your issue to 
-        <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span>
+        Email your issue to <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> 
+        and we'll get back to you.
       </p>
     </cds-modal-body>
   </cds-modal>

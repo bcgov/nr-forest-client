@@ -3,6 +3,7 @@ package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
@@ -13,7 +14,9 @@ import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.util.ProcessorUtil;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -60,6 +63,8 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
   public Mono<MessagingWrapper<ForestClientDto>> generateForestClient(
       MessagingWrapper<String> message) {
 
+    AtomicReference<String> atomicClientName = new AtomicReference<>(StringUtils.EMPTY);
+
     return
         getSubmissionDetailRepository()
             .findBySubmissionId(
@@ -68,6 +73,17 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                         .parameters()
                         .get(ApplicationConstant.SUBMISSION_ID)
             )
+
+            //if Staff submitted, get the client name from the submission as doing business as
+            .doOnNext(submissionDetail ->
+              atomicClientName.set(
+                  Optional
+                      .ofNullable(submissionDetail.getDoingBusinessAs())
+                      .filter(StringUtils::isNotBlank)
+                      .orElse(submissionDetail.getOrganizationName())
+              )
+            )
+
             .map(submissionDetail ->
                 getBaseForestClient(
                     getUser(message, ApplicationConstant.CREATED_BY),
@@ -76,15 +92,19 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     .withBirthdate(submissionDetail.getBirthdate())
                     .withClientIdentification(submissionDetail.getRegistrationNumber())
                     .withClientComment(
-                        String.join(" ",
-                            getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME),
-                            "of BCeID Business",
-                            message.getInfoParameter("businessName",String.class),
-                            "submitted the",
-                            "sole proprietor registered on BC Registry with number",
-                            submissionDetail.getRegistrationNumber(),
-                            "and company name",
-                            submissionDetail.getOrganizationName().toUpperCase()
+                        BooleanUtils.toString(
+                            isStaffSubmitted(message),
+                            submissionDetail.getNotes(),
+                            String.join(" ",
+                                getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME),
+                                "of BCeID Business",
+                                message.getInfoParameter("businessName", String.class),
+                                "submitted the",
+                                "sole proprietor registered on BC Registry with number",
+                                submissionDetail.getRegistrationNumber(),
+                                "and company name",
+                                submissionDetail.getOrganizationName().toUpperCase()
+                            )
                         )
                     )
                     .withRegistryCompanyTypeCode(ProcessorUtil.extractLetters(
@@ -92,57 +112,29 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     .withCorpRegnNmbr(ProcessorUtil.extractNumbers(
                         submissionDetail.getRegistrationNumber()))
                     .withClientNumber(message.payload())
+                    .withAcronym(submissionDetail.getClientAcronym())
+                    .withWcbFirmNumber(submissionDetail.getWorkSafeBCNumber())
+
+                    .withLegalFirstName(
+                        isStaffSubmitted(message) ? submissionDetail.getFirstName().toUpperCase()
+                            : StringUtils.EMPTY)
+                    .withClientName(
+                        isStaffSubmitted(message) ? submissionDetail.getLastName().toUpperCase()
+                            : StringUtils.EMPTY)
+                    .withClientTypeCode("I")
+                    .withClientIdTypeCode("BCRE")
             )
             //Load the details to set the remaining fields
             .flatMap(forestClient ->
-                bcRegistryService
-                    .requestDocumentData(forestClient.clientIdentification())
-                    // Should only be one
-                    .next()
-                    // Get the proprietor or empty if none
-                    .flatMap(document ->
-                        Mono.justOrEmpty(
-                            Optional.ofNullable(
-                                document.getProprietor()
-                            )
+                Mono.just(
+                        SubmissionProcessTypeEnum.STAFF.equals(
+                            message.getParameter(ApplicationConstant.SUBMISSION_STARTER,
+                                SubmissionProcessTypeEnum.class)
                         )
                     )
-                    .map(BcRegistryPartyDto::officer)
-                    .map(contact ->
-                        new String[]{
-                            contact.firstName().toUpperCase(),
-                            contact.lastName().toUpperCase()
-                        })
-                    .switchIfEmpty(
-                        //In case of negative results from BC Registry (rare)
-                        // load from contacts as a fallback
-                        getContactRepository()
-                            //Get all contacts for the submission
-                            .findBySubmissionId(
-                                (Integer)
-                                    message
-                                        .parameters()
-                                        .get(ApplicationConstant.SUBMISSION_ID)
-                            )
-                            //Handle as a flux with the index
-                            .index()
-                            //Only deal with the first 2
-                            .filter(index -> index.getT1() < 2)
-                            .map(Tuple2::getT2)
-                            .map(contact -> new String[]{
-                                contact.getFirstName().toUpperCase(),
-                                contact.getLastName().toUpperCase()
-                            })
-                            //Grab the last, as it should cover the case of the second being removed
-                            .last()
-                    )
-                    .map(contact ->
-                        forestClient
-                            .withLegalFirstName(contact[0])
-                            .withClientName(contact[1])
-                            .withClientTypeCode("I")
-                            .withClientIdTypeCode("BCRE")
-                    )
+                    .filter(BooleanUtils::isTrue)
+                    .map(isStaff -> forestClient)
+                    .switchIfEmpty(loadRSPNameFromContact(message, forestClient))
             )
             .map(forestClient ->
                 new MessagingWrapper<>(
@@ -150,9 +142,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     message.parameters()
                 )
                     .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
-                        forestClient
-                            .clientComment()
-                            .split("and company name ")[1]
+                            atomicClientName.get().toUpperCase()
                     )
                     .withParameter(ApplicationConstant.REGISTRATION_NUMBER,
                         String.join(StringUtils.EMPTY,
@@ -160,8 +150,66 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                             forestClient.corpRegnNmbr()
                         )
                     )
+                    .withParameter(
+                        ApplicationConstant.IS_DOING_BUSINESS_AS,
+                        true
+                    )
+                    .withParameter(
+                        ApplicationConstant.DOING_BUSINESS_AS,
+                        atomicClientName.get().toUpperCase()
+                    )
             );
 
+  }
+
+  private Mono<ForestClientDto> loadRSPNameFromContact(MessagingWrapper<String> message,
+      ForestClientDto forestClient) {
+    return bcRegistryService
+        .requestDocumentData(forestClient.clientIdentification())
+        // Should only be one
+        .next()
+        // Get the proprietor or empty if none
+        .flatMap(document ->
+            Mono.justOrEmpty(
+                Optional.ofNullable(
+                    document.getProprietor()
+                )
+            )
+        )
+        .map(BcRegistryPartyDto::officer)
+        .map(contact ->
+            new String[]{
+                contact.firstName().toUpperCase(),
+                contact.lastName().toUpperCase()
+            })
+        .switchIfEmpty(
+            //In case of negative results from BC Registry (rare)
+            // load from contacts as a fallback
+            getContactRepository()
+                //Get all contacts for the submission
+                .findBySubmissionId(
+                    (Integer)
+                        message
+                            .parameters()
+                            .get(ApplicationConstant.SUBMISSION_ID)
+                )
+                //Handle as a flux with the index
+                .index()
+                //Only deal with the first 2
+                .filter(index -> index.getT1() < 2)
+                .map(Tuple2::getT2)
+                .map(contact -> new String[]{
+                    contact.getFirstName().toUpperCase(),
+                    contact.getLastName().toUpperCase()
+                })
+                //Grab the last, as it should cover the case of the second being removed
+                .last()
+        )
+        .map(contact ->
+            forestClient
+                .withLegalFirstName(contact[0])
+                .withClientName(contact[1])
+        );
   }
 
 }

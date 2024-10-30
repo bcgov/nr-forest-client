@@ -1,7 +1,6 @@
 package ca.bc.gov.app.entity;
 
 import static ca.bc.gov.app.ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -97,7 +96,7 @@ public class ForestClientLocationEntity {
   private String locnExpiredInd;
   
   @Column("returned_mail_date")
-  private LocalDate returnedMailDate;
+  private LocalDateTime returnedMailDate;
   
   @Column("trust_location_ind")
   @NotNull

@@ -16,6 +16,7 @@ const canadianPostalCodeRegex: RegExp = /^(([A-Z]\d){3})$/i;
 const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/;
 const nameRegex: RegExp = /^[a-zA-Z0-9\s'-]*$/;
 const ascii: RegExp = /^[\x20-\x7e]*$/;
+const asciiLineBreak: RegExp = /^[\n\x20-\x7e]*$/;
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
@@ -38,7 +39,7 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 export const isNotEmpty =
   (message: string = "This field is required") =>
   (value: string): string => {
-    if (value && value.trim().length > 0) return "";
+    if (value && (typeof value === "string") && value.trim().length > 0) return "";
     return message;
   };
 
@@ -186,6 +187,16 @@ export const isMinSize =
     };
   };
 
+export const isExactSize =
+  (message: string = "This field must have the defined size") =>
+  (size: number) => {
+    return (value: string): string => {
+      if (isNotEmpty(message)(value) === "" && value.length == size)
+        return "";
+      return message;
+    };
+  };
+
 /**
  * Checks if the value is not empty and is composed of only numbers
  * @param value - The value to check
@@ -267,7 +278,7 @@ export const isNoSpecialCharacters =
   };
 
 export const isIdCharacters =
-  (message: string = "This field can only contain: A-Z or 0-9") =>
+  (field: string = "field", message: string = `The ${field} can only contain: A-Z or 0-9`) =>
   (value: string): string => {
     if (idCharacters.test(value)) return "";
     return message;
@@ -290,6 +301,16 @@ export const isAscii =
   ) =>
   (value: string): string => {
     if (ascii.test(value)) return "";
+    return message;
+  };
+
+export const isAsciiLineBreak =
+  (
+    field: string = "field",
+    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space, line break or common symbols`,
+  ) =>
+  (value: string): string => {
+    if (asciiLineBreak.test(value)) return "";
     return message;
   };
 
@@ -438,6 +459,27 @@ export const validateSelection =
   };
 
 /**
+ * Converts a validator to one that first checks if the input value is an empty string or null.
+ * In that case it approves the value right away and just skips the provided validator.
+ * Otherwise, it performs the provided validation.
+ * @param validator
+ */
+export const optional =
+  (validator: (value: string) => string) =>
+  (value: string): string => {    
+    return value === "" || value === null || value === undefined ? "" : validator(value);
+  };
+
+export const isMinSizeMsg = (fieldName: string, minSize: number): ((value: string) => string) =>
+  isMinSize(`The ${fieldName} must contain at least ${minSize} characters`)(minSize);
+
+export const isMaxSizeMsg = (fieldName: string, maxSize: number): ((value: string) => string) =>
+  isMaxSize(`The ${fieldName} has a ${maxSize} character limit`)(maxSize);
+
+export const isExactSizMsg = (fieldName: string, size: number): ((value: string) => string) =>
+  isExactSize(`The ${fieldName} must contain ${size} characters`)(size);
+
+/**
  * Retrieves the value of a field in an object or array based on a given path.
  * If the field is an array, it returns an array of values.
  *
@@ -500,11 +542,11 @@ const parseAggregatorCondition = (conditinal: string) : { value1: string, operat
 }
 
 /**
-* Parses an equality condition and returns an object with the parsed values.
-* @param condition - The condition to parse.
-* @returns An object with the parsed values: value1, operator, and value2.
-* @throws {Error} If the condition format is invalid.
-*/
+ * Parses an equality condition and returns an object with the parsed values.
+ * @param condition - The condition to parse.
+ * @returns An object with the parsed values: value1, operator, and value2.
+ * @throws {Error} If the condition format is invalid.
+ */
 const parseEqualityCondition = (condition: string): { value1: string, operator: string, value2: string } => {
   if(condition.includes("===") || condition.includes("!==")) {
       const regex = /(.+?)\s*(===|!==)\s*(?:"(.*?)"|\$(\..+?))$/;
@@ -523,13 +565,13 @@ const parseEqualityCondition = (condition: string): { value1: string, operator: 
 }
 
 /**
-* Evaluates a logical condition based on the provided values and operator.
-* @param value1 - The first value to be evaluated.
-* @param operator - The logical operator to be used ('&&' for AND, '||' for OR).
-* @param value2 - The second value to be evaluated.
-* @returns The result of the logical condition evaluation.
-* @throws {Error} If an invalid operator is provided.
-*/
+ * Evaluates a logical condition based on the provided values and operator.
+ * @param value1 - The first value to be evaluated.
+ * @param operator - The logical operator to be used ('&&' for AND, '||' for OR).
+ * @param value2 - The second value to be evaluated.
+ * @returns The result of the logical condition evaluation.
+ * @throws {Error} If an invalid operator is provided.
+ */
 const evaluateLogicalCondition = ({ value1, operator, value2 }: { value1: string, operator: string, value2: string }): boolean => {
   const boolValue1 = value1 === 'true';
   const boolValue2 = value2 === 'true';
@@ -545,11 +587,11 @@ const evaluateLogicalCondition = ({ value1, operator, value2 }: { value1: string
 }
 
 /**
-* Evaluates an entry against an item based on the provided values and operator.
-* @param item - The item to evaluate against.
-* @param entry - The entry containing the values and operator to evaluate.
-* @returns A boolean indicating whether the evaluation is true or false.
-*/
+ * Evaluates an entry against an item based on the provided values and operator.
+ * @param item - The item to evaluate against.
+ * @param entry - The entry containing the values and operator to evaluate.
+ * @returns A boolean indicating whether the evaluation is true or false.
+ */
 const evaluateEntry = (item: any, entry: { value1: string, operator: string, value2: string }): boolean => {
 
   if(entry.value1 === 'true' && entry.value2 === 'true')
@@ -576,11 +618,11 @@ const evaluateEntry = (item: any, entry: { value1: string, operator: string, val
 }
 
 /**
-* Evaluates a condition for a given item.
-* @param item - The item to evaluate the condition against.
-* @param condition - The condition to evaluate.
-* @returns A boolean indicating whether the condition is true or false.
-*/
+ * Evaluates a condition for a given item.
+ * @param item - The item to evaluate the condition against.
+ * @param condition - The condition to evaluate.
+ * @returns A boolean indicating whether the condition is true or false.
+ */
 const evaluateCondition = (item: any, condition: string): boolean => {
 
   if (condition === 'true') {

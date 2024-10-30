@@ -1,5 +1,10 @@
 /* eslint-disable dot-notation */
-import { isMaxSize, isOnlyNumbers, isNotEmpty, isNotEmptyArray } from "@/helpers/validators/GlobalValidators";
+import {
+  isMaxSize,
+  isOnlyNumbers,
+  isNotEmpty,
+  isNotEmptyArray,
+} from "@/helpers/validators/GlobalValidators";
 
 const reviewFieldValidations: Record<string, ((value: any) => string)[]> = {};
 
@@ -10,7 +15,9 @@ export const getValidations = (key: string): ((value: any) => string)[] =>
 const isMaxSizeMsg = (fieldName: string, maxSize: number) =>
   isMaxSize(`The ${fieldName} has a ${maxSize} character limit`)(maxSize);
 
-reviewFieldValidations["reasons"] = [isNotEmptyArray("You must select at least one reason")];
+reviewFieldValidations["reasons"] = [
+  isNotEmptyArray("You must select at least one reason"),
+];
 
 reviewFieldValidations["message"] = [
   isNotEmpty("Matching client number cannot be empty"),

@@ -33,7 +33,7 @@ public class ClientSubmissionProcessingService {
     return
         submissionRepository
             .findById(submissionId)
-            .doOnNext(submission -> log.info("Loaded submission {}", submission))
+            .doOnNext(submission -> log.info("Loaded submission {} created by {}", submission.getSubmissionId(), submission.getCreatedBy()))
             .flatMap(event ->
                 submissionDetailRepository
                     .findBySubmissionId(submissionId)
@@ -60,6 +60,10 @@ public class ClientSubmissionProcessingService {
                                         details.getClientTypeCode())
                                     .withParameter(ApplicationConstant.MATCHED_USER,
                                         matching.getCreatedBy())
+                                    .withParameter(ApplicationConstant.CREATED_BY,
+                                        event.getCreatedBy())
+                                    .withParameter(ApplicationConstant.UPDATED_BY,
+                                        event.getUpdatedBy())
                             )
                     )
             );

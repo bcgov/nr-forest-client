@@ -21,6 +21,9 @@ spring:
       maxIdleTime: 45000
       maxCreateConnectionTime: 90000
       poolName: FsaLegacyClientConPool
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
   http:
     encoding:
       charset: UTF-8
@@ -87,12 +90,13 @@ ca:
           service: ${ORACLEDB_SERVICENAME:fsa-forest}
           database: ${ORACLEDB_DATABASE:fsa-forest}
           host: ${ORACLEDB_HOST:localhost}
-          port: ${ORACLEDB_PORT:1521}
+          port: ${ORACLEDB_PORT:1543}
           username: ${ORACLEDB_USER:user}
           password: ${ORACLEDB_PASSWORD:passwd}
           keystore: ${ORACLEDB_KEYSTORE:jssecacerts.jks}
           secret: ${ORACLEDB_SECRET:changeit}
-
+        data:
+          predictiveCap: ${PREDICTIVE_CAP:7D}
 
 logging:
   pattern:
@@ -117,3 +121,4 @@ spring:
 logging:
   pattern:
     console: "{\"time\": \"%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}\", \"level\": \"${LOG_LEVEL:%5p}\", \"app\":\"${spring.application.name:-}\", \"traceId\":\"%X{${X-TRACE-ID:traceId}:-}\", \"spanId\":\"%X{spanId:-}\", \"pid\": \"${PID: }\", \"thread\": \"%t\", \"source\": \"%logger{63}:%L\", \"message\": \"%m${LOG_EXCEPTION_CONVERSION_WORD:%wEx}\"}%n"
+

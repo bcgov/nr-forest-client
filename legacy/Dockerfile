@@ -12,8 +12,8 @@ RUN microdnf update --nodocs -y && \
     microdnf clean all
 
 # Add Maven to the PATH environment variable
-ENV MAVEN_HOME /opt/maven
-ENV PATH $MAVEN_HOME/bin:$PATH
+ENV MAVEN_HOME=/opt/maven
+ENV PATH=$MAVEN_HOME/bin:$PATH
 
 # Receiving app version
 ARG APP_VERSION=0.0.1
@@ -30,7 +30,6 @@ RUN mvn versions:set -DnewVersion=${APP_VERSION} -f pom.xml -DskipTests -Dtests.
 # Build
 RUN mvn -Pnative native:compile
 
-
 ### Deployer
 FROM gcr.io/distroless/java-base:nonroot AS deploy
 ARG PORT=9000
@@ -44,5 +43,7 @@ USER 1001
 EXPOSE ${PORT}
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -f http://localhost:${PORT}/health | grep '"status":"UP"' || exit 1
 
+ENV SPRING_PROFILES_ACTIVE=container
+
 # Startup
-ENTRYPOINT ["/app/nr-forest-client-legacy", "--spring.profiles.active=container"]
+ENTRYPOINT ["/app/nr-forest-client-legacy"]

@@ -1,0 +1,84 @@
+{
+  "mappings": [
+    {
+      "name": "Submission Still Processing for Staff - Individual",
+      "request": {
+        "url": "/api/clients/submissions/staff",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.businessInformation[?(@.clientType == 'I')]"
+          },
+          {
+            "matchesJsonPath": "$.businessInformation[?(@.notes == 'error')]"
+          }
+        ]
+      },
+      "response": {
+        "status": 408,
+        "headers": {
+          "Content-Type": "application/json",
+          "Access-Control-Expose-Headers": "x-sub-id, Location",
+          "Location": "/api/clients/submissions/4444",
+          "x-sub-id": "4444"
+        },
+        "body":"Submission 4444 is still being processed",
+        "fixedDelayMilliseconds": 750
+      }
+    },
+
+    {
+      "name": "Submission Error for Staff - Individual",
+      "request": {
+        "url": "/api/clients/submissions/staff",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.businessInformation[?(@.clientType == 'I')]"
+          },
+          {
+            "matchesJsonPath": "$.businessInformation[?(@.identificationType.value == 'PASS')]"
+          }
+        ]
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyFileName": "response-submission-fault-pass.json",
+        "fixedDelayMilliseconds": 750
+      }
+    },
+
+    {
+      "name": "Submission Success for Staff - Individual",
+      "request": {
+        "url": "/api/clients/submissions/staff",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.businessInformation[?(@.clientType == 'I')]"
+          },
+          {
+            "matchesJsonPath": "$.businessInformation[?(@.identificationType.value != 'PASS')]"
+          },
+          {
+            "matchesJsonPath": "$.businessInformation[?(@.notes != 'error')]"
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Access-Control-Expose-Headers": "x-client-id, Location",
+          "Location": "/api/clients/details/00123456",
+          "x-client-id": "00123456"
+        },
+        "fixedDelayMilliseconds": 750
+      }
+    }
+
+  ]
+}

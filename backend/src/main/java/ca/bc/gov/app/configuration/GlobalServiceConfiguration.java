@@ -2,6 +2,7 @@ package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryAlternateNameDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentAccessRequestDto;
@@ -11,6 +12,9 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestBodyDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentRequestResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryExceptionMessageDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetPartyDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetRequestBodyDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetRequestQueryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
@@ -37,7 +41,16 @@ import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
+import ca.bc.gov.app.dto.client.MatchResult;
+import ca.bc.gov.app.dto.legacy.AddressSearchDto;
+import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.opendata.Crs;
+import ca.bc.gov.app.dto.opendata.CrsProperties;
+import ca.bc.gov.app.dto.opendata.Feature;
+import ca.bc.gov.app.dto.opendata.FeatureProperties;
+import ca.bc.gov.app.dto.opendata.Geometry;
+import ca.bc.gov.app.dto.opendata.OpenData;
 import ca.bc.gov.app.health.HealthExchangeFilterFunction;
 import ca.bc.gov.app.health.ManualHealthIndicator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -99,7 +112,26 @@ import org.springframework.web.reactive.function.client.WebClient;
     BcRegistryBusinessAdressesDto.class,
     BcRegistryOfficerDto.class,
     BcRegistryRoleDto.class,
-    ForestClientDto.class
+    ForestClientDto.class,
+    OpenData.class,
+    Feature.class,
+    Crs.class,
+    CrsProperties.class,
+    Geometry.class,
+    FeatureProperties.class,
+    AddressSearchDto.class,
+    ContactSearchDto.class,
+    Crs.class,
+    CrsProperties.class,
+    Feature.class,
+    FeatureProperties.class,
+    Geometry.class,
+    OpenData.class,
+    MatchResult.class,
+    BcRegistryAlternateNameDto.class,
+    BcRegistryFacetPartyDto.class,
+    BcRegistryFacetRequestBodyDto.class,
+    BcRegistryFacetRequestQueryDto.class
 })
 public class GlobalServiceConfiguration {
 
@@ -111,8 +143,11 @@ public class GlobalServiceConfiguration {
    * @return a WebClient instance configured with the CHES API base URI
    */
   @Bean
-  public WebClient chesApi(ForestClientConfiguration configuration) {
-    return WebClient.builder().baseUrl(configuration.getChes().getUri()).build();
+  public WebClient chesApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder.baseUrl(configuration.getChes().getUri()).build();
   }
 
   /**
@@ -123,9 +158,11 @@ public class GlobalServiceConfiguration {
    * @return a WebClient instance configured for the CHES Auth API
    */
   @Bean
-  public WebClient authApi(ForestClientConfiguration configuration) {
-    return WebClient
-        .builder()
+  public WebClient authApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder
         .baseUrl(configuration.getChes().getTokenUrl())
         .filter(
             ExchangeFilterFunctions
@@ -146,10 +183,10 @@ public class GlobalServiceConfiguration {
   @Bean
   public WebClient bcRegistryApi(
       ForestClientConfiguration configuration,
-      @Qualifier("bcRegistryApiHealthIndicator") ManualHealthIndicator bcRegistryApiHealthIndicator
+      @Qualifier("bcRegistryApiHealthIndicator") ManualHealthIndicator bcRegistryApiHealthIndicator,
+      WebClient.Builder webClientBuilder
   ) {
-    return WebClient
-        .builder()
+    return webClientBuilder
         .baseUrl(configuration.getBcregistry().getUri())
         .defaultHeader("x-apikey", configuration.getBcregistry().getApiKey())
         .defaultHeader("Account-Id", configuration.getBcregistry().getAccountId())
@@ -165,9 +202,11 @@ public class GlobalServiceConfiguration {
    * @return a WebClient instance configured for the Oracle Legacy API
    */
   @Bean
-  public WebClient legacyApi(ForestClientConfiguration configuration) {
-    return WebClient
-        .builder()
+  public WebClient legacyApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder
         .baseUrl(configuration.getLegacy().getUrl())
         .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
         .defaultHeader("Accept", MediaType.APPLICATION_JSON_VALUE)
@@ -181,8 +220,87 @@ public class GlobalServiceConfiguration {
    * @return A configured instance of WebClient for accessing the AddressComplete API.
    */
   @Bean
-  public WebClient addressCompleteApi(ForestClientConfiguration configuration) {
-    return WebClient.builder().baseUrl(configuration.getAddressComplete().getUrl()).build();
+  public WebClient addressCompleteApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder.baseUrl(configuration.getAddressComplete().getUrl()).build();
+  }
+
+  /**
+   * Configures and provides a WebClient for accessing the Open Data SAC API. This WebClient is
+   * pre-configured with the base URL for the SAC API, as specified in the provided
+   * {@link ForestClientConfiguration}.
+   *
+   * @param configuration    The configuration containing the SAC API URL and other settings.
+   * @param webClientBuilder A builder for creating WebClient instances.
+   * @return A WebClient instance configured for the Open Data SAC API.
+   */
+  @Bean
+  public WebClient openDataSacBandApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder
+        .baseUrl(configuration.getOpenData().getSacBandUrl()).build();
+  }
+
+  @Bean
+  public WebClient openDataSacTribeApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder
+        .baseUrl(configuration.getOpenData().getSacTribeUrl()).build();
+  }
+
+  /**
+   * Configures and provides a WebClient for accessing the Open Data BC Maps API. Similar to the SAC
+   * API WebClient, this WebClient is configured with the base URL for the BC Maps API, as defined
+   * in the {@link ForestClientConfiguration}.
+   *
+   * @param configuration    The configuration containing the BC Maps API URL and other necessary
+   *                         settings.
+   * @param webClientBuilder A builder for creating WebClient instances.
+   * @return A WebClient instance configured for the Open Data BC Maps API.
+   */
+  @Bean
+  public WebClient openDataBcMapsBandApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder.baseUrl(configuration.getOpenData().getOpenMapsBandUrl()).build();
+  }
+
+  @Bean
+  public WebClient openDataBcMapsTribeApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder.baseUrl(configuration.getOpenData().getOpenMapsTribeUrl()).build();
+  }
+
+  /**
+   * Configures and provides a {@link WebClient} instance for making HTTP requests to the Processor
+   * API. This method utilizes the {@link ForestClientConfiguration} to retrieve the Processor API's
+   * base URL and configures a {@link WebClient.Builder} with this URL. The configured
+   * {@link WebClient} is then built and returned. This WebClient can be used throughout the
+   * application to interact with the Processor API, facilitating operations such as sending
+   * requests and receiving responses.
+   *
+   * @param configuration    The {@link ForestClientConfiguration} containing the Processor API's
+   *                         configuration details.
+   * @param webClientBuilder A pre-configured {@link WebClient.Builder} for creating WebClient
+   *                         instances.
+   * @return A fully configured {@link WebClient} instance ready for interacting with the Processor
+   * API.
+   */
+  @Bean
+  public WebClient processorApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder.baseUrl(configuration.getProcessor().getUrl()).build();
   }
 
   @Bean

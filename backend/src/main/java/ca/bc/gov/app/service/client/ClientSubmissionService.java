@@ -11,25 +11,23 @@ import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
-import ca.bc.gov.app.dto.client.DistrictDto;
 import ca.bc.gov.app.dto.submissions.SubmissionAddressDto;
 import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
 import ca.bc.gov.app.dto.submissions.SubmissionBusinessDto;
 import ca.bc.gov.app.dto.submissions.SubmissionContactDto;
 import ca.bc.gov.app.dto.submissions.SubmissionDetailsDto;
-import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
 import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationContactEntity;
 import ca.bc.gov.app.entity.client.SubmissionLocationEntity;
 import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.exception.RequestAlreadyProcessedException;
+import ca.bc.gov.app.exception.SubmissionNotCompletedException;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.predicates.QueryPredicates;
 import ca.bc.gov.app.predicates.SubmissionDetailPredicates;
 import ca.bc.gov.app.predicates.SubmissionPredicates;
-import ca.bc.gov.app.repository.client.DistrictCodeRepository;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
@@ -38,7 +36,9 @@ import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
+import ca.bc.gov.app.util.RetryUtil;
 import io.micrometer.observation.annotation.Observed;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,11 +50,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -62,25 +62,57 @@ import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Observed
 public class ClientSubmissionService {
 
+  private final ClientCodeService codeService;
+  private final ClientDistrictService districtService;
   private final SubmissionRepository submissionRepository;
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionLocationRepository submissionLocationRepository;
   private final SubmissionContactRepository submissionContactRepository;
   private final SubmissionLocationContactRepository submissionLocationContactRepository;
   private final SubmissionMatchDetailRepository submissionMatchDetailRepository;
-  private final DistrictCodeRepository districtCodeRepository;
   private final ChesService chesService;
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
+  private final WebClient processorApi;
+
+  public ClientSubmissionService(
+      ClientCodeService codeService,
+      ClientDistrictService districtService,
+      SubmissionRepository submissionRepository,
+      SubmissionDetailRepository submissionDetailRepository,
+      SubmissionLocationRepository submissionLocationRepository,
+      SubmissionContactRepository submissionContactRepository,
+      SubmissionLocationContactRepository submissionLocationContactRepository,
+      SubmissionMatchDetailRepository submissionMatchDetailRepository,
+      ChesService chesService,
+      R2dbcEntityTemplate template,
+      ForestClientConfiguration configuration,
+      @Qualifier("processorApi") WebClient processorApi
+  ) {
+    this.codeService = codeService;
+    this.districtService = districtService;
+    this.submissionRepository = submissionRepository;
+    this.submissionDetailRepository = submissionDetailRepository;
+    this.submissionLocationRepository = submissionLocationRepository;
+    this.submissionContactRepository = submissionContactRepository;
+    this.submissionLocationContactRepository = submissionLocationContactRepository;
+    this.submissionMatchDetailRepository = submissionMatchDetailRepository;
+    this.chesService = chesService;
+    this.template = template;
+    this.configuration = configuration;
+    this.processorApi = processorApi;
+  }
+
 
   public Flux<ClientListSubmissionDto> listSubmissions(
       int page,
@@ -103,13 +135,14 @@ public class ClientSubmissionService {
         submittedAt
     );
 
-    return getClientTypes()
+    return
+        codeService.getClientTypes()
         .flatMapMany(clientTypes ->
             loadSubmissions(page, size, requestStatus, submittedAt)
                 .flatMapSequential(submissionPair ->
                     loadSubmissionDetail(clientType, name, submissionPair.getRight())
                         .flatMap(submissionDetail ->
-                            getDistrictFullDescByCode(submissionDetail.getDistrictCode())
+                            districtService.getDistrictFullDescByCode(submissionDetail.getDistrictCode())
                                 .map(districtFullDesc ->
                                     new ClientListSubmissionDto(
                                         submissionPair.getRight().getSubmissionId(),
@@ -140,22 +173,74 @@ public class ClientSubmissionService {
         );
   }
 
-  private Mono<String> getDistrictFullDescByCode(String districtCode) {
-    return Mono.justOrEmpty(districtCode)
-        .flatMap(districtCodeRepository::findByCode)
-        .map(districtCodeEntity -> districtCodeEntity.getCode() + " - "
-            + districtCodeEntity.getDescription())
-        .defaultIfEmpty("");
+  /**
+   * Processes a staff submission for a client.
+   * <p>
+   * This method handles the submission process for staff members. It follows a similar workflow as
+   * external submissions but uses a specific submission type. The process includes saving the
+   * submission, triggering an external processor, and implementing a retry mechanism to wait for
+   * the processor to complete its task. The retry logic checks for the presence of a client number
+   * in the submission details, which indicates that the processor has successfully created an entry
+   * in the forest_client table. If the client number is not present after the specified number of
+   * retries, a {@link SubmissionNotCompletedException} is thrown.
+   * </p>
+   *
+   * @param clientSubmissionDto The data transfer object containing the submission details.
+   * @param principal           The security principal representing the authenticated user making
+   *                            the submission.
+   * @return A {@link Mono} emitting the client number as a {@link String} once the submission is
+   * successfully processed. If the submission cannot be completed, it emits an error.
+   */
+  public Mono<String> staffSubmit(
+      ClientSubmissionDto clientSubmissionDto,
+      JwtAuthenticationToken principal
+  ) {
+    return
+        // Use the same workflow as the external to save the submission
+        saveSubmission(clientSubmissionDto, principal, SubmissionTypeCodeEnum.SSD)
+            .doOnNext(
+                submissionId -> log.info("Submission {} saved, triggering processor", submissionId)
+            )
+            // Trigger the processor to start processing the submission (fire and forget)
+            .doOnSuccess(submissionId -> triggerProcessor(submissionId).subscribe())
+            .flatMap(submissionId ->
+                // Load the detail of the submission
+                submissionDetailRepository
+                    .findBySubmissionId(submissionId)
+                    .doOnNext(submissionDetail ->
+                        log.info(
+                            "Checking submission {} for completion in oracle [{}]",
+                            submissionId,
+                            submissionDetail.getClientNumber()
+                        )
+                    )
+                    // This is where the retry logic is implemented, we check for the client number
+                    // It will be populated once the processor creates the forest_client entry
+                    .handle(RetryUtil.handleRetry(submissionId))
+                    // This configures the retry conditions and configuration
+                    // We use a backoff strategy with a jitter of 12% and a max of 5 retries
+                    // It should take around 30~40 seconds to give up and return an error
+                    .retryWhen(
+                        Retry
+                            .backoff(5, Duration.ofSeconds(1))
+                            .jitter(0.12)
+                            .doBeforeRetry(retrySignal -> log.warn(
+                                    "[Check #{}] Checking submission {} completion in oracle",
+                                    retrySignal.totalRetries() + 2,
+                                    //We add 2 because the first one happens before the retry and starts on 0
+                                    submissionId
+                                )
+                            )
+                            .filter(SubmissionNotCompletedException.class::isInstance)
+                    )
+            )
+            .doOnNext(
+                clientNumber -> log.info("Oracle client created with number {}.", clientNumber)
+            )
+            .map(String::valueOf);
   }
-  
-  private Mono<DistrictDto> getDistrictByCode(String districtCode) {
-    return Mono.justOrEmpty(districtCode).flatMap(districtCodeRepository::findByCode)
-        .map(districtCodeEntity -> new DistrictDto(
-            districtCodeEntity.getCode(),
-            districtCodeEntity.getDescription(),
-            districtCodeEntity.getEmailAddress()));
-  }
-  
+
+
   /**
    * Submits a new client submission and returns a Mono of the submission ID.
    *
@@ -166,11 +251,181 @@ public class ClientSubmissionService {
       ClientSubmissionDto clientSubmissionDto,
       JwtAuthenticationToken principal
   ) {
+    return saveSubmission(clientSubmissionDto, principal, SubmissionTypeCodeEnum.SPP);
+  }
 
-    log.info("Submitting client submission for user {} with email {} and name {}",
+  public Mono<SubmissionDetailsDto> getSubmissionDetail(Long id) {
+
+    log.info("Getting submission detail for submission {}", id);
+
+    DatabaseClient client = template.getDatabaseClient();
+
+    Mono<SubmissionDetailsDto> detailsBusiness =
+        client
+            .sql(ApplicationConstant.SUBMISSION_DETAILS_QUERY)
+            .bind(ApplicationConstant.SUBMISSION_ID, id)
+            .map((row, metadata) ->
+                new SubmissionDetailsDto(
+                    row.get("submission_id", Long.class),
+                    row.get("status", String.class),
+                    row.get("submission_type", String.class),
+                    row.get("submission_date", LocalDateTime.class),
+                    row.get("update_timestamp", LocalDateTime.class),
+                    null,
+                    row.get("update_user", String.class),
+                    new SubmissionBusinessDto(
+                        row.get("business_type", String.class),
+                        row.get("incorporation_number", String.class),
+                        row.get("client_number", String.class),
+                        row.get("organization_name", String.class),
+                        row.get("client_type", String.class),
+                        row.get("client_type_desc", String.class),
+                        row.get("good_standing", String.class),
+                        row.get("birthdate", LocalDate.class),
+                        row.get("district", String.class),
+                        row.get("district_desc", String.class)
+                    ),
+                    List.of(),
+                    List.of(),
+                    Map.of(),
+                    "",
+                    ""
+                )
+            )
+            .one()
+            .map(dto -> dto.withUpdateUser(removeProvider(dto.updateUser())));
+
+    Flux<SubmissionContactDto> contacts =
+        client
+            .sql(ApplicationConstant.SUBMISSION_CONTACTS_QUERY
+            )
+            .bind(ApplicationConstant.SUBMISSION_ID, id)
+            .map((row, metadata) -> new SubmissionContactDto(
+                Objects.requireNonNull(row.get("index", Integer.class)) - 1,
+                row.get("contact_desc", String.class),
+                row.get("first_name", String.class),
+                row.get("last_name", String.class),
+                row.get("business_phone_number", String.class),
+                row.get("email_address", String.class),
+                Arrays.stream(StringUtils.defaultString(row.get("locations", String.class))
+                        .split(", "))
+                    .collect(Collectors.toSet()),
+                row.get("idp_user_id", String.class)
+            ))
+            .all();
+
+    Flux<SubmissionAddressDto> addresses =
+        client
+            .sql(ApplicationConstant.SUBMISSION_LOCATION_QUERY
+            )
+            .bind(ApplicationConstant.SUBMISSION_ID, id)
+            .map((row, metadata) -> new SubmissionAddressDto(
+                Objects.requireNonNull(row.get("index", Integer.class)) - 1,
+                row.get("street_address", String.class),
+                row.get("country_desc", String.class),
+                row.get("province_desc", String.class),
+                row.get("city_name", String.class),
+                row.get("postal_code", String.class),
+                row.get("location_name", String.class)
+            ))
+            .all();
+
+    return detailsBusiness
+        .flatMap(submissionDetailsDto ->
+            contacts
+                .collectList()
+                .map(submissionDetailsDto::withContact)
+        )
+        .flatMap(submissionDetailsDto ->
+            addresses
+                .collectList()
+                .map(submissionDetailsDto::withAddress)
+        )
+        .flatMap(submissionDetailsDto ->
+            submissionMatchDetailRepository
+                .findBySubmissionId(id.intValue())
+                .doOnNext(this::cleanMatchers)
+                .map(matched ->
+                    submissionDetailsDto
+                        .withApprovedTimestamp(matched.getUpdatedAt())
+                        .withMatchers(matched.getMatchers())
+                        .withRejectionReason(matched.getMatchingMessage())
+                        .withConfirmedMatchUserId(matched.getCreatedBy())
+                )
+                .defaultIfEmpty(
+                    submissionDetailsDto
+                        .withMatchers(Map.of())
+                )
+        );
+
+  }
+
+  @SuppressWarnings("java:S1172")
+  public Mono<Void> approveOrReject(
+      Long id,
+      String userId,
+      String userEmail,
+      String userName,
+      SubmissionApproveRejectDto request
+  ) {
+    log.info("Approving or rejecting submission {} for user {} with email {} and name {}",
+        id,
+        userId,
+        userEmail,
+        userName);
+
+    return
+        submissionRepository
+            .findById(id.intValue())
+            //If is not New or In Progress, return error as it was already processed
+            .filter(submission ->
+                List.of(SubmissionStatusEnum.N, SubmissionStatusEnum.P)
+                    .contains(submission.getSubmissionStatus())
+            )
+            .switchIfEmpty(Mono.error(new RequestAlreadyProcessedException()))
+            .map(submission -> {
+              submission.setUpdatedBy(userId);
+              submission.setUpdatedAt(LocalDateTime.now());
+              submission.setSubmissionStatus(
+                  request.approved() ? SubmissionStatusEnum.A : SubmissionStatusEnum.R
+              );
+              return submission;
+            })
+            .flatMap(submissionRepository::save)
+            .flatMap(submission ->
+                submissionMatchDetailRepository
+                    .findBySubmissionId(id.intValue())
+                    .map(matched ->
+                        matched
+                            .withStatus(BooleanUtils.toString(request.approved(), "Y", "N"))
+                            .withUpdatedAt(LocalDateTime.now())
+                            .withCreatedBy(userId)
+                            .withMatchingMessage(processRejectionReason(request))
+                    )
+                    .flatMap(submissionMatchDetailRepository::save)
+            )
+            .then();
+  }
+
+  private Mono<Void> triggerProcessor(Integer submissionId) {
+    return
+        processorApi
+            .get()
+            .uri("/api/processor/{id}", submissionId)
+            .exchangeToMono(response -> response.bodyToMono(Void.class));
+  }
+
+  private Mono<Integer> saveSubmission(
+      ClientSubmissionDto clientSubmissionDto,
+      JwtAuthenticationToken principal,
+      SubmissionTypeCodeEnum submissionType
+  ) {
+
+    log.info("Saving submission from user {} with email {} and name {} with type {}",
         JwtPrincipalUtil.getUserId(principal),
         JwtPrincipalUtil.getEmail(principal),
-        JwtPrincipalUtil.getName(principal)
+        JwtPrincipalUtil.getName(principal),
+        submissionType
     );
 
     return
@@ -178,8 +433,13 @@ public class ClientSubmissionService {
             .just(
                 SubmissionEntity
                     .builder()
-                    .submissionStatus(SubmissionStatusEnum.N)
-                    .submissionType(SubmissionTypeCodeEnum.SPP)
+                    //If the submission type is SPP, then the status is New, otherwise it is Approved
+                    .submissionStatus(
+                        SubmissionTypeCodeEnum.SPP.equals(submissionType)
+                            ? SubmissionStatusEnum.N
+                            : SubmissionStatusEnum.A
+                    )
+                    .submissionType(submissionType)
                     .submissionDate(LocalDateTime.now())
                     .createdBy(JwtPrincipalUtil.getUserId(principal))
                     .updatedBy(JwtPrincipalUtil.getUserId(principal))
@@ -244,163 +504,21 @@ public class ClientSubmissionService {
                     .flatMap(submissionMatchDetailRepository::save)
                     .map(SubmissionMatchDetailEntity::getSubmissionId)
             )
-
-            .flatMap(submissionId -> sendEmail(
-                    submissionId,
-                    clientSubmissionDto,
-                    JwtPrincipalUtil.getEmail(principal),
-                    JwtPrincipalUtil.getName(principal)
-                )
-            );
-  }
-
-  public Mono<SubmissionDetailsDto> getSubmissionDetail(Long id) {
-
-    log.info("Getting submission detail for submission {}", id);
-
-    DatabaseClient client = template.getDatabaseClient();
-
-    Mono<SubmissionDetailsDto> detailsBusiness =
-        client
-            .sql(ApplicationConstant.SUBMISSION_DETAILS_QUERY)
-            .bind(ApplicationConstant.SUBMISSION_ID, id)
-            .map((row, metadata) ->
-                new SubmissionDetailsDto(
-                    row.get("submission_id", Long.class),
-                    row.get("status", String.class),
-                    row.get("submission_type", String.class),
-                    row.get("submission_date", LocalDateTime.class),
-                    row.get("update_timestamp", LocalDateTime.class),
-                    null,
-                    row.get("update_user", String.class),
-                    new SubmissionBusinessDto(
-                        row.get("business_type", String.class),
-                        row.get("incorporation_number", String.class),
-                        row.get("client_number", String.class),
-                        row.get("organization_name", String.class),
-                        row.get("client_type", String.class),
-                        row.get("client_type_desc", String.class),
-                        row.get("good_standing", String.class),
-                        row.get("birthdate", LocalDate.class),
-                        row.get("district", String.class),
-                        row.get("district_desc", String.class)
-                    ),
-                    List.of(),
-                    List.of(),
-                    Map.of()
-                )
-            )
-            .one()
-            .map(dto -> dto.withUpdateUser(removeProvider(dto.updateUser())));
-
-    Flux<SubmissionContactDto> contacts =
-        client
-            .sql(ApplicationConstant.SUBMISSION_CONTACTS_QUERY
-            )
-            .bind(ApplicationConstant.SUBMISSION_ID, id)
-            .map((row, metadata) -> new SubmissionContactDto(
-                Objects.requireNonNull(row.get("index", Integer.class)) - 1,
-                row.get("contact_desc", String.class),
-                row.get("first_name", String.class),
-                row.get("last_name", String.class),
-                row.get("business_phone_number", String.class),
-                row.get("email_address", String.class),
-                Arrays.stream(StringUtils.defaultString(row.get("locations", String.class))
-                        .split(", "))
-                    .collect(Collectors.toSet()),
-                row.get("idp_user_id", String.class)
-            ))
-            .all();
-
-    Flux<SubmissionAddressDto> addresses =
-        client
-            .sql(ApplicationConstant.SUBMISSION_LOCATION_QUERY
-            )
-            .bind(ApplicationConstant.SUBMISSION_ID, id)
-            .map((row, metadata) -> new SubmissionAddressDto(
-                Objects.requireNonNull(row.get("index", Integer.class)) - 1,
-                row.get("street_address", String.class),
-                row.get("country_desc", String.class),
-                row.get("province_desc", String.class),
-                row.get("city_name", String.class),
-                row.get("postal_code", String.class),
-                row.get("location_name", String.class)
-            ))
-            .all();
-
-    return detailsBusiness
-        .flatMap(submissionDetailsDto ->
-            contacts
-                .collectList()
-                .map(submissionDetailsDto::withContact)
-        )
-        .flatMap(submissionDetailsDto ->
-            addresses
-                .collectList()
-                .map(submissionDetailsDto::withAddress)
-        )
-        .flatMap(submissionDetailsDto ->
-            submissionMatchDetailRepository
-                .findBySubmissionId(id.intValue())
-                .doOnNext(this::cleanMatchers)
-                .map(matched ->
-                    submissionDetailsDto
-                        .withApprovedTimestamp(matched.getUpdatedAt())
-                        .withMatchers(matched.getMatchers())
-                )
-                .defaultIfEmpty(
-                    submissionDetailsDto
-                        .withMatchers(Map.of())
-                )
-        );
-
-  }
-
-  @SuppressWarnings("java:S1172")
-  public Mono<Void> approveOrReject(
-      Long id,
-      String userId,
-      String userEmail,
-      String userName,
-      SubmissionApproveRejectDto request
-  ) {
-    log.info("Approving or rejecting submission {} for user {} with email {} and name {}",
-        id,
-        userId,
-        userEmail,
-        userName);
-
-    return
-        submissionRepository
-            .findById(id.intValue())
-            //If is not New or In Progress, return error as it was already processed
-            .filter(submission ->
-                List.of(SubmissionStatusEnum.N, SubmissionStatusEnum.P)
-                    .contains(submission.getSubmissionStatus())
-            )
-            .switchIfEmpty(Mono.error(new RequestAlreadyProcessedException()))
-            .map(submission -> {
-              submission.setUpdatedBy(userId);
-              submission.setUpdatedAt(LocalDateTime.now());
-              submission.setSubmissionStatus(
-                  request.approved() ? SubmissionStatusEnum.A : SubmissionStatusEnum.R
-              );
-              return submission;
-            })
-            .flatMap(submissionRepository::save)
-            .flatMap(submission ->
-                submissionMatchDetailRepository
-                    .findBySubmissionId(id.intValue())
-                    .map(matched ->
-                        matched
-                            .withStatus(BooleanUtils.toString(request.approved(), "Y", "N"))
-                            .withUpdatedAt(LocalDateTime.now())
-                            .withCreatedBy(userId)
-                            .withMatchingMessage(processRejectionReason(request))
+            .flatMap(submissionId ->
+                Mono
+                    .just(submissionId)
+                    //Only external submissions require this first email
+                    .filter(subId -> SubmissionTypeCodeEnum.SPP.equals(submissionType))
+                    .flatMap(subId ->
+                        sendEmail(
+                            subId,
+                            clientSubmissionDto,
+                            JwtPrincipalUtil.getEmail(principal),
+                            JwtPrincipalUtil.getName(principal)
+                        )
                     )
-                    .flatMap(submissionMatchDetailRepository::save)
-            )
-            .then();
+                    .defaultIfEmpty(submissionId)
+            );
   }
 
   private void cleanMatchers(SubmissionMatchDetailEntity entity) {
@@ -454,57 +572,38 @@ public class ClientSubmissionService {
       String email,
       String userName
   ) {
-      return getDistrictByCode(clientSubmissionDto.businessInformation().district())
-          .flatMap(district -> {
-              Map<String, Object> params = registrationParameters(
-                  clientSubmissionDto.description(userName), 
-                  district.description(), 
-                  district.emails()
-              );
-              return chesService.sendEmail(
-                      "registration",
-                      email,
-                      "Client number application received",
-                      params,
-                      null)
-                  .thenReturn(submissionId);
-          });
+    return
+        districtService.getDistrictByCode(clientSubmissionDto.businessInformation().district())
+            .map(district -> registrationParameters(
+                    clientSubmissionDto.description(userName),
+                    district.description(),
+                    district.emails()
+                )
+            )
+            .defaultIfEmpty(
+                registrationParameters(clientSubmissionDto.description(userName), "", "")
+            )
+            .flatMap(params ->
+                chesService.sendEmail(
+                        "registration",
+                        email,
+                        "Client number application received",
+                        params,
+                        null)
+                    .thenReturn(submissionId)
+            );
   }
-  
+
   private Map<String, Object> registrationParameters(
       Map<String, Object> clientSubmission,
       String districtName,
       String districtEmail
   ) {
-    Map<String, Object> descMap = new HashMap<>();
-    descMap.putAll(clientSubmission);
+    Map<String, Object> descMap = new HashMap<>(clientSubmission);
     descMap.put("districtName", StringUtils.defaultString(districtName));
     descMap.put("districtEmail", StringUtils.defaultString(districtEmail));
     return descMap;
   }
-
-  private Mono<Map<String, String>> getClientTypes() {
-    return template
-        .select(
-            query(
-                QueryPredicates.isBefore(LocalDateTime.now(), "effectiveAt")
-                    .and(
-                        QueryPredicates.isAfter(LocalDateTime.now(), "expiredAt")
-                            .or(QueryPredicates.isNull("expiredAt"))
-                    )
-            ),
-            ClientTypeCodeEntity.class
-        )
-        .collectList()
-        //Convert the list into a map using code as the key and description as value
-        .map(clientTypeCodeEntities ->
-            clientTypeCodeEntities
-                .stream()
-                .collect(Collectors.toMap(ClientTypeCodeEntity::getCode,
-                    ClientTypeCodeEntity::getDescription))
-        );
-  }
-
 
   private Mono<SubmissionDetailEntity> loadSubmissionDetail(String[] clientType,
       String[] name, SubmissionEntity submission) {
@@ -548,7 +647,7 @@ public class ClientSubmissionService {
                           .withHour(0)
                           .withMinute(0)
                           .withSecond(0),
-                      "submissionDate"
+                      "updateTimestamp"
                   )
                   .and(
                       QueryPredicates

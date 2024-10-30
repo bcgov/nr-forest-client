@@ -20,6 +20,8 @@ ca:
           accountId: 'account 0000'
         legacy:
           url: 'http://127.0.0.1:10060'
+        processor:
+          url: 'http://127.0.0.1:10070'
         addressComplete:
           url: 'http://127.0.0.1:10050'
           apiKey: 'AB12-CD34-EF56-GH78'
@@ -32,6 +34,12 @@ ca:
               secret: donttellanyonethisisasecret
         frontend:
           url: http://localhost:1234
+        openData:
+          sacBandUrl: http://127.0.0.1:11111/sac
+          sacTribeUrl: http://127.0.0.1:11113/sac
+          openMapsBandUrl: http://127.0.0.1:11112/bcmaps
+          openMapsTribeUrl: http://127.0.0.1:11114/bcmaps
+
 
 features:
   staff:
@@ -39,10 +47,10 @@ features:
 
 logging:
   level:
-    org.springframework.security: DEBUG
-    org.springframework.r2dbc: DEBUG
-    io.r2dbc.postgresql.QUERY: DEBUG
-    io.r2dbc.postgresql.PARAM: DEBUG
+    org.springframework.security: OFF
+    org.springframework.r2dbc: OFF
+    io.r2dbc.postgresql.QUERY: OFF
+    io.r2dbc.postgresql.PARAM: OFF
     org.springframework.test: OFF
     org.testcontainers: OFF
     com.github.dockerjava: OFF

@@ -5,6 +5,8 @@ import * as fetcher from "@/composables/useFetch";
 
 import DataFetcher from "@/components/DataFetcher.vue";
 
+vi.useFakeTimers();
+
 describe("DataFetcher", () => {
   const mockedFetchTo = (url: string, received: any, config: any = {}) => ({
     response: ref({}),
@@ -57,6 +59,7 @@ describe("DataFetcher", () => {
       },
     });
 
+    vi.advanceTimersByTime(305);
     await nextTick();
 
     expect(wrapper.html()).toBe("<div>slot content is Loaded</div>");
@@ -79,6 +82,7 @@ describe("DataFetcher", () => {
       },
     });
 
+    vi.advanceTimersByTime(305);
     await nextTick();
 
     // still the same
@@ -94,6 +98,7 @@ describe("DataFetcher", () => {
         url: "/api/data",
         minLength: 1,
         initValue: { name: "test" },
+        debounce: 1,
       },
       slots: {
         default: "<div>slot content is {{ content.name }}</div>",
@@ -104,8 +109,10 @@ describe("DataFetcher", () => {
     expect(wrapper.find("div").text()).toBe("slot content is test");
 
     await wrapper.setProps({ url: "/api/data/changed" });
-
+    
+    vi.advanceTimersByTime(305);
     await nextTick();
+    await wrapper.vm.$nextTick();
 
     expect(wrapper.html()).toBe("<div>slot content is Loaded</div>");
     expect(wrapper.find("div").text()).toBe("slot content is Loaded");
@@ -120,6 +127,7 @@ describe("DataFetcher", () => {
         minLength: 1,
         initValue: { name: "test" },
         disabled: true,
+        debounce: 0,
       },
       slots: {
         default: "<div>slot content is {{ content.name }}</div>",
@@ -131,6 +139,7 @@ describe("DataFetcher", () => {
 
     await wrapper.setProps({ url: "/api/data/changed" });
 
+    vi.advanceTimersByTime(305);
     await nextTick();
 
     // still the same
@@ -147,6 +156,7 @@ describe("DataFetcher", () => {
         minLength: 1,
         initValue: { name: "test" },
         disabled: true,
+        debounce: 1,
       },
       slots: {
         default: "<div>slot content is {{ content.name }}</div>",
@@ -161,7 +171,9 @@ describe("DataFetcher", () => {
       url: "/api/data/changed",
     });
 
+    vi.advanceTimersByTime(305);
     await nextTick();
+    await wrapper.vm.$nextTick();
 
     expect(wrapper.html()).toBe("<div>slot content is Loaded</div>");
     expect(wrapper.find("div").text()).toBe("slot content is Loaded");

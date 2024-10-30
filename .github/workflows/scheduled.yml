@@ -9,8 +9,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  documentation:
+    name: Generating Documentation
+    uses: ./.github/workflows/reusable-doc-gen.yml
+    
   zap_scan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Penetration Tests
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
@@ -25,7 +29,7 @@ jobs:
             target: https://forestclient-tst.nrs.gov.bc.ca
     steps:
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.10.0
+        uses: zaproxy/action-full-scan@v0.11.0
         with:
           allow_issue_writing: true
           artifact_name: "zap_${{ matrix.name }}"

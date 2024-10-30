@@ -1,0 +1,33 @@
+{
+  "name": "Starfire Pacific Inc",
+  "id": "{{request.path.[2]}}",
+  "goodStanding": true,
+  "addresses": [
+    {
+      "streetAddress": "52240 Shoshone Court",
+      "country": {
+        "value": "CA",
+        "text": "Canada"
+      },
+      "province": {
+        "value": "AB",
+        "text": "Alberta"
+      },
+      "city": "Nanton",
+      "postalCode": "L5M4A2",
+      "locationName": "Mailing address"
+    }
+  ],
+  "contacts": [
+    {
+      "contactType": {
+        "value": "BL",
+        "text": null
+      },
+      "firstName": "Burty",
+      "lastName": "Simecek",
+      "phoneNumber": null,
+      "email": null
+    }
+  ]
+}

@@ -21,7 +21,9 @@ public record ForestClientDto(
     String clientComment,
     String createdBy,
     String updatedBy,
-    Long orgUnit) {
+    Long orgUnit,
+    String acronym,
+    String wcbFirmNumber) {
 
   @Transient
   public String name() {

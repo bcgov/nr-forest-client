@@ -7,7 +7,7 @@ import type { CDSMultiSelect } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
-import type { CodeNameType } from "@/dto/CommonTypesDto";
+import type { CodeNameType, ValidationMessageType } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -34,7 +34,9 @@ const emit = defineEmits<{
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
+
+const warning = ref(false);
 
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue);
@@ -51,6 +53,30 @@ emit("empty", props.selectedValues ? props.selectedValues.length === 0 : true);
 //Controls the selected values
 const items = ref<string[]>([]);
 
+/**
+ * Sets the error and emits an error event.
+ * @param errorObject - the error object or string
+ */
+const setError = (errorObject: string | ValidationMessageType | undefined) => {
+  const errorMessage =
+    typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+  error.value = errorMessage || "";
+
+  warning.value = false;
+  if (typeof errorObject === "object") {
+    warning.value = errorObject.warning;
+  }
+
+  /*
+  The error should be emitted whenever it is found, instead of watching and emitting only when it
+  changes.
+  Because the empty event is always emitted, even when it remains the same payload, and then we
+  rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
+  an empty one to allow subscribers to know in case the field still has the same error.
+  */
+  emit("error", error.value);
+};
+
 //We call all the validations
 const validateInput = (newValue: any) => {
   if (props.validations && props.validations.length > 0) {
@@ -62,9 +88,9 @@ const validateInput = (newValue: any) => {
       props.validations
         .map((validation) => validation(value))
         .filter(hasError)
-        .shift() ?? props.errorMessage;
+        .reduce((acc, errorMessage) => acc || errorMessage, props.errorMessage);
 
-    error.value = validate(items.value);
+    setError(validate(items.value));
   }
 };
 
@@ -108,10 +134,14 @@ watch([selectedValue], () => validateInput(selectedValue.value));
 watch(error, () => emit("error", error.value));
 watch(
   () => props.errorMessage,
-  () => (error.value = props.errorMessage)
+  () => setError(props.errorMessage)
 );
 
-revalidateBus.on(() => validateInput(selectedValue.value));
+revalidateBus.on((keys: string[] | undefined) => {
+  if (keys === undefined || keys.includes(props.id)) {
+    validateInput(selectedValue.value);
+  }
+});
 
 const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
 
@@ -127,7 +157,9 @@ watch(
       await nextTick();
 
       const helperTextId = "helper-text";
-      const helperText = cdsMultiSelect.shadowRoot?.querySelector("[name='helper-text']");
+      const helperText = cdsMultiSelect.shadowRoot?.querySelector(
+        "[name='helper-text']"
+      );
       if (helperText) {
         helperText.id = helperTextId;
 
@@ -135,11 +167,13 @@ watch(
         if (isFocused.value) {
           helperText.role = "generic";
         } else {
-          helperText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+          helperText.role =
+            ariaInvalidString.value === "true" ? "alert" : "generic";
         }
       }
 
       const triggerDiv = cdsMultiSelect.shadowRoot?.querySelector("div[role='button']");
+      
       if (triggerDiv) {
         // Properly indicate as required.
         triggerDiv.ariaRequired = props.required ? "true" : "false";
@@ -149,7 +183,7 @@ watch(
         triggerDiv.setAttribute("aria-describedby", helperTextId);
       }
     }
-  },
+  }
 );
 </script>
 
@@ -162,14 +196,17 @@ watch(
           :id="id"
           :value="selectedValue"
           :label="selectedValue"
+          :class="warning ? 'warning' : ''"
           :title-text="label"
           :aria-label="label"
           :required="required"
           :data-required-label="requiredLabel"
           :helper-text="tip"
-          :invalid="error ? true : false"
+          :invalid="!warning && error ? true : false"
           :aria-invalid="ariaInvalidString"
-          :invalid-text="error"
+          :invalid-text="!warning && error"
+          :warn="warning"
+          :warn-text="warning && error"
           filterable
           @cds-multi-select-selected="selectItems"
           @focus="isFocused = true"
@@ -181,6 +218,7 @@ watch(
           "
           :data-focus="id"
           :data-scroll="id"
+          v-shadow="4"
         >
           <cds-multi-select-item
             v-for="option in inputList"

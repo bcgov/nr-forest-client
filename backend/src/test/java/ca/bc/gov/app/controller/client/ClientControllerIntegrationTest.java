@@ -9,11 +9,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.junit.jupiter.api.Named.named;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.BcRegistryTestConstants;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
@@ -82,10 +84,20 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
   @BeforeEach
   public void reset() {
     bcRegistryStub.resetAll();
+    chesStub.resetAll();
 
     chesStub
         .stubFor(
             post("/chess/uri")
+                .willReturn(
+                    ok(TestConstants.CHES_SUCCESS_MESSAGE)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+    chesStub
+        .stubFor(
+            post("/chess/uri/email")
                 .willReturn(
                     ok(TestConstants.CHES_SUCCESS_MESSAGE)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -106,7 +118,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .build();
   }
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "{0}")
   @MethodSource("clientDetailing")
   @DisplayName("Client details")
   void shouldGetClientDetails(
@@ -125,6 +137,17 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
   ) {
 
     reset();
+
+    bcRegistryStub
+        .stubFor(
+            post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
+                .willReturn(okJson(
+                        BcRegistryTestConstants.BCREG_FACET_ANY
+                            .replace("C0123456", clientNumber)
+                            .replace("EXAMPLE COMPANY LTD.", "SAMPLE COMPANY")
+                    )
+                )
+        );
 
     bcRegistryStub
         .stubFor(post(urlPathEqualTo(
@@ -164,8 +187,100 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             .mutateWith(csrf())
             .mutateWith(
                 mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                    .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                    .jwt(jwt -> jwt.claims(
+                        claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                    .authorities(new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+            )
+            .get()
+            .uri("/api/clients/{clientNumber}", Map.of("clientNumber", clientNumber))
+            .exchange()
+            .expectStatus().isEqualTo(HttpStatus.valueOf(responseStatus))
+            .expectBody()
+            .consumeWith(System.out::println);
+
+    if (HttpStatus.valueOf(responseStatus).is2xxSuccessful()) {
+      response.json(responseContent);
+    } else {
+      response.equals(responseContent);
+    }
+
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("clientDetailingStaff")
+  @DisplayName("Client details for staff")
+  void shouldGetClientDetailsForStaff(
+      String clientNumber,
+
+      int bcRegistryDocRequestStatus,
+      String bcRegistryDocRequestResponse,
+
+      int bcRegistryDocDetailsStatus,
+      String bcRegistryDocDetailsResponse,
+
+      String legacyResponse,
+
+      int responseStatus,
+      String responseContent
+  ) {
+
+    reset();
+
+    bcRegistryStub
+        .stubFor(
+            post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
+                .willReturn(okJson(
+                        BcRegistryTestConstants.BCREG_FACET_ANY
+                            .replace("C0123456", clientNumber)
+                            .replace("EXAMPLE COMPANY LTD.", "SAMPLE COMPANY")
+                    )
+                )
+        );
+
+    bcRegistryStub
+        .stubFor(post(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + clientNumber + "/documents/requests"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .withRequestBody(equalToJson(TestConstants.BCREG_DOC_REQ))
+            .willReturn(
+                status(bcRegistryDocRequestStatus)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(bcRegistryDocRequestResponse)
+            )
+        );
+
+    bcRegistryStub
+        .stubFor(get(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + clientNumber + "/documents/aa0a00a0a"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .willReturn(
+                status(bcRegistryDocDetailsStatus)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(bcRegistryDocDetailsResponse)
+            )
+        );
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/search/registrationOrName"))
+                .withQueryParam("registrationNumber", equalTo("AA0000001"))
+                .withQueryParam("companyName", equalTo("SAMPLE COMPANY"))
+                .willReturn(okJson(legacyResponse))
+        );
+
+    WebTestClient.BodyContentSpec response =
+        client
+            .mutateWith(csrf())
+            .mutateWith(mockUser().roles(ApplicationConstant.ROLE_EDITOR))
+            .mutateWith(
+                mockJwt()
+                    .jwt(
+                        jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                    .authorities(
+                        new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
             )
             .get()
             .uri("/api/clients/{clientNumber}", Map.of("clientNumber", clientNumber))
@@ -188,11 +303,16 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     bcRegistryStub
         .stubFor(
-            get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
-                .withQueryParam("category", equalTo("status:Active"))
-                .withQueryParam("start", equalTo("0"))
-                .withQueryParam("rows", equalTo("100"))
-                .withQueryParam("query", equalTo("value:BC0772006"))
+            post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
+                .withRequestBody(equalToJson("""
+                        {
+                          "query": { "value": "BC0772006","name": "BC0772006" },
+                          "categories":{ "status":["ACTIVE"] },
+                          "rows": 100,
+                          "start":0
+                        }"""
+                    )
+                )
                 .willReturn(okJson(TestConstants.ORGBOOK_INCORP_OK))
         );
 
@@ -200,8 +320,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/incorporation/BC0772006")
@@ -218,11 +340,16 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     bcRegistryStub
         .stubFor(
-            get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
-                .withQueryParam("category", equalTo("status:Active"))
-                .withQueryParam("start", equalTo("0"))
-                .withQueryParam("rows", equalTo("100"))
-                .withQueryParam("query", equalTo("value:BC0000000"))
+            post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
+                .withRequestBody(equalToJson("""
+                        {
+                          "query": { "value": "BC0000000","name": "BC0000000" },
+                          "categories":{ "status":["ACTIVE"] },
+                          "rows": 100,
+                          "start":0
+                        }"""
+                    )
+                )
                 .willReturn(okJson(TestConstants.ORGBOOK_INCORP_EMPTY))
         );
 
@@ -230,8 +357,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/incorporation/BC0000000")
@@ -248,11 +377,16 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     bcRegistryStub
         .stubFor(
-            get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
-                .withQueryParam("category", equalTo("status:Active"))
-                .withQueryParam("start", equalTo("0"))
-                .withQueryParam("rows", equalTo("100"))
-                .withQueryParam("query", equalTo("value:Power"))
+            post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
+                .withRequestBody(equalToJson("""
+                        {
+                          "query": { "value": "Power","name": "Power" },
+                          "categories":{ "status":["ACTIVE"] },
+                          "rows": 100,
+                          "start":0
+                        }"""
+                    )
+                )
                 .willReturn(okJson(TestConstants.ORGBOOK_INCORP_OK))
         );
 
@@ -260,8 +394,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/name/Power")
@@ -277,11 +413,16 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     bcRegistryStub
         .stubFor(
-            get(urlPathEqualTo("/registry-search/api/v1/businesses/search/facets"))
-                .withQueryParam("category", equalTo("status:Active"))
-                .withQueryParam("start", equalTo("0"))
-                .withQueryParam("rows", equalTo("100"))
-                .withQueryParam("query", equalTo("value:Jhon"))
+            post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
+                .withRequestBody(equalToJson("""
+                        {
+                          "query": { "value": "Jhon","name": "Jhon" },
+                          "categories":{ "status":["ACTIVE"] },
+                          "rows": 100,
+                          "start":0
+                        }"""
+                    )
+                )
                 .willReturn(okJson(TestConstants.ORGBOOK_INCORP_EMPTY))
         );
 
@@ -289,8 +430,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/name/Jhon")
@@ -316,8 +459,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/individual/{userId}?lastName=Doe", Map.of("userId", "123456"))
@@ -343,8 +488,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                    .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority("ROLE_"+ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
         .uri("/api/clients/individual/{userId}?lastName=Doe", Map.of("userId", "123456"))
@@ -358,56 +505,56 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     return
         Stream.of(
             Arguments.of(
-                "AA0000001",
+                named("All worked fine","AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 200, TestConstants.BCREG_DOC_DATA,
                 200, TestConstants.BCREG_RESPONSE_OK,
                 TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
-                "AA0000001",
+                named("Duplicated with all good due to legacy","AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 200, TestConstants.BCREG_DOC_DATA,
                 409, TestConstants.BCREG_RESPONSE_DUP,
                 TestConstants.LEGACY_OK
             ),
             Arguments.of(
-                "AA0000001",
+                named("All good, even with some legacy data","AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 200, TestConstants.BCREG_DOC_DATA,
                 200, TestConstants.BCREG_RESPONSE_OK,
                 TestConstants.LEGACY_OK.replace("0000001", "0000002")
             ),
             Arguments.of(
-                "AA0000001",
+                named("Can't find it, but facet can","AA0000001"),
                 404, TestConstants.BCREG_NOK,
                 404, TestConstants.BCREG_NOK,
-                404, TestConstants.BCREG_RESPONSE_NOK,
+                200, BcRegistryTestConstants.BCREG_RESPONSE_ANY,
                 TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
-                "AA0000001",
+                named("Can't find what you're looking, but facet saved you","AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 404, TestConstants.BCREG_NOK,
-                404, TestConstants.BCREG_RESPONSE_NOK,
+                200, BcRegistryTestConstants.BCREG_RESPONSE_ANY,
                 TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
-                "AA0000001",
+                named("Bc registry key is wrong","AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 401, TestConstants.BCREG_401,
                 401, TestConstants.BCREG_RESPONSE_401,
                 TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
-                "AA0000001",
+                named("All keys went south","AA0000001"),
                 401, TestConstants.BCREG_401,
                 401, TestConstants.BCREG_401,
                 401, TestConstants.BCREG_RESPONSE_401,
                 TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
-                "AA0000001",
+                named("Errors and keys","AA0000001"),
                 400, TestConstants.BCREG_400,
                 400, TestConstants.BCREG_400,
                 401, TestConstants.BCREG_RESPONSE_401,
@@ -415,14 +562,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             ),
 
             Arguments.of(
-                "AA0000001",
-                200, TestConstants.BCREG_DOC_REQ_RES,
-                400, TestConstants.BCREG_400,
-                401, TestConstants.BCREG_RESPONSE_401,
-                TestConstants.LEGACY_EMPTY
-            ),
-            Arguments.of(
-                "AA0000001",
+                named("Sole prop from org is a no bueno","AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 200, TestConstants.BCREG_DOC_DATA
                     .replace("\"partyType\": \"person\"", "\"partyType\": \"organization\"")
@@ -432,6 +572,95 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 ,
                 422, "Unable to process request. This sole proprietor is not owner by a person",
                 TestConstants.LEGACY_EMPTY
+            )
+        );
+  }
+
+  private static Stream<Arguments> clientDetailingStaff() {
+    return
+        Stream.of(
+            Arguments.of(
+                named("Bc registry ok and not on legacy", "AA0000001"),
+                201, TestConstants.BCREG_DOC_REQ_RES,
+                200, TestConstants.BCREG_DOC_DATA,
+                TestConstants.LEGACY_EMPTY,
+                200, TestConstants.BCREG_RESPONSE_OK
+            ),
+            Arguments.of(
+                named("Bc registry ok and found on legacy", "AA0000001"),
+                201, TestConstants.BCREG_DOC_REQ_RES,
+                200, TestConstants.BCREG_DOC_DATA,
+                TestConstants.LEGACY_OK,
+                409, TestConstants.BCREG_RESPONSE_DUP
+            ),
+            Arguments.of(
+                named("Bc registry ok and legacy with other ids", "AA0000001"),
+                201, TestConstants.BCREG_DOC_REQ_RES,
+                200, TestConstants.BCREG_DOC_DATA,
+                TestConstants.LEGACY_OK.replace("0000001", "0000002"),
+                200, TestConstants.BCREG_RESPONSE_OK
+            ),
+            Arguments.of(
+                named("not found on bc registry", "AA0000001"),
+                404, TestConstants.BCREG_NOK,
+                404, TestConstants.BCREG_NOK,
+                TestConstants.LEGACY_EMPTY,
+                200, BcRegistryTestConstants.BCREG_RESPONSE_ANY
+            ),
+            Arguments.of(
+                named("Bc Registry ok with no doc and no legacy", "AA0000001"),
+                201, TestConstants.BCREG_DOC_REQ_RES,
+                404, TestConstants.BCREG_NOK,
+                TestConstants.LEGACY_EMPTY,
+                200, BcRegistryTestConstants.BCREG_RESPONSE_ANY
+            ),
+            Arguments.of(
+                named("Key error on bc registry", "AA0000001"),
+                201, TestConstants.BCREG_DOC_REQ_RES,
+                401, TestConstants.BCREG_401,
+                TestConstants.LEGACY_EMPTY,
+                401, TestConstants.BCREG_RESPONSE_401
+            ),
+            Arguments.of(
+                named("Full key error", "AA0000001"),
+                401, TestConstants.BCREG_401,
+                401, TestConstants.BCREG_401,
+                TestConstants.LEGACY_EMPTY,
+                401, TestConstants.BCREG_RESPONSE_401
+            ),
+            Arguments.of(
+                named("400 on Bc Registry", "AA0000001"),
+                400, TestConstants.BCREG_400,
+                400, TestConstants.BCREG_400,
+                TestConstants.LEGACY_EMPTY,
+                401, TestConstants.BCREG_RESPONSE_401
+            ),
+            Arguments.of(
+                named("Bc Registry with no doc but ok on request", "AA0000001"),
+                201, TestConstants.BCREG_DOC_REQ_RES,
+                400, TestConstants.BCREG_400,
+                TestConstants.LEGACY_EMPTY,
+                401, TestConstants.BCREG_RESPONSE_401
+            ),
+            Arguments.of(
+                named("Bc Registry with owner org", "AA0000001"),
+                201, TestConstants.BCREG_DOC_REQ_RES,
+                200, TestConstants.BCREG_DOC_DATA
+                    .replace("\"partyType\": \"person\"", "\"partyType\": \"organization\"")
+                    .replace("\"firstName\": \"JAMES\",", "\"organizationName\": \"OWNER ORG\",")
+                    .replace("\"lastName\": \"BAXTER\",", "\"identifier\": \"BB0000001\",")
+                    .replace("\"middleInitial\": \"middleInitial\",", "\"id\": \"1234467\",")
+                ,
+                TestConstants.LEGACY_EMPTY,
+                200, TestConstants.BCREG_RESPONSE_NOCONTACTOK
+            ),
+            Arguments.of(
+                named("BC Registry legal type change", "AA0000001"),
+                201, TestConstants.BCREG_DOC_REQ_RES,
+                200, TestConstants.BCREG_DOC_DATA
+                    .replace("\"legalType\": \"SP\"", "\"legalType\": \"LP\""),
+                TestConstants.LEGACY_EMPTY,
+                200, TestConstants.BCREG_RESPONSE_OK
             )
         );
   }

@@ -38,7 +38,6 @@ logging:
         r2dbc: OFF
       testcontainers: OFF
       flywaydb.core.internal.resolver: DEBUG
-    com.github.dockerjava: OFF
     io.r2dbc.postgresql.QUERY: OFF
     io.r2dbc.postgresql.PARAM: OFF
-    ca.bc.gov.app: OFF
+    com.github.tomakehurst: DEBUG

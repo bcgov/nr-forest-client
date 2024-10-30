@@ -1,0 +1,56 @@
+[
+  {
+    "code": "C1231231",
+    "name": "Corporation 1",
+    "status": "ACTIVE",
+    "legalType": "C"
+  },
+  {
+    "code": "FM123123",
+    "name": "Sole Proprietorship 1",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "C4566541",
+    "name": "Corporation 2",
+    "status": "ACTIVE",
+    "legalType": "C"
+  },
+  {
+    "code": "C4443332",
+    "name": "Corporation 3",
+    "status": "ACTIVE",
+    "legalType": "C"
+  },
+  {
+    "code": "C7745745",
+    "name": "Corporation 4",
+    "status": "ACTIVE",
+    "legalType": "C"
+  },
+  {
+    "code": "C7775745",
+    "name": "Corporation 5",
+    "status": "ACTIVE",
+    "legalType": "C"
+  },
+  {
+    "code": "FM7715744",
+    "name": "Sole Proprietorship 2",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "LL123123",
+    "name": "Limited liability partnership 1",
+    "status": "ACTIVE",
+    "legalType": "LP"
+  },
+  {
+    "code": "C9999999",
+    "name": "Corporation 6",
+    "status": "ACTIVE",
+    "legalType": "C"
+  }
+]

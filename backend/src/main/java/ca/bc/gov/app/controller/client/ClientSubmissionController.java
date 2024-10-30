@@ -1,10 +1,10 @@
 package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.controller.AbstractController;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
+import ca.bc.gov.app.dto.client.ValidationSourceEnum;
 import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
 import ca.bc.gov.app.dto.submissions.SubmissionDetailsDto;
 import ca.bc.gov.app.exception.InvalidRequestObjectException;
@@ -12,11 +12,12 @@ import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.service.client.ClientSubmissionService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
-import ca.bc.gov.app.validator.client.ClientSubmitRequestValidator;
+import ca.bc.gov.app.validator.SubmissionValidatorService;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -38,18 +39,12 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/api/clients/submissions", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @Observed
-public class ClientSubmissionController extends
-    AbstractController<ClientSubmissionDto,
-        ClientSubmitRequestValidator> {
+@RequiredArgsConstructor
+public class ClientSubmissionController {
 
   private final ClientSubmissionService clientService;
+  private final SubmissionValidatorService validator;
 
-  public ClientSubmissionController(
-      ClientSubmissionService clientService,
-      ClientSubmitRequestValidator validator) {
-    super(ClientSubmissionDto.class, validator);
-    this.clientService = clientService;
-  }
 
   @GetMapping
   public Flux<ClientListSubmissionDto> listSubmissions(
@@ -107,13 +102,12 @@ public class ClientSubmissionController extends
       ServerHttpResponse serverResponse,
       JwtAuthenticationToken principal
   ) {
-    
+
     return Mono.just(
             new ClientSubmissionDto(
                 request.businessInformation(),
                 request.location(),
-                JwtPrincipalUtil.getUserId(principal).replaceFirst("^BCSC\\\\", ""),
-                JwtPrincipalUtil.getLastName(principal)
+                JwtPrincipalUtil.getUserId(principal)
             )
         )
         .switchIfEmpty(
@@ -126,11 +120,11 @@ public class ClientSubmissionController extends
                 )
                 .map(ClientBusinessInformationDto::businessName)
                 .orElse("No Business Name")
-            ))
-        .flatMap(this::validateReactive)
-        .doOnNext(this::validate)
-        .doOnNext(sub -> log.info("Request is valid: {}", sub.businessInformation().businessName()))
-        .doOnError(e -> log.error("Request is invalid: {}", e.getMessage()))
+        ))
+        .flatMap(sub -> validator.validate(sub, ValidationSourceEnum.EXTERNAL))
+        .doOnNext(sub -> log.info("External submission is valid: {}",
+            sub.businessInformation().businessName()))
+        .doOnError(e -> log.error("External submission is invalid: {}", e.getMessage()))
         .flatMap(submissionDto -> clientService.submit(submissionDto, principal))
         .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
         .doOnNext(submissionId ->
@@ -148,6 +142,45 @@ public class ClientSubmissionController extends
                 )
         )
         .then();
+  }
+
+  @PostMapping("/staff")
+  @ResponseStatus(HttpStatus.CREATED)
+  public Mono<Void> submitStaff(
+      @RequestBody ClientSubmissionDto request,
+      ServerHttpResponse serverResponse,
+      JwtAuthenticationToken principal
+  ) {
+
+    log.info("Staff {} submitting request for: {}",
+        JwtPrincipalUtil.getUserId(principal),
+        request.businessInformation().businessName()
+    );
+
+    return Mono.justOrEmpty(request)
+        .switchIfEmpty(
+            Mono.error(new InvalidRequestObjectException("no request body was provided")))
+        .map(req -> new ClientSubmissionDto(
+                          req.businessInformation(), 
+                          req.location(), 
+                          JwtPrincipalUtil.getUserId(principal)))
+        .flatMap(sub -> validator.validate(sub, ValidationSourceEnum.STAFF))
+        .doOnNext(sub -> log.info("Staff submission is valid: {}", 
+                                  sub.businessInformation().businessName()))
+        .doOnError(e -> log.error("Staff submission is invalid: {}", 
+                                  e.getMessage()))
+        .flatMap(submission -> clientService.staffSubmit(submission, principal))
+        .doOnNext(clientId -> serverResponse
+            .getHeaders()
+            .addAll(CollectionUtils.toMultiValueMap(
+                Map.of(
+                    "Location", List.of(String.format("/api/clients/details/%s", clientId)),
+                    "x-client-id", List.of(String.valueOf(clientId))
+                )
+            ))
+        )
+        .then();
+
   }
 
   @GetMapping("/{id}")

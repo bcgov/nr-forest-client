@@ -9,7 +9,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import type { CodeNameType, BusinessSearchResult } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
 // Validators
-import { getValidations } from "@/helpers/validators/GlobalValidators";
+import { getValidations } from "@/helpers/validators/BCeIDFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
@@ -78,7 +78,7 @@ const updateStateProvince = (
 //Province related data
 const provinceUrl = computed(
   () =>
-    `/api/countries/${selectedValue.country.value}/provinces?page=0&size=250`
+    `/api/codes/countries/${selectedValue.country.value}/provinces?page=0&size=250`
 );
 
 const resetProvinceOnChange = (receivedCountry: any) => {

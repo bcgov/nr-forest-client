@@ -1,0 +1,125 @@
+{
+  "mappings": [    
+    {
+      "name": "Country Codes",
+      "request": {
+        "url": "/api/codes/countries?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-countries.json"
+      }
+    },
+    {
+      "name": "District Codes",
+      "request": {
+        "url": "/api/codes/districts?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-districts.json"
+      }
+    },
+    {
+      "name": "Identification Type Codes",
+      "request": {
+        "url": "/api/codes/identification-types",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-identification-types.json"
+      }
+    },
+    {
+      "name": "Province Codes",
+      "request": {
+        "urlPattern": "/api/codes/countries/([A-Z]+)/provinces\\?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
+      }
+    },
+    {
+      "name": "Contact Type Codes",
+      "request": {
+        "url": "/api/codes/contact-types?page=0&size=250",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-contact-types.json"
+      }
+    },
+    {
+      "name": "Get Country by CountryCode",
+      "request": {
+        "urlPattern": "/api/codes/countries/([A-Z]+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-getCountryByCode-{{request.path.[2]}}.json"
+      }
+    },
+    {
+      "name": "Get Province by CountryCode and ProvinceCode",
+      "request": {
+        "urlPattern": "/api/codes/countries/([A-Z]+)/([A-Z]+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-province-{{request.path.[3]}}-{{request.path.[4]}}.json"
+      }
+    },
+    {
+      "name": "Get ClientType by Code",
+      "request": {
+        "urlPattern": "/api/codes/client-types/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "transformerParameters": {
+          "clientTypeMapping": {
+            "A": "Association",
+            "B": "First Nation Band",
+            "C": "Corporation",
+            "F": "Ministry of Forests and Range",
+            "G": "Government",
+            "I": "Individual",
+            "L": "Limited Partnership",
+            "P": "General Partnership",
+            "R": "First Nation Group",
+            "S": "Society",
+            "T": "First Nation Tribal Council",
+            "U": "Unregistered Company",
+            "USP": "Unregistered sole proprietorship",
+            "RSP": "Registered sole proprietorship"
+          }
+        },
+        "jsonBody": {
+          "code": "{{#assign 'code'}}{{request.pathSegments.[3]}}{{/assign}}{{code}}",
+          "name": "{{lookup parameters.clientTypeMapping code}}"
+        }
+      }
+    }
+  ]
+}

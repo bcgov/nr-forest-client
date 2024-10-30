@@ -63,12 +63,12 @@ formFieldValidations["location.addresses.*.city"] = [
   isNotEmpty("You must provide a city"),
   isMinSize("The city name must be between 3 and 30 characters")(3),
   isMaxSize("The city name must be between 3 and 30 characters")(30),
-  hasOnlyNamingCharacters("city name"),
+  isAscii("city name"),
 ];
 formFieldValidations["location.addresses.*.streetAddress"] = [
   isNotEmpty("Please provide a valid address or PO Box"),
-  isMinSize("The address must be between 5 and 40 characters")(5),
-  isMaxSize("The address must be between 5 and 40 characters")(40),
+  isMinSize("The address must be between 4 and 40 characters")(4),
+  isMaxSize("The address must be between 4 and 40 characters")(40),
   isAscii("address"),
 ];
 formFieldValidations[
@@ -127,3 +127,6 @@ export const addValidation = (
   if (!formFieldValidations[key]) formFieldValidations[key] = [];
   formFieldValidations[key].push(validation);
 };
+
+export const getValidations = (key: string): ((value: any) => string)[] =>
+  key ? formFieldValidations[key] || [] : [];

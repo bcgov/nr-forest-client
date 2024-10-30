@@ -1,15 +1,31 @@
 {
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "components.d.ts"],
-  "exclude": ["src/tests/*"],
+  "extends": "./tsconfig.base.json",
+  "include": [
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "components.d.ts"
+  ],
+  "exclude": [
+    "src/tests/*"
+  ],
   "compilerOptions": {
     "composite": true,
-    "lib": ["es2017", "dom", "dom.iterable"],
+    "lib": [
+      "es2017",
+      "dom",
+      "dom.iterable"
+    ],
     "verbatimModuleSyntax": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
-    "types": ["unplugin-icons/types/vue"],
+    "types": [
+      "unplugin-icons/types/vue"
+    ],
     "ignoreDeprecations": "5.0" // To silence the deprecation warning
   }
 }

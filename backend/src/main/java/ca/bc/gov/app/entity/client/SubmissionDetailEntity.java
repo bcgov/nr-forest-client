@@ -61,5 +61,49 @@ public class SubmissionDetailEntity {
   @Column("district_code")
   @Size(min = 2, max = 5)
   private String districtCode;
+
+  @Column("work_safe_bc_number")
+  @Size(max = 6)
+  private String workSafeBCNumber;
+
+  @Column("doing_business_as")
+  @Size(max = 120)
+  private String doingBusinessAs;
+
+  @Column("client_acronym")
+  @Size(max = 8)
+  private String clientAcronym;
+
+  @Column("first_name")
+  @Size(max = 30)
+  private String firstName;
+
+  @Column("middle_name")
+  @Size(max = 30)
+  private String middleName;
+
+  @Column("last_name")
+  @Size(max = 30)
+  private String lastName;
+
+  @Column("notes")
+  @Size(max = 4000)
+  private String notes;
+
+  @Column("identification_type_code")
+  @Size(max = 4)
+  private String identificationTypeCode;
+
+  @Column("client_identification")
+  @Size(max = 40)
+  private String clientIdentification;
+
+  @Column("identification_country_code")
+  @Size(max = 2)
+  private String countryCode;
+
+  @Column("identification_province_code")
+  @Size(max = 4)
+  private String provinceCode;
   
 }

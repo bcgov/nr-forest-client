@@ -6,7 +6,7 @@ import type { CDSTextInput } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
-import { isEmpty } from "@/dto/CommonTypesDto";
+import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
 import type { TextInputType } from "@/components/types";
 
 //Define the input properties for this component
@@ -31,7 +31,8 @@ const props = withDefaults(
   }>(),
   {
     type: "text",
-  },
+    enabled: true,
+  }
 );
 
 //Events we emit during component lifecycle
@@ -44,14 +45,23 @@ const emit = defineEmits<{
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
+
+const warning = ref(false);
 
 /**
  * Sets the error and emits an error event.
- * @param errorMessage - the error message
+ * @param errorObject - the error object or string
  */
-const setError = (errorMessage: string | undefined) => {
-  error.value = errorMessage;
+const setError = (errorObject: string | ValidationMessageType | undefined) => {
+  const errorMessage =
+    typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+  error.value = errorMessage || "";
+
+  warning.value = false;
+  if (typeof errorObject === "object") {
+    warning.value = errorObject.warning;
+  }
 
   /*
   The error should be emitted whenever it is found, instead of watching and emitting only when it
@@ -60,12 +70,12 @@ const setError = (errorMessage: string | undefined) => {
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
   an empty one to allow subscribers to know in case the field still has the same error.
   */
-  emit('error', error.value);
-}
+  emit("error", error.value);
+};
 
 watch(
   () => props.errorMessage,
-  () => setError(props.errorMessage),
+  () => setError(props.errorMessage)
 );
 
 //We set it as a separated ref due to props not being updatable
@@ -102,13 +112,15 @@ const validateInput = (newValue: string) => {
           if (errorMessage) return true;
           return false;
         })
-        .shift() ?? props.errorMessage,
+        .reduce((acc, errorMessage) => acc || errorMessage, props.errorMessage)
     );
   }
 };
 
-revalidateBus.on(() => {
-  validateInput(selectedValue.value);
+revalidateBus.on((keys: string[] | undefined) => {
+  if (keys === undefined || keys.includes(props.id)) {
+    validateInput(selectedValue.value);
+  }
 });
 
 watch(
@@ -121,7 +133,7 @@ const isUserEvent = ref(false);
 
 const selectValue = (event: any) => {
   selectedValue.value = event.target.value;
-  isUserEvent.value = true
+  isUserEvent.value = true;
 };
 
 const originalDescribedBy = ref<string>();
@@ -133,14 +145,22 @@ const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
 const cdsTextInputRef = ref<InstanceType<typeof CDSTextInput> | null>(null);
 
 watch(
-  [cdsTextInputRef, () => props.numeric, () => props.type, isFocused, ariaInvalidString],
+  [
+    cdsTextInputRef,
+    () => props.numeric,
+    () => props.type,
+    isFocused,
+    ariaInvalidString,
+  ],
   async ([cdsTextInput]) => {
     if (cdsTextInput) {
       // wait for the DOM updates to complete
       await nextTick();
 
       const invalidTextId = "invalid-text";
-      const invalidText = cdsTextInput.shadowRoot?.querySelector("[name='invalid-text']");
+      const invalidText = cdsTextInput.shadowRoot?.querySelector(
+        "[name='invalid-text']"
+      );
       if (invalidText) {
         invalidText.id = invalidTextId;
 
@@ -148,7 +168,8 @@ watch(
         if (isFocused.value) {
           invalidText.role = "generic";
         } else {
-          invalidText.role = ariaInvalidString.value === "true" ? "alert" : "generic";
+          invalidText.role =
+            ariaInvalidString.value === "true" ? "alert" : "generic";
         }
       }
 
@@ -169,11 +190,13 @@ watch(
         // Use the helper text as a field description
         input.setAttribute(
           "aria-describedby",
-          ariaInvalidString.value === "true" ? invalidTextId : originalDescribedBy.value,
+          ariaInvalidString.value === "true"
+            ? invalidTextId
+            : originalDescribedBy.value
         );
       }
     }
-  },
+  }
 );
 </script>
 
@@ -182,6 +205,8 @@ watch(
     <div class="input-group">
       <cds-text-input
         v-if="enabled"
+        v-bind="$attrs"
+        :class="warning ? 'warning' : ''"
         ref="cdsTextInputRef"
         :id="id"
         :autocomplete="autocomplete"
@@ -194,10 +219,12 @@ watch(
         :value="selectedValue"
         :helper-text="tip"
         :disabled="!enabled"
-        :invalid="error ? true : false"
+        :invalid="!warning && error ? true : false"
         :aria-invalid="ariaInvalidString"
-        :invalid-text="error"
+        :invalid-text="!warning && error"
         v-masked="mask"
+        :warn="warning"
+        :warn-text="warning && error"
         @focus="isFocused = true"
         @blur="
           (event: any) => {
@@ -209,19 +236,18 @@ watch(
         :data-focus="id"
         :data-scroll="id"
         :data-id="'input-' + id"
-        v-shadow="3"
+        v-shadow="4"
       />
     </div>
   </div>
 
   <div v-if="!enabled" class="grouping-04">
     <div :data-scroll="id" class="grouping-04-label">
-      <span :for="id" class="label-01">{{ label }}</span>
+      <div class="cds--text-input__label-wrapper" part="div cds--text-input__label-wrapper">
+        <span :for="id" :class="'cds--label cds-text-input-label label-'+id" part="label cds--label">{{ label }}</span>
+      </div>
     </div>
-    <span class="text-01">{{ modelValue }}</span>
+    <span :class="'text-'+id">{{ modelValue }}</span>
   </div>
 
 </template>
-
-<style scoped>
-</style>

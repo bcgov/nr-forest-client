@@ -10,6 +10,7 @@ export const addNewAddress = (addresses: Address[]): number => {
     province: { value: "", text: "" } as CodeDescrType,
     city: "",
     postalCode: "",
+    index: addresses.length,
   };
 
   const newAddresses = addresses.push(blankAddress);
@@ -24,14 +25,18 @@ export const addNewContact = (contacts: Contact[]): number => {
     lastName: "",
     phoneNumber: "",
     email: "",
+    index: contacts.length,
   };
 
   const newContacts = contacts.push(blankContact);
   return newContacts;
 };
 
-export const getAddressDescription = (address: Address, index: number): string =>
-  address.locationName.length !== 0 ? address.locationName : "Address #" + index;
+export const getAddressDescription = (
+  address: Address,
+  index: number,
+  entityName = "Address",
+): string => (address.locationName.length !== 0 ? address.locationName : `${entityName} #` + index);
 
 export const getContactDescription = (contact: Contact, index: number): string =>
   !isNullOrUndefinedOrBlank(contact.firstName)
@@ -40,11 +45,18 @@ export const getContactDescription = (contact: Contact, index: number): string =
 
 export const toTitleCase = (inputString: string): string => {
   if (inputString === undefined) return "";
-  return inputString
-    .toLowerCase()
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+
+  const splitMapJoin = (currentString: string, separator: string) =>
+    currentString
+      .split(separator)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(separator);
+
+  let result = inputString.toLowerCase();
+  result = splitMapJoin(result, " ");
+  result = splitMapJoin(result, "(");
+  result = splitMapJoin(result, ".");
+  return result;
 };
 
 export const toSentenceCase = (inputString: string): string => {
@@ -84,3 +96,7 @@ export const adminEmail = "forhvap.cliadmin@gov.bc.ca";
 export const getObfuscatedEmailLink = email => {
   return `<a target="_blank" href="mailto:${email}">${getObfuscatedEmail(email)}</a>`;
 };
+
+export const getFormattedHtml = ((value: string) => {
+  return value ? value.replace(/\n/g, '<br>') : '';
+});

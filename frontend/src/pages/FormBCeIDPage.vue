@@ -18,7 +18,7 @@ import AddressWizardStep from "@/pages/bceidform/AddressWizardStep.vue";
 import ContactWizardStep from "@/pages/bceidform/ContactWizardStep.vue";
 import ReviewWizardStep from "@/pages/bceidform/ReviewWizardStep.vue";
 // Imported types
-import { newFormDataDto, locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
+import { newFormDataDtoExternal, locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import type {
   ValidationMessageType,
@@ -52,7 +52,7 @@ const notificationBus = useEventBus<ValidationMessageType | undefined>(
 );
 const exitBus =
   useEventBus<Record<string, boolean | null>>("exit-notification");
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 const progressIndicatorBus = useEventBus<ProgressNotification>(
   "progress-indicator-bus"
 );
@@ -76,7 +76,7 @@ if (!features.BCEID_MULTI_ADDRESS) {
   submitterContact.locationNames = [{ ...defaultLocation }];
 }
 
-let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
+let formDataDto = ref<FormDataDto>({ ...newFormDataDtoExternal() });
 
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({
@@ -135,7 +135,7 @@ watch([error], () => {
         fieldId: "server.validation.error",
         fieldName: convertFieldNameToSentence(errorItem.fieldId),
         errorMsg: errorItem.errorMsg,
-      }),
+      })
     );
   } else {
     handleErrorDefault();
@@ -281,7 +281,6 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
   revalidateBus.emit();
 };
 
-
 /*
 We do not auto focus the first step in the first rendering to prevent skipping form instructions.
 The differenct might only be noticeable when using a screen reader.
@@ -330,7 +329,9 @@ const processAndLogOut = () => {
       {
         registrationNumber: formData.businessInformation.registrationNumber,
         name: formData.businessInformation.businessName,
-        userName: `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}` ?? "",
+        userName:
+          `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}` ??
+          "",
         userId: ForestClientUserSession.user.userId ?? "",
         email: ForestClientUserSession.user.email ?? "",
       },
@@ -341,6 +342,7 @@ const processAndLogOut = () => {
 };
 
 const submitBtnDisabled = ref(false);
+let nextBtnDisabled = ref(false);
 
 const submit = () => {
   errorBus.emit([]);
@@ -355,8 +357,10 @@ const submit = () => {
 exitBus.on((event: Record<string, boolean | null>) => {
   endAndLogOut.value = event.goodStanding ? event.goodStanding : false;
   mailAndLogOut.value = event.duplicated ? event.duplicated : false;
-  endAndLogOut.value = event.nonPersonSP ? event.nonPersonSP : endAndLogOut.value;
-  endAndLogOut.value = event.unsupportedClientType || endAndLogOut.value;
+  endAndLogOut.value = event.nonPersonSP
+    ? event.nonPersonSP
+    : endAndLogOut.value;
+  endAndLogOut.value = event.unsupportedClientType || event.unsupportedLegalType || endAndLogOut.value;
 });
 
 progressIndicatorBus.on((event: ProgressNotification) => {
@@ -392,15 +396,17 @@ const scrollToNewContact = () => {
 };
 
 const districtsList = ref([]);
-useFetchTo("/api/districts?page=0&size=250", districtsList);
+useFetchTo("/api/codes/districts?page=0&size=250", districtsList);
 const formattedDistrictsList = computed(() =>
   districtsList.value.map((district) => ({
     ...district,
     name: `${district.code} - ${district.name}`,
-  })),
+  }))
 );
 
-const cdsProgressStepArray = ref<InstanceType<typeof CDSProgressStep>[] | null>(null);
+const cdsProgressStepArray = ref<InstanceType<typeof CDSProgressStep>[] | null>(
+  null
+);
 
 watch(cdsProgressStepArray, async (array) => {
   if (array) {
@@ -426,6 +432,37 @@ const individualValidInd = ref(false);
 const setIndividualValidInd = (valid: boolean) => {
   individualValidInd.value = valid;
 };
+
+const submissionLimitCheck = ref([]);
+
+const { error: submissionLimitError, 
+        handleErrorDefault: submissionLimitHandleError 
+      } = useFetchTo(
+  "/api/submission-limit",
+  submissionLimitCheck,
+  {
+    skipDefaultErrorHandling: true,
+  }
+);
+
+watch(submissionLimitError, () => {
+  if (submissionLimitError.value.response?.status === 400) {
+    const validationErrors: ValidationMessageType[] =
+      submissionLimitError.value.response?.data;
+
+    validationErrors.forEach((errorItem: ValidationMessageType) =>
+      notificationBus.emit({
+        fieldId: "server.validation.error",
+        fieldName: "",
+        errorMsg: errorItem.errorMsg,
+      })
+    );
+
+    nextBtnDisabled.value = true;
+    return;
+  }
+  submissionLimitHandleError();
+});
 </script>
 
 <template>
@@ -458,6 +495,7 @@ const setIndividualValidInd = (valid: boolean) => {
     -->
       <div data-scroll="top-notification" class="header-offset"></div>
       <error-notification-grouping-component
+        data-text="top"
         :form-data="formData"
         :scroll-to-element-fn="scrollToNewContact"
       />
@@ -568,7 +606,7 @@ const setIndividualValidInd = (valid: boolean) => {
               v-if="!isLast && !progressData[currentTab].valid">
           All fields must be filled out correctly to enable the "Next" button below
         </span>
-        <div class="form-footer-group-buttons">
+        <div class="form-group-buttons">
           <cds-button
               v-if="!isFirst"
               kind="secondary"
@@ -576,6 +614,7 @@ const setIndividualValidInd = (valid: boolean) => {
               :disabled="isFirst"
               v-on:click="onBack"
               data-test="wizard-back-button"
+              data-text="Back"
             >
             <span>Back</span>
           </cds-button>
@@ -586,8 +625,9 @@ const setIndividualValidInd = (valid: boolean) => {
               kind="primary"
               size="lg"
               v-on:click="onNext"
-              :disabled="progressData[currentTab].valid === false"
+              :disabled="progressData[currentTab].valid === false || nextBtnDisabled"
               data-test="wizard-next-button"
+              data-text="Next"
               >
               <span>Next</span>
               <ArrowRight16 slot="icon" />
@@ -600,6 +640,7 @@ const setIndividualValidInd = (valid: boolean) => {
           <cds-button
             v-if="isLast && !endAndLogOut && !mailAndLogOut"
               data-test="wizard-submit-button"
+              data-text="Submit"
               kind="primary"
               size="lg"
               @click.prevent="submit"
@@ -615,6 +656,7 @@ const setIndividualValidInd = (valid: boolean) => {
             size="lg"
             v-show="!isLast && (endAndLogOut || mailAndLogOut)"
             @click.prevent="processAndLogOut"
+            :data-text="`${endAndLogOut ? 'End application' : 'Receive email'} and logout`"
           >
             <span
               >{{ endAndLogOut ? 'End application' : 'Receive email' }} and

@@ -10,9 +10,11 @@ import type { Contact } from "@/dto/ApplyClientNumberDto";
 // Importing validatons
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
+import { getContactDescription } from "@/services/ForestClientService";
 // @ts-ignore
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
-import { getContactDescription } from "@/services/ForestClientService";
+// @ts-ignore
+import Logout16 from "@carbon/icons-vue/es/logout/16";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -107,10 +109,18 @@ const logoutAndRedirect = () => {
   window.open("https://www.bceid.ca/", "_blank", "noopener");
   session?.logOut();
 }
+
+const contactName = (contact: Contact, contactId: number) => {
+  if(contactId === 0) return "Primary contact";
+  if (!contact) return "Additional contact";
+  const name = `${contact.firstName} ${contact.lastName}`;
+  if (!name.trim()) return "Additional contact";
+  return name;
+};
 </script>
 
 <template>
-  <div class="frame-01">
+  <div class="frame-01" :data-text="`${contactName(selectedValue,id)}`">
     <div v-if="id === 0" class="card">
       <div>
         <cds-inline-notification

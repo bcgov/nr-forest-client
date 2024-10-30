@@ -13,6 +13,9 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - name: ENVIRONMENT
+    description: Environment name used by the application
+    value: prod
   - name: IMAGE_TAG
     description: Image tag to use
     value: latest
@@ -25,7 +28,10 @@ parameters:
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-forest-client-legacy:prod
   - name: ORACLEDB_KEYSTORE
-    description: Oracle database keystore file  
+    description: Oracle database keystore file
+  - name: ORACLEDB_PORT
+    description: Oracle database port
+    value: "1543"
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
@@ -38,8 +44,8 @@ parameters:
     description: The amount of storage the cert PVC should have
     value: 25Mi
 objects:  
-  - apiVersion: v1
-    kind: ImageStream
+  - kind: ImageStream
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -54,8 +60,8 @@ objects:
             name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -67,11 +73,12 @@ objects:
         requests:
           storage: ${CERT_PVC_SIZE}
       storageClassName: netapp-file-standard
-  - apiVersion: v1
-    kind: DeploymentConfig
+  - kind: DeploymentConfig
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}
+        appkind: ${COMPONENT}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       replicas: 1
@@ -105,7 +112,7 @@ objects:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
           initContainers:
             - name: ${NAME}-init
-              image: ${REGISTRY}/bcgov/${NAME}/common:${ZONE}
+              image: ${REGISTRY}/bcgov/nr-forest-client-commons/certextractor:0.2.0
               imagePullPolicy: Always
               env:
                 - name: ORACLEDB_HOST
@@ -119,7 +126,7 @@ objects:
                       name: ${NAME}-${ZONE}
                       key: oracle-secret
                 - name: ORACLEDB_PORT
-                  value: "1543"
+                  value: ${ORACLEDB_PORT}
               volumeMounts:
                 - name: ${NAME}-${ZONE}-certs
                   mountPath: /cert
@@ -161,7 +168,9 @@ objects:
                       name: ${NAME}-${ZONE}
                       key: oracle-service
                 - name: ORACLEDB_PORT
-                  value: "1543"
+                  value: ${ORACLEDB_PORT}
+                - name: SPRING_PROFILES_ACTIVE
+                  value: "container,${ENVIRONMENT}"
                 - name: ORACLEDB_SECRET
                   valueFrom:
                     secretKeyRef:
@@ -204,8 +213,8 @@ objects:
               volumeMounts:
                 - mountPath: /cert
                   name: ${NAME}-${ZONE}-certs
-  - apiVersion: v1
-    kind: Service
+  - kind: Service
+    apiVersion: v1
     metadata:
       labels:
         app: ${NAME}-${ZONE}

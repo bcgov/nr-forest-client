@@ -45,7 +45,9 @@ for (const directiveName in directivesMap) {
 app.config.globalProperties.$session = ForestClientUserSession;
 app.config.globalProperties.$features = featureFlags;
 app.config.globalProperties.$backend = backendUrl;
-app.mount("#app");
+router.isReady().then(() => {
+  app.mount("#app");
+});
 
 declare module "@vue/runtime-core" {
   // eslint-disable-next-line no-unused-vars

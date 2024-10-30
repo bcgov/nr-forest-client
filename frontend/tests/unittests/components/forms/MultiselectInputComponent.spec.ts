@@ -203,7 +203,7 @@ describe("MultiselectInputComponent", () => {
     ]);
 
     expect(wrapper.emitted("error")).toBeTruthy();
-    expect(wrapper.emitted("error")![0][0]).toBe(undefined);
+    expect(wrapper.emitted("error")![0][0]).toBe("");
   });
 
   it("should remove selection", async () => {

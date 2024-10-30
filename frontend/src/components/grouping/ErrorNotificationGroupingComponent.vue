@@ -14,7 +14,7 @@ import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientServi
 
 const props = defineProps<{
   formData: FormDataDto;
-  scrollToElementFn: () => void;
+  scrollToElementFn?: () => void;
 }>();
 
 const nonAssociatedAddressList = reactive<string[]>([]);
@@ -97,6 +97,7 @@ const goToStep = (step: number) => {
 
     <cds-inline-notification
         v-if="globalErrorMessage?.fieldId === 'missing.info'"
+        id="missingInfo"
         v-shadow="true"
         low-contrast="true"
         hide-close-button="true"
@@ -109,6 +110,7 @@ const goToStep = (step: number) => {
 
     <cds-inline-notification
       v-else-if="globalErrorMessage?.fieldId === 'missing.contact.assigned'"
+      id="missingContactAssigned"
       v-shadow="true"
       low-contrast="true"
       hide-close-button="true"
@@ -120,6 +122,7 @@ const goToStep = (step: number) => {
 
     <cds-actionable-notification
       v-else-if="globalErrorMessage?.fieldId === 'missing.section.assigned'"
+      id="missingSectionAssigned"
       v-shadow="true"
       low-contrast="true"
       hide-close-button="true"
@@ -137,6 +140,7 @@ const goToStep = (step: number) => {
 
     <cds-actionable-notification
       v-else-if="globalErrorMessage?.fieldId === 'server.validation.error'"
+      id="serverValidationError"
       v-shadow="true"
       low-contrast="true"
       hide-close-button="true"
@@ -152,6 +156,7 @@ const goToStep = (step: number) => {
 
     <cds-actionable-notification
       v-else-if="globalErrorMessage?.fieldId === 'internal.server.error'"
+      id="internalServerError"
       v-shadow="true"
       low-contrast="true"
       hide-close-button="true"
@@ -161,12 +166,13 @@ const goToStep = (step: number) => {
     >    
       <div>
         We're working to fix a problem with our network. Please try re-submitting your application later.
-        If this error persistent, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+        If this error persists, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
       </div>    
     </cds-actionable-notification>
 
     <cds-actionable-notification
       v-else-if="globalErrorMessage?.errorMsg"
+      id="globalErrorMessage"
       v-shadow="true"
       low-contrast="true"
       hide-close-button="true"
@@ -181,6 +187,7 @@ const goToStep = (step: number) => {
 
     <cds-actionable-notification
       v-else-if="globalErrorMessage?.fieldId === 'bad.request.error'"
+      id="badRequestError"
       v-shadow="true"
       low-contrast="true"
       hide-close-button="true"
@@ -208,7 +215,7 @@ const goToStep = (step: number) => {
     </cds-actionable-notification>
 
     <cds-inline-notification
-      v-for="item in nonAssociatedAddressList"
+      v-for="item in nonAssociatedAddressList"      
       :key="item"
       v-shadow="true"
       low-contrast="true"
@@ -223,5 +230,6 @@ const goToStep = (step: number) => {
         must have a contact.
       </p>
     </cds-inline-notification>
+
   </div>
 </template>

@@ -46,7 +46,7 @@ class LocationStepMatcherTest {
       boolean error,
       boolean fuzzy
   ) {
-    when(legacyService.searchGeneric(anyString(), any()))
+    when(legacyService.searchGeneric(anyString(), anyString()))
         .thenReturn(emailMatch, businessPhoneMatch, secondaryPhoneMatch, faxMatch);
 
     when(legacyService.searchLocation(any(AddressSearchDto.class)))
@@ -72,7 +72,7 @@ class LocationStepMatcherTest {
                               matchResult
                                   .stream()
                                   .map(m -> (MatchResult) m)
-                                  .anyMatch(m -> m.fuzzy() == fuzzy),
+                                  .anyMatch(MatchResult::fuzzy),
                           "MatchResult with fuzzy value %s",
                           fuzzy
                       )

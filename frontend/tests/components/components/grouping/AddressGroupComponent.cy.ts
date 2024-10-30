@@ -5,6 +5,7 @@ import type { Address } from "@/dto/ApplyClientNumberDto";
 import "@/helpers/validators/BCeIDFormValidations";
 
 describe("<AddressGroupComponent />", () => {
+
   const dummyValidation = (): ((
     key: string,
     field: string
@@ -15,25 +16,31 @@ describe("<AddressGroupComponent />", () => {
     };
   };
 
+  const streetAddressMatchingScenarios = [
+    {
+      "description": "when a partial matching address is typed in",
+      "value": "2975 Jutland Rd",
+      "identical": false
+    },
+    {
+      "description": "when a complete matching address is typed in",
+      "value": "2975 Jutland Rd Victoria, BC, V8T 5J9",
+      "identical": true
+    }
+  ];
+
   beforeEach(() => {
-    cy.intercept("GET", "/api/countries/CA/provinces?page=0&size=250", {
+    cy.intercept("GET", "**/api/codes/countries/CA/provinces?page=0&size=250", {
       fixture: "provinces.json",
     }).as("getProvinces");
 
-    cy.intercept("GET", "/api/countries/US/provinces?page=0&size=250", {
+    cy.intercept("GET", "**/api/codes/countries/US/provinces?page=0&size=250", {
       fixture: "states.json",
     }).as("getStates");
 
-    cy.fixture("address.json").as("addressFixture");
-    cy.fixture("countries.json").as("countriesFixture");
-
-    cy.fixture("emptyAddress.json").as("emptyAddressFixture");
-
-    cy.fixture("addressKelownaBC.json").as("addressKelownaBCFixture");
-
     cy.intercept(
       "GET",
-      `/api/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI(
+      `**/api/addresses?country=*&maxSuggestions=10&searchTerm=${encodeURI(
         "2975 Jutland Rd"
       )}*`,
       {
@@ -43,7 +50,7 @@ describe("<AddressGroupComponent />", () => {
 
     cy.intercept(
       "GET",
-      `/api/addresses?country=CA&maxSuggestions=10&searchTerm=${encodeURI(
+      `**/api/addresses?country=*&maxSuggestions=10&searchTerm=${encodeURI(
         "158 Hargrave St"
       )}*`,
       {
@@ -53,7 +60,7 @@ describe("<AddressGroupComponent />", () => {
 
     cy.intercept(
       "GET",
-      `/api/addresses?country=CA&maxSuggestions=10&searchTerm=111`,
+      `**/api/addresses?country=CA&maxSuggestions=10&searchTerm=111`,
       [
         {
           code: "A1A1A1",
@@ -62,13 +69,18 @@ describe("<AddressGroupComponent />", () => {
       ]
     ).as("searchAddress111");
 
-    cy.intercept("GET", "/api/addresses/V8T5J9", {
+    cy.intercept("GET", "**/api/addresses/V8T5J9", {
       fixture: "address.json",
     }).as("getAddress");
 
-    cy.intercept("GET", "/api/addresses/R3C3N2", {
+    cy.intercept("GET", "**/api/addresses/R3C3N2", {
       fixture: "addressMB.json",
     }).as("getaddressMB");
+
+    cy.fixture("address.json").as("addressFixture");
+    cy.fixture("countries.json").as("countriesFixture");
+    cy.fixture("emptyAddress.json").as("emptyAddressFixture");
+    cy.fixture("addressKelownaBC.json").as("addressKelownaBCFixture");
   });
 
   it("should render the component", () => {
@@ -210,18 +222,6 @@ describe("<AddressGroupComponent />", () => {
 
   });
 
-  const streetAddressMatchingScenarios = [
-    {
-      description: "when a partial matching address is typed in",
-      value: "2975 Jutland Rd",
-      identical: false,
-    },
-    {
-      description: "when a complete matching address is typed in",
-      value: "2975 Jutland Rd Victoria, BC, V8T 5J9",
-      identical: true,
-    },
-  ];
   streetAddressMatchingScenarios.forEach((scenario) => {
     describe(scenario.description, () => {
       it("should update the address related fields", () => {
@@ -366,7 +366,7 @@ describe("<AddressGroupComponent />", () => {
 
       // For some reason on Electron we need to wait a millisecond now.
       // Otherwise this test either fails or can't be trusted on Electron.
-      cy.wait(1);
+      cy.wait(10);
 
       return calls;
     };
@@ -550,7 +550,7 @@ describe("<AddressGroupComponent />", () => {
         cy.wait("@getAddress");
 
         // Province is BC again
-        cy.get("@addressFixture").then((address: Address) => {
+        cy.get("@addressFixture").then((address: any) => {
           cy.get("#province_0")
             .should("be.visible")
             .and("have.value", "British Columbia");
@@ -601,7 +601,7 @@ describe("<AddressGroupComponent />", () => {
         cy.wait("@getaddressMB");
 
         // Province is now MB
-        cy.get("@addressFixture").then((address: Address) => {
+        cy.get("@addressFixture").then((address: any) => {
           cy.get("#province_0")
             .should("be.visible")
             .and("have.value", "Manitoba");
@@ -609,10 +609,12 @@ describe("<AddressGroupComponent />", () => {
       });
     });
   });
-  
+
   describe('when the following fields are displayed as invalid: City, Province, Postal code', () => {
+
     it('should display them as valid once they get filled by selecting a Street address option', () => {
-      cy.get("@emptyAddressFixture").then((emptyAddress) => {
+
+      cy.get("@emptyAddressFixture").then((emptyAddress) => {        
         cy.get("@countriesFixture").then((countries) => {
           cy.mount(AddressGroupComponent, {
             props: {
@@ -628,19 +630,22 @@ describe("<AddressGroupComponent />", () => {
       cy.wait("@getProvinces");
 
       cy.get("#city_0").shadow().find("input").type("Test");
+      cy.log("City field is filled with Test");
+
       cy.get("#city_0").shadow().find("input").clear();
       cy.get("#city_0").shadow().find("input").should('be.focused').blur();
-      
+      cy.log("City field is cleared and blured");
+
       cy.get("#province_0").shadow().find("#selection-button").click();
+      cy.log("Province field is clicked");
       
       cy.get("#postalCode_0").shadow().find("input").type("Test");
+      cy.log("Postal code field is filled with Test");
+
       cy.get("#postalCode_0").shadow().find("input").clear();
       cy.get("#postalCode_0").shadow().find("input").click();
-
-      // Only to unfocus the previous field
-      cy.get("#addr_0").click();
-
-      cy.wait(1000);
+      cy.get("#postalCode_0").shadow().find("input").should('be.focused').blur();
+      cy.log("Postal code field is cleared and clicked");
 
       // Fields are displayed as invalid
       cy.get("#city_0").shadow().find("input").should("have.class", "cds--text-input--invalid");
@@ -666,4 +671,5 @@ describe("<AddressGroupComponent />", () => {
       cy.get("#postalCode_0").shadow().find("input").should("not.have.class", "cds--text-input--invalid");
     });
   });
+  
 });

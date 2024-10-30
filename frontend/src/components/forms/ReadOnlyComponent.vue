@@ -1,9 +1,20 @@
 <script setup lang="ts">
-const props = defineProps<{ label: string }>()
+defineProps<{ label: string }>()
 </script>
 <template>
   <div class="grouping-11">
-    <span class="label-01">{{ label }}</span>
+    <div class="title-group-01">
+      <span class="label-01">{{ label }}</span>   
+      <slot name="icon"></slot>
+    </div>      
     <slot></slot>
   </div>
 </template>
+
+<style scoped>
+.title-group-01 {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+</style>

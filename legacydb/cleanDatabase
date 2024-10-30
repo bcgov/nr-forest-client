@@ -1,0 +1,26 @@
+#!/bin/bash
+set -Eeuo pipefail
+
+PDB="${1:-}"
+USER="${2:-}"
+
+# Check if PDB variable is set
+if [ -n "${PDB}" ]; then
+  sqlplus -s / as sysdba <<EOF
+     -- Exit on any errors
+     WHENEVER SQLERROR EXIT SQL.SQLCODE
+
+     ALTER SESSION SET CONTAINER=${PDB};
+
+     -- Remove the UAT created data
+     BEGIN
+       DELETE FROM THE.CLIENT_CONTACT WHERE THE.CLIENT_CONTACT.ADD_USERID = '${USER}';
+       DELETE FROM THE.CLIENT_LOCATION WHERE THE.CLIENT_LOCATION.ADD_USERID = '${USER}';
+       DELETE FROM THE.CLIENT_DOING_BUSINESS_AS WHERE THE.CLIENT_DOING_BUSINESS_AS.ADD_USERID = '${USER}';
+       DELETE FROM THE.FOREST_CLIENT WHERE THE.FOREST_CLIENT.ADD_USERID ='${USER}';
+     END;
+     /
+
+     exit;
+EOF
+fi

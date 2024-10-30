@@ -11,6 +11,10 @@ export interface CodeNameType {
   name: string;
 }
 
+export interface CodeNameValue<T> extends CodeNameType {
+  value: T;
+}
+
 export interface BusinessSearchResult {
   code: string;
   name: string;
@@ -23,6 +27,30 @@ export interface ValidationMessageType {
   fieldName: string;
   errorMsg: string;
   originalValue?: string;
+  warning?: boolean;
+}
+
+export interface FuzzyMatchResult {
+  field: string;
+  match: string;
+  fuzzy: boolean;
+  partialMatch: boolean;
+}
+
+export interface MiscFuzzyMatchResult {
+  label?: string;
+  result: FuzzyMatchResult;
+}
+
+export interface FuzzyMatcherData {
+  show: boolean;
+  fuzzy: boolean;
+  matches: MiscFuzzyMatchResult[];
+}
+
+export interface FuzzyMatcherEvent {
+  id: string;
+  matches: FuzzyMatchResult[];
 }
 
 export const isEmpty = (receivedValue: any): boolean => {
@@ -65,6 +93,11 @@ export enum ClientTypeEnum {
   L,
   RSP,
   USP,
+  B,
+  T,
+  G,
+  F,
+  U
 }
 
 export enum IdentificationTypeEnum {
@@ -77,8 +110,16 @@ export enum IdentificationTypeEnum {
   OTHR,
 }
 
-export interface IdentificationType extends CodeNameType {
-  code: keyof typeof IdentificationTypeEnum;
+export interface IdentificationCodeNameType {
+  code: string;
+  name: string;
+  countryCode: string;
+}
+
+export interface IdentificationCodeDescrType {
+  value: string;
+  text: string;
+  countryCode: string;
 }
 
 export interface ProgressData {
@@ -139,6 +180,18 @@ export interface SubmissionList {
   district: string
 }
 
+/**
+ * Each item resulting from the client search.
+ */
+export interface ClientSearchResult {
+  clientNumber: string
+  clientAcronym: string
+  clientFullName: string
+  clientType: string
+  city: string
+  clientStatus: string
+}
+
 export interface SubmissionDetails {
   submissionId: number
   submissionStatus: string
@@ -151,6 +204,8 @@ export interface SubmissionDetails {
   contact: SubmissionDetailsContact[]
   address: SubmissionDetailsAddress[]
   matchers: SubmissionDetailsMatchers
+  rejectionReason: string
+  confirmedMatchUserId: string
 }
 
 export interface SubmissionDetailsBusiness {

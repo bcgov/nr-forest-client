@@ -11,21 +11,22 @@ import BCeIDForm from "@/pages/FormBCeIDPage.vue";
 import BCSCForm from "@/pages/FormBCSCPage.vue";
 import StaffForm from "@/pages/FormStaffPage.vue";
 import FormSubmittedPage from "@/pages/FormSubmittedPage.vue";
+import FormStaffConfirmationPage from "@/pages/FormStaffConfirmationPage.vue";
 import UserLoadingPage from "@/pages/UserLoadingPage.vue";
 import LandingPage from "@/pages/LandingPage.vue";
 import ErrorPage from "@/pages/ErrorPage.vue";
 import NotFoundPage from "@/pages/NotFoundPage.vue";
 import LogoutPage from "@/pages/LogoutPage.vue";
+import SearchPage from "@/pages/SearchPage.vue";
 
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
 import { featureFlags } from "@/CoreConstants";
 
-const CONFIRMATION_ROUTE_NAME = "confirmation";
 const targetPathStorage = useLocalStorage("targetPath", "");
 const userProviderInfo = useLocalStorage("userProviderInfo", "");
 
-const routes = [
+export const routes = [
   {
     path: "/landing",
     name: "home",
@@ -94,7 +95,7 @@ const routes = [
   },
   {
     path: "/form-submitted",
-    name: CONFIRMATION_ROUTE_NAME,
+    name: "confirmation",
     component: FormSubmittedPage,
     props: true,
     meta: {
@@ -110,6 +111,54 @@ const routes = [
       headersStyle: "headers",
       sideMenu: false,
       profile: false,
+    },
+  },
+  {
+    path: "/client-created",
+    name: "staff-confirmation",
+    component: FormStaffConfirmationPage,
+    props: route => ({ 
+      clientNumber: history.state.clientNumber, 
+      clientEmail: history.state.clientEmail 
+    }),
+    meta: {
+      format: "full-centered",
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ["idir"],
+      redirectTo: {
+        bceidbusiness: "form",
+        bcsc: "form",
+      },
+      style: "content",
+      headersStyle: "headers",
+      sideMenu: true,
+      profile: true,
+    },
+  },
+  {
+    path: "/client-submitted/:submissionId",
+    name: "staff-processing",
+    component: () => import("@/pages/FormStaffProcessingPage.vue"),
+    props: (route) => ({
+      submissionId: route.params.submissionId,
+      clientEmail: history.state.clientEmail,
+    }),
+    meta: {
+      format: "full-centered",
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ["idir"],
+      redirectTo: {
+        bceidbusiness: "form",
+        bcsc: "form",
+      },
+      style: "content",
+      headersStyle: "headers",
+      sideMenu: true,
+      profile: true,
     },
   },
   {
@@ -134,6 +183,28 @@ const routes = [
     },
   },
   {
+    path: "/search",
+    name: "search",
+    component: SearchPage,
+    props: true,
+    meta: {
+      format: "full",
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ["idir"],
+      redirectTo: {
+        bceidbusiness: "form",
+        bcsc: "form",
+      },
+      style: "content-stretched",
+      headersStyle: "headers-compact",
+      sideMenu: true,
+      featureFlagged: "STAFF_SEARCH",
+      profile: true,
+    },
+  },
+  {
     path: "/new-client-staff",
     name: "staff-form",
     component: StaffForm,
@@ -152,8 +223,7 @@ const routes = [
       style: "content-stretched",
       headersStyle: "headers-compact",
       sideMenu: true,
-      profile: true,
-      featureFlagged: "STAFF_CREATE",
+      profile: true
     },
   },
   {
@@ -269,7 +339,7 @@ const routes = [
   },
 ];
 
-const router = createRouter({
+export const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior: () => ({ top: 0 }),
@@ -340,8 +410,6 @@ Hub.listen("auth", async ({ payload }) => {
       break;
   }
 });
-
-export { routes, router, CONFIRMATION_ROUTE_NAME };
 
 declare module "vue-router" {
   // eslint-disable-next-line no-unused-vars

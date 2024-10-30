@@ -4,13 +4,12 @@ import { nextTick } from "vue";
 import CDSModal from "@carbon/web-components/es/components/modal/modal";
 
 import MainHeaderComponent from "@/components/MainHeaderComponent.vue";
-import { CONFIRMATION_ROUTE_NAME } from "@/routes";
 
 const defaultRouteData = { name: "any" };
 let routeData = { ...defaultRouteData };
 
 vi.mock("vue-router", async () => {
-  const actual = await vi.importActual("vue-router")
+  const actual = await vi.importActual("vue-router");
   return {
     ...actual,
     useRoute: () => routeData,
@@ -27,7 +26,7 @@ const session = {
 };
 
 vi.mock("vue", async () => {
-  const actual = await vi.importActual("vue")
+  const actual = await vi.importActual("vue");
   return {
     ...actual,
     getCurrentInstance: () => {
@@ -47,7 +46,7 @@ describe("MainHeaderComponent.vue", () => {
   };
   beforeEach(() => {
     routeData = { ...defaultRouteData };
-  })
+  });
   describe("Authenticated Scenario", () => {
     it("renders the component correctly when authenticated", async () => {
       const wrapper = mount(MainHeaderComponent, {
@@ -78,25 +77,34 @@ describe("MainHeaderComponent.vue", () => {
       expect(session.logOut).not.toBeCalled();
     });
 
-    describe("when current route is the confirmation page (form-submitted)", async () => {
-      beforeEach(() => {
-        routeData.name = CONFIRMATION_ROUTE_NAME;
-      });
-
-      it("logs out without showing the confirmation dialog", async () => {
-        const wrapper = mount(MainHeaderComponent, {
-          global: {
-            mocks: {
-              $session: session,
-              $route: mockRoute,
-            },
-          },
+    describe("when current route is the confirmation page", () => {
+      const routes = [
+        { name: 'externalConfirmationRoute', route: "confirmation" },
+        { name: 'staffConfirmationRoute', route: "staff-confirmation" }
+      ];
+    
+      routes.forEach(({ name, route }) => {
+        describe(`(${name})`, () => {
+          beforeEach(() => {
+            routeData.name = route;
+          });
+    
+          it("logs out without showing the confirmation dialog", async () => {
+            const wrapper = mount(MainHeaderComponent, {
+              global: {
+                mocks: {
+                  $session: session,
+                  $route: mockRoute,
+                },
+              },
+            });
+            await wrapper.find("[data-id='logout-btn']").trigger("click");
+            expect(wrapper.find<CDSModal>("#logout-modal").element.open).toBe(false);
+            expect(session.logOut).toBeCalled();
+          });
         });
-        await wrapper.find("[data-id='logout-btn']").trigger("click");
-        expect(wrapper.find<CDSModal>("#logout-modal").element.open).toBe(false);
-        expect(session.logOut).toBeCalled();
       });
-    })
+    });
 
     describe("when route meta profile is truthy", () => {
       const mockRoute = {

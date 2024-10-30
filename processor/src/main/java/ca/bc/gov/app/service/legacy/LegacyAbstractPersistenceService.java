@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
 import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
@@ -11,6 +12,7 @@ import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
+import ca.bc.gov.app.util.ProcessorUtil;
 import java.time.Duration;
 import java.util.function.Function;
 import lombok.Getter;
@@ -140,7 +142,7 @@ public abstract class LegacyAbstractPersistenceService {
                     .doOnNext(submissionDetail ->
                         log.info(
                             "Updating submission detail for persistence on oracle {} {} {}",
-                            message.payload().clientNumber(),
+                            clientNumber,
                             submissionDetail.getOrganizationName(),
                             submissionDetail.getRegistrationNumber()
                         )
@@ -249,9 +251,19 @@ public abstract class LegacyAbstractPersistenceService {
                     submissionContact.getLastName()).toUpperCase(),
                 RegExUtils.replaceAll(submissionContact.getBusinessPhoneNumber(), "\\D",
                     StringUtils.EMPTY),
+                RegExUtils.replaceAll(
+                    StringUtils.defaultString(submissionContact.getSecondaryPhoneNumber()),
+                    "\\D",
+                    StringUtils.EMPTY
+                ),
+                RegExUtils.replaceAll(
+                    StringUtils.defaultString(submissionContact.getFaxNumber()),
+                    "\\D",
+                    StringUtils.EMPTY
+                ),
                 submissionContact.getEmailAddress(),
-                ApplicationConstant.PROCESSOR_USER_NAME,
-                ApplicationConstant.PROCESSOR_USER_NAME,
+                getUser(message, ApplicationConstant.CREATED_BY),
+                getUser(message, ApplicationConstant.UPDATED_BY),
                 ApplicationConstant.ORG_UNIT
             )
         )
@@ -278,9 +290,11 @@ public abstract class LegacyAbstractPersistenceService {
             StringUtils.EMPTY,
             StringUtils.EMPTY,
             StringUtils.EMPTY,
-            createdBy,
-            updatedBy,
-            ApplicationConstant.ORG_UNIT
+            ProcessorUtil.limitString(createdBy, 30),
+            ProcessorUtil.limitString(updatedBy, 30),
+            ApplicationConstant.ORG_UNIT,
+            StringUtils.EMPTY,
+            StringUtils.EMPTY
         );
   }
 
@@ -288,46 +302,55 @@ public abstract class LegacyAbstractPersistenceService {
     return message.parameters().get(headerName).toString();
   }
 
-  private String getClientNumber(MessagingWrapper<?> message) {
-    return message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER).toString();
+  protected boolean isStaffSubmitted(MessagingWrapper<?> message) {
+    return SubmissionProcessTypeEnum.STAFF.equals(
+        message.getParameter(ApplicationConstant.SUBMISSION_STARTER,
+            SubmissionProcessTypeEnum.class)
+    );
   }
 
-  private boolean isRegisteredSoleProprietorship(ForestClientDto forestClient) {
-    return forestClient.clientTypeCode().equalsIgnoreCase("I") && StringUtils.equalsIgnoreCase(
-        forestClient.clientIdTypeCode(), "BCRE");
+  private String getClientNumber(MessagingWrapper<?> message) {
+    return message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER).toString();
   }
 
   private Mono<String> createClientDoingBusinessAs(MessagingWrapper<ForestClientDto> message,
       String clientNumber) {
     return Mono
         .just(clientNumber)
+        //FSADT1-1388: Allow doing business as based on parameter
         .filter(
-            forestClientNumber -> isRegisteredSoleProprietorship(message.payload())
+            forestClientNumber ->
+                Boolean.TRUE.equals(message
+                    .getParameter(
+                        ApplicationConstant.IS_DOING_BUSINESS_AS,
+                        Boolean.class
+                    )
+                )
         )
         .doOnNext(forestClientNumber ->
             log.info(
                 "Creating doing business as for {} {}",
                 forestClientNumber,
-                message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME)
+                message.parameters().get(ApplicationConstant.DOING_BUSINESS_AS)
             )
         )
         .flatMap(forestClientNumber ->
             legacyService
                 .createDoingBusinessAs(
                     forestClientNumber,
-                    message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME).toString(),
+                    message.parameters().get(ApplicationConstant.DOING_BUSINESS_AS).toString(),
                     getUser(message, ApplicationConstant.CREATED_BY),
                     getUser(message, ApplicationConstant.UPDATED_BY)
                 )
         )
-        .defaultIfEmpty(clientNumber)
         .doOnNext(forestClientNumber ->
             log.info(
                 "Created doing business as for {} {}",
                 forestClientNumber,
                 message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME)
             )
-        );
+        )
+        .defaultIfEmpty(clientNumber);
   }
 
 }

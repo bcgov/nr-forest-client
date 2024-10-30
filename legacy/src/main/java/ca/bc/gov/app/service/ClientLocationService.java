@@ -28,6 +28,7 @@ public class ClientLocationService {
   private final ForestClientLocationRepository repository;
 
   public Mono<String> saveAndGetIndex(ForestClientLocationDto dto) {
+      
     return
         //Load the country detail from the database
         getCountry(dto.country())
@@ -62,7 +63,7 @@ public class ClientLocationService {
             .map(ForestClientLocationEntity::getClientNumber);
   }
 
-	public Flux<ForestClientLocationDto> search(String address, String postalCode) {
+  public Flux<ForestClientLocationDto> search(String address, String postalCode) {
     log.info("Searching for forest client location {} {}", address, postalCode);
 		return repository
 				.matchBy(address, postalCode)

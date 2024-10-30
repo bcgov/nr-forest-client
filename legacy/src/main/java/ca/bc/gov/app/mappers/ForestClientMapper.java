@@ -15,7 +15,7 @@ public interface ForestClientMapper extends
   @Override
   @Mapping(
       target = "wcbFirmNumber",
-      source = "clientNumber",
+      source = "wcbFirmNumber",
       qualifiedByName = "EmptySpaceQualifier",
       defaultValue = " "
   )
@@ -49,6 +49,10 @@ public interface ForestClientMapper extends
       source = "birthdate",
       qualifiedByName = "LocalDateDateTimeQualifier"
   )
+  @Mapping(
+      target = "clientAcronym",
+      source = "acronym"
+  )
   ForestClientEntity toEntity(ForestClientDto dto);
 
   @Override
@@ -61,6 +65,10 @@ public interface ForestClientMapper extends
       target = "birthdate",
       source = "birthdate",
       qualifiedByName = "LocalDateTimeDateQualifier"
+  )
+  @Mapping(
+      target = "acronym",
+      source = "clientAcronym"
   )
   ForestClientDto toDto(ForestClientEntity entity);
 }

@@ -1,6 +1,8 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
+import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
@@ -10,6 +12,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -208,15 +211,54 @@ public class ClientLegacyService {
 
   }
 
+  /**
+   * Searches for a list of {@link ForestClientDto} in the legacy API based on the given search type
+   * and value. This method constructs a query parameter map using the provided search type and
+   * value, sends a GET request to the legacy API, and converts the response into a Flux of
+   * ForestClientDto objects. It also logs the search parameters and the results for debugging
+   * purposes.
+   *
+   * @param searchType The type of search to perform (e.g., "registrationNumber", "companyName").
+   * @param value      The value to search for.
+   * @return A Flux of ForestClientDto objects matching the search criteria.
+   */
   public Flux<ForestClientDto> searchGeneric(
       String searchType,
       String value
   ) {
+    return searchGeneric(searchType, searchType, value);
+  }
 
-    if (StringUtils.isBlank(value))
+  public Flux<ForestClientDto> searchGeneric(
+      String searchType,
+      String paramName,
+      String value
+  ) {
+
+    if (StringUtils.isAnyBlank(searchType, paramName, value)) {
       return Flux.empty();
+    }
 
-    Map<String, List<String>> parameters = Map.of(searchType, List.of(value));
+    Map<String, List<String>> parameters = Map.of(paramName, List.of(value));
+
+    return searchGeneric(searchType, parameters);
+  }
+
+  public Flux<ForestClientDto> searchGeneric(
+      String searchType,
+      Map<String, List<String>> parameters
+  ) {
+
+    if (
+        StringUtils.isBlank(searchType)
+            || parameters == null
+            || parameters.isEmpty()
+            || parameters.values().stream().anyMatch(CollectionUtils::isEmpty)
+            || parameters.values().stream().flatMap(List::stream).anyMatch(StringUtils::isBlank)
+            || parameters.keySet().stream().anyMatch(StringUtils::isBlank)
+    ) {
+      return Flux.empty();
+    }
 
     return
         legacyApi
@@ -246,12 +288,59 @@ public class ClientLegacyService {
     return
         legacyApi
             .post()
-            .uri("/api/search/location")
+            .uri("/api/search/address")
             .body(BodyInserters.fromValue(dto))
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             .doOnNext(
-                client -> log.info("Found Legacy data for location search with client number {}", client.clientNumber())
+                client -> log.info("Found Legacy data for location search with client number {}",
+                    client.clientNumber())
             );
+  }
+
+  public Flux<ForestClientDto> searchContact(ContactSearchDto dto) {
+    return
+        legacyApi
+            .post()
+            .uri("/api/search/contact")
+            .body(BodyInserters.fromValue(dto))
+            .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
+            .doOnNext(
+                client -> log.info("Found Legacy data for contact search with client number {}",
+                    client.clientNumber())
+            );
+  }
+  
+  public Flux<Pair<ClientListDto, Long>> search(int page, int size, String keyword) {
+    log.info(
+        "Searching clients by keyword {} with page {} and size {}", 
+        keyword, 
+        page, 
+        size
+    );
+
+    return legacyApi
+        .get()
+        .uri(builder -> 
+              builder
+                .path("/api/search")
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .queryParam("value", keyword)
+                .build(Map.of())
+        )
+        .exchangeToFlux(response -> {
+          List<String> totalCountHeader = response.headers().header("X-Total-Count");
+          Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
+
+          return response
+              .bodyToFlux(ClientListDto.class)
+              .map(dto -> Pair.of(dto, count));
+        })
+        .doOnNext(pair -> {
+          ClientListDto dto = pair.getFirst();
+          Long totalCount = pair.getSecond();
+          log.info("Found clients by keyword {}, total count: {}", dto.clientNumber(), totalCount);
+        });
   }
 
 }

@@ -113,7 +113,7 @@ class ClientMatchLocationControllerIntegrationTest extends AbstractTestContainer
 
     legacyStub
         .stubFor(
-            post(urlPathEqualTo("/api/search/location"))
+            post(urlPathEqualTo("/api/search/address"))
                 .willReturn(okJson(addressMatch))
         );
 
@@ -130,8 +130,7 @@ class ClientMatchLocationControllerIntegrationTest extends AbstractTestContainer
           .expectStatus()
           .isEqualTo(HttpStatus.CONFLICT)
           .expectBodyList(MatchResult.class)
-          .value(values -> Assertions.assertEquals(
-                  fuzzy,
+          .value(values -> Assertions.assertTrue(
                   values
                       .stream()
                       .reduce(false, (acc, m) -> acc || m.fuzzy(), (a, b) -> a || b)

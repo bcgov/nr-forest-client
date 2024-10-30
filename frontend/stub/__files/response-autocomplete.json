@@ -1,61 +1,133 @@
 [
   {
-    "code": "XX9016140",
-    "name": "Pacific Lumber Association",
+    "code": "UU2648185",
+    "name": "{{request.path.[3]}} (GS)",
+    "status": "ACTIVE",
+    "legalType": "GP"
+  },
+  {
+    "name": "Botsford, McKenzie and Paucek (UT)",
+    "status": "ACTIVE",
+    "legalType": "BC",
+    "code": "BC3223779"
+  },
+  {
+    "code": "FM7654321",
+    "name": "British Columbia Forest Products (SP)",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "name": "Bruen, Hammes and Purdy (GS)",
+    "status": "ACTIVE",
+    "legalType": "LP",
+    "code": "LP3983048"
+  },
+  {
+    "name": "Dooley Inc (GS)",
+    "status": "ACTIVE",
+    "legalType": "SP",
+    "code": "FM4152816"
+  },
+  {
+    "code": "ZZ8201962",
+    "name": "Edgar Paciolli (DU)",
+    "status": "ACTIVE",
+    "legalType": "GP"
+  },
+  {
+    "code": "FM0417371",
+    "name": "Forestec Salotec (GS)",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "code": "FM0471371",
+    "name": "WeLove Forest (NP)",
+    "status": "ACTIVE",
+    "legalType": "SP"
+  },
+  {
+    "name": "Grady LLC (GS)",
+    "status": "ACTIVE",
+    "legalType": "C",
+    "code": "C4001790"
+  },
+  {
+    "name": "Jacobson, Tremblay and Ferry (GS)",
+    "status": "ACTIVE",
+    "legalType": "A",
+    "code": "A4427266"
+  },
+  {
+    "name": "Legros, Rutherford and Runte (UT)",
+    "status": "ACTIVE",
+    "legalType": "BC",
+    "code": "BC9364902"
+  },
+  {
+    "name": "Mitchell-Hettinger (GS)",
+    "status": "ACTIVE",
+    "legalType": "FOR",
+    "code": "FOR7272044"
+  },
+  {
+    "code": "JJ3478189",
+    "name": "Pacific Cultural Association (GS)",
     "status": "ACTIVE",
     "legalType": "GP"
   },
   {
     "code": "XX9753423",
-    "name": "Pacific Forests Ltd",
+    "name": "Pacific Forests Ltd (GS)",
     "status": "ACTIVE",
     "legalType": "GP"
   },
   {
-    "code": "XX7944564",
-    "name": "Starfire Pacific Inc",
-    "status": "ACTIVE",
-    "legalType": "GP"
-  },
-  {
-    "code": "UU2648185",
-    "name": "{{request.path.[3]}}",
-    "status": "ACTIVE",
-    "legalType": "GP"
-  },
-  {
-    "code": "JJ3478189",
-    "name": "Pacific Cultural Association",
-    "status": "ACTIVE",
-    "legalType": "GP"
-  },
-  {
-    "code": "ZZ8201962",
-    "name": "Edgar Paciolli",
+    "code": "XX9016140",
+    "name": "Pacific Lumber Association (GS)",
     "status": "ACTIVE",
     "legalType": "GP"
   },
   {
     "code": "YY5199142",
-    "name": "Powel of the Pacific",
+    "name": "Powel of the Pacific (NS)",
+    "status": "ACTIVE",
+    "legalType": "GP"
+  },
+  {
+    "name": "Rutherford Inc (UK)",
+    "status": "ACTIVE",
+    "legalType": "EPR",
+    "code": "EPR5711179"
+  },
+  {
+    "name": "Schaefer Group (GS)",
+    "status": "ACTIVE",
+    "legalType": "FOR",
+    "code": "FOR1225451"
+  },
+  {
+    "code": "XX7944564",
+    "name": "Starfire Pacific Inc (GS)",
     "status": "ACTIVE",
     "legalType": "GP"
   },
   {
     "code": "FM1234567",
-    "name": "The Great Pacific  Forest Company",
+    "name": "The Great Pacific  Forest Company (GS)",
     "status": "ACTIVE",
     "legalType": "SP"
   },
   {
-    "code": "FM7654321",
-    "name": "British Columbia Forest Products",
+    "name": "Thiel, Wintheiser and Vandervort (GS)",
     "status": "ACTIVE",
-    "legalType": "SP"
+    "legalType": "XP",
+    "code": "XP2083996"
   },
   {
     "code": "BC1234567",
-    "name": "Unsupported Client Type Inc.",
+    "name": "Unsupported Client Type Inc. (UT)",
     "status": "ACTIVE",
     "legalType": "BC"
   }

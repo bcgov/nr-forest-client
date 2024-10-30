@@ -17,7 +17,7 @@ jobs:
     name: Set Variables
     outputs:
       pr: ${{ steps.pr.outputs.pr }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
       # Get PR number for squash merges to main
@@ -26,12 +26,12 @@ jobs:
         uses: bcgov-nr/action-get-pr@v0.0.1
 
   images-test:
-    name: Promote images to PROD
+    name: Promote images to TEST
     needs: [vars]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        component: [backend, common, database, frontend, legacy, processor]
+        component: [backend, database, frontend, legacy, processor]
     steps:
       - uses: shrink/actions-docker-registry-tag@v4
         with:
@@ -47,16 +47,17 @@ jobs:
       ZONE: test
       URL: forestclient-tst.nrs.gov.bc.ca
     environment: test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
@@ -108,17 +109,18 @@ jobs:
       URL: forestclient-tst.nrs.gov.bc.ca
       ZONE: test
     environment: test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
       - name: Deploy Database Backup
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: database/openshift.backup.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
@@ -133,37 +135,68 @@ jobs:
           oc create job --from=cronjob/${{ github.event.repository.name }}-${{ env.ZONE }}-database-backup ${{ github.event.repository.name }}-${{ env.ZONE }}-database-backup-$(date +%Y%m%d%H%M%S)
 
       - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: false
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
 
       - name: Deploy Legacy
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
+            -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
+
+      - name: Deploy Processor
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
+        with:
+          file: processor/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
+          overwrite: true
+          verification_path: health
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+
+      - name: Deploy Backend ConfigMap
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
+        with:
+          file: backend/openshift.configmap.test.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
+          overwrite: true          
+          parameters:
+            -p ZONE=${{ env.ZONE }}       
 
       - name: Deploy Backend
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           verification_path: health
           parameters:
@@ -176,22 +209,36 @@ jobs:
             -p FRONTEND_URL=${{ env.URL }}
 
       - name: Dev data replacement
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: database/openshift.dev.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
 
+      - name: Deploy Frontend ConfigMap
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
+        with:
+          file: frontend/openshift.configmap.test.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
+          overwrite: true          
+          parameters:
+            -p ZONE=${{ env.ZONE }} 
+
       - name: Deploy Frontend
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
@@ -207,27 +254,17 @@ jobs:
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
             -p FRONTEND_URL=${{ env.URL }}
 
-      - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
-          file: processor/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          verification_path: health
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/processor:${{ env.ZONE }}
-            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+  documentation:
+    name: Generating Documentation
+    uses: ./.github/workflows/reusable-doc-gen.yml
 
   images-prod:
     name: Promote images to PROD
     needs: [test-deploy]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        component: [backend, frontend, legacy, database, common, processor]
+        component: [backend, frontend, legacy, database, processor]
     steps:
       - uses: shrink/actions-docker-registry-tag@v4
         with:
@@ -243,16 +280,17 @@ jobs:
       URL: forestclient.nrs.gov.bc.ca
       ZONE: prod
     environment: prod
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Deploys
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
@@ -282,21 +320,27 @@ jobs:
       ZONE: prod
       URL: forestclient.nrs.gov.bc.ca
     environment: prod
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
       - name: Deploy Database Backup
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: database/openshift.backup.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
+            
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:        
+          oc: "4.13"
 
       - name: Backup database before update
         continue-on-error: true
@@ -308,37 +352,68 @@ jobs:
           oc create job --from=cronjob/${{ github.event.repository.name }}-${{ env.ZONE }}-database-backup ${{ github.event.repository.name }}-${{ env.ZONE }}-database-backup-$(date +%Y%m%d%H%M%S)
 
       - name: Deploy Database
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: false
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
             -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
 
       - name: Deploy Legacy
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}            
+            -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
+            -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
+            
+      - name: Deploy Processor
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
+        with:
+          file: processor/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
+          overwrite: true
+          verification_path: health
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
+            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+
+      - name: Deploy Backend ConfigMap
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
+        with:
+          file: backend/openshift.configmap.prod.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
+          overwrite: true          
+          parameters:
+            -p ZONE=${{ env.ZONE }}    
 
       - name: Deploy Backend
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           verification_path: health
           parameters:
@@ -350,13 +425,26 @@ jobs:
             -p COGNITO_REGION=ca-central-1
             -p FRONTEND_URL=${{ env.URL }}
 
+      - name: Deploy Frontend ConfigMap
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
+        with:
+          file: frontend/openshift.configmap.prod.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
+          overwrite: true          
+          parameters:
+            -p ZONE=${{ env.ZONE }}
+
       - name: Deploy Frontend
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
@@ -371,17 +459,3 @@ jobs:
             -p COGNITO_ENVIRONMENT=PROD
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
             -p FRONTEND_URL=${{ env.URL }}
-
-      - name: Deploy Processor
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
-        with:
-          file: processor/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          verification_path: health
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/processor:${{ env.PREV }}
-            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'

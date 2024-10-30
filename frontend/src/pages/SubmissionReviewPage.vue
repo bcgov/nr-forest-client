@@ -84,6 +84,8 @@ const data = ref<SubmissionDetails>({
     contact: "",
     location: "",
   },
+  rejectionReason: "",
+  confirmedMatchUserId: ""
 });
 
 // Modal related
@@ -302,7 +304,7 @@ const renderListItem = (label, clientNumbers) => {
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
 const isNotEditor = !ForestClientUserSession.authorities.includes('CLIENT_EDITOR') && !ForestClientUserSession.authorities.includes('CLIENT_ADMIN');
 
-if(isNotEditor){
+if (isNotEditor) {
   submitDisabled.value = true;
 }
 
@@ -310,6 +312,27 @@ const rejectValidation = reactive<Record<string, boolean>>({
   reasons: false,
   message: false,
 });
+
+const cleanedRejectionReason = computed(() => {
+  return data.value.rejectionReason.replace(/<div>&nbsp;<\/div>/g, '').replace(/<p>/g, ' ').replace(/<\/p>/g, '');
+});
+
+
+const isProcessing = computed(() => {
+  const processingStatus = (
+    !data.value.business.clientNumber
+    && data.value.submissionType === 'Staff submitted data'  
+  );
+
+  if (processingStatus) {
+    setTimeout(() => location.reload(), 10000);
+  }
+
+  return processingStatus;
+});
+
+
+
 </script>
 
 <template>
@@ -339,6 +362,21 @@ const rejectValidation = reactive<Record<string, boolean>>({
       -->
         <div data-scroll="top-notification" class="header-offset"></div>
         <cds-actionable-notification
+          v-if="isProcessing"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="warning"
+          title="This submission is being processed"      
+        >    
+          <div>
+            <p>
+              It may take a few minutes. Once completed, the client number will display in the “Client summary” section below.
+            </p>
+          </div>
+        </cds-actionable-notification>
+
+        <cds-actionable-notification
           v-if="networkErrorMsg !== '' && userhasAuthority"
           v-shadow="true"
           low-contrast="true"
@@ -349,7 +387,7 @@ const rejectValidation = reactive<Record<string, boolean>>({
         >    
           <div>
             We're working to fix a problem with our network. Please try approving or rejecting the submission later.
-            If this error persistent, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+            If this error persists, please email <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
           </div>
         </cds-actionable-notification>
 
@@ -477,8 +515,8 @@ const rejectValidation = reactive<Record<string, boolean>>({
         title="You are not authorized to modify client information"      
         >    
         <div>
-          <p>To change your role please contact Client Admin through email 
-            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help
+          <p>To change your role, email Client Admin at 
+            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span>
           </p>
         </div>
       </cds-actionable-notification>
@@ -487,14 +525,19 @@ const rejectValidation = reactive<Record<string, boolean>>({
         <div class="grouping-05-short">
           <div>
             <h2 class="mg-tl-2 heading-06">Client summary</h2>
+
             <div class="grouping-10">
-              
               <read-only-component label="Name">
                 <span class="body-compact-01">{{ toTitleCase(data.business.organizationName) }}</span>
               </read-only-component>
               
               <read-only-component label="Client number" v-if="data.business.clientNumber">
-                <span class="body-compact-01">{{ data.business.clientNumber }}</span>
+                <span class="body-compact-01">
+                  <a target="_blank" 
+                    :href="'https://' + greenDomain + '/int/client/client02MaintenanceAction.do?bean.clientNumber=' + data.business.clientNumber">
+                    {{ data.business.clientNumber }}
+                  </a>
+                </span>
               </read-only-component>
 
               <read-only-component label="Client type">
@@ -528,6 +571,15 @@ const rejectValidation = reactive<Record<string, boolean>>({
               <read-only-component label="Approved on" v-if="data.submissionStatus === 'Approved'">
                 <span class="body-compact-01">{{ friendlyDate(data.approvedTimestamp) }}</span>
               </read-only-component>
+
+              <read-only-component label="Rejected by" v-if="data.submissionStatus === 'Rejected'">
+                <span class="body-compact-01">{{ data.confirmedMatchUserId }}</span>
+              </read-only-component>
+
+              <read-only-component label="Reason for rejection" v-if="data.submissionStatus === 'Rejected'">
+                <span class="body-compact-01" style="width: 40rem" v-html="'Client' + cleanedRejectionReason"></span>
+              </read-only-component>
+
             </div>
           </div>
 

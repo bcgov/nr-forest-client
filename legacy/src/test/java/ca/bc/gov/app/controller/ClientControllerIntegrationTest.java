@@ -51,7 +51,9 @@ class ClientControllerIntegrationTest extends
                     "Comment here",
                     "Test",
                     "Test",
-                    1L
+                    1L,
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY
                 )
             )
         )

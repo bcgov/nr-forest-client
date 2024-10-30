@@ -54,9 +54,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class GlobalServiceConfiguration {
 
   @Bean
-  public WebClient forestClientApi(ForestClientConfiguration configuration) {
-    return WebClient
-        .builder()
+  public WebClient forestClientApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder
         .baseUrl(configuration.getBackend().getUri())
         .filter(
             basicAuthentication(
@@ -68,9 +70,11 @@ public class GlobalServiceConfiguration {
   }
 
   @Bean
-  public WebClient legacyClientApi(ForestClientConfiguration configuration) {
-    return WebClient
-        .builder()
+  public WebClient legacyClientApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder
         .baseUrl(configuration.getLegacy().getUri())
         .build();
   }
@@ -82,9 +86,11 @@ public class GlobalServiceConfiguration {
    * @return A configured instance of WebClient for accessing the BC Registry API.
    */
   @Bean
-  public WebClient bcRegistryApi(ForestClientConfiguration configuration) {
-    return WebClient
-        .builder()
+  public WebClient bcRegistryApi(
+      ForestClientConfiguration configuration,
+      WebClient.Builder webClientBuilder
+  ) {
+    return webClientBuilder
         .baseUrl(configuration.getBcregistry().getUri())
         .defaultHeader("x-apikey", configuration.getBcregistry().getApiKey())
         .defaultHeader("Account-Id", configuration.getBcregistry().getAccountId())

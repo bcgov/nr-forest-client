@@ -5,6 +5,7 @@ import static java.util.function.Predicate.not;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.SubmissionProcessKindEnum;
 import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.entity.SubmissionTypeCodeEnum;
@@ -100,19 +101,44 @@ public class ClientSubmissionAutoProcessingService {
     return
         submissionMatchDetailRepository
             .findBySubmissionId((int) message.parameters().get(ApplicationConstant.SUBMISSION_ID))
-            .filter(not(SubmissionMatchDetailEntity::isBeingProcessed))
-            //This will add the current date to the processing time to prevent concurrency
-            .flatMap(entity ->
-                submissionMatchDetailRepository
-                    .save(entity.withProcessingTime(LocalDateTime.now()))
-            )
-            .map(entity ->
-                message.withParameter(
-                    ApplicationConstant.MATCHING_INFO,
-                    entity.getMatchers().get(ApplicationConstant.MATCHING_INFO)
+            .doOnNext(entity -> log.info(
+                    "Loaded submission {} with matching info {}",
+                    entity.getSubmissionId(),
+                    entity.getMatchingField()
                 )
             )
-            .switchIfEmpty(Mono.just(message));
+
+            .flatMap(entity ->
+                Mono
+                    .just(
+                        message.withParameter(
+                                ApplicationConstant.MATCHING_INFO,
+                                entity.getMatchers().get(ApplicationConstant.MATCHING_INFO)
+                            )
+                            // This checks if a submission is HOT or COLD
+                            // A HOT submission is one that can be processed
+                            // A COLD submission is one that is being processed already
+                            .withParameter(
+                                ApplicationConstant.MATCHING_KIND,
+                                (entity.isBeingProcessed()) ?
+                                    SubmissionProcessKindEnum.COLD :
+                                    SubmissionProcessKindEnum.HOT
+                            )
+                    )
+                    //This will add the current date to the processing time to prevent concurrency
+                    .flatMap(msg ->
+                        submissionMatchDetailRepository
+                            .save(entity.withProcessingTime(LocalDateTime.now()))
+                            .thenReturn(msg)
+                    )
+            )
+            // Submissions without a match details are always HOT
+            .defaultIfEmpty(
+                message.withParameter(
+                    ApplicationConstant.MATCHING_KIND,
+                    SubmissionProcessKindEnum.HOT
+                )
+            );
   }
 
   private void updateEntityMatchers(

@@ -47,6 +47,9 @@ parameters:
   - name: FRONTEND_URL
     description: Frontend URL
     required: true
+  - name: CONFIG_MAP_NAME
+    description: ConfigMap name specific to each environment
+    value: ${NAME}-${ZONE}-${COMPONENT}-config
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -96,15 +99,25 @@ objects:
             app: ${NAME}-${ZONE}
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
+          volumes:
+            - name: ${COMPONENT}-config
+              configMap:
+                name: ${NAME}-${ZONE}-${COMPONENT}-config
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: ${NAME}
+              volumeMounts:
+                - name: ${COMPONENT}-config
+                  mountPath: /app/application.yml
+                  subPath: application.yml
               env:
                 - name: FRONTEND_URL
                   value: https://${FRONTEND_URL}
                 - name: LEGACY_URL
                   value: http://${NAME}-${ZONE}-legacy
+                - name: PROCESSOR_URL
+                  value: http://${NAME}-${ZONE}-processor
                 - name: SELF_URI
                   value: https://${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
                 - name: CHES_CLIENT_ID
@@ -232,8 +245,8 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
       annotations:
         haproxy.router.openshift.io/rate-limit-connections: "true"
-        haproxy.router.openshift.io/rate-limit-connections.rate-http: "50"
-        haproxy.router.openshift.io/rate-limit-connections.rate-tcp: "25"
+        haproxy.router.openshift.io/rate-limit-connections.rate-http: "150"
+        haproxy.router.openshift.io/rate-limit-connections.rate-tcp: "75"
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:

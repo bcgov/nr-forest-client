@@ -13,6 +13,7 @@ import "@carbon/web-components/es/components/tooltip/index";
 import { useFetchTo } from "@/composables/useFetch";
 import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
+import useSvg from "@/composables/useSvg";
 // Types
 import type { SubmissionList } from "@/dto/CommonTypesDto";
 import { formatDistanceToNow, format } from "date-fns";
@@ -24,7 +25,7 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import Approved16 from "@carbon/icons-vue/es/task--complete/16";
 // @ts-ignore
 import Review16 from "@carbon/icons-vue/es/data--view--alt/16";
-
+import summit from "@carbon/pictograms/es/summit";
 
 const router = useRouter();
 
@@ -113,10 +114,11 @@ onMounted(() => {
 });
 
 const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
+const summitSvg = useSvg(summit);
 </script>
 
 <template>
-  <div id="screen" class="submission-list">
+  <div id="screen" class="table-list">
     <div id="title" v-if="userhasAuthority">
       <div>
         <div class="form-header-title mg-sd-25">
@@ -165,6 +167,15 @@ const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some
       />
     </div>
 
+    <div class="empty-table-list" 
+        v-if="totalItems == 0 && userhasAuthority && !loading">
+        <summit-svg alt="Summit pictogram" 
+                    class="standard-svg"/>
+        <p class="heading-02">No submissions to show yet</p>
+        <p class="body-compact-01">They will appear once submitted.</p>
+        <p class="body-compact-01">Submissions remain here for only 7 days after they're reviewed.</p>
+    </div>
+    
     <div class="paginator" v-if="totalItems && userhasAuthority">
       <cds-pagination
           items-per-page-text="Submissions per page"        

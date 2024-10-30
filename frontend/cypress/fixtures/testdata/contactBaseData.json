@@ -1,0 +1,10 @@
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "emailAddress": "contact1@mail.ca",
+  "businessPhoneNumber": "1234567890",
+  "secondaryPhoneNumber": "1234567890",
+  "faxNumber": "1234567890",
+  "role": "Person",
+  "addressname": "Mailing address"
+}

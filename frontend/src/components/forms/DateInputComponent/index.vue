@@ -8,7 +8,7 @@ import "@carbon/web-components/es/components/text-input/index";
 import { useEventBus } from "@vueuse/core";
 import { useFocus } from "@/composables/useFocus";
 // Types
-import { isEmpty } from "@/dto/CommonTypesDto";
+import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
 import { DatePart } from "./common";
 // Validators
 import {
@@ -47,10 +47,11 @@ const props = withDefaults(
     autocomplete?: [string, string, string];
   }>(),
   {
+    enabled: true,
     yearValidations: () => [],
     monthValidations: () => [],
     dayValidations: () => [],
-  },
+  }
 );
 
 // Events we emit during component lifecycle
@@ -78,7 +79,7 @@ const emit = defineEmits<{
 // We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<void>("revalidate-bus");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const partError = reactive({
   [DatePart.year]: "",
@@ -88,11 +89,16 @@ const partError = reactive({
 
 const fullDateError = ref("");
 
+const warning = ref(false);
+
 /**
  * Sets the error and emits an error event.
- * @param errorMessage - the error message
+ * @param errorObject - the error object or string
  */
-const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
+const setError = (
+  errorObject: string | ValidationMessageType | undefined,
+  datePart?: DatePart
+) => {
   /*
   The error should be emitted whenever it is found, instead of watching and emitting only when it
   changes.
@@ -100,6 +106,14 @@ const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
   an empty one to allow subscribers to know in case the field still has the same error.
   */
+
+  const errorMessage =
+    typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+
+  warning.value = false;
+  if (typeof errorObject === "object") {
+    warning.value = errorObject.warning;
+  }
 
   if (datePart === undefined) {
     error.value = errorMessage;
@@ -114,7 +128,9 @@ const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
       other part contains error.
       */
       const newErrorMessage =
-        partError[DatePart.year] || partError[DatePart.month] || partError[DatePart.day];
+        partError[DatePart.year] ||
+        partError[DatePart.month] ||
+        partError[DatePart.day];
       error.value = newErrorMessage;
     } else {
       error.value = errorMessage;
@@ -137,8 +153,8 @@ const setError = (errorMessage: string | undefined, datePart?: DatePart) => {
 
 watch(
   () => props.errorMessage,
-  () => setError(props.errorMessage),
-)
+  () => setError(props.errorMessage)
+);
 
 const datePartPositions = {
   [DatePart.year]: 1,
@@ -149,22 +165,29 @@ const datePartPositions = {
 const regex = /(.{0,4})-(.{0,2})-(.{0,2})/;
 
 const getDatePart = (datePart: DatePart) =>
-  props.modelValue ? regex.exec(props.modelValue)[datePartPositions[datePart]] : "";
-
-// We set it as a separated ref due to props not being updatable
-const selectedValue = ref<string | null>(props.modelValue);
+  props.modelValue
+    ? regex.exec(props.modelValue)[datePartPositions[datePart]]
+    : "";
 
 const selectedYear = ref<string>(getDatePart(DatePart.year));
 const selectedMonth = ref<string>(getDatePart(DatePart.month));
 const selectedDay = ref<string>(getDatePart(DatePart.day));
 
-const buildFullDate = () => `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`
+const buildFullDate = () =>
+  `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`;
+
+// We set it as a separated ref due to props not being updatable
+const selectedValue = ref<string | null>(buildFullDate());
 
 const areAllPartsValid = () =>
-  validation[DatePart.year] && validation[DatePart.month] && validation[DatePart.day];
+  validation[DatePart.year] &&
+  validation[DatePart.month] &&
+  validation[DatePart.day];
 
 const isAnyPartEmpty = () =>
-  isEmpty(selectedYear.value) || isEmpty(selectedMonth.value) || isEmpty(selectedDay.value);
+  isEmpty(selectedYear.value) ||
+  isEmpty(selectedMonth.value) ||
+  isEmpty(selectedDay.value);
 
 // We set the value prop as a reference for update reason
 emit("empty", isAnyPartEmpty());
@@ -181,20 +204,22 @@ const emitValueChange = (newValue: string): void => {
   emit("update:model-value", newValue);
   const someEmpty = isAnyPartEmpty();
   emit("empty", someEmpty);
-  let possiblyValid = false;
-  if (!someEmpty && focusedPart.value !== null) {
-    const otherParts = getPartsExcept(focusedPart.value);
-    const allOtherAreValid = otherParts.every((part) => validation[part]);
-    if (allOtherAreValid) {
-      possiblyValid = true;
+  if (focusedPart.value !== null) {
+    let possiblyValid = false;
+    if (!someEmpty) {
+      const otherParts = getPartsExcept(focusedPart.value);
+      const allOtherAreValid = otherParts.every((part) => validation[part]);
+      if (allOtherAreValid) {
+        possiblyValid = true;
+      }
     }
+    emit("possibly-valid", possiblyValid);
   }
-  emit("possibly-valid", possiblyValid);
 };
 
 // Watch for changes on the input
 watch([selectedValue], () => {
-  emitValueChange(selectedValue.value)
+  emitValueChange(selectedValue.value);
 });
 
 // We call all the part validations
@@ -203,8 +228,8 @@ const validatePart = (datePart: DatePart) => {
   const error = partValidators.value[datePart]
     .map((validation) => validation(newValue))
     .filter((errorMessage) => {
-      if (errorMessage) return true
-      return false
+      if (errorMessage) return true;
+      return false;
     })
     .shift();
   setError(error, datePart);
@@ -218,8 +243,8 @@ const validateFullDate = (newValue: string) => {
       props.validations
         .map((validation) => validation(newValue))
         .filter((errorMessage) => {
-          if (errorMessage) return true
-          return false
+          if (errorMessage) return true;
+          return false;
         })
         .shift() ?? props.errorMessage;
     setError(error);
@@ -243,7 +268,8 @@ const validation = reactive({
 const validationFullDate = ref(false);
 
 const year4DigitsMessage = "Year must have 4 digits";
-const month2DigitsMessage = "Month must have 2 digits. For example, 01 for January";
+const month2DigitsMessage =
+  "Month must have 2 digits. For example, 01 for January";
 const day2DigitsMessage = "Day must have 2 digits";
 
 const partValidators = computed(() => ({
@@ -272,11 +298,13 @@ const partValidators = computed(() => ({
       if (!validation[DatePart.year] || !validation[DatePart.month]) {
         return "";
       }
-      const yearMonthDate = parseISO(`${selectedYear.value}-${selectedMonth.value}`);
+      const yearMonthDate = parseISO(
+        `${selectedYear.value}-${selectedMonth.value}`
+      );
       return isValidDayOfMonthYear(
         selectedYear.value,
         selectedMonth.value,
-        `Day can't be greater than ${getDaysInMonth(yearMonthDate)}`,
+        `Day can't be greater than ${getDaysInMonth(yearMonthDate)}`
       )(value);
     },
     (value: string) => {
@@ -284,11 +312,13 @@ const partValidators = computed(() => ({
         return "";
       }
       const arbitraryLeapYear = 2000;
-      const yearMonthDate = parseISO(`${arbitraryLeapYear}-${selectedMonth.value}`);
+      const yearMonthDate = parseISO(
+        `${arbitraryLeapYear}-${selectedMonth.value}`
+      );
       return isValidDayOfMonth(
         selectedMonth.value,
-        `Day can't be greater than ${getDaysInMonth(yearMonthDate)}`,
-      )(value)
+        `Day can't be greater than ${getDaysInMonth(yearMonthDate)}`
+      )(value);
     },
     isLessThan(32, "Day can't be greater than 31"),
     ...props.dayValidations,
@@ -297,8 +327,8 @@ const partValidators = computed(() => ({
 
 // Update validation status on setup
 validation[DatePart.year] = selectedYear.value && validatePart(DatePart.year);
-validation[DatePart.month] = selectedYear.value && validatePart(DatePart.month);
-validation[DatePart.day] = selectedYear.value && validatePart(DatePart.day);
+validation[DatePart.month] = selectedMonth.value && validatePart(DatePart.month);
+validation[DatePart.day] = selectedDay.value && validatePart(DatePart.day);
 
 if (areAllPartsValid()) {
   validationFullDate.value = validateFullDate(selectedValue.value);
@@ -319,21 +349,25 @@ const onBlurPart = (datePart: DatePart) => (partNewValue: string) => {
     validation[DatePart.day] = validatePart(DatePart.day);
   }
 
+  selectedValue.value = buildFullDate();
   if (areAllPartsValid()) {
     validateFullDate(selectedValue.value);
   }
-  isUserEvent.value = true;
 };
 
 const onBlurYear = onBlurPart(DatePart.year);
 const onBlurMonth = onBlurPart(DatePart.month);
 const onBlurDay = onBlurPart(DatePart.day);
 
-revalidateBus.on(() => {
-  validation[DatePart.year] = validatePart(DatePart.year);
-  validation[DatePart.month] = validatePart(DatePart.month);
-  validation[DatePart.day] = validatePart(DatePart.day);
-  validateFullDate(selectedValue.value);
+revalidateBus.on((keys: string[] | undefined) => {
+  if (keys === undefined || keys.includes(props.id)) {
+    validation[DatePart.year] = validatePart(DatePart.year);
+    validation[DatePart.month] = validatePart(DatePart.month);
+    validation[DatePart.day] = validatePart(DatePart.day);
+    if (areAllPartsValid()) {
+      validateFullDate(selectedValue.value);
+    }
+  }
 });
 
 watch(
@@ -353,13 +387,13 @@ watch(
       selectedValue.value = props.modelValue;
 
       if (areAllPartsValid()) {
-        validateFullDate(selectedValue.value)
+        validateFullDate(selectedValue.value);
       }
     }
 
     // resets variable
     isUserEvent.value = false;
-  },
+  }
 );
 
 // Tells whether the current change was done manually by the user.
@@ -408,12 +442,15 @@ const datePartComponentRefs = {
   gap: 1rem;
 }
 
-.grouping-02:has([invalid]) ~ .field-error {
+.grouping-02:has([invalid], [warn]) ~ .field-error {
   display: block;
   overflow: visible;
   max-height: 12.5rem;
   font-weight: 400;
-  color: var(--cds-text-error,#da1e28);
+}
+
+.grouping-02:has([invalid]) ~ .field-error {
+  color: var(--cds-text-error, #da1e28);
 }
 
 :deep([id$="Year"]) {
@@ -449,7 +486,8 @@ const datePartComponentRefs = {
         :datePart="DatePart.year"
         :selectedValue="selectedYear"
         :enabled="enabled"
-        :invalid="!!partError[DatePart.year] || !!fullDateError"
+        :invalid="!warning && (!!partError[DatePart.year] || !!fullDateError)"
+        :warning="warning"
         @blur="(event: any) => onBlurYear(event.target.value)"
         @input="selectYear"
         :required="required"
@@ -462,7 +500,8 @@ const datePartComponentRefs = {
         :datePart="DatePart.month"
         :selectedValue="selectedMonth"
         :enabled="enabled"
-        :invalid="!!partError[DatePart.month] || !!fullDateError"
+        :invalid="!warning && (!!partError[DatePart.month] || !!fullDateError)"
+        :warning="warning"
         @blur="(event: any) => onBlurMonth(event.target.value)"
         @input="selectMonth"
         :required="required"
@@ -475,7 +514,8 @@ const datePartComponentRefs = {
         :datePart="DatePart.day"
         :selectedValue="selectedDay"
         :enabled="enabled"
-        :invalid="!!partError[DatePart.day] || !!fullDateError"
+        :invalid="!warning && (!!partError[DatePart.day] || !!fullDateError)"
+        :warning="warning"
         @blur="(event: any) => onBlurDay(event.target.value)"
         @input="selectDay"
         :required="required"

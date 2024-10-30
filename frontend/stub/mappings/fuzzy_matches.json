@@ -1,0 +1,984 @@
+{
+  "mappings": [
+    {
+      "name": "Submission Match Stub - All good",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST"        
+      },
+      "response": {
+        "status": 204,
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+
+    {
+      "name": "Submission Fuzzy for Individuals: Partial Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "I"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.firstName",
+              "equalTo": "Jhonny"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.lastName",
+              "equalTo": "Baxter"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.birthdate",
+              "equalTo": "1970-01-01"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/partial_individual_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "Submission Fuzzy for Individuals: Full and Partial Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "I"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.firstName",
+              "equalTo": "James"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.lastName",
+              "equalTo": "Baxter"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.birthdate",
+              "equalTo": "1970-01-01"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientIdentification",
+              "equalTo": "1234567"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_and_partial_individual_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "Submission Fuzzy for Individuals: Document Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "I"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.identificationType.value",
+              "equalTo": "CDDL"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.identificationProvince",
+              "equalTo": "BC"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientIdentification",
+              "equalTo": "7654321"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/document_individual_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "Submission Fuzzy for Individuals: Document and Partial Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "I"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.firstName",
+              "equalTo": "Jonas"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.lastName",
+              "equalTo": "Baxter"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.birthdate",
+              "equalTo": "1970-01-01"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientIdentification",
+              "equalTo": "4444444"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/document_and_partial_individual_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+
+    {
+      "name": "Submission Fuzzy for BC Registered: Partial name Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "BC"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Legros, Rutherford and Runte (UT)"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.registrationNumber",
+              "equalTo": "BC9364902"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/partial_business_name_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "Submission Fuzzy for BC Registered: Full name Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "FOR"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Schaefer Group (GS)"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.registrationNumber",
+              "equalTo": "FOR1225451"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_business_name_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "Submission Fuzzy for BC Registered: Full registration Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "FOR"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Mitchell-Hettinger (GS)"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.registrationNumber",
+              "equalTo": "FOR7272044"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_registered_number_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "Submission Fuzzy for BC Registered: Sole Proprietorship Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "RSP"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Dooley Inc (GS)"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.registrationNumber",
+              "equalTo": "FM4152816"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/partial_individual_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+
+    {
+      "name": "Submission Fuzzy for Full Doing Business Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [      
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.doingBusinessAs",
+              "equalTo": "Mr. Full"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_dba_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "Submission Fuzzy for Fuzzy Doing Business Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [      
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.doingBusinessAs",
+              "equalTo": "Mr. Fuzzy"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/partial_dba_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+
+    {
+      "name": "Submission Fuzzy for Acronym Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [      
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientAcronym",
+              "equalTo": "FAIL"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_acronym_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+
+    {
+      "name": "Submission Fuzzy for First Nations: Federal Id Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.clientType",
+              "equalTo": "B"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Webequie"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.registrationNumber",
+              "equalTo": "DINA240"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_fn_federal_id_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+
+    {
+      "name": "Submission Fuzzy for General Partial name Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Partial Corp"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/partial_business_name_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+    {
+      "name": "Submission Fuzzy for General Full name Match",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "1"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.businessInformation.businessName",
+              "equalTo": "Full Corp"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_business_name_match.json",
+        "headers": { "Content-Type": "application/json" }
+      }
+    },
+
+    {
+      "name": "Submission Match Stub for Location email",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[0].emailAddress",
+              "equalTo": "youshallnotpass@mail.ca"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_address_email_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Dynamic Match Stub for Location email",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses..[?(@.emailAddress)]",
+              "contains": "match"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{{val (array) assign='indexList'}}{{#each (jsonPath request.body '$.location.addresses') as |address|}}{{#if (contains address.emailAddress 'match')}}{{val (arrayAdd indexList @index) assign='indexList'}}{{/if}}{{/each}}{{#arrayJoin ',' indexList as |index|}}{\"field\":\"location.addresses[{{index}}].emailAddress\", \"match\":\"0000000{{index}}\", \"fuzzy\":true, \"partialMatch\":false}{{/arrayJoin}}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for businessPhoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[0].businessPhoneNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_address_business_phone_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for secondaryPhoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[0].secondaryPhoneNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_address_secondary_phone_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for faxNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[0].faxNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_address_fax_phone_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for street address",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[0].streetAddress",
+              "equalTo": "6493 Maple Ave"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_address_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for street address",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "2"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.addresses[1].streetAddress",
+              "equalTo": "6493 Maple Ave"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_address_1_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+
+    {
+      "name": "Submission Match Stub for Contact email",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "3"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].email",
+              "equalTo": "youshallnotpass@mail.ca"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_contact_email_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Dynamic Match Stub for Contact email",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "3"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts..[?(@.email)]",
+              "contains": "match"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "body": "[{{val (array) assign='indexList'}}{{#each (jsonPath request.body '$.location.contacts') as |contact|}}{{#if (contains contact.email 'match')}}{{val (arrayAdd indexList @index) assign='indexList'}}{{/if}}{{/each}}{{#arrayJoin ',' indexList as |index|}}{\"field\":\"location.contacts[{{index}}].email\", \"match\":\"0000000{{index}}\", \"fuzzy\":true, \"partialMatch\":false}{{/arrayJoin}}]",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Submission Match Stub for contact phoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "3"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].phoneNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_contact_business_phone_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for contact secondaryPhoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "3"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].secondaryPhoneNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_contact_secondary_phone_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for contact faxNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "3"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].faxNumber",
+              "equalTo": "(222) 222-2222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_contact_fax_phone_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for contact info and secondaryPhoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "3"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].secondaryPhoneNumber",
+              "equalTo": "(777) 777-7777"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_contact_and_full_contact_secondary_phone_matches.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "name": "Submission Match Stub for contact info and secondaryPhoneNumber",
+      "request": {
+        "url": "/api/clients/matches",
+        "method": "POST",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          },
+          "X-STEP": {
+            "equalTo": "3"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.location.contacts[0].firstName",
+              "equalTo": "Duncan"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "bodyFileName": "fuzzy/full_contact_match.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+    
+  ]
+}

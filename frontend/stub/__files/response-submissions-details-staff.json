@@ -1,0 +1,57 @@
+{
+    "submissionId": 4444,
+    "submissionStatus": "Approved",
+    "submissionType": "Staff submitted data",
+    "submittedTimestamp": "{{now offset='-18 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "updateTimestamp": "{{now offset='-9 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "approvedTimestamp": "{{now offset='-1 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
+    "updateUser": "CLIADMIN",
+    "business": {
+        "businessType": "U",
+        "registrationNumber": "",
+        "clientNumber": "",
+        "organizationName": "Johnathan Wick",
+        "clientType": "I",
+        "clientTypeDesc": "Individual",
+        "goodStandingInd": "Y",
+        "birthdate": "1962-08-17",
+        "district": null,
+        "districtDesc": null
+    },
+    "contact": [
+        {
+            "index": 0,
+            "contactType": "Billing",
+            "firstName": "Johnathan",
+            "lastName": "Wick",
+            "phoneNumber": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+            "emailAddress": "thatmail@maila.ca",
+            "locations": [
+                "Hangar"
+            ],
+            "userId": "{{randomValue type='UUID'}}"
+        }
+    ],
+    "address": [
+        {
+            "index": 0,
+            "streetAddress": "1234 Nowhere St",
+            "country": "Canada",
+            "province": "British Columbia",
+            "city": "Victoria",
+            "postalCode": "V8V8V8",
+            "name": "Hangar"
+        }
+    ],
+    "matchers": {
+        "info": {
+            "name": "Johnathan Wick",
+            "email": "johnwick@mail.ca",
+            "userId": "",
+            "businessId": "",
+            "businessName": ""
+        }
+    },
+    "rejectionReason": null,
+    "confirmedMatchUserId": ""
+}

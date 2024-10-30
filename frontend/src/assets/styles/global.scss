@@ -1,8 +1,17 @@
 @use "sass:map";
 @use "@carbon/styles";
+@use '@carbon/styles/scss/theme';
+@use '@carbon/themes';
 @use "@bcgov-nr/nr-fsa-theme/design-tokens/type-family.scss" as typeFamily;
+@use '@bcgov-nr/nr-fsa-theme/design-tokens/light-tags.scss' as light-tag-overrides;
+
+// adds cds-tag related tokens
+@include theme.add-component-tokens(light-tag-overrides.$light-tag-token-overrides);
 
 :root {
+  // the empty list passed in prevents from emitting the full theme
+  @include themes.theme(());
+
   --others-transparent-transparent: rgba(255, 255, 255, 0);
   --light-theme-border-subtle-01: #dfdfe1;
   --light-theme-button-button-primary: #0073e6;
@@ -48,7 +57,9 @@
 
   --cds-body-02-font-size: 0.875rem;
   --heading-compact-02-font-size-rem: 0.875; // This is used to perform calculations only.
-  --heading-compact-02-font-size: calc(var(--heading-compact-02-font-size-rem) * 1rem);
+  --heading-compact-02-font-size: calc(
+    var(--heading-compact-02-font-size-rem) * 1rem
+  );
 
   //Buttons
   --cds-button-disabled: #c6c6c8;
@@ -113,6 +124,11 @@
   box-sizing: unset;
 }
 
+//This ensures that the BC Sans font applies to all text elements across the entire application
+body {
+  font-family: BC Sans, sans-serif !important;
+}
+
 b {
   font-weight: 700;
 }
@@ -166,6 +182,14 @@ cds-button::part(button) {
 
 cds-button span {
   width: 11rem;
+}
+
+#add-delivery-btn {
+  width: 18rem;
+
+  span {
+    width: unset;
+  }
 }
 
 .close-panel-button svg {
@@ -228,13 +252,17 @@ cds-actionable-notification,
   box-shadow: none;
 }
 
-cds-radio-button-group {
+cds-radio-button-group,
+cds-checkbox-group {
   --cds-text-secondary: var(--light-theme-text-text-primary);
 }
 
-cds-radio-button-group[data-required-label="true"]::part(legend)::before {
+:is(
+    cds-radio-button-group,
+    cds-checkbox-group
+  )[data-required-label="true"]::part(legend)::before {
   color: var(--light-theme-text-text-error, #b32001);
-  content: '* ';
+  content: "* ";
 }
 
 cds-radio-button:not(:last-child) {
@@ -245,9 +273,11 @@ cds-combo-box::part(title-text) {
   color: var(--light-theme-text-text-primary, #131315);
 }
 
-:is(cds-combo-box, cds-multi-select)[data-required-label="true"]::part(title-text)::before {
+:is(cds-combo-box, cds-multi-select)[data-required-label="true"]::part(
+    title-text
+  )::before {
   color: var(--light-theme-text-text-error, #b32001);
-  content: '* ';
+  content: "* ";
 }
 
 cds-combo-box::part(trigger-button) {
@@ -351,7 +381,7 @@ div#app {
 .submission-badge {
   width: 31.375rem;
   height: 31.375rem;
-  fill: var(--cds-button-primary, #0353e9);
+  fill: var(--cds-button-primary, #0073e6);
 }
 
 .form-header-progress {
@@ -448,7 +478,8 @@ div#app {
   background-blend-mode: multiply;
 }
 
-.heading-compact-01, cds-accordion-item::part(title) {
+.heading-compact-01,
+cds-accordion-item::part(title) {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-compact-01 */
@@ -488,7 +519,8 @@ designed.
 Class names should be useful when the semantic of a specific tag level wouldn't make sense.
 */
 
-h5, .heading-07,
+h5,
+.heading-07,
 cds-accordion-item.grouping-05-internal::part(title) {
   color: var(--light-theme-text-text-primary, #131315);
   /* Fixed heading styles/heading-07 */
@@ -500,7 +532,8 @@ cds-accordion-item.grouping-05-internal::part(title) {
   letter-spacing: 0.01rem;
 }
 
-h4, .heading-06 {
+h4,
+.heading-06 {
   color: var(--light-theme-text-text-primary, #131315) !important;
 
   /* Fixed heading styles/heading-06 */
@@ -511,7 +544,8 @@ h4, .heading-06 {
   line-height: 1.5rem;
 }
 
-h3, .heading-05 {
+h3,
+.heading-05 {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-05 */
@@ -522,7 +556,8 @@ h3, .heading-05 {
   line-height: 1.75rem;
 }
 
-h2, .heading-04 {
+h2,
+.heading-04 {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-04 */
@@ -533,7 +568,16 @@ h2, .heading-04 {
   line-height: 2.25rem;
 }
 
-h1, .heading-03 {
+.heading-02 {
+  color: var(--light-theme-text-text-primary, #131315);
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.5rem;
+}
+
+h1,
+.heading-03 {
   color: var(--light-theme-text-text-primary, #131315);
 
   /* Fixed heading styles/heading-03 */
@@ -544,7 +588,8 @@ h1, .heading-03 {
   line-height: 2.5rem;
 }
 
-h2.fluid, .fluid-heading-04 {
+h2.fluid,
+.fluid-heading-04 {
   align-self: stretch;
   color: var(--light-theme-text-text-primary, #131315);
 
@@ -606,6 +651,13 @@ cds-actionable-notification * {
   letter-spacing: 0.01rem;
 }
 
+.body-compact-02 {
+  font-size: 0.8712rem;
+  font-weight: 700;
+  line-height: 1.12rem;
+  letter-spacing: 0.01rem;
+}
+
 .content {
   flex-grow: 1;
   align-self: stretch;
@@ -655,7 +707,8 @@ cds-actionable-notification * {
   align-items: flex-start;
 }
 
-.form-steps, .form-steps-staff {
+.form-steps,
+.form-steps-staff {
   flex-grow: 1;
   align-self: stretch;
   display: flex;
@@ -750,7 +803,7 @@ cds-actionable-notification * {
   gap: 1rem;
 }
 
-.form-footer-group-buttons {
+.form-group-buttons {
   display: flex;
   gap: 1rem;
 }
@@ -818,11 +871,27 @@ cds-actionable-notification * {
   background-blend-mode: multiply;
 }
 
-.form-steps-staff :is(
-  .grouping-02,
-  .grouping-03
-) {
+.form-steps-staff .frame-01 {
   width: 42.5rem;
+}
+
+.form-steps-staff :is(.grouping-02, .grouping-03) {
+  width: 100%;
+}
+
+.form-steps-staff {
+  cds-accordion-item {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    background: #fff;
+    padding: 1rem 1rem 1rem 1rem;
+
+    .frame-01 {
+      width: 100%;
+    }
+  }
 }
 
 .grouping-03:has(#identificationType) {
@@ -831,6 +900,12 @@ cds-actionable-notification * {
 
 .grouping-03:has(#identificationProvince),
 .grouping-02:has(#clientIdentification) {
+  width: 9.875rem;
+}
+.grouping-02:has(#clientTypeOfId) {
+  width: 9.875rem;
+}
+.grouping-02:has(#clientIdNumber) {
   width: 9.875rem;
 }
 
@@ -1036,6 +1111,13 @@ cds-actionable-notification * {
   display: flex;
   flex-direction: row;
   gap: 1rem;
+  align-items: end;
+}
+
+.input-with-instruction {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .label-01 {
@@ -1045,6 +1127,17 @@ cds-actionable-notification * {
 
   /* Utility styles/label-01 */
 
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1rem;
+  letter-spacing: 0.02rem;
+}
+
+.label-02 {
+  align-self: stretch;
+  padding-bottom: 0.25rem;
+  color: var(--light-theme-text-text-primary, #131315);
   font-size: 0.75rem;
   font-style: normal;
   font-weight: 400;
@@ -1083,7 +1176,8 @@ cds-actionable-notification * {
   gap: 8px;
 }
 
-cds-text-input::part(label), .cds-text-input-label {
+cds-text-input::part(label),
+.cds-text-input-label {
   color: var(--light-theme-text-text-primary, #131315);
   font-family: BC Sans;
   font-size: 0.75rem;
@@ -1098,7 +1192,8 @@ cds-text-input::part(label) {
   padding-bottom: unset;
 }
 
-cds-text-input::part(label)::before, .cds-text-input-required-label {
+:is(cds-text-input, cds-textarea)::part(label)::before,
+.cds-text-input-required-label {
   color: var(--light-theme-text-text-error, #b32001);
 }
 
@@ -1107,13 +1202,35 @@ cds-text-input::part(label)::before, .cds-text-input-required-label {
 }
 
 .label-with-icon {
-  padding-bottom: 1rem;
   display: flex;
   gap: 0.5rem;
+  line-height: 0; // prevents the label from being pushed away from its input field (below it).
 }
 
-cds-text-input[data-required-label="true"]::part(label)::before {
-  content: '* ';
+/*
+A parent label for a set of input fields that have their own labels like 'Date of birth' that has
+children: Year, Month, Day.
+*/
+.parent-label {
+  padding-bottom: 1rem;
+}
+
+:is(cds-text-input, cds-textarea)[data-required-label="true"]::part(
+    label
+  )::before {
+  content: "* ";
+}
+
+cds-textarea::part(label),
+.cds-text-input-label {
+  color: var(--light-theme-text-text-primary, #131315);
+}
+
+cds-text-input.warning::part(input),
+cds-combo-box.warning::part(input),
+cds-textarea.warning::part(input),
+cds-multi-select.warning::part(input) {
+  outline: 2px solid var(--cds-support-warning, #ffc300);
 }
 
 cds-modal::part(dialog) {
@@ -1148,7 +1265,8 @@ cds-modal-footer-button::part(button) {
   --cds-button-danger-hover: var(--light-theme-button-danger-hover, #b32001);
 }
 
-cds-modal:is(#reject-modal, #approve-modal) cds-modal-footer-button::part(button) {
+cds-modal:is(#reject-modal, #approve-modal)
+  cds-modal-footer-button::part(button) {
   padding-bottom: 1rem;
 }
 
@@ -1273,7 +1391,7 @@ cds-side-nav-items.lower-side-nav {
   align-items: stretch;
 }
 
-.submission-list,
+.table-list,
 .submission-content {
   padding: 2.5rem 0rem 2.5rem 16rem;
   display: flex;
@@ -1377,6 +1495,22 @@ cds-table-header-cell {
   width: 1.5rem;
 }
 
+.col-6_75rem {
+  width: 6.75rem;
+}
+
+.col-19_4375rem {
+  width: 19.4375rem;
+}
+
+.col-14_75rem {
+  width: 14.75rem;
+}
+
+.col-7_0625rem {
+  width: 7.0625rem;
+}
+
 cds-pagination {
   border-radius: 0px 0px 4px 4px;
   border-top: 1px solid var(--light-theme-border-border-subtle-01, #dfdfe1);
@@ -1421,9 +1555,30 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
 .hide-when-less-than-two-children {
   display: none;
+
+  &:has(:nth-child(2)) {
+    display: flex;
+    flex-direction: column;
+  }
 }
-.hide-when-less-than-two-children:has(:nth-child(2)) {
-  display: unset;
+
+/*
+I wish we could define .hide-when-less-than-two-children simply like this.
+But it's not working on Safari with dynamic updates.
+*/
+// .hide-when-less-than-two-children:not(:has(:nth-child(2))) {
+//   display: none;
+// }
+
+.errors-container {
+  --gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+
+  &>.header-offset {
+    margin-bottom: calc(-1 * var(--gap));
+  }
 }
 
 .invisible {
@@ -1438,6 +1593,92 @@ Useful for scrolling to the *start* of an HTML element without having it covered
   width: 1px;
   height: 1px;
   overflow: hidden;
+}
+
+.empty-table-list {
+  height: 16rem;
+  background: var(--light-theme-layer-layer-01, #f3f3f5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.standard-svg {
+  max-height: 16rem !important;
+  max-width: 16rem !important;
+  fill: var(--cds-button-primary, #0073e6);
+}
+
+.empty-table-list .body-compact-01 {
+  width: 22.5rem;
+  text-align: center;
+}
+
+div.internal-grouping-01 span.body-compact-01 ~ svg.good {
+  fill: var(--cds-support-success);
+}
+
+div.internal-grouping-01 span.body-compact-01 ~ svg.warning {
+  fill: var(--cds-support-warning);
+}
+
+div.internal-grouping-01 span.body-compact-01 ~ svg.warning path[data-icon-path="inner-path"] {
+  fill: #000000;
+  opacity: 1;
+}
+
+div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
+  font-weight: 900;
+  background-color: color-mix(in srgb, var(--cds-support-warning) 40%, white);
+}
+
+#datatable {
+  position: relative;
+  right: 0;
+  overflow-x: scroll;
+}
+
+#search-line {
+  --lg-size: 3rem;
+  --padding-size: 2.5rem;
+
+  display: flex;
+  align-items: flex-start;
+  min-height: calc(var(--lg-size) + var(--padding-size));
+  padding: 0 var(--padding-size);
+
+  .grouping-02 {
+    flex-grow: 1;
+  }
+}
+
+#search-box {
+  --row-height: 2.875rem;
+
+  cds-combo-box-item {
+    block-size: var(--row-height);
+  }
+
+  &::part(cds--combo-box), &::part(input) {
+    border-bottom-width: 0;
+  }
+
+  &::part(input)::placeholder {
+    color: var(--light-theme-text-text-primary);
+  }
+}
+
+.search-result-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: -0.0625rem 0;
+}
+
+#search-button {
+  width: 7.875rem;
 }
 
 /* Small (up to 671px) */
@@ -1549,7 +1790,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     align-self: stretch;
   }
 
-  .form-footer-group-buttons {
+  .form-group-buttons {
     flex-direction: column-reverse;
     justify-content: flex-end;
     align-items: stretch;
@@ -1580,7 +1821,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     align-items: flex-start;
   }
 
-  h2.fluid, .fluid-heading-04 {
+  h2.fluid,
+  .fluid-heading-04 {
     /* Fluid styles/SM/fluid-heading-04 */
     font-size: 2rem;
     line-height: 2.5rem;
@@ -1627,19 +1869,15 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     margin: 0rem 1rem 2rem 1rem;
   }
 
-  .submission-list {
+  .table-list {
     padding: 2.5rem 0rem;
   }
+
   .paginator {
     width: 100vw;
   }
   .submission-details--title svg {
     width: 5rem;
-  }
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
   }
   cds-table {
     width: 82rem;
@@ -1708,7 +1946,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     align-items: flex-start;
   }
 
-  h2.fluid, .fluid-heading-04 {
+  h2.fluid,
+  .fluid-heading-04 {
     /* Fluid styles/MED/fluid-heading-04 */
     font-size: 2.25rem;
     line-height: 2.75rem;
@@ -1737,7 +1976,7 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     margin-left: 1rem;
   }
 
-  .submission-list {
+  .table-list {
     padding: 2.5rem 0rem;
   }
 
@@ -1747,11 +1986,6 @@ Useful for scrolling to the *start* of an HTML element without having it covered
 
   .paginator {
     width: 100vw;
-  }
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
   }
   cds-table {
     width: 82rem;
@@ -1791,7 +2025,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     column-gap: 4.0625rem;
   }
 
-  h2.fluid, .fluid-heading-04 {
+  h2.fluid,
+  .fluid-heading-04 {
     /* Fluid styles/MED/fluid-heading-04 */
     font-size: 2.25rem;
     line-height: 2.75rem;
@@ -1820,17 +2055,28 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     --padding-right: 2rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
-    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
+    max-width: calc(
+      100vw -
+        (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
+    );
   }
 
-  #datatable {
-    position: relative;
-    right: 0;
-    overflow-x: scroll;
-  }
   cds-table {
     min-width: 66rem;
   }
+
+  div.content:has(div.staff svg.submission-badge) {
+    margin-left: 16rem;
+  }
+
+  div.form-group-buttons {
+    gap: 0.5rem;
+  }
+
+  div.form-group-buttons cds-button {
+    margin-top: 1rem;
+  }
+
 }
 
 /* X-Large (from 1312px to 1583px) */
@@ -1862,7 +2108,8 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     column-gap: 3.3125rem;
   }
 
-  h2.fluid, .fluid-heading-04 {
+  h2.fluid,
+  .fluid-heading-04 {
     /* Fluid styles/XLG/fluid-heading-04 */
     font-size: 3rem;
     line-height: 56px;
@@ -1891,8 +2138,17 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     --padding-right: 2rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
-    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
+    max-width: calc(
+      100vw -
+        (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
+    );
   }
+
+  div.content:has(div.frame-03 svg.submission-badge) {
+    margin-left: 12rem;
+  }
+
+  
 }
 
 /* XX-Large (from 1584px to 1783px) */
@@ -1942,7 +2198,14 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     --padding-right: 2rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
-    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
+    max-width: calc(
+      100vw -
+        (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
+    );
+  }
+
+  div.content:has(div.frame-03 svg.submission-badge) {
+    margin-left: 12rem;
   }
 }
 
@@ -1979,6 +2242,13 @@ Useful for scrolling to the *start* of an HTML element without having it covered
     --padding-right: 2.5rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
-    max-width: calc(100vw - (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width)));
+    max-width: calc(
+      100vw -
+        (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
+    );
+  }
+
+  div.content:has(div.frame-03 svg.submission-badge) {
+    margin-left: 12rem;
   }
 }

@@ -1,0 +1,77 @@
+{
+  "mappings": [
+    {
+      "name": "Autocompete Canada Post Canada",
+      "request": {
+        "urlPath": "/api/addresses",
+        "method": "GET",
+        "queryParameters": {
+          "country": {
+            "equalTo": "CA"
+          },
+          "maxSuggestions": {
+            "equalTo": "10"
+          },
+          "searchTerm": {
+            "matches": ".+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-address-search-CA.json"
+      }
+    },
+    {
+      "name": "Autocompete Canada Post US",
+      "request": {
+        "urlPath": "/api/addresses",
+        "method": "GET",
+        "queryParameters": {
+          "country": {
+            "equalTo": "US"
+          },
+          "maxSuggestions": {
+            "equalTo": "10"
+          },
+          "searchTerm": {
+            "matches": ".*"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-address-search-US.json"
+      }
+    },
+    {
+      "name": "Canada Post details for success",
+      "request": {
+        "urlPattern": "/api/addresses/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-address-{{request.path.[2]}}.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 2500
+      }
+    },
+    {
+      "name": "Canada Post error details for F8F8F8",
+      "request": {
+        "url": "/api/addresses/F8F8F8",
+        "method": "GET"
+      },
+      "response": {
+        "status": 404,
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 2500
+      }
+    }
+  ]
+}

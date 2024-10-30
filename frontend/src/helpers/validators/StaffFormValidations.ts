@@ -2,16 +2,26 @@ import {
   isNotEmpty,
   isMaxSize,
   isMinSize,
+  isCanadianPostalCode,
+  isUsZipCode,
   isOnlyNumbers,
   isMinimumYearsAgo,
   isDateInThePast,
   hasOnlyNamingCharacters,
+  isNoSpecialCharacters,
   isIdCharacters,
-  isRegex,
-  validateSelection,
   formFieldValidations as externalFormFieldValidations,
+  isAscii,
+  isEmail,
+  isPhoneNumber,
+  optional,
+  isAsciiLineBreak,
+  isNotEmptyArray,
   validate as globalValidate,
   runValidation as globalRunValidation,
+  isMaxSizeMsg,
+  isMinSizeMsg,
+  isExactSizMsg,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -27,20 +37,13 @@ const fieldValidations: Record<string, ((value: any) => string)[]> = {
 
 // This function will return all validators for the field
 export const getValidations = (key: string): ((value: any) => string)[] =>
-  fieldValidations[key] || [];
-
-const isMinSizeMsg = (fieldName: string, minSize: number) =>
-  isMinSize(`The ${fieldName} must contain at least ${minSize} characters`)(minSize);
-
-const isMaxSizeMsg = (fieldName: string, maxSize: number) =>
-  isMaxSize(`The ${fieldName} has a ${maxSize} character limit`)(maxSize);
-
-const isExactSizMsg = (fieldName: string, size: number) => {
-  const msg = `The ${fieldName} must contain ${size} characters`;
-  return [isMinSize(msg)(size), isMaxSize(msg)(size)];
-};
+  key ? fieldValidations[key] || [] : [];
 
 // Step 1: Business Information
+fieldValidations["businessInformation.clientType"] = [
+  isNotEmpty("You must select a client type."),
+];
+
 fieldValidations["businessInformation.birthdate"] = [
   isDateInThePast("Date of birth must be in the past"),
   isMinimumYearsAgo(19, "The applicant must be at least 19 years old to apply"),
@@ -48,17 +51,43 @@ fieldValidations["businessInformation.birthdate"] = [
 
 // use the same validations as firstName in contacts
 fieldValidations["businessInformation.firstName"] = [
-  ...fieldValidations["location.contacts.*.firstName"],
+  isMinSize("Please enter the first name")(1),
+  isMaxSizeMsg("first name", 30),
+  hasOnlyNamingCharacters("first name"),
 ];
 
 fieldValidations["businessInformation.middleName"] = [
-  isMaxSizeMsg("middle name", 30),
-  hasOnlyNamingCharacters("middle name"),
+  optional(isMaxSizeMsg("middle name", 30)),
+  optional(hasOnlyNamingCharacters("middle name")),
 ];
 
 // use the same validations as lastName in contacts
 fieldValidations["businessInformation.lastName"] = [
-  ...fieldValidations["location.contacts.*.lastName"],
+  isMinSize("Please enter the last name")(1),
+  isMaxSizeMsg("last name", 30),
+  hasOnlyNamingCharacters("last name"),
+];
+
+fieldValidations["businessInformation.businessName"] = [
+  isNotEmpty("Client name cannot be empty"),
+  isMaxSizeMsg("client name", 60),
+  isAscii("client name"),
+];
+
+fieldValidations["businessInformation.workSafeBcNumber"] = [
+  optional(isOnlyNumbers("WorkSafeBC number should contain only numbers")),
+  optional(isMaxSizeMsg("WorkSafeBC", 6))
+];
+
+fieldValidations["businessInformation.doingBusinessAs"] = [  
+  optional(isMaxSizeMsg("doing business as", 120)),
+  optional(isAscii("doing business as")),
+];
+
+fieldValidations["businessInformation.clientAcronym"] = [  
+  optional(isMaxSizeMsg("acronym", 8)),
+  optional(isMinSizeMsg("acronym", 3)),
+  optional(isIdCharacters("acronym")),
 ];
 
 // For the input field.
@@ -103,7 +132,6 @@ export const clientIdentificationMaskParams = (() => {
       maxSize: 10,
       onlyNumbers: true,
     },
-    OTHR: undefined,
   };
   return init as Record<keyof typeof init, ClientIdentificationValidation | undefined>;
 })();
@@ -111,75 +139,181 @@ export const clientIdentificationMaskParams = (() => {
 type ClientIdentificationFormFieldValidationKey =
   `businessInformation.clientIdentification-${keyof typeof clientIdentificationMaskParams}`;
 
-const createClientIdentificationFieldValidations = (
-  validations: Record<ClientIdentificationFormFieldValidationKey, ((value: string) => string)[]>,
-) => validations;
-
 // clientIdentification base validations - applied regardless of the ID type / province.
 fieldValidations["businessInformation.clientIdentification"] = [
   isNotEmpty("You must provide an ID number"),
 ];
 
-const extractOtherId = (value: string) => value.split(":")[1]?.trim();
+fieldValidations["businessInformation.clientTypeOfId"] = [
+  isNotEmpty("You must provide a type of ID"),
+  isMaxSizeMsg("Type of ID", 38), //40 - 1 colon - at least 1 from ID number
+  hasOnlyNamingCharacters("Type of ID")
+];
 
-Object.assign(
-  fieldValidations,
-  createClientIdentificationFieldValidations({
-    "businessInformation.clientIdentification-BCDL": [
-      isOnlyNumbers("BC driver's licence should contain only numbers"),
-      isMinSizeMsg("BC driver's licence", 7),
-      isMaxSizeMsg("BC driver's licence", clientIdentificationMaskParams.BCDL.maxSize),
-    ],
+fieldValidations["businessInformation.clientIdNumber"] = [
+  isNotEmpty("You must provide an ID number"),
+  isMaxSizeMsg("ID number", 38), //40 - 1 colon - at least 1 from Type of ID
+  hasOnlyNamingCharacters("ID number")
+];
 
-    "businessInformation.clientIdentification-nonBCDL": [
-      isIdCharacters(),
-      isMinSizeMsg("driver's licence", 7),
-      isMaxSizeMsg("driver's licence", clientIdentificationMaskParams.nonBCDL.maxSize),
-    ],
+fieldValidations["businessInformation.clientIdentification-BCDL"] = [
+  isOnlyNumbers("BC driver's licence should contain only numbers"),
+  isMinSizeMsg("BC driver's licence", 7),
+  isMaxSizeMsg("BC driver's licence", clientIdentificationMaskParams.BCDL.maxSize),
+];
 
-    "businessInformation.clientIdentification-BRTH": [
-      isOnlyNumbers("Canadian birth certificate should contain only numbers"),
-      isMinSizeMsg("Canadian birth certificate", 12),
-      isMaxSizeMsg("Canadian birth certificate", clientIdentificationMaskParams.BRTH.maxSize),
-    ],
+fieldValidations["businessInformation.clientIdentification-nonBCDL"] = [      
+  isIdCharacters("driver's licence"),
+  isMinSizeMsg("driver's licence", 7),
+  isMaxSizeMsg("driver's licence", clientIdentificationMaskParams.nonBCDL.maxSize),
+];
 
-    "businessInformation.clientIdentification-PASS": [
-      isIdCharacters(),
-      ...isExactSizMsg("Canadian passport", clientIdentificationMaskParams.PASS.maxSize),
-    ],
+fieldValidations["businessInformation.clientIdentification-BRTH"] = [
+  isOnlyNumbers("Canadian birth certificate should contain only numbers"),
+  isMinSizeMsg("Canadian birth certificate", 12),
+  isMaxSizeMsg("Canadian birth certificate", clientIdentificationMaskParams.BRTH.maxSize),
+];
 
-    "businessInformation.clientIdentification-CITZ": [
-      isIdCharacters(),
-      ...isExactSizMsg("Canadian citizenship card", clientIdentificationMaskParams.CITZ.maxSize),
-    ],
+fieldValidations["businessInformation.clientIdentification-PASS"] = [
+  isIdCharacters("Canadian passport"),
+  isExactSizMsg("Canadian passport", clientIdentificationMaskParams.PASS.maxSize),
+];
 
-    "businessInformation.clientIdentification-FNID": [
-      isOnlyNumbers("First Nation status ID should contain only numbers"),
-      ...isExactSizMsg("First Nation status ID", clientIdentificationMaskParams.FNID.maxSize),
-    ],
+fieldValidations["businessInformation.clientIdentification-CITZ"] = [
+  isIdCharacters("Canadian citizenship card"),
+  isExactSizMsg("Canadian citizenship card", clientIdentificationMaskParams.CITZ.maxSize),
+];
 
-    "businessInformation.clientIdentification-OTHR": [
-      isMinSizeMsg("ID number", 3),
-      isMaxSizeMsg("ID number", 40),
-      isRegex(
-        /^[^:]+:\s?[^\s:]+$/,
-        'Other identification must follow the pattern: [ID Type] : [ID Value] such as "USA Passport : 12345"',
-      ),
-      validateSelection(extractOtherId)(
-        isIdCharacters("The value to right of the colon can only contain: A-Z or 0-9"),
-      ),
-      validateSelection(extractOtherId)(isMinSizeMsg("value to right of the colon", 3)),
-    ],
-  }),
-);
+fieldValidations["businessInformation.clientIdentification-FNID"] = [
+  isOnlyNumbers("First Nation status ID should contain only numbers"),
+  isExactSizMsg("First Nation status ID", clientIdentificationMaskParams.FNID.maxSize),
+];
 
 export const getClientIdentificationValidations = (
   key: ClientIdentificationFormFieldValidationKey,
 ): ((value: any) => string)[] => getValidations(key);
 
-// Step 2: Addresses
+// Step 2: Locations
+
+fieldValidations["location.addresses.*.complementaryAddressOne"] = [
+  isMaxSizeMsg("delivery information", 40),
+  isAscii("delivery information"),
+];
+
+fieldValidations["location.addresses.*.complementaryAddressTwo"] = [
+  isMaxSizeMsg("additional delivery information", 40),
+  isAscii("additional delivery information"),
+];
+
+fieldValidations["location.addresses.*.emailAddress"] = [
+  optional(isEmail("Please provide a valid email address")),
+  optional(isMinSize("Please provide a valid email address")(6)),
+  isMaxSizeMsg("email address", 100),
+];
+
+const phoneValidations = [
+  optional(isPhoneNumber("Please provide a valid phone number")),
+  optional(isMinSize("Please provide a valid phone number")(10)),
+  isMaxSizeMsg("phone number", 14),
+];
+
+fieldValidations["location.addresses.*.businessPhoneNumber"] = [...phoneValidations];
+fieldValidations["location.addresses.*.secondaryPhoneNumber"] = [...phoneValidations];
+fieldValidations["location.addresses.*.faxNumber"] = [...phoneValidations];
+
+fieldValidations["location.addresses.*.notes"] = [
+  isMaxSizeMsg("notes", 4000),
+  isAsciiLineBreak("notes"),
+];
+fieldValidations["location.addresses.*.locationName"] = [
+  isNotEmpty("You must provide a name for this location"),
+  isMinSize(
+    "The location name must be between 3 and 40 characters and cannot contain special characters"
+  )(3),
+  isMaxSize(
+    "The location name must be between 3 and 40 characters and cannot contain special characters"
+  )(40),
+  isNoSpecialCharacters(
+    "The location name must be between 3 and 40 characters and cannot contain special characters"
+  ),
+];
+fieldValidations["location.addresses.*.country.text"] = [
+  isNotEmpty("You must select a country"),
+];
+fieldValidations["location.addresses.*.province.text"] = [
+  isNotEmpty("You must select a value"),
+];
+fieldValidations["location.addresses.*.city"] = [
+  isNotEmpty("You must provide a city"),
+  isMinSize("The city name must be between 3 and 30 characters")(3),
+  isMaxSize("The city name must be between 3 and 30 characters")(30),
+  isAscii("city name"),
+];
+fieldValidations["location.addresses.*.streetAddress"] = [
+  isNotEmpty("Please provide a valid address or PO Box"),
+  isMinSize("The address must be between 4 and 40 characters")(4),
+  isMaxSize("The address must be between 4 and 40 characters")(40),
+  isAscii("address"),
+];
+fieldValidations[
+  'location.addresses.*.postalCode($.location.addresses.*.country.value === "CA")'
+] = [isCanadianPostalCode];
+fieldValidations[
+  'location.addresses.*.postalCode($.location.addresses.*.country.value === "US")'
+] = [isUsZipCode];
+fieldValidations[
+  'location.addresses.*.postalCode($.location.addresses.*.country.value !== "CA" && $.location.addresses.*.country.value !== "US")'
+] = [
+  isOnlyNumbers(
+    "Postal code should be composed of only numbers and should be between 5 and 10 characters"
+  ),
+  isMinSize(
+    "Postal code should be composed of only numbers and should be between 5 and 10 characters"
+  )(5),
+  isMaxSize(
+    "Postal code should be composed of only numbers and should be between 5 and 10 characters"
+  )(10),
+];
 
 // Step 3: Contacts
+fieldValidations["location.contacts.*.locationNames.text"] = [
+  isNotEmptyArray("You must select at least one location"),
+];
+fieldValidations["location.contacts.*.contactType.text"] = [
+  isNotEmpty("You must select a contact type."),
+];
+
+fieldValidations["location.contacts.*.firstName"] = [
+  isMinSize("Please enter the first name")(1),
+  isMaxSizeMsg("first name", 30),
+  hasOnlyNamingCharacters("first name"),
+];
+
+fieldValidations["location.contacts.*.lastName"] = [
+  isMinSize("Please enter the last name")(1),
+  isMaxSizeMsg("last name", 30),
+  hasOnlyNamingCharacters("last name"),
+];
+
+fieldValidations["location.contacts.*.emailAddress"] = [
+  optional(isEmail("Please provide a valid email address")),
+  optional(isMinSize("Please provide a valid email address")(6)),
+  isMaxSizeMsg("email address", 100),
+];
+
+fieldValidations["location.contacts.*.phoneNumber"] = [...phoneValidations];
+
+fieldValidations["location.contacts.*.secondaryPhoneNumber"] = [...phoneValidations];
+
+fieldValidations["location.contacts.*.faxNumber"] = [...phoneValidations];
+
+// Step 4: Review
+fieldValidations["businessInformation.notes"] = [
+  isMaxSizeMsg("notes", 4000),
+  isAsciiLineBreak("notes"),
+];
+
+// General information
 
 export const addValidation = (key: string, validation: (value: string) => string): void => {
   if (!fieldValidations[key]) fieldValidations[key] = [];
@@ -190,7 +324,7 @@ const defaultGetValidations = getValidations;
 
 export const validate = (
   ...args: Parameters<typeof globalValidate>
-): ReturnType<typeof globalValidate> => {
+): ReturnType<typeof globalValidate> => {  
   const getValidations = args[3] || defaultGetValidations;
   args[3] = getValidations;
   return globalValidate.apply(this, args);

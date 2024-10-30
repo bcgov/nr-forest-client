@@ -6,8 +6,9 @@ import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
-import java.time.Duration;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -39,25 +40,24 @@ public class LegacyService {
         new ForestClientLocationDto(
             clientNumber,
             String.format("%02d", index),
-            detail.getName(),
-            detail.getStreetAddress().toUpperCase(),
-            StringUtils.EMPTY,
-            StringUtils.EMPTY,
+            detail.getName().toUpperCase(),
+            detail.getAddressValue1(),
+            detail.getAddressValue2(),
+            detail.getAddressValue3(),
             detail.getCityName().toUpperCase(),
             detail.getProvinceCode().toUpperCase(),
             detail.getPostalCode(),
             detail.getCountryCode().toUpperCase(),
+            RegExUtils.replaceAll(detail.getBusinessPhoneNumber(), "\\D", StringUtils.EMPTY),
             StringUtils.EMPTY,
-            StringUtils.EMPTY,
-            StringUtils.EMPTY,
-            StringUtils.EMPTY,
-            StringUtils.EMPTY,
+            RegExUtils.replaceAll(detail.getSecondaryPhoneNumber(), "\\D", StringUtils.EMPTY),
+            RegExUtils.replaceAll(detail.getFaxNumber(), "\\D", StringUtils.EMPTY),
+            StringUtils.defaultString(detail.getEmailAddress()),
             "N",
             null,
             "N",
-            StringUtils.EMPTY,
-            ApplicationConstant.PROCESSOR_USER_NAME,
-            ApplicationConstant.PROCESSOR_USER_NAME,
+            StringUtils.defaultString(detail.getNotes()),
+            user, user,
             ApplicationConstant.ORG_UNIT,
             ApplicationConstant.ORG_UNIT
         );
@@ -70,8 +70,6 @@ public class LegacyService {
     return postRequestToLegacy(
         "/api/contacts",
         dto
-            .withCreatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
-            .withUpdatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
     )
         .thenReturn(dto.clientNumber());
   }
@@ -80,8 +78,6 @@ public class LegacyService {
     return postRequestToLegacy(
         "/api/clients",
         dto
-            .withCreatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
-            .withUpdatedBy(ApplicationConstant.PROCESSOR_USER_NAME)
     );
   }
 
@@ -96,8 +92,8 @@ public class LegacyService {
         new ClientDoingBusinessAsDto(
             clientNumber,
             doingBusinessAsName,
-            ApplicationConstant.PROCESSOR_USER_NAME,
-            ApplicationConstant.PROCESSOR_USER_NAME,
+            Objects.toString(createdBy, ApplicationConstant.PROCESSOR_USER_NAME),
+            Objects.toString(updatedBy, ApplicationConstant.PROCESSOR_USER_NAME),
             ApplicationConstant.ORG_UNIT
         )
     )
@@ -136,10 +132,9 @@ public class LegacyService {
               if (response.statusCode().is2xxSuccessful()) {
                 return response.bodyToMono(String.class);
               } else {
-                return Mono.error(new RuntimeException("Failed to submit " + url));
+                return Mono.error(new RuntimeException("Failed to submit to " + url));
               }
-            })
-            .delayElement(Duration.ofSeconds(7));
+            });
   }
 
 }

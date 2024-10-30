@@ -1,0 +1,14 @@
+[
+  {
+    "field":"businessInformation.individual", 
+    "match":"00000001", 
+    "fuzzy":true,
+    "partialMatch":true
+  },
+  {
+    "field":"businessInformation.clientIdentification", 
+    "match":"00000002", 
+    "fuzzy":false,
+    "partialMatch":false
+  }
+]
