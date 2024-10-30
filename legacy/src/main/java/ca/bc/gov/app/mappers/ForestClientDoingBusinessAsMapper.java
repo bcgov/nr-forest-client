@@ -1,6 +1,6 @@
 package ca.bc.gov.app.mappers;
 
-import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
+import ca.bc.gov.app.dto.legacy.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,7 +1,7 @@
 package ca.bc.gov.app.service;
 
 import ca.bc.gov.app.ApplicationConstants;
-import ca.bc.gov.app.dto.ForestClientContactDto;
+import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientContactRepository;

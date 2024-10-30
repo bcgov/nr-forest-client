@@ -1,6 +1,6 @@
 package ca.bc.gov.app.mappers;
 
-import ca.bc.gov.app.dto.ForestClientLocationDto;
+import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,7 +15,12 @@ public interface ForestClientLocationMapper extends
   @Override
   @Mapping(
       source = "updatedByUnit",
-      target = "orgUnit",
+      target = "updateOrgUnit",
+      qualifiedByName = "InitialRevisionQualifier"
+  )
+  @Mapping(
+      source = "createdByUnit",
+      target = "addOrgUnit",
       qualifiedByName = "InitialRevisionQualifier"
   )
   ForestClientLocationDto toDto(ForestClientLocationEntity entity);
@@ -33,12 +38,12 @@ public interface ForestClientLocationMapper extends
   )
   @Mapping(
       target = "createdByUnit",
-      source = "orgUnit",
+      source = "addOrgUnit",
       qualifiedByName = "InitialRevisionQualifier"
   )
   @Mapping(
       target = "updatedByUnit",
-      source = "orgUnit",
+      source = "addOrgUnit",
       qualifiedByName = "InitialRevisionQualifier"
   )
   @Mapping(

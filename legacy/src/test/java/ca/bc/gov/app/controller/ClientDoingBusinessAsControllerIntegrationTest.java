@@ -1,6 +1,6 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
+import ca.bc.gov.app.dto.legacy.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.Map;
 import java.util.stream.Stream;

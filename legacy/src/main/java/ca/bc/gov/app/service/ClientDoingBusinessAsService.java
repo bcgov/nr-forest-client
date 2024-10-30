@@ -1,7 +1,7 @@
 package ca.bc.gov.app.service;
 
 import ca.bc.gov.app.ApplicationConstants;
-import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
+import ca.bc.gov.app.dto.legacy.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
@@ -24,7 +24,7 @@ public class ClientDoingBusinessAsService {
   private final R2dbcEntityOperations entityTemplate;
   private final ClientDoingBusinessAsRepository repository;
   private final AbstractForestClientMapper<
-                  ClientDoingBusinessAsDto, 
+      ClientDoingBusinessAsDto,
                   ClientDoingBusinessAsEntity> mapper;
 
   public Mono<String> saveAndGetIndex(ClientDoingBusinessAsDto dto) {

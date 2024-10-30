@@ -1,6 +1,6 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.dto.ForestClientLocationDto;
+import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -57,6 +57,7 @@ class ClientLocationControllerIntegrationTest extends
                     StringUtils.EMPTY,
                     "TEST",
                     "TEST",
+                    1L,
                     1L
                 )
             )

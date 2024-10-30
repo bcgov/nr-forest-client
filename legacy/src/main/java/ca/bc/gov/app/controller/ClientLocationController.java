@@ -1,6 +1,6 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.dto.ForestClientLocationDto;
+import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.service.ClientLocationService;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;

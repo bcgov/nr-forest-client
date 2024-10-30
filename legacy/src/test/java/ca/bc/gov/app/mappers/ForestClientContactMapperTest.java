@@ -3,7 +3,7 @@ package ca.bc.gov.app.mappers;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import ca.bc.gov.app.dto.ForestClientContactDto;
+import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;

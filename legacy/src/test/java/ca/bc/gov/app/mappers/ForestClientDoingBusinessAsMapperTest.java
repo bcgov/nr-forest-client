@@ -4,7 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
+import ca.bc.gov.app.dto.legacy.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;

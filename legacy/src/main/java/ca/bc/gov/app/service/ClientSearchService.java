@@ -4,10 +4,10 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
-import ca.bc.gov.app.dto.AddressSearchDto;
-import ca.bc.gov.app.dto.ContactSearchDto;
-import ca.bc.gov.app.dto.ForestClientDto;
-import ca.bc.gov.app.dto.PredictiveSearchResultDto;
+import ca.bc.gov.app.dto.legacy.AddressSearchDto;
+import ca.bc.gov.app.dto.legacy.ContactSearchDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.legacy.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.entity.ForestClientEntity;

@@ -1,6 +1,6 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -52,6 +52,7 @@ class ClientControllerIntegrationTest extends
                     "Test",
                     "Test",
                     1L,
+                    StringUtils.EMPTY,
                     StringUtils.EMPTY,
                     StringUtils.EMPTY
                 )

@@ -4,7 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import ca.bc.gov.app.dto.ForestClientLocationDto;
+import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +39,7 @@ class ForestClientLocationMapperTest {
       null,
       "Test",
       "Test",
+      1L,
       1L
   );
 

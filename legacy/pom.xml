@@ -119,6 +119,11 @@
       <artifactId>mapstruct-processor</artifactId>
       <version>${mapstruct.version}l</version>
     </dependency>
+    <dependency>
+      <groupId>ca.bc.gov.nrs-commons</groupId>
+      <artifactId>forest-client-core</artifactId>
+      <version>0.3.0</version>
+    </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>

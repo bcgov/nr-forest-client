@@ -3,7 +3,7 @@ package ca.bc.gov.app.mappers;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import java.time.LocalDateTime;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +33,8 @@ class ForestClientMapperTest {
       "Test",
       1L,
       StringUtils.EMPTY,
-      " "
+      " ",
+      StringUtils.EMPTY
   );
 
   ForestClientEntity entity =
@@ -54,6 +55,7 @@ class ForestClientMapperTest {
           .updatedByUnit(1L)
           .revision(1L)
           .wcbFirmNumber(" ")
+          .ocgSupplierNmbr(StringUtils.EMPTY)
           .clientAcronym(StringUtils.EMPTY)
           .build();
 

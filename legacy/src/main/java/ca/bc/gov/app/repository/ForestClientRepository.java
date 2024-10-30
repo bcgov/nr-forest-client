@@ -1,6 +1,6 @@
 package ca.bc.gov.app.repository;
 
-import ca.bc.gov.app.dto.PredictiveSearchResultDto;
+import ca.bc.gov.app.dto.legacy.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import java.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;

@@ -1,6 +1,6 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.dto.ForestClientContactDto;
+import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.service.ClientContactService;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;

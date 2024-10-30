@@ -1,6 +1,6 @@
 package ca.bc.gov.app.service;
 
-import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import io.micrometer.observation.annotation.Observed;
@@ -33,7 +33,7 @@ public class ClientService {
             .doOnNext(forestClientDto ->
                 log.info(
                     "Saving forest client {}",
-                    forestClientDto.name()
+                    forestClientDto.legalName()
                 )
             )
             .map(mapper::toEntity)

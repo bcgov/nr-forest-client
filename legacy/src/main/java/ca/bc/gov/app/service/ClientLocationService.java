@@ -1,8 +1,8 @@
 package ca.bc.gov.app.service;
 
 import ca.bc.gov.app.ApplicationConstants;
-import ca.bc.gov.app.dto.ClientNameCodeDto;
-import ca.bc.gov.app.dto.ForestClientLocationDto;
+import ca.bc.gov.app.dto.client.CodeNameDto;
+import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import ca.bc.gov.app.entity.ForestClientMailingCountryEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
@@ -32,7 +32,7 @@ public class ClientLocationService {
     return
         //Load the country detail from the database
         getCountry(dto.country())
-            .map(ClientNameCodeDto::name)
+            .map(CodeNameDto::name)
             .map(dto::withCountry)
             .defaultIfEmpty(dto) //This will only be invoked if the country is not on the list
             .filterWhen(locationDto ->
@@ -98,13 +98,13 @@ public class ClientLocationService {
             );
   }
 
-  private Mono<ClientNameCodeDto> getCountry(String code) {
+  private Mono<CodeNameDto> getCountry(String code) {
     return entityTemplate
         .selectOne(
             Query.query(Criteria.where("code").is(code)),
             ForestClientMailingCountryEntity.class
         )
-        .map(entity -> new ClientNameCodeDto(entity.getCode(), entity.getName()))
+        .map(entity -> new CodeNameDto(entity.getCode(), entity.getName()))
         .doOnNext(country -> log.info("Found country {} for code {}", country.name(),country.code()));
   }
 }

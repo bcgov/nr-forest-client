@@ -1,6 +1,6 @@
 package ca.bc.gov.app.mappers;
 
-import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

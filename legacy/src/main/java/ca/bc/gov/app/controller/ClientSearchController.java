@@ -1,9 +1,9 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.dto.AddressSearchDto;
-import ca.bc.gov.app.dto.ContactSearchDto;
-import ca.bc.gov.app.dto.ForestClientDto;
-import ca.bc.gov.app.dto.PredictiveSearchResultDto;
+import ca.bc.gov.app.dto.legacy.AddressSearchDto;
+import ca.bc.gov.app.dto.legacy.ContactSearchDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.legacy.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;

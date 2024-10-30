@@ -1,13 +1,13 @@
 package ca.bc.gov.app.configuration;
 
-import ca.bc.gov.app.dto.AddressSearchDto;
-import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
-import ca.bc.gov.app.dto.ClientNameCodeDto;
-import ca.bc.gov.app.dto.ContactSearchDto;
-import ca.bc.gov.app.dto.ForestClientContactDto;
-import ca.bc.gov.app.dto.ForestClientDto;
-import ca.bc.gov.app.dto.ForestClientLocationDto;
-import ca.bc.gov.app.dto.PredictiveSearchResultDto;
+import ca.bc.gov.app.dto.client.CodeNameDto;
+import ca.bc.gov.app.dto.legacy.ClientDoingBusinessAsDto;
+import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
+import ca.bc.gov.app.dto.legacy.PredictiveSearchResultDto;
+import ca.bc.gov.app.dto.legacy.AddressSearchDto;
+import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
@@ -16,12 +16,11 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration
 @RegisterReflectionForBinding({
-    ClientNameCodeDto.class,
+    CodeNameDto.class,
     ForestClientDto.class,
     AddressSearchDto.class,
     ContactSearchDto.class,
     ClientDoingBusinessAsDto.class,
-    ClientNameCodeDto.class,
     ForestClientContactDto.class,
     ForestClientLocationDto.class,
     PredictiveSearchResultDto.class

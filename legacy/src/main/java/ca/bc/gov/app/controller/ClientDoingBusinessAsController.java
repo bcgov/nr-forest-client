@@ -1,6 +1,6 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
+import ca.bc.gov.app.dto.legacy.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.exception.NoValueFoundException;
 import ca.bc.gov.app.service.ClientDoingBusinessAsService;
 import io.micrometer.observation.annotation.Observed;

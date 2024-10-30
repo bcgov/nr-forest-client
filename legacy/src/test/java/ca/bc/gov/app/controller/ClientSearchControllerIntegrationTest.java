@@ -1,7 +1,7 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.dto.AddressSearchDto;
-import ca.bc.gov.app.dto.ContactSearchDto;
+import ca.bc.gov.app.dto.legacy.AddressSearchDto;
+import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.HashMap;

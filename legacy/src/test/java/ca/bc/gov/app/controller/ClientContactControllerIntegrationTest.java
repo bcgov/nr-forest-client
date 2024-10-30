@@ -1,7 +1,6 @@
 package ca.bc.gov.app.controller;
 
-
-import ca.bc.gov.app.dto.ForestClientContactDto;
+import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.Map;
 import java.util.stream.Stream;
