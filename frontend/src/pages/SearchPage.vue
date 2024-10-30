@@ -246,7 +246,7 @@ onMounted(() => {
     </div>
     <div id="datatable" v-if="userhasAuthority">
 
-      <cds-table use-zebra-styles v-if="!loadingSearch">
+      <cds-table id="search-table" use-zebra-styles v-if="!loadingSearch">
         <cds-table-head>
           <cds-table-header-row>
             <cds-table-header-cell />
@@ -256,7 +256,6 @@ onMounted(() => {
             <cds-table-header-cell class="col-14_75rem">Type</cds-table-header-cell>
             <cds-table-header-cell class="col-14_75rem">City</cds-table-header-cell>
             <cds-table-header-cell class="col-7_0625rem">Status</cds-table-header-cell>
-            <cds-table-header-cell />
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
@@ -276,7 +275,6 @@ onMounted(() => {
                 <cds-tag :type="tagColor(row.clientStatus)" title=""><span>{{ row.clientStatus }}</span></cds-tag>
               </div>
             </cds-table-cell>
-            <cds-table-cell />
           </cds-table-row>
         </cds-table-body>
       </cds-table>
