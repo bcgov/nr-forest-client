@@ -1,8 +1,8 @@
 package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.models.client.SubmissionStatusEnum;
-import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
+import ca.bc.gov.app.dto.client.SubmissionStatusEnum;
+import ca.bc.gov.app.dto.client.SubmissionTypeCodeEnum;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

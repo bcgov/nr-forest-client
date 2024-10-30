@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Condition;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -97,7 +98,7 @@ class IndividualStepMatcherTest {
                   .hasMessage("409 CONFLICT \"Match found on existing data.\"")
                   .extracting("matches")
                   .isInstanceOf(List.class)
-                  .asList()
+                  .asInstanceOf(InstanceOfAssertFactories.LIST)
                   .has(
                       new Condition<>(
                           matchResult ->
@@ -123,11 +124,11 @@ class IndividualStepMatcherTest {
     return Stream.of(
         Arguments.of(
             ClientMatchDataGenerator.getDto(
-                "Jhon", 
-                "Wick", 
-                LocalDate.of(1970, 1, 1), 
-                "CDDL", 
-                "BC", 
+                "Jhon",
+                "Wick",
+                LocalDate.of(1970, 1, 1),
+                "CDDL",
+                "BC",
                 "1234567",
                 null,
                 null),
@@ -139,12 +140,12 @@ class IndividualStepMatcherTest {
         ),
         Arguments.of(
             ClientMatchDataGenerator.getDto(
-                "James", 
-                "Wick", 
-                LocalDate.of(1970, 1, 1), 
-                "CDDL", 
+                "James",
+                "Wick",
+                LocalDate.of(1970, 1, 1),
+                "CDDL",
                 "AB",
-                "7654321", 
+                "7654321",
                 null,
                 null),
             Flux.empty(),
@@ -155,12 +156,12 @@ class IndividualStepMatcherTest {
         ),
         Arguments.of(
             ClientMatchDataGenerator.getDto(
-                "Valeria", 
-                "Valid", 
-                LocalDate.of(1970, 1, 1), 
-                "CDDL", 
+                "Valeria",
+                "Valid",
+                LocalDate.of(1970, 1, 1),
+                "CDDL",
                 "YK",
-                "1233210", 
+                "1233210",
                 null,
                 null),
             Flux.empty(),
@@ -171,12 +172,12 @@ class IndividualStepMatcherTest {
         ),
         Arguments.of(
             ClientMatchDataGenerator.getDto(
-                "Papernon", 
-                "Pompadour", 
-                LocalDate.of(1970, 1, 1), 
-                "CDDL", 
+                "Papernon",
+                "Pompadour",
+                LocalDate.of(1970, 1, 1),
+                "CDDL",
                 "ON",
-                "9994545", 
+                "9994545",
                 null,
                 null),
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000003")),
@@ -187,12 +188,12 @@ class IndividualStepMatcherTest {
         ),
         Arguments.of(
             ClientMatchDataGenerator.getDto(
-                "Karls", 
-                "Enrikvinjon", 
-                LocalDate.of(1970, 1, 1), 
-                "CDDL", 
+                "Karls",
+                "Enrikvinjon",
+                LocalDate.of(1970, 1, 1),
+                "CDDL",
                 "BC",
-                "3337474", 
+                "3337474",
                 null,
                 null),
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000004")),
@@ -203,12 +204,12 @@ class IndividualStepMatcherTest {
         ),
         Arguments.of(
             ClientMatchDataGenerator.getDto(
-                "Palitz", 
-                "Yelvengard", 
-                LocalDate.of(1970, 1, 1), 
-                "USDL", 
+                "Palitz",
+                "Yelvengard",
+                LocalDate.of(1970, 1, 1),
+                "USDL",
                 "AZ",
-                "7433374", 
+                "7433374",
                 null,
                 null),
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000006")),

@@ -11,7 +11,7 @@ public class UnsupportedClientTypeException extends ResponseStatusException {
   public UnsupportedClientTypeException(String clientType) {
     super(HttpStatus.NOT_ACCEPTABLE,
         String.format("Client type %s is not supported at the moment",
-            ClientTypeCodeEnum.as(clientType)));
+            ClientTypeCodeEnum.fromValue(clientType)));
   }
 
 }

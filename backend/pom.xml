@@ -144,6 +144,11 @@
             <groupId>io.projectreactor.addons</groupId>
             <artifactId>reactor-extra</artifactId>
         </dependency>
+        <dependency>
+            <groupId>ca.bc.gov.nrs-commons</groupId>
+            <artifactId>forest-client-core</artifactId>
+            <version>0.3.0</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

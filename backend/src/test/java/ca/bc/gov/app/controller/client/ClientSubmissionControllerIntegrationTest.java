@@ -238,9 +238,6 @@ class ClientSubmissionControllerIntegrationTest
             )
             .get()
             .uri(uri)
-            .header(ApplicationConstant.USERID_HEADER, "testUserId")
-            .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
-            .header(ApplicationConstant.USERNAME_HEADER, "Jhon Doe")
             .exchange()
             .expectStatus().isOk()
             .expectBodyList(ClientListSubmissionDto.class);

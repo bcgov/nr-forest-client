@@ -3,7 +3,7 @@ package ca.bc.gov.app.predicates;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ca.bc.gov.app.models.client.SubmissionStatusEnum;
+import ca.bc.gov.app.dto.client.SubmissionStatusEnum;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;

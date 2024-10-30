@@ -1,6 +1,5 @@
 package ca.bc.gov.app.utils;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.DateTimeException;
@@ -8,6 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -28,9 +28,9 @@ class GeneralTest {
   @ParameterizedTest
   @ValueSource(strings = {"mail@mail.ca", "donotnod@happygames.ca", "paulushc@gmail.com"})
   void testMail(String value) {
-    String EMAIL_REGEX = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$";
-    assertTrue(value.matches(EMAIL_REGEX));
-    assertTrue(Pattern.compile(EMAIL_REGEX).matcher(value).matches());
+    String emailRegex = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$";
+    Assertions.assertTrue(value.matches(emailRegex));
+    Assertions.assertTrue(Pattern.compile(emailRegex).matcher(value).matches());
   }
 
   /**

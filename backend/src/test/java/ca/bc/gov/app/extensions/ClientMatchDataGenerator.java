@@ -354,6 +354,10 @@ public class ClientMatchDataGenerator {
         null,
         null,
         null,
+        null,
+        null,
+        null,
+        null,
         null
     );
   }
