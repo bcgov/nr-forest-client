@@ -19,6 +19,24 @@ We recommend **yml** files as they tend to be less repetitive, but it's up to yo
 Also, make sure to run the application using your profile, if it's through command line, remember to pass a 
 **--spring.profiles.active=dev-jsmith** argument, or if using IntelliJ, create a run configuration (more on that later).
 
+We are using the [forest client commons library](https://github.com/bcgov/nr-forest-client-commons) to share DTOs and some other classes.
+This is to reduce code duplicity and make it easier to maintain the code and transfer data between the services. For it to work,
+you will need to add to your maven settings file (usually located at ~/.m2/settings.xml) the following server configuration:
+
+```xml
+  <servers>
+  <server>
+    <id>github</id>
+    <username>your_github_username</username>
+    <password>your_github_personal_access_token</password>
+  </server>
+</servers>
+```
+
+You can generate a personal access token by going to your github settings > Developer settings > Personal access tokens > Generate new token.
+More on this can be found [here](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+
+
 ## Configuring your yml/properties file
 
 When creating your own configuration file, you can overwrite any of the entries contained on the main 
