@@ -13,7 +13,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
 
 import type { ClientSearchResult, CodeNameValue } from "@/dto/CommonTypesDto";
-import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
+import { adminEmail, getObfuscatedEmailLink, toTitleCase, highlightMatch } from "@/services/ForestClientService";
 import summit from "@carbon/pictograms/es/summit";
 import userSearch from "@carbon/pictograms/es/user--search";
 import useSvg from "@/composables/useSvg";
@@ -136,7 +136,8 @@ const searchResultToCodeNameValue = (
   return result;
 };
 
-const searchResultToCodeNameValueList = (list: ClientSearchResult[]) => list.map(searchResultToCodeNameValue);
+const searchResultToCodeNameValueList = (list: ClientSearchResult[]) =>
+  list?.map(searchResultToCodeNameValue);
 
 const searchResultToText = (searchResult: ClientSearchResult): string => {
   const { clientNumber, clientFullName, clientType, city } = searchResult;
@@ -231,7 +232,7 @@ onMounted(() => {
           #="{ value }"
         >
           <div class="search-result-item" v-if="value">
-            {{ searchResultToText(value) }}
+            <span v-dompurify-html="highlightMatch(searchResultToText(value), searchKeyword)"></span>
             <cds-tag :type="tagColor(value.clientStatus)" title="">
               <span>{{ value.clientStatus }}</span>
             </cds-tag>

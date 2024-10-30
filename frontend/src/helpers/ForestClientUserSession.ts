@@ -112,8 +112,6 @@ class ForestClientUserSession implements SessionProperties {
     }
   };
 
-
-
   private processName = (
     payload: any,
     provider: string
