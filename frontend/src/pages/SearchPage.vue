@@ -249,7 +249,7 @@ onMounted(() => {
       <cds-table id="search-table" use-zebra-styles v-if="!loadingSearch">
         <cds-table-head>
           <cds-table-header-row>
-            <cds-table-header-cell />
+            <cds-table-header-cell class="padding-column" />
             <cds-table-header-cell class="col-6_75rem">Client number</cds-table-header-cell>
             <cds-table-header-cell class="col-6_75rem">Acronym</cds-table-header-cell>
             <cds-table-header-cell class="col-19_4375rem">Name</cds-table-header-cell>
