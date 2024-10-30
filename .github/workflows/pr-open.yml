@@ -50,8 +50,23 @@ jobs:
     strategy:
       matrix:
         package: [backend, database, frontend, legacy, processor]
+        include:
+          - package: backend
+            maven: true            
+          - package: database
+            maven: false
+          - package: frontend
+            maven: false
+          - package: legacy
+            maven: true
+          - package: processor
+            maven: true
     steps:
       - uses: actions/checkout@v4
+
+      - name: Prepare Docker build context
+        if: ${{ matrix.maven }}
+        run: cp .github/settings.xml.template ${{ matrix.package }}/
 
       - uses: bcgov-nr/action-builder-ghcr@v2.2.0
         name: Build (${{ matrix.package }})
