@@ -64,10 +64,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Prepare Docker build context
-        if: ${{ matrix.maven }}
-        run: cp .github/settings.xml.template ${{ matrix.package }}/
-
       - uses: bcgov-nr/action-builder-ghcr@v2.2.0
         name: Build (${{ matrix.package }})
         with:
