@@ -5,6 +5,7 @@ import './commands'
 
 import { mount } from 'cypress/vue'
 import '@cypress/code-coverage/support'
+import VueDOMPurifyHTML from "vue-dompurify-html";
 import '@/styles'
 
 declare global {
@@ -15,4 +16,10 @@ declare global {
   }
 }
 
-Cypress.Commands.add('mount', mount)
+Cypress.Commands.add('mount', (component, options = {}) => {
+  options.global = options.global || {};
+  options.global.plugins = options.global.plugins || [];
+  options.global.plugins.push(VueDOMPurifyHTML);
+
+  return mount(component, options);
+});
