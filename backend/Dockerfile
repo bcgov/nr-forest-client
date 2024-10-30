@@ -17,11 +17,16 @@ ENV PATH=$MAVEN_HOME/bin:$PATH
 
 # Receiving app version
 ARG APP_VERSION=0.0.1
+ARG GITHUB_USERNAME
+ARG GITHUB_TOKEN
 
 # Copy
 WORKDIR /app
 COPY pom.xml ./
 COPY src ./src
+COPY .github/settings.xml.template /root/.m2/settings.xml
+RUN sed -i "s|\${GITHUB_USERNAME}|${GITHUB_USERNAME}|g" /root/.m2/settings.xml && \
+    sed -i "s|\${GITHUB_TOKEN}|${GITHUB_TOKEN}|g" /root/.m2/settings.xml
 
 # Setting app version
 RUN mvn versions:set -DnewVersion=${APP_VERSION} -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true && \
