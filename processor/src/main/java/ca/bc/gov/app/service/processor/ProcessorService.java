@@ -1,9 +1,9 @@
 package ca.bc.gov.app.service.processor;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.MessagingWrapper;
-import ca.bc.gov.app.dto.SubmissionProcessKindEnum;
-import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
+import ca.bc.gov.app.dto.client.ValidationSourceEnum;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
+import ca.bc.gov.app.dto.submissions.SubmissionProcessKindEnum;
 import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.service.client.ClientSubmissionAutoProcessingService;
@@ -94,7 +94,7 @@ public class ProcessorService {
                 submissionId,
                 Map.of(
                     ApplicationConstant.SUBMISSION_ID, submissionId,
-                    ApplicationConstant.SUBMISSION_STARTER, SubmissionProcessTypeEnum.EXTERNAL
+                    ApplicationConstant.SUBMISSION_STARTER, ValidationSourceEnum.EXTERNAL
                 )
             )
         )
@@ -121,7 +121,7 @@ public class ProcessorService {
                 submissionId,
                 Map.of(
                     ApplicationConstant.SUBMISSION_ID, submissionId,
-                    ApplicationConstant.SUBMISSION_STARTER, SubmissionProcessTypeEnum.STAFF
+                    ApplicationConstant.SUBMISSION_STARTER, ValidationSourceEnum.STAFF
                 )
             )
         )
@@ -146,7 +146,7 @@ public class ProcessorService {
    */
   public Mono<String> processedMessage(
       Integer submissionId,
-      SubmissionProcessTypeEnum submissionType
+      ValidationSourceEnum submissionType
   ) {
     return Mono.just(
             new MessagingWrapper<>(

@@ -1,7 +1,7 @@
 package ca.bc.gov.app.matchers;
 
-import ca.bc.gov.app.dto.MatcherResult;
-import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.dto.submissions.MatcherResult;
+import ca.bc.gov.app.dto.submissions.SubmissionInformationDto;
 import java.util.LinkedHashSet;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;

@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
 import ca.bc.gov.app.entity.SubmissionContactEntity;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.SubmissionLocationContactEntity;

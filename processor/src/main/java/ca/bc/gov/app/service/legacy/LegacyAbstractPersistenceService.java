@@ -1,10 +1,11 @@
 package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.MessagingWrapper;
-import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
+import ca.bc.gov.app.dto.client.ValidationSourceEnum;
+import ca.bc.gov.app.dto.legacy.ClientStatusCodeEnum;
 import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
@@ -282,7 +283,7 @@ public abstract class LegacyAbstractPersistenceService {
             StringUtils.EMPTY,
             StringUtils.EMPTY,
             StringUtils.EMPTY,
-            "ACT",
+            ClientStatusCodeEnum.ACT.name(),
             StringUtils.EMPTY,
             null,
             StringUtils.EMPTY,
@@ -294,6 +295,7 @@ public abstract class LegacyAbstractPersistenceService {
             ProcessorUtil.limitString(updatedBy, 30),
             ApplicationConstant.ORG_UNIT,
             StringUtils.EMPTY,
+            StringUtils.EMPTY,
             StringUtils.EMPTY
         );
   }
@@ -303,9 +305,9 @@ public abstract class LegacyAbstractPersistenceService {
   }
 
   protected boolean isStaffSubmitted(MessagingWrapper<?> message) {
-    return SubmissionProcessTypeEnum.STAFF.equals(
+    return ValidationSourceEnum.STAFF.equals(
         message.getParameter(ApplicationConstant.SUBMISSION_STARTER,
-            SubmissionProcessTypeEnum.class)
+            ValidationSourceEnum.class)
     );
   }
 

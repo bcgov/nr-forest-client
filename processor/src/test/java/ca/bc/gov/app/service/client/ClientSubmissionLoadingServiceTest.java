@@ -8,11 +8,9 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.SubmissionLocationRepository;
-
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;

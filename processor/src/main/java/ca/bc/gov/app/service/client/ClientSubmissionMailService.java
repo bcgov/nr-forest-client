@@ -1,6 +1,6 @@
 package ca.bc.gov.app.service.client;
 
-import ca.bc.gov.app.dto.EmailRequestDto;
+import ca.bc.gov.app.dto.client.EmailRequestDto;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

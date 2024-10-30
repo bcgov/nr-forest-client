@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
-import ca.bc.gov.app.dto.MessagingWrapper;
-import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
+import ca.bc.gov.app.dto.client.ValidationSourceEnum;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
@@ -406,7 +406,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                 Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
             )
                 .withParameter(ApplicationConstant.SUBMISSION_STARTER,
-                    SubmissionProcessTypeEnum.STAFF)
+                    ValidationSourceEnum.STAFF)
                 .withParameter(ApplicationConstant.MATCHING_INFO,
                     Map.of(
                         "name", "John Wick",
@@ -449,7 +449,8 @@ class LegacyRegisteredSPPersistenceServiceTest {
                 "IDIR\\JWICK",
                 ApplicationConstant.ORG_UNIT,
                 null, //acronym
-                null //wsbn
+                null, //wsbn,
+                StringUtils.EMPTY
             )
         ),
         Arguments.of(
@@ -475,7 +476,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
                 Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
             )
                 .withParameter(ApplicationConstant.SUBMISSION_STARTER,
-                    SubmissionProcessTypeEnum.STAFF)
+                    ValidationSourceEnum.STAFF)
                 .withParameter(ApplicationConstant.MATCHING_INFO,
                     Map.of(
                         "name", "John Wick",
@@ -518,28 +519,29 @@ class LegacyRegisteredSPPersistenceServiceTest {
                 "IDIR\\JWICK",
                 ApplicationConstant.ORG_UNIT,
                 "BAXC", //acronym
-                "123456" //wsbn
+                "123456", //wsbn,
+                StringUtils.EMPTY
             )
         ),
         Arguments.of(
             named("External-submitted RSP",
-            SubmissionDetailEntity.builder()
-                .submissionId(submissionId)
-                .submissionDetailId(submissionId)
-                .organizationName("Baxter Corp")
-                .registrationNumber("FM00184546")
-                .businessTypeCode("R")
-                .clientTypeCode("RSP")
-                .goodStandingInd("Y")
-                .birthdate(LocalDate.of(1962, 3, 12))
-                .build()
+                SubmissionDetailEntity.builder()
+                    .submissionId(submissionId)
+                    .submissionDetailId(submissionId)
+                    .organizationName("Baxter Corp")
+                    .registrationNumber("FM00184546")
+                    .businessTypeCode("R")
+                    .clientTypeCode("RSP")
+                    .goodStandingInd("Y")
+                    .birthdate(LocalDate.of(1962, 3, 12))
+                    .build()
             ),
             new MessagingWrapper<>(
                 clientNumber,
                 Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
             )
                 .withParameter(ApplicationConstant.SUBMISSION_STARTER,
-                    SubmissionProcessTypeEnum.EXTERNAL)
+                    ValidationSourceEnum.EXTERNAL)
                 .withParameter(ApplicationConstant.MATCHING_INFO, null)
                 .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
                 .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)
@@ -580,7 +582,8 @@ class LegacyRegisteredSPPersistenceServiceTest {
                 "BCEIDBUSINESS\\JWICK",
                 ApplicationConstant.ORG_UNIT,
                 null,
-                null
+                null,
+                StringUtils.EMPTY
             )
         )
     );
@@ -611,12 +614,13 @@ class LegacyRegisteredSPPersistenceServiceTest {
                         "IDIR\\JWICK",
                         ApplicationConstant.ORG_UNIT,
                         null, //acronym
-                        null //wsbn
+                        null, //wsbn
+                        null
                     ),
                     Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
                 )
                     .withParameter(ApplicationConstant.SUBMISSION_STARTER,
-                        SubmissionProcessTypeEnum.STAFF)
+                        ValidationSourceEnum.STAFF)
                     .withParameter(ApplicationConstant.MATCHING_INFO,
                         Map.of(
                             "name", "John Wick",
@@ -670,12 +674,13 @@ class LegacyRegisteredSPPersistenceServiceTest {
                         "BCEIDBUSINESS\\JWICK",
                         ApplicationConstant.ORG_UNIT,
                         null,
-                        null
+                        null,
+                        StringUtils.EMPTY
                     ),
                     Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
                 )
                     .withParameter(ApplicationConstant.SUBMISSION_STARTER,
-                        SubmissionProcessTypeEnum.EXTERNAL)
+                        ValidationSourceEnum.EXTERNAL)
                     .withParameter(ApplicationConstant.MATCHING_INFO, null)
                     .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
                     .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)

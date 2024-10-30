@@ -1,7 +1,7 @@
 package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
 import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

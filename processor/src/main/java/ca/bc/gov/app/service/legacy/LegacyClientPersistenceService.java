@@ -2,8 +2,8 @@
 package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.SubmissionLocationContactRepository;

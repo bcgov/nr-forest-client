@@ -7,8 +7,8 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ca.bc.gov.app.dto.MatcherResult;
-import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.dto.submissions.MatcherResult;
+import ca.bc.gov.app.dto.submissions.SubmissionInformationDto;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.Set;
 import java.util.stream.Stream;

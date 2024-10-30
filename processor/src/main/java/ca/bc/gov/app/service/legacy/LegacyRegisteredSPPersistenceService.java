@@ -2,10 +2,10 @@
 package ca.bc.gov.app.service.legacy;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.MessagingWrapper;
-import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
+import ca.bc.gov.app.dto.client.ValidationSourceEnum;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
 import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
@@ -127,9 +127,9 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
             //Load the details to set the remaining fields
             .flatMap(forestClient ->
                 Mono.just(
-                        SubmissionProcessTypeEnum.STAFF.equals(
+                        ValidationSourceEnum.STAFF.equals(
                             message.getParameter(ApplicationConstant.SUBMISSION_STARTER,
-                                SubmissionProcessTypeEnum.class)
+                                ValidationSourceEnum.class)
                         )
                     )
                     .filter(BooleanUtils::isTrue)

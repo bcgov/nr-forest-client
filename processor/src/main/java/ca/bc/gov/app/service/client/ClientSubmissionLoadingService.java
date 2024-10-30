@@ -1,10 +1,10 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.DistrictDto;
-import ca.bc.gov.app.dto.EmailRequestDto;
-import ca.bc.gov.app.dto.MessagingWrapper;
-import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.dto.client.DistrictDto;
+import ca.bc.gov.app.dto.client.EmailRequestDto;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
+import ca.bc.gov.app.dto.submissions.SubmissionInformationDto;
 import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;

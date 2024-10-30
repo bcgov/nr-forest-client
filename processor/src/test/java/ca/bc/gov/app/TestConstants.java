@@ -1,12 +1,12 @@
 package ca.bc.gov.app;
 
-import ca.bc.gov.app.dto.EmailRequestDto;
-import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficerDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryRoleDto;
+import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.submissions.SubmissionInformationDto;
 import ca.bc.gov.app.entity.SubmissionContactEntity;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
 import java.time.LocalDate;
@@ -92,14 +92,20 @@ public class TestConstants {
   );
   public static final BcRegistryDocumentDto BCREG_DOC_DATA =
       new BcRegistryDocumentDto(
+          null,
+          null,
           List.of(
               new BcRegistryPartyDto(
+                  null,
+                  null,
                   new BcRegistryOfficerDto(
                       "baxterj@baxter.com",
                       "James",
                       "Baxter",
                       "W",
-                      "Director"
+                      "Director",
+                      "",
+                      ""
                   ),
                   List.of(
                       new BcRegistryRoleDto(
@@ -153,6 +159,7 @@ public class TestConstants {
       }""";
 
   public static final ForestClientDto CLIENT_ENTITY = new ForestClientDto(
+      null,
       null,
       null,
       null,

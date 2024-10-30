@@ -1,8 +1,8 @@
 package ca.bc.gov.app.matchers;
 
-import ca.bc.gov.app.dto.MatcherResult;
-import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
+import ca.bc.gov.app.dto.submissions.MatcherResult;
+import ca.bc.gov.app.dto.submissions.SubmissionInformationDto;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;

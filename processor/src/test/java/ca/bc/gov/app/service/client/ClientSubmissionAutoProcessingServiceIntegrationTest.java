@@ -9,8 +9,8 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.MatcherResult;
-import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
+import ca.bc.gov.app.dto.submissions.MatcherResult;
 import ca.bc.gov.app.entity.SubmissionEntity;
 import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.extensions.AbstractTestContainer;

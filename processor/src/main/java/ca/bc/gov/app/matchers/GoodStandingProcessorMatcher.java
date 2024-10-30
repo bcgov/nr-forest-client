@@ -1,7 +1,7 @@
 package ca.bc.gov.app.matchers;
 
-import ca.bc.gov.app.dto.MatcherResult;
-import ca.bc.gov.app.dto.SubmissionInformationDto;
+import ca.bc.gov.app.dto.submissions.MatcherResult;
+import ca.bc.gov.app.dto.submissions.SubmissionInformationDto;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

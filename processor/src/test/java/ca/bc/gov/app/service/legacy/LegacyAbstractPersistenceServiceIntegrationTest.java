@@ -4,7 +4,7 @@ package ca.bc.gov.app.service.legacy;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
 import ca.bc.gov.app.extensions.AbstractTestContainer;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;

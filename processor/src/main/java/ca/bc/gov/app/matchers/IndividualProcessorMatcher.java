@@ -1,9 +1,9 @@
 package ca.bc.gov.app.matchers;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.MatcherResult;
-import ca.bc.gov.app.dto.SubmissionInformationDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.submissions.MatcherResult;
+import ca.bc.gov.app.dto.submissions.SubmissionInformationDto;
 import ca.bc.gov.app.util.ProcessorUtil;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;

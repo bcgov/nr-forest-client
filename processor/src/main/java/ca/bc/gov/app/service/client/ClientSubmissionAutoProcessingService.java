@@ -3,9 +3,9 @@ package ca.bc.gov.app.service.client;
 import static java.util.function.Predicate.not;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.MatcherResult;
-import ca.bc.gov.app.dto.MessagingWrapper;
-import ca.bc.gov.app.dto.SubmissionProcessKindEnum;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
+import ca.bc.gov.app.dto.submissions.MatcherResult;
+import ca.bc.gov.app.dto.submissions.SubmissionProcessKindEnum;
 import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.entity.SubmissionTypeCodeEnum;

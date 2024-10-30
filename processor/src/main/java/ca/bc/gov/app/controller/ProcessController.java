@@ -1,6 +1,6 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
+import ca.bc.gov.app.dto.client.ValidationSourceEnum;
 import ca.bc.gov.app.service.processor.ProcessorService;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class ProcessController {
     log.info("Processing staff submission with id {}", id);
     return
         processorService
-            .processedMessage(id, SubmissionProcessTypeEnum.STAFF)
+            .processedMessage(id, ValidationSourceEnum.STAFF)
             .doOnNext(submission -> log.info("Submission {} was processed", submission))
             .then();
   }

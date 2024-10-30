@@ -8,9 +8,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.MessagingWrapper;
-import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
+import ca.bc.gov.app.dto.client.ValidationSourceEnum;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.processor.MessagingWrapper;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
@@ -189,7 +189,7 @@ class LegacyIndividualPersistenceServiceTest {
                 Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
             )
                 .withParameter(ApplicationConstant.SUBMISSION_STARTER,
-                    SubmissionProcessTypeEnum.STAFF)
+                    ValidationSourceEnum.STAFF)
                 .withParameter(ApplicationConstant.MATCHING_INFO,
                     Map.of(
                         "name", "John Wick",
@@ -244,6 +244,7 @@ class LegacyIndividualPersistenceServiceTest {
                 "IDIR\\JWICK",
                 ApplicationConstant.ORG_UNIT,
                 null,
+                StringUtils.EMPTY,
                 StringUtils.EMPTY
             )
         ),
@@ -254,7 +255,7 @@ class LegacyIndividualPersistenceServiceTest {
                 Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
             )
                 .withParameter(ApplicationConstant.SUBMISSION_STARTER,
-                    SubmissionProcessTypeEnum.EXTERNAL)
+                    ValidationSourceEnum.EXTERNAL)
                 .withParameter(ApplicationConstant.MATCHING_INFO,
                     Map.of(
                         "name", "John Wick",
@@ -309,6 +310,7 @@ class LegacyIndividualPersistenceServiceTest {
                 "idir\\ottomated",
                 ApplicationConstant.ORG_UNIT,
                 null,
+                StringUtils.EMPTY,
                 StringUtils.EMPTY
             )
         )
