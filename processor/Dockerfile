@@ -24,7 +24,7 @@ ARG GITHUB_TOKEN
 WORKDIR /app
 COPY pom.xml ./
 COPY src ./src
-COPY .github/settings.xml.template /root/.m2/settings.xml
+COPY ../.github/settings.xml.template /root/.m2/settings.xml
 RUN sed -i "s|\${GITHUB_USERNAME}|${GITHUB_USERNAME}|g" /root/.m2/settings.xml && \
     sed -i "s|\${GITHUB_TOKEN}|${GITHUB_TOKEN}|g" /root/.m2/settings.xml
 
