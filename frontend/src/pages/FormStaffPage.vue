@@ -554,7 +554,7 @@ watch(submissionLimitError, () => {
             {{ progressData[0].title}}
           </h2>
 
-          <dropdown-input-component
+          <combo-box-input-component
             id="clientType"
             label="Client type"
             :initial-value="clientType?.name || ''"

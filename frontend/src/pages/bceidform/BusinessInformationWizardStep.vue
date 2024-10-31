@@ -440,7 +440,7 @@ onMounted(() => {
       >check this map</a
     >.
   </p>
-  <dropdown-input-component
+  <combo-box-input-component
     id="district"
     label="District"
     :initial-value="districtInitialValue?.name"

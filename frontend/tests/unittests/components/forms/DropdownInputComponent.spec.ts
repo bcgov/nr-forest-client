@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import DropdownInputComponent from "@/components/forms/DropdownInputComponent.vue";
+import ComboBoxInputComponent from "@/components/forms/ComboBoxInputComponent.vue";
 
-describe("DropdownInputComponent", () => {
+describe("ComboBoxInputComponent", () => {
   const validations = [
     (value: any) => (value === "A" ? "A is not supported" : ""),
   ];
@@ -17,7 +17,7 @@ describe("DropdownInputComponent", () => {
   };
 
   it("should render", () => {
-    const wrapper = mount(DropdownInputComponent, {
+    const wrapper = mount(ComboBoxInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -43,7 +43,7 @@ describe("DropdownInputComponent", () => {
   });
 
   it("should emit event when changing selection", async () => {
-    const wrapper = mount(DropdownInputComponent, {
+    const wrapper = mount(ComboBoxInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -72,7 +72,7 @@ describe("DropdownInputComponent", () => {
   });
 
   it("should emit empty then emit not empty", async () => {
-    const wrapper = mount(DropdownInputComponent, {
+    const wrapper = mount(ComboBoxInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -98,7 +98,7 @@ describe("DropdownInputComponent", () => {
   });
 
   it("should validate and emit error if required", async () => {
-    const wrapper = mount(DropdownInputComponent, {
+    const wrapper = mount(ComboBoxInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -132,7 +132,7 @@ describe("DropdownInputComponent", () => {
   });
 
   it("should not emit error if the change on selected value was not made by the user", async () => {
-    const wrapper = mount(DropdownInputComponent, {
+    const wrapper = mount(ComboBoxInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -161,7 +161,7 @@ describe("DropdownInputComponent", () => {
   });
 
   it("should emit error with empty payload (meaning it is valid) even if the change on selected value was not made by the user", async () => {
-    const wrapper = mount(DropdownInputComponent, {
+    const wrapper = mount(ComboBoxInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -195,7 +195,7 @@ describe("DropdownInputComponent", () => {
   it.each([[""], [undefined], [null]])(
     "should clear the selected value when initialValue changes to a falsy value (%s)",
     async (value) => {
-      const wrapper = mount(DropdownInputComponent, {
+      const wrapper = mount(ComboBoxInputComponent, {
         props: {
           id: "test",
           label: "test",
@@ -216,7 +216,7 @@ describe("DropdownInputComponent", () => {
   );
 
   it("should validate and emit no error if required", async () => {
-    const wrapper = mount(DropdownInputComponent, {
+    const wrapper = mount(ComboBoxInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -248,7 +248,7 @@ describe("DropdownInputComponent", () => {
   });
 
   it("should reset selected to initial value when list change", async () => {
-    const wrapper = mount(DropdownInputComponent, {
+    const wrapper = mount(ComboBoxInputComponent, {
       props: {
         id: "test",
         label: "test",

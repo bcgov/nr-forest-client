@@ -39,7 +39,8 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 export const isNotEmpty =
   (message: string = "This field is required") =>
   (value: string): string => {
-    if (value && (typeof value === "string") && value.trim().length > 0) return "";
+    if (value && typeof value === "string" && value.trim().length > 0)
+      return "";
     return message;
   };
 
@@ -191,7 +192,7 @@ export const isExactSize =
   (message: string = "This field must have the defined size") =>
   (size: number) => {
     return (value: string): string => {
-      if (isNotEmpty(message)(value) === "" && value.length == size)
+      if (isNotEmpty(message)(value) === "" && value.length == size) 
         return "";
       return message;
     };
@@ -278,7 +279,10 @@ export const isNoSpecialCharacters =
   };
 
 export const isIdCharacters =
-  (field: string = "field", message: string = `The ${field} can only contain: A-Z or 0-9`) =>
+  (
+    field: string = "field",
+    message: string = `The ${field} can only contain: A-Z or 0-9`
+  ) =>
   (value: string): string => {
     if (idCharacters.test(value)) return "";
     return message;
@@ -287,7 +291,7 @@ export const isIdCharacters =
 export const hasOnlyNamingCharacters =
   (
     field: string = "field",
-    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space, apostrophe or hyphen`,
+    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space, apostrophe or hyphen`
   ) =>
   (value: string): string => {
     if (nameRegex.test(value)) return "";
@@ -297,7 +301,7 @@ export const hasOnlyNamingCharacters =
 export const isAscii =
   (
     field: string = "field",
-    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space or common symbols`,
+    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space or common symbols`
   ) =>
   (value: string): string => {
     if (ascii.test(value)) return "";
@@ -307,7 +311,7 @@ export const isAscii =
 export const isAsciiLineBreak =
   (
     field: string = "field",
-    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space, line break or common symbols`,
+    message: string = `The ${field} can only contain: A-Z, a-z, 0-9, space, line break or common symbols`
   ) =>
   (value: string): string => {
     if (asciiLineBreak.test(value)) return "";
@@ -433,7 +437,7 @@ export const isDateInThePast = (message: string) => (value: string) => {
 export const isRegex =
   (
     regex: RegExp,
-    message: string = `This field must conform to the following regular expression: ${regex}`,
+    message: string = `This field must conform to the following regular expression: ${regex}`
   ) =>
   (value: string): string => {
     if (regex.test(value)) return "";
@@ -447,7 +451,10 @@ export const isRegex =
  * @returns A function that accepts a validator and applies it to the portion of the string obtained by applying the selector.
  */
 export const validateSelection =
-  (selector: (value: string) => string, selectorErrorMessage = "Value could not be validated") =>
+  (
+    selector: (value: string) => string,
+    selectorErrorMessage = "Value could not be validated"
+  ) =>
   (validator: (value: string) => string) =>
   (value: string): string => {
     try {
@@ -466,17 +473,30 @@ export const validateSelection =
  */
 export const optional =
   (validator: (value: string) => string) =>
-  (value: string): string => {    
-    return value === "" || value === null || value === undefined ? "" : validator(value);
+  (value: string): string => {
+    return value === "" || value === null || value === undefined
+      ? ""
+      : validator(value);
   };
 
-export const isMinSizeMsg = (fieldName: string, minSize: number): ((value: string) => string) =>
-  isMinSize(`The ${fieldName} must contain at least ${minSize} characters`)(minSize);
+export const isMinSizeMsg = (
+  fieldName: string,
+  minSize: number
+): ((value: string) => string) =>
+  isMinSize(`The ${fieldName} must contain at least ${minSize} characters`)(
+    minSize
+  );
 
-export const isMaxSizeMsg = (fieldName: string, maxSize: number): ((value: string) => string) =>
+export const isMaxSizeMsg = (
+  fieldName: string,
+  maxSize: number
+): ((value: string) => string) =>
   isMaxSize(`The ${fieldName} has a ${maxSize} character limit`)(maxSize);
 
-export const isExactSizMsg = (fieldName: string, size: number): ((value: string) => string) =>
+export const isExactSizMsg = (
+  fieldName: string,
+  size: number
+): ((value: string) => string) =>
   isExactSize(`The ${fieldName} must contain ${size} characters`)(size);
 
 /**
@@ -515,31 +535,38 @@ export const getFieldValue = (path: string, value: any): string | string[] => {
   return temporaryValue;
 };
 
-
 /**
  * Parses the aggregator condition and returns an object containing the parsed values.
  * @param conditional - The aggregator condition to parse.
  * @returns An object with the parsed values: value1, operator, and value2.
  * @throws {Error} If the condition format is invalid.
  */
-const parseAggregatorCondition = (conditinal: string) : { value1: string, operator: string, value2: string } =>{
+const parseAggregatorCondition = (
+  conditinal: string
+): { value1: string; operator: string; value2: string } => {
+  if (conditinal.includes("&&") || conditinal.includes("||")) {
+    const regex = /(.+?)\s*(&&|\|\|)\s*(.+?)$/;
+    const match = conditinal.replace("(", "").replace(")", "").match(regex);
+    if (match) {
+      return {
+        value1: match[1],
+        operator: match[2],
+        value2: match[3],
+      };
+    } else {
+      throw new Error(
+        "Invalid condition format it should be just string or string && string or string || string -> " +
+          conditinal
+      );
+    }
+  }
 
-  if (conditinal.includes("&&") || conditinal.includes("||")) {        
-      const regex = /(.+?)\s*(&&|\|\|)\s*(.+?)$/;
-      const match = conditinal.replace("(","").replace(")","").match(regex);
-      if (match) {
-          return {
-              value1: match[1],
-              operator: match[2],
-              value2: match[3]
-          };
-      } else {
-          throw new Error("Invalid condition format it should be just string or string && string or string || string -> " + conditinal);
-      }
-  }        
-
-  return { value1: conditinal.replace("(","").replace(")",""), operator: "&&", value2: "true" };
-}
+  return {
+    value1: conditinal.replace("(", "").replace(")", ""),
+    operator: "&&",
+    value2: "true",
+  };
+};
 
 /**
  * Parses an equality condition and returns an object with the parsed values.
@@ -547,22 +574,26 @@ const parseAggregatorCondition = (conditinal: string) : { value1: string, operat
  * @returns An object with the parsed values: value1, operator, and value2.
  * @throws {Error} If the condition format is invalid.
  */
-const parseEqualityCondition = (condition: string): { value1: string, operator: string, value2: string } => {
-  if(condition.includes("===") || condition.includes("!==")) {
-      const regex = /(.+?)\s*(===|!==)\s*(?:"(.*?)"|\$(\..+?))$/;
-      const match = condition.match(regex);
-      if (match) {
-          return {
-              value1: match[1].replace("$.",""),
-              operator: match[2],
-              value2: match[3]
-          };
-      } else {
-          throw new Error("Invalid condition format, it should be just a string or string === string or string !== string");
-      }
+const parseEqualityCondition = (
+  condition: string
+): { value1: string; operator: string; value2: string } => {
+  if (condition.includes("===") || condition.includes("!==")) {
+    const regex = /(.+?)\s*(===|!==)\s*(?:"(.*?)"|\$(\..+?))$/;
+    const match = condition.match(regex);
+    if (match) {
+      return {
+        value1: match[1].replace("$.", ""),
+        operator: match[2],
+        value2: match[3],
+      };
+    } else {
+      throw new Error(
+        "Invalid condition format, it should be just a string or string === string or string !== string"
+      );
+    }
   }
   return { value1: condition, operator: "===", value2: "true" };
-}
+};
 
 /**
  * Evaluates a logical condition based on the provided values and operator.
@@ -572,19 +603,27 @@ const parseEqualityCondition = (condition: string): { value1: string, operator: 
  * @returns The result of the logical condition evaluation.
  * @throws {Error} If an invalid operator is provided.
  */
-const evaluateLogicalCondition = ({ value1, operator, value2 }: { value1: string, operator: string, value2: string }): boolean => {
-  const boolValue1 = value1 === 'true';
-  const boolValue2 = value2 === 'true';
+const evaluateLogicalCondition = ({
+  value1,
+  operator,
+  value2,
+}: {
+  value1: string;
+  operator: string;
+  value2: string;
+}): boolean => {
+  const boolValue1 = value1 === "true";
+  const boolValue2 = value2 === "true";
 
   switch (operator) {
-      case '&&':
-          return boolValue1 && boolValue2;
-      case '||':
-          return boolValue1 || boolValue2;
-      default:
-          throw new Error('Invalid operator');
+    case "&&":
+      return boolValue1 && boolValue2;
+    case "||":
+      return boolValue1 || boolValue2;
+    default:
+      throw new Error("Invalid operator");
   }
-}
+};
 
 /**
  * Evaluates an entry against an item based on the provided values and operator.
@@ -592,30 +631,37 @@ const evaluateLogicalCondition = ({ value1, operator, value2 }: { value1: string
  * @param entry - The entry containing the values and operator to evaluate.
  * @returns A boolean indicating whether the evaluation is true or false.
  */
-const evaluateEntry = (item: any, entry: { value1: string, operator: string, value2: string }): boolean => {
-
-  if(entry.value1 === 'true' && entry.value2 === 'true')
-  return true;
+const evaluateEntry = (
+  item: any,
+  entry: { value1: string; operator: string; value2: string }
+): boolean => {
+  if (entry.value1 === "true" && entry.value2 === "true") return true;
 
   const value1Result = getFieldValue(entry.value1, item);
 
-  const compareValues = (val1: any, val2: string, operator: string): boolean => {
-      switch (operator) {
-          case '===':
-              return val1 === val2;
-          case '!==':
-              return val1 !== val2;
-          default:
-              throw new Error(`Unsupported operator: ${operator}`);
-      }
+  const compareValues = (
+    val1: any,
+    val2: string,
+    operator: string
+  ): boolean => {
+    switch (operator) {
+      case "===":
+        return val1 === val2;
+      case "!==":
+        return val1 !== val2;
+      default:
+        throw new Error(`Unsupported operator: ${operator}`);
+    }
   };
 
   if (Array.isArray(value1Result)) {
-      return value1Result.some(individualValue => compareValues(individualValue, entry.value2, entry.operator));
+    return value1Result.some((individualValue) =>
+      compareValues(individualValue, entry.value2, entry.operator)
+    );
   } else {
-      return compareValues(value1Result, entry.value2, entry.operator);
+    return compareValues(value1Result, entry.value2, entry.operator);
   }
-}
+};
 
 /**
  * Evaluates a condition for a given item.
@@ -624,16 +670,25 @@ const evaluateEntry = (item: any, entry: { value1: string, operator: string, val
  * @returns A boolean indicating whether the condition is true or false.
  */
 const evaluateCondition = (item: any, condition: string): boolean => {
-
-  if (condition === 'true') {
-      return true;
+  if (condition === "true") {
+    return true;
   }
-  
+
   const conditionParsed = parseAggregatorCondition(condition);
-  const condition1 = evaluateEntry(item, parseEqualityCondition(conditionParsed.value1));
-  const condition2 = evaluateEntry(item, parseEqualityCondition(conditionParsed.value2));  
-  return evaluateLogicalCondition({ value1: `${condition1}`, operator: conditionParsed.operator, value2: `${condition2}`});
-}
+  const condition1 = evaluateEntry(
+    item,
+    parseEqualityCondition(conditionParsed.value1)
+  );
+  const condition2 = evaluateEntry(
+    item,
+    parseEqualityCondition(conditionParsed.value2)
+  );
+  return evaluateLogicalCondition({
+    value1: `${condition1}`,
+    operator: conditionParsed.operator,
+    value2: `${condition2}`,
+  });
+};
 
 // We declare here a collection of all validations for every field in the form
 export const formFieldValidations: Record<
@@ -655,7 +710,7 @@ export const validate = (
   keys: string[],
   target: any,
   notify: boolean = false,
-  getValidations = defaultGetValidations,
+  getValidations = defaultGetValidations
 ): boolean => {
   // For every received key we get the validations and run them
   return keys.every((key) => {
@@ -670,7 +725,7 @@ export const validate = (
     const fieldValue = getFieldValue(fieldKey, target);
     const fieldEvaluation = evaluateCondition(
       target,
-      fieldCondition.replace(targetGlobalRegex, ""),
+      fieldCondition.replace(targetGlobalRegex, "")
     );
 
     // We skip if we evaluate and the result is false
@@ -683,7 +738,7 @@ export const validate = (
       (
         validation: (value: string) => string,
         notify: boolean,
-        eventOptions: Omit<ValidationMessageType, "errorMsg">,
+        eventOptions: Omit<ValidationMessageType, "errorMsg">
       ) =>
       (value: string) => {
         const validationResponse = validation(value);
@@ -696,7 +751,10 @@ export const validate = (
     // For every validator we run it and check if the result is empty
     return validations
       .map((validation) =>
-        validateNotifyFactory(validation, notify, { fieldName: key, fieldId: fieldKey }),
+        validateNotifyFactory(validation, notify, {
+          fieldName: key,
+          fieldId: fieldKey,
+        })
       )
       .every((validateNotify: (value: string) => boolean) => {
         // If the field value is an array we run the validation for every item in the array
@@ -729,18 +787,21 @@ export const runValidation = (
   const [fieldKey, fieldCondition] = key.includes("(")
     ? key.replace(")", "").split("(")
     : [key, "true"];
-    
+
   // We then load the field value
   const fieldValue = getFieldValue(fieldKey, target);
-  const fieldEvaluation = evaluateCondition(target, fieldCondition.replace(targetGlobalRegex,""));
+  const fieldEvaluation = evaluateCondition(
+    target,
+    fieldCondition.replace(targetGlobalRegex, "")
+  );
 
   // We skip if we evaluate and the result is false
   // Meaning we should not validate this field using this set of validations
-  if(!fieldEvaluation){
+  if (!fieldEvaluation) {
     return true;
   }
 
-  const validateValue = () : string | (string | string[])[] => {
+  const validateValue = (): string | (string | string[])[] => {
     if (Array.isArray(fieldValue)) {
       return fieldValue.map((item: any) => {
         // And sometimes we can end up with another array inside, that's life
@@ -751,73 +812,92 @@ export const runValidation = (
         // If it is not an array here, just validate it
         return validation(item);
       });
-    }else{
+    } else {
       return validation(fieldValue);
     }
-  }
+  };
 
   const validationResponse = validateValue();
 
-  
   if (notify) {
     // Note: also notifies when valid - errorMsg will be empty.
-    const validationResponseMessages : string[] = [];    
-    (Array.isArray(validationResponse) ? validationResponse.flat() : [validationResponse])
-      .forEach((validationResponseMessage) => validationResponseMessages.push(validationResponseMessage))
+    const validationResponseMessages: string[] = [];
+    (Array.isArray(validationResponse)
+      ? validationResponse.flat()
+      : [validationResponse]
+    ).forEach((validationResponseMessage) =>
+      validationResponseMessages.push(validationResponseMessage)
+    );
 
-      getFirstErrorMessage(validationResponseMessages,exhaustive).forEach((validationResponseMessage) => {      
-      notificationBus.emit({ fieldName: key, fieldId: fieldKey, errorMsg: validationResponseMessage }, fieldValue);
-    })
-
-    
+    getFirstErrorMessage(validationResponseMessages, exhaustive).forEach(
+      (validationResponseMessage) => {
+        notificationBus.emit(
+          {
+            fieldName: key,
+            fieldId: fieldKey,
+            errorMsg: validationResponseMessage,
+          },
+          fieldValue
+        );
+      }
+    );
   }
 
   // If the validation response is not empty we return false
   return isValidResponse(validationResponse);
 };
 
-const isValidResponse = (validationResponse: string | (string | string[])[]): boolean => {
-  if (typeof validationResponse === 'string') {
-      // Case 1: If it's a string and empty, return true
-      return validationResponse.trim() === '';
+const isValidResponse = (
+  validationResponse: string | (string | string[])[]
+): boolean => {
+  if (typeof validationResponse === "string") {
+    // Case 1: If it's a string and empty, return true
+    return validationResponse.trim() === "";
   } else if (Array.isArray(validationResponse)) {
-      // Case 2: If it's an empty array, return true
-      if (validationResponse.length === 0) {
-          return true;
-      }
+    // Case 2: If it's an empty array, return true
+    if (validationResponse.length === 0) {
+      return true;
+    }
 
-      // Check if it's an array of empty arrays
-      if (validationResponse.every(val => Array.isArray(val) && val.length === 0)) {
-          return true;
-      }
+    // Check if it's an array of empty arrays
+    if (
+      validationResponse.every((val) => Array.isArray(val) && val.length === 0)
+    ) {
+      return true;
+    }
 
-      // Check if it's an array of empty strings
-      if (validationResponse.every(val => typeof val === 'string' && val.trim() === '')) {
-          return true;
-      }
+    // Check if it's an array of empty strings
+    if (
+      validationResponse.every(
+        (val) => typeof val === "string" && val.trim() === ""
+      )
+    ) {
+      return true;
+    }
 
-      // Otherwise, it's not one of the valid cases, so return false
-      return false;
+    // Otherwise, it's not one of the valid cases, so return false
+    return false;
   } else {
-      // If it's neither a string nor an array, it's an invalid response
-      return false;
+    // If it's neither a string nor an array, it's an invalid response
+    return false;
   }
-}
+};
 
-const getFirstErrorMessage = (errors: string[],includeAll: boolean): string[] => {
-
-  if(includeAll)
-  return errors;
+const getFirstErrorMessage = (
+  errors: string[],
+  includeAll: boolean
+): string[] => {
+  if (includeAll) return errors;
 
   const result: string[] = [];
   for (const error of errors) {
-      result.push(error);
-      if (error.trim() !== '') {
-          break;
-      }
+    result.push(error);
+    if (error.trim() !== "") {
+      break;
+    }
   }
   return result;
-}
+};
 
 export const isNullOrUndefinedOrBlank = (
   input: string | null | undefined
