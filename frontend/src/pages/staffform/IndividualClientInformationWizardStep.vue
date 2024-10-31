@@ -354,7 +354,7 @@ watch(combinedValue, (newValue) => {
     </div>
 
     <div class="horizontal-input-grouping">
-      <dropdown-input-component
+      <combo-box-input-component
         id="identificationType"
         label="ID type"
         :initial-value="formData.businessInformation.identificationType?.text"
@@ -371,7 +371,7 @@ watch(combinedValue, (newValue) => {
         @empty="validation.identificationType = !$event"
       />
 
-      <dropdown-input-component
+      <combo-box-input-component
         v-if="shouldDisplayProvince"
         id="identificationProvince"
         :label="identificationProvinceLabel"

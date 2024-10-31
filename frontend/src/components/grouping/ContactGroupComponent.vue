@@ -232,7 +232,7 @@ const contactName = (contact: Contact, contactId: number) => {
       @error="validation.phoneNumber = !$event"
     />
 
-    <dropdown-input-component
+    <combo-box-input-component
       :id="'role_' + id"
       label="Primary role"
       tip="Choose the primary role for this contact"

@@ -378,7 +378,7 @@ const getLocationDescription = (address: Address, index: number): string =>
       :params="{ method: 'GET' }"
       #="{ content }"
     >
-      <dropdown-input-component
+      <combo-box-input-component
         :id="'province_' + id"
         :label="provinceNaming"
         autocomplete="off"
@@ -397,7 +397,7 @@ const getLocationDescription = (address: Address, index: number): string =>
       />
     </data-fetcher>
 
-    <dropdown-input-component
+    <combo-box-input-component
       :id="'country_' + id"
       label="Country"
       autocomplete="off"

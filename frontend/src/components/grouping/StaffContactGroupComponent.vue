@@ -234,7 +234,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
       />
     </div>
 
-    <dropdown-input-component
+    <combo-box-input-component
       :id="'role_' + id"
       label="Contact type"
       tip=""
