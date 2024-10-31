@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AddressGroupComponent: typeof import('./src/components/grouping/AddressGroupComponent.vue')['default']
     AutoCompleteInputComponent: typeof import('./src/components/forms/AutoCompleteInputComponent.vue')['default']
+    ComboBoxInputComponent: typeof import('./src/components/forms/ComboBoxInputComponent.vue')['default']
     ContactGroupComponent: typeof import('./src/components/grouping/ContactGroupComponent.vue')['default']
     DataFetcher: typeof import('./src/components/DataFetcher.vue')['default']
     DateInputComponent: typeof import('./src/components/forms/DateInputComponent/index.vue')['default']
