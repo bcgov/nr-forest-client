@@ -129,16 +129,16 @@ const summitSvg = useSvg(summit);
     </div>
     
     <div id="datatable" v-if="userhasAuthority">
-      <cds-table use-zebra-styles v-if="!loading">
+      <cds-table id="submissions-table" use-zebra-styles v-if="!loading">
         <cds-table-head>
           <cds-table-header-row>
-            <cds-table-header-cell />
+            <cds-table-header-cell class="padding-column" />
             <cds-table-header-cell>Client name</cds-table-header-cell>
             <cds-table-header-cell>Client type</cds-table-header-cell>
             <cds-table-header-cell>District</cds-table-header-cell>
             <cds-table-header-cell>Submitted on</cds-table-header-cell>
             <cds-table-header-cell>Submission status</cds-table-header-cell>
-            <cds-table-header-cell />
+            <cds-table-header-cell class="padding-column" />
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
