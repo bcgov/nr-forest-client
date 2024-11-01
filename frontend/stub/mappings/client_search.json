@@ -49,7 +49,7 @@
         "method": "GET",
         "queryParameters": {
           "keyword": {
-            "matches": "empty"
+            "matches": ".*empty.*"
           }
         }
       },
@@ -96,7 +96,7 @@
         "method": "GET",
         "queryParameters": {
           "keyword": {
-            "matches": "empty"
+            "matches": ".*empty.*"
           },
           "page": {
             "matches": "^[0-5]$"
