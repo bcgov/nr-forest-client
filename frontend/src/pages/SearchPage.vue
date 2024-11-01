@@ -43,7 +43,9 @@ const pageNumber = ref(1);
 const totalItems = ref(0);
 const pageSize = ref(10);
 
-const searchKeyword = ref("");
+const rawSearchKeyword = ref("");
+
+const searchKeyword = computed(() => rawSearchKeyword.value.trim().replaceAll(/ +/g, " "));
 const lastSearchKeyword = ref("");
 
 // empty is valid
@@ -219,7 +221,7 @@ onMounted(() => {
           tip=""
           placeholder="Search by client number, name or acronym"
           size="lg"
-          v-model="searchKeyword"
+          v-model="rawSearchKeyword"
           :contents="searchResultToCodeNameValueList(content)"
           :validations="validations"
           :validations-on-change="validationsOnChange"
