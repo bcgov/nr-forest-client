@@ -149,7 +149,7 @@ objects:
                 - name: ORACLEDB_PORT
                   value: ${ORACLEDB_PORT}
                 - name: SPRING_PROFILES_ACTIVE
-                  value: "container,${ENVIRONMENT}"
+                  value: "container,${ZONE}"
                 - name: ORACLEDB_SECRET
                   valueFrom:
                     secretKeyRef:
