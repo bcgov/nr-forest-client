@@ -43,7 +43,9 @@ const pageNumber = ref(1);
 const totalItems = ref(0);
 const pageSize = ref(10);
 
-const searchKeyword = ref("");
+const rawSearchKeyword = ref("");
+
+const searchKeyword = computed(() => rawSearchKeyword.value.trim().replaceAll(/ +/g, " "));
 const lastSearchKeyword = ref("");
 
 // empty is valid
@@ -219,7 +221,7 @@ onMounted(() => {
           tip=""
           placeholder="Search by client number, name or acronym"
           size="lg"
-          v-model="searchKeyword"
+          v-model="rawSearchKeyword"
           :contents="searchResultToCodeNameValueList(content)"
           :validations="validations"
           :validations-on-change="validationsOnChange"
@@ -246,17 +248,16 @@ onMounted(() => {
     </div>
     <div id="datatable" v-if="userhasAuthority">
 
-      <cds-table use-zebra-styles v-if="!loadingSearch">
+      <cds-table id="search-table" use-zebra-styles v-if="!loadingSearch">
         <cds-table-head>
           <cds-table-header-row>
-            <cds-table-header-cell />
+            <cds-table-header-cell class="padding-column" />
             <cds-table-header-cell class="col-6_75rem">Client number</cds-table-header-cell>
             <cds-table-header-cell class="col-6_75rem">Acronym</cds-table-header-cell>
             <cds-table-header-cell class="col-19_4375rem">Name</cds-table-header-cell>
             <cds-table-header-cell class="col-14_75rem">Type</cds-table-header-cell>
             <cds-table-header-cell class="col-14_75rem">City</cds-table-header-cell>
             <cds-table-header-cell class="col-7_0625rem">Status</cds-table-header-cell>
-            <cds-table-header-cell />
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
@@ -276,7 +277,6 @@ onMounted(() => {
                 <cds-tag :type="tagColor(row.clientStatus)" title=""><span>{{ row.clientStatus }}</span></cds-tag>
               </div>
             </cds-table-cell>
-            <cds-table-cell />
           </cds-table-row>
         </cds-table-body>
       </cds-table>

@@ -320,7 +320,7 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
       :params="{ method: 'GET' }"
       #="{ content }"
     >
-      <dropdown-input-component
+      <combo-box-input-component
         :id="'province_' + id"
         :label="provinceNaming"
         :autocomplete="section(id, 'address-level1')"
@@ -337,7 +337,7 @@ const section = (index: number, purpose: string) => `section-address-${index} ${
       />
     </data-fetcher>
 
-    <dropdown-input-component
+    <combo-box-input-component
       :id="'country_' + id"
       label="Country"
       :autocomplete="section(id, 'country-name')"

@@ -101,11 +101,14 @@ class ForestClientUserSession implements SessionProperties {
         }
       }
 
-      // get the token expiration time, minus 10% to refresh the token before it expires      
-      const timeDifference = ((idToken.payload.exp * 1000) - Date.now()) * 0.9;
+      // get the token expiration time, minus 10% to refresh the token before it expires
+      const timeDifference = (idToken.payload.exp * 1000 - Date.now()) * 0.9;
       // if the refresh interval is not set, set it
-      if (!this.sessionRefreshIntervalId){
-        this.sessionRefreshIntervalId = setInterval(() => this.loadUser(), timeDifference);
+      if (!this.sessionRefreshIntervalId) {
+        this.sessionRefreshIntervalId = setInterval(
+          () => this.loadUser(),
+          timeDifference
+        );
       }
     } else {
       this.user = undefined;
@@ -125,7 +128,7 @@ class ForestClientUserSession implements SessionProperties {
       additionalInfo.lastName = payload.family_name;
     }
 
-    if(payload["custom:idp_business_name"]){
+    if (payload["custom:idp_business_name"]) {
       additionalInfo.businessName = payload["custom:idp_business_name"];
     }
 
@@ -134,12 +137,18 @@ class ForestClientUserSession implements SessionProperties {
       (additionalInfo.firstName === "" && additionalInfo.lastName === "")
     ) {
       const name = payload["custom:idp_display_name"];
-      const nameParts: string[] = name.includes(",") ? name.split(",") : name.split(" ");
+      const nameParts: string[] = name.includes(",")
+        ? name.split(",")
+        : name.split(" ");
 
       if (provider === "idir" && nameParts.length >= 2) {
         // For IDIR, split by comma and then by space for the first name as the value will be Lastname, Firsname MIN:XX
         additionalInfo.lastName = nameParts[0].trim();
-        additionalInfo.firstName = nameParts[1].trim().split(" ").slice(0, -1).join(" ")
+        additionalInfo.firstName = nameParts[1]
+          .trim()
+          .split(" ")
+          .slice(0, -1)
+          .join(" ");
       } else if (nameParts.length >= 2) {
         // For others, assume space separates the first and last names
         additionalInfo.firstName = nameParts[0].trim();

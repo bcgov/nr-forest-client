@@ -343,6 +343,31 @@ describe("Search Page", () => {
     });
   });
 
+  describe("when user fills in the search box with extra spaces", () => {
+    beforeEach(() => {
+      cy.fillFormEntry("#search-box", " hello     world  ", { skipBlur: true });
+    });
+
+    it("trims the entered string before making the API call", () => {
+      cy.wait("@predictiveSearch").then((interception) => {
+        expect(interception.request.query.keyword).to.eq("hello world");
+      });
+    });
+
+    describe("and clicks the Search button", () => {
+      beforeEach(() => {
+        cy.wait("@predictiveSearch");
+        cy.get("#search-button").click();
+      });
+      it("trims the entered string before making the API call", () => {
+        cy.wait("@fullSearch").then((interception) => {
+          const { query } = interception.request;
+          expect(query.keyword).to.eq("hello world");
+        });
+      });
+    });
+  });
+
   describe("Search with no keywords", () => {
     beforeEach(() => {
       cy.get("#search-button").click();
