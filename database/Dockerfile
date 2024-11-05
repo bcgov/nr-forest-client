@@ -14,6 +14,9 @@ LABEL org.opencontainers.image.vendor="Government of British Columbia"
 LABEL org.opencontainers.image.description="Postgres Database with pgcrypto extension enabled"
 LABEL org.opencontainers.image.base.name="postgres:13"
 
+# Enable the pgcrypto extension
+RUN echo "CREATE EXTENSION IF NOT EXISTS pgcrypto;" >> /docker-entrypoint-initdb.d/init.sql
+
 HEALTHCHECK --interval=35s --timeout=4s CMD pg_isready -d db_prod
 
 # Non-privileged user
