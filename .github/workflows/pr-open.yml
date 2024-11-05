@@ -296,6 +296,7 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }}
             -p TAG=${{ github.event.number }}
+            -p ENVIRONMENT=dev
 
       - name: Deploy Processor
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
