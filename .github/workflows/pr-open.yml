@@ -64,8 +64,8 @@ jobs:
           build_args: |
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
 
-  deploy:
-    name: Deploy Application
+  pre-tools:
+    name: Pre Deploy Tools
     needs: [builds, vars]
     environment: dev
     runs-on: ubuntu-24.04
