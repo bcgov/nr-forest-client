@@ -120,10 +120,12 @@ jobs:
             -p ORACLEDB_USER_W=THE
             -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p TAG=latest
+
       - name: Install CLI tools from OpenShift Mirror
         uses: redhat-actions/openshift-tools-installer@v1
         with:        
           oc: "4.13"
+
       - name: Remove the PR database
         continue-on-error: true
         run: |
