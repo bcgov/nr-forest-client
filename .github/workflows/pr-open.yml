@@ -97,7 +97,7 @@ jobs:
 
   deploy-tools:
     name: Deploy Tools
-    needs: [pre-tools, build-legacydb, vars]
+    needs: [pre-tools, vars]
     environment: tools
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
