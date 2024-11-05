@@ -62,6 +62,7 @@ jobs:
           triggers: ('${{ matrix.package }}/')
           build_args: |
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
+            BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
   build-legacydb:
     name: Builds (legacydb)
