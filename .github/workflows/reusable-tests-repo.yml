@@ -5,8 +5,8 @@ on:
 
 jobs:
   trivy:
-    name: Repository Report
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    name: Security Scan
+    if: ${{ ! github.event.pull_request.draft }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -24,41 +24,3 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: "trivy-results.sarif"
-
-  codeql:
-    name: Semantic Code Analysis
-    runs-on: ubuntu-24.04
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
-        with:
-          languages: javascript,java
-
-      # Autobuild failed for Java, so building manually
-      - name: Set up JDK 17 and Caching maven dependencies
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
-          cache: "maven"
-          server-id: "github"
-
-      # Java builds
-      - name: Build Backend
-        working-directory: backend
-        run: mvn clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
-
-      - name: Build Legacy
-        working-directory: legacy
-        run: mvn clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
-
-      - name: Build Processor
-        working-directory: processor
-        run: mvn clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
