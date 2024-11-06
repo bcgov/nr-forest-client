@@ -124,7 +124,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
+            -p TAG=${{ env.ZONE }}
 
       - name: Backup database before update
         continue-on-error: true
@@ -145,7 +145,7 @@ jobs:
           overwrite: false
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/database:${{ env.ZONE }}
+            -p TAG=${{ env.ZONE }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -335,7 +335,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
+            -p TAG=${{ env.PREV }}
             
       - name: Install CLI tools from OpenShift Mirror
         uses: redhat-actions/openshift-tools-installer@v1
@@ -362,7 +362,7 @@ jobs:
           overwrite: false
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/database:${{ env.PREV }}
+            -p TAG=${{ env.PREV }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
