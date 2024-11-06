@@ -87,9 +87,6 @@ parameters:
     description: Random number, 0-60, for scheduling cronjobs
     from: "[0-5]{1}[0-9]{1}"
     generate: expression 
-  - name: PROMOTE
-    description: Image (namespace/name:tag) to promote/import
-    required: true
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
@@ -137,7 +134,7 @@ objects:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
           containers:
             - name: ${NAME}
-              image: ${REGISTRY}/${PROMOTE}
+              image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
               ports:
                 - containerPort: 5432
                   protocol: TCP

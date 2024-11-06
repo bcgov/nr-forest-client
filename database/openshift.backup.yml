@@ -54,9 +54,6 @@ parameters:
   - name: PVC_SIZE
     description: Volume space available for data, e.g. 512Mi, 2Gi.
     value: 256Mi
-  - name: PROMOTE
-    description: Image (namespace/name:tag) to promote/import
-    required: true
 objects: 
   - kind: PersistentVolumeClaim
     apiVersion: v1
@@ -98,7 +95,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${COMPONENT}
-                  image: ${REGISTRY}/${PROMOTE}
+                  image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
