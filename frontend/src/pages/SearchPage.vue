@@ -45,7 +45,7 @@ const pageSize = ref(10);
 
 const rawSearchKeyword = ref("");
 
-const searchKeyword = computed(() => rawSearchKeyword.value.trim().replaceAll(/ +/g, " "));
+const searchKeyword = computed(() => rawSearchKeyword.value.trim());
 const lastSearchKeyword = ref("");
 
 // empty is valid
