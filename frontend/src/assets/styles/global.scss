@@ -1459,6 +1459,8 @@ cds-accordion-item[open]:not([disabled])::part(content),
 }
 
 cds-table {
+  width: 100%;
+  min-width: 63rem;
   table-layout: fixed;
   border-collapse: separate;
 }
@@ -1494,9 +1496,6 @@ cds-table-header-cell {
 }
 
 #search-table {
-  width: 100%;
-  min-width: 63rem;
-
   /*
   Sizes come from designed widths in rem minus their padding, where screen width is 1584px and
   table width is 1328px.
@@ -1924,9 +1923,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   .submission-details--title svg {
     width: 5rem;
   }
-  cds-table {
-    width: 82rem;
-  }
 
   .card {
     padding: 1.5rem;
@@ -2032,9 +2028,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   .paginator {
     width: 100%;
   }
-  cds-table {
-    width: 82rem;
-  }
 }
 
 /* Large (from 1056px to 1311px) */
@@ -2104,10 +2097,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
       100vw -
         (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
     );
-  }
-
-  cds-table {
-    min-width: 66rem;
   }
 
   div.content:has(div.staff svg.submission-badge) {
