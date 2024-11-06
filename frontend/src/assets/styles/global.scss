@@ -103,6 +103,9 @@
   //Layout
   --header-height: 3.5rem;
 
+  //Data-table
+  --col-padding-rem: 1.5;
+
   /*
   The expected width of the scroll bar.
   While this might not match the real value, it should help to make a rough adjustment, at least.
@@ -1490,25 +1493,66 @@ cds-table-header-cell {
   background: var(--light-theme-layer-accent-layer-accent-01, #dfdfe1);
 }
 
-.col-6_75rem {
-  width: 6.75rem;
+#search-table {
+  width: 100%;
+  min-width: 63rem;
+
+  /*
+  Sizes come from designed widths in rem minus their padding, where screen width is 1584px and
+  table width is 1328px.
+  */
+  --col-6_75-rem: 6.75;
+  --col-19_4375-rem: 19.4375;
+  --col-14_75-rem: 14.75;
+  --col-7_0625-rem: 7.0625;
+
+  --padding-fixed-rem: 1;
+
+  --total: calc(
+    var(--col-padding-rem)
+    + var(--col-6_75-rem) + 2 * var(--padding-fixed-rem)
+    + var(--col-6_75-rem) + 2 * var(--padding-fixed-rem)
+    + var(--col-19_4375-rem) + 2 * var(--padding-fixed-rem)
+    + var(--col-14_75-rem) + 2 * var(--padding-fixed-rem)
+    + var(--col-14_75-rem) + 2 * var(--padding-fixed-rem)
+    + var(--col-7_0625-rem) + 2 * var(--padding-fixed-rem)
+  );
+
+  --col-status-rem: 5.75;
+
+  /*
+  Border-box allows to keep calculations simple, regardless of the padding, while keeping the
+  padding width always the same.
+  */
+  cds-table-header-cell {
+    box-sizing: border-box;
+  }
+
+  /*
+  Each column width below is a percentage proportional to the corresponding designed value, so it
+  can adjust responsively.
+  */
+
+  .col-6_75 {
+    width: calc( 100% * (var(--col-6_75-rem) + 2 * var(--padding-fixed-rem)) / var(--total));
+  }
+  
+  .col-19_4375 {
+    width: calc( 100% * (var(--col-19_4375-rem) + 2 * var(--padding-fixed-rem)) / var(--total));
+  }
+  
+  .col-14_75 {
+    width: calc( 100% * (var(--col-14_75-rem) + 2 * var(--padding-fixed-rem)) / var(--total));
+  }
+  
+  .col-7_0625 {
+    width: calc( 100% * (var(--col-7_0625-rem) + 2 * var(--padding-fixed-rem)) / var(--total));
+  }
 }
 
-.col-19_4375rem {
-  width: 19.4375rem;
-}
-
-.col-14_75rem {
-  width: 14.75rem;
-}
-
-.col-7_0625rem {
-  width: 7.0625rem;
-}
-
-.padding-column {
+.col-padding {
   padding: 0;
-  width: 1.5rem;
+  width: calc(var(--col-padding-rem) * 1rem);
 }
 
 cds-pagination {
@@ -1520,6 +1564,7 @@ cds-pagination {
 
 cds-tag {
   margin: 0;
+  word-break: normal;
 }
 
 cds-header-panel[expanded] {
