@@ -251,13 +251,13 @@ onMounted(() => {
       <cds-table id="search-table" use-zebra-styles v-if="!loadingSearch">
         <cds-table-head>
           <cds-table-header-row>
-            <cds-table-header-cell class="padding-column" />
-            <cds-table-header-cell class="col-6_75rem">Client number</cds-table-header-cell>
-            <cds-table-header-cell class="col-6_75rem">Acronym</cds-table-header-cell>
-            <cds-table-header-cell class="col-19_4375rem">Name</cds-table-header-cell>
-            <cds-table-header-cell class="col-14_75rem">Type</cds-table-header-cell>
-            <cds-table-header-cell class="col-14_75rem">City</cds-table-header-cell>
-            <cds-table-header-cell class="col-7_0625rem">Status</cds-table-header-cell>
+            <cds-table-header-cell class="col-padding" />
+            <cds-table-header-cell class="col-6_75">Client number</cds-table-header-cell>
+            <cds-table-header-cell class="col-6_75">Acronym</cds-table-header-cell>
+            <cds-table-header-cell class="col-19_4375">Name</cds-table-header-cell>
+            <cds-table-header-cell class="col-14_75">Type</cds-table-header-cell>
+            <cds-table-header-cell class="col-14_75">City</cds-table-header-cell>
+            <cds-table-header-cell class="col-7_0625">Status</cds-table-header-cell>
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
