@@ -13,9 +13,15 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-  - name: IMAGE_TAG
-    description: Image tag to use
-    value: latest
+  - name: TAG
+    description: Image tag; e.g. PR number, latest or prod
+    required: true
+  - name: REGISTRY
+    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
+    value: ghcr.io
+  - name: ORG
+    description: Organization name
+    value: bcgov
   - name: RESTORE_DIR
     description: Folder that contains initialization scripts
     value: /tmp/restore
@@ -47,7 +53,7 @@ parameters:
     value: "0"
   - name: PVC_SIZE
     description: Volume space available for data, e.g. 512Mi, 2Gi.
-    value: 256Mi  
+    value: 256Mi
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     required: true
@@ -187,7 +193,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-restore
-                  image: ${REGISTRY}/${PROMOTE}
+                  image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
