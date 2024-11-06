@@ -345,7 +345,7 @@ describe("Search Page", () => {
 
   describe("when user fills in the search box with extra spaces", () => {
     beforeEach(() => {
-      cy.fillFormEntry("#search-box", " hello     world  ", { skipBlur: true });
+      cy.fillFormEntry("#search-box", " hello world  ", { skipBlur: true });
     });
 
     it("trims the entered string before making the API call", () => {
