@@ -252,8 +252,7 @@ const handleLogoutClick = (event) => {
       <cds-side-nav-link 
         :active="$route.name == 'search'" 
         href="/search" 
-        large  
-        v-if="featureFlags.STAFF_SEARCH"
+        large 
         id="menu-list-search">
         <span>Client search</span>
         <Search16 slot="title-icon" />
