@@ -66,26 +66,36 @@ export const useFetchTo = (
     },
   };
 
-  const fetch = async () => {
+  const fetch = () => {
     loading.value = true;
     const actualURL = typeof url === "string" ? url : url.value;
-    try {
-      const result = await axios.request({
+    const controller = new AbortController();
+    const asyncResponse = axios
+      .request({
         ...parameters,
         url: actualURL,
         baseURL: backendUrl,
+        signal: controller.signal,
+      })
+      .then((result) => {
+        response.value = result;
+        data.value = result.data;
+      })
+      .catch((ex) => {
+        error.value = ex;
+        if (config.skipDefaultErrorHandling) {
+          return;
+        }
+        apiDataHandler.handleErrorDefault();
+      })
+      .finally(() => {
+        loading.value = false;
       });
-      response.value = result;
-      data.value = result.data;
-    } catch (ex) {
-      error.value = ex;
-      if (config.skipDefaultErrorHandling) {
-        return;
-      }
-      apiDataHandler.handleErrorDefault();
-    } finally {
-      loading.value = false;
-    }
+
+    return {
+      asyncResponse,
+      controller,
+    };
   };
 
   !config.skip && fetch();
