@@ -58,7 +58,7 @@ jobs:
         with:
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
-          tag_fallback: test
+          tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
           build_args: |
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
@@ -77,7 +77,7 @@ jobs:
         with:
           package: legacydb
           tag: latest
-          tag_fallback: test
+          tag_fallback: latest
           triggers: ('legacydb/')
           build_args: |
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
