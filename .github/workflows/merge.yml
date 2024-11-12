@@ -201,7 +201,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ env.ZONE }}
+            -p TAG=${{ env.ZONE }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
@@ -448,7 +448,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/frontend:${{ env.PREV }}
+            -p TAG=${{ env.PREV }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
             -p URL=${{ env.URL }}

@@ -58,7 +58,7 @@ jobs:
         with:
           package: ${{ matrix.package }}
           tag: ${{ github.event.number }}
-          tag_fallback: test
+          tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
           build_args: |
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
@@ -77,7 +77,7 @@ jobs:
         with:
           package: legacydb
           tag: latest
-          tag_fallback: test
+          tag_fallback: latest
           triggers: ('legacydb/')
           build_args: |
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
@@ -352,7 +352,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ github.event.number }}
-            -p PROMOTE=${{ github.repository }}/backend:${{ github.event.number }}
+            -p TAG=${{ github.event.number }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
@@ -393,7 +393,7 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ github.event.number }}
-            -p PROMOTE=${{ github.repository }}/frontend:${{ github.event.number }}
+            -p TAG=${{ github.event.number }}
             -p VITE_NODE_ENV=openshift-dev
             -p URL=${{ needs.vars.outputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
