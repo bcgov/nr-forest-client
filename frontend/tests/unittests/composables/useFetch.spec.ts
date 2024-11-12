@@ -333,7 +333,7 @@ describe('useFetch', () => {
     axiosMock = vi.spyOn(axios, "request").mockImplementation(
       ({ signal }) =>
         new Promise((_resolve, reject) => {
-          // Reject as soon as an abort event is captured
+          // Reject when an abort event is captured
           signal.addEventListener("abort", () => {
             reject(new Error(abortErrorMessage));
           });
