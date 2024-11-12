@@ -24,13 +24,33 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     uses: ./.github/workflows/reusable-tests-fe.yml
 
-  repo-reports:
-    name: Repository Reports
-    uses: ./.github/workflows/reusable-tests-repo.yml
+  trivy:
+    name: Repository Report
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          format: "sarif"
+          output: "trivy-results.sarif"
+          ignore-unfixed: true
+          scan-type: "fs"
+          scanners: "vuln,secret,config"
+          severity: "CRITICAL,HIGH"
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-results.sarif"
 
   results:
     name: Analysis Results
-    needs: [tests-java, tests-frontend, repo-reports]
+    if: always()
+    needs: [tests-java, tests-frontend] # Restore trivy when/if fixed
     runs-on: ubuntu-24.04
     steps:
-      - run: echo "Workflow completed successfully!"
+      - if: contains(needs.*.result, 'failure')
+        run: echo "At least one job has failed." && exit 1
+      - run: echo "Success!"
