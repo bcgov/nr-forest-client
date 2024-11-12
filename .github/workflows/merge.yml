@@ -159,7 +159,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/legacy:${{ env.ZONE }}
+            -p TAG=${{ env.ZONE }}
             -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
 
       - name: Deploy Processor
@@ -376,7 +376,7 @@ jobs:
           verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p PROMOTE=${{ github.repository }}/legacy:${{ env.PREV }}
+            -p TAG=${{ env.PREV }}
             -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
             
       - name: Deploy Processor
