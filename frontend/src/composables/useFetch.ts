@@ -80,9 +80,6 @@ export const useFetchTo = (
       .then((result) => {
         response.value = result;
         data.value = result.data;
-
-        // Reset error
-        error.value = {};
       })
       .catch((ex) => {
         error.value = ex;
@@ -90,9 +87,6 @@ export const useFetchTo = (
           return;
         }
         apiDataHandler.handleErrorDefault();
-
-        // Reset response
-        response.value = {};
       })
       .finally(() => {
         loading.value = false;
