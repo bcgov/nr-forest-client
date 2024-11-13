@@ -64,29 +64,6 @@ jobs:
             -p COGNITO_ENVIRONMENT=TEST
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
-      - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@v5
-        id: changelog
-        continue-on-error: true
-        with:
-          github-token: ${{ github.token }}
-          output-file: "CHANGELOG.md"
-          skip-version-file: "true"
-          skip-commit: "true"
-          git-push: "true"
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        if: ${{ steps.changelog.outputs.tag != '' }}
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          token: ${{ github.token }}
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          name: ${{ steps.changelog.outputs.tag }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
-
   test-deploy:
     name: TEST Deployment
     needs: [test-init, vars]
@@ -239,10 +216,6 @@ jobs:
             -p COGNITO_ENVIRONMENT=TEST
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
             -p FRONTEND_URL=${{ env.URL }}
-
-  documentation:
-    name: Generating Documentation
-    uses: ./.github/workflows/reusable-doc-gen.yml
 
   prod-init:
     name: PROD Init
@@ -445,3 +418,38 @@ jobs:
           repository: ${{ github.repository }}/${{ matrix.component }}
           target: test
           tags: prod
+
+  documentation:
+    name: Generating Documentation
+    needs: [prod-deploy]
+    uses: ./.github/workflows/reusable-doc-gen.yml
+
+  release:
+    name: Release
+    needs: [prod-deploy]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conventional Changelog Update
+        uses: TriPSs/conventional-changelog-action@v5
+        id: changelog
+        continue-on-error: true
+        with:
+          github-token: ${{ github.token }}
+          output-file: "CHANGELOG.md"
+          skip-version-file: "true"
+          skip-commit: "true"
+          git-push: "true"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: ${{ steps.changelog.outputs.tag != '' }}
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          token: ${{ github.token }}
+          tag_name: ${{ steps.changelog.outputs.tag }}
+          name: ${{ steps.changelog.outputs.tag }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
