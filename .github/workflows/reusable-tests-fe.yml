@@ -29,6 +29,7 @@ jobs:
           commands: |
             npm ci
             npm run coverage
+            ls -laR coverage
           dir: frontend
           sonar_args: >
             -Dsonar.exclusions=**/coverage/**,**/tests/**,**/stub/**,**/reports/**,**/cypress/**,,**/assets/**,,**/dto/**,**/CoreConstants.ts,**/src/CoreConstants.ts,**/main.ts,**/routes.ts,**/sims-vue.d.ts,**/styles.ts,**/components.d.ts
@@ -36,7 +37,7 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
           sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
-          triggers: ('frontend/')
+          # triggers: ('frontend/')
 
       - uses: actions/upload-artifact@v4
         name: Upload Cypress Screenshots with error
