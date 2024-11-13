@@ -25,24 +25,8 @@ jobs:
         id: pr
         uses: bcgov-nr/action-get-pr@v0.0.1
 
-  images-test:
-    name: Promote images to TEST
-    needs: [vars]
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        component: [backend, database, frontend, legacy, processor]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: ${{ needs.vars.outputs.pr}}
-          tags: test
-
   test-init:
     name: TEST Init
-    needs: [images-test]
     env:
       ZONE: test
       URL: forestclient-tst.nrs.gov.bc.ca
@@ -60,7 +44,7 @@ jobs:
           oc_version: "4.13"
           overwrite: true
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p ZONE=${{ env.ZONE }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
@@ -79,33 +63,11 @@ jobs:
             -p COGNITO_ENVIRONMENT=TEST
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
-      - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@v5
-        id: changelog
-        continue-on-error: true
-        with:
-          github-token: ${{ github.token }}
-          output-file: "CHANGELOG.md"
-          skip-version-file: "true"
-          skip-commit: "true"
-          git-push: "true"
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        if: ${{ steps.changelog.outputs.tag != '' }}
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          token: ${{ github.token }}
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          name: ${{ steps.changelog.outputs.tag }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
-
   test-deploy:
     name: TEST Deployment
-    needs: [test-init]
+    needs: [test-init, vars]
     env:
+      TAG: ${{ needs.vars.outputs.pr }}
       URL: forestclient-tst.nrs.gov.bc.ca
       ZONE: test
     environment: test
@@ -123,8 +85,8 @@ jobs:
           oc_version: "4.13"
           overwrite: true
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
 
       - name: Backup database before update
         continue-on-error: true
@@ -144,8 +106,8 @@ jobs:
           oc_version: "4.13"
           overwrite: false
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -158,8 +120,8 @@ jobs:
           overwrite: true
           verification_path: health
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
             -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
 
       - name: Deploy Processor
@@ -173,8 +135,8 @@ jobs:
           overwrite: true
           verification_path: health
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
       - name: Deploy Backend ConfigMap
@@ -200,8 +162,8 @@ jobs:
           overwrite: true
           verification_path: health
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
@@ -217,7 +179,7 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           oc_version: "4.13"
           overwrite: true
-          parameters: -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+          parameters: -p ZONE=${{ env.ZONE }}
 
       - name: Deploy Frontend ConfigMap
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -241,8 +203,8 @@ jobs:
           oc_version: "4.13"
           overwrite: true
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.ZONE }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
             -p URL=${{ env.URL }}
@@ -254,28 +216,9 @@ jobs:
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
             -p FRONTEND_URL=${{ env.URL }}
 
-  documentation:
-    name: Generating Documentation
-    uses: ./.github/workflows/reusable-doc-gen.yml
-
-  images-prod:
-    name: Promote images to PROD
-    needs: [test-deploy]
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        component: [backend, frontend, legacy, database, processor]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: test
-          tags: prod
-
   prod-init:
     name: PROD Init
-    needs: [images-prod]
+    needs: [test-deploy]
     env:
       URL: forestclient.nrs.gov.bc.ca
       ZONE: prod
@@ -293,7 +236,7 @@ jobs:
           oc_version: "4.13"
           overwrite: true
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
+            -p ZONE=${{ env.ZONE }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
@@ -314,11 +257,11 @@ jobs:
 
   prod-deploy:
     name: PROD Deployment
-    needs: [prod-init]
+    needs: [prod-init, vars]
     env:
-      PREV: test
-      ZONE: prod
+      TAG: ${{ needs.vars.outputs.pr }}
       URL: forestclient.nrs.gov.bc.ca
+      ZONE: prod
     environment: prod
     runs-on: ubuntu-24.04
     steps:
@@ -334,8 +277,8 @@ jobs:
           oc_version: "4.13"
           overwrite: true
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.PREV }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
             
       - name: Install CLI tools from OpenShift Mirror
         uses: redhat-actions/openshift-tools-installer@v1
@@ -361,8 +304,8 @@ jobs:
           oc_version: "4.13"
           overwrite: false
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.PREV }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
 
       - name: Deploy Legacy
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -375,8 +318,8 @@ jobs:
           overwrite: true
           verification_path: health
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.PREV }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
             -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
             
       - name: Deploy Processor
@@ -390,8 +333,8 @@ jobs:
           overwrite: true
           verification_path: health
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.PREV }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
       - name: Deploy Backend ConfigMap
@@ -417,8 +360,8 @@ jobs:
           overwrite: true
           verification_path: health
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.PREV }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
             -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
             -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
@@ -447,8 +390,8 @@ jobs:
           oc_version: "4.13"
           overwrite: true
           parameters:
-            -p ZONE=${{ env.ZONE }} -p NAME=${{ github.event.repository.name }}
-            -p TAG=${{ env.PREV }}
+            -p ZONE=${{ env.ZONE }}
+            -p TAG=${{ env.TAG }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
             -p URL=${{ env.URL }}
@@ -459,3 +402,48 @@ jobs:
             -p COGNITO_ENVIRONMENT=PROD
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
             -p FRONTEND_URL=${{ env.URL }}
+
+  images-prod:
+    name: Promote images to PROD
+    needs: [prod-deploy]
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        component: [backend, frontend, legacy, database, processor]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: test
+          tags: prod
+
+  release:
+    name: Release
+    needs: [prod-deploy]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conventional Changelog Update
+        uses: TriPSs/conventional-changelog-action@v5
+        id: changelog
+        continue-on-error: true
+        with:
+          github-token: ${{ github.token }}
+          output-file: "CHANGELOG.md"
+          skip-version-file: "true"
+          skip-commit: "true"
+          git-push: "true"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: ${{ steps.changelog.outputs.tag != '' }}
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          token: ${{ github.token }}
+          tag_name: ${{ steps.changelog.outputs.tag }}
+          name: ${{ steps.changelog.outputs.tag }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}

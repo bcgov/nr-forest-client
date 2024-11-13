@@ -2,7 +2,6 @@ name: Pull Request Open
 
 on:
   pull_request:
-  workflow_dispatch:
 
 concurrency:
   # PR open and close use the same group, allowing only one at a time
@@ -14,45 +13,23 @@ jobs:
     name: Variables
     runs-on: ubuntu-24.04
     outputs:
-      semver: ${{ steps.semver.outputs.tag }}
       url: ${{ steps.calculate.outputs.url }}
     steps:
-      # steps.semver.outputs.tag => needs.vars.outputs.semver
-      - uses: actions/checkout@v4
-        with:
-          ref: refs/heads/${{ github.event.repository.default_branch }}
-      - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@v5.4.0
-        id: semver
-        with:
-          git-branch: refs/heads/${{ github.head_ref }}
-          git-push: 'false'
-          skip-commit: 'true'
-          skip-on-empty: 'false'
-          skip-version-file: 'true'
-
       # steps.calculate.outputs.url => needs.vars.outputs.url
       - name: Calculate the deployment number
         id: calculate
         run: |
           echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
 
-      - run: |
-          echo "semver=${{ steps.semver.outputs.tag }}"
-          echo "url=${{ steps.calculate.outputs.url }}"
-
   builds:
     name: Builds
     runs-on: ubuntu-24.04
-    needs: [vars]
     permissions:
       packages: write
     strategy:
       matrix:
-        package: [backend, database, frontend, legacy, processor]
+        package: [backend, database, frontend, legacy, legacydb, processor]
     steps:
-      - uses: actions/checkout@v4
-
       - uses: bcgov-nr/action-builder-ghcr@v2.2.0
         name: Build (${{ matrix.package }})
         with:
@@ -61,30 +38,11 @@ jobs:
           tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
           build_args: |
-            APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
-
-  build-legacydb:
-    name: Builds (legacydb)
-    runs-on: ubuntu-24.04
-    needs: [vars]
-    permissions:
-      packages: write    
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: bcgov-nr/action-builder-ghcr@v2.2.0
-        name: Build (Legacy db)
-        with:
-          package: legacydb
-          tag: latest
-          tag_fallback: latest
-          triggers: ('legacydb/')
-          build_args: |
-            APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
+            APP_VERSION=${{ github.event.number }}
 
   pre-tools:
     name: Pre Deploy Tools
-    needs: [build-legacydb, vars]
+    needs: [builds, vars]
     environment: dev
     runs-on: ubuntu-24.04
     steps:
@@ -115,11 +73,8 @@ jobs:
 
   deploy-tools:
     name: Deploy Tools
-    needs: [pre-tools, build-legacydb, vars]
+    needs: [pre-tools, builds]
     environment: tools
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ needs.vars.outputs.url }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -222,9 +177,6 @@ jobs:
     name: Deploy Application
     needs: [deploy-tools, builds, vars]
     environment: dev
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ needs.vars.outputs.url }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
