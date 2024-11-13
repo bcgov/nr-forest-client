@@ -4,19 +4,14 @@ import { nextTick, ref, type Ref } from "vue";
 import * as fetcher from "@/composables/useFetch";
 
 import DataFetcher from "@/components/DataFetcher.vue";
+import MockAbortController from "../../mocks/MockAbortController";
 
 vi.useFakeTimers();
 
 describe("DataFetcher", () => {
-  vi.spyOn(global, "AbortController").mockImplementation(() => {
-    const abortSignal = new EventTarget();
-    return {
-      signal: abortSignal,
-      abort: () => {
-        abortSignal.dispatchEvent(new Event("abort"));
-      },
-    } as AbortController;
-  });
+  vi.spyOn(global, "AbortController").mockImplementation(
+    () => new MockAbortController() as AbortController,
+  );
 
   const mockedFetchTo = (url: Ref<string>, received: Ref<any>, config: any = {}) => ({
     response: ref({}),
@@ -47,7 +42,7 @@ describe("DataFetcher", () => {
       loading: ref(false),
       fetch: () => {
         const controller = new AbortController();
-        const asyncResponse = fetchData(url.value, controller.signal).catch((ex) => {
+        const asyncResponse = fetchData(url.value, controller.signal).catch(() => {
           // do nothing
         });
         asyncResponse.then((data) => {

@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils'
 import { ref, watch } from 'vue'
 import axios from 'axios'
 import { useFetch, usePost, useFetchTo } from '@/composables/useFetch'
+import MockAbortController from "../../mocks/MockAbortController";
 
 describe('useFetch', () => {
   let axiosMock
@@ -321,15 +322,9 @@ describe('useFetch', () => {
 
   it("should abort the request", async () => {
     const abortErrorMessage = "sample abort error message";
-    vi.spyOn(global, "AbortController").mockImplementation(() => {
-      const abortSignal = new EventTarget();
-      return {
-        signal: abortSignal,
-        abort: () => {
-          abortSignal.dispatchEvent(new Event("abort"));
-        },
-      } as AbortController;
-    });
+    vi.spyOn(global, "AbortController").mockImplementation(
+      () => new MockAbortController() as AbortController,
+    );
     axiosMock = vi.spyOn(axios, "request").mockImplementation(
       ({ signal }) =>
         new Promise((_resolve, reject) => {

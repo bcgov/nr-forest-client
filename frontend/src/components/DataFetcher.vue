@@ -80,14 +80,18 @@ watch([() => props.url, () => props.disabled], () => {
       controllerList[curRequestTime] = controller;
       asyncResponse
         .then(() => {
-          // Discard the response from old request when a newer request has been made.
-          if (curRequestTime === lastUpdateRequestTime) {
+          // Disregard outdated requests
+          /*
+          Note: the asyncResponse of an aborted request is not rejected due to the default error
+          handling from useFetchTo.
+          */
+          if (!controller.signal.aborted) {
             content.value = response.value;
           }
         })
         .finally(() => {
           // Disregard outdated requests
-          if (curRequestTime === lastUpdateRequestTime) {
+          if (!controller.signal.aborted) {
             loading.value = false;
           }
 
