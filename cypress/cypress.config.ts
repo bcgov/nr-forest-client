@@ -53,6 +53,8 @@ export default defineConfig({
     setupNodeEvents,
     defaultCommandTimeout: 10000,
     pageLoadTimeout: 60000,
+    experimentalMemoryManagement: true,
+    numTestsKeptInMemory: 1,
   },
   includeShadowDom: true,
   viewportHeight: 1080,
