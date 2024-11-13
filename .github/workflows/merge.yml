@@ -419,11 +419,6 @@ jobs:
           target: test
           tags: prod
 
-  documentation:
-    name: Generating Documentation
-    needs: [prod-deploy]
-    uses: ./.github/workflows/reusable-doc-gen.yml
-
   release:
     name: Release
     needs: [prod-deploy]
