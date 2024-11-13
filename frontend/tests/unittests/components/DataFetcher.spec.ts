@@ -37,8 +37,9 @@ describe("DataFetcher", () => {
     ) =>
     (url: Ref<string>, received: Ref<any>, config: any = {}) => {
       const error = ref({});
+      const response = ref({});
       return {
-        response: ref({}),
+        response,
         error,
         data: received,
         loading: ref(false),
@@ -49,6 +50,7 @@ describe("DataFetcher", () => {
           });
           asyncResponse.then((data) => {
             received.value = data;
+            response.value = { data };
           });
           return {
             asyncResponse,
