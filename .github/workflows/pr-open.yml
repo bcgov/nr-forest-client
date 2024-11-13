@@ -177,8 +177,6 @@ jobs:
     name: Deploy Application
     needs: [deploy-tools, builds, vars]
     environment: dev
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
