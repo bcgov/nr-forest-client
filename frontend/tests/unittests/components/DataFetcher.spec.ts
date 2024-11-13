@@ -35,25 +35,28 @@ describe("DataFetcher", () => {
         name: "Loaded",
       }),
     ) =>
-    (url: Ref<string>, received: Ref<any>, config: any = {}) => ({
-      response: ref({}),
-      error: ref({}),
-      data: received,
-      loading: ref(false),
-      fetch: () => {
-        const controller = new AbortController();
-        const asyncResponse = fetchData(url.value, controller.signal).catch(() => {
-          // do nothing
-        });
-        asyncResponse.then((data) => {
-          received.value = data;
-        });
-        return {
-          asyncResponse,
-          controller,
-        };
-      },
-    });
+    (url: Ref<string>, received: Ref<any>, config: any = {}) => {
+      const error = ref({});
+      return {
+        response: ref({}),
+        error,
+        data: received,
+        loading: ref(false),
+        fetch: () => {
+          const controller = new AbortController();
+          const asyncResponse = fetchData(url.value, controller.signal).catch((ex) => {
+            error.value = ex;
+          });
+          asyncResponse.then((data) => {
+            received.value = data;
+          });
+          return {
+            asyncResponse,
+            controller,
+          };
+        },
+      };
+    };
 
   const simpleFetchData = async (url: string) => {
     return new Promise((resolve) => {

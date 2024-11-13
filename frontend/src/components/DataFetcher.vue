@@ -78,17 +78,17 @@ watch([() => props.url, () => props.disabled], () => {
       controllerList[curRequestTime] = controller;
       asyncResponse
         .then(() => {
-          // Disregard outdated requests
+          // Disregard aborted requests
           /*
-          Note: the asyncResponse of an aborted request is not rejected due to the default error
-          handling from useFetchTo.
+          Note: the asyncResponse of an aborted request is not rejected due to the error handling
+          performed by useFetchTo.
           */
           if (!controller.signal.aborted) {
             content.value = response.value;
           }
         })
         .finally(() => {
-          // Disregard outdated requests
+          // Disregard aborted requests
           if (!controller.signal.aborted) {
             loading.value = false;
           }
