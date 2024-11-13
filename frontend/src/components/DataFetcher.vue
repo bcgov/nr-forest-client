@@ -25,7 +25,6 @@ const content = ref<any>(props.initValue);
 const response = ref<any>();
 const loading = ref<boolean>();
 
-const lastUpdateRequestTime = ref<number>(0);
 let debounceTimer: NodeJS.Timeout | null = null;
 
 const initialUrlValue = props.url;
@@ -48,10 +47,18 @@ const calculateStringDifference = (
 
 // If initial fetch is required, fetch
 if (!props.disabled && props.initFetch) {
-  fetch().then(() => {
+  fetch().asyncResponse.then(() => {
     content.value = response.value;
   });
 }
+
+const controllerList: Record<string, AbortController> = {};
+
+const abortOutdatedRequests = () => {
+  Object.values(controllerList).forEach((controller) => {
+    controller.abort();
+  });
+};
 
 // Watch for changes in the url, and if the difference is greater than the min length, fetch
 watch([() => props.url, () => props.disabled], () => {
@@ -60,21 +67,39 @@ watch([() => props.url, () => props.disabled], () => {
     // added a manual loading state to set the loading state when the user types
     loading.value = true;
     const curRequestTime = Date.now();
-    lastUpdateRequestTime.value = curRequestTime;
 
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }
     debounceTimer = setTimeout(() => {
       content.value = [];
-      fetch().then(() => {
-        // Discard the response from old request when a newer request has been made.
-        if (curRequestTime === lastUpdateRequestTime.value) {
-          loading.value = false;
-          content.value = response.value;
-        }
-      });
-  }, props.debounce); // Debounce time
+      const { asyncResponse, controller } = fetch();
+      abortOutdatedRequests();
+      controllerList[curRequestTime] = controller;
+      asyncResponse
+        .then(() => {
+          // Disregard aborted requests
+          /*
+          Note: the asyncResponse of an aborted request is not rejected due to the error handling
+          performed by useFetchTo.
+          */
+          if (!controller.signal.aborted) {
+            content.value = response.value;
+          }
+        })
+        .finally(() => {
+          // Disregard aborted requests
+          if (!controller.signal.aborted) {
+            loading.value = false;
+          }
+
+          /*
+          At this point the request has been either completed or aborted.
+          So it's time to remove its controller from the list
+          */
+          delete controllerList[curRequestTime];
+        });
+    }, props.debounce); // Debounce time
   }
 });
 </script>

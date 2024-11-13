@@ -1,8 +1,9 @@
-import { describe, it, expect, afterEach, vi, MockInstance } from 'vitest'
+import { describe, it, expect, afterEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { ref, watch } from 'vue'
 import axios from 'axios'
 import { useFetch, usePost, useFetchTo } from '@/composables/useFetch'
+import MockAbortController from "../../mocks/MockAbortController";
 
 describe('useFetch', () => {
   let axiosMock
@@ -51,6 +52,7 @@ describe('useFetch', () => {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer undefined',
       },
+      signal: expect.any(AbortSignal),
       skip: true,
       url: '/api/data'
     })
@@ -114,7 +116,6 @@ describe('useFetch', () => {
       template: "<div></div>",
       setup: () => {
         fetchWrapper = useFetch("/api/data", { skip: true });
-        // spyHandleErrorDefault = doSpyHandleErrorDefault();
         spyHandleErrorDefault = doSpyHandleErrorDefault();
         const { fetch, error } = fetchWrapper;
         watch(error, (value) => (responseData.value = value));
@@ -139,11 +140,13 @@ describe('useFetch', () => {
         "Content-Type": "application/json",
         Authorization: "Bearer undefined",
       },
+      signal: expect.any(AbortSignal),
       skip: true,
       url: "/api/data",
     });
 
     // Await the axios mock to resolve
+    await wrapper.vm.$nextTick();
     await wrapper.vm.$nextTick();
 
     expect(spyHandleErrorDefault).toHaveBeenCalled();
@@ -190,6 +193,7 @@ describe('useFetch', () => {
         "Content-Type": "application/json",
         Authorization: "Bearer undefined",
       },
+      signal: expect.any(AbortSignal),
       skip: true,
       skipDefaultErrorHandling: true,
       url: "/api/data",
@@ -314,5 +318,66 @@ describe('useFetch', () => {
     await wrapper.vm.$nextTick();
 
     expect(spyHandleErrorDefault).not.toHaveBeenCalled();
+  });
+
+  it("should abort the request", async () => {
+    const abortErrorMessage = "sample abort error message";
+    vi.spyOn(global, "AbortController").mockImplementation(
+      () => new MockAbortController() as AbortController,
+    );
+    axiosMock = vi.spyOn(axios, "request").mockImplementation(
+      ({ signal }) =>
+        new Promise((_resolve, reject) => {
+          // Reject when an abort event is captured
+          signal.addEventListener("abort", () => {
+            reject(new Error(abortErrorMessage));
+          });
+        }),
+    );
+
+    let testError: Error;
+
+    let fetchWrapper: ReturnType<typeof useFetch>;
+
+    let fetchReturn: ReturnType<(typeof fetchWrapper)["fetch"]>;
+
+    const doSpyHandleErrorDefault = () => vi.spyOn(fetchWrapper, "handleErrorDefault");
+    let spyHandleErrorDefault: ReturnType<typeof doSpyHandleErrorDefault>;
+
+    const TestComponent = {
+      template: "<div></div>",
+      setup: () => {
+        fetchWrapper = useFetch("/api/data", { skip: true });
+        spyHandleErrorDefault = doSpyHandleErrorDefault();
+        const { fetch, error } = fetchWrapper;
+        watch(error, (value) => {
+          testError = value;
+        });
+        fetchReturn = fetch();
+      },
+    };
+
+    const wrapper = mount(TestComponent);
+
+    await wrapper.vm.$nextTick();
+
+    expect(axiosMock).toHaveBeenCalledWith({
+      baseURL: "http://localhost:8080",
+      headers: {
+        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Content-Type": "application/json",
+        Authorization: "Bearer undefined",
+      },
+      signal: expect.any(EventTarget),
+      skip: true,
+      url: "/api/data",
+    });
+
+    fetchReturn.controller.abort();
+
+    await vi.waitUntil(() => testError);
+
+    expect(testError).toStrictEqual(new Error(abortErrorMessage));
+    expect(spyHandleErrorDefault).toHaveBeenCalled();
   });
 });

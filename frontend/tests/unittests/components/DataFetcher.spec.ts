@@ -4,38 +4,61 @@ import { nextTick, ref, type Ref } from "vue";
 import * as fetcher from "@/composables/useFetch";
 
 import DataFetcher from "@/components/DataFetcher.vue";
+import MockAbortController from "../../mocks/MockAbortController";
 
 vi.useFakeTimers();
 
-
-
 describe("DataFetcher", () => {
+  vi.spyOn(global, "AbortController").mockImplementation(
+    () => new MockAbortController() as AbortController,
+  );
+
   const mockedFetchTo = (url: Ref<string>, received: Ref<any>, config: any = {}) => ({
     response: ref({}),
     error: ref({}),
     data: received,
     loading: ref(false),
-    fetch: async () => {
-      received.value = { name: "Loaded" };
+    fetch: () => {
+      const controller = new AbortController();
+      const data = { name: "Loaded" };
+      received.value = data;
+      return {
+        asyncResponse: Promise.resolve(data),
+        controller,
+      };
     },
   });
 
   const mockedFetchToFunction =
     (
-      fetchData: (url: string) => Promise<any> = async () => ({
+      fetchData: (url: string, signal: AbortSignal) => Promise<any> = async () => ({
         name: "Loaded",
       }),
     ) =>
-    (url: Ref<string>, received: Ref<any>, config: any = {}) => ({
-      response: ref({}),
-      error: ref({}),
-      data: received,
-      loading: ref(false),
-      fetch: async () => {
-        received.value = await fetchData(url.value);
-        console.log(received.value);
-      },
-    });
+    (url: Ref<string>, received: Ref<any>, config: any = {}) => {
+      const error = ref({});
+      const response = ref({});
+      return {
+        response,
+        error,
+        data: received,
+        loading: ref(false),
+        fetch: () => {
+          const controller = new AbortController();
+          const asyncResponse = fetchData(url.value, controller.signal).catch((ex) => {
+            error.value = ex;
+          });
+          asyncResponse.then((data) => {
+            received.value = data;
+            response.value = { data };
+          });
+          return {
+            asyncResponse,
+            controller,
+          };
+        },
+      };
+    };
 
   const simpleFetchData = async (url: string) => {
     return new Promise((resolve) => {
@@ -47,26 +70,52 @@ describe("DataFetcher", () => {
 
   const mockFetchSimple = mockedFetchToFunction(simpleFetchData);
 
-  let lastResponse: any;
+  let lastResult: {
+    url: string;
+    response?: any;
+    error?: any;
+  };
 
-  const fetchDataSleepByParam = async (url: string) => {
+  const abortErrorMessage = "sample abort error message";
+
+  const fetchDataSleepByParam = (url: string, signal: AbortSignal) => {
     const regex = /.*\/(.+)/;
     const regexResult = regex.exec(url);
     const lastParam = regexResult[1];
     const time = parseInt(lastParam);
 
-    return new Promise((resolve) => {
-      setTimeout(() => {
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
         const response = { name: url };
         resolve(response);
 
         // Just for checking on the tests.
-        lastResponse = response;
+        lastResult = {
+          url,
+          response,
+        };
       }, time);
+
+      signal.addEventListener("abort", () => {
+        clearTimeout(timeoutId);
+        const error = new Error(abortErrorMessage);
+        reject(error);
+
+        // Just for checking on the tests.
+        lastResult = {
+          url,
+          error,
+        };
+      });
     });
   };
 
   const mockFetchSleepByParam = mockedFetchToFunction(fetchDataSleepByParam);
+
+  beforeEach(() => {
+    // reset variable
+    lastResult = undefined;
+  });
 
   it("should render", () => {
     const wrapper = mount(DataFetcher, {
@@ -314,10 +363,14 @@ describe("DataFetcher", () => {
         // More time, enough to get the response from /api/one/1000
         await vi.advanceTimersByTimeAsync(600);
 
-        // It was effectively responded
-        expect(lastResponse?.name).toEqual("/api/one/1000");
+        // It was effectively requested
+        expect(lastResult.url).toEqual("/api/one/1000");
 
-        // It should remain empty regardless
+        // But it was aborted
+        expect(lastResult.error).toStrictEqual(new Error(abortErrorMessage));
+        expect(lastResult.response).toBeUndefined();
+
+        // So it should remain empty
         expect(wrapper.find("div").text()).toBe("slot content is");
 
         // More time, enough to get the response from /api/two/1000
@@ -338,18 +391,24 @@ describe("DataFetcher", () => {
       });
 
       it("should discard the response from the first request", async () => {
+        await vi.waitFor(() => {
+          // api/one/1000 had been effectively requested
+          expect(lastResult.url).toEqual("/api/one/1000");
+        });
+
+        // But it has been aborted
+        expect(lastResult.error).toStrictEqual(new Error(abortErrorMessage));
+        expect(lastResult.response).toBeUndefined();
+
         // Enough to get only the response from /api/two/500
         await vi.advanceTimersByTimeAsync(600);
 
         expect(wrapper.find("div").text()).toBe("slot content is /api/two/500");
 
-        // More time, enough to get the response from /api/one/1000
+        // More time, enough to get the response from /api/one/1000, if it had not been aborted
         await vi.advanceTimersByTimeAsync(310);
 
-        // It was effectively responded
-        expect(lastResponse?.name).toEqual("/api/one/1000");
-
-        // But it should keep the current value
+        // So it should keep the current value
         expect(wrapper.find("div").text()).toBe("slot content is /api/two/500");
       });
     });
