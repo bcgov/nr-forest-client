@@ -25,7 +25,6 @@ const content = ref<any>(props.initValue);
 const response = ref<any>();
 const loading = ref<boolean>();
 
-let lastUpdateRequestTime = 0;
 let debounceTimer: NodeJS.Timeout | null = null;
 
 const initialUrlValue = props.url;
@@ -68,7 +67,6 @@ watch([() => props.url, () => props.disabled], () => {
     // added a manual loading state to set the loading state when the user types
     loading.value = true;
     const curRequestTime = Date.now();
-    lastUpdateRequestTime = curRequestTime;
 
     if (debounceTimer) {
       clearTimeout(debounceTimer);
