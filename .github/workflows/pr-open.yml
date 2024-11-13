@@ -49,10 +49,8 @@ jobs:
       packages: write
     strategy:
       matrix:
-        package: [backend, database, frontend, legacy, processor]
+        package: [backend, database, frontend, legacy, legacydb, processor]
     steps:
-      - uses: actions/checkout@v4
-
       - uses: bcgov-nr/action-builder-ghcr@v2.2.0
         name: Build (${{ matrix.package }})
         with:
@@ -63,28 +61,9 @@ jobs:
           build_args: |
             APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
 
-  build-legacydb:
-    name: Builds (legacydb)
-    runs-on: ubuntu-24.04
-    needs: [vars]
-    permissions:
-      packages: write    
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: bcgov-nr/action-builder-ghcr@v2.2.0
-        name: Build (Legacy db)
-        with:
-          package: legacydb
-          tag: latest
-          tag_fallback: latest
-          triggers: ('legacydb/')
-          build_args: |
-            APP_VERSION=${{ needs.vars.outputs.semver }}-${{ github.event.number }}
-
   pre-tools:
     name: Pre Deploy Tools
-    needs: [build-legacydb, vars]
+    needs: [builds, vars]
     environment: dev
     runs-on: ubuntu-24.04
     steps:
@@ -115,7 +94,7 @@ jobs:
 
   deploy-tools:
     name: Deploy Tools
-    needs: [pre-tools, build-legacydb, vars]
+    needs: [pre-tools, builds, vars]
     environment: tools
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
