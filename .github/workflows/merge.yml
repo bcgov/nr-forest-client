@@ -91,7 +91,7 @@ jobs:
     name: TEST Deployment
     needs: [test-init, vars]
     env:
-      TAG: ${{ needs.vars.outputs.tag }}
+      TAG: ${{ needs.vars.outputs.pr }}
       URL: forestclient-tst.nrs.gov.bc.ca
       ZONE: test
     environment: test
@@ -287,9 +287,9 @@ jobs:
     name: PROD Deployment
     needs: [prod-init, vars]
     env:
-      TAG: ${{ needs.vars.outputs.tag }}
-      ZONE: prod
+      TAG: ${{ needs.vars.outputs.pr }}
       URL: forestclient.nrs.gov.bc.ca
+      ZONE: prod
     environment: prod
     runs-on: ubuntu-24.04
     steps:
