@@ -36,6 +36,10 @@ parameters:
     value: 3.5Gi
   - name: MEMORY_LIMIT
     value: 4Gi
+  - name: RANDOM_EXPRESSION
+    description: Random expression to make sure deployments update
+    from: "[a-zA-Z0-9]{32}"
+    generate: expression
 objects:
   - kind: Secret
     apiVersion: v1    
@@ -111,7 +115,9 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: oracle-user-write              
+                      key: oracle-user-write
+                - name: RANDOM_EXPRESSION
+                  value: ${RANDOM_EXPRESSION}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               imagePullPolicy: Always
