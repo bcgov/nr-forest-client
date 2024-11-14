@@ -17,11 +17,13 @@ jobs:
   tests-java:
     name: Backend Tests
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    secrets: inherit
     uses: ./.github/workflows/reusable-tests-be.yml
 
   tests-frontend:
     name: Frontend Unit Tests
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    secrets: inherit
     uses: ./.github/workflows/reusable-tests-fe.yml
 
   trivy:
