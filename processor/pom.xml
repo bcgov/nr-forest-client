@@ -46,7 +46,7 @@
     <assertj.version>3.24.2</assertj.version>
     <netty.version>4.1.114.Final</netty.version>
     <oci.revision>${project.version}</oci.revision>
-    <flyway.version>10.20.1</flyway.version>
+    <flyway.version>10.21.0</flyway.version>
   </properties>
 
 	<dependencies>
