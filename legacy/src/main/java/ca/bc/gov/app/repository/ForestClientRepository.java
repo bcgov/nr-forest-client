@@ -132,8 +132,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           )
           AND cl.CLIENT_LOCN_CODE = '00'
       ORDER BY score DESC
-      OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY
-  """)
+      OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
   Flux<PredictiveSearchResultDto> findByPredictiveSearch(String value, int limit, long offset);
 
   @Query("""
@@ -187,8 +186,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
                   )
               )
           )
-          AND cl.CLIENT_LOCN_CODE = '00'
-  """)
+          AND cl.CLIENT_LOCN_CODE = '00'""")
   Mono<Long> countByPredictiveSearch(String value);
 
   @Query("""
