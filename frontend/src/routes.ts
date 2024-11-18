@@ -205,18 +205,15 @@ export const routes = [
     },
   },
   {
-    path: "/clients/:clientId",
+    path: "/clients/:id",
     name: "client-detail",
     component: ClientDetailPage,
-    props: (route) => ({
-      clientId: route.params.clientId,
-    }),
     meta: {
       format: "full",
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ["idir"],
+      visibleTo: ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"],
       redirectTo: {
         bceidbusiness: "form",
         bcsc: "form",
