@@ -30,7 +30,7 @@
     "lint": "eslint . --fix --ignore-path .gitignore",
     "stub": "wiremock --enable-stub-cors --global-response-templating --port 8080 --https-port 8081 --root-dir ./stub --verbose",
     "precoverage": "npm run test:report:clean",
-    "coverage": "npm run test:unit && npm run test:component && npm run test:e2e && test:e2e:clientDetail:off",
+    "coverage": "npm run test:unit && npm run test:component && npm run test:e2e && npm run test:e2e:clientDetail:off",
     "postcoverage": "npm run test:report:merge",
     "test:component": "VITE_MODE=test cypress run --component --headless",
     "posttest:component": "mv reports/.nyc_report reports/component",
