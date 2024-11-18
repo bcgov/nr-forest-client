@@ -160,14 +160,24 @@ describe("Search Page", () => {
         cy.get("#search-box").find(`cds-combo-box-item[data-id="${clientNumber}"]`).click();
       });
       it("navigates to the client details", () => {
-        const greenDomain = "green-domain.com";
         cy.get("@windowOpen").should(
           "be.calledWith",
-          `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
+          `/clients/${clientNumber}`,
           "_blank",
           "noopener",
         );
       });
+      if (Cypress.env("STAFF_CLIENT_DETAIL") === false) {
+        it.only("navigates to the client details in the legacy application", () => {
+          const greenDomain = "green-domain.com";
+          cy.get("@windowOpen").should(
+            "be.calledWith",
+            `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
+            "_blank",
+            "noopener",
+          );
+        });
+      }
     });
 
     describe("and clicks the Search button", () => {
@@ -207,14 +217,24 @@ describe("Search Page", () => {
           cy.get("cds-table").contains("cds-table-row", clientNumber).click();
         });
         it("navigates to the client details", () => {
-          const greenDomain = "green-domain.com";
           cy.get("@windowOpen").should(
             "be.calledWith",
-            `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
+            `/clients/${clientNumber}`,
             "_blank",
             "noopener",
           );
         });
+        if (Cypress.env("STAFF_CLIENT_DETAIL") === false) {
+          it.only("navigates to the client details in the legacy application", () => {
+            const greenDomain = "green-domain.com";
+            cy.get("@windowOpen").should(
+              "be.calledWith",
+              `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
+              "_blank",
+              "noopener",
+            );
+          });
+        }
       });
 
       describe("and clicks the Next page button on the table footer", () => {
