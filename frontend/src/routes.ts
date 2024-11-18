@@ -18,6 +18,7 @@ import ErrorPage from "@/pages/ErrorPage.vue";
 import NotFoundPage from "@/pages/NotFoundPage.vue";
 import LogoutPage from "@/pages/LogoutPage.vue";
 import SearchPage from "@/pages/SearchPage.vue";
+import ClientDetailPage from "@/pages/ClientDetailPage.vue";
 
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -201,6 +202,31 @@ export const routes = [
       headersStyle: "headers-compact",
       sideMenu: true,
       profile: true,
+    },
+  },
+  {
+    path: "/clients/:clientId",
+    name: "client-detail",
+    component: ClientDetailPage,
+    props: (route) => ({
+      clientId: route.params.clientId,
+    }),
+    meta: {
+      format: "full",
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ["idir"],
+      redirectTo: {
+        bceidbusiness: "form",
+        bcsc: "form",
+        idir: "internal",
+      },
+      style: "content-stretched",
+      headersStyle: "headers-compact",
+      sideMenu: true,
+      profile: true,
+      featureFlagged: "STAFF_CLIENT_DETAIL",
     },
   },
   {
