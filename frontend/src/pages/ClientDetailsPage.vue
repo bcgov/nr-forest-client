@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/breadcrumb/index";
 import "@carbon/web-components/es/components/notification/index";
