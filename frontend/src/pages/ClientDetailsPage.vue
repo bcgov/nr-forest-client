@@ -5,21 +5,7 @@ import "@carbon/web-components/es/components/breadcrumb/index";
 import "@carbon/web-components/es/components/notification/index";
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/tabs/index";
-// Composables
-import { useFetchTo } from "@/composables/useFetch";
-import { useRouter } from "vue-router";
-import { useEventBus } from "@vueuse/core";
-// Types
-import type { ModalNotification } from "@/dto/CommonTypesDto";
-import { format } from "date-fns";
-import { greenDomain } from "@/CoreConstants";
 
-// Imported User session
-import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-// @ts-ignore
-import Check16 from "@carbon/icons-vue/es/checkmark/16";
-// @ts-ignore
-import Error16 from "@carbon/icons-vue/es/error--outline/16";
 // @ts-ignore
 import Location16 from "@carbon/icons-vue/es/location/16";
 // @ts-ignore
@@ -29,22 +15,6 @@ import NetworkEnterprise16 from "@carbon/icons-vue/es/network--enterprise/16";
 // @ts-ignore
 import RecentlyViewed16 from "@carbon/icons-vue/es/recently-viewed/16";
 import { toTitleCase } from "@/services/ForestClientService";
-
-const toastBus = useEventBus<ModalNotification>("toast-notification");
-
-//Route related
-const router = useRouter();
-const id = ref(router.currentRoute.value.params.id);
-
-const formattedDate = (date: Date): string => {
-  if (!date) return "";
-  return format(new Date(date), "MMM dd, yyyy");
-};
-// Format the good standing parameter
-const goodStanding = (goodStanding: string): string => {
-  if (goodStanding) return goodStanding === "Y" ? "Good standing" : "Not in good standing";
-  return "Unknown";
-};
 </script>
 
 <template>
