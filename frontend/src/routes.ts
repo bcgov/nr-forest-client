@@ -18,7 +18,7 @@ import ErrorPage from "@/pages/ErrorPage.vue";
 import NotFoundPage from "@/pages/NotFoundPage.vue";
 import LogoutPage from "@/pages/LogoutPage.vue";
 import SearchPage from "@/pages/SearchPage.vue";
-import ClientDetailPage from "@/pages/ClientDetailPage.vue";
+import ClientDetailsPage from "@/pages/ClientDetailsPage.vue";
 
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -206,8 +206,8 @@ export const routes = [
   },
   {
     path: "/clients/:id",
-    name: "client-detail",
-    component: ClientDetailPage,
+    name: "client-details",
+    component: ClientDetailsPage,
     meta: {
       format: "full",
       hideHeader: false,

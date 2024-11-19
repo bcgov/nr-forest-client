@@ -1408,8 +1408,8 @@ cds-side-nav-items.lower-side-nav {
 
 .table-list,
 .submission-content,
-.client-detail-screen,
-.client-detail-content {
+.client-details-screen,
+.client-details-content {
   padding: 2.5rem 0rem 2.5rem 16rem;
   display: flex;
   flex-direction: column;
@@ -1430,19 +1430,19 @@ cds-side-nav {
   z-index: 10;
 }
 
-.submission-content, .client-detail-screen, .client-detail-content {
+.submission-content, .client-details-screen, .client-details-content {
   padding: 2.5rem 2rem;
   gap: 3rem;
   flex: 4;
 }
 
-.client-detail-screen {
+.client-details-screen {
   padding-left: 0;
   padding-right: 0;
   gap: 0;
 }
 
-.client-detail-content {
+.client-details-content {
   padding-top: 0;
   padding-bottom: 0;
   flex-grow: 0;
@@ -1922,16 +1922,16 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     width: 0rem;
   }
 
-  .submission-content, .client-detail-screen, .client-detail-content {
+  .submission-content, .client-details-screen, .client-details-content {
     padding: 2.5rem 1rem !important;
   }
 
-  .client-detail-screen {
+  .client-details-screen {
     padding-left: 0;
     padding-right: 0;
   }
 
-  .client-detail-content {
+  .client-details-content {
     padding-top: 0;
     padding-bottom: 0;
   }
@@ -2066,16 +2066,16 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     padding: 2.5rem 0rem;
   }
 
-  .submission-content, .client-detail-screen, .client-detail-content {
+  .submission-content, .client-details-screen, .client-details-content {
     padding: 2.5rem 2rem;
   }
 
-  .client-detail-screen {
+  .client-details-screen {
     padding-left: 0;
     padding-right: 0;
   }
 
-  .client-detail-content {
+  .client-details-content {
     padding-top: 0;
     padding-bottom: 0;
   }
@@ -2144,7 +2144,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   div#screen div#title {
     margin-bottom: 2rem;
   }
-  .submission-content, .client-detail-screen, .client-detail-content {
+  .submission-content, .client-details-screen, .client-details-content {
     --padding-right: 2rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
@@ -2153,11 +2153,11 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
         (var(--padding-right) + var(--padding-left) + var(--scroll-bar-width))
     );
   }
-  .client-detail-screen {
+  .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
   }
-  .client-detail-content {
+  .client-details-content {
     padding-top: 0;
     padding-bottom: 0;
     --padding-right: 2.5rem;
@@ -2233,7 +2233,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     margin-bottom: 2rem;
   }
 
-  .submission-content, .client-detail-screen, .client-detail-content {
+  .submission-content, .client-details-screen, .client-details-content {
     --padding-right: 2rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
@@ -2243,12 +2243,12 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     );
   }
 
-  .client-detail-screen {
+  .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
   }
 
-  .client-detail-content {
+  .client-details-content {
     padding-top: 0;
     padding-bottom: 0;
     --padding-right: 2.5rem;
@@ -2305,7 +2305,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     margin-bottom: 2rem;
   }
 
-  .submission-content, .client-detail-screen, .client-detail-content {
+  .submission-content, .client-details-screen, .client-details-content {
     --padding-right: 2rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
@@ -2315,12 +2315,12 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     );
   }
 
-  .client-detail-screen {
+  .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
   }
 
-  .client-detail-content {
+  .client-details-content {
     padding-top: 0;
     padding-bottom: 0;
     --padding-right: 2.5rem;
@@ -2361,7 +2361,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     margin-bottom: 2rem;
   }
 
-  .submission-content, .client-detail-screen, .client-detail-content {
+  .submission-content, .client-details-screen, .client-details-content {
     --padding-right: 2.5rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
@@ -2371,12 +2371,12 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
     );
   }
 
-  .client-detail-screen {
+  .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
   }
 
-  .client-detail-content {
+  .client-details-content {
     padding-top: 0;
     padding-bottom: 0;
     --padding-right: 2.5rem;

@@ -48,8 +48,8 @@ const goodStanding = (goodStanding: string): string => {
 </script>
 
 <template>
-  <div id="screen" class="client-detail-screen">
-    <div class="client-detail-content">
+  <div id="screen" class="client-details-screen">
+    <div class="client-details-content">
       <div class="submission-header">
         <cds-breadcrumb>
           <cds-breadcrumb-item>
