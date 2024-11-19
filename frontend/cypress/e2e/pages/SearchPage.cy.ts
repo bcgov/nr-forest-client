@@ -41,7 +41,7 @@ describe("Search Page", () => {
     });
   };
 
-  beforeEach(() => {
+  beforeEach(function () {
     // reset counters
     predictiveSearchCounter.count = 0;
     fullSearchCounter.count = 0;
@@ -73,6 +73,19 @@ describe("Search Page", () => {
         req.continue();
       },
     ).as("fullSearch");
+
+    const titlePath = this.currentTest.titlePath();
+    for (const title of titlePath.reverse()) {
+      const ffName = "STAFF_CLIENT_DETAIL";
+
+      if (!title.includes(ffName)) continue;
+
+      const suffix = title.split(ffName)[1];
+      const words = suffix.split(" ");
+      const value = !!words.find((cur) => ["on", "true"].includes(cur));
+
+      cy.addToLocalStorage("VITE_FEATURE_FLAGS", JSON.stringify({ [ffName]: value }));
+    }
 
     cy.viewport(1920, 1080);
     cy.visit("/");
@@ -167,8 +180,8 @@ describe("Search Page", () => {
           "noopener",
         );
       });
-      if (Cypress.env("STAFF_CLIENT_DETAIL") === false) {
-        it.only("navigates to the client details in the legacy application", () => {
+      describe("and STAFF_CLIENT_DETAIL is turned off", () => {
+        it("navigates to the client details in the legacy application", () => {
           const greenDomain = "green-domain.com";
           cy.get("@windowOpen").should(
             "be.calledWith",
@@ -177,7 +190,7 @@ describe("Search Page", () => {
             "noopener",
           );
         });
-      }
+      });
     });
 
     describe("and clicks the Search button", () => {
@@ -224,8 +237,8 @@ describe("Search Page", () => {
             "noopener",
           );
         });
-        if (Cypress.env("STAFF_CLIENT_DETAIL") === false) {
-          it.only("navigates to the client details in the legacy application", () => {
+        describe("and STAFF_CLIENT_DETAIL is turned off", () => {
+          it("navigates to the client details in the legacy application", () => {
             const greenDomain = "green-domain.com";
             cy.get("@windowOpen").should(
               "be.calledWith",
@@ -234,7 +247,7 @@ describe("Search Page", () => {
               "noopener",
             );
           });
-        }
+        });
       });
 
       describe("and clicks the Next page button on the table footer", () => {
