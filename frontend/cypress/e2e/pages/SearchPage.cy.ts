@@ -41,6 +41,21 @@ describe("Search Page", () => {
     });
   };
 
+  const setupFeatureFlag = (ctx: Mocha.Context) => {
+    const titlePath = ctx.currentTest.titlePath();
+    for (const title of titlePath.reverse()) {
+      const ffName = "STAFF_CLIENT_DETAIL";
+
+      if (!title.includes(ffName)) continue;
+
+      const suffix = title.split(ffName)[1];
+      const words = suffix.split(" ");
+      const value = !!words.find((cur) => ["on", "true"].includes(cur));
+
+      cy.addToLocalStorage("VITE_FEATURE_FLAGS", JSON.stringify({ [ffName]: value }));
+    }
+  };
+
   beforeEach(function () {
     // reset counters
     predictiveSearchCounter.count = 0;
@@ -74,18 +89,7 @@ describe("Search Page", () => {
       },
     ).as("fullSearch");
 
-    const titlePath = this.currentTest.titlePath();
-    for (const title of titlePath.reverse()) {
-      const ffName = "STAFF_CLIENT_DETAIL";
-
-      if (!title.includes(ffName)) continue;
-
-      const suffix = title.split(ffName)[1];
-      const words = suffix.split(" ");
-      const value = !!words.find((cur) => ["on", "true"].includes(cur));
-
-      cy.addToLocalStorage("VITE_FEATURE_FLAGS", JSON.stringify({ [ffName]: value }));
-    }
+    setupFeatureFlag(this);
 
     cy.viewport(1920, 1080);
     cy.visit("/");
