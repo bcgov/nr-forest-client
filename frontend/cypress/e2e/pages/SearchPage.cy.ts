@@ -53,6 +53,9 @@ describe("Search Page", () => {
       const value = !!words.find((cur) => ["on", "true"].includes(cur));
 
       cy.addToLocalStorage("VITE_FEATURE_FLAGS", JSON.stringify({ [ffName]: value }));
+
+      // No need to continue looking up in the titlePath
+      break;
     }
   };
 
