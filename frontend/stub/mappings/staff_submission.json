@@ -78,6 +78,29 @@
         },
         "fixedDelayMilliseconds": 750
       }
+    },
+
+    {
+      "name": "Submission Success for Staff - Non-individual",
+      "request": {
+        "url": "/api/clients/submissions/staff",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.businessInformation[?(@.clientType != 'I')]"
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Access-Control-Expose-Headers": "x-client-id, Location",
+          "Location": "/api/clients/details/00123456",
+          "x-client-id": "00123456"
+        },
+        "fixedDelayMilliseconds": 750
+      }
     }
 
   ]
