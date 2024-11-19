@@ -50,14 +50,14 @@ const goodStanding = (goodStanding: string): string => {
 <template>
   <div id="screen" class="client-details-screen">
     <div class="client-details-content">
-      <div class="submission-header">
+      <div class="resource-header">
         <cds-breadcrumb>
           <cds-breadcrumb-item>
             <cds-breadcrumb-link href="/search">Client search</cds-breadcrumb-link>
           </cds-breadcrumb-item>
         </cds-breadcrumb>
 
-        <h1 class="submission-details--title">
+        <h1 class="resource-details--title">
           <span>
             <!-- TODO: Replace with real value -->
             {{ toTitleCase("Client Name") }}
@@ -115,10 +115,10 @@ const goodStanding = (goodStanding: string): string => {
       </div>
     </div>
     <div class="tab-panel">
-      <div id="panel-locations" hidden></div>
-      <div id="panel-contacts" hidden></div>
-      <div id="panel-related" hidden></div>
-      <div id="panel-activity" hidden></div>
+      <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden></div>
+      <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden></div>
+      <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden></div>
+      <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden></div>
     </div>
   </div>
 </template>

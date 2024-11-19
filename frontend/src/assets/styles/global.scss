@@ -1474,13 +1474,13 @@ cds-accordion-item[open]:not([disabled])::part(content),
   margin-left: 2rem;
 }
 
-.submission-header {
+.resource-header {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.submission-details--title {
+.resource-details--title {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
@@ -1965,7 +1965,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   .paginator {
     width: 100%;
   }
-  .submission-details--title svg {
+  .resource-details--title svg {
     width: 5rem;
   }
 
