@@ -8,7 +8,7 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.3.5</version>
-    <relativePath/> <!-- lookup parent from repository -->
+    <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
   <groupId>ca.bc.gov.nrs</groupId>
@@ -51,7 +51,7 @@
 
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.5.5.Fina</mapstruct.version>
-    <netty.version>4.1.114.Final</netty.version>
+    <netty.version>4.1.115.Final</netty.version>
     <flyway.version>10.13.0</flyway.version>
   </properties>
 
@@ -435,9 +435,11 @@
                     <scope>runtime</scope>
                   </excludedScopes>
                   <excludes>
-                    <!-- Excluding opentelemetry due to the use of an alpha version that does not match the rest of the versions -->
+                    <!-- Excluding opentelemetry due to the use of an alpha version that does not
+                    match the rest of the versions -->
                     <exclude>io.opentelemetry:opentelemetry-api-incubator</exclude>
-                    <!-- Excluding jetbrains annotations due to the requirement on kotlin dependencies -->
+                    <!-- Excluding jetbrains annotations due to the requirement on kotlin
+                    dependencies -->
                     <exclude>org.jetbrains:annotations</exclude>
                   </excludes>
                 </dependencyConvergence>
@@ -463,7 +465,7 @@
                   <message>No Snapshots Allowed in releases!</message>
                   <onlyWhenRelease>true</onlyWhenRelease>
                 </requireReleaseDeps>
-                <banDuplicatePomDependencyVersions/>
+                <banDuplicatePomDependencyVersions />
               </rules>
             </configuration>
           </execution>
@@ -553,6 +555,7 @@
           <groupId>io.netty</groupId>
           <artifactId>netty-resolver-dns-native-macos</artifactId>
           <classifier>osx-aarch_64</classifier>
+          <version>${netty.version}</version>
         </dependency>
       </dependencies>
     </profile>
