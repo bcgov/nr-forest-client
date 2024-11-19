@@ -58,7 +58,7 @@ public class ClientService {
    * @param clientNumber the client number for which to retrieve details
    * @return a Mono that emits a ClientDetailsDto object representing the details of the client
    */
-  public Mono<ClientDetailsDto> getClientDetails(
+  public Mono<ClientDetailsDto> getClientDetailsByIncorporationNumber(
       String clientNumber,
       String userId,
       String businessId,
@@ -140,6 +140,16 @@ public class ClientService {
         .switchIfEmpty(Mono.error(new UnableToProcessRequestException(
             "Unable to process request. This sole proprietor is not owned by a person"
         )));
+  }
+  
+  public Mono<ForestClientDto> getClientDetailsByClientNumber(
+      String clientNumber,
+      String userId,
+      String businessId,
+      String provider
+  ) {
+    log.info("Loading details for {} {} {} {}", clientNumber, userId, businessId, provider);
+    return legacyService.searchByClientNumber(clientNumber);
   }
 
   /**

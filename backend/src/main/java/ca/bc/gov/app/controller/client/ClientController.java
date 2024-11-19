@@ -4,6 +4,7 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import ca.bc.gov.app.service.client.ClientService;
@@ -36,7 +37,7 @@ public class ClientController {
   private final ClientLegacyService clientLegacyService;
 
   @GetMapping("/{clientNumber}")
-  public Mono<ClientDetailsDto> getClientDetails(
+  public Mono<ClientDetailsDto> getClientDetailsByIncorporationNumber(
       @PathVariable String clientNumber,
       JwtAuthenticationToken principal
   ) {
@@ -45,12 +46,28 @@ public class ClientController {
         JwtPrincipalUtil.getUserId(principal)
     );
     return clientService
-        .getClientDetails(
+        .getClientDetailsByIncorporationNumber(
             clientNumber,
             JwtPrincipalUtil.getUserId(principal),
             JwtPrincipalUtil.getBusinessId(principal),
             JwtPrincipalUtil.getProvider(principal)
         );
+  }
+  
+  @GetMapping("/details/{clientNumber}")
+  public Mono<ForestClientDto> getClientDetailsByClientNumber(
+      @PathVariable String clientNumber,
+      JwtAuthenticationToken principal
+  ) {
+    log.info("Requesting client details for client number {} from the client service. {}",
+        clientNumber,
+        JwtPrincipalUtil.getUserId(principal)
+    );
+    return clientService.getClientDetailsByClientNumber(
+            clientNumber,
+            JwtPrincipalUtil.getUserId(principal),
+            JwtPrincipalUtil.getBusinessId(principal),
+            JwtPrincipalUtil.getProvider(principal));
   }
   
   @GetMapping("/search")

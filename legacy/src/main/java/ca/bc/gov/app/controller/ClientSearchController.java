@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @Slf4j
@@ -72,6 +73,14 @@ public class ClientSearchController {
   ) {
     log.info("Receiving request to search by ID {} and Last Name {}", clientId, lastName);
     return service.findByIdAndLastName(clientId, lastName);
+  }
+  
+  @GetMapping("/clientNumber")
+  public Mono<ForestClientDto> findByClientNumber(
+      @RequestParam String clientNumber
+  ) {
+    log.info("Receiving request to search by ID {} and Last Name", clientNumber);
+    return service.findByClientNumber(clientNumber);
   }
 
   @GetMapping("/id/{idType}/{identification}")

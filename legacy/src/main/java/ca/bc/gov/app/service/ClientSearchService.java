@@ -536,6 +536,22 @@ public class ClientSearchService {
                 dto.clientNumber(), dto.clientName())
         );
   }
+  
+  public Mono<ForestClientDto> findByClientNumber(String clientNumber) {
+    log.info("Searching for client with number {}", clientNumber);
+
+    if (StringUtils.isBlank(clientNumber)) {
+      return Mono.error(new MissingRequiredParameterException("clientNumber"));
+    }
+
+    return forestClientRepository.findByClientNumber(clientNumber)
+        .map(forestClientMapper::toDto)
+        .doOnNext(
+            dto -> log.info("Found client with client number {}",
+                clientNumber,
+                dto.clientNumber())
+        );
+  }
 
   public Flux<Pair<PredictiveSearchResultDto, Long>> complexSearch(String value, Pageable page) {
     // This condition is for predictive search, and we will stop here if no query param is provided

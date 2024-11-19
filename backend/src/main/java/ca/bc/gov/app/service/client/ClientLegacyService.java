@@ -18,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * This class is responsible for interacting with the legacy API to fetch client data. It uses the
@@ -87,6 +88,28 @@ public class ClientLegacyService {
                     registrationNumber, companyName, dto.clientNumber()));
   }
 
+  public Mono<ForestClientDto> searchByClientNumber(
+      String clientNumber
+  ) {
+    log.info("Searching for client number {} in legacy", clientNumber);
+
+    return
+        legacyApi
+            .get()
+            .uri(builder ->
+                builder
+                    .path("/api/search/clientNumber")
+                    .queryParam("clientNumber", clientNumber)
+                    .build(Map.of())
+            )
+            .exchangeToMono(response -> response.bodyToMono(ForestClientDto.class))
+            .doOnNext(
+                dto -> log.info(
+                    "Found Legacy data for in legacy with client number {}",
+                    dto.clientNumber())
+            );
+  }
+  
   /**
    * This method is used to search for a client in the legacy system using the client's ID and last
    * name.
