@@ -8,7 +8,7 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.3.5</version>
-    <relativePath/>
+    <relativePath />
     <!-- lookup parent from repository -->
   </parent>
   <groupId>ca.bc.gov.nrs</groupId>
@@ -17,7 +17,7 @@
   <name>nr-forest-client-processor</name>
   <description>Forest Client Background Processor</description>
 
-	<licenses>
+  <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
       <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
@@ -44,12 +44,12 @@
     <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
     <junit-platform.version>1.9.1</junit-platform.version>
     <assertj.version>3.24.2</assertj.version>
-    <netty.version>4.1.114.Final</netty.version>
+    <netty.version>4.1.115.Final</netty.version>
     <oci.revision>${project.version}</oci.revision>
     <flyway.version>10.21.0</flyway.version>
   </properties>
 
-	<dependencies>
+  <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webflux</artifactId>
@@ -405,9 +405,11 @@
                     <scope>runtime</scope>
                   </excludedScopes>
                   <excludes>
-                    <!-- Excluding opentelemetry due to the use of an alpha version that does not match the rest of the versions -->
+                    <!-- Excluding opentelemetry due to the use of an alpha version that does not
+                    match the rest of the versions -->
                     <exclude>io.opentelemetry:opentelemetry-api-incubator</exclude>
-                    <!-- Excluding jetbrains annotations due to the requirement on kotlin dependencies -->
+                    <!-- Excluding jetbrains annotations due to the requirement on kotlin
+                    dependencies -->
                     <exclude>org.jetbrains:annotations</exclude>
                   </excludes>
                 </dependencyConvergence>
@@ -433,7 +435,7 @@
                   <message>No Snapshots Allowed in releases!</message>
                   <onlyWhenRelease>true</onlyWhenRelease>
                 </requireReleaseDeps>
-                <banDuplicatePomDependencyVersions/>
+                <banDuplicatePomDependencyVersions />
               </rules>
             </configuration>
           </execution>
@@ -517,6 +519,7 @@
           <groupId>io.netty</groupId>
           <artifactId>netty-resolver-dns-native-macos</artifactId>
           <classifier>osx-aarch_64</classifier>
+          <version>${netty.version}</version>
         </dependency>
       </dependencies>
     </profile>
