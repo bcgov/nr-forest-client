@@ -574,7 +574,8 @@ class ClientSearchControllerIntegrationTest extends
             Arguments.of("darbie", 0, 4, "00000145", "DARBIE BLIND (MINYX)"),
             Arguments.of("pietro", null, null, StringUtils.EMPTY, StringUtils.EMPTY),
             Arguments.of("pietro", 0, 5, StringUtils.EMPTY, StringUtils.EMPTY),
-            Arguments.of("pietro", 4, 10, StringUtils.EMPTY, StringUtils.EMPTY)
+            Arguments.of("pietro", 4, 10, StringUtils.EMPTY, StringUtils.EMPTY),
+            Arguments.of("matelda", null, null, "00000137", "MATELDA LINDHE")
         );
   }
 
