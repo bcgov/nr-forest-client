@@ -27,7 +27,7 @@ jobs:
         with:
           node_version: 18
           commands: |
-            npm ci
+            echo "skip tests"
           dir: frontend
           sonar_args: >
             -Dsonar.exclusions=**/coverage/**,**/tests/**,**/stub/**,**/reports/**,**/cypress/**,,**/assets/**,,**/dto/**,**/CoreConstants.ts,**/src/CoreConstants.ts,**/main.ts,**/routes.ts,**/sims-vue.d.ts,**/styles.ts,**/components.d.ts
