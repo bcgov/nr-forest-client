@@ -3,6 +3,7 @@ package ca.bc.gov.app.service.client;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
@@ -88,7 +89,7 @@ public class ClientLegacyService {
                     registrationNumber, companyName, dto.clientNumber()));
   }
 
-  public Mono<ForestClientDto> searchByClientNumber(
+  public Mono<ForestClientDetailsDto> searchByClientNumber(
       String clientNumber
   ) {
     log.info("Searching for client number {} in legacy", clientNumber);
@@ -102,7 +103,7 @@ public class ClientLegacyService {
                     .queryParam("clientNumber", clientNumber)
                     .build(Map.of())
             )
-            .exchangeToMono(response -> response.bodyToMono(ForestClientDto.class))
+            .exchangeToMono(response -> response.bodyToMono(ForestClientDetailsDto.class))
             .doOnNext(
                 dto -> log.info(
                     "Found Legacy data for in legacy with client number {}",

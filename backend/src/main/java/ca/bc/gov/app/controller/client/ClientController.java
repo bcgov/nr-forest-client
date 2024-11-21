@@ -4,7 +4,7 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
-import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import ca.bc.gov.app.service.client.ClientService;
@@ -55,7 +55,7 @@ public class ClientController {
   }
   
   @GetMapping("/details/{clientNumber}")
-  public Mono<ForestClientDto> getClientDetailsByClientNumber(
+  public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(
       @PathVariable String clientNumber,
       JwtAuthenticationToken principal
   ) {

@@ -13,6 +13,7 @@ import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.dto.client.LegalTypeEnum;
+import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
@@ -142,7 +143,7 @@ public class ClientService {
         )));
   }
   
-  public Mono<ForestClientDto> getClientDetailsByClientNumber(
+  public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(
       String clientNumber,
       String userId,
       String businessId,
