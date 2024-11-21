@@ -531,7 +531,7 @@ const isProcessing = computed(() => {
               
               <read-only-component label="Client number" v-if="data.business.clientNumber">
                 <span class="body-compact-01">
-                  <!-- // @sonar-ignore-next-line -->
+                  <!-- //@sonar-ignore-next-line -->
                   <a target="_blank" :href="'https://' + greenDomain + '/nonono=' + data.business.clientNumber">
                     {{ data.business.clientNumber }}
                   </a>
