@@ -531,10 +531,10 @@ const isProcessing = computed(() => {
               
               <read-only-component label="Client number" v-if="data.business.clientNumber">
                 <span class="body-compact-01">
-                  <!-- //BEGIN-NOSCAN -->
+                  <!-- //START-NOSCAN -->
                   <a
                     target="_blank"
-                    :href="'https://' + greenDomain + '/int/client/client02MaintenanceAction.do?bean.clientNumber=' + data.business.clientNumber"
+                    :href="'https://' + greenDomain + '/nonono=' + data.business.clientNumber"
                   >
                   <!-- //END-NOSCAN -->
                     {{ data.business.clientNumber }}
