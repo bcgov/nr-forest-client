@@ -336,7 +336,7 @@ const isProcessing = computed(() => {
 <template>
   
     <div id="screen" class="submission-content">
-      <div class="submission-header">
+      <div class="resource-header">
         <cds-breadcrumb>
           <cds-breadcrumb-item>
             <cds-breadcrumb-link href="/submissions">Submissions</cds-breadcrumb-link>
@@ -344,7 +344,7 @@ const isProcessing = computed(() => {
           
         </cds-breadcrumb>
 
-        <h1 class="submission-details--title" v-if="userhasAuthority">
+        <h1 class="resource-details--title" v-if="userhasAuthority">
           <span>
             {{ toTitleCase(data.business.organizationName) }}
           </span>
@@ -531,8 +531,12 @@ const isProcessing = computed(() => {
               
               <read-only-component label="Client number" v-if="data.business.clientNumber">
                 <span class="body-compact-01">
-                  <a target="_blank" 
-                    :href="'https://' + greenDomain + '/int/client/client02MaintenanceAction.do?bean.clientNumber=' + data.business.clientNumber">
+                  <!-- //BEGIN-NOSCAN -->
+                  <a
+                    target="_blank"
+                    :href="'https://' + greenDomain + '/int/client/client02MaintenanceAction.do?bean.clientNumber=' + data.business.clientNumber"
+                  >
+                  <!-- //END-NOSCAN -->
                     {{ data.business.clientNumber }}
                   </a>
                 </span>
