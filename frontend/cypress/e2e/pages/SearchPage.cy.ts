@@ -41,6 +41,24 @@ describe("Search Page", () => {
     });
   };
 
+  const setupFeatureFlag = (ctx: Mocha.Context) => {
+    const titlePath = ctx.currentTest.titlePath();
+    for (const title of titlePath.reverse()) {
+      const ffName = "STAFF_CLIENT_DETAIL";
+
+      if (!title.includes(ffName)) continue;
+
+      const suffix = title.split(ffName)[1];
+      const words = suffix.split(" ");
+      const value = !!words.find((cur) => ["on", "true"].includes(cur));
+
+      cy.addToLocalStorage("VITE_FEATURE_FLAGS", JSON.stringify({ [ffName]: value }));
+
+      // No need to continue looking up in the titlePath
+      break;
+    }
+  };
+
   beforeEach(function () {
     // reset counters
     predictiveSearchCounter.count = 0;
@@ -73,6 +91,8 @@ describe("Search Page", () => {
         req.continue();
       },
     ).as("fullSearch");
+
+    setupFeatureFlag(this);
 
     cy.viewport(1920, 1080);
     cy.visit("/");
@@ -167,6 +187,17 @@ describe("Search Page", () => {
           "noopener",
         );
       });
+      describe("and STAFF_CLIENT_DETAIL is turned off", () => {
+        it("navigates to the client details in the legacy application", () => {
+          const greenDomain = "green-domain.com";
+          cy.get("@windowOpen").should(
+            "be.calledWith",
+            `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
+            "_blank",
+            "noopener",
+          );
+        });
+      });
     });
 
     describe("and clicks the Search button", () => {
@@ -212,6 +243,17 @@ describe("Search Page", () => {
             "_blank",
             "noopener",
           );
+        });
+        describe("and STAFF_CLIENT_DETAIL is turned off", () => {
+          it("navigates to the client details in the legacy application", () => {
+            const greenDomain = "green-domain.com";
+            cy.get("@windowOpen").should(
+              "be.calledWith",
+              `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
+              "_blank",
+              "noopener",
+            );
+          });
         });
       });
 
