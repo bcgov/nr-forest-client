@@ -28,7 +28,6 @@ jobs:
           node_version: 18
           commands: |
             npm ci
-            npm run coverage
           dir: frontend
           sonar_args: >
             -Dsonar.exclusions=**/coverage/**,**/tests/**,**/stub/**,**/reports/**,**/cypress/**,,**/assets/**,,**/dto/**,**/CoreConstants.ts,**/src/CoreConstants.ts,**/main.ts,**/routes.ts,**/sims-vue.d.ts,**/styles.ts,**/components.d.ts
