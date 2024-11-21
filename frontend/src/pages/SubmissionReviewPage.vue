@@ -531,12 +531,12 @@ const isProcessing = computed(() => {
               
               <read-only-component label="Client number" v-if="data.business.clientNumber">
                 <span class="body-compact-01">
-                  <!-- //START-NOSCAN -->
+                  <!-- // @sonar-disable -->
                   <a
                     target="_blank"
                     :href="'https://' + greenDomain + '/nonono=' + data.business.clientNumber"
                   >
-                  <!-- //END-NOSCAN -->
+                  <!-- // @sonar-enable -->
                     {{ data.business.clientNumber }}
                   </a>
                 </span>
