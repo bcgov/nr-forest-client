@@ -531,7 +531,10 @@ const isProcessing = computed(() => {
               
               <read-only-component label="Client number" v-if="data.business.clientNumber">
                 <span class="body-compact-01">
-                  <a target="_blank" :href="'https://' + greenDomain + '/nonono=' + data.business.clientNumber"><!-- //NOSONAR -->
+                  <a
+                    target="_blank"
+                    :href="'https://' + greenDomain + '/nonono=' + data.business.clientNumber"
+                  ><!-- //NOSONAR -->
                     {{ data.business.clientNumber }}
                   </a>
                 </span>
