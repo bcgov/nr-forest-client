@@ -3,7 +3,7 @@
         "businessType": "R",
         "registrationNumber": "GP{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
-        "organizationName": "KOVACEK, THOMPSON AND BOYER",
+        "clientName": "KOVACEK, THOMPSON AND BOYER",
         "acronym": "KTB",
         "clientType": "P",
         "clientTypeDesc": "General Partnership",

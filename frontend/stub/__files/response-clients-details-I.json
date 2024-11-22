@@ -3,7 +3,7 @@
         "businessType": "U",
         "registrationNumber": null,
         "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
-        "organizationName": "Taylor",
+        "clientName": "Taylor",
         "legalFirstName": "James",
         "legalMiddleName": "",
         "birthdate": "1952-08-17",
