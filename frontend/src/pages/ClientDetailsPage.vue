@@ -85,7 +85,7 @@ const goodStanding = (goodStanding: string): string => {
                 <span class="body-compact-01">{{ data.business.clientNumber }}</span>
               </read-only-component>
 
-              <read-only-component label="Acronym">
+              <read-only-component label="Acronym" v-if="data.business.acronym">
                 <span class="body-compact-01">{{ data.business.acronym }}</span>
               </read-only-component>
 
@@ -93,8 +93,15 @@ const goodStanding = (goodStanding: string): string => {
                 <span class="body-compact-01">{{ data.business.clientTypeDesc }}</span>
               </read-only-component>
 
-              <read-only-component label="Birthdate" v-if="data.business.clientType === 'I'">
+              <read-only-component label="Date of birth" v-if="data.business.birthdate">
                 <span class="body-compact-01">{{ data.business.birthdate }}</span>
+              </read-only-component>
+
+              <read-only-component
+                :label="data.business.clientIdTypeDesc"
+                v-if="data.business.clientIdentification"
+              >
+                <span class="body-compact-01">{{ data.business.clientIdentification }}</span>
               </read-only-component>
 
               <read-only-component
@@ -104,7 +111,11 @@ const goodStanding = (goodStanding: string): string => {
                 <span class="body-compact-01">{{ data.business.registrationNumber }}</span>
               </read-only-component>
 
-              <read-only-component label="BC Registries standing" id="goodStanding">
+              <read-only-component
+                label="BC Registries standing"
+                id="goodStanding"
+                v-if="data.business.businessType === 'R'"
+              >
                 <div class="internal-grouping-01">
                   <span class="body-compact-01">{{
                     goodStanding(data.business.goodStandingInd)
