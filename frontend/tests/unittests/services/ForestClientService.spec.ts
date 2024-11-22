@@ -5,6 +5,7 @@ import {
   getContactDescription,
   getAddressDescription,
   toTitleCase,
+  getTagColorByClientStatus,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 
@@ -123,10 +124,20 @@ describe("ForestClientService.ts", () => {
   describe("toTitleCase", () => {
     it.each([
       ["TWO WORDS", "Two Words"],
-      ["NAME (DOING)", "Name (Doing)"],
-      ["A.C.R.O.N.", "A.C.R.O.N."],
-    ])("gets the expected result", (input, expectedOutput) => {
+      ["NAME (DOING)", "Name (Doing)"], // parentheses
+      ["A.C.R.O.N.", "A.C.R.O.N."], // period
+    ])("gets the expected result from input '%s': '%s'", (input, expectedOutput) => {
       expect(toTitleCase(input)).toEqual(expectedOutput);
+    });
+  });
+
+  describe("getTagColorByClientStatus", () => {
+    it.each([
+      ["Active", "green"], // existing value #1
+      ["Deactivated", "purple"], // existing value #2
+      ["Bogus", ""], // non-existent value
+    ])("gets the expected result from input '%s': '%s'", (input, expectedOutput) => {
+      expect(getTagColorByClientStatus(input)).toEqual(expectedOutput);
     });
   });
 });
