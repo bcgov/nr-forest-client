@@ -1,0 +1,55 @@
+{
+    "business": {
+        "businessType": "U",
+        "registrationNumber": null,
+        "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
+        "organizationName": "Taylor",
+        "legalFirstName": "James",
+        "legalMiddleName": "",
+        "birthdate": "1952-08-17",
+        "clientIdTypeCode": "BCDL",
+        "clientIdTypeDesc": "British Columbia Driver's Licence",
+        "clientIdentification": "64242646",
+        "acronym": null,
+        "clientType": "I",
+        "clientTypeDesc": "Individual",
+        "goodStandingInd": null,
+        "status": "Active",
+        "note": "This is famous guitarrist James Taylor's business"
+    },
+    "contact": [
+        {
+            "index": 0,
+            "contactType": "Accounts Receivable",
+            "firstName": "Test",
+            "lastName": "Uat",
+            "phoneNumber": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+            "emailAddress": "uattest@gov.bc.ca",
+            "locations": [
+                "Mailing address",
+                "Accountant's address"
+            ],
+            "userId": "{{randomValue type='UUID'}}"
+        }
+    ],
+    "address": [
+        {
+            "index": 0,
+            "streetAddress":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
+            "country":"Canada",
+            "province":"Saskatchewan",
+            "city":"Hampton",
+            "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "name": "Mailing address"
+        },
+        {
+            "index": 1,
+            "streetAddress":"{{randomValue length=4 type='NUMERIC'}} Oak St",
+            "country":"Canada",
+            "province":"British Columbia",
+            "city":"Deer Lake",
+            "postalCode":"{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "name": "Accountant's address"
+        }
+    ]
+}

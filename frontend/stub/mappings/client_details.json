@@ -1,0 +1,49 @@
+{
+  "mappings": [
+    {
+      "name": "Client Details General Partnership",
+      "request": {
+        "urlPattern": "/api/clients/details/[gG]?(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-G.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Sole Proprietorship",
+      "request": {
+        "urlPattern": "/api/clients/details/[sS](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-S.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Sole Proprietorship",
+      "request": {
+        "urlPattern": "/api/clients/details/[iI](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-I.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+    "business": {
+        "businessType": "R",
+        "registrationNumber": "SP{{randomValue length=8 type='NUMERIC'}}",
+        "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
+        "organizationName": "Dunder Mifflin Paper Company",
+        "birthdate": "1962-08-17",
+        "acronym": "DMPC",
+        "clientType": "RSP",
+        "clientTypeDesc": "Registered sole proprietorship",
+        "goodStandingInd": "Y",
+        "status": "Active",
+        "note": "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton"
+    },
+    "contact": [
+        {
+            "index": 0,
+            "contactType": "Accounts Receivable",
+            "firstName": "Test",
+            "lastName": "Uat",
+            "phoneNumber": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+            "emailAddress": "uattest@gov.bc.ca",
+            "locations": [
+                "Mailing address",
+                "Accountant's address"
+            ],
+            "userId": "{{randomValue type='UUID'}}"
+        }
+    ],
+    "address": [
+        {
+            "index": 0,
+            "streetAddress":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
+            "country":"Canada",
+            "province":"Saskatchewan",
+            "city":"Hampton",
+            "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "name": "Mailing address"
+        },
+        {
+            "index": 1,
+            "streetAddress":"{{randomValue length=4 type='NUMERIC'}} Oak St",
+            "country":"Canada",
+            "province":"British Columbia",
+            "city":"Deer Lake",
+            "postalCode":"{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "name": "Accountant's address"
+        }
+    ]
+}
