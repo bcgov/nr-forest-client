@@ -25,7 +25,7 @@ import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
 // @ts-ignore
 import Warning20 from "@carbon/icons-vue/es/warning--filled/20";
 
-import { toTitleCase } from "@/services/ForestClientService";
+import { getTagColorByClientStatus, toTitleCase } from "@/services/ForestClientService";
 
 //Route related
 const router = useRouter();
@@ -43,23 +43,6 @@ watch([fetchError], () => {
 const goodStanding = (goodStanding: string): string => {
   if (goodStanding) return goodStanding === "Y" ? "Good standing" : "Not in good standing";
   return "Unknown";
-};
-
-const tagColor = (status: string) => {
-  switch (status) {
-    case "Active":
-      return "green";
-    case "Deactivated":
-      return "purple";
-    case "Receivership":
-      return "magenta";
-    case "Suspended":
-      return "red";
-    case "Deceased":
-      return "gray";
-    default:
-      return "";
-  }
 };
 </script>
 
@@ -133,7 +116,7 @@ const tagColor = (status: string) => {
 
               <read-only-component label="Status">
                 <span class="body-compact-01">
-                  <cds-tag :type="tagColor(data.business.status)">
+                  <cds-tag :type="getTagColorByClientStatus(data.business.status)">
                     <span>{{ data.business.status }}</span>
                   </cds-tag>
                 </span>

@@ -118,3 +118,20 @@ export const highlightMatch = (itemName: string, searchTerm: string): string => 
     )
     .join('');
 };
+
+export const getTagColorByClientStatus = (status: string): string => {
+  switch (status) {
+    case "Active":
+      return "green";
+    case "Deactivated":
+      return "purple";
+    case "Receivership":
+      return "magenta";
+    case "Suspended":
+      return "red";
+    case "Deceased":
+      return "gray";
+    default:
+      return "";
+  }
+};
