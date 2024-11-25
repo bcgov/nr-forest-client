@@ -1602,6 +1602,10 @@ cds-header-panel[expanded] {
   background: var(--light-theme-layer-layer-02, #fff);
 }
 
+.no-padding {
+  padding: 0;
+}
+
 // Copied from .cds--side-nav__overlay-active in @carbon/styles/css/styles.css so to make it available on all breakpoints
 .overlay-active {
   z-index: 6000;
@@ -1701,7 +1705,7 @@ div.internal-grouping-01 span.body-compact-01 ~ svg.warning path[data-icon-path=
   opacity: 1;
 }
 
-div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
+div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typography) {
   font-weight: 900;
   background-color: color-mix(in srgb, var(--cds-support-warning) 40%, white);
 }

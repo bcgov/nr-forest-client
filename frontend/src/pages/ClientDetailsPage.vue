@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 // Carbon
 import "@carbon/web-components/es/components/breadcrumb/index";
@@ -44,6 +44,22 @@ const goodStanding = (goodStanding: string): string => {
   if (goodStanding) return goodStanding === "Y" ? "Good standing" : "Not in good standing";
   return "Unknown";
 };
+
+const fullClientName = computed(() => {
+  if (data.value?.business) {
+    const { legalFirstName, legalMiddleName, clientName } = data.value.business;
+    const rawParts = [legalFirstName, legalMiddleName, clientName];
+    const populatedParts = [];
+    for (const part of rawParts) {
+      if (part) {
+        populatedParts.push(part);
+      }
+    }
+    const fullClientName = populatedParts.join(" ");
+    return fullClientName;
+  }
+  return "";
+});
 </script>
 
 <template>
@@ -58,7 +74,7 @@ const goodStanding = (goodStanding: string): string => {
 
         <h1 class="resource-details--title">
           <span>
-            {{ toTitleCase(data?.business.organizationName) }}
+            {{ toTitleCase(fullClientName) }}
           </span>
         </h1>
         <div>
@@ -81,63 +97,57 @@ const goodStanding = (goodStanding: string): string => {
             <h2 class="mg-tl-2 heading-06">Client summary</h2>
 
             <div class="grouping-10">
-              <read-only-component label="Client number">
-                <span class="body-compact-01">{{ data.business.clientNumber }}</span>
-              </read-only-component>
-
-              <read-only-component label="Acronym" v-if="data.business.acronym">
-                <span class="body-compact-01">{{ data.business.acronym }}</span>
-              </read-only-component>
-
-              <read-only-component label="Client type">
-                <span class="body-compact-01">{{ data.business.clientTypeDesc }}</span>
-              </read-only-component>
-
-              <read-only-component label="Date of birth" v-if="data.business.birthdate">
-                <span class="body-compact-01">{{ data.business.birthdate }}</span>
-              </read-only-component>
-
-              <read-only-component
-                :label="data.business.clientIdTypeDesc"
-                v-if="data.business.clientIdentification"
-              >
-                <span class="body-compact-01">{{ data.business.clientIdentification }}</span>
-              </read-only-component>
-
-              <read-only-component
-                label="Registration number"
-                v-if="data.business.registrationNumber"
-              >
-                <span class="body-compact-01">{{ data.business.registrationNumber }}</span>
-              </read-only-component>
-
-              <read-only-component
-                label="BC Registries standing"
-                id="goodStanding"
-                v-if="data.business.businessType === 'R'"
-              >
-                <div class="internal-grouping-01">
-                  <span class="body-compact-01">{{
-                    goodStanding(data.business.goodStandingInd)
-                  }}</span>
-                  <Check20 v-if="data.business.goodStandingInd === 'Y'" class="good" />
-                  <Warning20 v-if="data.business.goodStandingInd !== 'Y'" class="warning" />
-                </div>
-              </read-only-component>
-
-              <read-only-component label="Status">
-                <span class="body-compact-01">
-                  <cds-tag :type="getTagColorByClientStatus(data.business.status)">
-                    <span>{{ data.business.status }}</span>
-                  </cds-tag>
-                </span>
-              </read-only-component>
-            </div>
-
-            <div class="grouping-10" v-if="data.business.note">
-              <read-only-component label="Note">
-                <span class="body-compact-01">{{ data.business.note }}</span>
-              </read-only-component>
+              <div class="grouping-10 no-padding">
+                <read-only-component label="Client number">
+                  <span class="body-compact-01">{{ data.business.clientNumber }}</span>
+                </read-only-component>
+                <read-only-component label="Acronym" v-if="data.business.acronym">
+                  <span class="body-compact-01">{{ data.business.acronym }}</span>
+                </read-only-component>
+                <read-only-component label="Client type">
+                  <span class="body-compact-01">{{ data.business.clientTypeDesc }}</span>
+                </read-only-component>
+                <read-only-component label="Date of birth" v-if="data.business.birthdate">
+                  <span class="body-compact-01">{{ data.business.birthdate }}</span>
+                </read-only-component>
+                <read-only-component
+                  :label="data.business.clientIdTypeDesc"
+                  v-if="data.business.clientIdentification"
+                >
+                  <span class="body-compact-01">{{ data.business.clientIdentification }}</span>
+                </read-only-component>
+                <read-only-component
+                  label="Registration number"
+                  v-if="data.business.registrationNumber"
+                >
+                  <span class="body-compact-01">{{ data.business.registrationNumber }}</span>
+                </read-only-component>
+                <read-only-component
+                  label="BC Registries standing"
+                  id="goodStanding"
+                  v-if="data.business.businessType === 'R'"
+                >
+                  <div class="internal-grouping-01">
+                    <span class="body-compact-01 default-typography">{{
+                      goodStanding(data.business.goodStandingInd)
+                    }}</span>
+                    <Check20 v-if="data.business.goodStandingInd === 'Y'" class="good" />
+                    <Warning20 v-if="data.business.goodStandingInd !== 'Y'" class="warning" />
+                  </div>
+                </read-only-component>
+                <read-only-component label="Status">
+                  <span class="body-compact-01">
+                    <cds-tag :type="getTagColorByClientStatus(data.business.status)">
+                      <span>{{ data.business.status }}</span>
+                    </cds-tag>
+                  </span>
+                </read-only-component>
+              </div>
+              <div class="grouping-10 no-padding" v-if="data.business.note">
+                <read-only-component label="Note">
+                  <span class="body-compact-01">{{ data.business.note }}</span>
+                </read-only-component>
+              </div>
             </div>
           </div>
         </div>
