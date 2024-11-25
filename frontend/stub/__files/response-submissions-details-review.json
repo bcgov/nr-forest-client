@@ -7,13 +7,14 @@
     "approvedTimestamp": "{{now offset='-1 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
     "updateUser": "Isador Driver",
     "business": {
-        "businessType": "Registered Business",
+        "businessType": "R",
         "registrationNumber": "GP{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"",
         "organizationName": "KOVACEK, THOMPSON AND BOYER",
         "clientType": "P",
-        "goodStanding": null,
+        "goodStandingInd": null,
         "clientTypeDesc": "General Partnership",
+        "district": "DCC",
         "districtDesc": "DCC - Cariboo-Chilcotin Natural Resource District"
     },
     "contact": [

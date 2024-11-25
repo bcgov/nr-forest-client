@@ -13,7 +13,8 @@
         "organizationName": "Carter, Mante and Rau",
         "clientType": "I",
         "clientTypeDesc": "Individual",
-        "goodStanding": "Y",
+        "goodStandingInd": "Y",
+        "district": "DKA",
         "districtDesc": "DKA - Thompson Rivers Natural Resource District"
     },
     "contact": [
