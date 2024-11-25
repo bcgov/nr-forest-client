@@ -1,15 +1,16 @@
 {
     "business": {
         "businessType": "R",
-        "registrationNumber": "GP{{randomValue length=8 type='NUMERIC'}}",
+        "registryCompanyTypeCode": "GP",
+        "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
         "clientName": "KOVACEK, THOMPSON AND BOYER",
-        "acronym": "KTB",
-        "clientType": "P",
+        "clientAcronym": "KTB",
+        "clientTypeCode": "P",
         "clientTypeDesc": "General Partnership",
         "goodStandingInd": "Y",
         "status": "Active",
-        "note": "Email from Cheryl Bibby to request any letters for sec deposits be mailed to 3000, 28th St, Vernon"
+        "clientComment": "Email from Cheryl Bibby to request any letters for sec deposits be mailed to 3000, 28th St, Vernon"
     },
     "contact": [
         {

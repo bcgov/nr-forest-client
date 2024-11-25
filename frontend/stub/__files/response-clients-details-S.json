@@ -1,16 +1,17 @@
 {
     "business": {
         "businessType": "R",
-        "registrationNumber": "SP{{randomValue length=8 type='NUMERIC'}}",
+        "registryCompanyTypeCode": "SP",
+        "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
         "clientName": "Dunder Mifflin Paper Company",
         "birthdate": "1962-08-17",
-        "acronym": "DMPC",
-        "clientType": "RSP",
+        "clientAcronym": "DMPC",
+        "clientTypeCode": "RSP",
         "clientTypeDesc": "Registered sole proprietorship",
         "goodStandingInd": "N",
         "status": "Active",
-        "note": "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton"
+        "clientComment": "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton"
     },
     "contact": [
         {

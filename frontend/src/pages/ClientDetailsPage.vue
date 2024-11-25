@@ -45,7 +45,7 @@ const goodStanding = (goodStanding: string): string => {
   return "Unknown";
 };
 
-const fullClientName = computed(() => {
+const clientFullName = computed(() => {
   if (data.value?.business) {
     const { legalFirstName, legalMiddleName, clientName } = data.value.business;
     const rawParts = [legalFirstName, legalMiddleName, clientName];
@@ -59,6 +59,14 @@ const fullClientName = computed(() => {
     return fullClientName;
   }
   return "";
+});
+
+const clientRegistrationNumber = computed(() => {
+  const { registryCompanyTypeCode, corpRegnNmbr } = data.value.business;
+  if (!registryCompanyTypeCode || !corpRegnNmbr) {
+    return undefined;
+  }
+  return `${registryCompanyTypeCode}${corpRegnNmbr}`;
 });
 </script>
 
@@ -74,7 +82,7 @@ const fullClientName = computed(() => {
 
         <h1 class="resource-details--title">
           <span>
-            {{ toTitleCase(fullClientName) }}
+            {{ toTitleCase(clientFullName) }}
           </span>
         </h1>
         <div>
@@ -101,8 +109,8 @@ const fullClientName = computed(() => {
                 <read-only-component label="Client number">
                   <span class="body-compact-01">{{ data.business.clientNumber }}</span>
                 </read-only-component>
-                <read-only-component label="Acronym" v-if="data.business.acronym">
-                  <span class="body-compact-01">{{ data.business.acronym }}</span>
+                <read-only-component label="Acronym" v-if="data.business.clientAcronym">
+                  <span class="body-compact-01">{{ data.business.clientAcronym }}</span>
                 </read-only-component>
                 <read-only-component label="Client type">
                   <span class="body-compact-01">{{ data.business.clientTypeDesc }}</span>
@@ -116,11 +124,8 @@ const fullClientName = computed(() => {
                 >
                   <span class="body-compact-01">{{ data.business.clientIdentification }}</span>
                 </read-only-component>
-                <read-only-component
-                  label="Registration number"
-                  v-if="data.business.registrationNumber"
-                >
-                  <span class="body-compact-01">{{ data.business.registrationNumber }}</span>
+                <read-only-component label="Registration number" v-if="clientRegistrationNumber">
+                  <span class="body-compact-01">{{ clientRegistrationNumber }}</span>
                 </read-only-component>
                 <read-only-component
                   label="BC Registries standing"
@@ -143,9 +148,9 @@ const fullClientName = computed(() => {
                   </span>
                 </read-only-component>
               </div>
-              <div class="grouping-10 no-padding" v-if="data.business.note">
+              <div class="grouping-10 no-padding" v-if="data.business.clientComment">
                 <read-only-component label="Note">
-                  <span class="body-compact-01">{{ data.business.note }}</span>
+                  <span class="body-compact-01">{{ data.business.clientComment }}</span>
                 </read-only-component>
               </div>
             </div>

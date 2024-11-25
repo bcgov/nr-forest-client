@@ -1,7 +1,8 @@
 {
     "business": {
         "businessType": "U",
-        "registrationNumber": null,
+        "registryCompanyTypeCode": null,
+        "corpRegnNmbr": null,
         "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
         "clientName": "Taylor",
         "legalFirstName": "James",
@@ -10,12 +11,12 @@
         "clientIdTypeCode": "BCDL",
         "clientIdTypeDesc": "British Columbia Driver's Licence",
         "clientIdentification": "64242646",
-        "acronym": null,
-        "clientType": "I",
+        "clientAcronym": null,
+        "clientTypeCode": "I",
         "clientTypeDesc": "Individual",
         "goodStandingInd": null,
         "status": "Active",
-        "note": "This is famous guitarrist James Taylor's business"
+        "clientComment": "This is famous guitarrist James Taylor's business"
     },
     "contact": [
         {
