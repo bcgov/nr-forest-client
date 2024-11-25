@@ -17,6 +17,7 @@ public record ForestClientDetailsDto (
   String wcbFirmNumber,
   String ocgSupplierNmbr,
   String clientComment,
+  String goodStandingInd,
   List<ForestClientLocationDto> addresses,
   List<ForestClientContactDto> contacts
 ) {
