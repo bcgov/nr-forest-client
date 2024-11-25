@@ -73,6 +73,9 @@ jobs:
   results:
     name: Validate Results
     needs: [changelog, validate]
+    if: always()
     runs-on: ubuntu-24.04
     steps:
-      - run: echo "Workflow completed successfully!"
+      - if: contains(needs.*.result, 'failure')
+        run: echo "At least one job has failed." && exit 1
+      - run: echo "Success!"
