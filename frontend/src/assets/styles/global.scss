@@ -1606,6 +1606,10 @@ cds-header-panel[expanded] {
   padding: 0;
 }
 
+.width-100percent {
+  width: 100%;
+}
+
 // Copied from .cds--side-nav__overlay-active in @carbon/styles/css/styles.css so to make it available on all breakpoints
 .overlay-active {
   z-index: 6000;
