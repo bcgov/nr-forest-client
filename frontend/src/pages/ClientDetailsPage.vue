@@ -115,15 +115,6 @@ const clientRegistrationNumber = computed(() => {
                 <read-only-component label="Client type">
                   <span class="body-compact-01">{{ data.business.clientTypeDesc }}</span>
                 </read-only-component>
-                <read-only-component label="Date of birth" v-if="data.business.birthdate">
-                  <span class="body-compact-01">{{ data.business.birthdate }}</span>
-                </read-only-component>
-                <read-only-component
-                  :label="data.business.clientIdTypeDesc"
-                  v-if="data.business.clientIdentification"
-                >
-                  <span class="body-compact-01">{{ data.business.clientIdentification }}</span>
-                </read-only-component>
                 <read-only-component label="Registration number" v-if="clientRegistrationNumber">
                   <span class="body-compact-01">{{ clientRegistrationNumber }}</span>
                 </read-only-component>
@@ -139,6 +130,15 @@ const clientRegistrationNumber = computed(() => {
                     <Check20 v-if="data.business.goodStandingInd === 'Y'" class="good" />
                     <Warning20 v-if="data.business.goodStandingInd !== 'Y'" class="warning" />
                   </div>
+                </read-only-component>
+                <read-only-component
+                  :label="data.business.clientIdTypeDesc"
+                  v-if="data.business.clientIdentification"
+                >
+                  <span class="body-compact-01">{{ data.business.clientIdentification }}</span>
+                </read-only-component>
+                <read-only-component label="Date of birth" v-if="data.business.birthdate">
+                  <span class="body-compact-01">{{ data.business.birthdate }}</span>
                 </read-only-component>
                 <read-only-component label="Status">
                   <span class="body-compact-01">
