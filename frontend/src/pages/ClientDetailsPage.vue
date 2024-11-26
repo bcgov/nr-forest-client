@@ -154,7 +154,7 @@ const clientRegistrationNumber = computed(() => {
                 <read-only-component
                   label="BC Registries standing"
                   id="goodStanding"
-                  v-if="data.business.businessType === 'R'"
+                  v-if="clientRegistrationNumber"
                 >
                   <div class="internal-grouping-01">
                     <span class="body-compact-01 default-typography">{{
@@ -166,7 +166,7 @@ const clientRegistrationNumber = computed(() => {
                 </read-only-component>
                 <read-only-component
                   :label="data.business.clientIdTypeDesc"
-                  v-if="data.business.clientIdentification"
+                  v-if="data.business.clientIdTypeDesc && data.business.clientIdentification"
                 >
                   <span class="body-compact-01">{{ data.business.clientIdentification }}</span>
                 </read-only-component>
@@ -185,7 +185,7 @@ const clientRegistrationNumber = computed(() => {
                 class="grouping-10 no-padding width-100percent"
                 v-if="data.business.clientComment"
               >
-                <read-only-component label="Note">
+                <read-only-component label="Note" v-if="data.business.clientComment">
                   <span class="body-compact-01">{{ data.business.clientComment }}</span>
                 </read-only-component>
               </div>
