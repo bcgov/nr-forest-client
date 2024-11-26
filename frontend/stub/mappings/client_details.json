@@ -68,6 +68,16 @@
         "body": "Server error",
         "fixedDelayMilliseconds": 200
       }
+    },
+    {
+      "name": "Client Details - Error Network",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)enet",
+        "method": "GET"
+      },
+      "response": {
+        "fault": "MALFORMED_RESPONSE_CHUNK"
+      }
     }
   ]
 }
