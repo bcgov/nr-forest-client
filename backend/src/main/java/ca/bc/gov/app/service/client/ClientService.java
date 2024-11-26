@@ -149,9 +149,69 @@ public class ClientService {
       String businessId,
       String provider
   ) {
-    log.info("Loading details for {} {} {} {}", clientNumber, userId, businessId, provider);
-    return legacyService.searchByClientNumber(clientNumber);
+      log.info("Loading details for {} {} {} {}", clientNumber, userId, businessId, provider);
+
+      return legacyService
+          .searchByClientNumber(clientNumber)
+          .flatMap(forestClientDetailsDto -> {
+              String corpRegnNmbr = forestClientDetailsDto.corpRegnNmbr();
+
+              if (corpRegnNmbr == null || corpRegnNmbr.isEmpty()) {
+                  log.info("Corporation registration number not provided. Returning legacy details.");
+                  return Mono.just(forestClientDetailsDto);
+              }
+
+              log.info("Retrieved corporation registration number: {}", corpRegnNmbr);
+
+              Mono<BcRegistryDocumentDto> documentMono = bcRegistryService
+                  .requestDocumentData(corpRegnNmbr)
+                  .next();
+              return populateGoodStandingInd(forestClientDetailsDto, documentMono);
+          });
   }
+
+  private Mono<ForestClientDetailsDto> populateGoodStandingInd(
+      ForestClientDetailsDto forestClientDetailsDto,
+      Mono<BcRegistryDocumentDto> documentMono
+  ) {
+      return documentMono
+          .map(document -> {
+              Boolean goodStandingInd = document.business().goodStanding();
+              String goodStanding;
+              
+              if (goodStandingInd == null) {
+                goodStanding = "";
+              } else {
+                goodStanding = goodStandingInd ? "Y" : "N";
+              }
+              log.info("Setting goodStandingInd for client: {} to {}", 
+                       forestClientDetailsDto.clientNumber(), goodStanding);
+
+              return new ForestClientDetailsDto(
+                  forestClientDetailsDto.clientNumber(),
+                  forestClientDetailsDto.clientName(),
+                  forestClientDetailsDto.legalFirstName(),
+                  forestClientDetailsDto.legalMiddleName(),
+                  forestClientDetailsDto.clientStatusCode(),
+                  forestClientDetailsDto.clientTypeCode(),
+                  forestClientDetailsDto.clientIdTypeCode(),
+                  forestClientDetailsDto.clientIdentification(),
+                  forestClientDetailsDto.registryCompanyTypeCode(),
+                  forestClientDetailsDto.corpRegnNmbr(),
+                  forestClientDetailsDto.clientAcronym(),
+                  forestClientDetailsDto.wcbFirmNumber(),
+                  forestClientDetailsDto.ocgSupplierNmbr(),
+                  forestClientDetailsDto.clientComment(),
+                  forestClientDetailsDto.clientCommentUpdateDate(),
+                  forestClientDetailsDto.clientCommentUpdateUser(),
+                  goodStanding,
+                  forestClientDetailsDto.birthdate(),
+                  forestClientDetailsDto.addresses(),
+                  forestClientDetailsDto.contacts()
+              );
+          });
+  }
+
 
   /**
    * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances matching
