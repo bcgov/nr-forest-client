@@ -200,7 +200,6 @@ public class ClientService {
                   forestClientDetailsDto.clientIdTypeDesc(),
                   forestClientDetailsDto.clientIdentification(),
                   forestClientDetailsDto.registryCompanyTypeCode(),
-                  forestClientDetailsDto.registryCompanyTypeDesc(),
                   forestClientDetailsDto.corpRegnNmbr(),
                   forestClientDetailsDto.clientAcronym(),
                   forestClientDetailsDto.wcbFirmNumber(),

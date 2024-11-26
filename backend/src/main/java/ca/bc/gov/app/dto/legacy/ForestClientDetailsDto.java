@@ -16,7 +16,6 @@ public record ForestClientDetailsDto (
   String clientIdTypeDesc,
   String clientIdentification,
   String registryCompanyTypeCode,
-  String registryCompanyTypeDesc,
   String corpRegnNmbr,
   String clientAcronym,
   String wcbFirmNumber,
