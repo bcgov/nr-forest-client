@@ -44,6 +44,30 @@
         ],
         "fixedDelayMilliseconds": 500
       }
+    },
+    {
+      "name": "Client Details - Error 400",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)e40.",
+        "method": "GET"
+      },
+      "response": {
+        "status": 404,
+        "body": "Client not found",
+        "fixedDelayMilliseconds": 200
+      }
+    },
+    {
+      "name": "Client Details - Error 500",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)e50.",
+        "method": "GET"
+      },
+      "response": {
+        "status": 500,
+        "body": "Server error",
+        "fixedDelayMilliseconds": 200
+      }
     }
   ]
 }

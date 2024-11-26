@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 
 // Carbon
 import "@carbon/web-components/es/components/breadcrumb/index";
@@ -25,7 +25,14 @@ import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
 // @ts-ignore
 import Warning20 from "@carbon/icons-vue/es/warning--filled/20";
 
-import { getTagColorByClientStatus, toTitleCase } from "@/services/ForestClientService";
+import {
+  adminEmail,
+  getObfuscatedEmailLink,
+  getTagColorByClientStatus,
+  toTitleCase,
+} from "@/services/ForestClientService";
+
+import { AxiosError } from "axios";
 
 //Route related
 const router = useRouter();
@@ -34,11 +41,6 @@ const clientNumber = router.currentRoute.value.params.id;
 const data = ref(undefined);
 
 const { error: fetchError } = useFetchTo(`/api/clients/details/${clientNumber}`, data);
-watch([fetchError], () => {
-  if (fetchError.value.message) {
-    networkErrorMsg.value = fetchError.value.message;
-  }
-});
 
 const goodStanding = (goodStanding: string): string => {
   if (goodStanding) return goodStanding === "Y" ? "Good standing" : "Not in good standing";
@@ -97,6 +99,37 @@ const clientRegistrationNumber = computed(() => {
           This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
         -->
         <div data-scroll="top-notification" class="header-offset"></div>
+        <cds-actionable-notification
+          v-if="[AxiosError.ERR_BAD_RESPONSE, AxiosError.ERR_NETWORK].includes(fetchError.code)"
+          id="internalServerError"
+          v-shadow="true"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="error"
+          title="Something went wrong:"
+        >
+          <div>
+            We're working to fix a problem with our network. Please try again later. If this error
+            persists, please email
+            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+          </div>
+        </cds-actionable-notification>
+        <cds-actionable-notification
+          v-else-if="fetchError.code === AxiosError.ERR_BAD_REQUEST"
+          id="badRequestError"
+          v-shadow="true"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="error"
+          title="Something went wrong:"
+        >
+          <div>
+            There seems to be a problem with the information you entered. Please double-check and
+            try again.
+          </div>
+        </cds-actionable-notification>
       </div>
 
       <div class="grouping-14" v-if="data">
