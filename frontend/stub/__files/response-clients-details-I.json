@@ -15,7 +15,8 @@
         "clientTypeCode": "I",
         "clientTypeDesc": "Individual",
         "goodStandingInd": null,
-        "status": "Active",
+        "clientStatusCode": "A",
+        "clientStatusDesc": "Active",
         "clientComment": "This is famous guitarrist James Taylor's business"
     },
     "contact": [

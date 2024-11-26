@@ -175,8 +175,8 @@ const clientRegistrationNumber = computed(() => {
                 </read-only-component>
                 <read-only-component label="Status">
                   <span class="body-compact-01">
-                    <cds-tag :type="getTagColorByClientStatus(data.business.status)">
-                      <span>{{ data.business.status }}</span>
+                    <cds-tag :type="getTagColorByClientStatus(data.business.clientStatusDesc)">
+                      <span>{{ data.business.clientStatusDesc }}</span>
                     </cds-tag>
                   </span>
                 </read-only-component>

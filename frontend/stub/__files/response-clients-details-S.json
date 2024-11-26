@@ -10,7 +10,8 @@
         "clientTypeCode": "RSP",
         "clientTypeDesc": "Registered sole proprietorship",
         "goodStandingInd": "N",
-        "status": "Active",
+        "clientStatusCode": "A",
+        "clientStatusDesc": "Active",
         "clientComment": "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton"
     },
     "contact": [
