@@ -576,3 +576,13 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=1
+
+  results:
+    name: PR Results
+    needs: [builds, pre-tools, deploy-tools, deploy, cypress-run, scale-down-after, recreate-database, scale-up-legacy]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - if: contains(needs.*.result, 'failure')
+        run: echo "At least one job has failed." && exit 1
+      - run: echo "Success!"
