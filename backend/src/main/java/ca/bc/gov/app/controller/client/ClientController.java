@@ -58,16 +58,14 @@ public class ClientController {
   public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(
       @PathVariable String clientNumber,
       JwtAuthenticationToken principal
-  ) {
+  ) {   
     log.info("Requesting client details for client number {} from the client service. {}",
         clientNumber,
         JwtPrincipalUtil.getUserId(principal)
     );
     return clientService.getClientDetailsByClientNumber(
             clientNumber,
-            JwtPrincipalUtil.getUserId(principal),
-            JwtPrincipalUtil.getBusinessId(principal),
-            JwtPrincipalUtil.getProvider(principal));
+            JwtPrincipalUtil.getGroups(principal));
   }
   
   @GetMapping("/search")

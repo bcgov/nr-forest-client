@@ -90,7 +90,8 @@ public class ClientLegacyService {
   }
 
   public Mono<ForestClientDetailsDto> searchByClientNumber(
-      String clientNumber
+      String clientNumber,
+      List<String> groups
   ) {
     log.info("Searching for client number {} in legacy", clientNumber);
 
@@ -101,6 +102,7 @@ public class ClientLegacyService {
                 builder
                     .path("/api/search/clientNumber")
                     .queryParam("clientNumber", clientNumber)
+                    .queryParam("groups", groups)
                     .build(Map.of())
             )
             .exchangeToMono(response -> response.bodyToMono(ForestClientDetailsDto.class))

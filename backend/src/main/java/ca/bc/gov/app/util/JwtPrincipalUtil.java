@@ -1,7 +1,10 @@
 package ca.bc.gov.app.util;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -378,6 +381,36 @@ public class JwtPrincipalUtil {
    */
   private static String getNameValue(Map<String, Object> claims) {
     return processName(claims).get("fullName");
+  }
+  
+  /**
+   * Retrieves a list of groups from the given JwtPrincipal.
+   * 
+   * This method extracts the token attributes from the provided {@link JwtPrincipal}, then looks for the key "cognito:groups" 
+   * in the token attributes. If the value associated with this key is a {@link List}, the method filters the elements to only 
+   * include non-null values of type {@link String}. The resulting list of strings is returned.
+   * 
+   * @param jwtPrincipal The {@link JwtPrincipal} containing the token attributes. It must have the "cognito:groups" key.
+   *                     If the key does not exist or the value is not a list of strings, an empty list is returned.
+   * @return A list of group names, or an empty list if the key is missing or the value is not a list of strings.
+   */
+  public static List<String> getGroups(JwtAuthenticationToken jwtPrincipal) {
+      if (jwtPrincipal == null || jwtPrincipal.getTokenAttributes() == null) {
+          return Collections.emptyList();
+      }
+
+      Map<String, Object> tokenAttributes = jwtPrincipal.getTokenAttributes();
+      Object groups = tokenAttributes.get("cognito:groups");
+
+      if (groups instanceof List) {
+          return ((List<?>) groups).stream()
+                  .filter(Objects::nonNull)
+                  .filter(String.class::isInstance)
+                  .map(String.class::cast)
+                  .toList();
+      }
+
+      return Collections.emptyList();
   }
 
 }

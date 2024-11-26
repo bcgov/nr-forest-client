@@ -77,9 +77,12 @@ public class ClientSearchController {
   
   @GetMapping("/clientNumber")
   public Mono<ForestClientDto> findByClientNumber(
-      @RequestParam String clientNumber
+      @RequestParam String clientNumber,
+      @RequestParam List<String> groups
   ) {
-    log.info("Receiving request to search by ID {} and Last Name", clientNumber);
+    log.info("Receiving request to search by ID {} and groups {}", 
+             clientNumber,
+             groups);
     return service.findByClientNumber(clientNumber);
   }
 

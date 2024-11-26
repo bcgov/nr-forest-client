@@ -145,14 +145,12 @@ public class ClientService {
   
   public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(
       String clientNumber,
-      String userId,
-      String businessId,
-      String provider
+      List<String> groups
   ) {
-      log.info("Loading details for {} {} {} {}", clientNumber, userId, businessId, provider);
+      log.info("Loading details for {} for user role {}", clientNumber, groups.toString());
 
       return legacyService
-          .searchByClientNumber(clientNumber)
+          .searchByClientNumber(clientNumber, groups)
           .flatMap(forestClientDetailsDto -> {
               String corpRegnNmbr = forestClientDetailsDto.corpRegnNmbr();
 
