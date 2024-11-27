@@ -23,16 +23,20 @@ const clientRegistrationNumber = computed(() => {
 
 <template>
   <div class="grouping-10 no-padding">
-    <read-only-component label="Client number">
+    <read-only-component label="Client number" id="clientNumber">
       <span class="body-compact-01">{{ props.data.clientNumber }}</span>
     </read-only-component>
-    <read-only-component label="Acronym" v-if="props.data.clientAcronym">
+    <read-only-component label="Acronym" id="acronym" v-if="props.data.clientAcronym">
       <span class="body-compact-01">{{ props.data.clientAcronym }}</span>
     </read-only-component>
-    <read-only-component label="Client type">
+    <read-only-component label="Client type" id="clientType">
       <span class="body-compact-01">{{ props.data.clientTypeDesc }}</span>
     </read-only-component>
-    <read-only-component label="Registration number" v-if="clientRegistrationNumber">
+    <read-only-component
+      label="Registration number"
+      id="registrationNumber"
+      v-if="clientRegistrationNumber"
+    >
       <span class="body-compact-01">{{ clientRegistrationNumber }}</span>
     </read-only-component>
     <read-only-component
@@ -50,14 +54,15 @@ const clientRegistrationNumber = computed(() => {
     </read-only-component>
     <read-only-component
       :label="props.data.clientIdTypeDesc"
+      id="identification"
       v-if="props.data.clientIdTypeDesc && props.data.clientIdentification"
     >
       <span class="body-compact-01">{{ props.data.clientIdentification }}</span>
     </read-only-component>
-    <read-only-component label="Date of birth" v-if="props.data.birthdate">
+    <read-only-component label="Date of birth" id="dataOfBirth" v-if="props.data.birthdate">
       <span class="body-compact-01">{{ props.data.birthdate }}</span>
     </read-only-component>
-    <read-only-component label="Status">
+    <read-only-component label="Status" id="status">
       <span class="body-compact-01">
         <cds-tag :type="getTagColorByClientStatus(props.data.clientStatusDesc)">
           <span>{{ props.data.clientStatusDesc }}</span>
@@ -66,7 +71,7 @@ const clientRegistrationNumber = computed(() => {
     </read-only-component>
   </div>
   <div class="grouping-10 no-padding" v-if="props.data.clientComment">
-    <read-only-component label="Notes" v-if="props.data.clientComment">
+    <read-only-component label="Notes" id="notes" v-if="props.data.clientComment">
       <span class="body-compact-01">{{ props.data.clientComment }}</span>
     </read-only-component>
   </div>
