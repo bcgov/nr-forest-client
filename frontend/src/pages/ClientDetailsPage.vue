@@ -181,10 +181,7 @@ const clientRegistrationNumber = computed(() => {
                   </span>
                 </read-only-component>
               </div>
-              <div
-                class="grouping-10 no-padding width-100percent"
-                v-if="data.business.clientComment"
-              >
+              <div class="grouping-10 no-padding" v-if="data.business.clientComment">
                 <read-only-component label="Note" v-if="data.business.clientComment">
                   <span class="body-compact-01">{{ data.business.clientComment }}</span>
                 </read-only-component>

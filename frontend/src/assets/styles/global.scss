@@ -1009,6 +1009,8 @@ cds-actionable-notification * {
   gap: 2rem;
   padding: 2rem;
   flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 .grouping-10-internal {
   display: flex;
@@ -1604,10 +1606,6 @@ cds-header-panel[expanded] {
 
 .no-padding {
   padding: 0;
-}
-
-.width-100percent {
-  width: 100%;
 }
 
 // Copied from .cds--side-nav__overlay-active in @carbon/styles/css/styles.css so to make it available on all breakpoints
