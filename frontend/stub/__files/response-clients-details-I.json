@@ -16,7 +16,8 @@
         "goodStandingInd": null,
         "clientStatusCode": "A",
         "clientStatusDesc": "Active",
-        "clientComment": "This is famous guitarrist James Taylor's business"
+        "clientComment": "This is famous guitarrist James Taylor's business",
+        "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}"
     },
     "contact": [
         {
