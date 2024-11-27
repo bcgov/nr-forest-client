@@ -83,7 +83,7 @@ public class ClientSearchController {
     log.info("Receiving request to search by ID {} and groups {}", 
              clientNumber,
              groups);
-    return service.findByClientNumber(clientNumber);
+    return service.findByClientNumber(clientNumber, groups);
   }
 
   @GetMapping("/id/{idType}/{identification}")

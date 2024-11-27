@@ -22,6 +22,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,6 +37,7 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -537,11 +539,15 @@ public class ClientSearchService {
         );
   }
   
-  public Mono<ForestClientDto> findByClientNumber(String clientNumber) {
+  public Mono<ForestClientDto> findByClientNumber(String clientNumber, List<String> groups) {
     log.info("Searching for client with number {}", clientNumber);
 
     if (StringUtils.isBlank(clientNumber)) {
       return Mono.error(new MissingRequiredParameterException("clientNumber"));
+    }
+    
+    if (CollectionUtils.isEmpty(groups)) {
+      return Mono.error(new MissingRequiredParameterException("groups"));
     }
 
     return forestClientRepository.findByClientNumber(clientNumber)
