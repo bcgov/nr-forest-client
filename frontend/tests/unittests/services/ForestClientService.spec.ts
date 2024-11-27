@@ -6,6 +6,7 @@ import {
   getAddressDescription,
   toTitleCase,
   getTagColorByClientStatus,
+  goodStanding,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 
@@ -138,6 +139,34 @@ describe("ForestClientService.ts", () => {
       ["Bogus", ""], // non-existent value
     ])("gets the expected result from input '%s': '%s'", (input, expectedOutput) => {
       expect(getTagColorByClientStatus(input)).toEqual(expectedOutput);
+    });
+  });
+
+  describe("goodStanding", () => {
+    const yExpected = "Good standing";
+    const emptyExpected = "Unknown";
+    describe("when input is 'Y'", () => {
+      it("returns 'Good standing'", () => {
+        expect(goodStanding("Y")).toEqual(yExpected);
+      });
+    });
+    describe("when input is empty", () => {
+      it.each([[""], [undefined], [null]])("returns 'Unknown' for %j", (input) => {
+        expect(goodStanding(input)).toEqual(emptyExpected);
+      });
+    });
+    describe("when input is 'N'", () => {
+      it("returns something else", () => {
+        const nValue = goodStanding("N");
+
+        // is a non-empty string
+        expect(nValue).toEqual(expect.any(String));
+        expect(nValue.length).toBeGreaterThan(0);
+
+        // doesn't overlap with "Y" or empty values
+        expect(nValue).not.toEqual(yExpected);
+        expect(nValue).not.toEqual(emptyExpected);
+      });
     });
   });
 });
