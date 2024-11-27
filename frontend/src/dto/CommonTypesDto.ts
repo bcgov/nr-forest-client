@@ -249,3 +249,27 @@ export interface SubmissionDetailsMatchers {
   contact: string
   location: string
 }
+
+export interface ClientDetails {
+  clientNumber: string;
+  clientName: string;
+  legalFirstName: string;
+  legalMiddleName: string;
+  clientStatusCode: string;
+  clientStatusDesc: string;
+  clientTypeCode: string;
+  clientTypeDesc: string;
+  clientIdTypeCode: string;
+  clientIdTypeDesc: string;
+  clientIdentification: string;
+  registryCompanyTypeCode: string;
+  corpRegnNmbr: string;
+  clientAcronym: string;
+  wcbFirmNumber: string;
+  ocgSupplierNmbr: string;
+  clientComment: string;
+  clientCommentUpdateDate: string;
+  clientCommentUpdateUser: string;
+  goodStandingInd: string;
+  birthdate: string;
+}

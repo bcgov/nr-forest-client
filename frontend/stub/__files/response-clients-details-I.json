@@ -1,25 +1,23 @@
 {
-    "business": {
-        "registryCompanyTypeCode": null,
-        "corpRegnNmbr": null,
-        "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
-        "clientName": "Taylor",
-        "legalFirstName": "James",
-        "legalMiddleName": "",
-        "birthdate": "1952-08-17",
-        "clientIdTypeCode": "BCDL",
-        "clientIdTypeDesc": "British Columbia Driver's Licence",
-        "clientIdentification": "64242646",
-        "clientAcronym": null,
-        "clientTypeCode": "I",
-        "clientTypeDesc": "Individual",
-        "goodStandingInd": null,
-        "clientStatusCode": "A",
-        "clientStatusDesc": "Active",
-        "clientComment": "This is famous guitarrist James Taylor's business",
-        "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}"
-    },
-    "contact": [
+    "registryCompanyTypeCode": null,
+    "corpRegnNmbr": null,
+    "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
+    "clientName": "Taylor",
+    "legalFirstName": "James",
+    "legalMiddleName": "",
+    "birthdate": "1952-08-17",
+    "clientIdTypeCode": "BCDL",
+    "clientIdTypeDesc": "British Columbia Driver's Licence",
+    "clientIdentification": "64242646",
+    "clientAcronym": null,
+    "clientTypeCode": "I",
+    "clientTypeDesc": "Individual",
+    "goodStandingInd": null,
+    "clientStatusCode": "A",
+    "clientStatusDesc": "Active",
+    "clientComment": "This is famous guitarrist James Taylor's business",
+    "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
+    "contacts": [
         {
             "index": 0,
             "contactType": "Accounts Receivable",
@@ -34,7 +32,7 @@
             "userId": "{{randomValue type='UUID'}}"
         }
     ],
-    "address": [
+    "addresses": [
         {
             "index": 0,
             "streetAddress":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",

@@ -1,20 +1,18 @@
 {
-    "business": {
-        "registryCompanyTypeCode": "SP",
-        "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
-        "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
-        "clientName": "Dunder Mifflin Paper Company",
-        "birthdate": "1962-08-17",
-        "clientAcronym": "DMPC",
-        "clientTypeCode": "RSP",
-        "clientTypeDesc": "Registered sole proprietorship",
-        "goodStandingInd": "N",
-        "clientStatusCode": "A",
-        "clientStatusDesc": "Active",
-        "clientComment": "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton",
-        "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}"
-    },
-    "contact": [
+    "registryCompanyTypeCode": "SP",
+    "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
+    "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
+    "clientName": "Dunder Mifflin Paper Company",
+    "birthdate": "1962-08-17",
+    "clientAcronym": "DMPC",
+    "clientTypeCode": "RSP",
+    "clientTypeDesc": "Registered sole proprietorship",
+    "goodStandingInd": "N",
+    "clientStatusCode": "A",
+    "clientStatusDesc": "Active",
+    "clientComment": "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton",
+    "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
+    "contacts": [
         {
             "index": 0,
             "contactType": "Accounts Receivable",
@@ -29,7 +27,7 @@
             "userId": "{{randomValue type='UUID'}}"
         }
     ],
-    "address": [
+    "addresses": [
         {
             "index": 0,
             "streetAddress":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
