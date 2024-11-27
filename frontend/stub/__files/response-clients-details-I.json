@@ -1,6 +1,5 @@
 {
     "business": {
-        "businessType": "U",
         "registryCompanyTypeCode": null,
         "corpRegnNmbr": null,
         "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",

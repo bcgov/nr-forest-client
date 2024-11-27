@@ -1,6 +1,5 @@
 {
     "business": {
-        "businessType": "R",
         "registryCompanyTypeCode": "SP",
         "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
