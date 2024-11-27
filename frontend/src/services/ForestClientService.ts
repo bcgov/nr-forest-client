@@ -135,3 +135,8 @@ export const getTagColorByClientStatus = (status: string): string => {
       return "";
   }
 };
+
+export const goodStanding = (goodStanding: string): string => {
+  if (goodStanding) return goodStanding === "Y" ? "Good standing" : "Not in good standing";
+  return "Unknown";
+};

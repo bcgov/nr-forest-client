@@ -29,6 +29,7 @@ import {
   adminEmail,
   getObfuscatedEmailLink,
   getTagColorByClientStatus,
+  goodStanding,
   toTitleCase,
 } from "@/services/ForestClientService";
 
@@ -41,11 +42,6 @@ const clientNumber = router.currentRoute.value.params.id;
 const data = ref(undefined);
 
 const { error: fetchError } = useFetchTo(`/api/clients/details/${clientNumber}`, data);
-
-const goodStanding = (goodStanding: string): string => {
-  if (goodStanding) return goodStanding === "Y" ? "Good standing" : "Not in good standing";
-  return "Unknown";
-};
 
 const clientFullName = computed(() => {
   if (data.value?.business) {
