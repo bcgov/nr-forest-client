@@ -6,6 +6,7 @@ import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
+import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
@@ -13,6 +14,7 @@ import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
+import ca.bc.gov.app.exception.NoValueFoundException;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.repository.ForestClientContactRepository;
@@ -539,7 +541,7 @@ public class ClientSearchService {
         );
   }
   
-  public Mono<ForestClientDto> findByClientNumber(String clientNumber, List<String> groups) {
+  public Mono<ForestClientDetailsDto> findByClientNumber(String clientNumber, List<String> groups) {
     log.info("Searching for client with number {}", clientNumber);
 
     if (StringUtils.isBlank(clientNumber)) {
@@ -550,8 +552,12 @@ public class ClientSearchService {
       return Mono.error(new MissingRequiredParameterException("groups"));
     }
 
-    return forestClientRepository.findByClientNumber(clientNumber)
-        .map(forestClientMapper::toDto)
+    return forestClientRepository.findDetailsByClientNumber(clientNumber)
+        .switchIfEmpty(
+            Mono.error(
+                new NoValueFoundException("Client not found with number: " + clientNumber)
+            )
+        )
         .doOnNext(
             dto -> log.info("Found client with client number {}",
                 clientNumber,

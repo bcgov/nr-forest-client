@@ -2,6 +2,7 @@ package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
+import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
@@ -76,7 +77,7 @@ public class ClientSearchController {
   }
   
   @GetMapping("/clientNumber")
-  public Mono<ForestClientDto> findByClientNumber(
+  public Mono<ForestClientDetailsDto> findByClientNumber(
       @RequestParam String clientNumber,
       @RequestParam List<String> groups
   ) {
