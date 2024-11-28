@@ -78,7 +78,6 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           c.corp_regn_nmbr,
           c.client_acronym,
           c.wcb_firm_number,
-          c.ocg_supplier_nmbr,
           c.client_comment,
           fca.update_userid as latest_update_userid,
           fca.update_timestamp as latest_update_timestamp,

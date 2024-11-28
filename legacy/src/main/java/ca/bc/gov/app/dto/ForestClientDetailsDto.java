@@ -19,7 +19,6 @@ public record ForestClientDetailsDto (
   String corpRegnNmbr,
   String clientAcronym,
   String wcbFirmNumber,
-  String ocgSupplierNmbr,
   String clientComment,
   LocalDate clientCommentUpdateDate,
   String clientCommentUpdateUser,

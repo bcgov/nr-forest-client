@@ -201,7 +201,6 @@ public class ClientService {
                   forestClientDetailsDto.corpRegnNmbr(),
                   forestClientDetailsDto.clientAcronym(),
                   forestClientDetailsDto.wcbFirmNumber(),
-                  forestClientDetailsDto.ocgSupplierNmbr(),
                   forestClientDetailsDto.clientComment(),
                   forestClientDetailsDto.clientCommentUpdateDate(),
                   forestClientDetailsDto.clientCommentUpdateUser(),
