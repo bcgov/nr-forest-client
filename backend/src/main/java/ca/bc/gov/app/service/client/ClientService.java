@@ -161,58 +161,60 @@ public class ClientService {
 
               log.info("Retrieved corporation registration number: {}", corpRegnNmbr);
 
-              Mono<BcRegistryDocumentDto> documentMono = bcRegistryService
-                  .requestDocumentData(corpRegnNmbr)
-                  .next();
-              return populateGoodStandingInd(forestClientDetailsDto, documentMono);
+              return bcRegistryService
+                      .requestDocumentData(corpRegnNmbr)
+                      .next()
+                      .flatMap(documentMono -> 
+                            populateGoodStandingInd(forestClientDetailsDto, 
+                                                    documentMono)
+                      );
           });
   }
 
   private Mono<ForestClientDetailsDto> populateGoodStandingInd(
       ForestClientDetailsDto forestClientDetailsDto,
-      Mono<BcRegistryDocumentDto> documentMono
+      BcRegistryDocumentDto document
   ) {
-      return documentMono
-          .map(document -> {
-              Boolean goodStandingInd = document.business().goodStanding();
-              String goodStanding;
-              
-              if (goodStandingInd == null) {
-                goodStanding = "";
-              } else {
-                goodStanding = goodStandingInd ? "Y" : "N";
-              }
-              log.info("Setting goodStandingInd for client: {} to {}", 
-                       forestClientDetailsDto.clientNumber(), goodStanding);
+      Boolean goodStandingInd = document.business().goodStanding();
+      String goodStanding;
+      if (goodStandingInd == null) {
+        goodStanding = "";
+      } 
+      else {
+        goodStanding = goodStandingInd ? "Y" : "N";
+      }
 
-              return new ForestClientDetailsDto(
-                  forestClientDetailsDto.clientNumber(),
-                  forestClientDetailsDto.clientName(),
-                  forestClientDetailsDto.legalFirstName(),
-                  forestClientDetailsDto.legalMiddleName(),
-                  forestClientDetailsDto.clientStatusCode(),
-                  forestClientDetailsDto.clientStatusDesc(),
-                  forestClientDetailsDto.clientTypeCode(),
-                  forestClientDetailsDto.clientTypeDesc(),
-                  forestClientDetailsDto.clientIdTypeCode(),
-                  forestClientDetailsDto.clientIdTypeDesc(),
-                  forestClientDetailsDto.clientIdentification(),
-                  forestClientDetailsDto.registryCompanyTypeCode(),
-                  forestClientDetailsDto.corpRegnNmbr(),
-                  forestClientDetailsDto.clientAcronym(),
-                  forestClientDetailsDto.wcbFirmNumber(),
-                  forestClientDetailsDto.clientComment(),
-                  forestClientDetailsDto.clientCommentUpdateDate(),
-                  forestClientDetailsDto.clientCommentUpdateUser(),
-                  goodStanding,
-                  forestClientDetailsDto.birthdate(),
-                  forestClientDetailsDto.addresses(),
-                  forestClientDetailsDto.contacts(),
-                  forestClientDetailsDto.doingBusinessAs()
-              );
-          });
+      log.info("Setting goodStandingInd for client: {} to {}", 
+               forestClientDetailsDto.clientNumber(), goodStanding);
+
+      ForestClientDetailsDto updatedDetails = new ForestClientDetailsDto(
+          forestClientDetailsDto.clientNumber(),
+          forestClientDetailsDto.clientName(),
+          forestClientDetailsDto.legalFirstName(),
+          forestClientDetailsDto.legalMiddleName(),
+          forestClientDetailsDto.clientStatusCode(),
+          forestClientDetailsDto.clientStatusDesc(),
+          forestClientDetailsDto.clientTypeCode(),
+          forestClientDetailsDto.clientTypeDesc(),
+          forestClientDetailsDto.clientIdTypeCode(),
+          forestClientDetailsDto.clientIdTypeDesc(),
+          forestClientDetailsDto.clientIdentification(),
+          forestClientDetailsDto.registryCompanyTypeCode(),
+          forestClientDetailsDto.corpRegnNmbr(),
+          forestClientDetailsDto.clientAcronym(),
+          forestClientDetailsDto.wcbFirmNumber(),
+          forestClientDetailsDto.clientComment(),
+          forestClientDetailsDto.clientCommentUpdateDate(),
+          forestClientDetailsDto.clientCommentUpdateUser(),
+          goodStanding,
+          forestClientDetailsDto.birthdate(),
+          forestClientDetailsDto.addresses(),
+          forestClientDetailsDto.contacts(),
+          forestClientDetailsDto.doingBusinessAs()
+      );
+
+      return Mono.just(updatedDetails);
   }
-
 
   /**
    * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances matching
