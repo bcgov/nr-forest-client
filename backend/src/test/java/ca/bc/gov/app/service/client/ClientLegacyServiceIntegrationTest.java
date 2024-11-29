@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -144,6 +145,101 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
         Map.of("",List.of()),
         Map.of("  ",List.of())
     );
+  }
+  
+  @Test
+  @DisplayName("searching legacy by client number")
+  void shouldSearchLegacyByClientNumber() {
+      String clientNumber = "00000001";
+      List<String> groups = List.of("CLIENT_VIEWER", "CLIENT_ADMIN");
+
+      ForestClientDetailsDto expectedDto = new ForestClientDetailsDto(
+          clientNumber,
+          "MY COMPANY LTD.",
+          null,
+          null,
+          "ACT",
+          "Active",
+          "C",
+          "Corporation",
+          null,
+          null,
+          null,
+          "BC",
+          "9607514",
+          null,
+          "678",
+          "THIS TEST",
+          null,
+          null,
+          "Y",
+          null,
+          null,
+          null,
+          null
+      );
+
+      legacyStub
+          .stubFor(
+              get(urlPathEqualTo("/api/search/clientNumber"))
+                  .withQueryParam("clientNumber", equalTo(clientNumber))
+                  .withQueryParam("groups", equalTo("CLIENT_VIEWER,CLIENT_ADMIN"))
+                  .willReturn(okJson("{"
+                      + "\"clientNumber\":\"00000001\","
+                      + "\"clientName\":\"MY COMPANY LTD.\","
+                      + "\"legalFirstName\":null,"
+                      + "\"legalMiddleName\":null,"
+                      + "\"clientStatusCode\":\"ACT\","
+                      + "\"clientStatusDesc\":\"Active\","
+                      + "\"clientTypeCode\":\"C\","
+                      + "\"clientTypeDesc\":\"Corporation\","
+                      + "\"clientIdTypeCode\":null,"
+                      + "\"clientIdTypeDesc\":null,"
+                      + "\"clientIdentification\":null,"
+                      + "\"registryCompanyTypeCode\":\"BC\","
+                      + "\"corpRegnNmbr\":\"9607514\","
+                      + "\"clientAcronym\":null,"
+                      + "\"wcbFirmNumber\":\"678\","
+                      + "\"ocgSupplierNmbr\":null,"
+                      + "\"clientComment\":\"THIS TEST\","
+                      + "\"clientCommentUpdateDate\":null,"
+                      + "\"clientCommentUpdateUser\":null,"
+                      + "\"goodStandingInd\":\"Y\","
+                      + "\"birthdate\":null,"
+                      + "\"addresses\":null,"
+                      + "\"contacts\":null,"
+                      + "\"doingBusinessAs\":null"
+                      + "}"))
+          );
+
+      service.searchByClientNumber(clientNumber, groups)
+          .as(StepVerifier::create)
+          .assertNext(clientDetailsDto -> {
+              assertEquals(expectedDto.clientNumber(), clientDetailsDto.clientNumber());
+              assertEquals(expectedDto.clientName(), clientDetailsDto.clientName());
+              assertNull(clientDetailsDto.legalFirstName());
+              assertNull(clientDetailsDto.legalMiddleName());
+              assertEquals(expectedDto.clientStatusCode(), clientDetailsDto.clientStatusCode());
+              assertEquals(expectedDto.clientStatusDesc(), clientDetailsDto.clientStatusDesc());
+              assertEquals(expectedDto.clientTypeCode(), clientDetailsDto.clientTypeCode());
+              assertEquals(expectedDto.clientTypeDesc(), clientDetailsDto.clientTypeDesc());
+              assertNull(clientDetailsDto.clientIdTypeCode());
+              assertNull(clientDetailsDto.clientIdTypeDesc());
+              assertNull(clientDetailsDto.clientIdentification());
+              assertEquals(expectedDto.registryCompanyTypeCode(), clientDetailsDto.registryCompanyTypeCode());
+              assertEquals(expectedDto.corpRegnNmbr(), clientDetailsDto.corpRegnNmbr());
+              assertNull(clientDetailsDto.clientAcronym());
+              assertEquals(expectedDto.wcbFirmNumber(), clientDetailsDto.wcbFirmNumber());
+              assertEquals(expectedDto.clientComment(), clientDetailsDto.clientComment());
+              assertNull(clientDetailsDto.clientCommentUpdateDate());
+              assertNull(clientDetailsDto.clientCommentUpdateUser());
+              assertEquals(expectedDto.goodStandingInd(), clientDetailsDto.goodStandingInd());
+              assertNull(clientDetailsDto.birthdate());
+              assertNull(clientDetailsDto.addresses());
+              assertNull(clientDetailsDto.contacts());
+              assertNull(clientDetailsDto.doingBusinessAs());
+          })
+          .verifyComplete();
   }
 
 }
