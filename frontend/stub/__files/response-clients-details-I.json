@@ -2,8 +2,8 @@
     "registryCompanyTypeCode": null,
     "corpRegnNmbr": null,
     "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
-    "clientName": "Taylor",
-    "legalFirstName": "James",
+    "clientName": "Silver",
+    "legalFirstName": "John",
     "legalMiddleName": "",
     "birthdate": "1952-08-17",
     "clientIdTypeCode": "BCDL",
@@ -15,7 +15,7 @@
     "goodStandingInd": null,
     "clientStatusCode": "A",
     "clientStatusDesc": "Active",
-    "clientComment": "This is famous guitarrist James Taylor's business",
+    "clientComment": "Sample comment",
     "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
     "contacts": [
         {

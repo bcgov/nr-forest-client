@@ -2,7 +2,12 @@
     "registryCompanyTypeCode": "SP",
     "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
     "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
-    "clientName": "Dunder Mifflin Paper Company",
+    "clientName": "Scott",
+    "legalFirstName": "Michael",
+    "legalMiddleName": "Gary",
+    "doingBusinessAs": [
+        {"doingBusinessAsName": "Dunder Mifflin Paper Company"}
+    ],
     "birthdate": "1962-08-17",
     "clientAcronym": "DMPC",
     "clientTypeCode": "RSP",
