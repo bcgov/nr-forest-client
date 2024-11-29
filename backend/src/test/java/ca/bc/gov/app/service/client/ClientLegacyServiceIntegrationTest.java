@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
@@ -151,7 +152,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
   @DisplayName("searching legacy by client number")
   void shouldSearchLegacyByClientNumber() {
       String clientNumber = "00000001";
-      List<String> groups = List.of("CLIENT_VIEWER", "CLIENT_ADMIN");
+      List<String> groups = List.of("CLIENT_ADMIN");
 
       ForestClientDetailsDto expectedDto = new ForestClientDetailsDto(
           clientNumber,
@@ -183,7 +184,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .stubFor(
               get(urlPathEqualTo("/api/search/clientNumber"))
                   .withQueryParam("clientNumber", equalTo(clientNumber))
-                  .withQueryParam("groups", equalTo("CLIENT_VIEWER,CLIENT_ADMIN"))
+                  .withQueryParam("groups", equalTo("CLIENT_ADMIN"))
                   .willReturn(okJson("{"
                       + "\"clientNumber\":\"00000001\","
                       + "\"clientName\":\"MY COMPANY LTD.\","
@@ -216,29 +217,33 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       service.searchByClientNumber(clientNumber, groups)
           .as(StepVerifier::create)
           .assertNext(clientDetailsDto -> {
-              assertEquals(expectedDto.clientNumber(), clientDetailsDto.clientNumber());
-              assertEquals(expectedDto.clientName(), clientDetailsDto.clientName());
-              assertNull(clientDetailsDto.legalFirstName());
-              assertNull(clientDetailsDto.legalMiddleName());
-              assertEquals(expectedDto.clientStatusCode(), clientDetailsDto.clientStatusCode());
-              assertEquals(expectedDto.clientStatusDesc(), clientDetailsDto.clientStatusDesc());
-              assertEquals(expectedDto.clientTypeCode(), clientDetailsDto.clientTypeCode());
-              assertEquals(expectedDto.clientTypeDesc(), clientDetailsDto.clientTypeDesc());
-              assertNull(clientDetailsDto.clientIdTypeCode());
-              assertNull(clientDetailsDto.clientIdTypeDesc());
-              assertNull(clientDetailsDto.clientIdentification());
-              assertEquals(expectedDto.registryCompanyTypeCode(), clientDetailsDto.registryCompanyTypeCode());
-              assertEquals(expectedDto.corpRegnNmbr(), clientDetailsDto.corpRegnNmbr());
-              assertNull(clientDetailsDto.clientAcronym());
-              assertEquals(expectedDto.wcbFirmNumber(), clientDetailsDto.wcbFirmNumber());
-              assertEquals(expectedDto.clientComment(), clientDetailsDto.clientComment());
-              assertNull(clientDetailsDto.clientCommentUpdateDate());
-              assertNull(clientDetailsDto.clientCommentUpdateUser());
-              assertEquals(expectedDto.goodStandingInd(), clientDetailsDto.goodStandingInd());
-              assertNull(clientDetailsDto.birthdate());
-              assertNull(clientDetailsDto.addresses());
-              assertNull(clientDetailsDto.contacts());
-              assertNull(clientDetailsDto.doingBusinessAs());
+              assertThat(clientDetailsDto)
+                  .extracting(
+                      ForestClientDetailsDto::clientNumber,
+                      ForestClientDetailsDto::clientName,
+                      ForestClientDetailsDto::clientStatusCode,
+                      ForestClientDetailsDto::clientStatusDesc,
+                      ForestClientDetailsDto::clientTypeCode,
+                      ForestClientDetailsDto::clientTypeDesc,
+                      ForestClientDetailsDto::registryCompanyTypeCode,
+                      ForestClientDetailsDto::corpRegnNmbr,
+                      ForestClientDetailsDto::wcbFirmNumber,
+                      ForestClientDetailsDto::clientComment,
+                      ForestClientDetailsDto::goodStandingInd
+                  )
+                  .containsExactly(
+                      expectedDto.clientNumber(),
+                      expectedDto.clientName(),
+                      expectedDto.clientStatusCode(),
+                      expectedDto.clientStatusDesc(),
+                      expectedDto.clientTypeCode(),
+                      expectedDto.clientTypeDesc(),
+                      expectedDto.registryCompanyTypeCode(),
+                      expectedDto.corpRegnNmbr(),
+                      expectedDto.wcbFirmNumber(),
+                      expectedDto.clientComment(),
+                      expectedDto.goodStandingInd()
+                  );
           })
           .verifyComplete();
   }
