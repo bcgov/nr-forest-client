@@ -250,6 +250,10 @@ export interface SubmissionDetailsMatchers {
   location: string
 }
 
+export interface ClientDoingBusinessAs {
+  doingBusinessAsName: string;
+}
+
 export interface ClientDetails {
   clientNumber: string;
   clientName: string;
@@ -272,4 +276,5 @@ export interface ClientDetails {
   clientCommentUpdateUser: string;
   goodStandingInd: string;
   birthdate: string;
+  doingBusinessAs: ClientDoingBusinessAs[];
 }
