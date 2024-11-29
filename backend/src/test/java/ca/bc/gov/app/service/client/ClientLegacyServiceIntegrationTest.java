@@ -210,6 +210,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
                       + "\"contacts\":null,"
                       + "\"doingBusinessAs\":null"
                       + "}"))
+                  .withHeader("Content-Type", equalTo("application/json"))
           );
 
       service.searchByClientNumber(clientNumber, groups)
