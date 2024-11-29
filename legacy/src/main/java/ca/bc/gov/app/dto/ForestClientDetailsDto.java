@@ -26,7 +26,8 @@ public record ForestClientDetailsDto (
   LocalDate birthdate,
   
   List<ForestClientLocationDto> addresses,
-  List<ForestClientContactDto> contacts
+  List<ForestClientContactDto> contacts,
+  List<ClientDoingBusinessAsDto> doingBusinessAs
 ) {
   
 }

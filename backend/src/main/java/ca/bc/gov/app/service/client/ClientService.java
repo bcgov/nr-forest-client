@@ -207,7 +207,8 @@ public class ClientService {
                   goodStanding,
                   forestClientDetailsDto.birthdate(),
                   forestClientDetailsDto.addresses(),
-                  forestClientDetailsDto.contacts()
+                  forestClientDetailsDto.contacts(),
+                  forestClientDetailsDto.doingBusinessAs()
               );
           });
   }
