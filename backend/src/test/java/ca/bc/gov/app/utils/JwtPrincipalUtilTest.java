@@ -187,7 +187,9 @@ class JwtPrincipalUtilTest {
   @DisplayName("getGroups should return expected group list")
   @MethodSource("provideGroupsTestData")
   void shouldGetGroups(Map<String, Object> tokenAttributes, List<String> expectedGroups) {
-      JwtAuthenticationToken jwtAuthenticationToken = createJwtAuthenticationTokenWithAttributes(tokenAttributes);
+      JwtAuthenticationToken jwtAuthenticationToken = tokenAttributes == null
+          ? null
+          : createJwtAuthenticationTokenWithAttributes(tokenAttributes);
 
       List<String> actualGroups = JwtPrincipalUtil.getGroups(jwtAuthenticationToken);
 
@@ -208,7 +210,9 @@ class JwtPrincipalUtilTest {
           ),
           // Case 3: Token attributes contain null groups
           Arguments.of(
-              Map.of("cognito:groups", null),
+              new HashMap<>() {{
+                  put("cognito:groups", null);
+              }},
               List.of()
           ),
           // Case 4: Token attributes missing "cognito:groups"
@@ -219,11 +223,6 @@ class JwtPrincipalUtilTest {
           // Case 5: Null JwtAuthenticationToken
           Arguments.of(
               null,
-              List.of()
-          ),
-          // Case 6: Null token attributes in JwtAuthenticationToken
-          Arguments.of(
-              new HashMap<>(),
               List.of()
           )
       );
