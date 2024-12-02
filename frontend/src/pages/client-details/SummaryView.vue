@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { ClientDetails } from "@/dto/CommonTypesDto";
-import { getTagColorByClientStatus, goodStanding } from "@/services/ForestClientService";
+import {
+  getFormattedHtml,
+  getTagColorByClientStatus,
+  goodStanding,
+} from "@/services/ForestClientService";
 
 // @ts-ignore
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
@@ -19,6 +23,14 @@ const clientRegistrationNumber = computed(() => {
   }
   return `${registryCompanyTypeCode}${corpRegnNmbr}`;
 });
+
+const doingBusinessAs = computed(() => {
+  const { doingBusinessAs } = props.data;
+  if (doingBusinessAs && doingBusinessAs.length) {
+    return doingBusinessAs.map((value) => value.doingBusinessAsName).join("\n");
+  }
+  return undefined;
+});
 </script>
 
 <template>
@@ -28,6 +40,9 @@ const clientRegistrationNumber = computed(() => {
     </read-only-component>
     <read-only-component label="Acronym" id="acronym" v-if="props.data.clientAcronym">
       <span class="body-compact-01">{{ props.data.clientAcronym }}</span>
+    </read-only-component>
+    <read-only-component label="Doing business as" id="doingBusinessAs" v-if="doingBusinessAs">
+      <span class="body-compact-01" v-dompurify-html="getFormattedHtml(doingBusinessAs)"></span>
     </read-only-component>
     <read-only-component label="Client type" id="clientType">
       <span class="body-compact-01">{{ props.data.clientTypeDesc }}</span>
@@ -72,7 +87,10 @@ const clientRegistrationNumber = computed(() => {
   </div>
   <div class="grouping-10 no-padding" v-if="props.data.clientComment">
     <read-only-component label="Notes" id="notes" v-if="props.data.clientComment">
-      <span class="body-compact-01">{{ props.data.clientComment }}</span>
+      <span
+        class="body-compact-01"
+        v-dompurify-html="getFormattedHtml(props.data.clientComment)"
+      ></span>
     </read-only-component>
   </div>
 </template>

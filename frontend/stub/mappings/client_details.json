@@ -3,12 +3,27 @@
     {
       "name": "Client Details General Partnership",
       "request": {
-        "urlPattern": "/api/clients/details/[gG]?(.*)",
+        "urlPattern": "/api/clients/details/[gG]?\\d(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
         "bodyFileName": "response-clients-details-G.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details General Partnership",
+      "request": {
+        "urlPattern": "/api/clients/details/[gG][aA](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-GA.json",
         "transformers": [
           "response-template"
         ],

@@ -7,7 +7,10 @@ describe("<summary-view />", () => {
       registryCompanyTypeCode: "SP",
       corpRegnNmbr: "88888888",
       clientNumber: "4444",
-      clientName: "Dunder Mifflin Paper Company",
+      clientName: "Scott",
+      legalFirstName: "Michael",
+      legalMiddleName: "Gary",
+      doingBusinessAs: [{ doingBusinessAsName: "Dunder Mifflin Paper Company" }],
       birthdate: "1962-08-17",
       clientAcronym: "DMPC",
       clientTypeCode: "RSP",
@@ -37,6 +40,7 @@ describe("<summary-view />", () => {
   const testField = (selector: string, value: string) => {
     cy.get(selector).should("be.visible");
     cy.get(selector).contains(value);
+    expect(value.length).to.be.greaterThan(0);
   };
 
   const testFieldHidden = (selector: string) => {
@@ -48,6 +52,7 @@ describe("<summary-view />", () => {
 
     testField("#clientNumber", currentProps.data.clientNumber);
     testField("#acronym", currentProps.data.clientAcronym);
+    testField("#doingBusinessAs", currentProps.data.doingBusinessAs[0].doingBusinessAsName);
     testField("#clientType", currentProps.data.clientTypeDesc);
 
     // registryCompanyTypeCode + corpRegnNmbr
@@ -68,7 +73,7 @@ describe("<summary-view />", () => {
     testField("#notes", currentProps.data.clientComment);
   });
 
-  it("hides fields optional fields when they are empty", () => {
+  it("hides optional fields when they are empty", () => {
     const data: ClientDetails = {
       ...getDefaultProps().data,
       registryCompanyTypeCode: "",
@@ -88,5 +93,17 @@ describe("<summary-view />", () => {
     testFieldHidden("#identification");
     testFieldHidden("#dataOfBirth");
     testFieldHidden("#notes");
+  });
+
+  it("displays as many names the client has as Doing business as", () => {
+    const { data } = getDefaultProps();
+    data.doingBusinessAs[1] = { doingBusinessAsName: "Name #2" };
+    data.doingBusinessAs[2] = { doingBusinessAsName: "Name #3" };
+
+    mount({ data });
+
+    testField("#doingBusinessAs", data.doingBusinessAs[0].doingBusinessAsName);
+    testField("#doingBusinessAs", data.doingBusinessAs[1].doingBusinessAsName);
+    testField("#doingBusinessAs", data.doingBusinessAs[2].doingBusinessAsName);
   });
 });
