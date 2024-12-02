@@ -10,7 +10,7 @@ describe("Client Details Page", () => {
   });
 
   it("renders the page skeleton", () => {
-    cy.visit("/clients/0");
+    cy.visit("/clients/details/0");
 
     cy.get("cds-breadcrumb").should("contain", "Client search");
     cy.contains("h2", "Client summary");
@@ -45,7 +45,7 @@ describe("Client Details Page", () => {
     const { type, id, expected, expectedDescription } = scenario;
     describe(`when client is a ${type}`, () => {
       beforeEach(() => {
-        cy.visit(`/clients/${id}`);
+        cy.visit(`/clients/details/${id}`);
       });
       it(`displays the full client name in the header as: ${expectedDescription}`, () => {
         cy.contains("h1", expected);
@@ -76,7 +76,7 @@ describe("Client Details Page", () => {
     const { clientId, elId, description, detail } = scenario;
     describe(`when error is ${description}`, () => {
       beforeEach(() => {
-        cy.visit(`/clients/${clientId}`);
+        cy.visit(`/clients/details/${clientId}`);
       });
       const suffix = detail ? ` with detail "${detail}"` : "";
       it(`displays the error message "Something went wrong"${suffix}`, () => {

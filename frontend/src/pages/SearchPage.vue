@@ -140,7 +140,7 @@ const searchResultToText = (searchResult: ClientSearchResult): string => {
 const openClientDetails = (clientCode: string) => {
   if (clientCode) {
     const url = featureFlags.STAFF_CLIENT_DETAIL
-      ? `/clients/${clientCode}`
+      ? `/clients/details/${clientCode}`
       : `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientCode}`;
     window.open(url, "_blank", "noopener");
   }
