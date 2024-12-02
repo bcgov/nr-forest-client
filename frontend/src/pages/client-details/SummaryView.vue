@@ -35,21 +35,32 @@ const doingBusinessAs = computed(() => {
 
 <template>
   <div class="grouping-10 no-padding">
-    <read-only-component label="Client number" id="clientNumber">
+    <read-only-component label="Client number" id="clientNumber" label-class="label-02">
       <span class="body-compact-01">{{ props.data.clientNumber }}</span>
     </read-only-component>
-    <read-only-component label="Acronym" id="acronym" v-if="props.data.clientAcronym">
+    <read-only-component
+      label="Acronym"
+      id="acronym"
+      label-class="label-02"
+      v-if="props.data.clientAcronym"
+    >
       <span class="body-compact-01">{{ props.data.clientAcronym }}</span>
     </read-only-component>
-    <read-only-component label="Doing business as" id="doingBusinessAs" v-if="doingBusinessAs">
+    <read-only-component
+      label="Doing business as"
+      id="doingBusinessAs"
+      label-class="label-02"
+      v-if="doingBusinessAs"
+    >
       <span class="body-compact-01" v-dompurify-html="getFormattedHtml(doingBusinessAs)"></span>
     </read-only-component>
-    <read-only-component label="Client type" id="clientType">
+    <read-only-component label="Client type" id="clientType" label-class="label-02">
       <span class="body-compact-01">{{ props.data.clientTypeDesc }}</span>
     </read-only-component>
     <read-only-component
       label="Registration number"
       id="registrationNumber"
+      label-class="label-02"
       v-if="clientRegistrationNumber"
     >
       <span class="body-compact-01">{{ clientRegistrationNumber }}</span>
@@ -57,6 +68,7 @@ const doingBusinessAs = computed(() => {
     <read-only-component
       label="BC Registries standing"
       id="goodStanding"
+      label-class="label-02"
       v-if="clientRegistrationNumber"
     >
       <div class="internal-grouping-01">
@@ -70,14 +82,20 @@ const doingBusinessAs = computed(() => {
     <read-only-component
       :label="props.data.clientIdTypeDesc"
       id="identification"
+      label-class="label-02"
       v-if="props.data.clientIdTypeDesc && props.data.clientIdentification"
     >
       <span class="body-compact-01">{{ props.data.clientIdentification }}</span>
     </read-only-component>
-    <read-only-component label="Date of birth" id="dataOfBirth" v-if="props.data.birthdate">
+    <read-only-component
+      label="Date of birth"
+      id="dataOfBirth"
+      label-class="label-02"
+      v-if="props.data.birthdate"
+    >
       <span class="body-compact-01">{{ props.data.birthdate }}</span>
     </read-only-component>
-    <read-only-component label="Status" id="status">
+    <read-only-component label="Status" id="status" label-class="label-02">
       <span class="body-compact-01">
         <cds-tag :type="getTagColorByClientStatus(props.data.clientStatusDesc)">
           <span>{{ props.data.clientStatusDesc }}</span>
@@ -86,7 +104,12 @@ const doingBusinessAs = computed(() => {
     </read-only-component>
   </div>
   <div class="grouping-10 no-padding" v-if="props.data.clientComment">
-    <read-only-component label="Notes" id="notes" v-if="props.data.clientComment">
+    <read-only-component
+      label="Notes"
+      id="notes"
+      label-class="label-02"
+      v-if="props.data.clientComment"
+    >
       <span
         class="body-compact-01"
         v-dompurify-html="getFormattedHtml(props.data.clientComment)"
