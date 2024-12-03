@@ -67,10 +67,10 @@ public final class ApplicationConstant {
         ROW_NUMBER() OVER (order by sc.submission_contact_id ) AS index,
         sc.contact_type_code,
         ctc.description as contact_desc,
-        sc.first_name,
-        sc.last_name,
-        sc.business_phone_number,
-        sc.email_address,
+        pgp_sym_decrypt(sc.first_name, current_setting('cryptic.key')) as first_name,
+        pgp_sym_decrypt(sc.last_name, current_setting('cryptic.key')) as last_name,
+        pgp_sym_decrypt(sc.business_phone_number, current_setting('cryptic.key')) as business_phone_number,
+        pgp_sym_decrypt(sc.email_address, current_setting('cryptic.key')) as email_address,
         (select STRING_AGG(sl.location_name,', ') as locations from nrfc.submission_location sl left join nrfc.submission_location_contact_xref slcx on slcx.submission_location_id = sl.submission_location_id left join nrfc.submission_contact sc on sc.submission_contact_id = slcx.submission_contact_id where sl.submission_id = :submissionId) as locations,
         sc.idp_user_id
       FROM nrfc.submission_contact sc
