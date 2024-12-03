@@ -46,20 +46,20 @@ public final class ApplicationConstant {
         btc.business_type_code as business_type,
         sd.incorporation_number,
         sd.client_number,
-        sd.organization_name,
+        pgp_sym_decrypt(sd.organization_name, current_setting('cryptic.key')) as organization_name,
         ctc.client_type_code as client_type,
         ctc.description as client_type_desc,
         sd.good_standing_ind as good_standing,
-        sd.birthdate,
+        pgp_sym_decrypt(sd.birthdate, current_setting('cryptic.key'))::date as birthdate,
         dc.district_code as district,
         dc.district_code || ' - ' || dc.description as district_desc
       FROM nrfc.submission s
-      left join nrfc.submission_status_code ssc on ssc.submission_status_code = s.submission_status_code\s
+      left join nrfc.submission_status_code ssc on ssc.submission_status_code = s.submission_status_code
       left join nrfc.submission_type_code stc on stc.submission_type_code = s.submission_type_code
-      left join nrfc.submission_detail sd on sd.submission_id = s.submission_id\s
-      left join nrfc.business_type_code btc on btc.business_type_code = sd.business_type_code\s
-      left join nrfc.district_code dc on dc.district_code = sd.district_code\s
-      left join nrfc.client_type_code ctc on ctc.client_type_code = sd.client_type_code\s
+      left join nrfc.submission_detail sd on sd.submission_id = s.submission_id
+      left join nrfc.business_type_code btc on btc.business_type_code = sd.business_type_code
+      left join nrfc.district_code dc on dc.district_code = sd.district_code
+      left join nrfc.client_type_code ctc on ctc.client_type_code = sd.client_type_code
       where s.submission_id = :submissionId""";
 
   public static final String SUBMISSION_CONTACTS_QUERY = """

@@ -1,6 +1,7 @@
 package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -37,9 +39,13 @@ public class SubmissionDetailEntity {
   @Size(min = 1, max = 13)
   private String registrationNumber;
 
+  @Transient
+  private String organizationName;
+
   @Column("organization_name")
   @Size(min = 3, max = 60)
-  private String organizationName;
+  @JsonIgnore
+  private byte[] originalOrganizationName;
 
   @Column("business_type_code")
   @NotNull
@@ -54,8 +60,12 @@ public class SubmissionDetailEntity {
   @Column("good_standing_ind")
   @Size(min = 1, max = 1)
   private String goodStandingInd;
-  
+
   @Column("birthdate")
+  @JsonIgnore
+  private byte[] originalBirthdate;
+
+  @Transient
   private LocalDate birthdate;
   
   @Column("district_code")
@@ -76,14 +86,26 @@ public class SubmissionDetailEntity {
 
   @Column("first_name")
   @Size(max = 30)
+  @JsonIgnore
+  private byte[] originalFirstName;
+
+  @Transient
   private String firstName;
 
   @Column("middle_name")
   @Size(max = 30)
+  @JsonIgnore
+  private byte[] originalMiddleName;
+
+  @Transient
   private String middleName;
 
   @Column("last_name")
   @Size(max = 30)
+  @JsonIgnore
+  private byte[] originalLastName;
+
+  @Transient
   private String lastName;
 
   @Column("notes")
@@ -96,6 +118,10 @@ public class SubmissionDetailEntity {
 
   @Column("client_identification")
   @Size(max = 40)
+  @JsonIgnore
+  private byte[] originalClientIdentification;
+
+  @Transient
   private String clientIdentification;
 
   @Column("identification_country_code")
