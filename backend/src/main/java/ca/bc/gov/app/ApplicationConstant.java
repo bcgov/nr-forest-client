@@ -80,13 +80,13 @@ public final class ApplicationConstant {
   public static final String SUBMISSION_LOCATION_QUERY = """
       SELECT
         ROW_NUMBER() OVER (order by sl.submission_location_id ) AS index,
-        sl.street_address,
+        pgp_sym_decrypt(sl.street_address, current_setting('cryptic.key')) as street_address,
         sl.country_code,
         cc.description as country_desc,
         sl.province_code,
         pc.description as province_desc,
-        sl.city_name,
-        sl.postal_code,
+        pgp_sym_decrypt(sl.city_name, current_setting('cryptic.key')) as city_name,
+        pgp_sym_decrypt(sl.postal_code, current_setting('cryptic.key')) as postal_code,
         sl.location_name
       FROM nrfc.submission_location sl
       left join nrfc.country_code cc on cc.country_code = sl.country_code
