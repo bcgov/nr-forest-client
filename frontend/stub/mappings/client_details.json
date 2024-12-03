@@ -76,6 +76,21 @@
       }
     },
     {
+      "name": "Client Details Individual - Viewer role",
+      "request": {
+        "urlPattern": "/api/clients/details/[iI][vV](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-IV.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Client Details - Error 400",
       "request": {
         "urlPattern": "/api/clients/details/(.*)e4..",

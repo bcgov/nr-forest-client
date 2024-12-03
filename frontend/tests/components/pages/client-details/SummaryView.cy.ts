@@ -68,7 +68,7 @@ describe("<summary-view />", () => {
     // identification Value
     testField("#identification", currentProps.data.clientIdentification);
 
-    testField("#dataOfBirth", currentProps.data.birthdate);
+    testField("#dateOfBirth", currentProps.data.birthdate);
     testField("#status", currentProps.data.clientStatusDesc);
     testField("#notes", currentProps.data.clientComment);
   });
@@ -78,6 +78,7 @@ describe("<summary-view />", () => {
       ...getDefaultProps().data,
       registryCompanyTypeCode: "",
       corpRegnNmbr: "",
+      doingBusinessAs: [],
       birthdate: "",
       clientAcronym: "",
       goodStandingInd: null,
@@ -91,6 +92,7 @@ describe("<summary-view />", () => {
     testFieldHidden("#registrationNumber");
     testFieldHidden("#goodStanding");
     testFieldHidden("#identification");
+    testFieldHidden("#doingBusinessAs");
     testFieldHidden("#dataOfBirth");
     testFieldHidden("#notes");
   });
@@ -105,5 +107,20 @@ describe("<summary-view />", () => {
     testField("#doingBusinessAs", data.doingBusinessAs[0].doingBusinessAsName);
     testField("#doingBusinessAs", data.doingBusinessAs[1].doingBusinessAsName);
     testField("#doingBusinessAs", data.doingBusinessAs[2].doingBusinessAsName);
+  });
+
+  it("sets the birthdate label to 'Date of birth' when date is complete", () => {
+    mount();
+
+    cy.get("#dateOfBirth").contains("Date of birth");
+  });
+
+  it("sets the birthdate label to 'Year of birth' when date has only four digits", () => {
+    const { data } = getDefaultProps();
+    data.birthdate = "1985";
+
+    mount({ data });
+
+    cy.get("#dateOfBirth").contains("Year of birth");
   });
 });

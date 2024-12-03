@@ -31,6 +31,10 @@ const doingBusinessAs = computed(() => {
   }
   return undefined;
 });
+
+const birthdateLabel = computed(() =>
+  props.data.birthdate.length > 4 ? "Date of birth" : "Year of birth",
+);
 </script>
 
 <template>
@@ -74,7 +78,7 @@ const doingBusinessAs = computed(() => {
     >
       <span class="body-compact-01">{{ props.data.clientIdentification }}</span>
     </read-only-component>
-    <read-only-component label="Date of birth" id="dataOfBirth" v-if="props.data.birthdate">
+    <read-only-component :label="birthdateLabel" id="dateOfBirth" v-if="props.data.birthdate">
       <span class="body-compact-01">{{ props.data.birthdate }}</span>
     </read-only-component>
     <read-only-component label="Status" id="status">
