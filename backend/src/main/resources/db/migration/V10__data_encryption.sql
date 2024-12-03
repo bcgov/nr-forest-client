@@ -44,24 +44,28 @@ ALTER TABLE nrfc.submission_contact RENAME COLUMN email_address_t to email_addre
 
 ALTER TABLE nrfc.submission_detail
 ADD COLUMN IF NOT EXISTS birthdate_t BYTEA NULL,
+ADD COLUMN IF NOT EXISTS organization_name_t BYTEA NULL,
 ADD COLUMN IF NOT EXISTS first_name_t BYTEA NULL,
 ADD COLUMN IF NOT EXISTS middle_name_t BYTEA NULL,
 ADD COLUMN IF NOT EXISTS last_name_t BYTEA NULL,
 ADD COLUMN IF NOT EXISTS client_identification_t BYTEA NULL;
 
 UPDATE nrfc.submission_detail SET birthdate_t = pgp_sym_encrypt(birthdate::text,current_setting('cryptic.key'));
+UPDATE nrfc.submission_detail SET organization_name_t = pgp_sym_encrypt(organization_name,current_setting('cryptic.key'));
 UPDATE nrfc.submission_detail SET first_name_t = pgp_sym_encrypt(first_name,current_setting('cryptic.key'));
 UPDATE nrfc.submission_detail SET middle_name_t = pgp_sym_encrypt(middle_name,current_setting('cryptic.key'));
 UPDATE nrfc.submission_detail SET last_name_t = pgp_sym_encrypt(last_name,current_setting('cryptic.key'));
 UPDATE nrfc.submission_detail SET client_identification_t = pgp_sym_encrypt(client_identification,current_setting('cryptic.key'));
 
 ALTER TABLE nrfc.submission_detail DROP COLUMN IF EXISTS birthdate;
+ALTER TABLE nrfc.submission_detail DROP COLUMN IF EXISTS organization_name;
 ALTER TABLE nrfc.submission_detail DROP COLUMN IF EXISTS first_name;
 ALTER TABLE nrfc.submission_detail DROP COLUMN IF EXISTS middle_name;
 ALTER TABLE nrfc.submission_detail DROP COLUMN IF EXISTS last_name;
 ALTER TABLE nrfc.submission_detail DROP COLUMN IF EXISTS client_identification;
 
 ALTER TABLE nrfc.submission_detail RENAME COLUMN birthdate_t TO birthdate;
+ALTER TABLE nrfc.submission_detail RENAME COLUMN organization_name_t TO organization_name;
 ALTER TABLE nrfc.submission_detail RENAME COLUMN first_name_t TO first_name;
 ALTER TABLE nrfc.submission_detail RENAME COLUMN middle_name_t TO middle_name;
 ALTER TABLE nrfc.submission_detail RENAME COLUMN last_name_t TO last_name;
