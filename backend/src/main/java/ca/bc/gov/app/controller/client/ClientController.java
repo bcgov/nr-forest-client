@@ -87,35 +87,27 @@ public class ClientController {
       @RequestParam(required = false, defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "") String keyword,
       ServerHttpResponse serverResponse) {
-    
-    log.info("Listing clients: page={}, size={}, keyword={}", page, size, keyword);
-    
-    return clientLegacyService
-        .search(
-            page,
-            size,
-            keyword
-        )
-        .doOnNext(pair -> {
-          Long count = pair.getSecond();
 
-          serverResponse
-            .getHeaders()
-            .putIfAbsent(
-                ApplicationConstant.X_TOTAL_COUNT, 
-                List.of(count.toString())
-            );
-          }
-        )
-        .map(Pair::getFirst)
-        .doFinally(signalType -> 
-          serverResponse
-            .getHeaders()
-            .putIfAbsent(
-                ApplicationConstant.X_TOTAL_COUNT,
-                List.of("0")
-            )
-        );
+      log.info("Listing clients: page={}, size={}, keyword={}", page, size, keyword);
+
+      return clientLegacyService
+              .search(page, size, keyword)
+              .doOnNext(pair -> {
+                  Long count = pair.getSecond();
+
+                  serverResponse
+                          .getHeaders()
+                          .putIfAbsent(
+                                  ApplicationConstant.X_TOTAL_COUNT,
+                                  List.of(count.toString()));
+              })
+              .map(Pair::getFirst)
+              .doFinally(signalType -> 
+                  serverResponse
+                          .getHeaders()
+                          .putIfAbsent(
+                                  ApplicationConstant.X_TOTAL_COUNT,
+                                  List.of("0")));
   }
   
   /**
