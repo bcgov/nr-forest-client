@@ -1,21 +1,12 @@
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    label: string;
-    labelClass?: string;
-  }>(),
-  {
-    labelClass: "label-01",
-  },
-);
+defineProps<{ label: string }>()
 </script>
-
 <template>
   <div class="grouping-11">
     <div class="title-group-01">
-      <span :class="labelClass">{{ label }}</span>
+      <span class="label-01">{{ label }}</span>   
       <slot name="icon"></slot>
-    </div>
+    </div>      
     <slot></slot>
   </div>
 </template>
