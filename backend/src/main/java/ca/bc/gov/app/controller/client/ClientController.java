@@ -10,9 +10,9 @@ import ca.bc.gov.app.service.client.ClientLegacyService;
 import ca.bc.gov.app.service.client.ClientService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import java.util.List;
 import org.apache.commons.text.WordUtils;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
@@ -54,6 +54,19 @@ public class ClientController {
         );
   }
   
+  /**
+   * Handles HTTP GET requests to retrieve client details based on the provided client number.
+   *
+   * <p>This method fetches the details of a client from the {@code ClientService} using the 
+   * specified {@code clientNumber}. The caller's JWT authentication token is used to extract 
+   * user-related information such as groups and user ID.</p>
+   *
+   * @param clientNumber the unique identifier of the client whose details are to be retrieved.
+   * @param principal    the {@link JwtAuthenticationToken} containing the authenticated user's 
+   *                     information, including their roles and groups.
+   * @return a {@link Mono} emitting the {@link ForestClientDetailsDto} containing the requested 
+   *         client details, or an error if the client cannot be found or accessed.
+   */
   @GetMapping("/details/{clientNumber}")
   public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(
       @PathVariable String clientNumber,
