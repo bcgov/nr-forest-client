@@ -22,15 +22,15 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * This class is responsible for interacting with the legacy API to fetch client data. It uses the
- * WebClient to send HTTP requests to the legacy API and converts the responses into Flux of
- * ForestClientDto objects. It provides several methods to search for clients in the legacy system
- * using different search criteria.
- * <p>
- * It is annotated with @Slf4j for logging, @Service to indicate that it's a Spring service bean,
- * and @Observed for metrics.
- * <p>
- * Each method logs the search parameters and the results for debugging purposes.
+ * This class is responsible for interacting with the legacy API to fetch client data. 
+ * It uses the WebClient to send HTTP requests to the legacy API and converts the responses 
+ * into Flux of ForestClientDto objects. It provides several methods to search for clients 
+ * in the legacy system using different search criteria.
+ * 
+ * <p>It is annotated with @Slf4j for logging, @Service to indicate that it's a 
+ * Spring service bean, and @Observed for metrics.
+ * 
+ * <p>Each method logs the search parameters and the results for debugging purposes.
  */
 @Slf4j
 @Service

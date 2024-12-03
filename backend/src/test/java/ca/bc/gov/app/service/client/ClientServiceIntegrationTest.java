@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @DisplayName("Integrated Test | Client Service")
-public class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
+class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Autowired
   private ClientService service;
