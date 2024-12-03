@@ -112,29 +112,29 @@ public class ClientController {
       @RequestParam(required = false, defaultValue = "") String keyword,
       ServerHttpResponse serverResponse
   ) {
-      log.info("Listing clients: page={}, size={}, keyword={}", page, size, keyword);
+    log.info("Listing clients: page={}, size={}, keyword={}", page, size, keyword);
 
-      return clientLegacyService
-          .search(page, size, keyword)
-          .doOnNext(pair -> {
-              Long count = pair.getSecond();
+    return clientLegacyService
+        .search(page, size, keyword)
+        .doOnNext(pair -> {
+            Long count = pair.getSecond();
 
-              serverResponse
-                  .getHeaders()
-                  .putIfAbsent(
-                      ApplicationConstant.X_TOTAL_COUNT,
-                      List.of(count.toString())
-                  );
-          })
-          .map(Pair::getFirst)
-          .doFinally(signalType ->
-              serverResponse
-                  .getHeaders()
-                  .putIfAbsent(
-                      ApplicationConstant.X_TOTAL_COUNT,
-                      List.of("0")
-                  )
-          );
+            serverResponse
+                .getHeaders()
+                .putIfAbsent(
+                    ApplicationConstant.X_TOTAL_COUNT,
+                    List.of(count.toString())
+                );
+        })
+        .map(Pair::getFirst)
+        .doFinally(signalType ->
+            serverResponse
+                .getHeaders()
+                .putIfAbsent(
+                    ApplicationConstant.X_TOTAL_COUNT,
+                    List.of("0")
+                )
+        );
   }
   
   /**
@@ -154,11 +154,12 @@ public class ClientController {
   /**
    * Finds a client based on their registration number.
    *
-   * <p>This endpoint retrieves client information by searching for a registration number. If no 
-   * client is found, an error is returned.
+   * This endpoint retrieves client information by searching for a registration number. 
+   * If no client is found, an error is returned.
    *
    * @param registrationNumber the registration number of the client to look up
-   * @return a {@link Mono} emitting the {@link ClientLookUpDto} if found, or an error if no data exists
+   * @return a {@link Mono} emitting the {@link ClientLookUpDto} if found, or an error 
+   * if no data exists
    */
   @GetMapping(value = "/incorporation/{registrationNumber}")
   public Mono<ClientLookUpDto> findByRegistrationNumber(
@@ -174,8 +175,8 @@ public class ClientController {
   /**
    * Searches for an individual client by user ID and last name.
    *
-   * <p>This endpoint fetches an individual client using their user ID and last name. The request is 
-   * validated against existing records in the system.
+   * This endpoint fetches an individual client using their user ID and last name. 
+   * The request is validated against existing records in the system.
    *
    * @param userId the unique identifier of the individual to search for
    * @param lastName the last name of the individual to search for

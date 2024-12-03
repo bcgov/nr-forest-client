@@ -34,6 +34,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -177,41 +178,18 @@ public class ClientService {
   ) {
       Boolean goodStandingInd = document.business().goodStanding();
       String goodStanding;
+      
       if (goodStandingInd == null) {
         goodStanding = "";
-      } 
-      else {
-        goodStanding = goodStandingInd ? "Y" : "N";
+      } else {
+        goodStanding = BooleanUtils.toString(goodStandingInd, "Y", "N");
       }
 
-      log.info("Setting goodStandingInd for client: {} to {}", 
+      log.info("Setting goodStandingInd for client: {} to {}",
                forestClientDetailsDto.clientNumber(), goodStanding);
 
-      ForestClientDetailsDto updatedDetails = new ForestClientDetailsDto(
-          forestClientDetailsDto.clientNumber(),
-          forestClientDetailsDto.clientName(),
-          forestClientDetailsDto.legalFirstName(),
-          forestClientDetailsDto.legalMiddleName(),
-          forestClientDetailsDto.clientStatusCode(),
-          forestClientDetailsDto.clientStatusDesc(),
-          forestClientDetailsDto.clientTypeCode(),
-          forestClientDetailsDto.clientTypeDesc(),
-          forestClientDetailsDto.clientIdTypeCode(),
-          forestClientDetailsDto.clientIdTypeDesc(),
-          forestClientDetailsDto.clientIdentification(),
-          forestClientDetailsDto.registryCompanyTypeCode(),
-          forestClientDetailsDto.corpRegnNmbr(),
-          forestClientDetailsDto.clientAcronym(),
-          forestClientDetailsDto.wcbFirmNumber(),
-          forestClientDetailsDto.clientComment(),
-          forestClientDetailsDto.clientCommentUpdateDate(),
-          forestClientDetailsDto.clientCommentUpdateUser(),
-          goodStanding,
-          forestClientDetailsDto.birthdate(),
-          forestClientDetailsDto.addresses(),
-          forestClientDetailsDto.contacts(),
-          forestClientDetailsDto.doingBusinessAs()
-      );
+      ForestClientDetailsDto updatedDetails = 
+          forestClientDetailsDto.withGoodStandingInd(goodStanding);
 
       return Mono.just(updatedDetails);
   }
