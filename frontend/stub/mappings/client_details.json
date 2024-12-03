@@ -16,9 +16,9 @@
       }
     },
     {
-      "name": "Client Details General Partnership",
+      "name": "Client Details General Partnership - Doing business as",
       "request": {
-        "urlPattern": "/api/clients/details/[gG][aA](.*)",
+        "urlPattern": "/api/clients/details/[gG][dD](.*)",
         "method": "GET"
       },
       "response": {
@@ -46,7 +46,22 @@
       }
     },
     {
-      "name": "Client Details Sole Proprietorship",
+      "name": "Client Details Sole Proprietorship - Some empty fields",
+      "request": {
+        "urlPattern": "/api/clients/details/[sS][eE](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-SE.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Individual",
       "request": {
         "urlPattern": "/api/clients/details/[iI](.*)",
         "method": "GET"
@@ -63,7 +78,7 @@
     {
       "name": "Client Details - Error 400",
       "request": {
-        "urlPattern": "/api/clients/details/(.*)e40.",
+        "urlPattern": "/api/clients/details/(.*)e4..",
         "method": "GET"
       },
       "response": {
@@ -75,7 +90,7 @@
     {
       "name": "Client Details - Error 500",
       "request": {
-        "urlPattern": "/api/clients/details/(.*)e50.",
+        "urlPattern": "/api/clients/details/(.*)e5..",
         "method": "GET"
       },
       "response": {

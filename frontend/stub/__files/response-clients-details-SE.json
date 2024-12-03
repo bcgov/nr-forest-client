@@ -1,0 +1,53 @@
+{
+    "registryCompanyTypeCode": "SP",
+    "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
+    "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
+    "clientName": "Scott",
+    "legalFirstName": "Michael",
+    "legalMiddleName": "",
+    "doingBusinessAs": [],
+    "birthdate": "1962-08-17",
+    "clientAcronym": "",
+    "clientTypeCode": "RSP",
+    "clientTypeDesc": "Registered sole proprietorship",
+    "goodStandingInd": "N",
+    "clientStatusCode": "A",
+    "clientStatusDesc": "Active",
+    "clientComment": "",
+    "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
+    "contacts": [
+        {
+            "index": 0,
+            "contactType": "Accounts Receivable",
+            "firstName": "Test",
+            "lastName": "Uat",
+            "phoneNumber": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+            "emailAddress": "uattest@gov.bc.ca",
+            "locations": [
+                "Mailing address",
+                "Accountant's address"
+            ],
+            "userId": "{{randomValue type='UUID'}}"
+        }
+    ],
+    "addresses": [
+        {
+            "index": 0,
+            "streetAddress":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
+            "country":"Canada",
+            "province":"Saskatchewan",
+            "city":"Hampton",
+            "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "name": "Mailing address"
+        },
+        {
+            "index": 1,
+            "streetAddress":"{{randomValue length=4 type='NUMERIC'}} Oak St",
+            "country":"Canada",
+            "province":"British Columbia",
+            "city":"Deer Lake",
+            "postalCode":"{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "name": "Accountant's address"
+        }
+    ]
+}
