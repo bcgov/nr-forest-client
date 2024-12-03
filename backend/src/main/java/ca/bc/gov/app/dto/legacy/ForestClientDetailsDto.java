@@ -3,7 +3,7 @@ package ca.bc.gov.app.dto.legacy;
 import java.time.LocalDate;
 import java.util.List;
 
-public record ForestClientDetailsDto (
+public record ForestClientDetailsDto(
   String clientNumber,
   String clientName,
   String legalFirstName,

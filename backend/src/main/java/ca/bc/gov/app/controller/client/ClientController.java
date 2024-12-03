@@ -100,7 +100,8 @@ public class ClientController {
    *
    * @param page the page number to retrieve (default is 0)
    * @param size the number of records per page (default is 10)
-   * @param keyword the keyword to search for (default is an empty string, which returns all records)
+   * @param keyword the keyword to search for (default is an empty string, which returns all 
+   *        records)
    * @param serverResponse the HTTP response to include the total count of records in the headers
    * @return a {@link Flux} emitting {@link ClientListDto} objects containing the search results
    */
@@ -109,28 +110,31 @@ public class ClientController {
       @RequestParam(required = false, defaultValue = "0") int page,
       @RequestParam(required = false, defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "") String keyword,
-      ServerHttpResponse serverResponse) {
-
+      ServerHttpResponse serverResponse
+  ) {
       log.info("Listing clients: page={}, size={}, keyword={}", page, size, keyword);
 
       return clientLegacyService
-              .search(page, size, keyword)
-              .doOnNext(pair -> {
-                  Long count = pair.getSecond();
+          .search(page, size, keyword)
+          .doOnNext(pair -> {
+              Long count = pair.getSecond();
 
-                  serverResponse
-                          .getHeaders()
-                          .putIfAbsent(
-                                  ApplicationConstant.X_TOTAL_COUNT,
-                                  List.of(count.toString()));
-              })
-              .map(Pair::getFirst)
-              .doFinally(signalType -> 
-                  serverResponse
-                          .getHeaders()
-                          .putIfAbsent(
-                                  ApplicationConstant.X_TOTAL_COUNT,
-                                  List.of("0")));
+              serverResponse
+                  .getHeaders()
+                  .putIfAbsent(
+                      ApplicationConstant.X_TOTAL_COUNT,
+                      List.of(count.toString())
+                  );
+          })
+          .map(Pair::getFirst)
+          .doFinally(signalType ->
+              serverResponse
+                  .getHeaders()
+                  .putIfAbsent(
+                      ApplicationConstant.X_TOTAL_COUNT,
+                      List.of("0")
+                  )
+          );
   }
   
   /**

@@ -5,27 +5,29 @@ import java.util.List;
 
 public record ForestClientDetailsDto(
     String clientNumber,
-    String clientName, 
+    String clientName,
     String legalFirstName,
-    String legalMiddleName, 
-    String clientStatusCode, 
-    String clientStatusDesc, 
+    String legalMiddleName,
+    String clientStatusCode,
+    String clientStatusDesc,
     String clientTypeCode,
-    String clientTypeDesc, 
-    String clientIdTypeCode, 
+    String clientTypeDesc,
+    String clientIdTypeCode,
     String clientIdTypeDesc,
-    String clientIdentification, 
-    String registryCompanyTypeCode, 
+    String clientIdentification,
+    String registryCompanyTypeCode,
     String corpRegnNmbr,
-    String clientAcronym, 
-    String wcbFirmNumber, 
+    String clientAcronym,
+    String wcbFirmNumber,
     String clientComment,
-    LocalDate clientCommentUpdateDate, 
-    String clientCommentUpdateUser, 
+    LocalDate clientCommentUpdateDate,
+    String clientCommentUpdateUser,
     String goodStandingInd,
     LocalDate birthdate,
-
-    List<ForestClientLocationDto> addresses, 
+    
+    List<ForestClientLocationDto> addresses,
     List<ForestClientContactDto> contacts,
-    List<ClientDoingBusinessAsDto> doingBusinessAs) {
-}
+    List<ClientDoingBusinessAsDto> doingBusinessAs
+  ) {
+    
+  }
