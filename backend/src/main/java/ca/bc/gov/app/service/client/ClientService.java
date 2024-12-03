@@ -133,10 +133,10 @@ public class ClientService {
         })
 
         // If document type is SP and party contains only one entry that is not a person, fail
-        .filter(document -> provider.equalsIgnoreCase("idir") ||
-            !("SP".equalsIgnoreCase(document.business().legalType()) &&
-                document.parties().size() == 1 &&
-                !document.parties().get(0).isPerson())
+        .filter(document -> provider.equalsIgnoreCase("idir") 
+            || !("SP".equalsIgnoreCase(document.business().legalType()) 
+                && document.parties().size() == 1 
+                && !document.parties().get(0).isPerson())
         )
         .flatMap(buildDetails())
         .switchIfEmpty(Mono.error(new UnableToProcessRequestException(
@@ -153,22 +153,22 @@ public class ClientService {
       return legacyService
           .searchByClientNumber(clientNumber, groups)
           .flatMap(forestClientDetailsDto -> {
-              String corpRegnNmbr = forestClientDetailsDto.corpRegnNmbr();
+            String corpRegnNmbr = forestClientDetailsDto.corpRegnNmbr();
 
-              if (corpRegnNmbr == null || corpRegnNmbr.isEmpty()) {
-                  log.info("Corporation registration number not provided. Returning legacy details.");
-                  return Mono.just(forestClientDetailsDto);
-              }
+            if (corpRegnNmbr == null || corpRegnNmbr.isEmpty()) {
+              log.info("Corporation registration number not provided. Returning legacy details.");
+              return Mono.just(forestClientDetailsDto);
+            }
 
-              log.info("Retrieved corporation registration number: {}", corpRegnNmbr);
+            log.info("Retrieved corporation registration number: {}", corpRegnNmbr);
 
-              return bcRegistryService
-                      .requestDocumentData(corpRegnNmbr)
-                      .next()
-                      .flatMap(documentMono -> 
-                            populateGoodStandingInd(forestClientDetailsDto, 
-                                                    documentMono)
-                      );
+            return bcRegistryService
+                    .requestDocumentData(corpRegnNmbr)
+                    .next()
+                    .flatMap(documentMono -> 
+                          populateGoodStandingInd(forestClientDetailsDto, 
+                                                  documentMono)
+                    );
           });
   }
 
@@ -222,7 +222,8 @@ public class ClientService {
     return legacyService
         .searchIdAndLastName(userId, lastName)
         .doOnNext(legacy -> log.info("Found legacy entry for {} {}", userId, lastName))
-        //If we have result, we return a Mono.error with the exception, otherwise return a Mono.empty
+        //If we have result, we return a Mono.error with the exception, 
+        //otherwise return a Mono.empty
         .next()
         .flatMap(legacy -> Mono
             .error(new ClientAlreadyExistException(legacy.clientNumber()))

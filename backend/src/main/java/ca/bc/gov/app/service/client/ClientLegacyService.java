@@ -89,6 +89,17 @@ public class ClientLegacyService {
                     registrationNumber, companyName, dto.clientNumber()));
   }
 
+  /**
+   * Searches for client details by client number using the legacy API.
+   *
+   * <p>This method communicates with the legacy API to retrieve client information based on the 
+   * provided client number. Optionally, a list of groups can be specified to refine the search 
+   * criteria. If a matching record is found, it is returned as a {@link ForestClientDetailsDto}.
+   *
+   * @param clientNumber the client number to search for
+   * @param groups a list of groups to filter the search (optional)
+   * @return a {@link Mono} emitting the {@link ForestClientDetailsDto} if the client is found
+   */
   public Mono<ForestClientDetailsDto> searchByClientNumber(
       String clientNumber,
       List<String> groups
@@ -194,10 +205,11 @@ public class ClientLegacyService {
             // Convert the response to a Flux of ForestClientDto objects
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             // Log the results for debugging purposes
-            .doOnNext(
-                dto -> log.info(
-                    "Found Legacy data for first name {} and last name {} in legacy with client number {}",
-                    firstName, lastName, dto.clientNumber())
+            .doOnNext(dto -> 
+                log.info(
+                    "Found data for first {} and last name {} in legacy with client number {}",
+                    firstName, lastName, dto.clientNumber()
+                )
             );
 
   }
@@ -231,7 +243,7 @@ public class ClientLegacyService {
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
-                    "Found Legacy data for id type {} and identification {} in legacy with client number {}",
+                    "Found data for id type {} and identification {} in legacy with client number {}",
                     idType, identification, dto.clientNumber())
             );
 
@@ -301,7 +313,7 @@ public class ClientLegacyService {
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
-                    "Found Legacy data for {} with {} in legacy with client number {}",
+                    "Found data for {} with {} in legacy with client number {}",
                     searchType,
                     parameters,
                     dto.clientNumber()

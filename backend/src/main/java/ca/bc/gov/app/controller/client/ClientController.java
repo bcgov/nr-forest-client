@@ -120,20 +120,20 @@ public class ClientController {
           Long count = pair.getSecond();
 
           serverResponse
-            .getHeaders()
-            .putIfAbsent(
-                ApplicationConstant.X_TOTAL_COUNT,
-                List.of(count.toString())
-            );
+              .getHeaders()
+              .putIfAbsent(
+                  ApplicationConstant.X_TOTAL_COUNT,
+                  List.of(count.toString())
+              );
         })
         .map(Pair::getFirst)
         .doFinally(signalType ->
           serverResponse
-            .getHeaders()
-            .putIfAbsent(
-                ApplicationConstant.X_TOTAL_COUNT,
-                List.of("0")
-            )
+              .getHeaders()
+              .putIfAbsent(
+                  ApplicationConstant.X_TOTAL_COUNT,
+                  List.of("0")
+              )
         );
   }
   
