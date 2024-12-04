@@ -15,7 +15,7 @@ describe('ReadOnlyComponent.vue', () => {
 	const wrapper = mount(ReadOnlyComponent, {
 	  props: { label: 'Test Label' }
 	});
-	expect(wrapper.find('.label-01').text()).toBe('Test Label');
+	expect(wrapper.find('.label-02').text()).toBe('Test Label');
   });
 
   it('renders default slot content', () => {
