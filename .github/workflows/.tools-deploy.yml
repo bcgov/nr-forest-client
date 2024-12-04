@@ -1,0 +1,159 @@
+name: Tools deployment
+
+on:
+  pull_request:
+
+concurrency:
+  # PR open and close use the same group, allowing only one at a time
+  group: ${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  builds:
+    name: Builds
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: write
+    steps:
+      - uses: bcgov-nr/action-builder-ghcr@v2.3.0
+        name: Build (legacydb)
+        with:
+          package: legacydb
+          tag: ${{ github.event.number }}
+          tag_fallback: latest
+          triggers: ('legacydb/')
+          build_args: |
+            APP_VERSION=${{ github.event.number }}
+
+  pre-tools:
+    name: Pre Deploy Tools
+    needs: [builds]
+    environment: dev
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:        
+          oc: "4.13"
+      - name: Scale down legacy
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=0 -n ${{ secrets.OC_NAMESPACE }}
+          undesired_replicas=0  
+
+          while true; do
+            available_replicas=$(oc get dc/nr-forest-client-${{ github.event.number }}-legacy -n ${{ secrets.OC_NAMESPACE }} -o jsonpath='{.status.availableReplicas}')
+            
+            if [[ "$available_replicas" -ge "$undesired_replicas" ]]; then
+              echo "DeploymentConfig ${{ secrets.OC_NAMESPACE }}-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
+              break
+            fi
+            
+            echo "Waiting... ($available_replicas pods available)"
+            sleep 5
+          done
+
+  deploy-tools:
+    name: Deploy Tools
+    needs: [pre-tools, builds]
+    environment: tools
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initializing Deployment
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
+        with:
+          file: legacydb/openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: "4.13"
+          overwrite: false
+          parameters:
+            -p ZONE=tools            
+            -p ORACLEDB_USER_W=THE
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
+            -p TAG=latest
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:        
+          oc: "4.13"
+      - name: Remove the PR database
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This removes a new pluggable database, user and service for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/removeDatabase "THE" "PR_${{ github.event.number }}"
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+
+      - name: Create the PR database
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This creates a new pluggable database for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools  -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/createDatabase PR_${{ github.event.number }}
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+
+      - name: Create the PR user
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          # This creates a new pluggable database for the PR
+          for i in {1..5}; do
+            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+            if [ -n "$POD_NAME" ]; then
+              echo "Pod found: $POD_NAME"
+              oc exec $POD_NAME -- /opt/oracle/createAppUser "THE" "${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}" "PR_${{ github.event.number }}"
+              break
+            else
+              echo "Pod not found, retrying in 10 seconds... ($i/5)"
+              sleep 10
+            fi
+          done
+
+          if [ -z "$POD_NAME" ]; then
+            echo "Failed to find the pod after 5 attempts."
+          fi
+
+      - name: Migrate the PR database
+        continue-on-error: true
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          # Escape slashes and other special characters
+          ESCAPED_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[\/&]/\\&/g')
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc create job --from=cronjob/nr-forest-client-tools-migratedb migrate-pr${{ github.event.number }}-${{ github.run_attempt }}-$(date +%s) --dry-run=client -o yaml | sed "s/value: main/value: ${ESCAPED_BRANCH_NAME}/" | sed "s/value: \"0\"/value: \"${{ github.event.number }}\"/" | oc apply -f -
