@@ -43,7 +43,5 @@ USER 1001
 EXPOSE ${PORT}
 HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status":"UP"'
 
-ENV SPRING_PROFILES_ACTIVE=container
-
 # Startup
-ENTRYPOINT ["/app/nr-forest-client-legacy"]
+ENTRYPOINT ["/app/nr-forest-client-legacy","--spring.profiles.active=container"]
