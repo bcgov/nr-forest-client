@@ -46,5 +46,5 @@ HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status
 ENV SPRING_PROFILES_ACTIVE=container
 
 # Startup
-SHELL []
-ENTRYPOINT ["/app/nr-forest-client-legacy"]
+SHELL ["/app/nr-forest-client-legacy"]
+ENTRYPOINT ["--spring.profiles.active=container"]
