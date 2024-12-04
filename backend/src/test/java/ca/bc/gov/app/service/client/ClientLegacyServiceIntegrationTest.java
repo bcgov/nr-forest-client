@@ -98,7 +98,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
 
   @Test
   @DisplayName("searching legacy for location")
-  void shouldSearchALocation(){
+  void shouldSearchALocation() {
 
     legacyStub
         .stubFor(
@@ -114,7 +114,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
 
   @Test
   @DisplayName("searching legacy for contact")
-  void shouldSearchAContact(){
+  void shouldSearchAContact() {
     legacyStub
         .stubFor(
             post(urlPathEqualTo("/api/search/contact"))
@@ -136,7 +136,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
     );
   }
 
-  private static Stream<Map<String,List<String>>> invalidValuesForMap(){
+  private static Stream<Map<String,List<String>>> invalidValuesForMap() {
     return Stream.of(
         Map.of("email",List.of("")),
         Map.of("email",List.of("   ")),
