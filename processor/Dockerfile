@@ -44,4 +44,4 @@ EXPOSE ${PORT}
 HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status":"UP"'
 
 # Startup
-ENTRYPOINT ["java", "-jar","/app/nr-forest-client-processor.jar","--spring.profiles.active=container"]
+ENTRYPOINT ["java", "-jar", "/app/nr-forest-client-processor.jar", "--spring.profiles.active=container"]
