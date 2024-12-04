@@ -1,6 +1,7 @@
 package ca.bc.gov.app.entity.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -35,28 +37,52 @@ public class SubmissionContactEntity {
 
   @Column("first_name")
   @Size(min = 1, max = 30)
+  @JsonIgnore
+  private byte[] originalFirstName;
+
+  @Transient
   private String firstName;
 
   @Column("last_name")
   @Size(min = 1, max = 30)
+  @JsonIgnore
+  private byte[] originalLastName;
+
+  @Transient
   private String lastName;
 
   @Column("business_phone_number")
   @NotNull
   @Size(min = 5, max = 14)
+  @JsonIgnore
+  private byte[] originalBusinessPhoneNumber;
+
+  @Transient
   private String businessPhoneNumber;
 
   @Column("secondary_phone_number")
   @Size(max = 14)
+  @JsonIgnore
+  private byte[] originalSecondaryPhoneNumber;
+
+  @Transient
   private String secondaryPhoneNumber;
 
   @Column("fax_number")
   @Size(max = 14)
+  @JsonIgnore
+  private byte[] originalFaxNumber;
+
+  @Transient
   private String faxNumber;
 
   @Column("email_address")
   @NotNull
   @Size(min = 5, max = 100)
+  @JsonIgnore
+  private byte[] originalEmailAddress;
+
+  @Transient
   private String emailAddress;
 
   @Column("idp_user_id")
