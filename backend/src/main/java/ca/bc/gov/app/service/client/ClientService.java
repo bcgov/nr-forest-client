@@ -177,13 +177,12 @@ public class ClientService {
       BcRegistryDocumentDto document
   ) {
       Boolean goodStandingInd = document.business().goodStanding();
-      String goodStanding;
-      
-      if (goodStandingInd == null) {
-        goodStanding = "";
-      } else {
-        goodStanding = BooleanUtils.toString(goodStandingInd, "Y", "N");
-      }
+      String goodStanding = BooleanUtils.toString(
+          goodStandingInd,
+          "Y",
+          "N",
+          StringUtils.EMPTY
+      );
 
       log.info("Setting goodStandingInd for client: {} to {}",
                forestClientDetailsDto.clientNumber(), goodStanding);
