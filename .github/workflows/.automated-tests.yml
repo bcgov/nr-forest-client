@@ -1,5 +1,4 @@
 name: Automated user flow tests
-run-name: Automated workflow tests triggered by @${{ github.actor }}
 
 on:
   workflow_run:
