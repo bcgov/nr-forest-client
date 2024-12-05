@@ -10,7 +10,7 @@ import reactor.test.StepVerifier;
 
 @Slf4j
 @DisplayName("Integrated Test | FSA Client District Service")
-public class ClientDistrictServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
+class ClientDistrictServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Autowired
   private ClientDistrictService service;

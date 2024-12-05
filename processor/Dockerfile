@@ -1,4 +1,3 @@
-### Builder
 FROM eclipse-temurin:17.0.8.1_1-jdk-jammy AS build
 
 # Install Maven
@@ -43,5 +42,7 @@ USER 1001
 EXPOSE ${PORT}
 HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status":"UP"'
 
+ENV SPRING_PROFILES_ACTIVE=container
+
 # Startup
-ENTRYPOINT ["java", "-jar", "/app/nr-forest-client-processor.jar", "--spring.profiles.active=container"]
+ENTRYPOINT ["java", "-jar", "/app/nr-forest-client-processor.jar"]

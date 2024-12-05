@@ -30,7 +30,6 @@ RUN mvn versions:set -DnewVersion=${APP_VERSION} -f pom.xml -DskipTests -Dtests.
 # Build
 RUN mvn -Pnative native:compile
 
-
 ### Deployer
 FROM gcr.io/distroless/java-base:nonroot AS deploy
 ARG PORT=8080
@@ -44,5 +43,7 @@ USER 1001
 EXPOSE ${PORT}
 HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status":"UP"'
 
+ENV SPRING_PROFILES_ACTIVE=container
+
 # Startup
-ENTRYPOINT ["/app/nr-forest-client-backend","--spring.profiles.active=container"]
+ENTRYPOINT ["/app/nr-forest-client-backend"]
