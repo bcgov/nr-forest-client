@@ -6,7 +6,7 @@ on:
     types: [completed]
 
 concurrency:
-  group: ${{ github.event.workflow_run.pull_requests.number }}
+  group: cypress-${{ github.event.workflow_run.pull_requests.number }}
   cancel-in-progress: true
 
 jobs:
