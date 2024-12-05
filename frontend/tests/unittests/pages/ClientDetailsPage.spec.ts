@@ -2,12 +2,21 @@ import { describe, it, expect } from "vitest";
 
 import { mount } from "@vue/test-utils";
 import ClientDetailsPage from "@/pages/ClientDetailsPage.vue";
+import { createMemoryHistory, createRouter } from "vue-router";
 
 describe("ClientDetailsPage.vue", () => {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: "/", component: ClientDetailsPage }],
+  });
+
   // Helper function to mount component with props
-  const createComponent = (propsData = {}) => {
+  const createComponent = (props = {}) => {
     return mount(ClientDetailsPage, {
-      propsData,
+      props,
+      global: {
+        plugins: [router],
+      },
     });
   };
 
