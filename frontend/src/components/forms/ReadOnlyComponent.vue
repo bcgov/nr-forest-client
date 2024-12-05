@@ -4,9 +4,9 @@ defineProps<{ label: string }>()
 <template>
   <div class="grouping-11">
     <div class="title-group-01">
-      <span class="label-01">{{ label }}</span>   
+      <span class="label-02">{{ label }}</span>
       <slot name="icon"></slot>
-    </div>      
+    </div>
     <slot></slot>
   </div>
 </template>

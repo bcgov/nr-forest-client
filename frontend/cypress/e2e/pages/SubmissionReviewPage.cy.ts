@@ -222,7 +222,7 @@ describe("Submission Review Page", () => {
         cy.get("cds-actionable-notification")
         .should("not.exist");
   
-        cy.get('.grouping-10 > :nth-child(2) > .title-group-01 > .label-01')
+        cy.get('.grouping-10 > :nth-child(2) > .title-group-01 > .label-02')
         .should("contain", "Client number");
           
         cy.get(".grouping-10 > :nth-child(2) > .body-compact-01")

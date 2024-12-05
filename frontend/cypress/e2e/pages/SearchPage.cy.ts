@@ -182,7 +182,7 @@ describe("Search Page", () => {
       it("navigates to the client details", () => {
         cy.get("@windowOpen").should(
           "be.calledWith",
-          `/clients/${clientNumber}`,
+          `/clients/details/${clientNumber}`,
           "_blank",
           "noopener",
         );
@@ -239,7 +239,7 @@ describe("Search Page", () => {
         it("navigates to the client details", () => {
           cy.get("@windowOpen").should(
             "be.calledWith",
-            `/clients/${clientNumber}`,
+            `/clients/details/${clientNumber}`,
             "_blank",
             "noopener",
           );
