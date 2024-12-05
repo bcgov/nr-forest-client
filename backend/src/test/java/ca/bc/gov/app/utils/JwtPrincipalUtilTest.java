@@ -5,12 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -178,4 +182,50 @@ class JwtPrincipalUtilTest {
         attributes
     );
   }
+  
+  @ParameterizedTest
+  @DisplayName("getGroups should return expected group list")
+  @MethodSource("provideGroupsTestData")
+  void shouldGetGroups(Map<String, Object> tokenAttributes, List<String> expectedGroups) {
+      JwtAuthenticationToken jwtAuthenticationToken = tokenAttributes == null
+          ? null
+          : createJwtAuthenticationTokenWithAttributes(tokenAttributes);
+
+      List<String> actualGroups = JwtPrincipalUtil.getGroups(jwtAuthenticationToken);
+
+      assertEquals(expectedGroups, actualGroups);
+  }
+
+  private static Stream<Arguments> provideGroupsTestData() {
+      return Stream.of(
+          // Case 1: Token attributes contain "CLIENT_ADMIN"
+          Arguments.of(
+              Map.of("cognito:groups", List.of("CLIENT_ADMIN")),
+              List.of("CLIENT_ADMIN")
+          ),
+          // Case 2: Token attributes contain an empty group list
+          Arguments.of(
+              Map.of("cognito:groups", List.of()),
+              List.of()
+          ),
+          // Case 3: Token attributes contain null groups
+          Arguments.of(
+              new HashMap<>() {{
+                  put("cognito:groups", null);
+              }},
+              List.of()
+          ),
+          // Case 4: Token attributes missing "cognito:groups"
+          Arguments.of(
+              Map.of("otherKey", "someValue"),
+              List.of()
+          ),
+          // Case 5: Null JwtAuthenticationToken
+          Arguments.of(
+              null,
+              List.of()
+          )
+      );
+  }
+  
 }

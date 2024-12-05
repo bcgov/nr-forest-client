@@ -2,6 +2,7 @@ package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
+import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @Slf4j
@@ -54,7 +56,7 @@ public class ClientSearchController {
   ) {
     log.info("Receiving request to search by individual {} {} {} {}", firstName, lastName, dob,
         identification);
-    return service.findByIndividual(firstName, lastName, dob, identification,true);
+    return service.findByIndividual(firstName, lastName, dob, identification, true);
   }
 
   @GetMapping("/match")
@@ -72,6 +74,24 @@ public class ClientSearchController {
   ) {
     log.info("Receiving request to search by ID {} and Last Name {}", clientId, lastName);
     return service.findByIdAndLastName(clientId, lastName);
+  }
+  
+  /**
+   * Handles the HTTP GET request to retrieve client details by client number.
+   * 
+   * @param clientNumber the client number to search for
+   * @param groups the list of user groups for authorization or filtering purposes
+   * @return a Mono containing the client details if found, or an empty Mono if not found
+   */
+  @GetMapping("/clientNumber")
+  public Mono<ForestClientDetailsDto> findByClientNumber(
+      @RequestParam String clientNumber,
+      @RequestParam List<String> groups
+  ) {
+    log.info("Receiving request to search by ID {} and groups {}", 
+             clientNumber,
+             groups);
+    return service.findByClientNumber(clientNumber, groups);
   }
 
   @GetMapping("/id/{idType}/{identification}")
@@ -129,9 +149,9 @@ public class ClientSearchController {
       @RequestParam(required = false,defaultValue = "true") Boolean isFuzzy
   ) {
     log.info("Receiving request to search by doing business as name {} being a {} match",
-        dbaName, BooleanUtils.toString(isFuzzy,"fuzzy","full")
+        dbaName, BooleanUtils.toString(isFuzzy, "fuzzy", "full")
     );
-    return service.findByDoingBusinessAs(dbaName,isFuzzy);
+    return service.findByDoingBusinessAs(dbaName, isFuzzy);
   }
 
   @GetMapping("/clientName")

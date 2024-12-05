@@ -3,6 +3,7 @@ package ca.bc.gov.app.service.client;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
@@ -18,17 +19,18 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
- * This class is responsible for interacting with the legacy API to fetch client data. It uses the
- * WebClient to send HTTP requests to the legacy API and converts the responses into Flux of
- * ForestClientDto objects. It provides several methods to search for clients in the legacy system
- * using different search criteria.
- * <p>
- * It is annotated with @Slf4j for logging, @Service to indicate that it's a Spring service bean,
- * and @Observed for metrics.
- * <p>
- * Each method logs the search parameters and the results for debugging purposes.
+ * This class is responsible for interacting with the legacy API to fetch client data. 
+ * It uses the WebClient to send HTTP requests to the legacy API and converts the responses 
+ * into Flux of ForestClientDto objects. It provides several methods to search for clients 
+ * in the legacy system using different search criteria.
+ * 
+ * <p>It is annotated with @Slf4j for logging, @Service to indicate that it's a 
+ * Spring service bean, and @Observed for metrics.
+ * 
+ * <p>Each method logs the search parameters and the results for debugging purposes.
  */
 @Slf4j
 @Service
@@ -87,6 +89,41 @@ public class ClientLegacyService {
                     registrationNumber, companyName, dto.clientNumber()));
   }
 
+  /**
+   * Searches for client details by client number using the legacy API.
+   *
+   * <p>This method communicates with the legacy API to retrieve client information based on the 
+   * provided client number. Optionally, a list of groups can be specified to refine the search 
+   * criteria. If a matching record is found, it is returned as a {@link ForestClientDetailsDto}.
+   *
+   * @param clientNumber the client number to search for
+   * @param groups a list of groups to filter the search (optional)
+   * @return a {@link Mono} emitting the {@link ForestClientDetailsDto} if the client is found
+   */
+  public Mono<ForestClientDetailsDto> searchByClientNumber(
+      String clientNumber,
+      List<String> groups
+  ) {
+    log.info("Searching for client number {} in legacy", clientNumber);
+
+    return
+        legacyApi
+            .get()
+            .uri(builder ->
+                builder
+                    .path("/api/search/clientNumber")
+                    .queryParam("clientNumber", clientNumber)
+                    .queryParam("groups", groups)
+                    .build(Map.of())
+            )
+            .exchangeToMono(response -> response.bodyToMono(ForestClientDetailsDto.class))
+            .doOnNext(
+                dto -> log.info(
+                    "Found Legacy data for in legacy with client number {}",
+                    dto.clientNumber())
+            );
+  }
+  
   /**
    * This method is used to search for a client in the legacy system using the client's ID and last
    * name.
@@ -168,10 +205,11 @@ public class ClientLegacyService {
             // Convert the response to a Flux of ForestClientDto objects
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             // Log the results for debugging purposes
-            .doOnNext(
-                dto -> log.info(
-                    "Found Legacy data for first name {} and last name {} in legacy with client number {}",
-                    firstName, lastName, dto.clientNumber())
+            .doOnNext(dto -> 
+                log.info(
+                    "Found data for first {} and last name {} in legacy with client number {}",
+                    firstName, lastName, dto.clientNumber()
+                )
             );
 
   }
@@ -205,7 +243,7 @@ public class ClientLegacyService {
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
-                    "Found Legacy data for id type {} and identification {} in legacy with client number {}",
+                    "Found data for id type {} and identification {} in legacy with client number {}",
                     idType, identification, dto.clientNumber())
             );
 
@@ -275,7 +313,7 @@ public class ClientLegacyService {
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
-                    "Found Legacy data for {} with {} in legacy with client number {}",
+                    "Found data for {} with {} in legacy with client number {}",
                     searchType,
                     parameters,
                     dto.clientNumber()
