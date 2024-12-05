@@ -30,7 +30,7 @@ jobs:
       matrix:
         package: [backend, database, frontend, legacy, processor]
     steps:
-      - uses: bcgov-nr/action-builder-ghcr@v2.3.0
+      - uses: bcgov-nr/action-builder-ghcr@v2.2.0
         name: Build (${{ matrix.package }})
         with:
           package: ${{ matrix.package }}

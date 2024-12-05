@@ -1,5 +1,6 @@
 package ca.bc.gov.app.repository;
 
+import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import java.time.LocalDateTime;
@@ -59,6 +60,53 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
   Flux<ForestClientEntity> matchBy(String companyName);
 
   Mono<ForestClientEntity> findByClientNumber(String clientNumber);
+  
+  @Query("""
+      select
+          c.client_number,
+          c.client_name,
+          c.legal_first_name,
+          c.legal_middle_name,
+          c.client_status_code,
+          s.description as client_status_desc,
+          c.client_type_code,
+          t.description as client_type_desc,
+          c.client_id_type_code,
+          it.description as client_id_type_desc,
+          c.client_identification,
+          c.registry_company_type_code,
+          c.corp_regn_nmbr,
+          c.client_acronym,
+          c.wcb_firm_number,
+          c.client_comment,
+          fca.update_userid as latest_update_userid,
+          fca.update_timestamp as latest_update_timestamp,
+          '' as good_standing_ind,
+          c.birthdate
+      from the.forest_client c
+        inner join the.client_status_code s on c.client_status_code = s.client_status_code
+        inner join the.client_type_code t on c.client_type_code = t.client_type_code
+        left join the.client_id_type_code it on c.client_id_type_code = it.client_id_type_code
+        left join (
+            select
+                client_number,
+                update_userid,
+                update_timestamp
+            from (
+                select
+                    client_number,
+                    update_userid,
+                    update_timestamp,
+                    row_number() over (partition by client_number order by update_timestamp desc) as rn
+                from
+                    the.for_cli_audit
+                where
+                    client_comment is not null
+            )
+            where rn = 1
+        ) fca on c.client_number = fca.client_number
+      where c.client_number = :clientNumber""")
+  Mono<ForestClientDetailsDto> findDetailsByClientNumber(String clientNumber);
 
   @Query("""
       SELECT

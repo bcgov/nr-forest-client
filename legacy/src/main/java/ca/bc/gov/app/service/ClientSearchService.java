@@ -6,6 +6,7 @@ import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
+import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
@@ -13,6 +14,7 @@ import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
+import ca.bc.gov.app.exception.NoValueFoundException;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.repository.ForestClientContactRepository;
@@ -22,6 +24,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,6 +39,7 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -534,6 +538,30 @@ public class ClientSearchService {
             dto -> log.info("Found client with name {} as  {} {}",
                 clientName,
                 dto.clientNumber(), dto.clientName())
+        );
+  }
+  
+  public Mono<ForestClientDetailsDto> findByClientNumber(String clientNumber, List<String> groups) {
+    log.info("Searching for client with number {}", clientNumber);
+
+    if (StringUtils.isBlank(clientNumber)) {
+      return Mono.error(new MissingRequiredParameterException("clientNumber"));
+    }
+    
+    if (CollectionUtils.isEmpty(groups)) {
+      return Mono.error(new MissingRequiredParameterException("groups"));
+    }
+
+    return forestClientRepository.findDetailsByClientNumber(clientNumber)
+        .switchIfEmpty(
+            Mono.error(
+                new NoValueFoundException("Client not found with number: " + clientNumber)
+            )
+        )
+        .doOnNext(
+            dto -> log.info("Found client with client number {}",
+                clientNumber,
+                dto.clientNumber())
         );
   }
 
