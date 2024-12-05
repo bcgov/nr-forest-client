@@ -3,7 +3,7 @@
     {
       "name": "Client Details General Partnership",
       "request": {
-        "urlPattern": "/api/clients/details/[gG]?\\d(.*)",
+        "urlPattern": "/api/clients/details/[gG]?(.*)",
         "method": "GET"
       },
       "response": {
@@ -23,7 +23,7 @@
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-GA.json",
+        "bodyFileName": "response-clients-details-GD.json",
         "transformers": [
           "response-template"
         ],
