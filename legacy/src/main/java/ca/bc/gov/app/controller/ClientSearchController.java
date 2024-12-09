@@ -80,18 +80,12 @@ public class ClientSearchController {
    * Handles the HTTP GET request to retrieve client details by client number.
    * 
    * @param clientNumber the client number to search for
-   * @param groups the list of user groups for authorization or filtering purposes
    * @return a Mono containing the client details if found, or an empty Mono if not found
    */
-  @GetMapping("/clientNumber")
-  public Mono<ForestClientDetailsDto> findByClientNumber(
-      @RequestParam String clientNumber,
-      @RequestParam List<String> groups
-  ) {
-    log.info("Receiving request to search by ID {} and groups {}", 
-             clientNumber,
-             groups);
-    return service.findByClientNumber(clientNumber, groups);
+  @GetMapping("/clientNumber/{clientNumber}")
+  public Mono<ForestClientDetailsDto> findByClientNumber(@PathVariable String clientNumber) {
+    log.info("Receiving request to search by ID {}",clientNumber);
+    return service.findByClientNumber(clientNumber);
   }
 
   @GetMapping("/id/{idType}/{identification}")

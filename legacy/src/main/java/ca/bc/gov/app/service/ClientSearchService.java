@@ -541,21 +541,17 @@ public class ClientSearchService {
         );
   }
   
-  public Mono<ForestClientDetailsDto> findByClientNumber(String clientNumber, List<String> groups) {
+  public Mono<ForestClientDetailsDto> findByClientNumber(String clientNumber) {
     log.info("Searching for client with number {}", clientNumber);
 
     if (StringUtils.isBlank(clientNumber)) {
       return Mono.error(new MissingRequiredParameterException("clientNumber"));
     }
-    
-    if (CollectionUtils.isEmpty(groups)) {
-      return Mono.error(new MissingRequiredParameterException("groups"));
-    }
 
     return forestClientRepository.findDetailsByClientNumber(clientNumber)
         .switchIfEmpty(
             Mono.error(
-                new NoValueFoundException("Client not found with number: " + clientNumber)
+                new NoValueFoundException("client with number: " + clientNumber)
             )
         )
         .doOnNext(
