@@ -97,25 +97,15 @@ public class ClientLegacyService {
    * criteria. If a matching record is found, it is returned as a {@link ForestClientDetailsDto}.
    *
    * @param clientNumber the client number to search for
-   * @param groups a list of groups to filter the search (optional)
    * @return a {@link Mono} emitting the {@link ForestClientDetailsDto} if the client is found
    */
-  public Mono<ForestClientDetailsDto> searchByClientNumber(
-      String clientNumber,
-      List<String> groups
-  ) {
+  public Mono<ForestClientDetailsDto> searchByClientNumber(String clientNumber) {
     log.info("Searching for client number {} in legacy", clientNumber);
 
     return
         legacyApi
             .get()
-            .uri(builder ->
-                builder
-                    .path("/api/search/clientNumber")
-                    .queryParam("clientNumber", clientNumber)
-                    .queryParam("groups", groups)
-                    .build(Map.of())
-            )
+            .uri("/api/search/clientNumber/{clientNumber}", clientNumber)
             .exchangeToMono(response -> response.bodyToMono(ForestClientDetailsDto.class))
             .doOnNext(
                 dto -> log.info(

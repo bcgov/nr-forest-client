@@ -214,7 +214,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
                   .withHeader("Content-Type", equalTo("application/json"))
           );
 
-      service.searchByClientNumber(clientNumber, groups)
+      service.searchByClientNumber(clientNumber)
           .as(StepVerifier::create)
           .assertNext(clientDetailsDto -> {
               assertThat(clientDetailsDto)
