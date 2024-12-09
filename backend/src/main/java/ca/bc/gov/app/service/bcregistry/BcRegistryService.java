@@ -72,7 +72,7 @@ public class BcRegistryService {
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
   public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacets(String name, String identifier) {
-    log.info("Searching BC Registry for {}", name);
+    log.info("Searching BC Registry for {}", Objects.toString(name,identifier));
     return
         bcRegistryApi
             .post()

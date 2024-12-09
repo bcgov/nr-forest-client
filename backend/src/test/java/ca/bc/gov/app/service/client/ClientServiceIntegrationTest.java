@@ -153,7 +153,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         null);
 
     Mockito
-      .when(legacyService.searchByClientNumber(clientNumber, groups))
+      .when(legacyService.searchByClientNumber(clientNumber))
       .thenReturn(Mono.just(initialDto));
 
     Mockito
@@ -162,7 +162,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
       .thenReturn(Flux.just(mockDocumentDto));
 
     service
-      .getClientDetailsByClientNumber(clientNumber, groups)
+      .getClientDetailsByClientNumber(clientNumber)
       .as(StepVerifier::create)
       .expectNext(expectedDto)
       .verifyComplete();

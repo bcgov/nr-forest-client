@@ -64,32 +64,11 @@ public class ClientController {
             JwtPrincipalUtil.getProvider(principal)
         );
   }
-  
-  /**
-   * Handles HTTP GET requests to retrieve client details based on the provided client number.
-   *
-   * <p>This method fetches the details of a client from the {@code ClientService} using the 
-   * specified {@code clientNumber}. The caller's JWT authentication token is used to extract 
-   * user-related information such as groups and user ID.</p>
-   *
-   * @param clientNumber the unique identifier of the client whose details are to be retrieved.
-   * @param principal    the {@link JwtAuthenticationToken} containing the authenticated user's 
-   *                     information, including their roles and groups.
-   * @return a {@link Mono} emitting the {@link ForestClientDetailsDto} containing the requested 
-   *         client details, or an error if the client cannot be found or accessed.
-   */
+
   @GetMapping("/details/{clientNumber}")
-  public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(
-      @PathVariable String clientNumber,
-      JwtAuthenticationToken principal
-  ) {   
-    log.info("Requesting client details for client number {} from the client service. {}",
-        clientNumber,
-        JwtPrincipalUtil.getUserId(principal)
-    );
-    return clientService.getClientDetailsByClientNumber(
-            clientNumber,
-            JwtPrincipalUtil.getGroups(principal));
+  public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(@PathVariable String clientNumber) {
+    log.info("Requesting client details for client number {}", clientNumber);
+    return clientService.getClientDetailsByClientNumber(clientNumber);
   }
   
   /**

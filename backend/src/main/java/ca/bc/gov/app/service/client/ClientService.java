@@ -144,32 +144,27 @@ public class ClientService {
         )));
   }
   
-  public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(
-      String clientNumber,
-      List<String> groups
-  ) {
-      log.info("Loading details for {} for user role {}", clientNumber, groups.toString());
-
+  public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(String clientNumber) {
       return legacyService
-          .searchByClientNumber(clientNumber, groups)
-          .flatMap(forestClientDetailsDto -> {
-            String corpRegnNmbr = forestClientDetailsDto.corpRegnNmbr();
-
-            if (corpRegnNmbr == null || corpRegnNmbr.isEmpty()) {
-              log.info("Corporation registration number not provided. Returning legacy details.");
-              return Mono.just(forestClientDetailsDto);
-            }
-
-            log.info("Retrieved corporation registration number: {}", corpRegnNmbr);
-
-            return bcRegistryService
-                    .requestDocumentData(corpRegnNmbr)
-                    .next()
-                    .flatMap(documentMono -> 
-                          populateGoodStandingInd(forestClientDetailsDto, 
-                                                  documentMono)
-                    );
-          });
+          .searchByClientNumber(clientNumber)
+          .flatMap(forestClientDetailsDto ->  Mono
+                .just(forestClientDetailsDto)
+                .filter(dto ->(StringUtils.isNotBlank(dto.corpRegnNmbr())))
+                .doOnNext(dto -> log.info("Retrieved corporation registration number: {}",  forestClientDetailsDto.corpRegnNmbr()))
+                .flatMap(dto ->
+                        bcRegistryService
+                            .requestDocumentData( dto.corpRegnNmbr())
+                            .next()
+                )
+                .flatMap(documentMono -> populateGoodStandingInd(forestClientDetailsDto, documentMono) )
+                .onErrorContinue(NoClientDataFound.class, (ex, obj) ->
+                                log.error("No data found on BC Registry for client number: {}", clientNumber)
+                )
+              .switchIfEmpty(
+                  Mono.just(forestClientDetailsDto)
+                      .doOnNext(dto -> log.info("Corporation registration number not provided. Returning legacy details."))
+              )
+          );
   }
 
   private Mono<ForestClientDetailsDto> populateGoodStandingInd(
