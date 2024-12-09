@@ -205,7 +205,7 @@ export const routes = [
     },
   },
   {
-    path: "/clients/:id",
+    path: "/clients/details/:id",
     name: "client-details",
     component: ClientDetailsPage,
     meta: {

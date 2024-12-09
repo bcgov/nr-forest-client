@@ -13,7 +13,14 @@ import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
 
 import type { ClientSearchResult, CodeNameValue } from "@/dto/CommonTypesDto";
-import { adminEmail, getObfuscatedEmailLink, toTitleCase, highlightMatch } from "@/services/ForestClientService";
+import {
+  adminEmail,
+  getObfuscatedEmailLink,
+  toTitleCase,
+  highlightMatch,
+  getTagColorByClientStatus,
+} from "@/services/ForestClientService";
+
 import summit from "@carbon/pictograms/es/summit";
 import userSearch from "@carbon/pictograms/es/user--search";
 import useSvg from "@/composables/useSvg";
@@ -96,23 +103,6 @@ watch([searchError], () => {
   }
 });
 
-const tagColor = (status: string) => {
-  switch (status) {
-    case "Active":
-      return "green";
-    case "Deactivated":
-      return "purple";
-    case "Receivership":
-      return "magenta";
-    case "Suspended":
-      return "red";
-    case "Deceased":
-      return "gray";
-    default:
-      return "";
-  }
-};
-
 const paginate = (event: any) => {
   const hasPageChanged = event.detail.page !== pageNumber.value;
   pageNumber.value = event.detail.page;
@@ -150,7 +140,7 @@ const searchResultToText = (searchResult: ClientSearchResult): string => {
 const openClientDetails = (clientCode: string) => {
   if (clientCode) {
     const url = featureFlags.STAFF_CLIENT_DETAIL
-      ? `/clients/${clientCode}`
+      ? `/clients/details/${clientCode}`
       : `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientCode}`;
     window.open(url, "_blank", "noopener");
   }
@@ -237,7 +227,7 @@ onMounted(() => {
         >
           <div class="search-result-item" v-if="value">
             <span v-dompurify-html="highlightMatch(searchResultToText(value), searchKeyword)"></span>
-            <cds-tag :type="tagColor(value.clientStatus)" title="">
+            <cds-tag :type="getTagColorByClientStatus(value.clientStatus)" title="">
               <span>{{ value.clientStatus }}</span>
             </cds-tag>
           </div>
@@ -276,7 +266,9 @@ onMounted(() => {
             <cds-table-cell><span>{{ toTitleCase(row.city) }}</span></cds-table-cell>
             <cds-table-cell>
               <div>
-                <cds-tag :type="tagColor(row.clientStatus)" title=""><span>{{ row.clientStatus }}</span></cds-tag>
+                <cds-tag :type="getTagColorByClientStatus(row.clientStatus)" title="">
+                  <span>{{ row.clientStatus }}</span>
+                </cds-tag>
               </div>
             </cds-table-cell>
           </cds-table-row>
