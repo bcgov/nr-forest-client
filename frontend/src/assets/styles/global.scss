@@ -1038,7 +1038,7 @@ cds-actionable-notification * {
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  gap: 2.5rem;
+  gap: 1rem;
   border-radius: 0.5rem;
   border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
   background: #fff;
@@ -1122,6 +1122,12 @@ cds-actionable-notification * {
 
 .grouping-divider {
   margin: 0.5rem 0;
+}
+
+.flex-column-1_5rem {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .horizontal-input-grouping {
@@ -1221,6 +1227,9 @@ cds-text-input::part(label) {
 .label-with-icon {
   display: flex;
   gap: 0.5rem;
+}
+
+.line-height-0 {
   line-height: 0; // prevents the label from being pushed away from its input field (below it).
 }
 
@@ -1441,6 +1450,7 @@ cds-side-nav {
 .client-details-screen {
   padding-left: 0;
   padding-right: 0;
+  padding-bottom: 0;
   gap: 0;
 }
 
@@ -1608,6 +1618,10 @@ cds-header-panel[expanded] {
   padding: 0;
 }
 
+.margin-left-1_75rem {
+  margin-left: 1.75rem;
+}
+
 // Copied from .cds--side-nav__overlay-active in @carbon/styles/css/styles.css so to make it available on all breakpoints
 .overlay-active {
   z-index: 6000;
@@ -1760,10 +1774,19 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
 }
 
 .tab-panel {
-  display: flex;
   padding: 2.5rem;
-  gap: 2rem;
   background: var(--light-theme-layer-layer-01, #f3f3f5);
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+
+    &[hidden] {
+      display: none;
+    }
+  }
 }
 
 /* Small (up to 671px) */
@@ -1935,6 +1958,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   .client-details-screen {
     padding-left: 0;
     padding-right: 0;
+    padding-bottom: 0;
   }
 
   .client-details-content {
@@ -2079,6 +2103,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   .client-details-screen {
     padding-left: 0;
     padding-right: 0;
+    padding-bottom: 0;
   }
 
   .client-details-content {
@@ -2162,6 +2187,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
+    padding-bottom: 0;
   }
   .client-details-content {
     padding-top: 0;
@@ -2252,6 +2278,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
+    padding-bottom: 0;
   }
 
   .client-details-content {
@@ -2324,6 +2351,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
+    padding-bottom: 0;
   }
 
   .client-details-content {
@@ -2380,6 +2408,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
+    padding-bottom: 0;
   }
 
   .client-details-content {

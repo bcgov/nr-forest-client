@@ -324,7 +324,7 @@ watch(combinedValue, (newValue) => {
     />
 
     <div>
-      <div class="label-with-icon parent-label">
+      <div class="label-with-icon line-height-0 parent-label">
         <div class="cds-text-input-label">
           <span class="cds-text-input-required-label">* </span>
           <span>Date of birth</span>

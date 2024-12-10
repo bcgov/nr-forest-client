@@ -8,19 +8,18 @@ import "@carbon/web-components/es/components/notification/index";
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/tabs/index";
 import "@carbon/web-components/es/components/tag/index";
+import "@carbon/web-components/es/components/accordion/index";
 
 // Composables
 import { useFetchTo } from "@/composables/useFetch";
 import { useRouter } from "vue-router";
 
-// @ts-ignore
 import Location16 from "@carbon/icons-vue/es/location/16";
-// @ts-ignore
 import User16 from "@carbon/icons-vue/es/user/16";
-// @ts-ignore
 import NetworkEnterprise16 from "@carbon/icons-vue/es/network--enterprise/16";
-// @ts-ignore
 import RecentlyViewed16 from "@carbon/icons-vue/es/recently-viewed/16";
+import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
+import Location20 from "@carbon/icons-vue/es/location/20";
 
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
 
@@ -28,6 +27,7 @@ import type { ClientDetails } from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
+import LocationDetails from "@/pages/client-details/LocationView/LocationDetails.vue";
 
 //Route related
 const router = useRouter();
@@ -154,7 +154,20 @@ const clientFullName = computed(() => {
       </div>
     </div>
     <div class="tab-panel" v-if="data">
-      <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden></div>
+      <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
+        <template v-for="(location, index) in data.addresses" :key="location.clientLocnCode">
+          <cds-accordion>
+            <cds-accordion-item open size="lg" class="grouping-13">
+              <span slot="title" class="label-with-icon">
+                <LocationStar20 v-if="index === 0" />
+                <Location20 v-else />
+                {{ location.clientLocnCode }} - {{ location.clientLocnName }}
+              </span>
+              <location-details :data="location" />
+            </cds-accordion-item>
+          </cds-accordion>
+        </template>
+      </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden></div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden></div>
       <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden></div>
