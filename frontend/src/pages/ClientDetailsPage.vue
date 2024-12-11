@@ -166,6 +166,14 @@ const formatCount = (count = 0) => {
               <LocationStar20 v-if="index === 0" />
               <Location20 v-else />
               {{ location.clientLocnCode }} - {{ location.clientLocnName }}
+              <cds-tag
+                :id="`location-${location.clientLocnCode}-deactivated`"
+                v-if="location.locnExpiredInd === 'Y'"
+                type="purple"
+                title=""
+              >
+                <span>Deactivated</span>
+              </cds-tag>
             </span>
             <location-view :data="location" />
           </cds-accordion-item>
