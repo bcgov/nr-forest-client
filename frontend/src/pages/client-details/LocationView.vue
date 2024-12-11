@@ -25,7 +25,7 @@ const deliveryInformation = computed(() => {
   <div class="flex-column-1_5rem">
     <div :id="`location-${data.clientLocnCode}-address-section`" class="grouping-23">
       <span class="body-compact-01">{{ data.addressOne }}</span>
-      <span class="body-compact-01">{{ data.city }}, {{ data.province }}</span>
+      <span class="body-compact-01">{{ data.city }}, {{ data.provinceDesc }}</span>
       <span class="body-compact-01">{{ data.country }}</span>
       <span class="body-compact-01">{{ data.postalCode }}</span>
     </div>
