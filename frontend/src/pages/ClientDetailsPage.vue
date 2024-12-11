@@ -27,7 +27,7 @@ import type { ClientDetails } from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
-import LocationDetails from "@/pages/client-details/LocationView/LocationDetails.vue";
+import LocationView from "@/pages/client-details/LocationView.vue";
 
 //Route related
 const router = useRouter();
@@ -52,6 +52,10 @@ const clientFullName = computed(() => {
   }
   return "";
 });
+
+const formatCount = (count = 0) => {
+  return String(count).padStart(2, "0");
+};
 </script>
 
 <template>
@@ -155,18 +159,17 @@ const clientFullName = computed(() => {
     </div>
     <div class="tab-panel" v-if="data">
       <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
-        <template v-for="(location, index) in data.addresses" :key="location.clientLocnCode">
-          <cds-accordion>
-            <cds-accordion-item open size="lg" class="grouping-13">
-              <span slot="title" class="label-with-icon">
-                <LocationStar20 v-if="index === 0" />
-                <Location20 v-else />
-                {{ location.clientLocnCode }} - {{ location.clientLocnName }}
-              </span>
-              <location-details :data="location" />
-            </cds-accordion-item>
-          </cds-accordion>
-        </template>
+        <h3 class="padding-left-1rem">{{ formatCount(data.addresses?.length) }} locations</h3>
+        <cds-accordion v-for="(location, index) in data.addresses" :key="location.clientLocnCode">
+          <cds-accordion-item open size="lg" class="grouping-13">
+            <span slot="title" class="label-with-icon">
+              <LocationStar20 v-if="index === 0" />
+              <Location20 v-else />
+              {{ location.clientLocnCode }} - {{ location.clientLocnName }}
+            </span>
+            <location-view :data="location" />
+          </cds-accordion-item>
+        </cds-accordion>
       </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden></div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden></div>
