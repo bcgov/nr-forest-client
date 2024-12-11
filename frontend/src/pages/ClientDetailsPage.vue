@@ -23,7 +23,7 @@ import Location20 from "@carbon/icons-vue/es/location/20";
 
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
 
-import type { ClientDetails } from "@/dto/CommonTypesDto";
+import type { ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
@@ -55,6 +55,12 @@ const clientFullName = computed(() => {
 
 const formatCount = (count = 0) => {
   return String(count).padStart(2, "0");
+};
+
+const formatAddress = (location: ClientLocation) => {
+  const { addressOne, city, province, country, postalCode } = location;
+  const list = [addressOne, city, province, country, postalCode];
+  return list.join(", ");
 };
 </script>
 
@@ -161,20 +167,25 @@ const formatCount = (count = 0) => {
       <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
         <h3 class="padding-left-1rem">{{ formatCount(data.addresses?.length) }} locations</h3>
         <cds-accordion v-for="(location, index) in data.addresses" :key="location.clientLocnCode">
-          <cds-accordion-item open size="lg" class="grouping-13">
-            <span slot="title" class="label-with-icon">
-              <LocationStar20 v-if="index === 0" />
-              <Location20 v-else />
-              {{ location.clientLocnCode }} - {{ location.clientLocnName }}
-              <cds-tag
-                :id="`location-${location.clientLocnCode}-deactivated`"
-                v-if="location.locnExpiredInd === 'Y'"
-                type="purple"
-                title=""
-              >
-                <span>Deactivated</span>
-              </cds-tag>
-            </span>
+          <cds-accordion-item size="lg" class="grouping-13">
+            <div slot="title" class="flex-column-0_25rem">
+              <span class="label-with-icon">
+                <LocationStar20 v-if="index === 0" />
+                <Location20 v-else />
+                {{ location.clientLocnCode }} - {{ location.clientLocnName }}
+                <cds-tag
+                  :id="`location-${location.clientLocnCode}-deactivated`"
+                  v-if="location.locnExpiredInd === 'Y'"
+                  type="purple"
+                  title=""
+                >
+                  <span>Deactivated</span>
+                </cds-tag>
+              </span>
+              <span class="hide-open body-compact-01 padding-left-1_625rem">
+                {{ formatAddress(location) }}
+              </span>
+            </div>
             <location-view :data="location" />
           </cds-accordion-item>
         </cds-accordion>

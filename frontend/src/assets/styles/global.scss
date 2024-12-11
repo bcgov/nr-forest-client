@@ -1130,6 +1130,12 @@ cds-actionable-notification * {
   gap: 1.5rem;
 }
 
+.flex-column-0_25rem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .horizontal-input-grouping {
   display: flex;
   flex-direction: row;
@@ -1624,6 +1630,14 @@ cds-header-panel[expanded] {
 
 .padding-left-1rem {
   padding-left: 1rem;
+}
+
+.padding-left-1_625rem {
+  padding-left: 1.625rem;
+}
+
+cds-accordion-item[open] .hide-open {
+  display: none;
 }
 
 // Copied from .cds--side-nav__overlay-active in @carbon/styles/css/styles.css so to make it available on all breakpoints
