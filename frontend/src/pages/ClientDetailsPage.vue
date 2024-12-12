@@ -29,7 +29,7 @@ import type { ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 
-//Route related
+// Route related
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id;
 
@@ -61,6 +61,13 @@ const formatAddress = (location: ClientLocation) => {
   const { addressOne, city, provinceCode, country, postalCode } = location;
   const list = [addressOne, city, provinceCode, country, postalCode];
   return list.join(", ");
+};
+
+const pluralize = (word: string, count = 0) => {
+  if (count === 1) {
+    return word;
+  }
+  return `${word}s`;
 };
 </script>
 
@@ -165,7 +172,10 @@ const formatAddress = (location: ClientLocation) => {
     </div>
     <div class="tab-panel" v-if="data">
       <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
-        <h3 class="padding-left-1rem">{{ formatCount(data.addresses?.length) }} locations</h3>
+        <h3 class="padding-left-1rem">
+          {{ formatCount(data.addresses?.length) }}
+          {{ pluralize("location", data.addresses?.length) }}
+        </h3>
         <cds-accordion v-for="(location, index) in data.addresses" :key="location.clientLocnCode">
           <cds-accordion-item size="lg" class="grouping-13">
             <div slot="title" class="flex-column-0_25rem">
