@@ -26,10 +26,18 @@ const indexString = props.data.clientLocnCode;
 <template>
   <div class="flex-column-1_5rem">
     <div :id="`location-${indexString}-address-section`" class="grouping-23">
-      <span class="body-compact-01">{{ data.addressOne }}</span>
-      <span class="body-compact-01">{{ data.city }}, {{ data.provinceDesc }}</span>
-      <span class="body-compact-01">{{ data.country }}</span>
-      <span class="body-compact-01">{{ data.postalCode }}</span>
+      <span :id="`location-${indexString}-streetAddress`" class="body-compact-01">
+        {{ data.addressOne }}
+      </span>
+      <span :id="`location-${indexString}-city-province`" class="body-compact-01">
+        {{ data.city }}, {{ data.provinceDesc }}
+      </span>
+      <span :id="`location-${indexString}-country`" class="body-compact-01">
+        {{ data.country }}
+      </span>
+      <span :id="`location-${indexString}-postalCode`" class="body-compact-01">
+        {{ data.postalCode }}
+      </span>
     </div>
     <div
       :id="`location-${indexString}-delivery-section`"
@@ -54,7 +62,7 @@ const indexString = props.data.clientLocnCode;
     <div
       :id="`location-${indexString}-phone-section`"
       class="grouping-10 no-padding margin-left-1_75rem"
-      v-if="data.businessPhone || data.cellPhone || data.faxNumber"
+      v-if="data.businessPhone || data.cellPhone || data.homePhone || data.faxNumber"
     >
       <read-only-component
         label="Primary phone number"
