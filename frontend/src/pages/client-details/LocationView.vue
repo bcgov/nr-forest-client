@@ -60,23 +60,26 @@ const deliveryInformation = computed(() => {
     >
       <read-only-component
         label="Primary phone number"
-        :id="`businessPhone-${data.businessPhone}`"
+        :id="`primaryPhoneNumber-${data.clientLocnCode}`"
         v-if="data.businessPhone"
       >
         <span class="body-compact-01">{{ data.businessPhone }}</span>
       </read-only-component>
       <read-only-component
         label="Secondary phone number"
-        :id="`businessPhone-${data.cellPhone}`"
+        :id="`secondaryPhoneNumber-${data.clientLocnCode}`"
         v-if="data.cellPhone"
       >
         <span class="body-compact-01">{{ data.cellPhone }}</span>
       </read-only-component>
       <read-only-component
-        label="Fax"
-        :id="`businessPhone-${data.faxNumber}`"
-        v-if="data.faxNumber"
+        label="Tertiary phone number"
+        :id="`tertiaryPhoneNumber-${data.clientLocnCode}`"
+        v-if="data.homePhone"
       >
+        <span class="body-compact-01">{{ data.homePhone }}</span>
+      </read-only-component>
+      <read-only-component label="Fax" :id="`fax-${data.clientLocnCode}`" v-if="data.faxNumber">
         <span class="body-compact-01">{{ data.faxNumber }}</span>
       </read-only-component>
     </div>
