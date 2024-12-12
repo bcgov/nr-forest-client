@@ -32,22 +32,42 @@
     ],
     "addresses": [
         {
-            "index": 0,
-            "streetAddress":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
+            "clientLocnName": "Mailing address",
+            "clientLocnCode": "00",
+            "addressOne":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
+            "addressTwo":"C/O Tony Pineda",
+            "addressThree":"Sample additional info",
             "country":"Canada",
-            "province":"Saskatchewan",
+            "provinceCode":"SK",
+            "provinceDesc":"Saskatchewan",
             "city":"Hampton",
             "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
-            "name": "Mailing address"
+            "emailAddress": "contact@mail.com",
+            "businessPhone": "(250) 286-3767",
+            "cellPhone": "(250) 555-3700",
+            "homePhone": "(250) 555-3101",
+            "faxNumber": "(250) 286-3768",
+            "cliLocnComment": "Sample location 00 comment",
+            "locnExpiredInd": "N"
         },
         {
-            "index": 1,
-            "streetAddress":"{{randomValue length=4 type='NUMERIC'}} Oak St",
+            "clientLocnName": "Accountant's address",
+            "clientLocnCode": "01",
+            "addressOne":"{{randomValue length=4 type='NUMERIC'}} Oak St",
+            "addressTwo":"C/O Mike Oliveira",
+            "addressThree":"",
             "country":"Canada",
-            "province":"British Columbia",
+            "provinceCode":"BC",
+            "provinceDesc":"British Columbia",
             "city":"Deer Lake",
-            "postalCode":"{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
-            "name": "Accountant's address"
+            "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "emailAddress": "account@mail.com",
+            "businessPhone": "(250) 286-4767",
+            "cellPhone": "(250) 555-4700",
+            "homePhone": "(250) 555-4101",
+            "faxNumber": "(250) 286-4768",
+            "cliLocnComment": "Sample location 01 comment",
+            "locnExpiredInd": "N"
         }
     ]
 }
