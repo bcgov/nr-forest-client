@@ -176,7 +176,11 @@ const pluralize = (word: string, count = 0) => {
           {{ formatCount(data.addresses?.length) }}
           {{ pluralize("location", data.addresses?.length) }}
         </h3>
-        <cds-accordion v-for="(location, index) in data.addresses" :key="location.clientLocnCode">
+        <cds-accordion
+          v-for="(location, index) in data.addresses"
+          :key="location.clientLocnCode"
+          :id="`location-${location.clientLocnCode}`"
+        >
           <cds-accordion-item size="lg" class="grouping-13">
             <div slot="title" class="flex-column-0_25rem">
               <span class="label-with-icon">
@@ -192,7 +196,10 @@ const pluralize = (word: string, count = 0) => {
                   <span>Deactivated</span>
                 </cds-tag>
               </span>
-              <span class="hide-open body-compact-01 padding-left-1_625rem">
+              <span
+                :id="`location-${location.clientLocnCode}-title-address`"
+                class="hide-open body-compact-01 padding-left-1_625rem"
+              >
                 {{ formatAddress(location) }}
               </span>
             </div>

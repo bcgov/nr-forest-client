@@ -64,6 +64,25 @@
             "faxNumber": "(250) 286-4768",
             "cliLocnComment": "Sample location 01 comment",
             "locnExpiredInd": "N"
+        },
+        {
+            "clientLocnName": "Warehouse",
+            "clientLocnCode": "02",
+            "addressOne":"{{randomValue length=4 type='NUMERIC'}} Joy St",
+            "addressTwo":"C/O John Wayne",
+            "addressThree":"",
+            "country":"Canada",
+            "provinceCode":"BC",
+            "provinceDesc":"British Columbia",
+            "city":"Deer Lake",
+            "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "emailAddress": "warehouse@mail.com",
+            "businessPhone": "(250) 286-5767",
+            "cellPhone": "(250) 555-5700",
+            "homePhone": "(250) 555-5101",
+            "faxNumber": "(250) 286-5768",
+            "cliLocnComment": "Sample location 02 comment",
+            "locnExpiredInd": "N"
         }
     ]
 }

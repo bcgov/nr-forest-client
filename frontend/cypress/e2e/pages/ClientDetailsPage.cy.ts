@@ -87,4 +87,60 @@ describe("Client Details Page", () => {
       });
     });
   });
+
+  describe("locations tab", () => {
+    it("displays the number of locations", () => {
+      cy.visit("/clients/details/g");
+
+      cy.get("#panel-locations").contains("03 locations");
+    });
+
+    it("displays one collapsed accordion component for each location", () => {
+      cy.visit("/clients/details/g");
+
+      // There are 3 accordions
+      cy.get("#panel-locations").get("cds-accordion").should("have.length", 3);
+
+      // All accordions are initially collapsed
+      cy.get("#panel-locations")
+        .get("cds-accordion")
+        .each(($el) => {
+          expect($el).not.to.have.attr("open");
+        });
+    });
+
+    it("displays the location name on the accordion's title", () => {
+      cy.visit("/clients/details/g");
+
+      cy.get("#location-00 [slot='title']").contains("Mailing address");
+      cy.get("#location-01 [slot='title']").contains("Accountant's address");
+    });
+
+    it("displays the tag Deactivated when location is expired", () => {
+      cy.visit("/clients/details/gd");
+
+      cy.get("cds-tag#location-00-deactivated").contains("Deactivated");
+    });
+
+    it("displays no tag Deactivated when location is not expired", () => {
+      cy.visit("/clients/details/gd");
+
+      cy.get("cds-tag#location-01-deactivated").should("not.exist");
+    });
+
+    it("displays the address on the accordion's title while it's collapsed", () => {
+      cy.visit("/clients/details/g");
+
+      cy.get("#location-00-title-address").should("be.visible");
+    });
+
+    it("hides the address on the accordion's title when it's expanded", () => {
+      cy.visit("/clients/details/g");
+
+      // Clicks to expand the accordion
+      cy.get("#location-00 [slot='title']").click();
+
+      cy.get("#location-00-title-address").should("not.be.visible");
+    });
+  });
 });
