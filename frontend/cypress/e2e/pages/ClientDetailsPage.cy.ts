@@ -98,15 +98,15 @@ describe("Client Details Page", () => {
     it("displays one collapsed accordion component for each location", () => {
       cy.visit("/clients/details/g");
 
-      // There are 3 accordions
-      cy.get("#panel-locations").get("cds-accordion").should("have.length", 3);
+      cy.get("#panel-locations").within(() => {
+        // There are 3 accordions
+        cy.get("cds-accordion").should("have.length", 3);
 
-      // All accordions are initially collapsed
-      cy.get("#panel-locations")
-        .get("cds-accordion")
-        .each(($el) => {
+        // All accordions are initially collapsed
+        cy.get("cds-accordion cds-accordion-item").each(($el) => {
           expect($el).not.to.have.attr("open");
         });
+      });
     });
 
     it("displays the location name on the accordion's title", () => {
@@ -122,7 +122,7 @@ describe("Client Details Page", () => {
       cy.get("cds-tag#location-00-deactivated").contains("Deactivated");
     });
 
-    it("displays no tag Deactivated when location is not expired", () => {
+    it("doesn't display the tag Deactivated when location is not expired", () => {
       cy.visit("/clients/details/gd");
 
       cy.get("cds-tag#location-01-deactivated").should("not.exist");
