@@ -142,5 +142,32 @@ describe("Client Details Page", () => {
 
       cy.get("#location-00-title-address").should("not.be.visible");
     });
+
+    it("keeps accordions' states while tabs are switched", () => {
+      cy.visit("/clients/details/g");
+
+      // Expand first and third locations, leave second one collapsed
+      cy.get("#location-00 [slot='title']").click();
+      cy.get("#location-02 [slot='title']").click();
+
+      // Switch to tab another tab (Contacts)
+      cy.get("#tab-contacts").click();
+
+      // Make sure the current tab panel was effectively switched
+      cy.get("#panel-locations").should("have.attr", "hidden");
+      cy.get("#panel-contacts").should("not.have.attr", "hidden");
+
+      // Switch back to tab Locations
+      cy.get("#tab-locations").click();
+
+      // First location is still open
+      cy.get("#location-00 cds-accordion-item").should("have.attr", "open");
+
+      // Second location is still closed
+      cy.get("#location-01 cds-accordion-item").should("not.have.attr", "open");
+
+      // Third location is still open
+      cy.get("#location-02 cds-accordion-item").should("have.attr", "open");
+    });
   });
 });
