@@ -1,11 +1,15 @@
 describe("Client Details Page", () => {
   beforeEach(() => {
-    cy.visit("/");
+    cy.location().then((location) => {
+      if (location.pathname === "blank") {
+        cy.visit("/");
 
-    cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
-      given_name: "James",
-      family_name: "Baxter",
-      "cognito:groups": ["CLIENT_VIEWER"],
+        cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
+          given_name: "James",
+          family_name: "Baxter",
+          "cognito:groups": ["CLIENT_VIEWER"],
+        });
+      }
     });
   });
 
@@ -89,49 +93,52 @@ describe("Client Details Page", () => {
   });
 
   describe("locations tab", () => {
-    it("displays the number of locations", () => {
-      cy.visit("/clients/details/g");
+    describe("non-user action tests", { testIsolation: false }, () => {
+      describe("3 active locations", () => {
+        before(() => {
+          cy.visit("/clients/details/g");
+        });
+        it("displays the number of locations", () => {
+          cy.get("#panel-locations").contains("03 locations");
+        });
 
-      cy.get("#panel-locations").contains("03 locations");
-    });
+        it("displays one collapsed accordion component for each location", () => {
+          cy.get("#panel-locations").within(() => {
+            // There are 3 accordions
+            cy.get("cds-accordion").should("have.length", 3);
 
-    it("displays one collapsed accordion component for each location", () => {
-      cy.visit("/clients/details/g");
+            // All accordions are initially collapsed
+            cy.get("cds-accordion cds-accordion-item").each(($el) => {
+              expect($el).not.to.have.attr("open");
+            });
+          });
+        });
 
-      cy.get("#panel-locations").within(() => {
-        // There are 3 accordions
-        cy.get("cds-accordion").should("have.length", 3);
+        it("displays the location name on the accordion's title", () => {
+          cy.get("#location-00 [slot='title']").contains("Mailing address");
+          cy.get("#location-01 [slot='title']").contains("Accountant's address");
+          cy.get("#location-02 [slot='title']").contains("Warehouse");
+        });
 
-        // All accordions are initially collapsed
-        cy.get("cds-accordion cds-accordion-item").each(($el) => {
-          expect($el).not.to.have.attr("open");
+        it("displays the address on the accordion's title while it's collapsed", () => {
+          cy.get("#location-00-title-address").should("be.visible");
+          cy.get("#location-01-title-address").should("be.visible");
+          cy.get("#location-02-title-address").should("be.visible");
         });
       });
-    });
 
-    it("displays the location name on the accordion's title", () => {
-      cy.visit("/clients/details/g");
+      describe("2 locations - 1 deactivated and 1 active", () => {
+        before(() => {
+          cy.visit("/clients/details/gd");
+        });
+        it("displays the tag Deactivated when location is expired", () => {
+          cy.get("cds-tag#location-00-deactivated").contains("Deactivated");
+        });
 
-      cy.get("#location-00 [slot='title']").contains("Mailing address");
-      cy.get("#location-01 [slot='title']").contains("Accountant's address");
-    });
-
-    it("displays the tag Deactivated when location is expired", () => {
-      cy.visit("/clients/details/gd");
-
-      cy.get("cds-tag#location-00-deactivated").contains("Deactivated");
-    });
-
-    it("doesn't display the tag Deactivated when location is not expired", () => {
-      cy.visit("/clients/details/gd");
-
-      cy.get("cds-tag#location-01-deactivated").should("not.exist");
-    });
-
-    it("displays the address on the accordion's title while it's collapsed", () => {
-      cy.visit("/clients/details/g");
-
-      cy.get("#location-00-title-address").should("be.visible");
+        it("doesn't display the tag Deactivated when location is not expired", () => {
+          cy.get("cds-tag#location-01-deactivated").should("not.exist");
+        });
+      });
     });
 
     it("hides the address on the accordion's title when it's expanded", () => {
