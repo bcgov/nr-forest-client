@@ -25,20 +25,6 @@ const indexString = props.data.clientLocnCode;
 
 <template>
   <div class="flex-column-1_5rem">
-    <div :id="`location-${indexString}-address-section`" class="grouping-23">
-      <span :id="`location-${indexString}-streetAddress`" class="body-compact-01">
-        {{ data.addressOne }}
-      </span>
-      <span :id="`location-${indexString}-city-province`" class="body-compact-01">
-        {{ data.city }}, {{ data.provinceDesc }}
-      </span>
-      <span :id="`location-${indexString}-country`" class="body-compact-01">
-        {{ data.country }}
-      </span>
-      <span :id="`location-${indexString}-postalCode`" class="body-compact-01">
-        {{ data.postalCode }}
-      </span>
-    </div>
     <div
       :id="`location-${indexString}-delivery-section`"
       class="grouping-23"
@@ -53,6 +39,20 @@ const indexString = props.data.clientLocnCode;
           v-dompurify-html="getFormattedHtml(deliveryInformation)"
         ></span>
       </read-only-component>
+    </div>
+    <div :id="`location-${indexString}-address-section`" class="grouping-23">
+      <span :id="`location-${indexString}-streetAddress`" class="body-compact-01">
+        {{ data.addressOne }}
+      </span>
+      <span :id="`location-${indexString}-city-province`" class="body-compact-01">
+        {{ data.city }}, {{ data.provinceDesc }}
+      </span>
+      <span :id="`location-${indexString}-country`" class="body-compact-01">
+        {{ data.country }}
+      </span>
+      <span :id="`location-${indexString}-postalCode`" class="body-compact-01">
+        {{ data.postalCode }}
+      </span>
     </div>
     <div :id="`location-${indexString}-email-section`" class="grouping-23" v-if="data.emailAddress">
       <read-only-component label="Email address" :id="`location-${indexString}-emailAddress`">
