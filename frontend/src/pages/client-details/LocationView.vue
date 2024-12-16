@@ -56,7 +56,9 @@ const indexString = props.data.clientLocnCode;
     </div>
     <div :id="`location-${indexString}-email-section`" class="grouping-23" v-if="data.emailAddress">
       <read-only-component label="Email address" :id="`location-${indexString}-emailAddress`">
-        <span class="body-compact-01">{{ data.emailAddress }}</span>
+        <a :href="`mailto:${data.emailAddress}`">
+          <span class="body-compact-01 colorless">{{ data.emailAddress }}</span>
+        </a>
       </read-only-component>
     </div>
     <div
@@ -69,24 +71,32 @@ const indexString = props.data.clientLocnCode;
         :id="`location-${indexString}-primaryPhoneNumber`"
         v-if="data.businessPhone"
       >
-        <span class="body-compact-01">{{ data.businessPhone }}</span>
+        <a :href="`tel:${data.businessPhone}`">
+          <span class="body-compact-01 colorless">{{ data.businessPhone }}</span>
+        </a>
       </read-only-component>
       <read-only-component
         label="Secondary phone number"
         :id="`location-${indexString}-secondaryPhoneNumber`"
         v-if="data.cellPhone"
       >
-        <span class="body-compact-01">{{ data.cellPhone }}</span>
+        <a :href="`tel:${data.cellPhone}`">
+          <span class="body-compact-01 colorless">{{ data.cellPhone }}</span>
+        </a>
       </read-only-component>
       <read-only-component label="Fax" :id="`location-${indexString}-fax`" v-if="data.faxNumber">
-        <span class="body-compact-01">{{ data.faxNumber }}</span>
+        <a :href="`tel:${data.faxNumber}`">
+          <span class="body-compact-01 colorless">{{ data.faxNumber }}</span>
+        </a>
       </read-only-component>
       <read-only-component
         label="Other"
         :id="`location-${indexString}-other`"
         v-if="data.homePhone"
       >
-        <span class="body-compact-01">{{ data.homePhone }}</span>
+        <a :href="`tel:${data.homePhone}`">
+          <span class="body-compact-01 colorless">{{ data.homePhone }}</span>
+        </a>
       </read-only-component>
     </div>
     <div

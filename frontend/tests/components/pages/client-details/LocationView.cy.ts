@@ -35,10 +35,16 @@ describe("<location-view />", () => {
       .as("vueWrapper");
   };
 
-  const testField = (selector: string, value: string) => {
+  const testField = (selector: string, value: string, linkPrefix?: string) => {
     cy.get(selector).should("be.visible");
     cy.get(selector).contains(value);
     expect(value.length).to.be.greaterThan(0);
+
+    if (linkPrefix) {
+      cy.get(selector).within(() => {
+        cy.get("a").should("have.attr", "href", `${linkPrefix}${value}`);
+      });
+    }
   };
 
   const testFieldHidden = (selector: string) => {
@@ -67,15 +73,19 @@ describe("<location-view />", () => {
       testField("#location-00-deliveryInformation", currentProps.data.addressThree);
     });
 
+    const emailPrefix = "mailto:";
+
     cy.get("#location-00-email-section").within(() => {
-      testField("#location-00-emailAddress", currentProps.data.emailAddress);
+      testField("#location-00-emailAddress", currentProps.data.emailAddress, emailPrefix);
     });
 
+    const phonePrefix = "tel:";
+
     cy.get("#location-00-phone-section").within(() => {
-      testField("#location-00-primaryPhoneNumber", currentProps.data.businessPhone);
-      testField("#location-00-secondaryPhoneNumber", currentProps.data.cellPhone);
-      testField("#location-00-fax", currentProps.data.faxNumber);
-      testField("#location-00-other", currentProps.data.homePhone);
+      testField("#location-00-primaryPhoneNumber", currentProps.data.businessPhone, phonePrefix);
+      testField("#location-00-secondaryPhoneNumber", currentProps.data.cellPhone, phonePrefix);
+      testField("#location-00-fax", currentProps.data.faxNumber, phonePrefix);
+      testField("#location-00-other", currentProps.data.homePhone, phonePrefix);
     });
 
     cy.get("#location-00-notes-section").within(() => {
