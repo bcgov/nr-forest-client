@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
+import ca.bc.gov.app.dto.legacy.AuditLogDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
@@ -379,6 +380,26 @@ public class ClientLegacyService {
           Long totalCount = pair.getSecond();
           log.info("Found clients by keyword {}, total count: {}", dto.clientNumber(), totalCount);
         });
+  }
+  
+  public Flux<AuditLogDto> retrieveAuditLog(String clientNumber) {
+    log.info("Retrieving audit log for client number {} in legacy", clientNumber);
+
+    return
+        legacyApi
+            .get()
+            .uri(builder ->
+                builder
+                    .path("/api/search/auditLog")
+                    .queryParam("clientNumber", clientNumber)
+                    .build(Map.of())
+            )
+            .exchangeToFlux(response -> response.bodyToFlux(AuditLogDto.class))
+            .doOnNext(
+                dto -> log.info(
+                    "Found Legacy data for in legacy with client number {}",
+                    dto.clientNumber())
+            );
   }
 
 }

@@ -180,6 +180,15 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN,
             ApplicationConstant.ROLE_SUSPEND);
+    
+    // Viewer, editor, suspend and admin users can GET from the clients search endpoint
+    authorize
+        .pathMatchers(HttpMethod.GET, "/api/clients/audit-log/**")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
 
     // Deny all other requests
     authorize.anyExchange().denyAll();
