@@ -17,8 +17,8 @@ describe("<location-view />", () => {
       emailAddress: "contact@mail.com",
       businessPhone: "(250) 286-3767",
       cellPhone: "(250) 555-3700",
-      homePhone: "(250) 555-3101",
       faxNumber: "(250) 286-3768",
+      homePhone: "(250) 555-3101",
       cliLocnComment: "Sample location 00 comment",
       locnExpiredInd: "N",
     } as ClientLocation,
@@ -74,8 +74,8 @@ describe("<location-view />", () => {
     cy.get("#location-00-phone-section").within(() => {
       testField("#location-00-primaryPhoneNumber", currentProps.data.businessPhone);
       testField("#location-00-secondaryPhoneNumber", currentProps.data.cellPhone);
-      testField("#location-00-tertiaryPhoneNumber", currentProps.data.homePhone);
       testField("#location-00-fax", currentProps.data.faxNumber);
+      testField("#location-00-other", currentProps.data.homePhone);
     });
 
     cy.get("#location-00-note-section").within(() => {
@@ -91,8 +91,8 @@ describe("<location-view />", () => {
       emailAddress: "",
       businessPhone: "",
       cellPhone: "",
-      homePhone: "",
       faxNumber: "",
+      homePhone: "",
       cliLocnComment: "",
     };
     mount({ data });
@@ -107,8 +107,8 @@ describe("<location-view />", () => {
     const scenarios = [
       ["businessPhone", "#location-00-primaryPhoneNumber"],
       ["cellPhone", "#location-00-secondaryPhoneNumber"],
-      ["homePhone", "#location-00-tertiaryPhoneNumber"],
       ["faxNumber", "#location-00-fax"],
+      ["homePhone", "#location-00-other"],
     ];
 
     scenarios.forEach((scenario) => {
@@ -120,8 +120,8 @@ describe("<location-view />", () => {
             ...getDefaultProps().data,
             businessPhone: "",
             cellPhone: "",
-            homePhone: "",
             faxNumber: "",
+            homePhone: "",
             [propName]: "(250) 555-9876",
           };
           mount({ data });
