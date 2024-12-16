@@ -1636,6 +1636,10 @@ cds-header-panel[expanded] {
   padding-left: 1.625rem;
 }
 
+.colorless {
+  color: unset;
+}
+
 cds-accordion-item[open] .hide-open {
   display: none;
 }
