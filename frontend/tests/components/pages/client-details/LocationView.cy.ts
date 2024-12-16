@@ -78,8 +78,8 @@ describe("<location-view />", () => {
       testField("#location-00-other", currentProps.data.homePhone);
     });
 
-    cy.get("#location-00-note-section").within(() => {
-      testField("#location-00-note", currentProps.data.cliLocnComment);
+    cy.get("#location-00-notes-section").within(() => {
+      testField("#location-00-notes", currentProps.data.cliLocnComment);
     });
   });
 
@@ -100,7 +100,7 @@ describe("<location-view />", () => {
     cy.get("#location-00-delivery-section").should("not.exist");
     cy.get("#location-00-email-section").should("not.exist");
     cy.get("#location-00-phone-section").should("not.exist");
-    cy.get("#location-00-note-section").should("not.exist");
+    cy.get("#location-00-notes-section").should("not.exist");
   });
 
   describe("while there is at least one phone to be displayed", () => {

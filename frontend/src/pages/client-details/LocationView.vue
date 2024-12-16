@@ -90,11 +90,11 @@ const indexString = props.data.clientLocnCode;
       </read-only-component>
     </div>
     <div
-      :id="`location-${indexString}-note-section`"
+      :id="`location-${indexString}-notes-section`"
       class="grouping-23"
       v-if="data.cliLocnComment"
     >
-      <read-only-component label="Note" :id="`location-${indexString}-note`">
+      <read-only-component label="Notes" :id="`location-${indexString}-notes`">
         <span
           class="body-compact-01"
           v-dompurify-html="getFormattedHtml(data.cliLocnComment)"
