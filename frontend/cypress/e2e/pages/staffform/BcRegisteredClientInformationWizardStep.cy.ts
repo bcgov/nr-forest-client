@@ -461,7 +461,7 @@ describe("BC Registered Staff Wizard Step", () => {
             ".read-only-box > cds-inline-notification#readOnlyNotification"
           ).should("exist");
 
-          cy.get(`.read-only-box > #legalType > .title-group-01 > .label-01`)
+          cy.get(`.read-only-box > #legalType > .title-group-01 > .label-02`)
             .should("exist")
             .and("have.text", "Type");
 
@@ -470,7 +470,7 @@ describe("BC Registered Staff Wizard Step", () => {
             .and("have.text", scenario.type);
 
           cy.get(
-            `.read-only-box > #registrationNumber > .title-group-01 > .label-01`
+            `.read-only-box > #registrationNumber > .title-group-01 > .label-02`
           )
             .should("exist")
             .and("have.text", "Registration number");
@@ -493,7 +493,7 @@ describe("BC Registered Staff Wizard Step", () => {
             //TODO: check the text and style maybe?!
           }
 
-          cy.get(`.read-only-box > #goodStanding > .title-group-01 > .label-01`)
+          cy.get(`.read-only-box > #goodStanding > .title-group-01 > .label-02`)
             .should("exist")
             .and("have.text", "BC Registries standing");
 
@@ -577,17 +577,17 @@ describe("BC Registered Staff Wizard Step", () => {
         ".read-only-box > cds-inline-notification#readOnlyNotification"
       ).should("exist");
 
-      cy.get(".read-only-box > #legalType > .title-group-01 > .label-01")
+      cy.get(".read-only-box > #legalType > .title-group-01 > .label-02")
         .should("exist")
         .and("have.text", "Type");
 
       cy.get(
-        ".read-only-box > #registrationNumber > .title-group-01 > .label-01"
+        ".read-only-box > #registrationNumber > .title-group-01 > .label-02"
       )
         .should("exist")
         .and("have.text", "Registration number");
 
-      cy.get(".read-only-box > #goodStanding > .title-group-01 > .label-01")
+      cy.get(".read-only-box > #goodStanding > .title-group-01 > .label-02")
         .should("exist")
         .and("have.text", "BC Registries standing");
 
@@ -612,15 +612,15 @@ describe("BC Registered Staff Wizard Step", () => {
         ).should("not.exist");
 
         cy.get(
-          ".read-only-box > #legalType > .title-group-01 > .label-01"
+          ".read-only-box > #legalType > .title-group-01 > .label-02"
         ).should("not.exist");
 
         cy.get(
-          ".read-only-box > #registrationNumber > .title-group-01 > .label-01"
+          ".read-only-box > #registrationNumber > .title-group-01 > .label-02"
         ).should("not.exist");
 
         cy.get(
-          ".read-only-box > #goodStanding > .title-group-01 > .label-01"
+          ".read-only-box > #goodStanding > .title-group-01 > .label-02"
         ).should("not.exist");
 
         cy.get("#workSafeBCNumber").should("not.exist");

@@ -22,7 +22,13 @@ import type {
 } from "@/dto/CommonTypesDto";
 import { formatDistanceToNow, format } from "date-fns";
 import { greenDomain } from "@/CoreConstants";
-import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
+import {
+  adminEmail,
+  getObfuscatedEmailLink,
+  convertFieldNameToSentence,
+  toTitleCase,
+  goodStanding,
+} from "@/services/ForestClientService";
 
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
@@ -34,7 +40,6 @@ import Review16 from "@carbon/icons-vue/es/data--view--alt/32";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 // @ts-ignore
 import Error16 from "@carbon/icons-vue/es/error--outline/16";
-import { convertFieldNameToSentence, toTitleCase } from "@/services/ForestClientService";
 import { getValidations } from "@/helpers/validators/SubmissionReviewValidations";
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
@@ -213,12 +218,6 @@ const friendlyDate = (date: Date): string => {
 const formattedDate = (date: Date): string => {
   if (!date) return "";
   return format(new Date(date), "MMM dd, yyyy");
-};
-// Format the good standing parameter
-const goodStanding = (goodStanding: string): string => {
-  if (goodStanding)
-    return goodStanding === "Y" ? "Good standing" : "Not in good standing";
-  return "Unknown";
 };
 
 const tagColor = (status: string) => {
@@ -531,12 +530,10 @@ const isProcessing = computed(() => {
               
               <read-only-component label="Client number" v-if="data.business.clientNumber">
                 <span class="body-compact-01">
-                  <!-- //BEGIN-NOSCAN -->
                   <a
                     target="_blank"
                     :href="'https://' + greenDomain + '/int/client/client02MaintenanceAction.do?bean.clientNumber=' + data.business.clientNumber"
                   >
-                  <!-- //END-NOSCAN -->
                     {{ data.business.clientNumber }}
                   </a>
                 </span>
