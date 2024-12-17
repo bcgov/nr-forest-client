@@ -543,7 +543,10 @@ const isProcessing = computed(() => {
                 <span class="body-compact-01">{{ data.business.clientTypeDesc }}</span>
               </read-only-component>
 
-              <read-only-component label="Birthdate" v-if="data.business.clientType === 'I'">
+              <read-only-component
+                label="Birthdate"
+                v-if="data.business.clientType === 'I' || data.business.clientType === 'RSP'"
+              >
                 <span class="body-compact-01">{{ data.business.birthdate }}</span>
               </read-only-component>
 
