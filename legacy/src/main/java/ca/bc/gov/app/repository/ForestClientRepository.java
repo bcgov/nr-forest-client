@@ -583,6 +583,6 @@ ORDER BY
   A1.UPDATE_TIMESTAMP DESC,
   A1.COLUMN_NAME
 """)
-  Flux<AuditLogDto> findAuditLogsByClientNumber(String clientNumber);
+  Flux<AuditLogDto> findLocationAuditLogsByClientNumber(String clientNumber);
   
 }

@@ -646,7 +646,7 @@ public class ClientSearchService {
       return Flux.error(new MissingRequiredParameterException("clientNumber"));
     }
 
-    return forestClientRepository.findAuditLogsByClientNumber(clientNumber)
+    return forestClientRepository.findLocationAuditLogsByClientNumber(clientNumber)
         .switchIfEmpty(Flux.empty())
         .doOnNext(
             dto -> log.info("Found client with client number {}",
