@@ -240,7 +240,6 @@ public class JwtPrincipalUtil {
 
   private static Set<String> getClaimGroups(Map<String,Object> tokenAttributes) {
     Object groups = tokenAttributes.get("cognito:groups");
-    System.out.println(groups);
 
     if (groups instanceof List) {
       return ((List<?>) groups).stream()
