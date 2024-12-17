@@ -112,5 +112,6 @@ public final class ApplicationConstant {
 
   public static final String MDC_USERID = "X-USER";
 
+  public static final String MDC_USERROLES = "X-Role";
 }
 
