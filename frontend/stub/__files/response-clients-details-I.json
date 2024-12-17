@@ -34,22 +34,24 @@
     ],
     "addresses": [
         {
-            "index": 0,
-            "streetAddress":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
-            "country":"Canada",
-            "province":"Saskatchewan",
+            "clientLocnName": "Mailing address",
+            "clientLocnCode": "00",
+            "addressOne":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
+            "addressTwo":"C/O Tony Pineda",
+            "addressThree":"Sample additional info",
+            "countryCode":"CA",
+            "countryDesc":"Canada",
+            "provinceCode":"SK",
+            "provinceDesc":"Saskatchewan",
             "city":"Hampton",
             "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
-            "name": "Mailing address"
-        },
-        {
-            "index": 1,
-            "streetAddress":"{{randomValue length=4 type='NUMERIC'}} Oak St",
-            "country":"Canada",
-            "province":"British Columbia",
-            "city":"Deer Lake",
-            "postalCode":"{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
-            "name": "Accountant's address"
+            "emailAddress": "tony.pineda@mail.com",
+            "businessPhone": "(250) 286-3767",
+            "cellPhone": "",
+            "homePhone": "",
+            "faxNumber": "",
+            "cliLocnComment": "Sample location 00 comment",
+            "locnExpiredInd": "N"
         }
     ]
 }

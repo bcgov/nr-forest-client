@@ -1,11 +1,15 @@
 describe("Client Details Page", () => {
   beforeEach(() => {
-    cy.visit("/");
+    cy.location().then((location) => {
+      if (location.pathname === "blank") {
+        cy.visit("/");
 
-    cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
-      given_name: "James",
-      family_name: "Baxter",
-      "cognito:groups": ["CLIENT_VIEWER"],
+        cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
+          given_name: "James",
+          family_name: "Baxter",
+          "cognito:groups": ["CLIENT_VIEWER"],
+        });
+      }
     });
   });
 
@@ -85,6 +89,92 @@ describe("Client Details Page", () => {
           cy.get(`#${elId}`).contains(detail);
         }
       });
+    });
+  });
+
+  describe("locations tab", () => {
+    describe("non-user action tests", { testIsolation: false }, () => {
+      describe("3 active locations", () => {
+        before(() => {
+          cy.visit("/clients/details/g");
+        });
+        it("displays the number of locations", () => {
+          cy.get("#panel-locations").contains("03 locations");
+        });
+
+        it("displays one collapsed accordion component for each location", () => {
+          cy.get("#panel-locations").within(() => {
+            // There are 3 accordions
+            cy.get("cds-accordion").should("have.length", 3);
+
+            // All accordions are initially collapsed
+            cy.get("cds-accordion cds-accordion-item").each(($el) => {
+              expect($el).not.to.have.attr("open");
+            });
+          });
+        });
+
+        it("displays the location name on the accordion's title", () => {
+          cy.get("#location-00 [slot='title']").contains("Mailing address");
+          cy.get("#location-01 [slot='title']").contains("Accountant's address");
+          cy.get("#location-02 [slot='title']").contains("Warehouse");
+        });
+
+        it("displays the address on the accordion's title while it's collapsed", () => {
+          cy.get("#location-00-title-address").should("be.visible");
+          cy.get("#location-01-title-address").should("be.visible");
+          cy.get("#location-02-title-address").should("be.visible");
+        });
+      });
+
+      describe("2 locations - 1 deactivated and 1 active", () => {
+        before(() => {
+          cy.visit("/clients/details/gd");
+        });
+        it("displays the tag Deactivated when location is expired", () => {
+          cy.get("cds-tag#location-00-deactivated").contains("Deactivated");
+        });
+
+        it("doesn't display the tag Deactivated when location is not expired", () => {
+          cy.get("cds-tag#location-01-deactivated").should("not.exist");
+        });
+      });
+    });
+
+    it("hides the address on the accordion's title when it's expanded", () => {
+      cy.visit("/clients/details/g");
+
+      // Clicks to expand the accordion
+      cy.get("#location-00 [slot='title']").click();
+
+      cy.get("#location-00-title-address").should("not.be.visible");
+    });
+
+    it("keeps accordions' states while tabs are switched", () => {
+      cy.visit("/clients/details/g");
+
+      // Expand first and third locations, leave second one collapsed
+      cy.get("#location-00 [slot='title']").click();
+      cy.get("#location-02 [slot='title']").click();
+
+      // Switch to tab another tab (Contacts)
+      cy.get("#tab-contacts").click();
+
+      // Make sure the current tab panel was effectively switched
+      cy.get("#panel-locations").should("have.attr", "hidden");
+      cy.get("#panel-contacts").should("not.have.attr", "hidden");
+
+      // Switch back to tab Locations
+      cy.get("#tab-locations").click();
+
+      // First location is still open
+      cy.get("#location-00 cds-accordion-item").should("have.attr", "open");
+
+      // Second location is still closed
+      cy.get("#location-01 cds-accordion-item").should("not.have.attr", "open");
+
+      // Third location is still open
+      cy.get("#location-02 cds-accordion-item").should("have.attr", "open");
     });
   });
 });
