@@ -1,5 +1,6 @@
 package ca.bc.gov.app.configuration;
 
+import ca.bc.gov.app.converters.ForestClientDetailsSerializerModifier;
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAlternateNameDto;
@@ -54,6 +55,8 @@ import ca.bc.gov.app.dto.opendata.OpenData;
 import ca.bc.gov.app.health.HealthExchangeFilterFunction;
 import ca.bc.gov.app.health.ManualHealthIndicator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -305,7 +308,20 @@ public class GlobalServiceConfiguration {
 
   @Bean
   public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-    return builder.build();
+
+    ObjectMapper mapper = builder.build();
+    mapper.registerModule(new JavaTimeModule());
+    mapper.registerModule(forestClientDetailsDtoModule());
+
+    return mapper;
+  }
+
+  SimpleModule forestClientDetailsDtoModule() {
+    SimpleModule module = new SimpleModule();
+
+    // Register the serializer modifier
+    module.setSerializerModifier(new ForestClientDetailsSerializerModifier());
+    return module;
   }
 
 }
