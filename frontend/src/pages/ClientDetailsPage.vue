@@ -69,6 +69,20 @@ const pluralize = (word: string, count = 0) => {
   }
   return `${word}s`;
 };
+
+const compareString = (a: string, b: string) => {
+  if (a < b) {
+    return -1;
+  }
+  if (a > b) {
+    return 1;
+  }
+  return 0;
+};
+
+const sortedLocations = computed(() =>
+  data.value.addresses.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
+);
 </script>
 
 <template>
@@ -177,7 +191,7 @@ const pluralize = (word: string, count = 0) => {
           {{ pluralize("location", data.addresses?.length) }}
         </h3>
         <cds-accordion
-          v-for="(location, index) in data.addresses"
+          v-for="(location, index) in sortedLocations"
           :key="location.clientLocnCode"
           :id="`location-${location.clientLocnCode}`"
         >
