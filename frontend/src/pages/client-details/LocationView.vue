@@ -84,18 +84,18 @@ const indexString = props.data.clientLocnCode;
           <span class="body-compact-01 colorless">{{ data.cellPhone }}</span>
         </a>
       </read-only-component>
-      <read-only-component label="Fax" :id="`location-${indexString}-fax`" v-if="data.faxNumber">
-        <a :href="`tel:${data.faxNumber}`">
-          <span class="body-compact-01 colorless">{{ data.faxNumber }}</span>
-        </a>
-      </read-only-component>
       <read-only-component
-        label="Other"
-        :id="`location-${indexString}-other`"
+        label="Tertiary phone number"
+        :id="`location-${indexString}-tertiaryPhoneNumber`"
         v-if="data.homePhone"
       >
         <a :href="`tel:${data.homePhone}`">
           <span class="body-compact-01 colorless">{{ data.homePhone }}</span>
+        </a>
+      </read-only-component>
+      <read-only-component label="Fax" :id="`location-${indexString}-fax`" v-if="data.faxNumber">
+        <a :href="`tel:${data.faxNumber}`">
+          <span class="body-compact-01 colorless">{{ data.faxNumber }}</span>
         </a>
       </read-only-component>
     </div>
