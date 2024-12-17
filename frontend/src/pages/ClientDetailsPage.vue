@@ -58,8 +58,8 @@ const formatCount = (count = 0) => {
 };
 
 const formatAddress = (location: ClientLocation) => {
-  const { addressOne, city, provinceCode, country, postalCode } = location;
-  const list = [addressOne, city, provinceCode, country, postalCode];
+  const { addressOne, city, provinceCode, countryDesc, postalCode } = location;
+  const list = [addressOne, city, provinceCode, countryDesc, postalCode];
   return list.join(", ");
 };
 

@@ -265,7 +265,8 @@ export interface ClientLocation {
   provinceCode: string;
   provinceDesc: string;
   postalCode: string;
-  country: string;
+  countryCode: string;
+  countryDesc: string;
   businessPhone: string;
   homePhone: string;
   cellPhone: string;
