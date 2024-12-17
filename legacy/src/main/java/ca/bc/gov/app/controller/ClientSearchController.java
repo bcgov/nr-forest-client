@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.dto.AddressSearchDto;
+import ca.bc.gov.app.dto.AuditLogDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
@@ -94,6 +95,15 @@ public class ClientSearchController {
     return service.findByClientNumber(clientNumber, groups);
   }
 
+  @GetMapping("/auditLog")
+  public Flux<AuditLogDto> findAuditLogsByClientNumber(
+      @RequestParam String clientNumber
+  ) {
+    log.info("Receiving request to search by client number {}", 
+             clientNumber);
+    return service.findAuditLogsByClientNumber(clientNumber);
+  }
+  
   @GetMapping("/id/{idType}/{identification}")
   public Flux<ForestClientDto> findByIdentification(
       @PathVariable String idType,

@@ -5,6 +5,7 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.AddressSearchDto;
+import ca.bc.gov.app.dto.AuditLogDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
@@ -636,6 +637,22 @@ public class ClientSearchService {
             entityClass
         )
         .doOnNext(client -> log.info("Found client for query {}", queryCriteria));
+  }
+
+  public Flux<AuditLogDto> findAuditLogsByClientNumber(String clientNumber) {
+    log.info("Searching for client with number {}", clientNumber);
+
+    if (StringUtils.isBlank(clientNumber)) {
+      return Flux.error(new MissingRequiredParameterException("clientNumber"));
+    }
+
+    return forestClientRepository.findAuditLogsByClientNumber(clientNumber)
+        .switchIfEmpty(Flux.empty())
+        .doOnNext(
+            dto -> log.info("Found client with client number {}",
+                clientNumber,
+                dto.clientNumber())
+        );
   }
 
 }
