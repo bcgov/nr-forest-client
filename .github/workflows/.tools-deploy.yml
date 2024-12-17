@@ -2,7 +2,9 @@ name: Tools deployment
 
 on:
   pull_request:
-
+  workflow_run:
+    workflows: ["Automated user flow tests"]
+    types: [completed]
 concurrency:
   # PR open and close use the same group, allowing only one at a time
   group: tools-${{ github.event.number }}
@@ -41,11 +43,11 @@ jobs:
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
-          oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=0 -n ${{ secrets.OC_NAMESPACE }}
+          oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=0 -n ${{ secrets.OC_NAMESPACE }}
           undesired_replicas=0  
 
           while true; do
-            available_replicas=$(oc get dc/nr-forest-client-${{ github.event.number }}-legacy -n ${{ secrets.OC_NAMESPACE }} -o jsonpath='{.status.availableReplicas}')
+            available_replicas=$(oc get deployment/nr-forest-client-${{ github.event.number }}-legacy -n ${{ secrets.OC_NAMESPACE }} -o jsonpath='{.status.availableReplicas}')
             
             if [[ "$available_replicas" -ge "$undesired_replicas" ]]; then
               echo "DeploymentConfig ${{ secrets.OC_NAMESPACE }}-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
@@ -157,3 +159,22 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
           oc create job --from=cronjob/nr-forest-client-tools-migratedb migrate-pr${{ github.event.number }}-${{ github.run_attempt }}-$(date +%s) --dry-run=client -o yaml | sed "s/value: main/value: ${ESCAPED_BRANCH_NAME}/" | sed "s/value: \"0\"/value: \"${{ github.event.number }}\"/" | oc apply -f -
+  
+  scale-up-legacy:
+    name: Scale up legacy
+    needs: [deploy-tools]
+    environment: dev
+    if: always()    
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install CLI tools from OpenShift Mirror
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:        
+          oc: "4.13"
+      - name: Start the Legacy Service
+        continue-on-error: true
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
+          oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=1
