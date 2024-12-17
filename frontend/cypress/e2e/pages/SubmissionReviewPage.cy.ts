@@ -364,7 +364,28 @@ describe("Submission Review Page", () => {
     });
 
   });
-  
 
+  it("displays the birthdate when clientType is Individual", () => {
+    beforeInit("test-case-review-staff-pending");
+    cy.contains("h2", "Client summary")
+      .parent()
+      .within(() => {
+        cy.contains("Client type").parents(".grouping-11").first().contains("Individual");
+        cy.contains("Birthdate").should("be.visible");
+      });
+  });
+
+  it("displays the birthdate when clientType is Registered sole proprietorship", () => {
+    beforeInit("test-case-review-rsp");
+    cy.contains("h2", "Client summary")
+      .parent()
+      .within(() => {
+        cy.contains("Client type")
+          .parents(".grouping-11")
+          .first()
+          .contains("Registered sole proprietorship");
+        cy.contains("Birthdate").should("be.visible");
+      });
+  });
   
 });
