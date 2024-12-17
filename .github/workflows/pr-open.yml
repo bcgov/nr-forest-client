@@ -456,10 +456,10 @@ jobs:
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
-          oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=0
+          oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=0
           undesired_replicas=0
           while true; do
-            available_replicas=$(oc get dc/nr-forest-client-${{ github.event.number }}-legacy -n ${{ secrets.OC_NAMESPACE }} -o jsonpath='{.status.availableReplicas}')
+            available_replicas=$(oc get deployment/nr-forest-client-${{ github.event.number }}-legacy -n ${{ secrets.OC_NAMESPACE }} -o jsonpath='{.status.availableReplicas}')
             
             if [[ "$available_replicas" -ge "$undesired_replicas" ]]; then
               echo "DeploymentConfig ${{ secrets.OC_NAMESPACE }}-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
@@ -575,7 +575,7 @@ jobs:
         run: |
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
-          oc scale dc/nr-forest-client-${{ github.event.number }}-legacy --replicas=1
+          oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=1
 
   results:
     name: PR Results
