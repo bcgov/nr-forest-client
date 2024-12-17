@@ -254,6 +254,30 @@ export interface ClientDoingBusinessAs {
   doingBusinessAsName: string;
 }
 
+export interface ClientLocation {
+  clientNumber: string;
+  clientLocnCode: string;
+  clientLocnName: string;
+  addressOne: string;
+  addressTwo: string;
+  addressThree: string;
+  city: string;
+  provinceCode: string;
+  provinceDesc: string;
+  postalCode: string;
+  countryCode: string;
+  countryDesc: string;
+  businessPhone: string;
+  homePhone: string;
+  cellPhone: string;
+  faxNumber: string;
+  emailAddress: string;
+  locnExpiredInd: string;
+  returnedMailDate: string;
+  trustLocationInd: string;
+  cliLocnComment: string;
+}
+
 export interface ClientDetails {
   clientNumber: string;
   clientName: string;
@@ -277,4 +301,5 @@ export interface ClientDetails {
   goodStandingInd: string;
   birthdate: string;
   doingBusinessAs: ClientDoingBusinessAs[];
+  addresses: ClientLocation[];
 }

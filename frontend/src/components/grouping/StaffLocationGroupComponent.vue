@@ -517,7 +517,7 @@ const getLocationDescription = (address: Address, index: number): string =>
       @empty="validation.notes = true"
       @error="validation.notes = !$event"
     >
-      <div slot="label-text" class="label-with-icon">
+      <div slot="label-text" class="label-with-icon line-height-0">
         <div class="cds-text-input-label">
           <span>Notes</span>
         </div>

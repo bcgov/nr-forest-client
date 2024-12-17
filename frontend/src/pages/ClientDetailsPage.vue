@@ -8,28 +8,28 @@ import "@carbon/web-components/es/components/notification/index";
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/tabs/index";
 import "@carbon/web-components/es/components/tag/index";
+import "@carbon/web-components/es/components/accordion/index";
 
 // Composables
 import { useFetchTo } from "@/composables/useFetch";
 import { useRouter } from "vue-router";
 
-// @ts-ignore
 import Location16 from "@carbon/icons-vue/es/location/16";
-// @ts-ignore
 import User16 from "@carbon/icons-vue/es/user/16";
-// @ts-ignore
 import NetworkEnterprise16 from "@carbon/icons-vue/es/network--enterprise/16";
-// @ts-ignore
 import RecentlyViewed16 from "@carbon/icons-vue/es/recently-viewed/16";
+import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
+import Location20 from "@carbon/icons-vue/es/location/20";
 
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
 
-import type { ClientDetails } from "@/dto/CommonTypesDto";
+import type { ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
+import LocationView from "@/pages/client-details/LocationView.vue";
 
-//Route related
+// Route related
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id;
 
@@ -52,6 +52,37 @@ const clientFullName = computed(() => {
   }
   return "";
 });
+
+const formatCount = (count = 0) => {
+  return String(count).padStart(2, "0");
+};
+
+const formatAddress = (location: ClientLocation) => {
+  const { addressOne, city, provinceCode, countryDesc, postalCode } = location;
+  const list = [addressOne, city, provinceCode, countryDesc, postalCode];
+  return list.join(", ");
+};
+
+const pluralize = (word: string, count = 0) => {
+  if (count === 1) {
+    return word;
+  }
+  return `${word}s`;
+};
+
+const compareString = (a: string, b: string) => {
+  if (a < b) {
+    return -1;
+  }
+  if (a > b) {
+    return 1;
+  }
+  return 0;
+};
+
+const sortedLocations = computed(() =>
+  data.value.addresses.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
+);
 </script>
 
 <template>
@@ -154,7 +185,42 @@ const clientFullName = computed(() => {
       </div>
     </div>
     <div class="tab-panel" v-if="data">
-      <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden></div>
+      <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
+        <h3 class="padding-left-1rem">
+          {{ formatCount(data.addresses?.length) }}
+          {{ pluralize("location", data.addresses?.length) }}
+        </h3>
+        <cds-accordion
+          v-for="(location, index) in sortedLocations"
+          :key="location.clientLocnCode"
+          :id="`location-${location.clientLocnCode}`"
+        >
+          <cds-accordion-item size="lg" class="grouping-13">
+            <div slot="title" class="flex-column-0_25rem">
+              <span class="label-with-icon">
+                <LocationStar20 v-if="index === 0" />
+                <Location20 v-else />
+                {{ location.clientLocnCode }} - {{ location.clientLocnName }}
+                <cds-tag
+                  :id="`location-${location.clientLocnCode}-deactivated`"
+                  v-if="location.locnExpiredInd === 'Y'"
+                  type="purple"
+                  title=""
+                >
+                  <span>Deactivated</span>
+                </cds-tag>
+              </span>
+              <span
+                :id="`location-${location.clientLocnCode}-title-address`"
+                class="hide-open body-compact-01 padding-left-1_625rem"
+              >
+                {{ formatAddress(location) }}
+              </span>
+            </div>
+            <location-view :data="location" />
+          </cds-accordion-item>
+        </cds-accordion>
+      </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden></div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden></div>
       <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden></div>
