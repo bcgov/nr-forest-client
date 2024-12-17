@@ -6,8 +6,10 @@ import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
+import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.ForestClientLocationDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
@@ -61,6 +63,8 @@ public class ClientSearchService {
   private final ForestClientContactRepository contactRepository;
   private final ForestClientLocationRepository locationRepository;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> forestClientMapper;
+  private final AbstractForestClientMapper<ForestClientLocationDto, ForestClientLocationEntity> locationMapper;
+  private final AbstractForestClientMapper<ForestClientContactDto, ForestClientContactEntity> contactMapper;
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
 
@@ -549,6 +553,22 @@ public class ClientSearchService {
     }
 
     return forestClientRepository.findDetailsByClientNumber(clientNumber)
+        .flatMap(dto ->
+            locationRepository
+                .findAllByClientNumber(clientNumber)
+                .map(locationMapper::toDto)
+                .collectList()
+                .map(dto::withAddresses)
+                .defaultIfEmpty(dto)
+            )
+        .flatMap(dto ->
+            contactRepository
+                .findAllByClientNumber(clientNumber)
+                .map(contactMapper::toDto)
+                .collectList()
+                .map(dto::withContacts)
+                .defaultIfEmpty(dto)
+            )
         .switchIfEmpty(
             Mono.error(
                 new NoValueFoundException("client with number: " + clientNumber)

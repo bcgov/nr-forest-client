@@ -44,4 +44,6 @@ public interface ForestClientLocationRepository
       String country
   );
 
+  Flux<ForestClientLocationEntity> findAllByClientNumber(String clientNumber);
+
 }

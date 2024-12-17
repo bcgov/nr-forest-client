@@ -49,4 +49,6 @@ public interface ForestClientContactRepository
       String fax
   );
 
+  Flux<ForestClientContactEntity> findAllByClientNumber(String clientNumber);
+
 }
