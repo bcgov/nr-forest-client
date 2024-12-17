@@ -56,6 +56,8 @@ describe("<location-view />", () => {
     mount();
 
     cy.get("#location-00-address-section").within(() => {
+      testField("#location-00-addressTwo", currentProps.data.addressTwo);
+      testField("#location-00-addressThree", currentProps.data.addressThree);
       testField("#location-00-streetAddress", currentProps.data.addressOne);
 
       // City, Province
@@ -66,12 +68,6 @@ describe("<location-view />", () => {
 
       testField("#location-00-country", currentProps.data.countryDesc);
       testField("#location-00-postalCode", currentProps.data.postalCode);
-    });
-
-    cy.get("#location-00-delivery-section").within(() => {
-      // same field twice because we can't assert the <br> that separates the values as text content.
-      testField("#location-00-deliveryInformation", currentProps.data.addressTwo);
-      testField("#location-00-deliveryInformation", currentProps.data.addressThree);
     });
 
     const emailPrefix = "mailto:";
@@ -108,10 +104,21 @@ describe("<location-view />", () => {
     };
     mount({ data });
 
-    cy.get("#location-00-delivery-section").should("not.exist");
     cy.get("#location-00-email-section").should("not.exist");
     cy.get("#location-00-phone-section").should("not.exist");
     cy.get("#location-00-notes-section").should("not.exist");
+  });
+
+  it("hides address fields when they are empty", () => {
+    const data: ClientLocation = {
+      ...getDefaultProps().data,
+      addressTwo: "",
+      addressThree: "",
+    };
+    mount({ data });
+
+    testFieldHidden("#location-00-addressTwo");
+    testFieldHidden("#location-00-addressThree");
   });
 
   describe("while there is at least one phone to be displayed", () => {

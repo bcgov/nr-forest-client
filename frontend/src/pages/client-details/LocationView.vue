@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
-
 import type { ClientLocation } from "@/dto/CommonTypesDto";
 import { getFormattedHtml } from "@/services/ForestClientService";
 
@@ -8,51 +6,42 @@ const props = defineProps<{
   data: ClientLocation;
 }>();
 
-const deliveryInformation = computed(() => {
-  const { addressTwo, addressThree } = props.data;
-  const rawList = [addressTwo, addressThree];
-  const list = [];
-  rawList.forEach((item) => {
-    if (item) {
-      list.push(item);
-    }
-  });
-  return list.join("\n");
-});
-
 const indexString = props.data.clientLocnCode;
 </script>
 
 <template>
   <div class="flex-column-1_5rem">
-    <div
-      :id="`location-${indexString}-delivery-section`"
-      class="grouping-23"
-      v-if="deliveryInformation"
-    >
-      <read-only-component
-        label="Delivery information"
-        :id="`location-${indexString}-deliveryInformation`"
-      >
-        <span
-          class="body-compact-01"
-          v-dompurify-html="getFormattedHtml(deliveryInformation)"
-        ></span>
-      </read-only-component>
-    </div>
     <div :id="`location-${indexString}-address-section`" class="grouping-23">
-      <span :id="`location-${indexString}-streetAddress`" class="body-compact-01">
-        {{ data.addressOne }}
-      </span>
-      <span :id="`location-${indexString}-city-province`" class="body-compact-01">
-        {{ data.city }}, {{ data.provinceDesc }}
-      </span>
-      <span :id="`location-${indexString}-country`" class="body-compact-01">
-        {{ data.countryDesc }}
-      </span>
-      <span :id="`location-${indexString}-postalCode`" class="body-compact-01">
-        {{ data.postalCode }}
-      </span>
+      <read-only-component label="Address" :id="`location-${indexString}-address`">
+        <div class="grouping-23 no-margin">
+          <span
+            :id="`location-${indexString}-addressTwo`"
+            class="body-compact-01"
+            v-if="data.addressTwo"
+          >
+            {{ data.addressTwo }}
+          </span>
+          <span
+            :id="`location-${indexString}-addressThree`"
+            class="body-compact-01"
+            v-if="data.addressThree"
+          >
+            {{ data.addressThree }}
+          </span>
+          <span :id="`location-${indexString}-streetAddress`" class="body-compact-01">
+            {{ data.addressOne }}
+          </span>
+          <span :id="`location-${indexString}-city-province`" class="body-compact-01">
+            {{ data.city }}, {{ data.provinceDesc }}
+          </span>
+          <span :id="`location-${indexString}-country`" class="body-compact-01">
+            {{ data.countryDesc }}
+          </span>
+          <span :id="`location-${indexString}-postalCode`" class="body-compact-01">
+            {{ data.postalCode }}
+          </span>
+        </div>
+      </read-only-component>
     </div>
     <div :id="`location-${indexString}-email-section`" class="grouping-23" v-if="data.emailAddress">
       <read-only-component label="Email address" :id="`location-${indexString}-emailAddress`">
