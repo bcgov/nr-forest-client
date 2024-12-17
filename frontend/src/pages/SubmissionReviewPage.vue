@@ -543,7 +543,10 @@ const isProcessing = computed(() => {
                 <span class="body-compact-01">{{ data.business.clientTypeDesc }}</span>
               </read-only-component>
 
-              <read-only-component label="Birthdate" v-if="data.business.clientType === 'I'">
+              <read-only-component
+                label="Birthdate"
+                v-if="data.business.clientType === 'I' || data.business.clientType === 'RSP'"
+              >
                 <span class="body-compact-01">{{ data.business.birthdate }}</span>
               </read-only-component>
 
@@ -599,7 +602,7 @@ const isProcessing = computed(() => {
               <read-only-component label="Email">
                     <cds-tooltip>
                       <div class="sb-tooltip-trigger" aria-labelledby="content">
-                        <a :href="'mailto:'+data.contact[0].emailAddress"><span class="body-compact-01-colorless">{{ data.contact[0].emailAddress }}</span></a>
+                        <a :href="'mailto:'+data.contact[0].emailAddress"><span class="body-compact-01 colorless">{{ data.contact[0].emailAddress }}</span></a>
                       </div>
                       <cds-tooltip-content id="content">
                         Click to send email
@@ -610,7 +613,7 @@ const isProcessing = computed(() => {
                   <read-only-component label="Phone number">
                     <cds-tooltip>
                       <div class="sb-tooltip-trigger" aria-labelledby="content">
-                        <a :href="'tel:'+data.contact[0].phoneNumber"><span class="body-compact-01-colorless">{{ data.contact[0].phoneNumber }}</span></a>
+                        <a :href="'tel:'+data.contact[0].phoneNumber"><span class="body-compact-01 colorless">{{ data.contact[0].phoneNumber }}</span></a>
                       </div>
                       <cds-tooltip-content id="content">
                         Click to call
@@ -678,7 +681,7 @@ const isProcessing = computed(() => {
                 <read-only-component label="Email">
                   <cds-tooltip>
                     <div class="sb-tooltip-trigger" aria-labelledby="content">
-                      <a :href="'mailto:'+contact.emailAddress"><span class="body-compact-01-colorless">{{ contact.emailAddress }}</span></a>
+                      <a :href="'mailto:'+contact.emailAddress"><span class="body-compact-01 colorless">{{ contact.emailAddress }}</span></a>
                     </div>
                     <cds-tooltip-content id="content">
                       Click to send email
@@ -689,7 +692,7 @@ const isProcessing = computed(() => {
                 <read-only-component label="Phone number">
                   <cds-tooltip>
                     <div class="sb-tooltip-trigger" aria-labelledby="content">
-                      <a :href="'tel:'+contact.phoneNumber"><span class="body-compact-01-colorless">{{ contact.phoneNumber }}</span></a>
+                      <a :href="'tel:'+contact.phoneNumber"><span class="body-compact-01 colorless">{{ contact.phoneNumber }}</span></a>
                     </div>
                     <cds-tooltip-content id="content">
                       Click to call
