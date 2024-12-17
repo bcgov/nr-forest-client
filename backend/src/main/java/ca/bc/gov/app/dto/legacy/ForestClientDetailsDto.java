@@ -26,10 +26,10 @@ public record ForestClientDetailsDto(
     String clientCommentUpdateUser,
     String goodStandingInd,
     LocalDate birthdate,
-    
+
     List<ForestClientLocationDto> addresses,
     List<ForestClientContactDto> contacts,
     List<ForestClientDoingBusinessAsDto> doingBusinessAs
 ) {
-  
+
 }
