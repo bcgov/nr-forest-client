@@ -133,59 +133,61 @@ public class ClientService {
         })
 
         // If document type is SP and party contains only one entry that is not a person, fail
-        .filter(document -> provider.equalsIgnoreCase("idir") 
-            || !("SP".equalsIgnoreCase(document.business().legalType()) 
-                && document.parties().size() == 1 
-                && !document.parties().get(0).isPerson())
+        .filter(document -> provider.equalsIgnoreCase("idir")
+                            || !("SP".equalsIgnoreCase(document.business().legalType())
+                                 && document.parties().size() == 1
+                                 && !document.parties().get(0).isPerson())
         )
         .flatMap(buildDetails())
         .switchIfEmpty(Mono.error(new UnableToProcessRequestException(
             "Unable to process request. This sole proprietor is not owned by a person"
         )));
   }
-  
+
   public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(String clientNumber) {
-      return legacyService
-          .searchByClientNumber(clientNumber)
-          .flatMap(forestClientDetailsDto ->  Mono
-                .just(forestClientDetailsDto)
-                .filter(dto ->(StringUtils.isNotBlank(dto.corpRegnNmbr())))
-                .doOnNext(dto -> log.info("Retrieved corporation registration number: {}",  forestClientDetailsDto.corpRegnNmbr()))
-                .flatMap(dto ->
-                        bcRegistryService
-                            .requestDocumentData( dto.corpRegnNmbr())
-                            .next()
-                )
-                .flatMap(documentMono -> populateGoodStandingInd(forestClientDetailsDto, documentMono) )
-                .onErrorContinue(NoClientDataFound.class, (ex, obj) ->
-                                log.error("No data found on BC Registry for client number: {}", clientNumber)
-                )
-              .switchIfEmpty(
-                  Mono.just(forestClientDetailsDto)
-                      .doOnNext(dto -> log.info("Corporation registration number not provided. Returning legacy details."))
-              )
-          );
+    return legacyService
+        .searchByClientNumber(clientNumber)
+        .flatMap(forestClientDetailsDto -> Mono
+            .just(forestClientDetailsDto)
+            .filter(dto -> (StringUtils.isNotBlank(dto.corpRegnNmbr())))
+            .doOnNext(dto -> log.info("Retrieved corporation registration number: {}",
+                forestClientDetailsDto.corpRegnNmbr()))
+            .flatMap(dto ->
+                bcRegistryService
+                    .requestDocumentData(dto.corpRegnNmbr())
+                    .next()
+            )
+            .flatMap(documentMono -> populateGoodStandingInd(forestClientDetailsDto, documentMono))
+            .onErrorContinue(NoClientDataFound.class, (ex, obj) ->
+                log.error("No data found on BC Registry for client number: {}", clientNumber)
+            )
+            .switchIfEmpty(
+                Mono.just(forestClientDetailsDto)
+                    .doOnNext(dto -> log.info(
+                        "Corporation registration number not provided. Returning legacy details."))
+            )
+        );
   }
 
   private Mono<ForestClientDetailsDto> populateGoodStandingInd(
       ForestClientDetailsDto forestClientDetailsDto,
       BcRegistryDocumentDto document
   ) {
-      Boolean goodStandingInd = document.business().goodStanding();
-      String goodStanding = BooleanUtils.toString(
-          goodStandingInd,
-          "Y",
-          "N",
-          StringUtils.EMPTY
-      );
+    Boolean goodStandingInd = document.business().goodStanding();
+    String goodStanding = BooleanUtils.toString(
+        goodStandingInd,
+        "Y",
+        "N",
+        StringUtils.EMPTY
+    );
 
-      log.info("Setting goodStandingInd for client: {} to {}",
-               forestClientDetailsDto.clientNumber(), goodStanding);
+    log.info("Setting goodStandingInd for client: {} to {}",
+        forestClientDetailsDto.clientNumber(), goodStanding);
 
-      ForestClientDetailsDto updatedDetails = 
-          forestClientDetailsDto.withGoodStandingInd(goodStanding);
+    ForestClientDetailsDto updatedDetails =
+        forestClientDetailsDto.withGoodStandingInd(goodStanding);
 
-      return Mono.just(updatedDetails);
+    return Mono.just(updatedDetails);
   }
 
   /**
@@ -402,13 +404,13 @@ public class ClientService {
     return legacy ->
         StringUtils.equals(
             StringUtils.defaultString(legacy.registryCompanyTypeCode()) +
-                StringUtils.defaultString(legacy.corpRegnNmbr()),
+            StringUtils.defaultString(legacy.corpRegnNmbr()),
             document.business().identifier()
         ) &&
-            StringUtils.equals(
-                document.business().legalName(),
-                legacy.legalName()
-            );
+        StringUtils.equals(
+            document.business().legalName(),
+            legacy.legalName()
+        );
   }
 
   private Function<ForestClientDto, Mono<ForestClientDto>> triggerEmailDuplicatedClient(

@@ -41,7 +41,6 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
   void testGetClientDetailsWithGoodStandingIndicator() {
     String clientNumber = "123456";
     String corpRegnNmbr = "9607514";
-    List<String> groups = List.of("CLIENT_ADMIN");
 
     ForestClientDetailsDto initialDto = new ForestClientDetailsDto(
         clientNumber, 
