@@ -7,6 +7,9 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
+/**
+ * Repository for the ForestClientLocationEntity.
+ */
 @Repository
 public interface ForestClientLocationRepository
     extends ReactiveCrudRepository<ForestClientLocationEntity, ForestClientLocationEntityId> {
@@ -23,9 +26,12 @@ public interface ForestClientLocationRepository
       from the.client_location
       where
       (
-       upper(replace(replace(address_1,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
-       or upper(replace(replace(address_2,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
-       or upper(replace(replace(address_3,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
+       upper(replace(replace(address_1,'-',' '),'   ',' '))
+        like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
+       or upper(replace(replace(address_2,'-',' '),'   ',' '))
+        like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
+       or upper(replace(replace(address_3,'-',' '),'   ',' '))
+        like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
       )
       and upper(postal_code) = upper(replace(:postalCode, ' ', ''))""")
   Flux<ForestClientLocationEntity> matchBy(String address, String postalCode);
@@ -45,9 +51,12 @@ public interface ForestClientLocationRepository
       from the.client_location
       where
       (
-       upper(replace(replace(address_1,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
-       or upper(replace(replace(address_2,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
-       or upper(replace(replace(address_3,'-',' '),'   ',' ')) like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
+       upper(replace(replace(address_1,'-',' '),'   ',' '))
+        like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
+       or upper(replace(replace(address_2,'-',' '),'   ',' '))
+        like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
+       or upper(replace(replace(address_3,'-',' '),'   ',' '))
+        like upper(replace(replace(concat(:address, '%'),'-',' '),'   ',' '))
       )
       and upper(city) = upper(:city)
       and upper(province) = upper(:province)

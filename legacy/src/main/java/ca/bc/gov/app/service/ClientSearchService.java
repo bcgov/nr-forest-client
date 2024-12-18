@@ -432,9 +432,9 @@ public class ClientSearchService {
    *
    * @param contact The {@link ContactSearchDto} containing search criteria such as name, email, and
    *                phone number.
-   * @return A {@link Flux<ForestClientDto>} stream of client DTOs that match the search criteria.
-   * If the contact parameter is null or not valid, a {@link MissingRequiredParameterException} is
-   * emitted.
+   * @return A {@link Flux} of {@link ForestClientDto} stream of client DTOs that match the search
+   * criteria. If the contact parameter is null or not valid, a
+   * {@link MissingRequiredParameterException} is emitted.
    */
   public Flux<ForestClientDto> findByContact(ContactSearchDto contact) {
 
@@ -620,7 +620,7 @@ public class ClientSearchService {
    * @param value the predictive search value
    * @param page  the pagination information
    * @return a Flux containing pairs of PredictiveSearchResultDto objects and the total count of
-   * matching clients
+   *     matching clients
    */
   public Flux<Pair<PredictiveSearchResultDto, Long>> complexSearch(String value, Pageable page) {
     // This condition is for predictive search, and we will stop here if no query param is provided
@@ -648,7 +648,7 @@ public class ClientSearchService {
    *
    * @param page the pagination information
    * @return a Flux containing pairs of PredictiveSearchResultDto objects and the total count of
-   * matching clients
+   *     matching clients
    */
   public Flux<Pair<PredictiveSearchResultDto, Long>> latestEntries(Pageable page) {
     return

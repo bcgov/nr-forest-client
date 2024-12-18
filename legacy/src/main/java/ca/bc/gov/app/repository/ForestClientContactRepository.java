@@ -6,7 +6,12 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
-
+/**
+ * Repository for the ForestClientContactEntity.
+ *
+ * <p>Provides methods to query the client table in the database. The methods are used to find
+ * client by straight field comparison and fuzzy match </p>
+ */
 @Repository
 public interface ForestClientContactRepository
     extends ReactiveCrudRepository<ForestClientContactEntity, String> {
