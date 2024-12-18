@@ -5,7 +5,7 @@ ARG APP_VERSION=0.0.1
 
 WORKDIR /app
 COPY . .
-RUN npm ci --ignore-scripts && npm run build
+RUN npm ci --ignore-scripts && npm install @esbuild/linux-x64 --no-save && npm run build
 
 # Caddy
 FROM caddy:2.8.4-alpine
