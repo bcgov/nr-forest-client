@@ -24,7 +24,7 @@ jobs:
   deploy-tools-pre:
     name: Tools Deployment (Pre)
     secrets: inherit
-    uses: ./.github/workflows/.automated-tests.yml
+    uses: ./.github/workflows/.tools-deploy.yml
 
   builds:
     name: Builds
@@ -240,7 +240,7 @@ jobs:
     name: Tools Deployment (Post)
     needs: [tests]
     secrets: inherit
-    uses: ./.github/workflows/.automated-tests.yml
+    uses: ./.github/workflows/.tools-deploy.yml
 
   results:
     name: PR Results
