@@ -72,14 +72,14 @@ public class BcRegistryService {
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
   public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacets(String name, String identifier) {
-    log.info("Searching BC Registry for {}", Objects.toString(name,identifier));
+    log.info("Searching BC Registry for {}", Objects.toString(name, identifier));
     return
         bcRegistryApi
             .post()
             .uri("/registry-search/api/v2/search/businesses")
             .body(BodyInserters.fromValue(
                     new BcRegistryFacetRequestBodyDto(
-                        new BcRegistryFacetRequestQueryDto(Objects.toString(name,identifier), name, identifier),
+                        new BcRegistryFacetRequestQueryDto(Objects.toString(name, identifier), name, identifier),
                         Map.of("status", List.of("ACTIVE")),
                         100,
                         0
@@ -119,8 +119,9 @@ public class BcRegistryService {
             .flatMapIterable(BcRegistryFacetSearchResultsDto::results)
             .filter(entry -> entry.status().equalsIgnoreCase("active"))
             .doOnNext(
-                content -> log.info("Found entry on BC Registry [{}] {}", content.identifier(),
-                    content.name()));
+                content -> log.info("Found entry on BC Registry [{}] {}", 
+                                    content.identifier(),
+                                    content.name()));
   }
 
   /**
@@ -161,8 +162,9 @@ public class BcRegistryService {
                         .bodyToMono(BcRegistryExceptionMessageDto.class)
                         .map(BcRegistryExceptionMessageDto::rootCause)
                         .doOnNext(
-                            message -> log.error("Error while requesting data for {} -- {}", value,
-                                message))
+                            message -> log.error("Error while requesting data for {} -- {}", 
+                                                 value,
+                                                 message))
                         .filter(message -> message.contains("not found"))
                         .switchIfEmpty(Mono.error(new InvalidAccessTokenException()))
                         .flatMap(message -> Mono.error(new NoClientDataFound(value)))
