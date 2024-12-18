@@ -21,8 +21,8 @@ jobs:
         run: |
           echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
 
-  deploy-tools-pre:
-    name: Tools Deployment (Pre)
+  deploy-tools:
+    name: Tools Deployment
     secrets: inherit
     uses: ./.github/workflows/.tools-deploy.yml
 
@@ -47,7 +47,7 @@ jobs:
 
   deploy:
     name: Deploy Application
-    needs: [builds, deploy-tools-pre, vars]
+    needs: [builds, deploy-tools, vars]
     environment: dev
     runs-on: ubuntu-24.04
     steps:
@@ -236,15 +236,9 @@ jobs:
     with:
       url: ${{ needs.vars.outputs.url }}
 
-  deploy-tools-post:
-    name: Tools Deployment (Post)
-    needs: [tests]
-    secrets: inherit
-    uses: ./.github/workflows/.tools-deploy.yml
-
   results:
     name: PR Results
-    needs: [builds, deploy, tests, deploy-tools-pre, deploy-tools-post]
+    needs: [builds, deploy, tests, deploy-tools]
     if: always()
     runs-on: ubuntu-24.04
     steps:
