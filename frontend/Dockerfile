@@ -3,7 +3,7 @@ FROM node:alpine3.16 AS build
 
 WORKDIR /app
 COPY . .
-RUN npm ci && npm run build
+RUN npm ci --ignore-scripts && npm install @esbuild/linux-x64 --no-save && npm run build
 
 # Caddy
 FROM caddy:2.8.4-alpine
@@ -22,7 +22,8 @@ RUN apk add --no-cache ca-certificates coreutils && \
 
 # Port, health check and non-root user
 EXPOSE 3000
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:3000/
+HEALTHCHECK --interval=30s --timeout=3s CMD ["curl", "-f", "http://localhost:3000/"]
+
 USER 1001
 
 CMD ["/bin/sh", "-c", ". /app/setenv.sh; caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"]
