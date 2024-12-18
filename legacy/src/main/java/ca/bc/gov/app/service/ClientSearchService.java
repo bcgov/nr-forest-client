@@ -26,7 +26,6 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,7 +40,6 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -57,14 +55,18 @@ import reactor.core.publisher.Mono;
 @Observed
 public class ClientSearchService {
 
+  public static final String CLIENT_NAME = "clientName";
+  public static final String CLIENT_IDENTIFICATION = "clientIdentification";
   private final ForestClientRepository forestClientRepository;
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository;
   private final ForestClientRepository clientRepository;
   private final ForestClientContactRepository contactRepository;
   private final ForestClientLocationRepository locationRepository;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> forestClientMapper;
-  private final AbstractForestClientMapper<ForestClientLocationDto, ForestClientLocationEntity> locationMapper;
-  private final AbstractForestClientMapper<ForestClientContactDto, ForestClientContactEntity> contactMapper;
+  private final
+  AbstractForestClientMapper<ForestClientLocationDto, ForestClientLocationEntity> locationMapper;
+  private final
+  AbstractForestClientMapper<ForestClientContactDto, ForestClientContactEntity> contactMapper;
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
 
@@ -164,13 +166,13 @@ public class ClientSearchService {
     }
 
     Criteria queryCriteria = where("legalFirstName").is(firstName).ignoreCase(true)
-        .and("clientName").is(lastName).ignoreCase(true)
+        .and(CLIENT_NAME).is(lastName).ignoreCase(true)
         .and("birthdate").is(dob.atStartOfDay())
         .and("clientTypeCode").is("I").ignoreCase(true);
 
     if (StringUtils.isNotBlank(identification)) {
       queryCriteria = queryCriteria
-          .and("clientIdentification")
+          .and(CLIENT_IDENTIFICATION)
           .is(identification)
           .ignoreCase(true);
     }
@@ -227,8 +229,8 @@ public class ClientSearchService {
       return Flux.error(new MissingRequiredParameterException("clientId, lastName"));
     }
 
-    Criteria queryCriteria = where("clientIdentification").is(clientId).ignoreCase(true)
-        .and("clientName").is(lastName).ignoreCase(true);
+    Criteria queryCriteria = where(CLIENT_IDENTIFICATION).is(clientId).ignoreCase(true)
+        .and(CLIENT_NAME).is(lastName).ignoreCase(true);
 
     return searchClientByQuery(queryCriteria, ForestClientEntity.class)
         .map(forestClientMapper::toDto)
@@ -260,7 +262,7 @@ public class ClientSearchService {
     }
 
     Criteria queryCriteria = where("clientIdTypeCode").is(idType).ignoreCase(true)
-        .and("clientIdentification").is(identification).ignoreCase(true)
+        .and(CLIENT_IDENTIFICATION).is(identification).ignoreCase(true)
         .and("clientTypeCode").is("I").ignoreCase(true);
 
     return searchClientByQuery(queryCriteria, ForestClientEntity.class)
@@ -467,6 +469,13 @@ public class ClientSearchService {
         );
   }
 
+  /**
+   * Finds clients by their acronym. Logs the search process and results. If the acronym is blank,
+   * returns a MissingRequiredParameterException.
+   *
+   * @param acronym the acronym to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   public Flux<ForestClientDto> findByAcronym(String acronym) {
     log.info("Searching for client with acronym {}", acronym);
 
@@ -487,6 +496,15 @@ public class ClientSearchService {
         );
   }
 
+  /**
+   * Finds clients by their doing business as (DBA) name. Logs the search process and results. If
+   * the DBA name is blank, returns a MissingRequiredParameterException. If the isFuzzy parameter is
+   * true, performs a fuzzy search.
+   *
+   * @param doingBusinessAs the DBA name to search for
+   * @param isFuzzy         whether to perform a fuzzy search
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   public Flux<ForestClientDto> findByDoingBusinessAs(String doingBusinessAs, boolean isFuzzy) {
 
     if (StringUtils.isBlank(doingBusinessAs)) {
@@ -521,18 +539,23 @@ public class ClientSearchService {
                     doingBusinessAs,
                     dto.clientNumber(), dto.clientName())
             );
-
-
   }
 
+  /**
+   * Finds clients by their name. Logs the search process and results. If the client name is blank,
+   * returns a MissingRequiredParameterException.
+   *
+   * @param clientName the name of the client to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   public Flux<ForestClientDto> findByClientName(String clientName) {
     log.info("Searching for client with name {}", clientName);
 
     if (StringUtils.isBlank(clientName)) {
-      return Flux.error(new MissingRequiredParameterException("clientName"));
+      return Flux.error(new MissingRequiredParameterException(CLIENT_NAME));
     }
 
-    Criteria queryCriteria = where("clientName").is(clientName).ignoreCase(true);
+    Criteria queryCriteria = where(CLIENT_NAME).is(clientName).ignoreCase(true);
 
     return searchClientByQuery(queryCriteria, ForestClientEntity.class)
         .map(forestClientMapper::toDto)
@@ -544,7 +567,15 @@ public class ClientSearchService {
                 dto.clientNumber(), dto.clientName())
         );
   }
-  
+
+  /**
+   * Finds client details by their client number. Logs the search process and results. If the client
+   * number is blank, returns a MissingRequiredParameterException. If no client is found, returns a
+   * NoValueFoundException.
+   *
+   * @param clientNumber the client number to search for
+   * @return a Mono containing the matching ForestClientDetailsDto object
+   */
   public Mono<ForestClientDetailsDto> findByClientNumber(String clientNumber) {
     log.info("Searching for client with number {}", clientNumber);
 
@@ -560,7 +591,7 @@ public class ClientSearchService {
                 .collectList()
                 .map(dto::withAddresses)
                 .defaultIfEmpty(dto)
-            )
+        )
         .flatMap(dto ->
             contactRepository
                 .findAllByClientNumber(clientNumber)
@@ -568,7 +599,7 @@ public class ClientSearchService {
                 .collectList()
                 .map(dto::withContacts)
                 .defaultIfEmpty(dto)
-            )
+        )
         .switchIfEmpty(
             Mono.error(
                 new NoValueFoundException("Client with number: " + clientNumber)
@@ -581,6 +612,16 @@ public class ClientSearchService {
         );
   }
 
+  /**
+   * Performs a complex search for clients based on a predictive search value. Logs the search
+   * process and results. If the search value is blank, returns a
+   * MissingRequiredParameterException.
+   *
+   * @param value the predictive search value
+   * @param page  the pagination information
+   * @return a Flux containing pairs of PredictiveSearchResultDto objects and the total count of
+   * matching clients
+   */
   public Flux<Pair<PredictiveSearchResultDto, Long>> complexSearch(String value, Pageable page) {
     // This condition is for predictive search, and we will stop here if no query param is provided
     if (StringUtils.isBlank(value)) {
@@ -601,6 +642,14 @@ public class ClientSearchService {
             );
   }
 
+  /**
+   * Retrieves the latest entries of predictive search results. Logs the search process and
+   * results.
+   *
+   * @param page the pagination information
+   * @return a Flux containing pairs of PredictiveSearchResultDto objects and the total count of
+   * matching clients
+   */
   public Flux<Pair<PredictiveSearchResultDto, Long>> latestEntries(Pageable page) {
     return
         forestClientRepository
