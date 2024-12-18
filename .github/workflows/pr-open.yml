@@ -224,9 +224,16 @@ jobs:
             -p LANDING_URL=${{ needs.vars.outputs.url }}
             -p FRONTEND_URL=${{ needs.vars.outputs.url }}
 
+  tests:
+    name: Tests
+    needs: [deploy]
+    uses: ./.github/workflows/.automated-tests.yml
+    with:
+      url: ${{ needs.vars.outputs.url }}
+
   results:
     name: PR Results
-    needs: [builds, deploy]
+    needs: [builds, deploy, tests]
     if: always()
     runs-on: ubuntu-24.04
     steps:

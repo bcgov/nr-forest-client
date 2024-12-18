@@ -1,42 +1,17 @@
 name: Automated user flow tests
 
 on:
-  workflow_run:
-    workflows: ["Pull Request Open"]
-    types: [completed]
-
-concurrency:
-  group: cypress-${{ github.event.workflow_run.pull_requests.number }}
-  cancel-in-progress: true
+  workflow_call:
+    inputs:
+      url:
+        required: true
+        type: string
 
 jobs:
-  vars:
-    name: Variables
-    runs-on: ubuntu-24.04
-    outputs:
-      url: ${{ steps.calculate.outputs.url }}
-      event: ${{ steps.event_number.outputs.event }}
-    steps:
-      # steps.event_number.outputs.event => needs.vars.outputs.event
-      - name: Calculate the event number
-        id: event_number
-        run: |
-          echo "${{ toJSON(github.event.workflow_run) }}"
-          echo "event=${GITHUB_REF#refs/pull/}" | sed 's|/.*||'" >> $GITHUB_OUTPUT
-      # steps.calculate.outputs.url => needs.vars.outputs.url
-      - name: Calculate the deployment number
-        id: calculate
-        run: |
-          echo "url=${{ github.event.repository.name }}-$((${{ steps.event_number.outputs.event }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
-
   cypress-run:
     name: "User flow test"
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-24.04
-    needs: [vars]
     environment: tools
-    env:
-      URL: ${{ needs.vars.outputs.url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,7 +26,7 @@ jobs:
         with:
           working-directory: cypress
         env:
-          CYPRESS_baseUrl: https://${{ env.URL }}
+          CYPRESS_baseUrl: https://${{ inputs.url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_editor_password: ${{ secrets.UAT_EDITOR_PASSWORD }}
           CYPRESS_editor_username: ${{ secrets.UAT_EDITOR_USERNAME }}
