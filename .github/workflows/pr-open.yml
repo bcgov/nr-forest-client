@@ -579,7 +579,7 @@ jobs:
 
   results:
     name: PR Results
-    needs: [builds, pre-tools, deploy-tools, deploy, cypress-run, scale-down-after, recreate-database, scale-up-legacy]
+    needs: [builds, pre-tools, deploy-tools, deploy, cypress-run]
     if: always()
     runs-on: ubuntu-24.04
     steps:
