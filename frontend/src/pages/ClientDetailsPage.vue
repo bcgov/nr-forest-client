@@ -81,7 +81,7 @@ const compareString = (a: string, b: string) => {
 };
 
 const sortedLocations = computed(() =>
-  data.value.addresses.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
+  data.value.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
 );
 </script>
 
