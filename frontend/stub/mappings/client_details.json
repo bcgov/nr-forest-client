@@ -91,7 +91,7 @@
       }
     },
     {
-      "name": "Client Details Individual - null address and contacts",
+      "name": "Client Details Individual - null addresses and contacts",
       "request": {
         "urlPattern": "/api/clients/details/null(.*)",
         "method": "GET"
