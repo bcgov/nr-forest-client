@@ -4,13 +4,21 @@ import ca.bc.gov.app.entity.ForestClientContactEntity;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-
 import reactor.core.publisher.Flux;
+
 
 @Repository
 public interface ForestClientContactRepository
-    extends ReactiveCrudRepository<ForestClientContactEntity,String> {
+    extends ReactiveCrudRepository<ForestClientContactEntity, String> {
 
+  /**
+   * Finds client contacts by matching the contact name, business phone, or email address.
+   *
+   * @param contactName   the contact name to match
+   * @param email         the email address to match
+   * @param businessPhone the business phone number to match
+   * @return a Flux containing the matching ForestClientContactEntity objects
+   */
   @Query("""
       SELECT *
       FROM THE.CLIENT_CONTACT
@@ -24,6 +32,17 @@ public interface ForestClientContactRepository
       String businessPhone
   );
 
+  /**
+   * Finds client contacts by matching the contact name, email address, and any of the provided
+   * phone numbers.
+   *
+   * @param contactName   the contact name to match
+   * @param email         the email address to match
+   * @param businessPhone the business phone number to match
+   * @param cellPhone     the cell phone number to match
+   * @param fax           the fax number to match
+   * @return a Flux containing the matching ForestClientContactEntity objects
+   */
   @Query("""
       SELECT *
       FROM THE.CLIENT_CONTACT
@@ -49,6 +68,12 @@ public interface ForestClientContactRepository
       String fax
   );
 
+  /**
+   * Finds all client contacts by client number.
+   *
+   * @param clientNumber the client number to match
+   * @return a Flux containing the matching ForestClientContactEntity objects
+   */
   Flux<ForestClientContactEntity> findAllByClientNumber(String clientNumber);
 
 }
