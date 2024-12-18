@@ -87,7 +87,7 @@ jobs:
 
   deploy-tools:
     name: Deploy Tools
-    needs: [pre-tools, builds, deploy-oracle]
+    needs: [remove-tools, deploy-oracle]
     environment: tools
     runs-on: ubuntu-24.04
     steps:

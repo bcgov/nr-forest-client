@@ -24,3 +24,14 @@ jobs:
     name: Remove database and user
     secrets: inherit
     uses: ./.github/workflows/.tools-cleanup.yml
+
+  promote-tools:
+    name: Promote tools
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/legacydb
+          target: ${{ github.event.number }}
+          tags: latest
