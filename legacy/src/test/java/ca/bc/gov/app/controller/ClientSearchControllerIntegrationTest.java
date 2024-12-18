@@ -6,7 +6,6 @@ import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.exception.NoValueFoundException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -340,15 +339,15 @@ class ClientSearchControllerIntegrationTest extends
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange();
 
-      response
-          .expectStatus().isOk()
-          .expectHeader()
-          .exists("X-Total-Count")
-          .expectBody()
-          .jsonPath("$[0].clientNumber").isNotEmpty()
-          .jsonPath("$[0].clientName").isNotEmpty()
-          .jsonPath("$.length()").isEqualTo(10)
-          .consumeWith(System.out::println);
+    response
+        .expectStatus().isOk()
+        .expectHeader()
+        .exists("X-Total-Count")
+        .expectBody()
+        .jsonPath("$[0].clientNumber").isNotEmpty()
+        .jsonPath("$[0].clientName").isNotEmpty()
+        .jsonPath("$.length()").isEqualTo(10)
+        .consumeWith(System.out::println);
 
   }
 
@@ -580,7 +579,7 @@ class ClientSearchControllerIntegrationTest extends
             Arguments.of("matelda", null, null, "00000137", "MATELDA LINDHE (JABBERTYPE)")
         );
   }
-  
+
   @ParameterizedTest
   @MethodSource("byClientNumber")
   @DisplayName("Search client by client number and groups")
@@ -589,27 +588,27 @@ class ClientSearchControllerIntegrationTest extends
       String expectedClientNumber,
       Class<RuntimeException> exception
   ) {
-      ResponseSpec response =
-          client
-              .get()
-              .uri("/api/search/clientNumber/{clientNumber}", clientNumber)
-              .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-              .exchange();
+    ResponseSpec response =
+        client
+            .get()
+            .uri("/api/search/clientNumber/{clientNumber}", clientNumber)
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .exchange();
 
-      if (StringUtils.isNotBlank(expectedClientNumber)) {
-          response
-              .expectStatus().isOk()
-              .expectBody()
-              .jsonPath("$.clientNumber").isNotEmpty()
-              .jsonPath("$.clientNumber").isEqualTo(expectedClientNumber)
-              .consumeWith(System.out::println);
-      }
+    if (StringUtils.isNotBlank(expectedClientNumber)) {
+      response
+          .expectStatus().isOk()
+          .expectBody()
+          .jsonPath("$.clientNumber").isNotEmpty()
+          .jsonPath("$.clientNumber").isEqualTo(expectedClientNumber)
+          .consumeWith(System.out::println);
+    }
 
-      if (exception != null) {
-          response.expectStatus().is4xxClientError();
-      }
+    if (exception != null) {
+      response.expectStatus().is4xxClientError();
+    }
   }
-  
+
   private static Stream<Arguments> byClientNumber() {
     return Stream.of(
         // Valid case
