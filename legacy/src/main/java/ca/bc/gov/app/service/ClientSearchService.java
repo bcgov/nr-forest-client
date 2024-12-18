@@ -571,7 +571,7 @@ public class ClientSearchService {
             )
         .switchIfEmpty(
             Mono.error(
-                new NoValueFoundException("client with number: " + clientNumber)
+                new NoValueFoundException("Client with number: " + clientNumber)
             )
         )
         .doOnNext(
