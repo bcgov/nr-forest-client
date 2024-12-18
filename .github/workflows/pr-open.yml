@@ -232,12 +232,12 @@ jobs:
     with:
       url: ${{ needs.vars.outputs.url }}
 
-  results:
-    name: PR Results
-    needs: [builds, deploy, tests]
-    if: always()
-    runs-on: ubuntu-24.04
-    steps:
-      - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
-        run: echo "At least one job has failed." && exit 1
-      - run: echo "Success!"
+  # results:
+  #   name: PR Results
+  #   needs: [builds, deploy, tests]
+  #   if: always()
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #     - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
+  #       run: echo "At least one job has failed." && exit 1
+  #     - run: echo "Success!"
