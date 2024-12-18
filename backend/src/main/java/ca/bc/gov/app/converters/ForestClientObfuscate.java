@@ -81,7 +81,12 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
   private String obfuscate(String propName, String propType, Object value) {
     Set<String> roles = toRoles(MDC.get(ApplicationConstant.MDC_USERROLES));
 
-    if (!roles.contains(ApplicationConstant.ROLE_VIEWER)) {
+    // Admins and Editors can see with no restrictions
+    if (
+        roles.contains(ApplicationConstant.ROLE_EDITOR)
+        || roles.contains(ApplicationConstant.ROLE_ADMIN)
+        || roles.contains(ApplicationConstant.ROLE_SUSPEND)
+    ) {
       return value.toString();
     }
 
