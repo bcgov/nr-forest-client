@@ -13,23 +13,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 
-/**
- * Requirement - ID - Suppress GIVEN Client detail summary edit mode WHEN in edit mode and role is
- * CLIENT_VIEW THEN system will display the ID using the following format IF ( ID IS NOT BC Registry
- * OR BC Service Card) THEN (example British Columbia Drivers License) { IF ( length < 7 values)
- * THEN display the entire values ELSE [first value]***[Last three values] Example "1***756" END IF
- * } ELSE IF ( BC Registry) Display the entire value. Example "FM232109" ELSE IF (BC Service Card)
- * Display "BC Service card verified" END IF
- * <p>
- * Requirement - Birthday GIVEN Client detail summary edit mode WHEN in edit mode and role is
- * CLIENT_VIEW THEN system will only show year of birth year. Example "1983" AND Column name is
- * "Year of birth" as oppose to "Date of birth"
- */
 @Slf4j
 public class ForestClientObfuscate<T> extends JsonSerializer<T> {
 
-  private final List<String> obfuscableFields = List.of("clientIdentification", "birthdate");
+  public static final String CLIENT_IDENTIFICATION = "clientIdentification";
+  private final List<String> obfuscableFields = List.of(CLIENT_IDENTIFICATION, "birthdate");
 
+  /**
+   * Serializes the given value, obfuscating certain fields based on user roles.
+   *
+   * @param value The value to serialize.
+   * @param gen The JSON generator used to write the JSON output.
+   * @param provider The serializer provider.
+   * @throws IOException If an I/O error occurs.
+   */
   @SneakyThrows
   @Override
   public void serialize(
@@ -40,6 +37,7 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
 
     if (value == null) {
       gen.writeNull();
+      return;
     }
 
     gen.writeStartObject();
@@ -78,6 +76,14 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
     gen.writeEndObject();
   }
 
+  /**
+   * Obfuscates the given property value based on the property name and type.
+   *
+   * @param propName The name of the property.
+   * @param propType The type of the property.
+   * @param value The value to obfuscate.
+   * @return The obfuscated value as a string.
+   */
   private String obfuscate(String propName, String propType, Object value) {
     Set<String> roles = toRoles(MDC.get(ApplicationConstant.MDC_USERROLES));
 
@@ -91,15 +97,15 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
     }
 
     // BC Services card uses a UUID, so we just say it is verified
-    if ("clientIdentification".equals(propName) && "BCSC".equals(propType)) {
+    if (CLIENT_IDENTIFICATION.equals(propName) && "BCSC".equals(propType)) {
       return "BC Service card verified";
     }
 
-    if ("clientIdentification".equals(propName) && "BCRE".equals(propType)) {
+    if (CLIENT_IDENTIFICATION.equals(propName) && "BCRE".equals(propType)) {
       return value.toString();
     }
 
-    if ("clientIdentification".equals(propName)) {
+    if (CLIENT_IDENTIFICATION.equals(propName)) {
       return obfuscateClientIdentification(value.toString());
     }
 
@@ -110,10 +116,22 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
     return value.toString();
   }
 
+  /**
+   * Obfuscates the birthdate by masking the day and month.
+   *
+   * @param value The birthdate to obfuscate.
+   * @return The obfuscated birthdate as a string.
+   */
   private String obfuscateBirthdate(LocalDate value) {
     return String.format("%d-**-**", value.getYear());
   }
 
+  /**
+   * Obfuscates the client identification by masking the middle characters.
+   *
+   * @param value The client identification to obfuscate.
+   * @return The obfuscated client identification as a string.
+   */
   private String obfuscateClientIdentification(String value) {
     if (value.length() < 7) {
       return value;
@@ -122,6 +140,12 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
     return value.charAt(0) + "***" + value.substring(value.length() - 3);
   }
 
+  /**
+   * Converts a comma-separated string of roles into a set of roles.
+   *
+   * @param roleCsv The comma-separated string of roles.
+   * @return A set of roles.
+   */
   private Set<String> toRoles(String roleCsv) {
     if (StringUtils.isNotBlank(roleCsv)) {
       return Set.of(roleCsv.split(","));

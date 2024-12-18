@@ -12,6 +12,12 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 import reactor.util.context.Context;
 
+/**
+ * This class is a web filter that extracts a value from the security context and sets it in the MDC
+ * (Mapped Diagnostic Context) for logging and tracing purposes. The value is then propagated down
+ * the filter chain and set in the reactive context to ensure it is available for logging and
+ * tracing in both reactive and non-reactive parts of the application.
+ */
 public abstract class ContextPropagatorWebFilter implements WebFilter {
 
   protected abstract String getContextKey();
@@ -20,16 +26,15 @@ public abstract class ContextPropagatorWebFilter implements WebFilter {
 
   /**
    * Filters each incoming request to extract from the security context a {@link String} value using
-   * {@link #getContextValueExtractor()} and set it in the MDC.
-   * The value is then propagated down the filter chain and set in the reactive context
-   * to ensure it is available for logging and tracing in both reactive and non-reactive parts of
-   * the application.
+   * {@link #getContextValueExtractor()} and set it in the MDC. The value is then propagated down
+   * the filter chain and set in the reactive context to ensure it is available for logging and
+   * tracing in both reactive and non-reactive parts of the application.
    *
    * @param exchange The current server web exchange that contains information about the request and
    *                 response.
    * @param chain    The web filter chain that allows the filter to pass on the request to the next
    *                 entity in the chain.
-   * @return A Mono<Void> that indicates when request handling is complete.
+   * @return A {@link Mono} of {@link Void} that indicates when request handling is complete.
    */
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -56,10 +61,10 @@ public abstract class ContextPropagatorWebFilter implements WebFilter {
   /**
    * Initializes and registers a thread-local context for the current thread. This method configures
    * the {@link ContextRegistry} to handle the value within the MDC (Mapped Diagnostic Context),
-   * allowing for the propagation of the value across different parts of the application that run
-   * on the same thread. It specifically sets up accessors for getting, setting, and removing the
-   * value from the MDC. This setup is crucial for maintaining state across the reactive and
-   * non-reactive parts of the application.
+   * allowing for the propagation of the value across different parts of the application that run on
+   * the same thread. It specifically sets up accessors for getting, setting, and removing the value
+   * from the MDC. This setup is crucial for maintaining state across the reactive and non-reactive
+   * parts of the application.
    */
   private void contextLoad() {
     ContextRegistry

@@ -24,6 +24,12 @@ import org.springframework.stereotype.Component;
 @Order(-1)
 public class UserIdWebFilter extends ContextPropagatorWebFilter {
 
+  /**
+   * Retrieves the context key for the user ID. This key is used to store the user ID in the MDC
+   * (Mapped Diagnostic Context).
+   *
+   * @return The context key for the user ID.
+   */
   @Override
   protected String getContextKey() {
     return ApplicationConstant.MDC_USERID;

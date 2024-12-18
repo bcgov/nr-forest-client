@@ -248,6 +248,15 @@ public class GlobalServiceConfiguration {
         .baseUrl(configuration.getOpenData().getSacBandUrl()).build();
   }
 
+  /**
+   * Configures and provides a WebClient for accessing the Open Data SAC Tribe API. This WebClient
+   * is pre-configured with the base URL for the SAC Tribe API, as specified in the provided
+   * {@link ForestClientConfiguration}.
+   *
+   * @param configuration    The configuration containing the SAC Tribe API URL and other settings.
+   * @param webClientBuilder A builder for creating WebClient instances.
+   * @return A WebClient instance configured for the Open Data SAC Tribe API.
+   */
   @Bean
   public WebClient openDataSacTribeApi(
       ForestClientConfiguration configuration,
@@ -275,6 +284,16 @@ public class GlobalServiceConfiguration {
     return webClientBuilder.baseUrl(configuration.getOpenData().getOpenMapsBandUrl()).build();
   }
 
+  /**
+   * Configures and provides a WebClient for accessing the Open Data BC Maps Tribe API. This
+   * WebClient is pre-configured with the base URL for the BC Maps Tribe API, as specified in the
+   * provided {@link ForestClientConfiguration}.
+   *
+   * @param configuration    The configuration containing the BC Maps Tribe API URL and other
+   *                         settings.
+   * @param webClientBuilder A builder for creating WebClient instances.
+   * @return A WebClient instance configured for the Open Data BC Maps Tribe API.
+   */
   @Bean
   public WebClient openDataBcMapsTribeApi(
       ForestClientConfiguration configuration,
@@ -306,6 +325,14 @@ public class GlobalServiceConfiguration {
     return webClientBuilder.baseUrl(configuration.getProcessor().getUrl()).build();
   }
 
+  /**
+   * Configures and provides an ObjectMapper bean. This ObjectMapper is built using the provided
+   * Jackson2ObjectMapperBuilder and is configured with the JavaTimeModule and a custom
+   * ForestClientDetailsSerializerModifier module.
+   *
+   * @param builder The Jackson2ObjectMapperBuilder used to build the ObjectMapper.
+   * @return A configured ObjectMapper instance.
+   */
   @Bean
   public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
 
@@ -316,6 +343,12 @@ public class GlobalServiceConfiguration {
     return mapper;
   }
 
+  /**
+   * Creates and configures a SimpleModule for customizing the serialization of ForestClientDetails.
+   * This module registers a custom serializer modifier, ForestClientDetailsSerializerModifier.
+   *
+   * @return A configured SimpleModule instance with the custom serializer modifier.
+   */
   SimpleModule forestClientDetailsDtoModule() {
     SimpleModule module = new SimpleModule();
 
