@@ -21,6 +21,11 @@ jobs:
         run: |
           echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
 
+  deploy-tools-pre:
+    name: Tools Deployment (Pre)
+    secrets: inherit
+    uses: ./.github/workflows/.automated-tests.yml
+
   builds:
     name: Builds
     runs-on: ubuntu-24.04
@@ -42,7 +47,7 @@ jobs:
 
   deploy:
     name: Deploy Application
-    needs: [builds, vars]
+    needs: [builds, deploy-tools-pre, vars]
     environment: dev
     runs-on: ubuntu-24.04
     steps:
@@ -227,14 +232,19 @@ jobs:
   tests:
     name: Tests
     needs: [deploy, vars]
-    needs: [vars]
     uses: ./.github/workflows/.automated-tests.yml
     with:
       url: ${{ needs.vars.outputs.url }}
 
+  deploy-tools-post:
+    name: Tools Deployment (Post)
+    needs: [tests]
+    secrets: inherit
+    uses: ./.github/workflows/.automated-tests.yml
+
   results:
     name: PR Results
-    needs: [builds, deploy, tests]
+    needs: [builds, deploy, tests, deploy-tools-pre, deploy-tools-post]
     if: always()
     runs-on: ubuntu-24.04
     steps:

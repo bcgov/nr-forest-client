@@ -1,10 +1,8 @@
 name: Tools deployment
 
 on:
-  pull_request:
-  workflow_run:
-    workflows: ["Automated user flow tests"]
-    types: [completed]
+  workflow_call:
+
 concurrency:
   # PR open and close use the same group, allowing only one at a time
   group: tools-${{ github.event.number }}
