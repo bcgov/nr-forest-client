@@ -3,7 +3,7 @@ FROM node:alpine3.16 AS build
 
 WORKDIR /app
 COPY . .
-RUN npm ci --ignore-scripts && npm install @esbuild/linux-x64 --no-save && npm run build
+RUN npm ci --ignore-scripts && npm install @esbuild/linux-x64 --no-save --ignore-scripts && npm run build
 
 # Caddy
 FROM caddy:2.8.4-alpine
