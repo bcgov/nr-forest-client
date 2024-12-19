@@ -228,6 +228,7 @@ jobs:
     name: Tests
     needs: [deploy, vars]
     uses: ./.github/workflows/.automated-tests.yml
+    secrets: inherit
     with:
       url: ${{ needs.vars.outputs.url }}
 
