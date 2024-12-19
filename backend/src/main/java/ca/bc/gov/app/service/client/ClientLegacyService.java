@@ -397,8 +397,7 @@ public class ClientLegacyService {
             .exchangeToFlux(response -> response.bodyToFlux(AuditLogDto.class))
             .doOnNext(
                 dto -> log.info(
-                    "Found Legacy data for in legacy with client number {}",
-                    dto.clientNumber())
+                    "Found Legacy data for in legacy with client number {}", clientNumber)
             );
   }
 

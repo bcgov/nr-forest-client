@@ -19,6 +19,7 @@ import NotFoundPage from "@/pages/NotFoundPage.vue";
 import LogoutPage from "@/pages/LogoutPage.vue";
 import SearchPage from "@/pages/SearchPage.vue";
 import ClientDetailsPage from "@/pages/ClientDetailsPage.vue";
+import TimelinePage from "@/pages/TimelinePage.vue";
 
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -48,6 +49,27 @@ export const routes = [
       headersStyle: "headers",
       sideMenu: false,
       profile: false,
+    },
+  },
+  {
+    path: "/timeline",
+    name: "timeline",
+    component: TimelinePage,
+    props: true,
+    meta: {
+      format: "full",
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: ["idir"],
+      redirectTo: {
+        bceidbusiness: "form",
+        bcsc: "form",
+      },
+      style: "content-stretched",
+      headersStyle: "headers-compact",
+      sideMenu: true,
+      profile: true,
     },
   },
   {

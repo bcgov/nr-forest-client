@@ -650,8 +650,7 @@ public class ClientSearchService {
         .switchIfEmpty(Flux.empty())
         .doOnNext(
             dto -> log.info("Found client with client number {}",
-                clientNumber,
-                dto.clientNumber())
+                clientNumber)
         );
   }
 

@@ -192,6 +192,17 @@ export interface ClientSearchResult {
   clientStatus: string
 }
 
+export interface AuditLogResult {
+  tableName: string
+  idx: string
+  columnName: string
+  oldValue: string
+  newValue: string
+  updateTimestamp: string
+  updateUserId: string
+  changeType: string
+}
+
 export interface SubmissionDetails {
   submissionId: number
   submissionStatus: string
