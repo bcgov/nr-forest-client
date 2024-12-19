@@ -6,7 +6,6 @@ import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.exception.NoValueFoundException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -340,15 +339,15 @@ class ClientSearchControllerIntegrationTest extends
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange();
 
-      response
-          .expectStatus().isOk()
-          .expectHeader()
-          .exists("X-Total-Count")
-          .expectBody()
-          .jsonPath("$[0].clientNumber").isNotEmpty()
-          .jsonPath("$[0].clientName").isNotEmpty()
-          .jsonPath("$.length()").isEqualTo(10)
-          .consumeWith(System.out::println);
+    response
+        .expectStatus().isOk()
+        .expectHeader()
+        .exists("X-Total-Count")
+        .expectBody()
+        .jsonPath("$[0].clientNumber").isNotEmpty()
+        .jsonPath("$[0].clientName").isNotEmpty()
+        .jsonPath("$.length()").isEqualTo(10)
+        .consumeWith(System.out::println);
 
   }
 
@@ -580,57 +579,46 @@ class ClientSearchControllerIntegrationTest extends
             Arguments.of("matelda", null, null, "00000137", "MATELDA LINDHE (JABBERTYPE)")
         );
   }
-  
+
   @ParameterizedTest
   @MethodSource("byClientNumber")
   @DisplayName("Search client by client number and groups")
   void shouldFindByClientNumber(
       String clientNumber,
-      List<String> groups,
       String expectedClientNumber,
       Class<RuntimeException> exception
   ) {
-      ResponseSpec response =
-          client
-              .get()
-              .uri(uriBuilder ->
-                  uriBuilder
-                      .path("/api/search/clientNumber")
-                      .queryParam("clientNumber", clientNumber)
-                      .queryParam("groups", String.join(",", groups))
-                      .build(new HashMap<>())
-              )
-              .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-              .exchange();
+    ResponseSpec response =
+        client
+            .get()
+            .uri("/api/search/clientNumber/{clientNumber}", clientNumber)
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .exchange();
 
-      if (StringUtils.isNotBlank(expectedClientNumber)) {
-          response
-              .expectStatus().isOk()
-              .expectBody()
-              .jsonPath("$.clientNumber").isNotEmpty()
-              .jsonPath("$.clientNumber").isEqualTo(expectedClientNumber)
-              .consumeWith(System.out::println);
-      }
+    if (StringUtils.isNotBlank(expectedClientNumber)) {
+      response
+          .expectStatus().isOk()
+          .expectBody()
+          .jsonPath("$.clientNumber").isNotEmpty()
+          .jsonPath("$.clientNumber").isEqualTo(expectedClientNumber)
+          .consumeWith(System.out::println);
+    }
 
-      if (exception != null) {
-          response.expectStatus().is4xxClientError();
-      }
+    if (exception != null) {
+      response.expectStatus().is4xxClientError();
+    }
   }
-  
+
   private static Stream<Arguments> byClientNumber() {
     return Stream.of(
         // Valid case
-        Arguments.of("00000123", List.of("CLIENT_ADMIN"), "00000123", null),
+        Arguments.of("00000138", "00000138", null),
 
         // Invalid case: missing client number
-        Arguments.of(null, List.of("CLIENT_ADMIN"), null,
-            MissingRequiredParameterException.class),
-
-        // Invalid case: missing groups
-        Arguments.of("00000123", List.of(), null, MissingRequiredParameterException.class),
+        Arguments.of(null, null, MissingRequiredParameterException.class),
 
         // Invalid case: client not found
-        Arguments.of("99999999", List.of("CLIENT_ADMIN"), null, NoValueFoundException.class));
+        Arguments.of("99999999", null, NoValueFoundException.class));
   }
 
 }

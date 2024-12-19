@@ -152,7 +152,6 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
   @DisplayName("searching legacy by client number")
   void shouldSearchLegacyByClientNumber() {
       String clientNumber = "00000001";
-      List<String> groups = List.of("CLIENT_ADMIN");
 
       ForestClientDetailsDto expectedDto = new ForestClientDetailsDto(
           clientNumber,
@@ -182,9 +181,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
 
       legacyStub
           .stubFor(
-              get(urlPathEqualTo("/api/search/clientNumber"))
-                  .withQueryParam("clientNumber", equalTo(clientNumber))
-                  .withQueryParam("groups", equalTo("CLIENT_ADMIN"))
+              get(urlPathEqualTo("/api/search/clientNumber/" + clientNumber))
                   .willReturn(okJson("{"
                       + "\"clientNumber\":\"00000001\","
                       + "\"clientName\":\"MY COMPANY LTD.\","
@@ -214,7 +211,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
                   .withHeader("Content-Type", equalTo("application/json"))
           );
 
-      service.searchByClientNumber(clientNumber, groups)
+      service.searchByClientNumber(clientNumber)
           .as(StepVerifier::create)
           .assertNext(clientDetailsDto -> {
               assertThat(clientDetailsDto)
