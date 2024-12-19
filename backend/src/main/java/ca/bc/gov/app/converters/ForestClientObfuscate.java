@@ -17,7 +17,7 @@ import org.slf4j.MDC;
 public class ForestClientObfuscate<T> extends JsonSerializer<T> {
 
   public static final String CLIENT_IDENTIFICATION = "clientIdentification";
-  private final List<String> obfuscableFields = List.of(CLIENT_IDENTIFICATION, "birthdate");
+  private final List<String> obfuscateFields = List.of(CLIENT_IDENTIFICATION, "birthdate");
 
   /**
    * Serializes the given value, obfuscating certain fields based on user roles.
@@ -63,7 +63,7 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
           clientIdTypeCode = rawValue.toString();
         }
 
-        if (obfuscableFields.contains(propName)) {
+        if (obfuscateFields.contains(propName)) {
           gen.writeString(obfuscate(propName, clientIdTypeCode, rawValue));
           continue;
         }
