@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +21,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class JwtPrincipalUtil {
 
+  public static final String LAST_NAME = "lastName";
+
   /**
    * Retrieves the provider of the JWT token from the given JwtAuthenticationToken principal. The
    * provider is extracted from the token attributes under the key "custom:idp_name". If the
@@ -27,7 +31,7 @@ public class JwtPrincipalUtil {
    *
    * @param principal JwtAuthenticationToken object from which the provider is to be extracted.
    * @return The provider of the JWT token in uppercase, or an empty string if the provider is
-   *         blank.
+   * blank.
    */
   public static String getProvider(JwtAuthenticationToken principal) {
     return getProviderValue(principal.getTokenAttributes());
@@ -41,7 +45,7 @@ public class JwtPrincipalUtil {
    *
    * @param principal Jwt object from which the provider is to be extracted.
    * @return The provider of the JWT token in uppercase, or an empty string if the provider is
-   *         blank.
+   * blank.
    */
   public static String getProvider(Jwt principal) {
     return getProviderValue(principal.getClaims());
@@ -56,7 +60,7 @@ public class JwtPrincipalUtil {
    *
    * @param principal JwtAuthenticationToken object from which the user ID is to be extracted.
    * @return The user ID prefixed with the provider in uppercase and a backslash, or an empty string
-   *         if the user ID is blank.
+   * if the user ID is blank.
    */
   public static String getUserId(JwtAuthenticationToken principal) {
     return getUserIdValue(principal.getTokenAttributes());
@@ -70,7 +74,7 @@ public class JwtPrincipalUtil {
    *
    * @param principal Jwt object from which the user ID is to be extracted.
    * @return The user ID prefixed with the provider in uppercase and a backslash, or an empty string
-   *         if the user ID is blank.
+   * if the user ID is blank.
    */
   public static String getUserId(Jwt principal) {
     return getUserIdValue(principal.getClaims());
@@ -172,7 +176,7 @@ public class JwtPrincipalUtil {
    *
    * @param principal Jwt object from which the display name is to be extracted.
    * @return The display name, or the concatenated first and last names, or an empty string if both
-   *         the display name and the first and last names are blank.
+   * the display name and the first and last names are blank.
    */
   public static String getName(Jwt principal) {
     return getNameValue(principal.getClaims());
@@ -203,13 +207,67 @@ public class JwtPrincipalUtil {
   }
 
   /**
+   * Retrieves a list of groups from the given JwtPrincipal. This method extracts the token
+   * attributes from the provided {@link JwtAuthenticationToken}, then looks for the key
+   * "cognito:groups" in the token attributes. If the value associated with this key is a
+   * {@link List}, the method filters the elements to only include non-null values of type
+   * {@link String}. The resulting list of strings is returned.
+   *
+   * @param jwtPrincipal The {@link JwtAuthenticationToken} containing the token attributes. It must
+   *                     have the "cognito:groups" key. If the key does not exist or the value is
+   *                     not a list of strings, an empty list is returned.
+   * @return A list of group names, or an empty list if the key is missing or the value is not a
+   * list of strings.
+   */
+  public static Set<String> getGroups(JwtAuthenticationToken jwtPrincipal) {
+    if (jwtPrincipal == null || jwtPrincipal.getTokenAttributes() == null) {
+      return Collections.emptySet();
+    }
+    return getClaimGroups(jwtPrincipal.getTokenAttributes());
+  }
+
+  /**
+   * Retrieves a list of groups from the given JwtPrincipal. This method extracts the token
+   * attributes from the provided {@link Jwt}, then looks for the key "cognito:groups" in the token
+   * attributes. If the value associated with this key is a {@link List}, the method filters the
+   * elements to only include non-null values of type {@link String}. The resulting list of strings
+   * is returned.
+   *
+   * @param jwtPrincipal The {@link Jwt} containing the token attributes. It must have the
+   *                     "cognito:groups" key. If the key does not exist or the value is not a list
+   *                     of strings, an empty list is returned.
+   * @return A list of group names, or an empty list if the key is missing or the value is not a
+   * list of strings.
+   */
+  public static Set<String> getGroups(Jwt jwtPrincipal) {
+    if (jwtPrincipal == null || jwtPrincipal.getClaims() == null) {
+      return Collections.emptySet();
+    }
+    return getClaimGroups(jwtPrincipal.getClaims());
+  }
+
+  private static Set<String> getClaimGroups(Map<String, Object> tokenAttributes) {
+    Object groups = tokenAttributes.get("cognito:groups");
+
+    if (groups instanceof List) {
+      return ((List<?>) groups).stream()
+          .filter(Objects::nonNull)
+          .filter(String.class::isInstance)
+          .map(String.class::cast)
+          .collect(Collectors.toSet());
+    }
+
+    return Collections.emptySet();
+  }
+
+  /**
    * Retrieves the value of a specified claim from the claims map. If the claim is not present,
    * returns an empty string.
    *
    * @param claims    The map containing the JWT claims.
    * @param claimName The name of the claim to retrieve.
    * @return The value of the specified claim as a String, or an empty string if the claim is not
-   *         present.
+   * present.
    */
   private static String getClaimValue(Map<String, Object> claims, String claimName) {
     return claims
@@ -225,7 +283,7 @@ public class JwtPrincipalUtil {
    *
    * @param claims The map containing the JWT claims.
    * @return The provider's name in uppercase or "BCSC" if it starts with "ca.bc.gov.flnr.fam.", or
-   *         an empty string if the provider is not specified.
+   * an empty string if the provider is not specified.
    */
   private static String getProviderValue(Map<String, Object> claims) {
     String provider = getClaimValue(claims, "custom:idp_name");
@@ -259,7 +317,7 @@ public class JwtPrincipalUtil {
    *
    * @param claims The map containing the JWT claims.
    * @return The constructed user ID in the format "Provider\Username" or "Provider\UserID", or an
-   *         empty string if neither the username nor the user ID is present in the claims.
+   * empty string if neither the username nor the user ID is present in the claims.
    */
   private static String getUserIdValue(Map<String, Object> claims) {
     return
@@ -309,7 +367,7 @@ public class JwtPrincipalUtil {
    *
    * @param claims The map containing the JWT claims.
    * @return The display name value as a String, or an empty string if the "custom:idp_display_name"
-   *         claim is not present.
+   * claim is not present.
    */
   private static String getDisplayNameValue(Map<String, Object> claims) {
     return getClaimValue(claims, "custom:idp_display_name");
@@ -324,10 +382,9 @@ public class JwtPrincipalUtil {
    *
    * @param claims The map containing the JWT claims from which the name information is to be
    *               extracted.
-   * @return A map with keys "businessName", "firstName", "lastName", and "fullName", 
-   *         containing the extracted and/or computed name information. 
-   *         If specific name components are not found, their values in the map 
-   *         will be empty strings.
+   * @return A map with keys "businessName", "firstName", "lastName", and "fullName", containing the
+   * extracted and/or computed name information. If specific name components are not found, their
+   * values in the map will be empty strings.
    */
   private static Map<String, String> processName(Map<String, Object> claims) {
     Map<String, String> additionalInfo = new HashMap<>();
@@ -342,17 +399,17 @@ public class JwtPrincipalUtil {
     // Determine if special handling for names is required
     boolean useDisplayName =
         "bceidbusiness".equals(getProviderValue(claims)) || (firstName.isEmpty()
-            && lastName.isEmpty());
+                                                             && lastName.isEmpty());
     if (useDisplayName) {
       Map<String, String> names = ClientMapper.parseName(getDisplayNameValue(claims),
           getProviderValue(claims));
       firstName = names.get("firstName");
-      lastName = names.get("lastName");
+      lastName = names.get(LAST_NAME);
     }
 
     // Put extracted or computed first and last names into the map
     additionalInfo.put("firstName", firstName.trim());
-    additionalInfo.put("lastName", lastName.trim());
+    additionalInfo.put(LAST_NAME, lastName.trim());
     additionalInfo.put("fullName", String.join(" ", firstName, lastName).trim());
 
     return additionalInfo;
@@ -367,7 +424,7 @@ public class JwtPrincipalUtil {
    * @return The last name extracted from the JWT claims, or an empty string if not specified.
    */
   private static String getLastNameValue(Map<String, Object> claims) {
-    return processName(claims).get("lastName");
+    return processName(claims).get(LAST_NAME);
   }
 
   /**
@@ -378,40 +435,11 @@ public class JwtPrincipalUtil {
    *
    * @param claims The map containing the JWT claims.
    * @return The full name (concatenation of first and last names) extracted from the JWT claims, or
-   *         an empty string if not specified.
+   * an empty string if not specified.
    */
   private static String getNameValue(Map<String, Object> claims) {
     return processName(claims).get("fullName");
   }
-  
-  /**
-   * Retrieves a list of groups from the given JwtPrincipal.
-   * 
-   * This method extracts the token attributes from the provided {@link JwtPrincipal}, then looks for the key "cognito:groups" 
-   * in the token attributes. If the value associated with this key is a {@link List}, the method filters the elements to only 
-   * include non-null values of type {@link String}. The resulting list of strings is returned.
-   * 
-   * @param jwtPrincipal The {@link JwtPrincipal} containing the token attributes. It must have the "cognito:groups" key.
-   *                     If the key does not exist or the value is not a list of strings, an empty list is returned.
-   * @return A list of group names, or an empty list if the key is missing or the value is not a list of strings.
-   */
-  public static List<String> getGroups(JwtAuthenticationToken jwtPrincipal) {
-      if (jwtPrincipal == null || jwtPrincipal.getTokenAttributes() == null) {
-          return Collections.emptyList();
-      }
 
-      Map<String, Object> tokenAttributes = jwtPrincipal.getTokenAttributes();
-      Object groups = tokenAttributes.get("cognito:groups");
-
-      if (groups instanceof List) {
-          return ((List<?>) groups).stream()
-                  .filter(Objects::nonNull)
-                  .filter(String.class::isInstance)
-                  .map(String.class::cast)
-                  .toList();
-      }
-
-      return Collections.emptyList();
-  }
 
 }

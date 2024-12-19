@@ -44,7 +44,7 @@ public class ClientController {
    * provider) is extracted from the token to authorize the request.
    *
    * @param clientNumber the incorporation number of the client whose details are being requested
-   * @param principal the JWT authentication token containing user and business information
+   * @param principal    the JWT authentication token containing user and business information
    * @return a {@link Mono} emitting the {@link ClientDetailsDto} containing the client's details
    */
   @GetMapping("/{clientNumber}")
@@ -64,44 +64,25 @@ public class ClientController {
             JwtPrincipalUtil.getProvider(principal)
         );
   }
-  
-  /**
-   * Handles HTTP GET requests to retrieve client details based on the provided client number.
-   *
-   * <p>This method fetches the details of a client from the {@code ClientService} using the 
-   * specified {@code clientNumber}. The caller's JWT authentication token is used to extract 
-   * user-related information such as groups and user ID.</p>
-   *
-   * @param clientNumber the unique identifier of the client whose details are to be retrieved.
-   * @param principal    the {@link JwtAuthenticationToken} containing the authenticated user's 
-   *                     information, including their roles and groups.
-   * @return a {@link Mono} emitting the {@link ForestClientDetailsDto} containing the requested 
-   *         client details, or an error if the client cannot be found or accessed.
-   */
+
   @GetMapping("/details/{clientNumber}")
   public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(
-      @PathVariable String clientNumber,
-      JwtAuthenticationToken principal
-  ) {   
-    log.info("Requesting client details for client number {} from the client service. {}",
-        clientNumber,
-        JwtPrincipalUtil.getUserId(principal)
-    );
-    return clientService.getClientDetailsByClientNumber(
-            clientNumber,
-            JwtPrincipalUtil.getGroups(principal));
+      @PathVariable String clientNumber) {
+    log.info("Requesting client details for client number {}", clientNumber);
+    return clientService.getClientDetailsByClientNumber(clientNumber);
   }
-  
+
   /**
-   * Performs a full-text search for clients based on the provided keyword, with pagination support.
+   * Performs a full-text search for clients based on the provided keyword, with pagination
+   * support.
    *
-   * <p>This endpoint allows searching for clients by a keyword. The results are paginated, and the 
+   * <p>This endpoint allows searching for clients by a keyword. The results are paginated, and the
    * total count of matching records is included in the response headers.
    *
-   * @param page the page number to retrieve (default is 0)
-   * @param size the number of records per page (default is 10)
-   * @param keyword the keyword to search for (default is an empty string, which returns all 
-   *        records)
+   * @param page           the page number to retrieve (default is 0)
+   * @param size           the number of records per page (default is 10)
+   * @param keyword        the keyword to search for (default is an empty string, which returns all
+   *                       records)
    * @param serverResponse the HTTP response to include the total count of records in the headers
    * @return a {@link Flux} emitting {@link ClientListDto} objects containing the search results
    */
@@ -128,15 +109,15 @@ public class ClientController {
         })
         .map(Pair::getFirst)
         .doFinally(signalType ->
-          serverResponse
-              .getHeaders()
-              .putIfAbsent(
-                  ApplicationConstant.X_TOTAL_COUNT,
-                  List.of("0")
-              )
+            serverResponse
+                .getHeaders()
+                .putIfAbsent(
+                    ApplicationConstant.X_TOTAL_COUNT,
+                    List.of("0")
+                )
         );
   }
-  
+
   /**
    * Retrieve a Flux of ClientLookUpDto objects by searching for clients with a specific name.
    *
@@ -154,18 +135,18 @@ public class ClientController {
   /**
    * Finds a client based on their registration number.
    *
-   * <p>This endpoint retrieves client information by searching for a registration number. 
+   * <p>This endpoint retrieves client information by searching for a registration number.
    * If no client is found, an error is returned.
    *
    * @param registrationNumber the registration number of the client to look up
-   * @return a {@link Mono} emitting the {@link ClientLookUpDto} if found, or an error 
-   *         if no data exists
+   * @return a {@link Mono} emitting the {@link ClientLookUpDto} if found, or an error if no data
+   * exists
    */
   @GetMapping(value = "/incorporation/{registrationNumber}")
   public Mono<ClientLookUpDto> findByRegistrationNumber(
       @PathVariable String registrationNumber) {
     log.info("Requesting a client with registration number {} from the client service.",
-             registrationNumber);
+        registrationNumber);
     return clientService
         .findByClientNameOrIncorporation(registrationNumber)
         .next()
@@ -175,10 +156,10 @@ public class ClientController {
   /**
    * Searches for an individual client by user ID and last name.
    *
-   * <p>This endpoint fetches an individual client using their user ID and last name. 
+   * <p>This endpoint fetches an individual client using their user ID and last name.
    * The request is validated against existing records in the system.
    *
-   * @param userId the unique identifier of the individual to search for
+   * @param userId   the unique identifier of the individual to search for
    * @param lastName the last name of the individual to search for
    * @return a {@link Mono} indicating completion, or an error if the individual is not found
    */
@@ -187,9 +168,9 @@ public class ClientController {
       @PathVariable String userId,
       @RequestParam String lastName
   ) {
-    log.info("Receiving request to search individual with id {} and last name {}", 
-             userId,
-             lastName);
+    log.info("Receiving request to search individual with id {} and last name {}",
+        userId,
+        lastName);
     return clientService.findByIndividual(userId, lastName);
   }
 
