@@ -14,17 +14,10 @@ RUN apt update -y && \
 ENV MAVEN_HOME=/opt/maven
 ENV PATH=$MAVEN_HOME/bin:$PATH
 
-# Receiving app version
-ARG APP_VERSION=0.0.1
-
 # Copy
 WORKDIR /app
 COPY pom.xml ./
 COPY src ./src
-
-# Setting app version
-RUN mvn versions:set -DnewVersion=${APP_VERSION} -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true && \
-    mvn versions:commit -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
 
 # Build
 RUN mvn clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
