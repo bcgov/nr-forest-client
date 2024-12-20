@@ -13,17 +13,26 @@
     "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
     "contacts": [
         {
-            "index": 0,
-            "contactType": "Accounts Receivable",
-            "firstName": "Test",
-            "lastName": "Uat",
-            "phoneNumber": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
-            "emailAddress": "uattest@gov.bc.ca",
-            "locations": [
-                "Mailing address",
-                "Accountant's address"
-            ],
-            "userId": "{{randomValue type='UUID'}}"
+            "clientLocnCode": ["00"],
+            "contactCode": "00",
+            "contactName": "Cheryl Bibby",
+            "contactTypeCode": "BL",
+            "contactTypeDesc": "Billing",
+            "businessPhone": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+            "secondaryPhone": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+            "faxNumber": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+            "emailAddress": "cheryl@ktb.com"
+        },
+        {
+            "clientLocnCode": ["01", "02"],
+            "contactCode": "01",
+            "contactName": "Edward Burns",
+            "contactTypeCode": "DI",
+            "contactTypeDesc": "Director",
+            "businessPhone": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+            "secondaryPhone": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+            "faxNumber": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+            "emailAddress": "burns@ktb.com"
         }
     ],
     "addresses": [

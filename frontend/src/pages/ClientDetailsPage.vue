@@ -20,6 +20,7 @@ import NetworkEnterprise16 from "@carbon/icons-vue/es/network--enterprise/16";
 import RecentlyViewed16 from "@carbon/icons-vue/es/recently-viewed/16";
 import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
 import Location20 from "@carbon/icons-vue/es/location/20";
+import User20 from "@carbon/icons-vue/es/user/20";
 
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
 
@@ -28,6 +29,7 @@ import type { ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
+import ContactView from "@/pages/client-details/ContactView.vue";
 
 // Route related
 const router = useRouter();
@@ -83,6 +85,32 @@ const compareString = (a: string, b: string) => {
 const sortedLocations = computed(() =>
   data.value.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
 );
+
+const sortedContacts = computed(() =>
+  data.value.contacts?.toSorted((a, b) => compareString(a.contactCode, b.contactCode)),
+);
+
+const formatLocations = (
+  locationCodes: string[],
+  allLocations: ClientLocation[] = data.value.addresses,
+) => {
+  const list: string[] = [];
+  for (const curLocationCode of locationCodes.toSorted()) {
+    const location = allLocations.find(
+      (curLocation) => curLocation.clientLocnCode === curLocationCode,
+    );
+    list.push(`${curLocationCode} - ${location.clientLocnName}`);
+  }
+  return list.join(", ");
+};
+
+const associatedLocationsRecord = computed(() => {
+  const result: Record<string, string> = {};
+  sortedContacts.value?.forEach((contact) => {
+    result[contact.contactCode] = formatLocations(contact.clientLocnCode);
+  });
+  return result;
+});
 </script>
 
 <template>
@@ -221,7 +249,36 @@ const sortedLocations = computed(() =>
           </cds-accordion-item>
         </cds-accordion>
       </div>
-      <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden></div>
+      <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
+        <h3 class="padding-left-1rem">
+          {{ formatCount(data.contacts?.length) }}
+          {{ pluralize("contact", data.contacts?.length) }}
+        </h3>
+        <cds-accordion
+          v-for="contact in sortedContacts"
+          :key="contact.contactCode"
+          :id="`contact-${contact.contactCode}`"
+        >
+          <cds-accordion-item size="lg" class="grouping-13">
+            <div slot="title" class="flex-column-0_25rem">
+              <span class="label-with-icon">
+                <User20 />
+                {{ contact.contactCode }} - {{ contact.contactName }}
+              </span>
+              <span
+                :id="`contact-${contact.contactCode}-title-locations`"
+                class="hide-open body-compact-01 padding-left-1_625rem"
+              >
+                {{ associatedLocationsRecord[contact.contactCode] }}
+              </span>
+            </div>
+            <contact-view
+              :data="contact"
+              :associatedLocationsString="associatedLocationsRecord[contact.contactCode]"
+            />
+          </cds-accordion-item>
+        </cds-accordion>
+      </div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden></div>
       <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden></div>
     </div>
