@@ -10,13 +10,16 @@ const indexString = props.data.clientLocnCode;
 </script>
 
 <template>
-  <div class="flex-column-1_5rem margin-left-1_75rem">
+  <div
+    :id="`contact-${indexString}-general-section`"
+    class="flex-column-1_5rem margin-left-1_75rem"
+  >
     <read-only-component label="Contact type" :id="`contact-${indexString}-contactType`">
       <span class="body-compact-01">{{ data.contactTypeDesc }}</span>
     </read-only-component>
     <read-only-component
-      label="Associated location"
-      :id="`contact-${indexString}-associatedLocation`"
+      label="Associated locations"
+      :id="`contact-${indexString}-associatedLocations`"
     >
       <span class="body-compact-01">{{ associatedLocationsString }}</span>
     </read-only-component>
