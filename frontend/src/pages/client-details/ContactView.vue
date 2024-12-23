@@ -20,7 +20,11 @@ const indexString = props.data.clientLocnCode;
     >
       <span class="body-compact-01">{{ associatedLocationsString }}</span>
     </read-only-component>
-    <read-only-component label="Email address" :id="`contact-${indexString}-emailAddress`">
+    <read-only-component
+      label="Email address"
+      :id="`contact-${indexString}-emailAddress`"
+      v-if="data.emailAddress"
+    >
       <a :href="`mailto:${data.emailAddress}`">
         <span class="body-compact-01 colorless">{{ data.emailAddress }}</span>
       </a>
