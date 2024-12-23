@@ -9,9 +9,11 @@ import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/tabs/index";
 import "@carbon/web-components/es/components/tag/index";
 import "@carbon/web-components/es/components/accordion/index";
+import user from "@carbon/pictograms/es/user";
 
 // Composables
 import { useFetchTo } from "@/composables/useFetch";
+import useSvg from "@/composables/useSvg";
 import { useRouter } from "vue-router";
 
 import Location16 from "@carbon/icons-vue/es/location/16";
@@ -23,6 +25,7 @@ import Location20 from "@carbon/icons-vue/es/location/20";
 import User20 from "@carbon/icons-vue/es/user/20";
 
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
 import type { ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
 
@@ -36,6 +39,10 @@ const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id;
 
 const data = ref<ClientDetails>(undefined);
+
+const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"].some((authority) =>
+  ForestClientUserSession.authorities.includes(authority),
+);
 
 const { error: fetchError } = useFetchTo(`/api/clients/details/${clientNumber}`, data);
 
@@ -111,6 +118,8 @@ const associatedLocationsRecord = computed(() => {
   });
   return result;
 });
+
+const userSvg = useSvg(user);
 </script>
 
 <template>
@@ -250,34 +259,42 @@ const associatedLocationsRecord = computed(() => {
         </cds-accordion>
       </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
-        <h3 class="padding-left-1rem">
-          {{ formatCount(data.contacts?.length) }}
-          {{ pluralize("contact", data.contacts?.length) }}
-        </h3>
-        <cds-accordion
-          v-for="contact in sortedContacts"
-          :key="contact.contactCode"
-          :id="`contact-${contact.contactCode}`"
-        >
-          <cds-accordion-item size="lg" class="grouping-13">
-            <div slot="title" class="flex-column-0_25rem">
-              <span class="label-with-icon">
-                <User20 />
-                {{ contact.contactCode }} - {{ contact.contactName }}
-              </span>
-              <span
-                :id="`contact-${contact.contactCode}-title-locations`"
-                class="hide-open body-compact-01 padding-left-1_625rem"
-              >
-                {{ associatedLocationsRecord[contact.contactCode] }}
-              </span>
-            </div>
-            <contact-view
-              :data="contact"
-              :associatedLocationsString="associatedLocationsRecord[contact.contactCode]"
-            />
-          </cds-accordion-item>
-        </cds-accordion>
+        <template v-if="data.contacts?.length">
+          <h3 class="padding-left-1rem">
+            {{ formatCount(data.contacts?.length) }}
+            {{ pluralize("contact", data.contacts?.length) }}
+          </h3>
+          <cds-accordion
+            v-for="contact in sortedContacts"
+            :key="contact.contactCode"
+            :id="`contact-${contact.contactCode}`"
+          >
+            <cds-accordion-item size="lg" class="grouping-13">
+              <div slot="title" class="flex-column-0_25rem">
+                <span class="label-with-icon">
+                  <User20 />
+                  {{ contact.contactCode }} - {{ contact.contactName }}
+                </span>
+                <span
+                  :id="`contact-${contact.contactCode}-title-locations`"
+                  class="hide-open body-compact-01 padding-left-1_625rem"
+                >
+                  {{ associatedLocationsRecord[contact.contactCode] }}
+                </span>
+              </div>
+              <contact-view
+                :data="contact"
+                :associatedLocationsString="associatedLocationsRecord[contact.contactCode]"
+              />
+            </cds-accordion-item>
+          </cds-accordion>
+        </template>
+        <div class="empty-table-list" v-else>
+          <user-svg alt="User pictogram" class="standard-svg" />
+          <p class="heading-02">Nothing to show yet!</p>
+          <p class="body-compact-01" v-if="userHasAuthority">Click “Add contact” button to start</p>
+          <p class="body-compact-01" v-else>No contacts have been added to this client account</p>
+        </div>
       </div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden></div>
       <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden></div>
