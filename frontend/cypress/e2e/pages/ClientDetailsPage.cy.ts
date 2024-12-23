@@ -98,6 +98,7 @@ describe("Client Details Page", () => {
         before(() => {
           cy.visit("/clients/details/g");
         });
+
         it("displays the number of locations", () => {
           cy.get("#panel-locations").contains("03 locations");
         });
@@ -141,40 +142,132 @@ describe("Client Details Page", () => {
       });
     });
 
-    it("hides the address on the accordion's title when it's expanded", () => {
-      cy.visit("/clients/details/g");
+    describe("regular, isolated tests", () => {
+      beforeEach(() => {
+        cy.visit("/clients/details/g");
+      });
 
-      // Clicks to expand the accordion
-      cy.get("#location-00 [slot='title']").click();
+      it("hides the address on the accordion's title when it's expanded", () => {
+        cy.visit("/clients/details/g");
 
-      cy.get("#location-00-title-address").should("not.be.visible");
+        // Clicks to expand the accordion
+        cy.get("#location-00 [slot='title']").click();
+
+        cy.get("#location-00-title-address").should("not.be.visible");
+      });
+
+      it("keeps accordions' states while tabs are switched", () => {
+        cy.visit("/clients/details/g");
+
+        // Expand first and third locations, leave second one collapsed
+        cy.get("#location-00 [slot='title']").click();
+        cy.get("#location-02 [slot='title']").click();
+
+        // Switch to tab another tab (Contacts)
+        cy.get("#tab-contacts").click();
+
+        // Make sure the current tab panel was effectively switched
+        cy.get("#panel-locations").should("have.attr", "hidden");
+        cy.get("#panel-contacts").should("not.have.attr", "hidden");
+
+        // Switch back to tab Locations
+        cy.get("#tab-locations").click();
+
+        // First location is still open
+        cy.get("#location-00 cds-accordion-item").should("have.attr", "open");
+
+        // Second location is still closed
+        cy.get("#location-01 cds-accordion-item").should("not.have.attr", "open");
+
+        // Third location is still open
+        cy.get("#location-02 cds-accordion-item").should("have.attr", "open");
+      });
+    });
+  });
+
+  describe("contacts tab", () => {
+    describe("non-user action tests", { testIsolation: false }, () => {
+      before(() => {
+        cy.visit("/clients/details/g");
+        // Switch to tab another tab (Contacts)
+        cy.get("#tab-contacts").click();
+
+        // Make sure the current tab panel was effectively switched
+        cy.get("#panel-locations").should("have.attr", "hidden");
+        cy.get("#panel-contacts").should("not.have.attr", "hidden");
+      });
+
+      it("displays the number of contacts", () => {
+        cy.get("#panel-contacts").contains("03 contacts");
+      });
+
+      it("displays one collapsed accordion component for each contact", () => {
+        cy.get("#panel-contacts").within(() => {
+          // There are 3 accordions
+          cy.get("cds-accordion").should("have.length", 3);
+
+          // All accordions are initially collapsed
+          cy.get("cds-accordion cds-accordion-item").each(($el) => {
+            expect($el).not.to.have.attr("open");
+          });
+        });
+      });
+
+      it("displays the contact name on the accordion's title", () => {
+        cy.get("#contact-00 [slot='title']").contains("Cheryl Bibby");
+        cy.get("#contact-01 [slot='title']").contains("Edward Burns");
+        cy.get("#contact-02 [slot='title']").contains("Christoffer Stewart");
+      });
+
+      it("displays the associated locations on the accordion's title while it's collapsed", () => {
+        cy.get("#contact-00-title-locations").should("be.visible");
+        cy.get("#contact-01-title-locations").should("be.visible");
+        cy.get("#contact-02-title-locations").should("be.visible");
+      });
     });
 
-    it("keeps accordions' states while tabs are switched", () => {
-      cy.visit("/clients/details/g");
+    describe("regular, isolated tests", () => {
+      beforeEach(() => {
+        cy.visit("/clients/details/g");
+        // Switch to tab another tab (Contacts)
+        cy.get("#tab-contacts").click();
 
-      // Expand first and third locations, leave second one collapsed
-      cy.get("#location-00 [slot='title']").click();
-      cy.get("#location-02 [slot='title']").click();
+        // Make sure the current tab panel was effectively switched
+        cy.get("#panel-locations").should("have.attr", "hidden");
+        cy.get("#panel-contacts").should("not.have.attr", "hidden");
+      });
 
-      // Switch to tab another tab (Contacts)
-      cy.get("#tab-contacts").click();
+      it("hides the associated locations on the accordion's title when it's expanded", () => {
+        // Clicks to expand the accordion
+        cy.get("#contact-00 [slot='title']").click();
 
-      // Make sure the current tab panel was effectively switched
-      cy.get("#panel-locations").should("have.attr", "hidden");
-      cy.get("#panel-contacts").should("not.have.attr", "hidden");
+        cy.get("#contact-00-title-locations").should("not.be.visible");
+      });
 
-      // Switch back to tab Locations
-      cy.get("#tab-locations").click();
+      it("keeps accordions' states while tabs are switched", () => {
+        // Expand first and third contacts, leave second one collapsed
+        cy.get("#contact-00 [slot='title']").click();
+        cy.get("#contact-02 [slot='title']").click();
 
-      // First location is still open
-      cy.get("#location-00 cds-accordion-item").should("have.attr", "open");
+        // Switch to tab another tab (Locations)
+        cy.get("#tab-locations").click();
 
-      // Second location is still closed
-      cy.get("#location-01 cds-accordion-item").should("not.have.attr", "open");
+        // Make sure the current tab panel was effectively switched
+        cy.get("#panel-contacts").should("have.attr", "hidden");
+        cy.get("#panel-locations").should("not.have.attr", "hidden");
 
-      // Third location is still open
-      cy.get("#location-02 cds-accordion-item").should("have.attr", "open");
+        // Switch back to tab Contacts
+        cy.get("#tab-contacts").click();
+
+        // First contact is still open
+        cy.get("#contact-00 cds-accordion-item").should("have.attr", "open");
+
+        // Second contact is still closed
+        cy.get("#contact-01 cds-accordion-item").should("not.have.attr", "open");
+
+        // Third contact is still open
+        cy.get("#contact-02 cds-accordion-item").should("have.attr", "open");
+      });
     });
   });
 });

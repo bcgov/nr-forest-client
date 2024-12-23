@@ -33,6 +33,17 @@
             "secondaryPhone": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
             "faxNumber": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
             "emailAddress": "burns@ktb.com"
+        },
+        {
+            "clientLocnCode": ["02"],
+            "contactCode": "02",
+            "contactName": "Christoffer Stewart",
+            "contactTypeCode": "BL",
+            "contactTypeDesc": "Billing",
+            "businessPhone": "",
+            "secondaryPhone": "",
+            "faxNumber": "",
+            "emailAddress": ""
         }
     ],
     "addresses": [
