@@ -41,7 +41,6 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
   void testGetClientDetailsWithGoodStandingIndicator() {
     String clientNumber = "123456";
     String corpRegnNmbr = "9607514";
-    List<String> groups = List.of("CLIENT_ADMIN");
 
     ForestClientDetailsDto initialDto = new ForestClientDetailsDto(
         clientNumber, 
@@ -153,7 +152,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         null);
 
     Mockito
-      .when(legacyService.searchByClientNumber(clientNumber, groups))
+      .when(legacyService.searchByClientNumber(clientNumber))
       .thenReturn(Mono.just(initialDto));
 
     Mockito
@@ -162,7 +161,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
       .thenReturn(Flux.just(mockDocumentDto));
 
     service
-      .getClientDetailsByClientNumber(clientNumber, groups)
+      .getClientDetailsByClientNumber(clientNumber)
       .as(StepVerifier::create)
       .expectNext(expectedDto)
       .verifyComplete();

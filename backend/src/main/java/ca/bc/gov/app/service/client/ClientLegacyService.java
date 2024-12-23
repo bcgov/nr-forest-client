@@ -23,14 +23,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * This class is responsible for interacting with the legacy API to fetch client data. 
- * It uses the WebClient to send HTTP requests to the legacy API and converts the responses 
- * into Flux of ForestClientDto objects. It provides several methods to search for clients 
- * in the legacy system using different search criteria.
- * 
- * <p>It is annotated with @Slf4j for logging, @Service to indicate that it's a 
+ * This class is responsible for interacting with the legacy API to fetch client data. It uses the
+ * WebClient to send HTTP requests to the legacy API and converts the responses into Flux of
+ * ForestClientDto objects. It provides several methods to search for clients in the legacy system
+ * using different search criteria.
+ *
+ * <p>It is annotated with @Slf4j for logging, @Service to indicate that it's a
  * Spring service bean, and @Observed for metrics.
- * 
+ *
  * <p>Each method logs the search parameters and the results for debugging purposes.
  */
 @Slf4j
@@ -93,30 +93,20 @@ public class ClientLegacyService {
   /**
    * Searches for client details by client number using the legacy API.
    *
-   * <p>This method communicates with the legacy API to retrieve client information based on the 
-   * provided client number. Optionally, a list of groups can be specified to refine the search 
+   * <p>This method communicates with the legacy API to retrieve client information based on the
+   * provided client number. Optionally, a list of groups can be specified to refine the search
    * criteria. If a matching record is found, it is returned as a {@link ForestClientDetailsDto}.
    *
    * @param clientNumber the client number to search for
-   * @param groups a list of groups to filter the search (optional)
    * @return a {@link Mono} emitting the {@link ForestClientDetailsDto} if the client is found
    */
-  public Mono<ForestClientDetailsDto> searchByClientNumber(
-      String clientNumber,
-      List<String> groups
-  ) {
+  public Mono<ForestClientDetailsDto> searchByClientNumber(String clientNumber) {
     log.info("Searching for client number {} in legacy", clientNumber);
 
     return
         legacyApi
             .get()
-            .uri(builder ->
-                builder
-                    .path("/api/search/clientNumber")
-                    .queryParam("clientNumber", clientNumber)
-                    .queryParam("groups", groups)
-                    .build(Map.of())
-            )
+            .uri("/api/search/clientNumber/{clientNumber}", clientNumber)
             .exchangeToMono(response -> response.bodyToMono(ForestClientDetailsDto.class))
             .doOnNext(
                 dto -> log.info(
@@ -124,7 +114,7 @@ public class ClientLegacyService {
                     dto.clientNumber())
             );
   }
-  
+
   /**
    * This method is used to search for a client in the legacy system using the client's ID and last
    * name.
@@ -206,7 +196,7 @@ public class ClientLegacyService {
             // Convert the response to a Flux of ForestClientDto objects
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
             // Log the results for debugging purposes
-            .doOnNext(dto -> 
+            .doOnNext(dto ->
                 log.info(
                     "Found data for first {} and last name {} in legacy with client number {}",
                     firstName, lastName, dto.clientNumber()
@@ -290,11 +280,11 @@ public class ClientLegacyService {
 
     if (
         StringUtils.isBlank(searchType)
-            || parameters == null
-            || parameters.isEmpty()
-            || parameters.values().stream().anyMatch(CollectionUtils::isEmpty)
-            || parameters.values().stream().flatMap(List::stream).anyMatch(StringUtils::isBlank)
-            || parameters.keySet().stream().anyMatch(StringUtils::isBlank)
+        || parameters == null
+        || parameters.isEmpty()
+        || parameters.values().stream().anyMatch(CollectionUtils::isEmpty)
+        || parameters.values().stream().flatMap(List::stream).anyMatch(StringUtils::isBlank)
+        || parameters.keySet().stream().anyMatch(StringUtils::isBlank)
     ) {
       return Flux.empty();
     }
@@ -323,6 +313,12 @@ public class ClientLegacyService {
 
   }
 
+  /**
+   * Searches for clients in the legacy system based on the provided address details.
+   *
+   * @param dto The address search criteria.
+   * @return A Flux of ForestClientDto objects that match the search criteria.
+   */
   public Flux<ForestClientDto> searchLocation(AddressSearchDto dto) {
     return
         legacyApi
@@ -336,6 +332,12 @@ public class ClientLegacyService {
             );
   }
 
+  /**
+   * Searches for clients in the legacy system based on the provided contact details.
+   *
+   * @param dto The contact search criteria.
+   * @return A Flux of ForestClientDto objects that match the search criteria.
+   */
   public Flux<ForestClientDto> searchContact(ContactSearchDto dto) {
     return
         legacyApi
@@ -348,19 +350,28 @@ public class ClientLegacyService {
                     client.clientNumber())
             );
   }
-  
+
+  /**
+   * Searches for clients in the legacy system based on the provided keyword, page, and size.
+   *
+   * @param page    The page number to retrieve.
+   * @param size    The number of records per page.
+   * @param keyword The keyword to search for.
+   * @return A Flux of pairs containing ClientListDto objects and the total count of matching
+   * records.
+   */
   public Flux<Pair<ClientListDto, Long>> search(int page, int size, String keyword) {
     log.info(
-        "Searching clients by keyword {} with page {} and size {}", 
-        keyword, 
-        page, 
+        "Searching clients by keyword {} with page {} and size {}",
+        keyword,
+        page,
         size
     );
 
     return legacyApi
         .get()
-        .uri(builder -> 
-              builder
+        .uri(builder ->
+            builder
                 .path("/api/search")
                 .queryParam("page", page)
                 .queryParam("size", size)

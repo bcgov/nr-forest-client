@@ -50,6 +50,7 @@ import reactor.core.publisher.Mono;
 @Observed
 public class BcRegistryService {
 
+  public static final String REQUEST_BCREGISTRY = "request.bcregistry";
   private final WebClient bcRegistryApi;
   private final ObservationRegistry registry;
 
@@ -72,14 +73,15 @@ public class BcRegistryService {
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
   public Flux<BcRegistryFacetSearchResultEntryDto> searchByFacets(String name, String identifier) {
-    log.info("Searching BC Registry for {}", name);
+    log.info("Searching BC Registry for {}", Objects.toString(name, identifier));
     return
         bcRegistryApi
             .post()
             .uri("/registry-search/api/v2/search/businesses")
             .body(BodyInserters.fromValue(
                     new BcRegistryFacetRequestBodyDto(
-                        new BcRegistryFacetRequestQueryDto(Objects.toString(name,identifier), name, identifier),
+                        new BcRegistryFacetRequestQueryDto(Objects.toString(name, identifier), name,
+                            identifier),
                         Map.of("status", List.of("ACTIVE")),
                         100,
                         0
@@ -112,14 +114,15 @@ public class BcRegistryService {
                     )
             )
             .bodyToMono(BcRegistryFacetResponseDto.class)
-            .name("request.bcregistry")
+            .name(REQUEST_BCREGISTRY)
             .tag("kind", "facet")
             .tap(Micrometer.observation(registry))
             .map(BcRegistryFacetResponseDto::searchResults)
             .flatMapIterable(BcRegistryFacetSearchResultsDto::results)
             .filter(entry -> entry.status().equalsIgnoreCase("active"))
             .doOnNext(
-                content -> log.info("Found entry on BC Registry [{}] {}", content.identifier(),
+                content -> log.info("Found entry on BC Registry [{}] {}",
+                    content.identifier(),
                     content.name()));
   }
 
@@ -161,7 +164,8 @@ public class BcRegistryService {
                         .bodyToMono(BcRegistryExceptionMessageDto.class)
                         .map(BcRegistryExceptionMessageDto::rootCause)
                         .doOnNext(
-                            message -> log.error("Error while requesting data for {} -- {}", value,
+                            message -> log.error("Error while requesting data for {} -- {}",
+                                value,
                                 message))
                         .filter(message -> message.contains("not found"))
                         .switchIfEmpty(Mono.error(new InvalidAccessTokenException()))
@@ -181,7 +185,7 @@ public class BcRegistryService {
                     )
             )
             .bodyToMono(BcRegistryDocumentRequestResponseDto.class)
-            .name("request.bcregistry")
+            .name(REQUEST_BCREGISTRY)
             .tag("kind", "docreq")
             .tap(Micrometer.observation(registry))
             .flatMapIterable(BcRegistryDocumentRequestResponseDto::documents)
@@ -218,7 +222,7 @@ public class BcRegistryService {
                 exception -> Mono.error(new InvalidAccessTokenException())
             )
             .bodyToMono(BcRegistryDocumentDto.class)
-            .name("request.bcregistry")
+            .name(REQUEST_BCREGISTRY)
             .tag("kind", "docget")
             .tap(Micrometer.observation(registry))
             .doOnNext(

@@ -2,22 +2,14 @@ package ca.bc.gov.app.controller.filters;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
-import io.micrometer.context.ContextRegistry;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
-import reactor.core.publisher.Mono;
-import reactor.util.context.Context;
 
 
 /**
@@ -30,59 +22,17 @@ import reactor.util.context.Context;
 @Component
 @Slf4j
 @Order(-1)
-public class UserIdWebFilter implements WebFilter {
+public class UserIdWebFilter extends ContextPropagatorWebFilter {
 
   /**
-   * Filters each incoming request to extract the user ID from the security context and set it in
-   * the MDC. The user ID is then propagated down the filter chain and set in the reactive context
-   * to ensure it is available for logging and tracing in both reactive and non-reactive parts of
-   * the application.
+   * Retrieves the context key for the user ID. This key is used to store the user ID in the MDC
+   * (Mapped Diagnostic Context).
    *
-   * @param exchange The current server web exchange that contains information about the request and
-   *                 response.
-   * @param chain    The web filter chain that allows the filter to pass on the request to the next
-   *                 entity in the chain.
-   * @return A Mono<Void> that indicates when request handling is complete.
+   * @return The context key for the user ID.
    */
   @Override
-  public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-    // This is to be able to tackle non-reactive context
-    contextLoad();
-
-    return
-        // Here we are getting the user id from the security context
-        ReactiveSecurityContextHolder
-            .getContext()
-            .map(SecurityContext::getAuthentication)
-            .map(this::extractUserId)
-            // Then we set it to the MDC
-            .doOnNext(userId -> MDC.put(ApplicationConstant.MDC_USERID, userId))
-            // Then we chain the filter, passing the context down
-            .flatMap(userId -> chain
-                .filter(exchange)
-                .contextWrite(Context.of(ApplicationConstant.MDC_USERID, userId))
-                // While we are at it, we also set the context for the reactive part
-                .doOnNext(v -> contextLoad())
-            );
-  }
-
-  /**
-   * Initializes and registers a thread-local context for the current thread. This method configures
-   * the {@link ContextRegistry} to handle the user ID within the MDC (Mapped Diagnostic Context),
-   * allowing for the propagation of the user ID across different parts of the application that run
-   * on the same thread. It specifically sets up accessors for getting, setting, and removing the
-   * user ID from the MDC. This setup is crucial for maintaining state across the reactive and
-   * non-reactive parts of the application.
-   */
-  private void contextLoad() {
-    ContextRegistry
-        .getInstance()
-        .registerThreadLocalAccessor(
-            ApplicationConstant.MDC_USERID,
-            () -> MDC.get(ApplicationConstant.MDC_USERID),
-            userId -> MDC.put(ApplicationConstant.MDC_USERID, userId),
-            () -> MDC.remove(ApplicationConstant.MDC_USERID)
-        );
+  protected String getContextKey() {
+    return ApplicationConstant.MDC_USERID;
   }
 
   /**
@@ -93,27 +43,29 @@ public class UserIdWebFilter implements WebFilter {
    * If the authentication object is null, not authenticated, or the principal type is not
    * supported, "no-user-id-found" is returned.
    *
-   * @param authentication The authentication object from which to extract the user ID.
    * @return The extracted user ID in the format "Provider\\UserID" or the username, or
    * "no-user-id-found" if it cannot be extracted.
    */
-  private String extractUserId(Authentication authentication) {
-    if (authentication != null && authentication.isAuthenticated()) {
-      Object principal = authentication.getPrincipal();
+  @Override
+  protected Function<Authentication, String> getContextValueExtractor() {
+    return authentication -> {
+      if (authentication != null && authentication.isAuthenticated()) {
+        Object principal = authentication.getPrincipal();
 
-      if (principal instanceof JwtAuthenticationToken jwt) {
-        return JwtPrincipalUtil.getUserId(jwt);
-      }
+        if (principal instanceof JwtAuthenticationToken jwt) {
+          return JwtPrincipalUtil.getUserId(jwt);
+        }
 
-      if (principal instanceof Jwt jwt) {
-        return JwtPrincipalUtil.getUserId(jwt);
-      }
+        if (principal instanceof Jwt jwt) {
+          return JwtPrincipalUtil.getUserId(jwt);
+        }
 
-      if (principal instanceof UserDetails userDetails) {
-        return userDetails.getUsername();
+        if (principal instanceof UserDetails userDetails) {
+          return userDetails.getUsername();
+        }
       }
-    }
-    return "no-user-id-found";
+      return "no-user-id-found";
+    };
   }
 
 }
