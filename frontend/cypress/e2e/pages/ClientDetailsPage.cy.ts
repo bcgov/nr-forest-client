@@ -189,6 +189,7 @@ describe("Client Details Page", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
       before(() => {
         cy.visit("/clients/details/g");
+
         // Switch to tab another tab (Contacts)
         cy.get("#tab-contacts").click();
 
@@ -229,6 +230,7 @@ describe("Client Details Page", () => {
     describe("regular, isolated tests", () => {
       beforeEach(() => {
         cy.visit("/clients/details/g");
+
         // Switch to tab another tab (Contacts)
         cy.get("#tab-contacts").click();
 

@@ -9,12 +9,9 @@ describe("<contact-view />", () => {
       contactName: "Cheryl Bibby",
       contactTypeCode: "BL",
       contactTypeDesc: "Billing",
-      businessPhone:
-        "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
-      secondaryPhone:
-        "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
-      faxNumber:
-        "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+      businessPhone: "(250) 286-3767",
+      secondaryPhone: "(250) 555-3700",
+      faxNumber: "(250) 286-3768",
       emailAddress: "cheryl@ktb.com",
     } as ClientContact,
     associatedLocationsString: "00 - Mailing address",
