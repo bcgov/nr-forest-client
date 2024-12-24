@@ -221,45 +221,47 @@ const userSvg = useSvg(user);
         </cds-tabs>
       </div>
     </div>
-    <div class="tab-panel" v-if="data">
+    <div class="tab-panels-container" v-if="data">
       <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
-        <h3 class="padding-left-1rem">
-          {{ formatCount(data.addresses?.length) }}
-          {{ pluralize("location", data.addresses?.length) }}
-        </h3>
-        <cds-accordion
-          v-for="(location, index) in sortedLocations"
-          :key="location.clientLocnCode"
-          :id="`location-${location.clientLocnCode}`"
-        >
-          <cds-accordion-item size="lg" class="grouping-13">
-            <div slot="title" class="flex-column-0_25rem">
-              <span class="label-with-icon">
-                <LocationStar20 v-if="index === 0" />
-                <Location20 v-else />
-                {{ location.clientLocnCode }} - {{ location.clientLocnName }}
-                <cds-tag
-                  :id="`location-${location.clientLocnCode}-deactivated`"
-                  v-if="location.locnExpiredInd === 'Y'"
-                  type="purple"
-                  title=""
+        <div class="tab-panel tab-panel--populated">
+          <h3 class="padding-left-1rem">
+            {{ formatCount(data.addresses?.length) }}
+            {{ pluralize("location", data.addresses?.length) }}
+          </h3>
+          <cds-accordion
+            v-for="(location, index) in sortedLocations"
+            :key="location.clientLocnCode"
+            :id="`location-${location.clientLocnCode}`"
+          >
+            <cds-accordion-item size="lg" class="grouping-13">
+              <div slot="title" class="flex-column-0_25rem">
+                <span class="label-with-icon">
+                  <LocationStar20 v-if="index === 0" />
+                  <Location20 v-else />
+                  {{ location.clientLocnCode }} - {{ location.clientLocnName }}
+                  <cds-tag
+                    :id="`location-${location.clientLocnCode}-deactivated`"
+                    v-if="location.locnExpiredInd === 'Y'"
+                    type="purple"
+                    title=""
+                  >
+                    <span>Deactivated</span>
+                  </cds-tag>
+                </span>
+                <span
+                  :id="`location-${location.clientLocnCode}-title-address`"
+                  class="hide-open body-compact-01 padding-left-1_625rem"
                 >
-                  <span>Deactivated</span>
-                </cds-tag>
-              </span>
-              <span
-                :id="`location-${location.clientLocnCode}-title-address`"
-                class="hide-open body-compact-01 padding-left-1_625rem"
-              >
-                {{ formatAddress(location) }}
-              </span>
-            </div>
-            <location-view :data="location" />
-          </cds-accordion-item>
-        </cds-accordion>
+                  {{ formatAddress(location) }}
+                </span>
+              </div>
+              <location-view :data="location" />
+            </cds-accordion-item>
+          </cds-accordion>
+        </div>
       </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
-        <template v-if="data.contacts?.length">
+        <div class="tab-panel tab-panel--populated" v-if="data.contacts?.length">
           <h3 class="padding-left-1rem">
             {{ formatCount(data.contacts?.length) }}
             {{ pluralize("contact", data.contacts?.length) }}
@@ -288,12 +290,16 @@ const userSvg = useSvg(user);
               />
             </cds-accordion-item>
           </cds-accordion>
-        </template>
-        <div class="empty-table-list" v-else>
-          <user-svg alt="User pictogram" class="standard-svg" />
-          <p class="heading-02">Nothing to show yet!</p>
-          <p class="body-compact-01" v-if="userHasAuthority">Click “Add contact” button to start</p>
-          <p class="body-compact-01" v-else>No contacts have been added to this client account</p>
+        </div>
+        <div class="tab-panel tab-panel--empty" v-else>
+          <div class="empty-table-list">
+            <user-svg alt="User pictogram" class="standard-svg" />
+            <p class="heading-02">Nothing to show yet!</p>
+            <p class="body-compact-01" v-if="userHasAuthority">
+              Click “Add contact” button to start
+            </p>
+            <p class="body-compact-01" v-else>No contacts have been added to this client account</p>
+          </div>
         </div>
       </div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden></div>
