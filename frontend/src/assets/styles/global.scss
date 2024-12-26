@@ -1830,6 +1830,11 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
 
     .empty-table-list {
       height: 100%;
+
+      svg {
+        height: 3rem;
+        width: 3rem;
+      }
     }
   }
 }
