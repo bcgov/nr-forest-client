@@ -1,13 +1,28 @@
 describe("Client Details Page", () => {
-  beforeEach(() => {
+  const getTestRole = (ctx: Mocha.Context) => {
+    const titlePath = ctx.currentTest.titlePath();
+    for (const title of titlePath.reverse()) {
+      if (!title.includes("role:")) continue;
+
+      const suffix = title.split("role:")[1];
+      const words = suffix.replace(/[^\w\s]/g, "").split(/\s+/);
+      const role = words[0];
+
+      return role;
+    }
+    return undefined;
+  };
+
+  beforeEach(function () {
     cy.location().then((location) => {
       if (location.pathname === "blank") {
         cy.visit("/");
 
+        const role = getTestRole(this) || "CLIENT_VIEWER";
         cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
           given_name: "James",
           family_name: "Baxter",
-          "cognito:groups": ["CLIENT_VIEWER"],
+          "cognito:groups": [role],
         });
       }
     });
@@ -228,47 +243,83 @@ describe("Client Details Page", () => {
     });
 
     describe("regular, isolated tests", () => {
-      beforeEach(() => {
-        cy.visit("/clients/details/g");
+      describe("3 contacts", () => {
+        beforeEach(() => {
+          cy.visit("/clients/details/g");
 
-        // Switch to tab another tab (Contacts)
-        cy.get("#tab-contacts").click();
+          // Switch to tab another tab (Contacts)
+          cy.get("#tab-contacts").click();
 
-        // Make sure the current tab panel was effectively switched
-        cy.get("#panel-locations").should("have.attr", "hidden");
-        cy.get("#panel-contacts").should("not.have.attr", "hidden");
+          // Make sure the current tab panel was effectively switched
+          cy.get("#panel-locations").should("have.attr", "hidden");
+          cy.get("#panel-contacts").should("not.have.attr", "hidden");
+        });
+
+        it("hides the associated locations on the accordion's title when it's expanded", () => {
+          // Clicks to expand the accordion
+          cy.get("#contact-00 [slot='title']").click();
+          cy.get("#contact-00-title-locations").should("not.be.visible");
+        });
+
+        it("keeps accordions' states while tabs are switched", () => {
+          // Expand first and third contacts, leave second one collapsed
+          cy.get("#contact-00 [slot='title']").click();
+          cy.get("#contact-02 [slot='title']").click();
+          // Switch to tab another tab (Locations)
+          cy.get("#tab-locations").click();
+          // Make sure the current tab panel was effectively switched
+          cy.get("#panel-contacts").should("have.attr", "hidden");
+          cy.get("#panel-locations").should("not.have.attr", "hidden");
+          // Switch back to tab Contacts
+          cy.get("#tab-contacts").click();
+          // First contact is still open
+          cy.get("#contact-00 cds-accordion-item").should("have.attr", "open");
+          // Second contact is still closed
+          cy.get("#contact-01 cds-accordion-item").should("not.have.attr", "open");
+          // Third contact is still open
+          cy.get("#contact-02 cds-accordion-item").should("have.attr", "open");
+        });
       });
+      describe("no contacts", () => {
+        beforeEach(() => {
+          cy.visit("/clients/details/gd");
 
-      it("hides the associated locations on the accordion's title when it's expanded", () => {
-        // Clicks to expand the accordion
-        cy.get("#contact-00 [slot='title']").click();
+          // Switch to tab another tab (Contacts)
+          cy.get("#tab-contacts").click();
 
-        cy.get("#contact-00-title-locations").should("not.be.visible");
-      });
+          // Make sure the current tab panel was effectively switched
+          cy.get("#panel-locations").should("have.attr", "hidden");
+          cy.get("#panel-contacts").should("not.have.attr", "hidden");
+        });
 
-      it("keeps accordions' states while tabs are switched", () => {
-        // Expand first and third contacts, leave second one collapsed
-        cy.get("#contact-00 [slot='title']").click();
-        cy.get("#contact-02 [slot='title']").click();
+        it("displays the empty view", () => {
+          cy.contains("#panel-contacts", "Nothing to show yet!");
+        });
 
-        // Switch to tab another tab (Locations)
-        cy.get("#tab-locations").click();
+        const addContactText = "Click “Add contact” button to start";
+        const alternateText = "No contacts have been added to this client account";
 
-        // Make sure the current tab panel was effectively switched
-        cy.get("#panel-contacts").should("have.attr", "hidden");
-        cy.get("#panel-locations").should("not.have.attr", "hidden");
+        describe("when role:CLIENT_VIEWER", () => {
+          it("doesn't display instruction for adding contacts", () => {
+            cy.contains("#panel-contacts", addContactText).should("not.exist");
 
-        // Switch back to tab Contacts
-        cy.get("#tab-contacts").click();
+            // displays the alternate text
+            cy.contains("#panel-contacts", alternateText);
+          });
+        });
 
-        // First contact is still open
-        cy.get("#contact-00 cds-accordion-item").should("have.attr", "open");
+        describe("when user has authority", () => {
+          ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"].forEach((role) => {
+            describe(`role:${role}`, () => {
+              it("displays instruction for adding contacts", () => {
+                cy.contains("#panel-contacts", addContactText);
 
-        // Second contact is still closed
-        cy.get("#contact-01 cds-accordion-item").should("not.have.attr", "open");
-
-        // Third contact is still open
-        cy.get("#contact-02 cds-accordion-item").should("have.attr", "open");
+                // doesn't display the alternate text
+                cy.contains("#panel-contacts", alternateText).should("not.exist");
+              });
+            });
+          });
+        });
       });
     });
   });
