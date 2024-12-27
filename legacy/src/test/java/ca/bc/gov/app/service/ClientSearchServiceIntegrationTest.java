@@ -217,7 +217,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
         );
   }
 
-  private static Stream<Arguments> byContact(){
+  private static Stream<Arguments> byContact() {
     return Stream
         .of(
             Arguments.of(new ContactSearchDto(
