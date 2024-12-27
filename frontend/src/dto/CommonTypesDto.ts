@@ -276,6 +276,23 @@ export interface ClientLocation {
   returnedMailDate: string;
   trustLocationInd: string;
   cliLocnComment: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface ClientContact {
+  clientNumber: string;
+  clientLocnCode: string[];
+  contactCode: string;
+  contactName: string;
+  contactTypeCode: string;
+  contactTypeDesc: string;
+  businessPhone: string;
+  secondaryPhone: string;
+  faxNumber: string;
+  emailAddress: string;
+  createdBy: string;
+  updatedBy: string;
 }
 
 export interface ClientDetails {
@@ -302,4 +319,5 @@ export interface ClientDetails {
   birthdate: string;
   doingBusinessAs: ClientDoingBusinessAs[];
   addresses: ClientLocation[];
+  contacts: ClientContact[];
 }
