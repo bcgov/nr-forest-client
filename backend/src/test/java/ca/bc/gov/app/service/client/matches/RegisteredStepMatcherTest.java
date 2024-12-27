@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-@SuppressWarnings("ALL")
+@SuppressWarnings("unchecked")
 @DisplayName("Unit Test | Registered Step Matcher")
 @Slf4j
 class RegisteredStepMatcherTest {
