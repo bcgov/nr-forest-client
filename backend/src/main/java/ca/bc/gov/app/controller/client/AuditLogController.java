@@ -23,11 +23,11 @@ public class AuditLogController {
   private final ClientLegacyService clientLegacyService;
   
   @GetMapping("/{clientNumber}")
-  public Flux<AuditLogDto> getClientDetailsByIncorporationNumber(
+  public Flux<AuditLogDto> getAuditLogsByClientNumber(
       @PathVariable String clientNumber,
       JwtAuthenticationToken principal
   ) {
-    log.info("\nTest {}", clientNumber);
+    log.info("Getting audit logs by client muber {}", clientNumber);
     return clientLegacyService.retrieveAuditLog(clientNumber);
   }
   
