@@ -199,7 +199,7 @@ export interface AuditLogResult {
   oldValue: string
   newValue: string
   updateTimestamp: string
-  updateUserId: string
+  updateUserid: string
   changeType: string
 }
 

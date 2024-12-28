@@ -1435,6 +1435,15 @@ cds-side-nav-items.lower-side-nav {
   width: calc(100vw - 18.5rem);
 }
 
+.audit-log-content {
+  padding: 2.5rem 0rem 0rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 1 0 0%;
+  width: calc(100vw - 18.5rem);
+}
+
 cds-side-nav::part(
     div cds--side-nav__navigation cds--side-nav cds--side-nav--ux
   ) {
