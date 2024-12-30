@@ -9,7 +9,7 @@ import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/tabs/index";
 import "@carbon/web-components/es/components/tag/index";
 import "@carbon/web-components/es/components/accordion/index";
-import user from "@carbon/pictograms/es/user";
+import summit from "@carbon/pictograms/es/summit";
 import tools from "@carbon/pictograms/es/tools";
 
 // Composables
@@ -132,7 +132,7 @@ const openClientDetails = () => {
   window.open(url, "_blank", "noopener");
 };
 
-const userSvg = useSvg(user);
+const summitSvg = useSvg(summit);
 const toolsSvg = useSvg(tools);
 </script>
 
@@ -307,7 +307,7 @@ const toolsSvg = useSvg(tools);
         </div>
         <div class="tab-panel tab-panel--empty" v-else>
           <div class="empty-table-list">
-            <user-svg alt="User pictogram" class="standard-svg" />
+            <summit-svg alt="Summit pictogram" class="standard-svg" />
             <div class="inner-description">
               <p class="heading-02">Nothing to show yet!</p>
               <p class="body-compact-01" v-if="userHasAuthority">
