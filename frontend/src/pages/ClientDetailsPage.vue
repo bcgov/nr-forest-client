@@ -122,12 +122,12 @@ const associatedLocationsRecord = computed(() => {
   return result;
 });
 
-const openRelatedClients = () => {
+const openRelatedClientsLegacy = () => {
   const url = `https://${greenDomain}/int/client/client04RelatedClientListAction.do?bean.clientNumber=${clientNumber}`;
   window.open(url, "_blank", "noopener");
 };
 
-const openClientDetails = () => {
+const openMaintenanceLegacy = () => {
   const url = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`;
   window.open(url, "_blank", "noopener");
 };
@@ -335,7 +335,7 @@ const toolsSvg = useSvg(tools);
                 id="open-related-clients-btn"
                 kind="tertiary"
                 size="md"
-                @click.prevent="openRelatedClients"
+                @click.prevent="openRelatedClientsLegacy"
               >
                 <span>Open in legacy system</span>
                 <Launch16 slot="icon" />
@@ -344,7 +344,30 @@ const toolsSvg = useSvg(tools);
           </div>
         </div>
       </div>
-      <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden></div>
+      <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden>
+        <div class="tab-panel tab-panel--empty">
+          <div class="empty-table-list">
+            <tools-svg alt="Tools pictogram" class="standard-svg" />
+            <div class="description">
+              <div class="inner-description">
+                <p class="heading-02">Under construction</p>
+                <p class="body-compact-01">
+                  Check this content in the legacy system. It opens in a new tab.
+                </p>
+              </div>
+              <cds-button
+                id="open-maintenance-btn"
+                kind="tertiary"
+                size="md"
+                @click.prevent="openMaintenanceLegacy"
+              >
+                <span>Open in legacy system</span>
+                <Launch16 slot="icon" />
+              </cds-button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
