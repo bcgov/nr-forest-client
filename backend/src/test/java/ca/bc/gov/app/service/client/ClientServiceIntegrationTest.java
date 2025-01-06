@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -41,6 +42,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
   void testGetClientDetailsWithGoodStandingIndicator() {
     String clientNumber = "123456";
     String corpRegnNmbr = "9607514";
+    LocalDateTime date = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
 
     ForestClientDetailsDto initialDto = new ForestClientDetailsDto(
         clientNumber, 
@@ -59,7 +61,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         "MYCO", 
         "678", 
         "Test Client", 
-        LocalDate.now(), 
+        date,
         "Admin", 
         null, 
         null, 
@@ -143,7 +145,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         "MYCO", 
         "678", 
         "Test Client", 
-        LocalDate.now(), 
+        date,
         "Admin", 
         "Y", 
         null, 
