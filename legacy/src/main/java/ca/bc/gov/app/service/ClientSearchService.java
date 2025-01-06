@@ -711,12 +711,12 @@ public class ClientSearchService {
       return Flux.error(new MissingRequiredParameterException("clientNumber"));
     }
 
-    return forestClientRepository.findLocationAuditLogsByClientNumber(clientNumber)
+    return Flux
+        .merge(
+            forestClientRepository.findLocationAuditLogsByClientNumber(clientNumber),
+            forestClientRepository.findClientInformationAuditLogsByClientNumber(clientNumber))
         .switchIfEmpty(Flux.empty())
-        .doOnNext(
-            dto -> log.info("Found client with client number {}",
-                clientNumber)
-        );
+        .doOnNext(dto -> log.info("Found client with client number {}", clientNumber));
   }
 
 }

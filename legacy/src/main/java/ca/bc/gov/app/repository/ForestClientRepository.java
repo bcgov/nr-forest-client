@@ -493,5 +493,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       ORDER BY UPDATE_TIMESTAMP DESC
       """)
   Flux<AuditLogDto> findLocationAuditLogsByClientNumber(String clientNumber);
+
+  Flux<AuditLogDto> findClientInformationAuditLogsByClientNumber(String clientNumber);
   
 }
