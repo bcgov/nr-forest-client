@@ -22,6 +22,11 @@ public interface ForestClientContactMapper extends
       source = "cellPhone",
       target = "secondaryPhone"
   )
+  @Mapping(
+      source = "clientLocnCode",
+      target = "locationCode",
+      qualifiedByName = "AddToListQualifier"
+  )
   ForestClientContactDto toDto(ForestClientContactEntity entity);
 
   @Override

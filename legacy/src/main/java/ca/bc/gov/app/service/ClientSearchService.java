@@ -25,6 +25,7 @@ import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -597,6 +598,26 @@ public class ClientSearchService {
                 .findAllByClientNumber(clientNumber)
                 .map(contactMapper::toDto)
                 .collectList()
+                // sometimes we will have duplicated contacts with different locationCode values. We need to remove duplicates and merge the contents of the locationCode field
+                .map(contacts ->
+                    new ArrayList<>(
+                        contacts
+                            .stream()
+                            .collect(
+                                Collectors.toMap(
+                                    ForestClientContactDto::contactName,
+                                    contact -> contact,
+                                    (contact1, contact2) ->
+                                        contact1.withLocationCode(
+                                            Stream.concat(contact1.locationCode().stream(),
+                                                    contact2.locationCode().stream()).distinct()
+                                                .toList()
+                                        )
+                                )
+                            )
+                            .values()
+                    )
+                )
                 .map(dto::withContacts)
                 .defaultIfEmpty(dto)
         )
@@ -620,7 +641,7 @@ public class ClientSearchService {
    * @param value the predictive search value
    * @param page  the pagination information
    * @return a Flux containing pairs of PredictiveSearchResultDto objects and the total count of
-   *     matching clients
+   * matching clients
    */
   public Flux<Pair<PredictiveSearchResultDto, Long>> complexSearch(String value, Pageable page) {
     // This condition is for predictive search, and we will stop here if no query param is provided
@@ -648,7 +669,7 @@ public class ClientSearchService {
    *
    * @param page the pagination information
    * @return a Flux containing pairs of PredictiveSearchResultDto objects and the total count of
-   *     matching clients
+   * matching clients
    */
   public Flux<Pair<PredictiveSearchResultDto, Long>> latestEntries(Pageable page) {
     return

@@ -2,6 +2,7 @@ package ca.bc.gov.app.mappers;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.InheritInverseConfiguration;
@@ -47,6 +48,11 @@ public interface AbstractForestClientMapper<D, E> {
   @Named("LocalDateDateTimeQualifier")
   default LocalDateTime toLocalDateTime(LocalDate date) {
     return date == null ? null : date.atStartOfDay();
+  }
+
+  @Named("AddToListQualifier")
+  default List<String> addToList(String value){
+    return value != null ? List.of(value) : List.of();
   }
 
 }
