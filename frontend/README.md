@@ -72,9 +72,9 @@ Using Carbon
 
 ### **Test**:
 
-[Vitest](https://vitest.dev/api/)  
-[Vue test util](https://test-utils.vuejs.org/api/)  
-[Cypress](https://www.cypress.io/)
+- [Vitest](https://vitest.dev/api/)  
+- [Vue test util](https://test-utils.vuejs.org/api/)  
+- [Cypress](https://www.cypress.io/)
 
 ### **Vite vs vue cli**
 
