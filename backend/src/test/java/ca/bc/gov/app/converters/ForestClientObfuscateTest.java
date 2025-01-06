@@ -61,7 +61,7 @@ class ForestClientObfuscateTest {
     String json = mapper.writeValueAsString(getDto());
     assertThat(json)
         .contains("\"clientIdentification\":\"12345678\"")
-        .contains("\"birthdate\":\"1070-12-13\"");
+        .contains("\"birthdate\":\"1070-12-13T00:00\"");
   }
 
   @Test
@@ -70,7 +70,7 @@ class ForestClientObfuscateTest {
     String json = mapper.writeValueAsString(getDto());
     assertThat(json)
         .contains("\"clientIdentification\":\"12345678\"")
-        .contains("\"birthdate\":\"1070-12-13\"");
+        .contains("\"birthdate\":\"1070-12-13T00:00\"");
   }
 
   private ForestClientDetailsDto getDto() {

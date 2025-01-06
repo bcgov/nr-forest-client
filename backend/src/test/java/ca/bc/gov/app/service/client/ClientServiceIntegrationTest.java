@@ -42,6 +42,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
   void testGetClientDetailsWithGoodStandingIndicator() {
     String clientNumber = "123456";
     String corpRegnNmbr = "9607514";
+    LocalDateTime date = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
 
     ForestClientDetailsDto initialDto = new ForestClientDetailsDto(
         clientNumber, 
@@ -60,7 +61,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         "MYCO", 
         "678", 
         "Test Client", 
-        LocalDateTime.now(),
+        date,
         "Admin", 
         null, 
         null, 
@@ -144,7 +145,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         "MYCO", 
         "678", 
         "Test Client", 
-        LocalDateTime.now(),
+        date,
         "Admin", 
         "Y", 
         null, 
