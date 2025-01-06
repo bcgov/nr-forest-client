@@ -10,6 +10,7 @@ import "@carbon/web-components/es/components/tabs/index";
 import "@carbon/web-components/es/components/tag/index";
 import "@carbon/web-components/es/components/accordion/index";
 import summit from "@carbon/pictograms/es/summit";
+import tools from "@carbon/pictograms/es/tools";
 
 // Composables
 import { useFetchTo } from "@/composables/useFetch";
@@ -23,7 +24,9 @@ import RecentlyViewed16 from "@carbon/icons-vue/es/recently-viewed/16";
 import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
 import Location20 from "@carbon/icons-vue/es/location/20";
 import User20 from "@carbon/icons-vue/es/user/20";
+import Launch16 from "@carbon/icons-vue/es/launch/16";
 
+import { greenDomain } from "@/CoreConstants";
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -119,7 +122,18 @@ const associatedLocationsRecord = computed(() => {
   return result;
 });
 
+const openRelatedClients = () => {
+  const url = `https://${greenDomain}/int/client/client04RelatedClientListAction.do?bean.clientNumber=${clientNumber}`;
+  window.open(url, "_blank", "noopener");
+};
+
+const openClientDetails = () => {
+  const url = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`;
+  window.open(url, "_blank", "noopener");
+};
+
 const summitSvg = useSvg(summit);
+const toolsSvg = useSvg(tools);
 </script>
 
 <template>
@@ -294,15 +308,42 @@ const summitSvg = useSvg(summit);
         <div class="tab-panel tab-panel--empty" v-else>
           <div class="empty-table-list">
             <summit-svg alt="Summit pictogram" class="standard-svg" />
-            <p class="heading-02">Nothing to show yet!</p>
-            <p class="body-compact-01" v-if="userHasAuthority">
-              Click “Add contact” button to start
-            </p>
-            <p class="body-compact-01" v-else>No contacts have been added to this client account</p>
+            <div class="inner-description">
+              <p class="heading-02">Nothing to show yet!</p>
+              <p class="body-compact-01" v-if="userHasAuthority">
+                Click “Add contact” button to start
+              </p>
+              <p class="body-compact-01" v-else>
+                No contacts have been added to this client account
+              </p>
+            </div>
           </div>
         </div>
       </div>
-      <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden></div>
+      <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden>
+        <div class="tab-panel tab-panel--empty">
+          <div class="empty-table-list">
+            <tools-svg alt="Tools pictogram" class="standard-svg" />
+            <div class="description">
+              <div class="inner-description">
+                <p class="heading-02">Under construction</p>
+                <p class="body-compact-01">
+                  Check this content in the legacy system. It opens in a new tab.
+                </p>
+              </div>
+              <cds-button
+                id="open-related-clients-btn"
+                kind="tertiary"
+                size="md"
+                @click.prevent="openRelatedClients"
+              >
+                <span>Open in legacy system</span>
+                <Launch16 slot="icon" />
+              </cds-button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden></div>
     </div>
   </div>

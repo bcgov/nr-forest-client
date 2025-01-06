@@ -178,7 +178,7 @@ describe("Client Details Page", () => {
         cy.get("#location-00 [slot='title']").click();
         cy.get("#location-02 [slot='title']").click();
 
-        // Switch to tab another tab (Contacts)
+        // Switch to another tab (Contacts)
         cy.get("#tab-contacts").click();
 
         // Make sure the current tab panel was effectively switched
@@ -205,7 +205,7 @@ describe("Client Details Page", () => {
       before(() => {
         cy.visit("/clients/details/g");
 
-        // Switch to tab another tab (Contacts)
+        // Switch to the Contacts tab
         cy.get("#tab-contacts").click();
 
         // Make sure the current tab panel was effectively switched
@@ -247,7 +247,7 @@ describe("Client Details Page", () => {
         beforeEach(() => {
           cy.visit("/clients/details/g");
 
-          // Switch to tab another tab (Contacts)
+          // Switch to the Contacts tab
           cy.get("#tab-contacts").click();
 
           // Make sure the current tab panel was effectively switched
@@ -265,7 +265,7 @@ describe("Client Details Page", () => {
           // Expand first and third contacts, leave second one collapsed
           cy.get("#contact-00 [slot='title']").click();
           cy.get("#contact-02 [slot='title']").click();
-          // Switch to tab another tab (Locations)
+          // Switch to another tab (Locations)
           cy.get("#tab-locations").click();
           // Make sure the current tab panel was effectively switched
           cy.get("#panel-contacts").should("have.attr", "hidden");
@@ -284,7 +284,7 @@ describe("Client Details Page", () => {
         beforeEach(() => {
           cy.visit("/clients/details/gd");
 
-          // Switch to tab another tab (Contacts)
+          // Switch to the Contacts tab
           cy.get("#tab-contacts").click();
 
           // Make sure the current tab panel was effectively switched
@@ -321,6 +321,40 @@ describe("Client Details Page", () => {
           });
         });
       });
+    });
+  });
+
+  describe("related clients tab", () => {
+    const clientNumber = "12321";
+    beforeEach(() => {
+      cy.visit(`/clients/details/${clientNumber}`);
+
+      cy.window().then((win) => {
+        cy.stub(win, "open").as("windowOpen");
+      });
+
+      // Switch to the Related Clients tab
+      cy.get("#tab-related").click();
+
+      // Make sure the current tab panel was effectively switched
+      cy.get("#panel-locations").should("have.attr", "hidden");
+      cy.get("#panel-related").should("not.have.attr", "hidden");
+    });
+
+    it("should display the Under construction message", () => {
+      cy.get("#panel-related").contains("Under construction").should("be.visible");
+    });
+
+    const greenDomain = Cypress.env("VITE_GREEN_DOMAIN");
+
+    it("should open the Related Client page in the legacy application", () => {
+      cy.get("#open-related-clients-btn").click();
+      cy.get("@windowOpen").should(
+        "be.calledWith",
+        `https://${greenDomain}/int/client/client04RelatedClientListAction.do?bean.clientNumber=${clientNumber}`,
+        "_blank",
+        "noopener",
+      );
     });
   });
 });
