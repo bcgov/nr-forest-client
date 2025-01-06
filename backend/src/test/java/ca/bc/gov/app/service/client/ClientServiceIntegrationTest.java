@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -59,7 +60,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         "MYCO", 
         "678", 
         "Test Client", 
-        LocalDate.now(), 
+        LocalDateTime.now(),
         "Admin", 
         null, 
         null, 
@@ -143,7 +144,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         "MYCO", 
         "678", 
         "Test Client", 
-        LocalDate.now(), 
+        LocalDateTime.now(),
         "Admin", 
         "Y", 
         null, 
