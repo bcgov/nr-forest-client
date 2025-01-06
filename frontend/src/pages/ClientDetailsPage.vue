@@ -9,9 +9,12 @@ import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/tabs/index";
 import "@carbon/web-components/es/components/tag/index";
 import "@carbon/web-components/es/components/accordion/index";
+import summit from "@carbon/pictograms/es/summit";
+import tools from "@carbon/pictograms/es/tools";
 
 // Composables
 import { useFetchTo } from "@/composables/useFetch";
+import useSvg from "@/composables/useSvg";
 import { useRouter } from "vue-router";
 
 import Location16 from "@carbon/icons-vue/es/location/16";
@@ -20,20 +23,29 @@ import NetworkEnterprise16 from "@carbon/icons-vue/es/network--enterprise/16";
 import RecentlyViewed16 from "@carbon/icons-vue/es/recently-viewed/16";
 import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
 import Location20 from "@carbon/icons-vue/es/location/20";
+import User20 from "@carbon/icons-vue/es/user/20";
+import Launch16 from "@carbon/icons-vue/es/launch/16";
 
+import { greenDomain } from "@/CoreConstants";
 import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
 import type { ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
+import ContactView from "@/pages/client-details/ContactView.vue";
 
 // Route related
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id;
 
 const data = ref<ClientDetails>(undefined);
+
+const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"].some((authority) =>
+  ForestClientUserSession.authorities.includes(authority),
+);
 
 const { error: fetchError } = useFetchTo(`/api/clients/details/${clientNumber}`, data);
 
@@ -83,6 +95,45 @@ const compareString = (a: string, b: string) => {
 const sortedLocations = computed(() =>
   data.value.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
 );
+
+const sortedContacts = computed(() =>
+  data.value.contacts?.toSorted((a, b) => compareString(a.contactCode, b.contactCode)),
+);
+
+const formatLocations = (
+  locationCodes: string[],
+  allLocations: ClientLocation[] = data.value.addresses,
+) => {
+  const list: string[] = [];
+  for (const curLocationCode of locationCodes.toSorted()) {
+    const location = allLocations.find(
+      (curLocation) => curLocation.clientLocnCode === curLocationCode,
+    );
+    list.push(`${curLocationCode} - ${location.clientLocnName}`);
+  }
+  return list.join(", ");
+};
+
+const associatedLocationsRecord = computed(() => {
+  const result: Record<string, string> = {};
+  sortedContacts.value?.forEach((contact) => {
+    result[contact.contactCode] = formatLocations(contact.clientLocnCode);
+  });
+  return result;
+});
+
+const openRelatedClients = () => {
+  const url = `https://${greenDomain}/int/client/client04RelatedClientListAction.do?bean.clientNumber=${clientNumber}`;
+  window.open(url, "_blank", "noopener");
+};
+
+const openClientDetails = () => {
+  const url = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`;
+  window.open(url, "_blank", "noopener");
+};
+
+const summitSvg = useSvg(summit);
+const toolsSvg = useSvg(tools);
 </script>
 
 <template>
@@ -184,45 +235,115 @@ const sortedLocations = computed(() =>
         </cds-tabs>
       </div>
     </div>
-    <div class="tab-panel" v-if="data">
+    <div class="tab-panels-container" v-if="data">
       <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
-        <h3 class="padding-left-1rem">
-          {{ formatCount(data.addresses?.length) }}
-          {{ pluralize("location", data.addresses?.length) }}
-        </h3>
-        <cds-accordion
-          v-for="(location, index) in sortedLocations"
-          :key="location.clientLocnCode"
-          :id="`location-${location.clientLocnCode}`"
-        >
-          <cds-accordion-item size="lg" class="grouping-13">
-            <div slot="title" class="flex-column-0_25rem">
-              <span class="label-with-icon">
-                <LocationStar20 v-if="index === 0" />
-                <Location20 v-else />
-                {{ location.clientLocnCode }} - {{ location.clientLocnName }}
-                <cds-tag
-                  :id="`location-${location.clientLocnCode}-deactivated`"
-                  v-if="location.locnExpiredInd === 'Y'"
-                  type="purple"
-                  title=""
+        <div class="tab-panel tab-panel--populated">
+          <h3 class="padding-left-1rem">
+            {{ formatCount(data.addresses?.length) }}
+            {{ pluralize("location", data.addresses?.length) }}
+          </h3>
+          <cds-accordion
+            v-for="(location, index) in sortedLocations"
+            :key="location.clientLocnCode"
+            :id="`location-${location.clientLocnCode}`"
+          >
+            <cds-accordion-item size="lg" class="grouping-13">
+              <div slot="title" class="flex-column-0_25rem">
+                <span class="label-with-icon">
+                  <LocationStar20 v-if="index === 0" />
+                  <Location20 v-else />
+                  {{ location.clientLocnCode }} - {{ location.clientLocnName }}
+                  <cds-tag
+                    :id="`location-${location.clientLocnCode}-deactivated`"
+                    v-if="location.locnExpiredInd === 'Y'"
+                    type="purple"
+                    title=""
+                  >
+                    <span>Deactivated</span>
+                  </cds-tag>
+                </span>
+                <span
+                  :id="`location-${location.clientLocnCode}-title-address`"
+                  class="hide-open body-compact-01 padding-left-1_625rem"
                 >
-                  <span>Deactivated</span>
-                </cds-tag>
-              </span>
-              <span
-                :id="`location-${location.clientLocnCode}-title-address`"
-                class="hide-open body-compact-01 padding-left-1_625rem"
-              >
-                {{ formatAddress(location) }}
-              </span>
-            </div>
-            <location-view :data="location" />
-          </cds-accordion-item>
-        </cds-accordion>
+                  {{ formatAddress(location) }}
+                </span>
+              </div>
+              <location-view :data="location" />
+            </cds-accordion-item>
+          </cds-accordion>
+        </div>
       </div>
-      <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden></div>
-      <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden></div>
+      <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
+        <div class="tab-panel tab-panel--populated" v-if="data.contacts?.length">
+          <h3 class="padding-left-1rem">
+            {{ formatCount(data.contacts?.length) }}
+            {{ pluralize("contact", data.contacts?.length) }}
+          </h3>
+          <cds-accordion
+            v-for="contact in sortedContacts"
+            :key="contact.contactCode"
+            :id="`contact-${contact.contactCode}`"
+          >
+            <cds-accordion-item size="lg" class="grouping-13">
+              <div slot="title" class="flex-column-0_25rem">
+                <span class="label-with-icon">
+                  <User20 />
+                  {{ contact.contactCode }} - {{ contact.contactName }}
+                </span>
+                <span
+                  :id="`contact-${contact.contactCode}-title-locations`"
+                  class="hide-open body-compact-01 padding-left-1_625rem"
+                >
+                  {{ associatedLocationsRecord[contact.contactCode] }}
+                </span>
+              </div>
+              <contact-view
+                :data="contact"
+                :associatedLocationsString="associatedLocationsRecord[contact.contactCode]"
+              />
+            </cds-accordion-item>
+          </cds-accordion>
+        </div>
+        <div class="tab-panel tab-panel--empty" v-else>
+          <div class="empty-table-list">
+            <summit-svg alt="Summit pictogram" class="standard-svg" />
+            <div class="inner-description">
+              <p class="heading-02">Nothing to show yet!</p>
+              <p class="body-compact-01" v-if="userHasAuthority">
+                Click “Add contact” button to start
+              </p>
+              <p class="body-compact-01" v-else>
+                No contacts have been added to this client account
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden>
+        <div class="tab-panel tab-panel--empty">
+          <div class="empty-table-list">
+            <tools-svg alt="Tools pictogram" class="standard-svg" />
+            <div class="description">
+              <div class="inner-description">
+                <p class="heading-02">Under construction</p>
+                <p class="body-compact-01">
+                  Check this content in the legacy system. It opens in a new tab.
+                </p>
+              </div>
+              <cds-button
+                id="open-related-clients-btn"
+                kind="tertiary"
+                size="md"
+                @click.prevent="openRelatedClients"
+              >
+                <span>Open in legacy system</span>
+                <Launch16 slot="icon" />
+              </cds-button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden></div>
     </div>
   </div>
