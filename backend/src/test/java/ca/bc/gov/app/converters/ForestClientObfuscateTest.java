@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -92,7 +94,7 @@ class ForestClientObfuscateTest {
         null,
         null,
         null,
-        LocalDate.of(1070, 12, 13),
+        LocalDateTime.of(LocalDate.of(1070, 12, 13), LocalTime.MIN),
         List.of(),
         List.of(),
         List.of()
