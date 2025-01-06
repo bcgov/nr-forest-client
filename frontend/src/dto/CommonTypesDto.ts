@@ -249,3 +249,75 @@ export interface SubmissionDetailsMatchers {
   contact: string
   location: string
 }
+
+export interface ClientDoingBusinessAs {
+  doingBusinessAsName: string;
+}
+
+export interface ClientLocation {
+  clientNumber: string;
+  clientLocnCode: string;
+  clientLocnName: string;
+  addressOne: string;
+  addressTwo: string;
+  addressThree: string;
+  city: string;
+  provinceCode: string;
+  provinceDesc: string;
+  postalCode: string;
+  countryCode: string;
+  countryDesc: string;
+  businessPhone: string;
+  homePhone: string;
+  cellPhone: string;
+  faxNumber: string;
+  emailAddress: string;
+  locnExpiredInd: string;
+  returnedMailDate: string;
+  trustLocationInd: string;
+  cliLocnComment: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface ClientContact {
+  clientNumber: string;
+  clientLocnCode: string[];
+  contactCode: string;
+  contactName: string;
+  contactTypeCode: string;
+  contactTypeDesc: string;
+  businessPhone: string;
+  secondaryPhone: string;
+  faxNumber: string;
+  emailAddress: string;
+  createdBy: string;
+  updatedBy: string;
+}
+
+export interface ClientDetails {
+  clientNumber: string;
+  clientName: string;
+  legalFirstName: string;
+  legalMiddleName: string;
+  clientStatusCode: string;
+  clientStatusDesc: string;
+  clientTypeCode: string;
+  clientTypeDesc: string;
+  clientIdTypeCode: string;
+  clientIdTypeDesc: string;
+  clientIdentification: string;
+  registryCompanyTypeCode: string;
+  corpRegnNmbr: string;
+  clientAcronym: string;
+  wcbFirmNumber: string;
+  ocgSupplierNmbr: string;
+  clientComment: string;
+  clientCommentUpdateDate: string;
+  clientCommentUpdateUser: string;
+  goodStandingInd: string;
+  birthdate: string;
+  doingBusinessAs: ClientDoingBusinessAs[];
+  addresses: ClientLocation[];
+  contacts: ClientContact[];
+}

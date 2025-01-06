@@ -13,6 +13,7 @@ import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.dto.client.LegalTypeEnum;
+import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
@@ -33,6 +34,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -58,7 +60,7 @@ public class ClientService {
    * @param clientNumber the client number for which to retrieve details
    * @return a Mono that emits a ClientDetailsDto object representing the details of the client
    */
-  public Mono<ClientDetailsDto> getClientDetails(
+  public Mono<ClientDetailsDto> getClientDetailsByIncorporationNumber(
       String clientNumber,
       String userId,
       String businessId,
@@ -131,15 +133,61 @@ public class ClientService {
         })
 
         // If document type is SP and party contains only one entry that is not a person, fail
-        .filter(document -> provider.equalsIgnoreCase("idir") ||
-            !("SP".equalsIgnoreCase(document.business().legalType()) &&
-                document.parties().size() == 1 &&
-                !document.parties().get(0).isPerson())
+        .filter(document -> provider.equalsIgnoreCase("idir")
+                            || !("SP".equalsIgnoreCase(document.business().legalType())
+                                 && document.parties().size() == 1
+                                 && !document.parties().get(0).isPerson())
         )
         .flatMap(buildDetails())
         .switchIfEmpty(Mono.error(new UnableToProcessRequestException(
             "Unable to process request. This sole proprietor is not owned by a person"
         )));
+  }
+
+  public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(String clientNumber) {
+    return legacyService
+        .searchByClientNumber(clientNumber)
+        .flatMap(forestClientDetailsDto -> Mono
+            .just(forestClientDetailsDto)
+            .filter(dto -> (StringUtils.isNotBlank(dto.corpRegnNmbr())))
+            .doOnNext(dto -> log.info("Retrieved corporation registration number: {}",
+                forestClientDetailsDto.corpRegnNmbr()))
+            .flatMap(dto ->
+                bcRegistryService
+                    .requestDocumentData(dto.corpRegnNmbr())
+                    .next()
+            )
+            .flatMap(documentMono -> populateGoodStandingInd(forestClientDetailsDto, documentMono))
+            .onErrorContinue(NoClientDataFound.class, (ex, obj) ->
+                log.error("No data found on BC Registry for client number: {}", clientNumber)
+            )
+            .switchIfEmpty(
+                Mono.just(forestClientDetailsDto)
+                    .doOnNext(dto -> log.info(
+                        "Corporation registration number not provided. Returning legacy details."))
+            )
+        );
+  }
+
+  private Mono<ForestClientDetailsDto> populateGoodStandingInd(
+      ForestClientDetailsDto forestClientDetailsDto,
+      BcRegistryDocumentDto document
+  ) {
+    Boolean goodStandingInd = document.business().goodStanding();
+    String goodStanding = BooleanUtils.toString(
+        goodStandingInd,
+        "Y",
+        "N",
+        StringUtils.EMPTY
+    );
+
+    log.info("Setting goodStandingInd for client: {} to {}",
+        forestClientDetailsDto.clientNumber(), goodStanding);
+
+    ForestClientDetailsDto updatedDetails =
+        forestClientDetailsDto.withGoodStandingInd(goodStanding);
+
+    return Mono.just(updatedDetails);
   }
 
   /**
@@ -170,7 +218,8 @@ public class ClientService {
     return legacyService
         .searchIdAndLastName(userId, lastName)
         .doOnNext(legacy -> log.info("Found legacy entry for {} {}", userId, lastName))
-        //If we have result, we return a Mono.error with the exception, otherwise return a Mono.empty
+        //If we have result, we return a Mono.error with the exception, 
+        //otherwise return a Mono.empty
         .next()
         .flatMap(legacy -> Mono
             .error(new ClientAlreadyExistException(legacy.clientNumber()))
@@ -355,13 +404,13 @@ public class ClientService {
     return legacy ->
         StringUtils.equals(
             StringUtils.defaultString(legacy.registryCompanyTypeCode()) +
-                StringUtils.defaultString(legacy.corpRegnNmbr()),
+            StringUtils.defaultString(legacy.corpRegnNmbr()),
             document.business().identifier()
         ) &&
-            StringUtils.equals(
-                document.business().legalName(),
-                legacy.legalName()
-            );
+        StringUtils.equals(
+            document.business().legalName(),
+            legacy.legalName()
+        );
   }
 
   private Function<ForestClientDto, Mono<ForestClientDto>> triggerEmailDuplicatedClient(

@@ -1,19 +1,125 @@
 <script setup lang="ts">
+import { computed, ref } from "vue";
+import { AxiosError } from "axios";
+
 // Carbon
 import "@carbon/web-components/es/components/breadcrumb/index";
 import "@carbon/web-components/es/components/notification/index";
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/tabs/index";
+import "@carbon/web-components/es/components/tag/index";
+import "@carbon/web-components/es/components/accordion/index";
+import summit from "@carbon/pictograms/es/summit";
 
-// @ts-ignore
+// Composables
+import { useFetchTo } from "@/composables/useFetch";
+import useSvg from "@/composables/useSvg";
+import { useRouter } from "vue-router";
+
 import Location16 from "@carbon/icons-vue/es/location/16";
-// @ts-ignore
 import User16 from "@carbon/icons-vue/es/user/16";
-// @ts-ignore
 import NetworkEnterprise16 from "@carbon/icons-vue/es/network--enterprise/16";
-// @ts-ignore
 import RecentlyViewed16 from "@carbon/icons-vue/es/recently-viewed/16";
-import { toTitleCase } from "@/services/ForestClientService";
+import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
+import Location20 from "@carbon/icons-vue/es/location/20";
+import User20 from "@carbon/icons-vue/es/user/20";
+
+import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
+import ForestClientUserSession from "@/helpers/ForestClientUserSession";
+
+import type { ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
+
+// Page components
+import SummaryView from "@/pages/client-details/SummaryView.vue";
+import LocationView from "@/pages/client-details/LocationView.vue";
+import ContactView from "@/pages/client-details/ContactView.vue";
+
+// Route related
+const router = useRouter();
+const clientNumber = router.currentRoute.value.params.id;
+
+const data = ref<ClientDetails>(undefined);
+
+const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"].some((authority) =>
+  ForestClientUserSession.authorities.includes(authority),
+);
+
+const { error: fetchError } = useFetchTo(`/api/clients/details/${clientNumber}`, data);
+
+const clientFullName = computed(() => {
+  if (data.value) {
+    const { legalFirstName, legalMiddleName, clientName } = data.value;
+    const rawParts = [legalFirstName, legalMiddleName, clientName];
+    const populatedParts = [];
+    for (const part of rawParts) {
+      if (part) {
+        populatedParts.push(part);
+      }
+    }
+    const fullClientName = populatedParts.join(" ");
+    return fullClientName;
+  }
+  return "";
+});
+
+const formatCount = (count = 0) => {
+  return String(count).padStart(2, "0");
+};
+
+const formatAddress = (location: ClientLocation) => {
+  const { addressOne, city, provinceCode, countryDesc, postalCode } = location;
+  const list = [addressOne, city, provinceCode, countryDesc, postalCode];
+  return list.join(", ");
+};
+
+const pluralize = (word: string, count = 0) => {
+  if (count === 1) {
+    return word;
+  }
+  return `${word}s`;
+};
+
+const compareString = (a: string, b: string) => {
+  if (a < b) {
+    return -1;
+  }
+  if (a > b) {
+    return 1;
+  }
+  return 0;
+};
+
+const sortedLocations = computed(() =>
+  data.value.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
+);
+
+const sortedContacts = computed(() =>
+  data.value.contacts?.toSorted((a, b) => compareString(a.contactCode, b.contactCode)),
+);
+
+const formatLocations = (
+  locationCodes: string[],
+  allLocations: ClientLocation[] = data.value.addresses,
+) => {
+  const list: string[] = [];
+  for (const curLocationCode of locationCodes.toSorted()) {
+    const location = allLocations.find(
+      (curLocation) => curLocation.clientLocnCode === curLocationCode,
+    );
+    list.push(`${curLocationCode} - ${location.clientLocnName}`);
+  }
+  return list.join(", ");
+};
+
+const associatedLocationsRecord = computed(() => {
+  const result: Record<string, string> = {};
+  sortedContacts.value?.forEach((contact) => {
+    result[contact.contactCode] = formatLocations(contact.clientLocnCode);
+  });
+  return result;
+});
+
+const summitSvg = useSvg(summit);
 </script>
 
 <template>
@@ -28,8 +134,7 @@ import { toTitleCase } from "@/services/ForestClientService";
 
         <h1 class="resource-details--title">
           <span>
-            <!-- TODO: Replace with real value -->
-            {{ toTitleCase("Client Name") }}
+            {{ toTitleCase(clientFullName) }}
           </span>
         </h1>
         <div>
@@ -44,14 +149,47 @@ import { toTitleCase } from "@/services/ForestClientService";
           This div is necessary to avoid the div.header-offset below from interfering in the flex flow.
         -->
         <div data-scroll="top-notification" class="header-offset"></div>
+        <cds-actionable-notification
+          v-if="[AxiosError.ERR_BAD_RESPONSE, AxiosError.ERR_NETWORK].includes(fetchError.code)"
+          id="internalServerError"
+          v-shadow="true"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="error"
+          title="Something went wrong:"
+        >
+          <div>
+            We're working to fix a problem with our network. Please try again later. If this error
+            persists, please email
+            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+          </div>
+        </cds-actionable-notification>
+        <cds-actionable-notification
+          v-else-if="fetchError.code === AxiosError.ERR_BAD_REQUEST"
+          id="badRequestError"
+          v-shadow="true"
+          low-contrast="true"
+          hide-close-button="true"
+          open="true"
+          kind="error"
+          title="Something went wrong:"
+        >
+          <div>
+            There seems to be a problem with the information you entered. Please double-check and
+            try again.
+          </div>
+        </cds-actionable-notification>
       </div>
 
-      <div class="grouping-14">
+      <div class="grouping-14" v-if="data">
         <div class="grouping-05-short">
           <div>
             <h2 class="mg-tl-2 heading-06">Client summary</h2>
 
-            <div class="grouping-10"></div>
+            <div class="grouping-10">
+              <summary-view :data="data" />
+            </div>
           </div>
         </div>
 
@@ -83,9 +221,87 @@ import { toTitleCase } from "@/services/ForestClientService";
         </cds-tabs>
       </div>
     </div>
-    <div class="tab-panel">
-      <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden></div>
-      <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden></div>
+    <div class="tab-panels-container" v-if="data">
+      <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
+        <div class="tab-panel tab-panel--populated">
+          <h3 class="padding-left-1rem">
+            {{ formatCount(data.addresses?.length) }}
+            {{ pluralize("location", data.addresses?.length) }}
+          </h3>
+          <cds-accordion
+            v-for="(location, index) in sortedLocations"
+            :key="location.clientLocnCode"
+            :id="`location-${location.clientLocnCode}`"
+          >
+            <cds-accordion-item size="lg" class="grouping-13">
+              <div slot="title" class="flex-column-0_25rem">
+                <span class="label-with-icon">
+                  <LocationStar20 v-if="index === 0" />
+                  <Location20 v-else />
+                  {{ location.clientLocnCode }} - {{ location.clientLocnName }}
+                  <cds-tag
+                    :id="`location-${location.clientLocnCode}-deactivated`"
+                    v-if="location.locnExpiredInd === 'Y'"
+                    type="purple"
+                    title=""
+                  >
+                    <span>Deactivated</span>
+                  </cds-tag>
+                </span>
+                <span
+                  :id="`location-${location.clientLocnCode}-title-address`"
+                  class="hide-open body-compact-01 padding-left-1_625rem"
+                >
+                  {{ formatAddress(location) }}
+                </span>
+              </div>
+              <location-view :data="location" />
+            </cds-accordion-item>
+          </cds-accordion>
+        </div>
+      </div>
+      <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
+        <div class="tab-panel tab-panel--populated" v-if="data.contacts?.length">
+          <h3 class="padding-left-1rem">
+            {{ formatCount(data.contacts?.length) }}
+            {{ pluralize("contact", data.contacts?.length) }}
+          </h3>
+          <cds-accordion
+            v-for="contact in sortedContacts"
+            :key="contact.contactCode"
+            :id="`contact-${contact.contactCode}`"
+          >
+            <cds-accordion-item size="lg" class="grouping-13">
+              <div slot="title" class="flex-column-0_25rem">
+                <span class="label-with-icon">
+                  <User20 />
+                  {{ contact.contactCode }} - {{ contact.contactName }}
+                </span>
+                <span
+                  :id="`contact-${contact.contactCode}-title-locations`"
+                  class="hide-open body-compact-01 padding-left-1_625rem"
+                >
+                  {{ associatedLocationsRecord[contact.contactCode] }}
+                </span>
+              </div>
+              <contact-view
+                :data="contact"
+                :associatedLocationsString="associatedLocationsRecord[contact.contactCode]"
+              />
+            </cds-accordion-item>
+          </cds-accordion>
+        </div>
+        <div class="tab-panel tab-panel--empty" v-else>
+          <div class="empty-table-list">
+            <summit-svg alt="Summit pictogram" class="standard-svg" />
+            <p class="heading-02">Nothing to show yet!</p>
+            <p class="body-compact-01" v-if="userHasAuthority">
+              Click “Add contact” button to start
+            </p>
+            <p class="body-compact-01" v-else>No contacts have been added to this client account</p>
+          </div>
+        </div>
+      </div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden></div>
       <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden></div>
     </div>

@@ -6,7 +6,7 @@ on:
 
 concurrency:
   # PR open and close use the same group, allowing only one at a time
-  group: ${{ github.event.number }}
+  group: pr-${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
@@ -20,35 +20,18 @@ jobs:
       cleanup: label
       packages: backend database frontend legacy processor
 
-  tools-cleanup:
-    name: Cleanup tools environment
-    needs: [cleanup]
-    environment: tools
+  remove-tools:
+    name: Remove database and user
+    secrets: inherit
+    uses: ./.github/workflows/.tools-cleanup.yml
+
+  promote-tools:
+    name: Promote tools
     runs-on: ubuntu-24.04
     steps:
-      - name: Install CLI tools from OpenShift Mirror
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:        
-          oc: "4.13"
-          
-      - name: Remove the PR database
-        continue-on-error: true
-        run: |
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
-          # This removes a new pluggable database, user and service for the PR
-          for i in {1..5}; do
-            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
-            if [ -n "$POD_NAME" ]; then
-              echo "Pod found: $POD_NAME"
-              oc exec $POD_NAME -- /opt/oracle/removeDatabase "THE" "PR_${{ github.event.number }}"
-              break
-            else
-              echo "Pod not found, retrying in 10 seconds... ($i/5)"
-              sleep 10
-            fi
-          done
-
-          if [ -z "$POD_NAME" ]; then
-            echo "Failed to find the pod after 5 attempts."
-          fi
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/legacydb
+          target: ${{ github.event.number }}
+          tags: latest

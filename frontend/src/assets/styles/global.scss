@@ -662,7 +662,7 @@ cds-actionable-notification * {
   font-size: 0.875rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 1.25rem;
+  line-height: 1.125rem;
   letter-spacing: 0.01rem;
 }
 
@@ -1009,6 +1009,8 @@ cds-actionable-notification * {
   gap: 2rem;
   padding: 2rem;
   flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 .grouping-10-internal {
   display: flex;
@@ -1036,7 +1038,7 @@ cds-actionable-notification * {
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  gap: 2.5rem;
+  gap: 1rem;
   border-radius: 0.5rem;
   border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
   background: #fff;
@@ -1120,6 +1122,18 @@ cds-actionable-notification * {
 
 .grouping-divider {
   margin: 0.5rem 0;
+}
+
+.flex-column-1_5rem {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.flex-column-0_25rem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .horizontal-input-grouping {
@@ -1219,6 +1233,9 @@ cds-text-input::part(label) {
 .label-with-icon {
   display: flex;
   gap: 0.5rem;
+}
+
+.line-height-0 {
   line-height: 0; // prevents the label from being pushed away from its input field (below it).
 }
 
@@ -1439,6 +1456,7 @@ cds-side-nav {
 .client-details-screen {
   padding-left: 0;
   padding-right: 0;
+  padding-bottom: 0;
   gap: 0;
 }
 
@@ -1454,8 +1472,8 @@ cds-accordion-item[open]:not([disabled])::part(content),
 :host(cds-accordion-item[open]:not([disabled]))
   .cds-ce--accordion__content--md {
   padding-right: 1rem !important;
-  padding-top: 0rem;
-  padding-bottom: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -1602,6 +1620,34 @@ cds-header-panel[expanded] {
   background: var(--light-theme-layer-layer-02, #fff);
 }
 
+.margin-left-1_75rem {
+  margin-left: 1.75rem;
+}
+
+.no-margin {
+  margin: 0;
+}
+
+.no-padding {
+  padding: 0;
+}
+
+.padding-left-1rem {
+  padding-left: 1rem;
+}
+
+.padding-left-1_625rem {
+  padding-left: 1.625rem;
+}
+
+.colorless {
+  color: unset;
+}
+
+cds-accordion-item[open] .hide-open {
+  display: none;
+}
+
 // Copied from .cds--side-nav__overlay-active in @carbon/styles/css/styles.css so to make it available on all breakpoints
 .overlay-active {
   z-index: 6000;
@@ -1701,7 +1747,7 @@ div.internal-grouping-01 span.body-compact-01 ~ svg.warning path[data-icon-path=
   opacity: 1;
 }
 
-div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
+div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typography) {
   font-weight: 900;
   background-color: color-mix(in srgb, var(--cds-support-warning) 40%, white);
 }
@@ -1753,11 +1799,44 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   width: 7.875rem;
 }
 
+.tab-panels-container {
+  height: 100%;
+
+  & > div {
+    height: 100%;
+  }
+}
+
 .tab-panel {
-  display: flex;
-  padding: 2.5rem;
-  gap: 2rem;
+  height: 100%;
   background: var(--light-theme-layer-layer-01, #f3f3f5);
+  box-sizing: border-box;
+
+  &--populated {
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &--empty {
+    padding: 5rem;
+    justify-content: center;
+
+    .empty-table-list {
+      height: 100%;
+
+      svg {
+        height: 3rem;
+        width: 3rem;
+      }
+    }
+  }
 }
 
 /* Small (up to 671px) */
@@ -1929,6 +2008,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   .client-details-screen {
     padding-left: 0;
     padding-right: 0;
+    padding-bottom: 0;
   }
 
   .client-details-content {
@@ -2073,6 +2153,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   .client-details-screen {
     padding-left: 0;
     padding-right: 0;
+    padding-bottom: 0;
   }
 
   .client-details-content {
@@ -2156,6 +2237,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
+    padding-bottom: 0;
   }
   .client-details-content {
     padding-top: 0;
@@ -2246,6 +2328,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
+    padding-bottom: 0;
   }
 
   .client-details-content {
@@ -2318,6 +2401,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
+    padding-bottom: 0;
   }
 
   .client-details-content {
@@ -2374,6 +2458,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01 {
   .client-details-screen {
     --padding-right: 0;
     --padding-left: 16rem;
+    padding-bottom: 0;
   }
 
   .client-details-content {

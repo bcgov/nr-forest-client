@@ -6,10 +6,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -98,7 +100,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
 
   @Test
   @DisplayName("searching legacy for location")
-  void shouldSearchALocation(){
+  void shouldSearchALocation() {
 
     legacyStub
         .stubFor(
@@ -114,7 +116,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
 
   @Test
   @DisplayName("searching legacy for contact")
-  void shouldSearchAContact(){
+  void shouldSearchAContact() {
     legacyStub
         .stubFor(
             post(urlPathEqualTo("/api/search/contact"))
@@ -136,7 +138,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
     );
   }
 
-  private static Stream<Map<String,List<String>>> invalidValuesForMap(){
+  private static Stream<Map<String,List<String>>> invalidValuesForMap() {
     return Stream.of(
         Map.of("email",List.of("")),
         Map.of("email",List.of("   ")),
@@ -144,6 +146,103 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
         Map.of("",List.of()),
         Map.of("  ",List.of())
     );
+  }
+  
+  @Test
+  @DisplayName("searching legacy by client number")
+  void shouldSearchLegacyByClientNumber() {
+      String clientNumber = "00000001";
+
+      ForestClientDetailsDto expectedDto = new ForestClientDetailsDto(
+          clientNumber,
+          "MY COMPANY LTD.",
+          null,
+          null,
+          "ACT",
+          "Active",
+          "C",
+          "Corporation",
+          null,
+          null,
+          null,
+          "BC",
+          "9607514",
+          null,
+          "678",
+          "THIS TEST",
+          null,
+          null,
+          "Y",
+          null,
+          null,
+          null,
+          null
+      );
+
+      legacyStub
+          .stubFor(
+              get(urlPathEqualTo("/api/search/clientNumber/" + clientNumber))
+                  .willReturn(okJson("{"
+                      + "\"clientNumber\":\"00000001\","
+                      + "\"clientName\":\"MY COMPANY LTD.\","
+                      + "\"legalFirstName\":null,"
+                      + "\"legalMiddleName\":null,"
+                      + "\"clientStatusCode\":\"ACT\","
+                      + "\"clientStatusDesc\":\"Active\","
+                      + "\"clientTypeCode\":\"C\","
+                      + "\"clientTypeDesc\":\"Corporation\","
+                      + "\"clientIdTypeCode\":null,"
+                      + "\"clientIdTypeDesc\":null,"
+                      + "\"clientIdentification\":null,"
+                      + "\"registryCompanyTypeCode\":\"BC\","
+                      + "\"corpRegnNmbr\":\"9607514\","
+                      + "\"clientAcronym\":null,"
+                      + "\"wcbFirmNumber\":\"678\","
+                      + "\"ocgSupplierNmbr\":null,"
+                      + "\"clientComment\":\"THIS TEST\","
+                      + "\"clientCommentUpdateDate\":null,"
+                      + "\"clientCommentUpdateUser\":null,"
+                      + "\"goodStandingInd\":\"Y\","
+                      + "\"birthdate\":null,"
+                      + "\"addresses\":null,"
+                      + "\"contacts\":null,"
+                      + "\"doingBusinessAs\":null"
+                      + "}"))
+                  .withHeader("Content-Type", equalTo("application/json"))
+          );
+
+      service.searchByClientNumber(clientNumber)
+          .as(StepVerifier::create)
+          .assertNext(clientDetailsDto -> {
+              assertThat(clientDetailsDto)
+                  .extracting(
+                      ForestClientDetailsDto::clientNumber,
+                      ForestClientDetailsDto::clientName,
+                      ForestClientDetailsDto::clientStatusCode,
+                      ForestClientDetailsDto::clientStatusDesc,
+                      ForestClientDetailsDto::clientTypeCode,
+                      ForestClientDetailsDto::clientTypeDesc,
+                      ForestClientDetailsDto::registryCompanyTypeCode,
+                      ForestClientDetailsDto::corpRegnNmbr,
+                      ForestClientDetailsDto::wcbFirmNumber,
+                      ForestClientDetailsDto::clientComment,
+                      ForestClientDetailsDto::goodStandingInd
+                  )
+                  .containsExactly(
+                      expectedDto.clientNumber(),
+                      expectedDto.clientName(),
+                      expectedDto.clientStatusCode(),
+                      expectedDto.clientStatusDesc(),
+                      expectedDto.clientTypeCode(),
+                      expectedDto.clientTypeDesc(),
+                      expectedDto.registryCompanyTypeCode(),
+                      expectedDto.corpRegnNmbr(),
+                      expectedDto.wcbFirmNumber(),
+                      expectedDto.clientComment(),
+                      expectedDto.goodStandingInd()
+                  );
+          })
+          .verifyComplete();
   }
 
 }

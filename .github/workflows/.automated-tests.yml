@@ -1,0 +1,88 @@
+name: Automated user flow tests
+
+on:
+  workflow_call:
+    inputs:
+      url:
+        required: true
+        type: string
+
+jobs:
+  cypress-run:
+    name: "User flow test"
+    runs-on: ubuntu-24.04
+    environment: tools
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        name: Start node
+        with:
+          node-version: 18
+
+      - name: Run Cypress End-to-End
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: cypress
+        env:
+          CYPRESS_baseUrl: https://${{ inputs.url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CYPRESS_editor_password: ${{ secrets.UAT_EDITOR_PASSWORD }}
+          CYPRESS_editor_username: ${{ secrets.UAT_EDITOR_USERNAME }}
+          CYPRESS_admin_password: ${{ secrets.UAT_ADMIN_PASSWORD }}
+          CYPRESS_admin_username: ${{ secrets.UAT_ADMIN_USERNAME }}
+          CYPRESS_viewer_password: ${{ secrets.UAT_VIEWER_PASSWORD }}
+          CYPRESS_viewer_username: ${{ secrets.UAT_VIEWER_USERNAME }}
+          CYPRESS_bceid_password: ${{ secrets.UAT_BCEID_PASSWORD }}
+          CYPRESS_bceid_username: ${{ secrets.UAT_BCEID_USERNAME }}
+          CYPRESS_bcsc_password: ${{ secrets.UAT_BCSC_PASSWORD }}
+          CYPRESS_bcsc_username: ${{ secrets.UAT_BCSC_USERNAME }}
+
+      - name: Publish Cypress Results
+        uses: mikepenz/action-junit-report@v5
+        continue-on-error: true
+        if: always()
+        with:
+          report_paths: cypress/result.xml
+          commit: ${{ github.event.pull_request.head.sha }}
+          summary: Cypress Test Results
+          detailed_summary: true
+          job_name: User Journeys
+
+      - name: Check for Cypress Screenshots and Videos
+        run: |
+          if [ -d "cypress/cypress/screenshots" ] && [ "$(ls -A cypress/cypress/screenshots)" ]; then
+            echo "Screenshots folder is not empty, uploading artifacts."            
+            echo "screenshots=true" >> $GITHUB_OUTPUT
+
+          else
+            echo "Screenshots folder is empty or does not exist."
+            echo "screenshots=false" >> $GITHUB_OUTPUT
+          fi
+
+          if [ -d "cypress/cypress/videos" ] && [ "$(ls -A cypress/cypress/videos)" ]; then
+            echo "Videos folder is not empty, uploading artifacts."            
+            echo "videos=true" >> $GITHUB_OUTPUT
+
+          else
+            echo "Videos folder is empty or does not exist."
+            echo "videos=false" >> $GITHUB_OUTPUT
+          fi
+        id: check_artifacts
+
+      - uses: actions/upload-artifact@v4
+        name: Upload Cypress Screenshots
+        if: always()
+        with:
+          name: cypress-screenshots
+          path: cypress/cypress/screenshots
+          retention-days: 7
+
+      - uses: actions/upload-artifact@v4
+        name: Upload Cypress Videos
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/cypress/videos
+          retention-days: 7

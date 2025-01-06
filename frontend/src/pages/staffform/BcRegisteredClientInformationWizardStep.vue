@@ -525,7 +525,7 @@ onMounted(() => {
 
     <template v-if="showFields || bcRegistryError || showOnError">
       <div v-if="formData.businessInformation.clientType === 'RSP'">
-        <div class="label-with-icon parent-label">
+        <div class="label-with-icon line-height-0 parent-label">
           <div class="cds-text-input-label">
             <span class="cds-text-input-required-label">* </span>
             <span>Date of birth</span>

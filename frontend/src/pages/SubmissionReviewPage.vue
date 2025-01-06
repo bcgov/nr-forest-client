@@ -22,7 +22,13 @@ import type {
 } from "@/dto/CommonTypesDto";
 import { formatDistanceToNow, format } from "date-fns";
 import { greenDomain } from "@/CoreConstants";
-import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
+import {
+  adminEmail,
+  getObfuscatedEmailLink,
+  convertFieldNameToSentence,
+  toTitleCase,
+  goodStanding,
+} from "@/services/ForestClientService";
 
 // Imported User session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
@@ -34,7 +40,6 @@ import Review16 from "@carbon/icons-vue/es/data--view--alt/32";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 // @ts-ignore
 import Error16 from "@carbon/icons-vue/es/error--outline/16";
-import { convertFieldNameToSentence, toTitleCase } from "@/services/ForestClientService";
 import { getValidations } from "@/helpers/validators/SubmissionReviewValidations";
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
@@ -213,12 +218,6 @@ const friendlyDate = (date: Date): string => {
 const formattedDate = (date: Date): string => {
   if (!date) return "";
   return format(new Date(date), "MMM dd, yyyy");
-};
-// Format the good standing parameter
-const goodStanding = (goodStanding: string): string => {
-  if (goodStanding)
-    return goodStanding === "Y" ? "Good standing" : "Not in good standing";
-  return "Unknown";
 };
 
 const tagColor = (status: string) => {
@@ -531,12 +530,10 @@ const isProcessing = computed(() => {
               
               <read-only-component label="Client number" v-if="data.business.clientNumber">
                 <span class="body-compact-01">
-                  <!-- //BEGIN-NOSCAN -->
                   <a
                     target="_blank"
                     :href="'https://' + greenDomain + '/int/client/client02MaintenanceAction.do?bean.clientNumber=' + data.business.clientNumber"
                   >
-                  <!-- //END-NOSCAN -->
                     {{ data.business.clientNumber }}
                   </a>
                 </span>
@@ -546,7 +543,10 @@ const isProcessing = computed(() => {
                 <span class="body-compact-01">{{ data.business.clientTypeDesc }}</span>
               </read-only-component>
 
-              <read-only-component label="Birthdate" v-if="data.business.clientType === 'I'">
+              <read-only-component
+                label="Birthdate"
+                v-if="data.business.clientType === 'I' || data.business.clientType === 'RSP'"
+              >
                 <span class="body-compact-01">{{ data.business.birthdate }}</span>
               </read-only-component>
 
@@ -602,7 +602,7 @@ const isProcessing = computed(() => {
               <read-only-component label="Email">
                     <cds-tooltip>
                       <div class="sb-tooltip-trigger" aria-labelledby="content">
-                        <a :href="'mailto:'+data.contact[0].emailAddress"><span class="body-compact-01-colorless">{{ data.contact[0].emailAddress }}</span></a>
+                        <a :href="'mailto:'+data.contact[0].emailAddress"><span class="body-compact-01 colorless">{{ data.contact[0].emailAddress }}</span></a>
                       </div>
                       <cds-tooltip-content id="content">
                         Click to send email
@@ -613,7 +613,7 @@ const isProcessing = computed(() => {
                   <read-only-component label="Phone number">
                     <cds-tooltip>
                       <div class="sb-tooltip-trigger" aria-labelledby="content">
-                        <a :href="'tel:'+data.contact[0].phoneNumber"><span class="body-compact-01-colorless">{{ data.contact[0].phoneNumber }}</span></a>
+                        <a :href="'tel:'+data.contact[0].phoneNumber"><span class="body-compact-01 colorless">{{ data.contact[0].phoneNumber }}</span></a>
                       </div>
                       <cds-tooltip-content id="content">
                         Click to call
@@ -681,7 +681,7 @@ const isProcessing = computed(() => {
                 <read-only-component label="Email">
                   <cds-tooltip>
                     <div class="sb-tooltip-trigger" aria-labelledby="content">
-                      <a :href="'mailto:'+contact.emailAddress"><span class="body-compact-01-colorless">{{ contact.emailAddress }}</span></a>
+                      <a :href="'mailto:'+contact.emailAddress"><span class="body-compact-01 colorless">{{ contact.emailAddress }}</span></a>
                     </div>
                     <cds-tooltip-content id="content">
                       Click to send email
@@ -692,7 +692,7 @@ const isProcessing = computed(() => {
                 <read-only-component label="Phone number">
                   <cds-tooltip>
                     <div class="sb-tooltip-trigger" aria-labelledby="content">
-                      <a :href="'tel:'+contact.phoneNumber"><span class="body-compact-01-colorless">{{ contact.phoneNumber }}</span></a>
+                      <a :href="'tel:'+contact.phoneNumber"><span class="body-compact-01 colorless">{{ contact.phoneNumber }}</span></a>
                     </div>
                     <cds-tooltip-content id="content">
                       Click to call
