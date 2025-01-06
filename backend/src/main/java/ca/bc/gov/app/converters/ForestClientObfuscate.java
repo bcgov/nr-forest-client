@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import lombok.SneakyThrows;
@@ -110,7 +111,7 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
     }
 
     if ("birthdate".equals(propName)) {
-      return obfuscateBirthdate((LocalDate) value);
+      return obfuscateBirthdate((LocalDateTime) value);
     }
 
     return value.toString();
@@ -122,7 +123,7 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
    * @param value The birthdate to obfuscate.
    * @return The obfuscated birthdate as a string.
    */
-  private String obfuscateBirthdate(LocalDate value) {
+  private String obfuscateBirthdate(LocalDateTime value) {
     return String.format("%d-**-**", value.getYear());
   }
 

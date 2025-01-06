@@ -1,6 +1,6 @@
 package ca.bc.gov.app.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.With;
 
@@ -22,14 +22,14 @@ public record ForestClientDetailsDto(
     String clientAcronym,
     String wcbFirmNumber,
     String clientComment,
-    LocalDate clientCommentUpdateDate,
+    LocalDateTime clientCommentUpdateDate,
     String clientCommentUpdateUser,
     String goodStandingInd,
-    LocalDate birthdate,
-    
+    LocalDateTime birthdate,
+
     List<ForestClientLocationDto> addresses,
     List<ForestClientContactDto> contacts,
     List<ClientDoingBusinessAsDto> doingBusinessAs
-  ) {
-    
-  }
+) {
+
+}
