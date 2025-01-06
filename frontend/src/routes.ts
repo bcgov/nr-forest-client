@@ -19,7 +19,7 @@ import NotFoundPage from "@/pages/NotFoundPage.vue";
 import LogoutPage from "@/pages/LogoutPage.vue";
 import SearchPage from "@/pages/SearchPage.vue";
 import ClientDetailsPage from "@/pages/ClientDetailsPage.vue";
-import TimelinePage from "@/pages/TimelinePage.vue";
+import ActivityLogPage from "@/pages/ActivityLogPage.vue";
 
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -52,9 +52,9 @@ export const routes = [
     },
   },
   {
-    path: "/timeline",
-    name: "timeline",
-    component: TimelinePage,
+    path: "/activity-log",
+    name: "activity-log",
+    component: ActivityLogPage,
     props: true,
     meta: {
       format: "full",
