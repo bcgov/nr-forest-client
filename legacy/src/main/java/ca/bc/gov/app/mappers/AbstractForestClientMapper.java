@@ -51,7 +51,7 @@ public interface AbstractForestClientMapper<D, E> {
   }
 
   @Named("AddToListQualifier")
-  default List<String> addToList(String value){
+  default List<String> addToList(String value) {
     return value != null ? List.of(value) : List.of();
   }
 
