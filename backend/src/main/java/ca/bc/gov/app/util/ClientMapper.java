@@ -160,6 +160,19 @@ public class ClientMapper {
             .orElse(0);
   }
 
+  public static Integer getLocationIdByName(
+      List<SubmissionLocationEntity> locations,
+      String locationName
+  ) {
+    return
+        locations
+            .stream()
+            .filter(location -> locationName.equalsIgnoreCase(location.getName()))
+            .map(SubmissionLocationEntity::getSubmissionLocationId)
+            .findFirst()
+            .orElse(0);
+  }
+
   public static Map<String, String> parseName(String displayName, String provider) {
     String[] nameParts =
         displayName.contains(",")
