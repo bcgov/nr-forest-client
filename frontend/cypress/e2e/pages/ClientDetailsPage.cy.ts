@@ -1,4 +1,6 @@
 describe("Client Details Page", () => {
+  const greenDomain = Cypress.env("VITE_GREEN_DOMAIN");
+
   const getTestRole = (ctx: Mocha.Context) => {
     const titlePath = ctx.currentTest.titlePath();
     for (const title of titlePath.reverse()) {
@@ -345,13 +347,43 @@ describe("Client Details Page", () => {
       cy.get("#panel-related").contains("Under construction").should("be.visible");
     });
 
-    const greenDomain = Cypress.env("VITE_GREEN_DOMAIN");
-
     it("should open the Related Client page in the legacy application", () => {
       cy.get("#open-related-clients-btn").click();
       cy.get("@windowOpen").should(
         "be.calledWith",
         `https://${greenDomain}/int/client/client04RelatedClientListAction.do?bean.clientNumber=${clientNumber}`,
+        "_blank",
+        "noopener",
+      );
+    });
+  });
+
+  describe("activity log tab", () => {
+    const clientNumber = "12321";
+    beforeEach(() => {
+      cy.visit(`/clients/details/${clientNumber}`);
+
+      cy.window().then((win) => {
+        cy.stub(win, "open").as("windowOpen");
+      });
+
+      // Switch to the Activity log tab
+      cy.get("#tab-activity").click();
+
+      // Make sure the current tab panel was effectively switched
+      cy.get("#panel-locations").should("have.attr", "hidden");
+      cy.get("#panel-activity").should("not.have.attr", "hidden");
+    });
+
+    it("should display the Under construction message", () => {
+      cy.get("#panel-activity").contains("Under construction").should("be.visible");
+    });
+
+    it("should open the Maintenance page in the legacy application", () => {
+      cy.get("#open-maintenance-btn").click();
+      cy.get("@windowOpen").should(
+        "be.calledWith",
+        `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
         "_blank",
         "noopener",
       );
