@@ -3,6 +3,7 @@ package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,7 @@ class ClientContactControllerIntegrationTest extends
                 new ForestClientContactDto(
                     clientNumber,
                     "00",
+                    List.of("00"),
                     "BL",
                     "James Baxter",
                     "2502502555",

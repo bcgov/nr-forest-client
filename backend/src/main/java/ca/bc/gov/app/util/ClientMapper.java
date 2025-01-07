@@ -18,6 +18,9 @@ import org.apache.commons.lang3.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientMapper {
 
+  public static final String FIRST_NAME = "firstName";
+  public static final String LAST_NAME = "lastName";
+
   /**
    * Maps a {@link ClientBusinessInformationDto} object to a {@link SubmissionDetailEntity} object,
    * using the specified submission ID.
@@ -160,6 +163,19 @@ public class ClientMapper {
             .orElse(0);
   }
 
+  public static Integer getLocationIdByName(
+      List<SubmissionLocationEntity> locations,
+      String locationName
+  ) {
+    return
+        locations
+            .stream()
+            .filter(location -> locationName.equalsIgnoreCase(location.getName()))
+            .map(SubmissionLocationEntity::getSubmissionLocationId)
+            .findFirst()
+            .orElse(0);
+  }
+
   public static Map<String, String> parseName(String displayName, String provider) {
     String[] nameParts =
         displayName.contains(",")
@@ -168,13 +184,13 @@ public class ClientMapper {
 
     if ("IDIR".equalsIgnoreCase(provider) && nameParts.length >= 2) {
 
-      String firstName = nameParts[1].replaceAll("\\s+\\w+:\\w+$", StringUtils.EMPTY).trim();
+      String firstName = nameParts[1].replaceAll("\\s+[^\\s:]+:[^\\s:]+$", StringUtils.EMPTY).trim();
       String lastName = nameParts[0].trim();
 
       return
           Map.of(
-              "firstName", firstName.split(" ")[0].trim(),
-              "lastName",
+              FIRST_NAME, firstName.split(" ")[0].trim(),
+              LAST_NAME,
 
               Stream.concat(
                       Stream
@@ -187,14 +203,14 @@ public class ClientMapper {
 
     } else if (nameParts.length >= 2) {
       return Map.of(
-          "firstName", nameParts[0].trim(),
-          "lastName", String.join(" ", Arrays.copyOfRange(nameParts, 1, nameParts.length))
+          FIRST_NAME, nameParts[0].trim(),
+          LAST_NAME, String.join(" ", Arrays.copyOfRange(nameParts, 1, nameParts.length))
       );
     }
 
     return Map.of(
-        "firstName", nameParts[0],
-        "lastName", ""
+        FIRST_NAME, nameParts[0],
+        LAST_NAME, ""
     );
   }
 

@@ -13,7 +13,7 @@
     "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
     "contacts": [
         {
-            "clientLocnCode": ["00"],
+            "locationCode": ["00"],
             "contactCode": "00",
             "contactName": "Cheryl Bibby",
             "contactTypeCode": "BL",
@@ -24,7 +24,7 @@
             "emailAddress": "cheryl@ktb.com"
         },
         {
-            "clientLocnCode": ["01", "02"],
+            "locationCode": ["01", "02"],
             "contactCode": "01",
             "contactName": "Edward Burns",
             "contactTypeCode": "DI",
@@ -35,7 +35,7 @@
             "emailAddress": "burns@ktb.com"
         },
         {
-            "clientLocnCode": ["02"],
+            "locationCode": ["02"],
             "contactCode": "02",
             "contactName": "Christoffer Stewart",
             "contactTypeCode": "BL",
