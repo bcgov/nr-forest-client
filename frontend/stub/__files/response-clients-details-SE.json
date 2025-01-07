@@ -18,7 +18,7 @@
     "contacts": [],
     "addresses": [
         {
-            "clientLocnName": "Mailing address",
+            "clientLocnName": "",
             "clientLocnCode": "00",
             "addressOne":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
             "addressTwo":"C/O Tony Pineda",
