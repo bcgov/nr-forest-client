@@ -231,7 +231,7 @@ describe("Client Details Page", () => {
         });
       });
 
-      it("displays the contact names on the accordions' titles sorted by contact name", () => {
+      it("displays the contacts names on the accordions' titles sorted by contact name", () => {
         cy.get("#contact-0 [slot='title']").contains("Cheryl Bibby");
         cy.get("#contact-1 [slot='title']").contains("Christoffer Stewart");
         cy.get("#contact-2 [slot='title']").contains("Edward Burns");
