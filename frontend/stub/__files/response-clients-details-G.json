@@ -14,7 +14,6 @@
     "contacts": [
         {
             "locationCode": ["00"],
-            "contactCode": "00",
             "contactName": "Cheryl Bibby",
             "contactTypeCode": "BL",
             "contactTypeDesc": "Billing",
@@ -25,7 +24,6 @@
         },
         {
             "locationCode": ["01", "02"],
-            "contactCode": "01",
             "contactName": "Edward Burns",
             "contactTypeCode": "DI",
             "contactTypeDesc": "Director",
@@ -36,7 +34,6 @@
         },
         {
             "locationCode": ["02"],
-            "contactCode": "02",
             "contactName": "Christoffer Stewart",
             "contactTypeCode": "BL",
             "contactTypeDesc": "Billing",

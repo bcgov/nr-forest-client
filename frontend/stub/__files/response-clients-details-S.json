@@ -19,7 +19,6 @@
     "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
     "contacts": [{
         "locationCode": ["00"],
-        "contactCode": "00",
         "contactName": "Cheryl Bibby",
         "contactTypeCode": "BL",
         "contactTypeDesc": "Billing",
