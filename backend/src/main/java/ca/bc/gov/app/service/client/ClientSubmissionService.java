@@ -531,7 +531,7 @@ public class ClientSubmissionService {
     });
   }
 
-  private Mono<SubmissionLocationContactEntity> saveAndAssociateContact(
+  private Flux<SubmissionLocationContactEntity> saveAndAssociateContact(
       List<SubmissionLocationEntity> locations,
       ClientContactDto contact,
       Integer submissionId,
@@ -544,14 +544,18 @@ public class ClientSubmissionService {
             .map(contactEntity -> contactEntity.withSubmissionId(submissionId))
             .map(contactEntity -> contactEntity.withUserId(contact.index() == 0 ? userId : null))
             .flatMap(submissionContactRepository::save)
-            .map(contactEntity ->
-                SubmissionLocationContactEntity
-                    .builder()
-                    .submissionLocationId(getLocationIdByName(locations, contact))
-                    .submissionContactId(contactEntity.getSubmissionContactId())
-                    .build()
-            )
-            .flatMap(submissionLocationContactRepository::save);
+            .flatMapMany(contactEntity ->
+                Flux
+                    .fromIterable(contact.locationNames())
+                    .map(locationName ->
+                        SubmissionLocationContactEntity
+                            .builder()
+                            .submissionLocationId(getLocationIdByName(locations, locationName.text()))
+                            .submissionContactId(contactEntity.getSubmissionContactId())
+                            .build()
+                    )
+                    .flatMap(submissionLocationContactRepository::save)
+            );
   }
 
   private Mono<List<SubmissionLocationEntity>> saveAddresses(

@@ -1830,8 +1830,31 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
 
     .empty-table-list {
       height: 100%;
+      gap: 1rem;
 
-      svg {
+      .description {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .inner-description {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .body-compact-01 {
+        width: unset;
+      }
+
+      cds-button span {
+        width: unset;
+      }
+
+      & > svg {
         height: 3rem;
         width: 3rem;
       }

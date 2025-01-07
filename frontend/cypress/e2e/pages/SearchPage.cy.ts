@@ -1,6 +1,8 @@
 import type { ClientSearchResult } from "@/dto/CommonTypesDto";
 
 describe("Search Page", () => {
+  const greenDomain = Cypress.env("VITE_GREEN_DOMAIN");
+
   const predictiveSearchCounter = {
     count: 0,
   };
@@ -189,7 +191,6 @@ describe("Search Page", () => {
       });
       describe("and STAFF_CLIENT_DETAIL is turned off", () => {
         it("navigates to the client details in the legacy application", () => {
-          const greenDomain = "green-domain.com";
           cy.get("@windowOpen").should(
             "be.calledWith",
             `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
@@ -246,7 +247,6 @@ describe("Search Page", () => {
         });
         describe("and STAFF_CLIENT_DETAIL is turned off", () => {
           it("navigates to the client details in the legacy application", () => {
-            const greenDomain = "green-domain.com";
             cy.get("@windowOpen").should(
               "be.calledWith",
               `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
