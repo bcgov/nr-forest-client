@@ -4,8 +4,7 @@ import ContactView from "@/pages/client-details/ContactView.vue";
 describe("<contact-view />", () => {
   const getDefaultProps = () => ({
     data: {
-      clientLocnCode: ["00"],
-      contactCode: "00",
+      locationCode: ["01"],
       contactName: "Cheryl Bibby",
       contactTypeCode: "BL",
       contactTypeDesc: "Billing",
@@ -14,7 +13,8 @@ describe("<contact-view />", () => {
       faxNumber: "(250) 286-3768",
       emailAddress: "cheryl@ktb.com",
     } as ClientContact,
-    associatedLocationsString: "00 - Mailing address",
+    index: 0,
+    associatedLocationsString: "01 - Town office",
   });
 
   let currentProps: ReturnType<typeof getDefaultProps> = null;
@@ -49,18 +49,18 @@ describe("<contact-view />", () => {
 
     const emailPrefix = "mailto:";
 
-    cy.get("#contact-00-general-section").within(() => {
-      testField("#contact-00-contactType", currentProps.data.contactTypeDesc);
-      testField("#contact-00-associatedLocations", currentProps.associatedLocationsString);
-      testField("#contact-00-emailAddress", currentProps.data.emailAddress, emailPrefix);
+    cy.get("#contact-0-general-section").within(() => {
+      testField("#contact-0-contactType", currentProps.data.contactTypeDesc);
+      testField("#contact-0-associatedLocations", currentProps.associatedLocationsString);
+      testField("#contact-0-emailAddress", currentProps.data.emailAddress, emailPrefix);
     });
 
     const phonePrefix = "tel:";
 
-    cy.get("#contact-00-phone-section").within(() => {
-      testField("#contact-00-primaryPhoneNumber", currentProps.data.businessPhone, phonePrefix);
-      testField("#contact-00-secondaryPhoneNumber", currentProps.data.secondaryPhone, phonePrefix);
-      testField("#contact-00-fax", currentProps.data.faxNumber, phonePrefix);
+    cy.get("#contact-0-phone-section").within(() => {
+      testField("#contact-0-primaryPhoneNumber", currentProps.data.businessPhone, phonePrefix);
+      testField("#contact-0-secondaryPhoneNumber", currentProps.data.secondaryPhone, phonePrefix);
+      testField("#contact-0-fax", currentProps.data.faxNumber, phonePrefix);
     });
   });
 
@@ -75,7 +75,7 @@ describe("<contact-view />", () => {
       ...getDefaultProps(),
       data,
     });
-    cy.get("#contact-00-phone-section").should("not.exist");
+    cy.get("#contact-0-phone-section").should("not.exist");
   });
 
   it("hides general fields when they are empty", () => {
@@ -88,14 +88,14 @@ describe("<contact-view />", () => {
       data,
     });
 
-    testFieldHidden("#contact-00-emailAddress");
+    testFieldHidden("#contact-0-emailAddress");
   });
 
   describe("while there is at least one phone to be displayed", () => {
     const scenarios = [
-      ["businessPhone", "#contact-00-primaryPhoneNumber"],
-      ["secondaryPhone", "#contact-00-secondaryPhoneNumber"],
-      ["faxNumber", "#contact-00-fax"],
+      ["businessPhone", "#contact-0-primaryPhoneNumber"],
+      ["secondaryPhone", "#contact-0-secondaryPhoneNumber"],
+      ["faxNumber", "#contact-0-fax"],
     ];
 
     scenarios.forEach((scenario) => {
@@ -116,7 +116,7 @@ describe("<contact-view />", () => {
           });
         });
         it(`displays the one phone with value: ${propName}`, () => {
-          cy.get("#contact-00-phone-section").within(() => {
+          cy.get("#contact-0-phone-section").within(() => {
             testField(selector, currentProps.data[propName]);
           });
         });
