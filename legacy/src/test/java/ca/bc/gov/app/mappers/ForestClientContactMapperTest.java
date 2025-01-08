@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -20,6 +21,7 @@ class ForestClientContactMapperTest {
   ForestClientContactDto dto =  new ForestClientContactDto(
       "00000001",
       "00",
+      List.of("00"),
       "BL",
       "James Baxter",
       "2502502550",

@@ -97,7 +97,7 @@ const sortedLocations = computed(() =>
 );
 
 const sortedContacts = computed(() =>
-  data.value.contacts?.toSorted((a, b) => compareString(a.contactCode, b.contactCode)),
+  data.value.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
 );
 
 const formatLocations = (
@@ -116,8 +116,8 @@ const formatLocations = (
 
 const associatedLocationsRecord = computed(() => {
   const result: Record<string, string> = {};
-  sortedContacts.value?.forEach((contact) => {
-    result[contact.contactCode] = formatLocations(contact.clientLocnCode);
+  sortedContacts.value?.forEach((contact, index) => {
+    result[index] = formatLocations(contact.locationCode);
   });
   return result;
 });
@@ -281,26 +281,27 @@ const toolsSvg = useSvg(tools);
             {{ pluralize("contact", data.contacts?.length) }}
           </h3>
           <cds-accordion
-            v-for="contact in sortedContacts"
-            :key="contact.contactCode"
-            :id="`contact-${contact.contactCode}`"
+            v-for="(contact, index) in sortedContacts"
+            :key="contact.contactName"
+            :id="`contact-${index}`"
           >
             <cds-accordion-item size="lg" class="grouping-13">
               <div slot="title" class="flex-column-0_25rem">
                 <span class="label-with-icon">
                   <User20 />
-                  {{ contact.contactCode }} - {{ contact.contactName }}
+                  {{ contact.contactName }}
                 </span>
                 <span
-                  :id="`contact-${contact.contactCode}-title-locations`"
+                  :id="`contact-${index}-title-locations`"
                   class="hide-open body-compact-01 padding-left-1_625rem"
                 >
-                  {{ associatedLocationsRecord[contact.contactCode] }}
+                  {{ associatedLocationsRecord[index] }}
                 </span>
               </div>
               <contact-view
                 :data="contact"
-                :associatedLocationsString="associatedLocationsRecord[contact.contactCode]"
+                :index="index"
+                :associatedLocationsString="associatedLocationsRecord[index]"
               />
             </cds-accordion-item>
           </cds-accordion>

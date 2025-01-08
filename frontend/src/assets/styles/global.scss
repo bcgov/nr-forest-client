@@ -956,7 +956,8 @@ cds-actionable-notification * {
   align-self: stretch;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 1rem;
+  border-radius: 0 0 0.5rem 0.5rem;
   background: #fff;
   padding: 1rem;
 }
@@ -1031,6 +1032,10 @@ cds-actionable-notification * {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+cds-accordion-item:not([open]) {
+  gap: 0; // removes unwanted extra space when accordion item is closed.
 }
 
 .grouping-13 {
@@ -1475,6 +1480,10 @@ cds-side-nav {
   flex-grow: 0;
   box-sizing: border-box;
   width: 100%;
+}
+
+cds-accordion-item::part(expando) {
+  min-block-size: 3rem;
 }
 
 cds-accordion-item[open]:not([disabled])::part(content),
