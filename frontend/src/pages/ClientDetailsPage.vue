@@ -116,13 +116,15 @@ const formatLocationsList = (
   allLocations: ClientLocation[] = data.value.addresses,
 ) => {
   const list: string[] = [];
-  for (const curLocationCode of locationCodes.toSorted()) {
-    const location = allLocations.find(
-      (curLocation) => curLocation.clientLocnCode === curLocationCode,
-    );
+  if (Array.isArray(locationCodes)) {
+    for (const curLocationCode of locationCodes.toSorted()) {
+      const location = allLocations.find(
+        (curLocation) => curLocation.clientLocnCode === curLocationCode,
+      );
 
-    const title = formatLocation(location);
-    list.push(title);
+      const title = formatLocation(location);
+      list.push(title);
+    }
   }
   return list.join(", ");
 };

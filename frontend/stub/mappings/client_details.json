@@ -106,6 +106,21 @@
       }
     },
     {
+      "name": "Client Details Individual - no locations",
+      "request": {
+        "urlPattern": "/api/clients/details/[nN][lL](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-NL.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Client Details - Error 400",
       "request": {
         "urlPattern": "/api/clients/details/(.*)e4..",
