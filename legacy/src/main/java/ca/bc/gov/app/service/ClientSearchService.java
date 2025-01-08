@@ -714,7 +714,12 @@ public class ClientSearchService {
     return Flux
         .merge(
             forestClientRepository.findLocationAuditLogsByClientNumber(clientNumber),
-            forestClientRepository.findClientInformationAuditLogsByClientNumber(clientNumber))
+            forestClientRepository.findClientInformationAuditLogsByClientNumber(clientNumber)
+        )
+        .sort(Comparator
+            .comparing(AuditLogDto::updateTimestamp, Comparator.nullsLast(Comparator.naturalOrder())).reversed()
+            .thenComparing(Comparator.comparing(AuditLogDto::tableName, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+            .thenComparing(Comparator.comparing(AuditLogDto::idx, Comparator.nullsLast(Comparator.naturalOrder())).reversed()))
         .switchIfEmpty(Flux.empty())
         .doOnNext(dto -> log.info("Found client with client number {}", clientNumber));
   }

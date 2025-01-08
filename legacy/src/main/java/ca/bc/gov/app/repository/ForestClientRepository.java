@@ -470,6 +470,19 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           UPDATE_USERID
         FROM THE.CLI_LOCN_AUDIT
         WHERE CLIENT_NUMBER = :clientNumber
+        
+        UNION ALL
+
+        SELECT
+          'CLI_LOCN_AUDIT' AS TABLE_NAME,
+          CLIENT_LOCN_CODE AS IDX,
+          'CLI_LOCN_COMMENT' AS COLUMN_NAME,
+          CLI_LOCN_COMMENT AS NEW_VALUE,
+          LAG(CLI_LOCN_COMMENT) OVER (PARTITION BY CLIENT_LOCN_CODE ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+          UPDATE_TIMESTAMP,
+          UPDATE_USERID
+        FROM THE.CLI_LOCN_AUDIT
+        WHERE CLIENT_NUMBER = :clientNumber
       )
 
       SELECT
@@ -494,6 +507,209 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       """)
   Flux<AuditLogDto> findLocationAuditLogsByClientNumber(String clientNumber);
 
+  @Query("""
+      WITH AUDIT_DATA AS (
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'CLIENT_NAME' AS COLUMN_NAME,
+            CLIENT_NAME AS NEW_VALUE,
+            LAG(CLIENT_NAME) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'LEGAL_FIRST_NAME' AS COLUMN_NAME,
+            LEGAL_FIRST_NAME AS NEW_VALUE,
+            LAG(LEGAL_FIRST_NAME) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'LEGAL_MIDDLE_NAME' AS COLUMN_NAME,
+            LEGAL_MIDDLE_NAME AS NEW_VALUE,
+            LAG(LEGAL_MIDDLE_NAME) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'CLIENT_STATUS_CODE' AS COLUMN_NAME,
+            CLIENT_STATUS_CODE AS NEW_VALUE,
+            LAG(CLIENT_STATUS_CODE) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'CLIENT_TYPE_CODE' AS COLUMN_NAME,
+            CLIENT_TYPE_CODE AS NEW_VALUE,
+            LAG(CLIENT_TYPE_CODE) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'BIRTHDATE' AS COLUMN_NAME,
+            TO_CHAR(BIRTHDATE, 'YYYY-MM-DD') AS NEW_VALUE,
+            LAG(TO_CHAR(BIRTHDATE, 'YYYY-MM-DD')) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'CLIENT_ID_TYPE_CODE' AS COLUMN_NAME,
+            CLIENT_ID_TYPE_CODE AS NEW_VALUE,
+            LAG(CLIENT_ID_TYPE_CODE) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'CLIENT_IDENTIFICATION' AS COLUMN_NAME,
+            CLIENT_IDENTIFICATION AS NEW_VALUE,
+            LAG(CLIENT_IDENTIFICATION) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'REGISTRY_COMPANY_TYPE_CODE' AS COLUMN_NAME,
+            REGISTRY_COMPANY_TYPE_CODE AS NEW_VALUE,
+            LAG(REGISTRY_COMPANY_TYPE_CODE) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'CORP_REGN_NMBR' AS COLUMN_NAME,
+            CORP_REGN_NMBR AS NEW_VALUE,
+            LAG(CORP_REGN_NMBR) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'CLIENT_ACRONYM' AS COLUMN_NAME,
+            CLIENT_ACRONYM AS NEW_VALUE,
+            LAG(CLIENT_ACRONYM) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'WCB_FIRM_NUMBER' AS COLUMN_NAME,
+            WCB_FIRM_NUMBER AS NEW_VALUE,
+            LAG(WCB_FIRM_NUMBER) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'OCG_SUPPLIER_NMBR' AS COLUMN_NAME,
+            OCG_SUPPLIER_NMBR AS NEW_VALUE,
+            LAG(OCG_SUPPLIER_NMBR) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+
+          UNION ALL
+
+          SELECT
+            'FOR_CLI_AUDIT' AS TABLE_NAME,
+            '' AS IDX,
+            'CLIENT_COMMENT' AS COLUMN_NAME,
+            CLIENT_COMMENT AS NEW_VALUE,
+            LAG(CLIENT_COMMENT) OVER (PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+            UPDATE_TIMESTAMP,
+            UPDATE_USERID
+          FROM THE.FOR_CLI_AUDIT
+          WHERE CLIENT_NUMBER = :clientNumber
+        )
+
+        SELECT
+          TABLE_NAME,
+          IDX,
+          COLUMN_NAME,
+          OLD_VALUE,
+          NEW_VALUE,
+          UPDATE_TIMESTAMP,
+          UPDATE_USERID,
+          CASE
+            WHEN OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL THEN 'INSERT'
+            WHEN OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL THEN 'DELETE'
+            WHEN TRIM(OLD_VALUE) <> TRIM(NEW_VALUE) THEN 'UPDATE'
+          END AS CHANGE_TYPE
+        FROM AUDIT_DATA
+        WHERE
+          (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL)
+          OR (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL)
+          OR (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
+        ORDER BY UPDATE_TIMESTAMP DESC
+      """)
   Flux<AuditLogDto> findClientInformationAuditLogsByClientNumber(String clientNumber);
-  
+
 }
