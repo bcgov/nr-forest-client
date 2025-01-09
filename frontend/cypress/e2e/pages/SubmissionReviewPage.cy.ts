@@ -222,7 +222,7 @@ describe("Submission Review Page", () => {
         cy.get("cds-actionable-notification")
         .should("not.exist");
   
-        cy.get('.grouping-10 > :nth-child(2) > .title-group-01 > .label-01')
+        cy.get('.grouping-10 > :nth-child(2) > .title-group-01 > .label-02')
         .should("contain", "Client number");
           
         cy.get(".grouping-10 > :nth-child(2) > .body-compact-01")
@@ -364,7 +364,28 @@ describe("Submission Review Page", () => {
     });
 
   });
-  
 
+  it("displays the birthdate when clientType is Individual", () => {
+    beforeInit("test-case-review-staff-pending");
+    cy.contains("h2", "Client summary")
+      .parent()
+      .within(() => {
+        cy.contains("Client type").parents(".grouping-11").first().contains("Individual");
+        cy.contains("Birthdate").should("be.visible");
+      });
+  });
+
+  it("displays the birthdate when clientType is Registered sole proprietorship", () => {
+    beforeInit("test-case-review-rsp");
+    cy.contains("h2", "Client summary")
+      .parent()
+      .within(() => {
+        cy.contains("Client type")
+          .parents(".grouping-11")
+          .first()
+          .contains("Registered sole proprietorship");
+        cy.contains("Birthdate").should("be.visible");
+      });
+  });
   
 });

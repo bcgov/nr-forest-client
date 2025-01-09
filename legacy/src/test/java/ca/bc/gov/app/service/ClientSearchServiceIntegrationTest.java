@@ -114,7 +114,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
             .complexSearch(searchValue, PageRequest.of(0, 5))
             .as(StepVerifier::create);
 
-    if(StringUtils.isNotBlank(expectedClientNumber)) {
+    if (StringUtils.isNotBlank(expectedClientNumber)) {
       test
           .assertNext(dto -> {
             assertNotNull(dto);
@@ -217,7 +217,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
         );
   }
 
-  private static Stream<Arguments> byContact(){
+  private static Stream<Arguments> byContact() {
     return Stream
         .of(
             Arguments.of(new ContactSearchDto(

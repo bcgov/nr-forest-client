@@ -54,12 +54,18 @@ public final class ApplicationConstant {
         dc.district_code as district,
         dc.district_code || ' - ' || dc.description as district_desc
       FROM nrfc.submission s
-      left join nrfc.submission_status_code ssc on ssc.submission_status_code = s.submission_status_code
-      left join nrfc.submission_type_code stc on stc.submission_type_code = s.submission_type_code
-      left join nrfc.submission_detail sd on sd.submission_id = s.submission_id
-      left join nrfc.business_type_code btc on btc.business_type_code = sd.business_type_code
-      left join nrfc.district_code dc on dc.district_code = sd.district_code
-      left join nrfc.client_type_code ctc on ctc.client_type_code = sd.client_type_code
+      left join nrfc.submission_status_code ssc
+        on ssc.submission_status_code = s.submission_status_code
+      left join nrfc.submission_type_code stc
+        on stc.submission_type_code = s.submission_type_code
+      left join nrfc.submission_detail sd
+        on sd.submission_id = s.submission_id
+      left join nrfc.business_type_code btc
+        on btc.business_type_code = sd.business_type_code
+      left join nrfc.district_code dc
+        on dc.district_code = sd.district_code
+      left join nrfc.client_type_code ctc
+        on ctc.client_type_code = sd.client_type_code
       where s.submission_id = :submissionId""";
 
   public static final String SUBMISSION_CONTACTS_QUERY = """
@@ -70,8 +76,16 @@ public final class ApplicationConstant {
         pgp_sym_decrypt(sc.first_name, current_setting('cryptic.key')) as first_name,
         pgp_sym_decrypt(sc.last_name, current_setting('cryptic.key')) as last_name,
         pgp_sym_decrypt(sc.business_phone_number, current_setting('cryptic.key')) as business_phone_number,
-        pgp_sym_decrypt(sc.email_address, current_setting('cryptic.key')) as email_address,
-        (select STRING_AGG(sl.location_name,', ') as locations from nrfc.submission_location sl left join nrfc.submission_location_contact_xref slcx on slcx.submission_location_id = sl.submission_location_id left join nrfc.submission_contact sc on sc.submission_contact_id = slcx.submission_contact_id where sl.submission_id = :submissionId) as locations,
+        pgp_sym_decrypt(sc.email_address, current_setting('cryptic.key')) as email_address,       
+        (
+          select STRING_AGG(sl.location_name,', ') as locations 
+          from nrfc.submission_location sl 
+          left join nrfc.submission_location_contact_xref slcx 
+          on slcx.submission_location_id = sl.submission_location_id 
+          left join nrfc.submission_contact sc 
+          on sc.submission_contact_id = slcx.submission_contact_id 
+          where sl.submission_id = :submissionId
+        ) as locations,
         sc.idp_user_id
       FROM nrfc.submission_contact sc
       left join nrfc.contact_type_code ctc on ctc.contact_type_code = sc.contact_type_code
@@ -90,7 +104,9 @@ public final class ApplicationConstant {
         sl.location_name
       FROM nrfc.submission_location sl
       left join nrfc.country_code cc on cc.country_code = sl.country_code
-      left join nrfc.province_code pc on (pc.province_code = sl.province_code and pc.country_code = cc.country_code)
+      left join nrfc.province_code pc on (
+        pc.province_code = sl.province_code and pc.country_code = cc.country_code
+      )
       where sl.submission_id = :submissionId
       order by sl.submission_location_id""";
 
@@ -108,9 +124,23 @@ public final class ApplicationConstant {
   public static final String ROLE_ADMIN = "CLIENT_ADMIN";
   public static final String ROLE_SUSPEND = "CLIENT_SUSPEND";
 
-  public static final String OPENDATA_FILTER = "<Filter><Or><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike><PropertyIsLike wildCard=\"*\" singleChar=\".\" escape=\"!\"><PropertyName>%s</PropertyName><Literal>*%s*</Literal></PropertyIsLike></Or></Filter>";
+  public static final String OPENDATA_FILTER = "<Filter><Or><PropertyIsLike wildCard=\"*\" "
+                                               + "singleChar=\".\" escape=\"!\">"
+                                               + "<PropertyName>%s</PropertyName>"
+                                               + "<Literal>*%s*</Literal></PropertyIsLike>"
+                                               + "<PropertyIsLike wildCard=\"*\" singleChar=\".\" "
+                                               + "escape=\"!\"><PropertyName>%s</PropertyName>"
+                                               + "<Literal>*%s*</Literal></PropertyIsLike>"
+                                               + "<PropertyIsLike wildCard=\"*\" singleChar=\".\" "
+                                               + "escape=\"!\"><PropertyName>%s</PropertyName>"
+                                               + "<Literal>*%s*</Literal></PropertyIsLike>"
+                                               + "<PropertyIsLike wildCard=\"*\" singleChar=\".\" "
+                                               + "escape=\"!\"><PropertyName>%s</PropertyName>"
+                                               + "<Literal>*%s*</Literal></PropertyIsLike>"
+                                               + "</Or></Filter>";
 
   public static final String MDC_USERID = "X-USER";
 
+  public static final String MDC_USERROLES = "X-Role";
 }
 

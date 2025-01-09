@@ -7,13 +7,14 @@
     "approvedTimestamp": "{{now offset='-1 minutes' format='yyyy-MM-dd HH:mm:ss'}}",
     "updateUser": "Rinaldo Hendrix",
     "business": {
-        "businessType": "Registered Business",
+        "businessType": "R",
         "registrationNumber": "BC{{randomValue length=8 type='NUMERIC'}}",
         "clientNumber":"",
         "organizationName": "Ziemann Group",
         "clientType": "C",
         "clientTypeDesc": "Corporation",
-        "goodStanding": "Y",
+        "goodStandingInd": "Y",
+        "district": "DCC",
         "districtDesc": "DCS - Cascades Natural Resource District"
     },
     "contact": [

@@ -2,6 +2,7 @@ package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
+import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @Slf4j
@@ -34,6 +36,13 @@ public class ClientSearchController {
 
   private final ClientSearchService service;
 
+  /**
+   * Handles the HTTP GET request to search for clients by registration number or company name.
+   *
+   * @param registrationNumber the registration number to search for (optional)
+   * @param companyName        the company name to search for (optional)
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @GetMapping("/registrationOrName")
   public Flux<ForestClientDto> findByIncorporationOrName(
       @RequestParam(required = false) String registrationNumber,
@@ -45,6 +54,16 @@ public class ClientSearchController {
         .findByRegistrationNumberOrCompanyName(registrationNumber, companyName);
   }
 
+  /**
+   * Handles the HTTP GET request to search for individuals by their first name, last name, date of
+   * birth, and optional identification.
+   *
+   * @param firstName      the first name of the individual to search for
+   * @param lastName       the last name of the individual to search for
+   * @param dob            the date of birth of the individual to search for
+   * @param identification the optional identification of the individual to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @GetMapping("/individual")
   public Flux<ForestClientDto> findIndividuals(
       @RequestParam String firstName,
@@ -54,17 +73,30 @@ public class ClientSearchController {
   ) {
     log.info("Receiving request to search by individual {} {} {} {}", firstName, lastName, dob,
         identification);
-    return service.findByIndividual(firstName, lastName, dob, identification,true);
+    return service.findByIndividual(firstName, lastName, dob, identification, true);
   }
 
+  /**
+   * Handles the HTTP GET request to perform a fuzzy match search by company name.
+   *
+   * @param companyName the company name to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @GetMapping("/match")
   public Flux<ForestClientDto> matchBy(
       @RequestParam String companyName
   ) {
-    log.info("Receiving request to match by company name {}", companyName);
+    log.info("Receiving request to fuzzy match by company name {}", companyName);
     return service.matchBy(companyName);
   }
 
+  /**
+   * Handles the HTTP GET request to search for clients by client ID and last name.
+   *
+   * @param clientId the client ID to search for
+   * @param lastName the last name to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @GetMapping("/idAndLastName")
   public Flux<ForestClientDto> findByIdAndLastName(
       @RequestParam String clientId,
@@ -74,6 +106,25 @@ public class ClientSearchController {
     return service.findByIdAndLastName(clientId, lastName);
   }
 
+  /**
+   * Handles the HTTP GET request to retrieve client details by client number.
+   *
+   * @param clientNumber the client number to search for
+   * @return a Mono containing the client details if found, or an empty Mono if not found
+   */
+  @GetMapping("/clientNumber/{clientNumber}")
+  public Mono<ForestClientDetailsDto> findByClientNumber(@PathVariable String clientNumber) {
+    log.info("Receiving request to search by ID {}", clientNumber);
+    return service.findByClientNumber(clientNumber);
+  }
+
+  /**
+   * Handles the HTTP GET request to search for clients by identification type and value.
+   *
+   * @param idType         the type of identification to search for
+   * @param identification the identification value to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @GetMapping("/id/{idType}/{identification}")
   public Flux<ForestClientDto> findByIdentification(
       @PathVariable String idType,
@@ -83,6 +134,12 @@ public class ClientSearchController {
     return service.findByIdentification(idType, identification);
   }
 
+  /**
+   * Handles the HTTP GET request to search for clients by email.
+   *
+   * @param email the email address to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @GetMapping("/email")
   public Flux<ForestClientDto> findByGeneralEmail(
       @RequestParam String email
@@ -91,6 +148,12 @@ public class ClientSearchController {
     return service.findByGeneralEmail(email);
   }
 
+  /**
+   * Handles the HTTP GET request to search for clients by phone number.
+   *
+   * @param phone the phone number to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @GetMapping("/phone")
   public Flux<ForestClientDto> findByGeneralPhone(
       @RequestParam String phone
@@ -99,6 +162,12 @@ public class ClientSearchController {
     return service.findByGeneralPhoneNumber(phone);
   }
 
+  /**
+   * Handles the HTTP POST request to search for clients by address.
+   *
+   * @param address the address to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @PostMapping("/address")
   public Flux<ForestClientDto> findByLocation(
       @RequestBody AddressSearchDto address
@@ -107,6 +176,12 @@ public class ClientSearchController {
     return service.findByEntireAddress(address);
   }
 
+  /**
+   * Handles the HTTP POST request to search for clients by contact information.
+   *
+   * @param contact the contact information to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @PostMapping("/contact")
   public Flux<ForestClientDto> findByContact(
       @RequestBody ContactSearchDto contact
@@ -115,6 +190,12 @@ public class ClientSearchController {
     return service.findByContact(contact);
   }
 
+  /**
+   * Handles the HTTP GET request to search for clients by acronym.
+   *
+   * @param acronym the acronym to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @GetMapping("/acronym")
   public Flux<ForestClientDto> findByAcronym(
       @RequestParam String acronym
@@ -123,17 +204,30 @@ public class ClientSearchController {
     return service.findByAcronym(acronym);
   }
 
+  /**
+   * Handles the HTTP GET request to search for clients by doing business as (DBA) name.
+   *
+   * @param dbaName the DBA name to search for
+   * @param isFuzzy whether to perform a fuzzy match (default is true)
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @GetMapping("/doingBusinessAs")
   public Flux<ForestClientDto> findByDoingBusinessAs(
       @RequestParam String dbaName,
-      @RequestParam(required = false,defaultValue = "true") Boolean isFuzzy
+      @RequestParam(required = false, defaultValue = "true") Boolean isFuzzy
   ) {
     log.info("Receiving request to search by doing business as name {} being a {} match",
-        dbaName, BooleanUtils.toString(isFuzzy,"fuzzy","full")
+        dbaName, BooleanUtils.toString(isFuzzy, "fuzzy", "full")
     );
-    return service.findByDoingBusinessAs(dbaName,isFuzzy);
+    return service.findByDoingBusinessAs(dbaName, isFuzzy);
   }
 
+  /**
+   * Handles the HTTP GET request to search for clients by client name.
+   *
+   * @param clientName the client name to search for
+   * @return a Flux containing the matching ForestClientDto objects
+   */
   @GetMapping("/clientName")
   public Flux<ForestClientDto> findByClientName(
       @RequestParam String clientName
@@ -141,7 +235,18 @@ public class ClientSearchController {
     log.info("Receiving request to match by company name {}", clientName);
     return service.findByClientName(clientName);
   }
-  
+
+  /**
+   * Handles the HTTP GET request to perform a complex search or retrieve the latest entries. If a
+   * value is provided, it performs a complex search; otherwise, it retrieves the latest entries.
+   * The total count of results is added to the response headers.
+   *
+   * @param value          the search value (optional)
+   * @param page           the page number for pagination (default is 0)
+   * @param size           the page size for pagination (default is 5)
+   * @param serverResponse the server response to add headers to
+   * @return a Flux containing the matching PredictiveSearchResultDto objects
+   */
   @GetMapping
   public Flux<PredictiveSearchResultDto> findByComplexSearch(
       @RequestParam(required = false) String value,
@@ -166,5 +271,5 @@ public class ClientSearchController {
           .map(Pair::getKey);
     }
   }
-  
+
 }

@@ -4,14 +4,15 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import ca.bc.gov.app.service.client.ClientService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import java.util.List;
 import org.apache.commons.text.WordUtils;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
@@ -35,8 +36,19 @@ public class ClientController {
   private final ClientService clientService;
   private final ClientLegacyService clientLegacyService;
 
+  /**
+   * Retrieves the details of a client based on the provided incorporation number.
+   *
+   * <p>This endpoint is used to fetch client details by their incorporation number. The request is
+   * authenticated using a JWT, and additional information (such as user ID, business ID, and
+   * provider) is extracted from the token to authorize the request.
+   *
+   * @param clientNumber the incorporation number of the client whose details are being requested
+   * @param principal    the JWT authentication token containing user and business information
+   * @return a {@link Mono} emitting the {@link ClientDetailsDto} containing the client's details
+   */
   @GetMapping("/{clientNumber}")
-  public Mono<ClientDetailsDto> getClientDetails(
+  public Mono<ClientDetailsDto> getClientDetailsByIncorporationNumber(
       @PathVariable String clientNumber,
       JwtAuthenticationToken principal
   ) {
@@ -45,51 +57,67 @@ public class ClientController {
         JwtPrincipalUtil.getUserId(principal)
     );
     return clientService
-        .getClientDetails(
+        .getClientDetailsByIncorporationNumber(
             clientNumber,
             JwtPrincipalUtil.getUserId(principal),
             JwtPrincipalUtil.getBusinessId(principal),
             JwtPrincipalUtil.getProvider(principal)
         );
   }
-  
+
+  @GetMapping("/details/{clientNumber}")
+  public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(
+      @PathVariable String clientNumber) {
+    log.info("Requesting client details for client number {}", clientNumber);
+    return clientService.getClientDetailsByClientNumber(clientNumber);
+  }
+
+  /**
+   * Performs a full-text search for clients based on the provided keyword, with pagination
+   * support.
+   *
+   * <p>This endpoint allows searching for clients by a keyword. The results are paginated, and the
+   * total count of matching records is included in the response headers.
+   *
+   * @param page           the page number to retrieve (default is 0)
+   * @param size           the number of records per page (default is 10)
+   * @param keyword        the keyword to search for (default is an empty string, which returns all
+   *                       records)
+   * @param serverResponse the HTTP response to include the total count of records in the headers
+   * @return a {@link Flux} emitting {@link ClientListDto} objects containing the search results
+   */
   @GetMapping("/search")
   public Flux<ClientListDto> fullSearch(
       @RequestParam(required = false, defaultValue = "0") int page,
       @RequestParam(required = false, defaultValue = "10") int size,
       @RequestParam(required = false, defaultValue = "") String keyword,
-      ServerHttpResponse serverResponse) {
-    
+      ServerHttpResponse serverResponse
+  ) {
     log.info("Listing clients: page={}, size={}, keyword={}", page, size, keyword);
-    
+
     return clientLegacyService
-        .search(
-            page,
-            size,
-            keyword
-        )
+        .search(page, size, keyword)
         .doOnNext(pair -> {
           Long count = pair.getSecond();
 
           serverResponse
-            .getHeaders()
-            .putIfAbsent(
-                ApplicationConstant.X_TOTAL_COUNT, 
-                List.of(count.toString())
-            );
-          }
-        )
+              .getHeaders()
+              .putIfAbsent(
+                  ApplicationConstant.X_TOTAL_COUNT,
+                  List.of(count.toString())
+              );
+        })
         .map(Pair::getFirst)
-        .doFinally(signalType -> 
-          serverResponse
-            .getHeaders()
-            .putIfAbsent(
-                ApplicationConstant.X_TOTAL_COUNT,
-                List.of("0")
-            )
+        .doFinally(signalType ->
+            serverResponse
+                .getHeaders()
+                .putIfAbsent(
+                    ApplicationConstant.X_TOTAL_COUNT,
+                    List.of("0")
+                )
         );
   }
-  
+
   /**
    * Retrieve a Flux of ClientLookUpDto objects by searching for clients with a specific name.
    *
@@ -104,6 +132,16 @@ public class ClientController {
         .map(client -> client.withName(WordUtils.capitalize(client.name())));
   }
 
+  /**
+   * Finds a client based on their registration number.
+   *
+   * <p>This endpoint retrieves client information by searching for a registration number.
+   * If no client is found, an error is returned.
+   *
+   * @param registrationNumber the registration number of the client to look up
+   * @return a {@link Mono} emitting the {@link ClientLookUpDto} if found, or an error if no data
+   * exists
+   */
   @GetMapping(value = "/incorporation/{registrationNumber}")
   public Mono<ClientLookUpDto> findByRegistrationNumber(
       @PathVariable String registrationNumber) {
@@ -115,12 +153,23 @@ public class ClientController {
         .switchIfEmpty(Mono.error(new NoClientDataFound(registrationNumber)));
   }
 
+  /**
+   * Searches for an individual client by user ID and last name.
+   *
+   * <p>This endpoint fetches an individual client using their user ID and last name.
+   * The request is validated against existing records in the system.
+   *
+   * @param userId   the unique identifier of the individual to search for
+   * @param lastName the last name of the individual to search for
+   * @return a {@link Mono} indicating completion, or an error if the individual is not found
+   */
   @GetMapping(value = "/individual/{userId}")
   public Mono<Void> findByIndividual(
       @PathVariable String userId,
       @RequestParam String lastName
   ) {
-    log.info("Receiving request to search individual with id {} and last name {}", userId,
+    log.info("Receiving request to search individual with id {} and last name {}",
+        userId,
         lastName);
     return clientService.findByIndividual(userId, lastName);
   }

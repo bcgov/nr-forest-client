@@ -1,0 +1,158 @@
+{
+  "mappings": [
+    {
+      "name": "Client Details General Partnership",
+      "request": {
+        "urlPattern": "/api/clients/details/[gG]?(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-G.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details General Partnership - Doing business as",
+      "request": {
+        "urlPattern": "/api/clients/details/[gG][dD](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-GD.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Sole Proprietorship",
+      "request": {
+        "urlPattern": "/api/clients/details/[sS](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-S.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Sole Proprietorship - Some empty fields",
+      "request": {
+        "urlPattern": "/api/clients/details/[sS][eE](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-SE.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Individual",
+      "request": {
+        "urlPattern": "/api/clients/details/[iI](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-I.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Individual - Viewer role",
+      "request": {
+        "urlPattern": "/api/clients/details/[iI][vV](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-IV.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Individual - null addresses and contacts",
+      "request": {
+        "urlPattern": "/api/clients/details/null(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-null.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Individual - no locations",
+      "request": {
+        "urlPattern": "/api/clients/details/[nN][lL](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-NL.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details - Error 400",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)e4..",
+        "method": "GET"
+      },
+      "response": {
+        "status": 404,
+        "body": "Client not found",
+        "fixedDelayMilliseconds": 200
+      }
+    },
+    {
+      "name": "Client Details - Error 500",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)e5..",
+        "method": "GET"
+      },
+      "response": {
+        "status": 500,
+        "body": "Server error",
+        "fixedDelayMilliseconds": 200
+      }
+    },
+    {
+      "name": "Client Details - Error Network",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)enet",
+        "method": "GET"
+      },
+      "response": {
+        "fault": "MALFORMED_RESPONSE_CHUNK"
+      }
+    }
+  ]
+}

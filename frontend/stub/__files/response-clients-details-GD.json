@@ -1,0 +1,62 @@
+{
+    "registryCompanyTypeCode": "GP",
+    "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
+    "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
+    "clientName": "KOVACEK, THOMPSON AND BOYER",
+    "doingBusinessAs": [
+        {"doingBusinessAsName": "KOVACEK Enterprises"},
+        {"doingBusinessAsName": "THOMPSON Enterprises"},
+        {"doingBusinessAsName": "BOYER Enterprises"}
+    ],
+    "clientAcronym": "KTB",
+    "clientTypeCode": "P",
+    "clientTypeDesc": "General Partnership",
+    "goodStandingInd": "Y",
+    "clientStatusCode": "A",
+    "clientStatusDesc": "Active",
+    "clientComment": "Email from Cheryl Bibby to request any letters for sec deposits be mailed to 3000, 28th St, Vernon",
+    "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
+    "contacts": [],
+    "addresses": [
+        {
+            "clientLocnName": "Mailing address",
+            "clientLocnCode": "00",
+            "addressOne":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
+            "addressTwo":"C/O Tony Pineda",
+            "addressThree":"Sample additional info",
+            "countryCode":"CA",
+            "countryDesc":"Canada",
+            "provinceCode":"SK",
+            "provinceDesc":"Saskatchewan",
+            "city":"Hampton",
+            "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "emailAddress": "contact@mail.com",
+            "businessPhone": "(250) 286-3767",
+            "cellPhone": "",
+            "homePhone": "",
+            "faxNumber": "",
+            "cliLocnComment": "Sample location 00 comment",
+            "locnExpiredInd": "Y"
+        },
+        {
+            "clientLocnName": "Accountant's address",
+            "clientLocnCode": "01",
+            "addressOne":"{{randomValue length=4 type='NUMERIC'}} Oak St",
+            "addressTwo":"C/O Mike Oliveira",
+            "addressThree":"",
+            "countryCode":"CA",
+            "countryDesc":"Canada",
+            "provinceCode":"BC",
+            "provinceDesc":"British Columbia",
+            "city":"Deer Lake",
+            "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+            "emailAddress": "account@mail.com",
+            "businessPhone": "(250) 286-4767",
+            "cellPhone": "(250) 555-4700",
+            "homePhone": "",
+            "faxNumber": "",
+            "cliLocnComment": "Sample location 01 comment",
+            "locnExpiredInd": "N"
+        }
+    ]
+}
