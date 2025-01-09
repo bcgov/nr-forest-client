@@ -214,7 +214,7 @@ const toolsSvg = useSvg(tools);
       <div class="grouping-14" v-if="data">
         <div class="grouping-05-short">
           <div>
-            <h2 class="mg-tl-2 heading-06">Client summary</h2>
+            <h2 class="mg-tl-2 heading-05">Client summary</h2>
 
             <div class="grouping-10">
               <summary-view :data="data" />
