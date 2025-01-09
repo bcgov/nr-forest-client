@@ -1,11 +1,17 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import type { ClientContact } from "@/dto/CommonTypesDto";
+import { formatPhoneNumber } from "@/services/ForestClientService";
 
-defineProps<{
+const props = defineProps<{
   data: ClientContact;
   index: number;
   associatedLocationsString: string;
 }>();
+
+const businessPhone = computed(() => formatPhoneNumber(props.data.businessPhone));
+const secondaryPhone = computed(() => formatPhoneNumber(props.data.secondaryPhone));
+const faxNumber = computed(() => formatPhoneNumber(props.data.faxNumber));
 </script>
 
 <template>
@@ -35,8 +41,8 @@ defineProps<{
         :id="`contact-${index}-primaryPhoneNumber`"
         v-if="data.businessPhone"
       >
-        <a :href="`tel:${data.businessPhone}`">
-          <span class="body-compact-01 colorless">{{ data.businessPhone }}</span>
+        <a :href="`tel:${businessPhone}`">
+          <span class="body-compact-01 colorless">{{ businessPhone }}</span>
         </a>
       </read-only-component>
       <read-only-component
@@ -44,13 +50,13 @@ defineProps<{
         :id="`contact-${index}-secondaryPhoneNumber`"
         v-if="data.secondaryPhone"
       >
-        <a :href="`tel:${data.secondaryPhone}`">
-          <span class="body-compact-01 colorless">{{ data.secondaryPhone }}</span>
+        <a :href="`tel:${secondaryPhone}`">
+          <span class="body-compact-01 colorless">{{ secondaryPhone }}</span>
         </a>
       </read-only-component>
       <read-only-component label="Fax" :id="`contact-${index}-fax`" v-if="data.faxNumber">
-        <a :href="`tel:${data.faxNumber}`">
-          <span class="body-compact-01 colorless">{{ data.faxNumber }}</span>
+        <a :href="`tel:${faxNumber}`">
+          <span class="body-compact-01 colorless">{{ faxNumber }}</span>
         </a>
       </read-only-component>
     </div>
