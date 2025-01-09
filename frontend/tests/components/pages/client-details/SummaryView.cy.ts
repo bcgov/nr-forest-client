@@ -115,6 +115,15 @@ describe("<summary-view />", () => {
     cy.get("#dateOfBirth").contains("Date of birth");
   });
 
+  it("sets the birthdate label to 'Year of birth' when date's month and day are masked", () => {
+    const { data } = getDefaultProps();
+    data.birthdate = "1985-**-**";
+
+    mount({ data });
+
+    cy.get("#dateOfBirth").contains("Year of birth");
+  });
+
   it("sets the birthdate label to 'Year of birth' when date has only four digits", () => {
     const { data } = getDefaultProps();
     data.birthdate = "1985";
