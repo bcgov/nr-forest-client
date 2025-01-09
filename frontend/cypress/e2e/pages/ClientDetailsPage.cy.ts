@@ -133,9 +133,9 @@ describe("Client Details Page", () => {
         });
 
         it("displays the location name on the accordion's title", () => {
-          cy.get("#location-00 [slot='title']").contains("Mailing address");
-          cy.get("#location-01 [slot='title']").contains("Accountant's address");
-          cy.get("#location-02 [slot='title']").contains("Warehouse");
+          cy.get("#location-00 [slot='title']").contains("00 - Mailing address");
+          cy.get("#location-01 [slot='title']").contains("01 - Accountant's address");
+          cy.get("#location-02 [slot='title']").contains("02 - Warehouse");
         });
 
         it("displays the address on the accordion's title while it's collapsed", () => {
@@ -155,6 +155,16 @@ describe("Client Details Page", () => {
 
         it("doesn't display the tag Deactivated when location is not expired", () => {
           cy.get("cds-tag#location-01-deactivated").should("not.exist");
+        });
+      });
+
+      describe("location without name", () => {
+        before(() => {
+          cy.visit("/clients/details/se");
+        });
+        it("displays only the location code, without the dash", () => {
+          cy.get("#location-00 [slot='title']").contains("00");
+          cy.get("#location-00 [slot='title']").contains("-").should("not.exist");
         });
       });
     });
@@ -321,6 +331,36 @@ describe("Client Details Page", () => {
               });
             });
           });
+        });
+      });
+
+      describe("1 contact, location without name", () => {
+        beforeEach(() => {
+          cy.visit("/clients/details/se");
+
+          // Switch to the Contacts tab
+          cy.get("#tab-contacts").click();
+
+          // Make sure the current tab panel was effectively switched
+          cy.get("#panel-locations").should("have.attr", "hidden");
+          cy.get("#panel-contacts").should("not.have.attr", "hidden");
+        });
+
+        it("displays the location code in the contact subtitle, without a dash", () => {
+          cy.get("#contact-0-title-locations").contains("00");
+          cy.get("#contact-0-title-locations").contains("-").should("not.exist");
+        });
+
+        /*
+        Note: this test would not be possible on the ContactView component, since the calculation
+        is performed outside that component.
+        */
+        it("displays the location code in the contact's Associated locations, without a dash", () => {
+          // expands the accordion
+          cy.get("#contact-0 cds-accordion-item").click();
+
+          cy.get("#contact-0-associatedLocations").contains("00").should("be.visible");
+          cy.get("#contact-0-associatedLocations").contains("-").should("not.exist");
         });
       });
     });

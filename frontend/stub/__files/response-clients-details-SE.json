@@ -15,10 +15,19 @@
     "clientStatusDesc": "Active",
     "clientComment": "",
     "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
-    "contacts": [],
+    "contacts": [{
+        "locationCode": ["00"],
+        "contactName": "Cheryl Bibby",
+        "contactTypeCode": "BL",
+        "contactTypeDesc": "Billing",
+        "businessPhone": "({{randomValue length=3 type='NUMERIC'}}) {{randomValue length=3 type='NUMERIC'}}-{{randomValue length=4 type='NUMERIC'}}",
+        "secondaryPhone": "",
+        "faxNumber": "",
+        "emailAddress": ""
+    }],
     "addresses": [
         {
-            "clientLocnName": "Mailing address",
+            "clientLocnName": "",
             "clientLocnCode": "00",
             "addressOne":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
             "addressTwo":"C/O Tony Pineda",
