@@ -6,7 +6,7 @@
     "legalFirstName": "Michael",
     "legalMiddleName": "",
     "doingBusinessAs": [],
-    "birthdate": "1962-08-17",
+    "birthdate": "1962-08-17T00:00",
     "clientAcronym": "",
     "clientTypeCode": "RSP",
     "clientTypeDesc": "Registered sole proprietorship",

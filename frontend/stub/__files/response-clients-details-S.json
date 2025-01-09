@@ -8,7 +8,7 @@
     "doingBusinessAs": [
         {"doingBusinessAsName": "Dunder Mifflin Paper Company"}
     ],
-    "birthdate": "1962-08-17",
+    "birthdate": "1962-08-17T00:00",
     "clientAcronym": "DMPC",
     "clientTypeCode": "RSP",
     "clientTypeDesc": "Registered sole proprietorship",

@@ -5,7 +5,7 @@
     "clientName": "Silver",
     "legalFirstName": "John",
     "legalMiddleName": "",
-    "birthdate": "1952-08-17",
+    "birthdate": "1952-08-17T00:00",
     "clientIdTypeCode": "BCDL",
     "clientIdTypeDesc": "British Columbia Driver's Licence",
     "clientIdentification": "64242646",
