@@ -35,6 +35,17 @@ const formatAuditLogDatetime = (timestamp: number): string => {
   return datetimeFormatter.format(new Date(timestamp));
 };
 
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC"
+  });
+
+const formatAuditLogDate = (timestamp: number): string => {
+  return dateFormatter.format(new Date(timestamp));
+};
+
 // Computed property to group audit logs
 const groupedAuditLogs = computed(() => {
   const groups: { [key: string]: AuditLogResult[] } = {};
@@ -87,10 +98,8 @@ const toggleDetails = (index: number) => {
           </tr>
           <tr>
             <td></td>
-            <td v-if="group[0].tableName === 'CLI_LOCN_AUDIT'" 
-                class="label-02">
-                Location {{ group[0].idx }}
-            </td>
+            <td class="label-02">{{ formatAuditLogDate(group[0].updateTimestamp) }}</td>
+            
           </tr>
           <tr>
             <td>&nbsp;</td>
@@ -105,10 +114,16 @@ const toggleDetails = (index: number) => {
 
         <div v-if="detailsVisible[index]" :id="'logDetails'+index" class="grouping-05" style="width: 80%;">
           <div class="body-compact-01">
+            <h4 class="label-with-icon"
+                v-if="group[0].tableName === 'CLI_LOCN_AUDIT'">
+                <Location20 />
+                <strong>Location {{ group[0].idx }}</strong>
+                <br /><br />
+            </h4>
+
             <div v-for="log in group">
-              <!-- Location Audit Fields -->
               <p class="label-02" v-if="log.columnName === 'CLIENT_LOCN_NAME'">Location name:</p>
-              <p class="label-02" v-if="log.columnName === 'HDBS_COMPANY_CODE'">(TBD) HDBS company code:</p>
+              <p class="label-02" v-if="log.columnName === 'HDBS_COMPANY_CODE'">HDBS company code:</p>
               <p class="label-02" v-if="log.columnName === 'ADDRESS_1'">Street address or PO box:</p>
               <p class="label-02" v-if="log.columnName === 'ADDRESS_2'">Delivery information:</p>
               <p class="label-02" v-if="log.columnName === 'ADDRESS_3'">Additional delivery information:</p>
@@ -123,6 +138,9 @@ const toggleDetails = (index: number) => {
               <p class="label-02" v-if="log.columnName === 'EMAIL_ADDRESS'">Email address:</p>
               <p class="label-02" v-if="log.columnName === 'LOCN_EXPIRED_IND'">Location expired:</p>
               <p class="label-02" v-if="log.columnName === 'CLI_LOCN_COMMENT'">Notes:</p>
+              <p class="label-02" v-if="log.columnName === 'RETURNED_MAIL_DATE'">Returned mail date:</p>
+              <p class="label-02" v-if="log.columnName === 'TRUST_LOCATION_IND'">Trust location:</p>
+
               <!-- Client Information Fields -->
               <p class="label-02" v-if="log.columnName === 'CLIENT_NAME'">(TBU) Client name/Last name:</p>
               <p class="label-02" v-if="log.columnName === 'LEGAL_FIRST_NAME'">First name:</p>
@@ -133,7 +151,10 @@ const toggleDetails = (index: number) => {
               <p class="label-02" v-if="log.columnName === 'CLIENT_ID_TYPE_CODE'">ID type:</p>
               <p class="label-02" v-if="log.columnName === 'CLIENT_IDENTIFICATION'">ID number:</p>
               <p class="label-02" v-if="log.columnName === 'REGISTRY_COMPANY_TYPE_CODE'">(TBC) Registry company type:</p>
-              <p class="label-02" v-if="log.columnName === 'CORP_REGN_NMBR'">(TBD) Reg number:</p>
+              <p class="label-02" v-if="log.columnName === 'CORP_REGN_NMBR'">Registration number:</p>
+              <p class="label-02" v-if="log.columnName === 'CLIENT_ACRONYM'">Acronym:</p>
+              <p class="label-02" v-if="log.columnName === 'WCB_FIRM_NUMBER'">WorkSafeBC number:</p>
+              <p class="label-02" v-if="log.columnName === 'OCG_SUPPLIER_NMBR'">OCG supplier number:</p>
               <p><del>{{ log.oldValue }}</del> {{ log.newValue }}</p>
               <br>
             </div>

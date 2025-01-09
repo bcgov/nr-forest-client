@@ -483,14 +483,48 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           UPDATE_USERID
         FROM THE.CLI_LOCN_AUDIT
         WHERE CLIENT_NUMBER = :clientNumber
+        
+        UNION ALL
+
+        SELECT
+          'CLI_LOCN_AUDIT' AS TABLE_NAME,
+          CLIENT_LOCN_CODE AS IDX,
+          'RETURNED_MAIL_DATE' AS COLUMN_NAME,
+            TO_CHAR(RETURNED_MAIL_DATE, 'YYYY-MM-DD') AS NEW_VALUE,
+            LAG(TO_CHAR(RETURNED_MAIL_DATE, 'YYYY-MM-DD')) OVER (PARTITION BY CLIENT_LOCN_CODE ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+          UPDATE_TIMESTAMP,
+          UPDATE_USERID
+        FROM THE.CLI_LOCN_AUDIT
+        WHERE CLIENT_NUMBER = :clientNumber
+        
+        UNION ALL
+
+        SELECT
+          'CLI_LOCN_AUDIT' AS TABLE_NAME,
+          CLIENT_LOCN_CODE AS IDX,
+          'TRUST_LOCATION_IND' AS COLUMN_NAME,
+          TRUST_LOCATION_IND AS NEW_VALUE,
+          LAG(TRUST_LOCATION_IND) OVER (PARTITION BY CLIENT_LOCN_CODE ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
+          UPDATE_TIMESTAMP,
+          UPDATE_USERID
+        FROM THE.CLI_LOCN_AUDIT
+        WHERE CLIENT_NUMBER = :clientNumber
       )
 
       SELECT
         TABLE_NAME,
         IDX,
         COLUMN_NAME,
-        OLD_VALUE,
-        NEW_VALUE,
+        CASE
+          WHEN TRIM(OLD_VALUE) = 'Y' THEN 'Yes'
+          WHEN TRIM(OLD_VALUE) = 'N' THEN 'No'
+          ELSE OLD_VALUE
+        END AS OLD_VALUE,
+        CASE
+          WHEN TRIM(NEW_VALUE) = 'Y' THEN 'Yes'
+          WHEN TRIM(NEW_VALUE) = 'N' THEN 'No'
+          ELSE NEW_VALUE
+        END AS NEW_VALUE,
         UPDATE_TIMESTAMP,
         UPDATE_USERID,
         CASE
@@ -694,8 +728,16 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           TABLE_NAME,
           IDX,
           COLUMN_NAME,
-          OLD_VALUE,
-          NEW_VALUE,
+          CASE
+            WHEN TRIM(OLD_VALUE) = 'Y' THEN 'Yes'
+            WHEN TRIM(OLD_VALUE) = 'N' THEN 'No'
+            ELSE OLD_VALUE
+          END AS OLD_VALUE,
+          CASE
+            WHEN TRIM(NEW_VALUE) = 'Y' THEN 'Yes'
+            WHEN TRIM(NEW_VALUE) = 'N' THEN 'No'
+            ELSE NEW_VALUE
+          END AS NEW_VALUE,
           UPDATE_TIMESTAMP,
           UPDATE_USERID,
           CASE
