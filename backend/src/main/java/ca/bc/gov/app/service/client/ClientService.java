@@ -259,7 +259,7 @@ public class ClientService {
       ForestClientDetailsDto forestClientDetailsDto
   ) {
 
-    if(CollectionUtils.isEmpty(forestClientDetailsDto.contacts()))
+    if (CollectionUtils.isEmpty(forestClientDetailsDto.contacts()))
       return Mono.just(forestClientDetailsDto);
 
     Set<String> contactCodes =

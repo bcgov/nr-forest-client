@@ -143,7 +143,7 @@ const openClientDetails = (clientCode: string) => {
       ? `/clients/details/${clientCode}`
       : `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientCode}`;
 
-    if(featureFlags.STAFF_CLIENT_DETAIL)
+    if (featureFlags.STAFF_CLIENT_DETAIL)
       window.open(url, "_self");
     else
       window.open(url, "_blank", "noopener");
