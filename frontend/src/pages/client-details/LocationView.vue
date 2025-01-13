@@ -38,10 +38,10 @@ const faxNumber = computed(() => formatPhoneNumber(props.data.faxNumber));
             {{ data.addressOne }}
           </span>
           <span :id="`location-${indexString}-city-province`" class="body-compact-01">
-            {{ data.city }}, {{ data.provinceDesc }}
+            {{ data.city }}, {{ data.province }}
           </span>
           <span :id="`location-${indexString}-country`" class="body-compact-01">
-            {{ data.countryDesc }}
+            {{ data.country }}
           </span>
           <span :id="`location-${indexString}-postalCode`" class="body-compact-01">
             {{ data.postalCode }}
