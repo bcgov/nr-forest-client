@@ -5,6 +5,7 @@ import static org.springframework.data.relational.core.query.Query.query;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.IdentificationTypeDto;
 import ca.bc.gov.app.entity.client.ClientTypeCodeEntity;
+import ca.bc.gov.app.entity.client.ContactTypeCodeEntity;
 import ca.bc.gov.app.predicates.QueryPredicates;
 import ca.bc.gov.app.repository.client.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
@@ -13,6 +14,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -155,5 +157,14 @@ public Mono<Map<String, String>> getClientTypes() {
             entity.getDescription()));
   }
 
+  public Mono<Map<String,String>> fetchContactTypesFromList(Set<String> contactTypes){
+
+    return contactTypeCodeRepository
+        .findByContactTypeCodeIn(contactTypes)
+        .collectMap(
+            ContactTypeCodeEntity::getContactTypeCode,
+            ContactTypeCodeEntity::getDescription
+        );
+  }
 
 }
