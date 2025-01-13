@@ -153,6 +153,7 @@ public class ClientService {
   public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(String clientNumber) {
     return legacyService
         .searchByClientNumber(clientNumber)
+        .flatMap(this::populateContactTypes)
         .flatMap(forestClientDetailsDto -> Mono
             .just(forestClientDetailsDto)
             .filter(dto -> (StringUtils.isNotBlank(dto.corpRegnNmbr())))
@@ -164,7 +165,7 @@ public class ClientService {
                     .next()
             )
             .flatMap(documentMono -> populateGoodStandingInd(forestClientDetailsDto, documentMono))
-            .flatMap(this::populateContactTypes)
+
             .onErrorContinue(NoClientDataFound.class, (ex, obj) ->
                 log.error("No data found on BC Registry for client number: {}", clientNumber)
             )
