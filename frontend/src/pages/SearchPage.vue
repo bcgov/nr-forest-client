@@ -142,7 +142,11 @@ const openClientDetails = (clientCode: string) => {
     const url = featureFlags.STAFF_CLIENT_DETAIL
       ? `/clients/details/${clientCode}`
       : `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientCode}`;
-    window.open(url, "_blank", "noopener");
+
+    if(featureFlags.STAFF_CLIENT_DETAIL)
+      window.open(url, "_self");
+    else
+      window.open(url, "_blank", "noopener");
   }
 };
 
