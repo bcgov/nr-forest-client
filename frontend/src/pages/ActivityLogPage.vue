@@ -88,11 +88,18 @@ const toggleDetails = (index: number) => {
             </td>
             <td class="label-02" style="vertical-align: middle;">
               <h4>
-                <span v-if="group[0].tableName === 'FOR_CLI_AUDIT'">Client information </span>
+                <span v-if="group[0].tableName === 'FOR_CLI_AUDIT'">Client summary </span>
                 <span v-if="group[0].tableName === 'CLI_LOCN_AUDIT'">Location </span>
+                <span v-if="group[0].tableName === 'CLI_CON_AUDIT'">Contact </span>
+                
                 <span v-if="group[0].changeType === 'UPDATE'">updated</span>
-                <span v-if="group[0].changeType === 'DELETE'">deleted</span>
+                <span v-if="group[0].changeType === 'DELETE'">updated</span><!-- TBD based on the table -->
                 <span v-if="group[0].changeType === 'INSERT'">added</span>
+
+                <span v-if="group[0].tableName === 'FOR_CLI_AUDIT' &&
+                      group[0].changeType === 'INSERT'">
+                  Client created<!-- TBD based on the index -->
+                </span>
               </h4>
             </td>
           </tr>
@@ -122,43 +129,50 @@ const toggleDetails = (index: number) => {
             </h4>
 
             <div v-for="log in group">
-              <p class="label-02" v-if="log.columnName === 'CLIENT_LOCN_NAME'">Location name:</p>
-              <p class="label-02" v-if="log.columnName === 'HDBS_COMPANY_CODE'">HDBS company code:</p>
-              <p class="label-02" v-if="log.columnName === 'ADDRESS_1'">Street address or PO box:</p>
-              <p class="label-02" v-if="log.columnName === 'ADDRESS_2'">Delivery information:</p>
-              <p class="label-02" v-if="log.columnName === 'ADDRESS_3'">Additional delivery information:</p>
-              <p class="label-02" v-if="log.columnName === 'CITY'">City:</p>
-              <p class="label-02" v-if="log.columnName === 'PROVINCE'">Province/State:</p>
-              <p class="label-02" v-if="log.columnName === 'POSTAL_CODE'">Postal Code:</p>
-              <p class="label-02" v-if="log.columnName === 'COUNTRY'">Country:</p>
-              <p class="label-02" v-if="log.columnName === 'BUSINESS_PHONE'">Primary phone number:</p>
-              <p class="label-02" v-if="log.columnName === 'CELL_PHONE'">Secondary phone number:</p>
-              <p class="label-02" v-if="log.columnName === 'HOME_PHONE'">Tertiary phone number:</p>
-              <p class="label-02" v-if="log.columnName === 'FAX_NUMBER'">Fax:</p>
-              <p class="label-02" v-if="log.columnName === 'EMAIL_ADDRESS'">Email address:</p>
-              <p class="label-02" v-if="log.columnName === 'LOCN_EXPIRED_IND'">Location expired:</p>
-              <p class="label-02" v-if="log.columnName === 'CLI_LOCN_COMMENT'">Notes:</p>
-              <p class="label-02" v-if="log.columnName === 'RETURNED_MAIL_DATE'">Returned mail date:</p>
-              <p class="label-02" v-if="log.columnName === 'TRUST_LOCATION_IND'">Trust location:</p>
+              <!-- Contact Information Fields -->
+              <p class="label-02" v-if="log.columnName === 'BUS_CONTACT_CODE'">Contact type</p>
+              <p class="label-02" v-if="log.columnName === 'CONTACT_NAME'">Contact name</p>
+
+              <!-- Location Information Fields -->
+              <p class="label-02" v-if="log.columnName === 'CLIENT_LOCN_NAME'">Location name</p>
+              <p class="label-02" v-if="log.columnName === 'HDBS_COMPANY_CODE'">HDBS company code</p>
+              <p class="label-02" v-if="log.columnName === 'ADDRESS_1'">Street address or PO box</p>
+              <p class="label-02" v-if="log.columnName === 'ADDRESS_2'">Delivery information</p>
+              <p class="label-02" v-if="log.columnName === 'ADDRESS_3'">Additional delivery information</p>
+              <p class="label-02" v-if="log.columnName === 'CITY'">City</p>
+              <p class="label-02" v-if="log.columnName === 'PROVINCE'">Province/State</p>
+              <p class="label-02" v-if="log.columnName === 'POSTAL_CODE'">Postal Code</p>
+              <p class="label-02" v-if="log.columnName === 'COUNTRY'">Country</p>
+              <p class="label-02" v-if="log.columnName === 'BUSINESS_PHONE'">Primary phone number</p>
+              <p class="label-02" v-if="log.columnName === 'CELL_PHONE'">Secondary phone number</p>
+              <p class="label-02" v-if="log.columnName === 'HOME_PHONE'">Tertiary phone number</p>
+              <p class="label-02" v-if="log.columnName === 'FAX_NUMBER'">Fax</p>
+              <p class="label-02" v-if="log.columnName === 'EMAIL_ADDRESS'">Email address</p>
+              <p class="label-02" v-if="log.columnName === 'LOCN_EXPIRED_IND'">Location expired</p>
+              <p class="label-02" v-if="log.columnName === 'CLI_LOCN_COMMENT'">Notes</p>
+              <p class="label-02" v-if="log.columnName === 'RETURNED_MAIL_DATE'">Returned mail date</p>
+              <p class="label-02" v-if="log.columnName === 'TRUST_LOCATION_IND'">Trust location</p>
 
               <!-- Client Information Fields -->
-              <p class="label-02" v-if="log.columnName === 'CLIENT_NAME'">(TBU) Client name/Last name:</p>
-              <p class="label-02" v-if="log.columnName === 'LEGAL_FIRST_NAME'">First name:</p>
-              <p class="label-02" v-if="log.columnName === 'LEGAL_MIDDLE_NAME'">Middle name:</p>
-              <p class="label-02" v-if="log.columnName === 'CLIENT_STATUS_CODE'">Client status:</p>
-              <p class="label-02" v-if="log.columnName === 'CLIENT_TYPE_CODE'">Client type:</p>
-              <p class="label-02" v-if="log.columnName === 'BIRTHDATE'">Date of birth:</p>
-              <p class="label-02" v-if="log.columnName === 'CLIENT_ID_TYPE_CODE'">ID type:</p>
-              <p class="label-02" v-if="log.columnName === 'CLIENT_IDENTIFICATION'">ID number:</p>
-              <p class="label-02" v-if="log.columnName === 'REGISTRY_COMPANY_TYPE_CODE'">(TBC) Registry company type:</p>
-              <p class="label-02" v-if="log.columnName === 'CORP_REGN_NMBR'">Registration number:</p>
-              <p class="label-02" v-if="log.columnName === 'CLIENT_ACRONYM'">Acronym:</p>
-              <p class="label-02" v-if="log.columnName === 'WCB_FIRM_NUMBER'">WorkSafeBC number:</p>
-              <p class="label-02" v-if="log.columnName === 'OCG_SUPPLIER_NMBR'">OCG supplier number:</p>
+              <p class="label-02" v-if="log.columnName === 'CLIENT_NAME'">(TBU) Client name/Last name</p>
+              <p class="label-02" v-if="log.columnName === 'LEGAL_FIRST_NAME'">First name</p>
+              <p class="label-02" v-if="log.columnName === 'LEGAL_MIDDLE_NAME'">Middle name</p>
+              <p class="label-02" v-if="log.columnName === 'CLIENT_STATUS_CODE'">Client status</p>
+              <p class="label-02" v-if="log.columnName === 'CLIENT_TYPE_CODE'">Client type</p>
+              <p class="label-02" v-if="log.columnName === 'BIRTHDATE'">Date of birth</p>
+              <p class="label-02" v-if="log.columnName === 'CLIENT_ID_TYPE_CODE'">ID type</p>
+              <p class="label-02" v-if="log.columnName === 'CLIENT_IDENTIFICATION'">ID number</p>
+              <p class="label-02" v-if="log.columnName === 'REGISTRY_COMPANY_TYPE_CODE'">(TBC) Registry company type</p>
+              <p class="label-02" v-if="log.columnName === 'CORP_REGN_NMBR'">Registration number</p>
+              <p class="label-02" v-if="log.columnName === 'CLIENT_ACRONYM'">Acronym</p>
+              <p class="label-02" v-if="log.columnName === 'WCB_FIRM_NUMBER'">WorkSafeBC number</p>
+              <p class="label-02" v-if="log.columnName === 'OCG_SUPPLIER_NMBR'">OCG supplier number</p>
+              <p class="label-02" v-if="log.columnName === 'CLIENT_COMMENT'">Notes</p>
+
               <p><del>{{ log.oldValue }}</del> {{ log.newValue }}</p>
               <br>
             </div>
-            <p class="label-02">Performed by:</p>
+            <p class="label-02">Performed by</p>
             <p><Avatar16 /> {{ group[0].updateUserid }} &#8226; {{ formatAuditLogDatetime(group[0].updateTimestamp) }}</p>
           </div>
         </div>

@@ -195,12 +195,14 @@ export interface ClientSearchResult {
 export interface AuditLogResult {
   tableName: string
   idx: string
+  identifierLabel: string
   columnName: string
   oldValue: string
   newValue: string
   updateTimestamp: string
   updateUserid: string
   changeType: string
+  reason: string
 }
 
 export interface SubmissionDetails {

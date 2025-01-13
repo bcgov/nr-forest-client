@@ -536,8 +536,9 @@ public class ClientSearchService {
 
     return Flux
         .merge(
-            forestClientRepository.findLocationAuditLogsByClientNumber(clientNumber),
-            forestClientRepository.findClientInformationAuditLogsByClientNumber(clientNumber)
+            //forestClientRepository.findLocationAuditLogsByClientNumber(clientNumber),
+            //forestClientRepository.findClientInformationAuditLogsByClientNumber(clientNumber),
+            forestClientRepository.findConctactAuditLogsByClientNumber(clientNumber)
         )
         .sort(Comparator
             .comparing(AuditLogDto::updateTimestamp, Comparator.nullsLast(Comparator.naturalOrder())).reversed()
