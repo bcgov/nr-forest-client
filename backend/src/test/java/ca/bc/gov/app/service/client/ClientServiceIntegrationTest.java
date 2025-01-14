@@ -1,5 +1,7 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
+import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -167,6 +169,352 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
       .as(StepVerifier::create)
       .expectNext(expectedDto)
       .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Search by incorporation number and fail due to no legal type")
+  void shouldSearchByIncorporationAndFail1(){
+
+    String corpRegnNmbr = "C00123456";
+    String userId = "idir\\jwick";
+    String businessId = "123456";
+    LocalDateTime date = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
+
+
+    BcRegistryOfficerDto mockOfficer = new BcRegistryOfficerDto(
+        "officer@email.com",
+        "John",
+        "Doe",
+        "D",
+        "123456",
+        "My Company Ltd.",
+        "Person");
+
+    BcRegistryAddressDto mockAddress = new BcRegistryAddressDto(
+        "City",
+        "Canada",
+        "BC",
+        "A1B2C3",
+        "Street",
+        "",
+        "",
+        "");
+
+    BcRegistryRoleDto mockRole = new BcRegistryRoleDto(
+        LocalDate.now().minusYears(1),
+        null,
+        "Owner");
+
+    BcRegistryPartyDto mockParty = new BcRegistryPartyDto(
+        mockAddress,
+        mockAddress,
+        mockOfficer,
+        List.of(mockRole));
+
+    BcRegistryAddressDto mockMailingAddress = mockAddress;
+    BcRegistryAddressDto mockDeliveryAddress = mockAddress;
+    BcRegistryBusinessAdressesDto mockBusinessOffice = new BcRegistryBusinessAdressesDto(
+        mockMailingAddress,
+        mockDeliveryAddress);
+
+    BcRegistryAlternateNameDto mockAlternateName = new BcRegistryAlternateNameDto(
+        "EntityType",
+        corpRegnNmbr,
+        "Alternate Name",
+        ZonedDateTime.now(),
+        LocalDate.now());
+
+    BcRegistryBusinessDto mockBusinessDto = new BcRegistryBusinessDto(
+        List.of(mockAlternateName),
+        true,
+        false,
+        false,
+        false,
+        corpRegnNmbr,
+        "MY COMPANY LTD.",
+        "TOTS",
+        "Active");
+
+    BcRegistryOfficesDto mockOffices = new BcRegistryOfficesDto(mockBusinessOffice);
+
+    BcRegistryDocumentDto mockDocumentDto =
+        new BcRegistryDocumentDto(mockBusinessDto, mockOffices, List.of(mockParty));
+
+    Mockito
+        .when(bcRegistryService
+            .requestDocumentData(corpRegnNmbr))
+        .thenReturn(Flux.just(mockDocumentDto));
+
+    Mockito
+        .when(legacyService
+            .searchLegacy(corpRegnNmbr,"Alternate Name",userId,businessId))
+            .thenReturn(Flux.empty());
+
+    service.getClientDetailsByIncorporationNumber(corpRegnNmbr, userId, businessId,"idir")
+      .as(StepVerifier::create)
+        .expectErrorMessage("406 NOT_ACCEPTABLE \"Unsupported Legal Type: TOTS\"")
+      .verify();
+
+  }
+
+  @Test
+  @DisplayName("Search by client number and succeed")
+  void shouldSearchByClientNumberAndgetResult(){
+
+    String clientNumber = "00123456";
+    String corpRegnNmbr = "C00123456";
+    LocalDateTime date = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
+
+    ForestClientDetailsDto clientDto = new ForestClientDetailsDto(
+        clientNumber,
+        "MY COMPANY LTD.",
+        null,
+        null,
+        "ACT",
+        "Active",
+        "C",
+        "Corporation",
+        "ID",
+        "Client Identification",
+        "00123456",
+        "B",
+        corpRegnNmbr,
+        "MYCO",
+        "678",
+        "Test Client",
+        date,
+        "Admin",
+        null,
+        null,
+        null,
+        null,
+        null);
+
+
+    BcRegistryOfficerDto mockOfficer = new BcRegistryOfficerDto(
+        "officer@email.com",
+        "John",
+        "Doe",
+        "D",
+        "123456",
+        "My Company Ltd.",
+        "Person");
+
+    BcRegistryAddressDto mockAddress = new BcRegistryAddressDto(
+        "City",
+        "Canada",
+        "BC",
+        "A1B2C3",
+        "Street",
+        "",
+        "",
+        "");
+
+    BcRegistryRoleDto mockRole = new BcRegistryRoleDto(
+        LocalDate.now().minusYears(1),
+        null,
+        "Owner");
+
+    BcRegistryPartyDto mockParty = new BcRegistryPartyDto(
+        mockAddress,
+        mockAddress,
+        mockOfficer,
+        List.of(mockRole));
+
+    BcRegistryAddressDto mockMailingAddress = mockAddress;
+    BcRegistryAddressDto mockDeliveryAddress = mockAddress;
+    BcRegistryBusinessAdressesDto mockBusinessOffice = new BcRegistryBusinessAdressesDto(
+        mockMailingAddress,
+        mockDeliveryAddress);
+
+    BcRegistryAlternateNameDto mockAlternateName = new BcRegistryAlternateNameDto(
+        "EntityType",
+        corpRegnNmbr,
+        "Alternate Name",
+        ZonedDateTime.now(),
+        LocalDate.now());
+
+    BcRegistryBusinessDto mockBusinessDto = new BcRegistryBusinessDto(
+        List.of(mockAlternateName),
+        true,
+        false,
+        false,
+        false,
+        corpRegnNmbr,
+        "MY COMPANY LTD.",
+        "LIC",
+        "Active");
+
+    BcRegistryOfficesDto mockOffices = new BcRegistryOfficesDto(mockBusinessOffice);
+
+    BcRegistryDocumentDto mockDocumentDto =
+        new BcRegistryDocumentDto(mockBusinessDto, mockOffices, List.of(mockParty));
+
+    Mockito
+        .when(bcRegistryService
+            .requestDocumentData(corpRegnNmbr))
+        .thenReturn(Flux.just(mockDocumentDto));
+
+    Mockito
+        .when(legacyService
+            .searchByClientNumber(clientNumber))
+        .thenReturn(Mono.just(clientDto));
+
+    service.getClientDetailsByClientNumber(clientNumber)
+        .as(StepVerifier::create)
+        .expectNext(clientDto.withGoodStandingInd("Y"))
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Search by client number and succeed including dependencies")
+  void shouldSearchByClientNumberAndgetResultWithContactAndLocation(){
+
+    String clientNumber = "00123456";
+    String corpRegnNmbr = "C00123456";
+    LocalDateTime date = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
+
+    ForestClientDetailsDto clientDto = new ForestClientDetailsDto(
+        clientNumber,
+        "MY COMPANY LTD.",
+        null,
+        null,
+        "ACT",
+        "Active",
+        "C",
+        "Corporation",
+        "ID",
+        "Client Identification",
+        "00123456",
+        "B",
+        corpRegnNmbr,
+        "MYCO",
+        "678",
+        "Test Client",
+        date,
+        "Admin",
+        null,
+        null,
+        List.of(
+            new ForestClientLocationDto(
+                clientNumber,
+                "00",
+                "Location",
+                "1234 Street",
+                null,
+                null,
+                "City",
+                "BC",
+                "A1B2C3",
+                "Canada",
+                "1234567890",
+                "0987654321",
+                "1234567890",
+                "0987654321",
+                "mail@notme.ca",
+                "N",
+                null,
+                null,
+                null,
+                "Admin",
+                "Admin",
+                70L
+            )
+        ),
+        List.of(
+            new ForestClientContactDto(
+                clientNumber,
+                "00",
+                List.of("00"),
+                "DI",
+                "Director",
+                "John Doe",
+                "1234567890",
+                "0987654321",
+                "1234567890",
+                "mail@nobody.ca",
+                "Admin",
+                "Admin",
+                70L
+            )
+
+        ),
+        null);
+
+
+    BcRegistryOfficerDto mockOfficer = new BcRegistryOfficerDto(
+        "officer@email.com",
+        "John",
+        "Doe",
+        "D",
+        "123456",
+        "My Company Ltd.",
+        "Person");
+
+    BcRegistryAddressDto mockAddress = new BcRegistryAddressDto(
+        "City",
+        "Canada",
+        "BC",
+        "A1B2C3",
+        "Street",
+        "",
+        "",
+        "");
+
+    BcRegistryRoleDto mockRole = new BcRegistryRoleDto(
+        LocalDate.now().minusYears(1),
+        null,
+        "Owner");
+
+    BcRegistryPartyDto mockParty = new BcRegistryPartyDto(
+        mockAddress,
+        mockAddress,
+        mockOfficer,
+        List.of(mockRole));
+
+    BcRegistryAddressDto mockMailingAddress = mockAddress;
+    BcRegistryAddressDto mockDeliveryAddress = mockAddress;
+    BcRegistryBusinessAdressesDto mockBusinessOffice = new BcRegistryBusinessAdressesDto(
+        mockMailingAddress,
+        mockDeliveryAddress);
+
+    BcRegistryAlternateNameDto mockAlternateName = new BcRegistryAlternateNameDto(
+        "EntityType",
+        corpRegnNmbr,
+        "Alternate Name",
+        ZonedDateTime.now(),
+        LocalDate.now());
+
+    BcRegistryBusinessDto mockBusinessDto = new BcRegistryBusinessDto(
+        List.of(mockAlternateName),
+        true,
+        false,
+        false,
+        false,
+        corpRegnNmbr,
+        "MY COMPANY LTD.",
+        "LIC",
+        "Active");
+
+    BcRegistryOfficesDto mockOffices = new BcRegistryOfficesDto(mockBusinessOffice);
+
+    BcRegistryDocumentDto mockDocumentDto =
+        new BcRegistryDocumentDto(mockBusinessDto, mockOffices, List.of(mockParty));
+
+    Mockito
+        .when(bcRegistryService
+            .requestDocumentData(corpRegnNmbr))
+        .thenReturn(Flux.just(mockDocumentDto));
+
+    Mockito
+        .when(legacyService
+            .searchByClientNumber(clientNumber))
+        .thenReturn(Mono.just(clientDto));
+
+    service.getClientDetailsByClientNumber(clientNumber)
+        .as(StepVerifier::create)
+        .expectNext(clientDto.withGoodStandingInd("Y"))
+        .verifyComplete();
   }
 
 }
