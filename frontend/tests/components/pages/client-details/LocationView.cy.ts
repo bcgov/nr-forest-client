@@ -11,8 +11,8 @@ describe("<location-view />", () => {
       addressTwo: "C/O Tony Pineda",
       addressThree: "Sample additional info",
       countryCode: "CA",
-      countryDesc: "Canada",
-      provinceCode: "SK",
+      country: "Canada",
+      province: "SK",
       provinceDesc: "Saskatchewan",
       city: "Hampton",
       postalCode: "T4G5J1",
@@ -64,10 +64,10 @@ describe("<location-view />", () => {
       // City, Province
       testField(
         "#location-00-city-province",
-        `${currentProps.data.city}, ${currentProps.data.provinceDesc}`,
+        `${currentProps.data.city}, ${currentProps.data.province}`,
       );
 
-      testField("#location-00-country", currentProps.data.countryDesc);
+      testField("#location-00-country", currentProps.data.country);
       testField("#location-00-postalCode", currentProps.data.postalCode);
     });
 
