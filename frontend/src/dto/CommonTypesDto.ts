@@ -282,8 +282,8 @@ export interface ClientLocation {
 
 export interface ClientContact {
   clientNumber: string;
-  clientLocnCode: string[];
-  contactCode: string;
+  clientLocnCode: string;
+  locationCode: string[];
   contactName: string;
   contactTypeCode: string;
   contactTypeDesc: string;

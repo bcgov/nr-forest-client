@@ -97,27 +97,42 @@ const sortedLocations = computed(() =>
 );
 
 const sortedContacts = computed(() =>
-  data.value.contacts?.toSorted((a, b) => compareString(a.contactCode, b.contactCode)),
+  data.value.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
 );
 
-const formatLocations = (
+const formatLocation = (location: ClientLocation) => {
+  const parts = [location.clientLocnCode];
+  if (location.clientLocnName) {
+    parts.push(location.clientLocnName);
+  }
+
+  const title = parts.join(" - ");
+
+  return title;
+};
+
+const formatLocationsList = (
   locationCodes: string[],
   allLocations: ClientLocation[] = data.value.addresses,
 ) => {
   const list: string[] = [];
-  for (const curLocationCode of locationCodes.toSorted()) {
-    const location = allLocations.find(
-      (curLocation) => curLocation.clientLocnCode === curLocationCode,
-    );
-    list.push(`${curLocationCode} - ${location.clientLocnName}`);
+  if (Array.isArray(locationCodes)) {
+    for (const curLocationCode of locationCodes.toSorted()) {
+      const location = allLocations.find(
+        (curLocation) => curLocation.clientLocnCode === curLocationCode,
+      );
+
+      const title = formatLocation(location);
+      list.push(title);
+    }
   }
   return list.join(", ");
 };
 
 const associatedLocationsRecord = computed(() => {
   const result: Record<string, string> = {};
-  sortedContacts.value?.forEach((contact) => {
-    result[contact.contactCode] = formatLocations(contact.locationCode);
+  sortedContacts.value?.forEach((contact, index) => {
+    result[index] = formatLocationsList(contact.locationCode);
   });
   return result;
 });
@@ -199,7 +214,7 @@ const toolsSvg = useSvg(tools);
       <div class="grouping-14" v-if="data">
         <div class="grouping-05-short">
           <div>
-            <h2 class="mg-tl-2 heading-06">Client summary</h2>
+            <h2 class="mg-tl-2 heading-05">Client summary</h2>
 
             <div class="grouping-10">
               <summary-view :data="data" />
@@ -252,7 +267,7 @@ const toolsSvg = useSvg(tools);
                 <span class="label-with-icon">
                   <LocationStar20 v-if="index === 0" />
                   <Location20 v-else />
-                  {{ location.clientLocnCode }} - {{ location.clientLocnName }}
+                  {{ formatLocation(location) }}
                   <cds-tag
                     :id="`location-${location.clientLocnCode}-deactivated`"
                     v-if="location.locnExpiredInd === 'Y'"
@@ -281,26 +296,27 @@ const toolsSvg = useSvg(tools);
             {{ pluralize("contact", data.contacts?.length) }}
           </h3>
           <cds-accordion
-            v-for="contact in sortedContacts"
-            :key="contact.contactCode"
-            :id="`contact-${contact.contactCode}`"
+            v-for="(contact, index) in sortedContacts"
+            :key="contact.contactName"
+            :id="`contact-${index}`"
           >
             <cds-accordion-item size="lg" class="grouping-13">
               <div slot="title" class="flex-column-0_25rem">
                 <span class="label-with-icon">
                   <User20 />
-                  {{ contact.contactCode }} - {{ contact.contactName }}
+                  {{ contact.contactName }}
                 </span>
                 <span
-                  :id="`contact-${contact.contactCode}-title-locations`"
+                  :id="`contact-${index}-title-locations`"
                   class="hide-open body-compact-01 padding-left-1_625rem"
                 >
-                  {{ associatedLocationsRecord[contact.contactCode] }}
+                  {{ associatedLocationsRecord[index] }}
                 </span>
               </div>
               <contact-view
                 :data="contact"
-                :associatedLocationsString="associatedLocationsRecord[contact.contactCode]"
+                :index="index"
+                :associatedLocationsString="associatedLocationsRecord[index]"
               />
             </cds-accordion-item>
           </cds-accordion>

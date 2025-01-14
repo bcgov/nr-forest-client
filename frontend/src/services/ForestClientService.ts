@@ -140,3 +140,15 @@ export const goodStanding = (goodStanding: string): string => {
   if (goodStanding) return goodStanding === "Y" ? "Good standing" : "Not in good standing";
   return "Unknown";
 };
+
+export const formatPhoneNumber = (phoneNumber: string): string => {
+  if (!phoneNumber) {
+    return "";
+  }
+
+  const part1 = phoneNumber.slice(0, 3);
+  const part2 = phoneNumber.slice(3, 6);
+  const part3 = phoneNumber.slice(6);
+
+  return `(${part1}) ${part2}-${part3}`;
+};

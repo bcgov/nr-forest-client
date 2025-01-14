@@ -133,9 +133,9 @@ describe("Client Details Page", () => {
         });
 
         it("displays the location name on the accordion's title", () => {
-          cy.get("#location-00 [slot='title']").contains("Mailing address");
-          cy.get("#location-01 [slot='title']").contains("Accountant's address");
-          cy.get("#location-02 [slot='title']").contains("Warehouse");
+          cy.get("#location-00 [slot='title']").contains("00 - Mailing address");
+          cy.get("#location-01 [slot='title']").contains("01 - Accountant's address");
+          cy.get("#location-02 [slot='title']").contains("02 - Warehouse");
         });
 
         it("displays the address on the accordion's title while it's collapsed", () => {
@@ -155,6 +155,16 @@ describe("Client Details Page", () => {
 
         it("doesn't display the tag Deactivated when location is not expired", () => {
           cy.get("cds-tag#location-01-deactivated").should("not.exist");
+        });
+      });
+
+      describe("location without name", () => {
+        before(() => {
+          cy.visit("/clients/details/se");
+        });
+        it("displays only the location code, without the dash", () => {
+          cy.get("#location-00 [slot='title']").contains("00");
+          cy.get("#location-00 [slot='title']").contains("-").should("not.exist");
         });
       });
     });
@@ -231,16 +241,16 @@ describe("Client Details Page", () => {
         });
       });
 
-      it("displays the contact name on the accordion's title", () => {
-        cy.get("#contact-00 [slot='title']").contains("Cheryl Bibby");
-        cy.get("#contact-01 [slot='title']").contains("Edward Burns");
-        cy.get("#contact-02 [slot='title']").contains("Christoffer Stewart");
+      it("displays the contacts names on the accordions' titles sorted by contact name", () => {
+        cy.get("#contact-0 [slot='title']").contains("Cheryl Bibby");
+        cy.get("#contact-1 [slot='title']").contains("Christoffer Stewart");
+        cy.get("#contact-2 [slot='title']").contains("Edward Burns");
       });
 
       it("displays the associated locations on the accordion's title while it's collapsed", () => {
-        cy.get("#contact-00-title-locations").should("be.visible");
-        cy.get("#contact-01-title-locations").should("be.visible");
-        cy.get("#contact-02-title-locations").should("be.visible");
+        cy.get("#contact-0-title-locations").should("be.visible");
+        cy.get("#contact-1-title-locations").should("be.visible");
+        cy.get("#contact-2-title-locations").should("be.visible");
       });
     });
 
@@ -259,14 +269,14 @@ describe("Client Details Page", () => {
 
         it("hides the associated locations on the accordion's title when it's expanded", () => {
           // Clicks to expand the accordion
-          cy.get("#contact-00 [slot='title']").click();
-          cy.get("#contact-00-title-locations").should("not.be.visible");
+          cy.get("#contact-0 [slot='title']").click();
+          cy.get("#contact-0-title-locations").should("not.be.visible");
         });
 
         it("keeps accordions' states while tabs are switched", () => {
           // Expand first and third contacts, leave second one collapsed
-          cy.get("#contact-00 [slot='title']").click();
-          cy.get("#contact-02 [slot='title']").click();
+          cy.get("#contact-0 [slot='title']").click();
+          cy.get("#contact-2 [slot='title']").click();
           // Switch to another tab (Locations)
           cy.get("#tab-locations").click();
           // Make sure the current tab panel was effectively switched
@@ -275,11 +285,11 @@ describe("Client Details Page", () => {
           // Switch back to tab Contacts
           cy.get("#tab-contacts").click();
           // First contact is still open
-          cy.get("#contact-00 cds-accordion-item").should("have.attr", "open");
+          cy.get("#contact-0 cds-accordion-item").should("have.attr", "open");
           // Second contact is still closed
-          cy.get("#contact-01 cds-accordion-item").should("not.have.attr", "open");
+          cy.get("#contact-1 cds-accordion-item").should("not.have.attr", "open");
           // Third contact is still open
-          cy.get("#contact-02 cds-accordion-item").should("have.attr", "open");
+          cy.get("#contact-2 cds-accordion-item").should("have.attr", "open");
         });
       });
       describe("no contacts", () => {
@@ -321,6 +331,36 @@ describe("Client Details Page", () => {
               });
             });
           });
+        });
+      });
+
+      describe("1 contact, location without name", () => {
+        beforeEach(() => {
+          cy.visit("/clients/details/se");
+
+          // Switch to the Contacts tab
+          cy.get("#tab-contacts").click();
+
+          // Make sure the current tab panel was effectively switched
+          cy.get("#panel-locations").should("have.attr", "hidden");
+          cy.get("#panel-contacts").should("not.have.attr", "hidden");
+        });
+
+        it("displays the location code in the contact subtitle, without a dash", () => {
+          cy.get("#contact-0-title-locations").contains("00");
+          cy.get("#contact-0-title-locations").contains("-").should("not.exist");
+        });
+
+        /*
+        Note: this test would not be possible on the ContactView component, since the calculation
+        is performed outside that component.
+        */
+        it("displays the location code in the contact's Associated locations, without a dash", () => {
+          // expands the accordion
+          cy.get("#contact-0 cds-accordion-item").click();
+
+          cy.get("#contact-0-associatedLocations").contains("00").should("be.visible");
+          cy.get("#contact-0-associatedLocations").contains("-").should("not.exist");
         });
       });
     });
