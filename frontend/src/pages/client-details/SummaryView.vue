@@ -32,17 +32,25 @@ const doingBusinessAs = computed(() => {
   return undefined;
 });
 
-const birthdateLabel = computed(() =>
-  props.data.birthdate.length > 4 ? "Date of birth" : "Year of birth",
-);
-
 const dateOfBirth = computed(() => {
+  if (props.data.birthdate) {
+    if (props.data.birthdate.length === 4) {
+      return props.data.birthdate;
+    }
 
-  if(props.data.birthdate) {
-    return new Date(props.data.birthdate).toISOString().split('T')[0];
+    // if masked (month and day)
+    if (props.data.birthdate.includes("*")) {
+      return props.data.birthdate.slice(0, 4);
+    }
+
+    return new Date(props.data.birthdate).toISOString().split("T")[0];
   }
-  return '';
+  return "";
 });
+
+const birthdateLabel = computed(() =>
+  dateOfBirth.value.length > 4 ? "Date of birth" : "Year of birth",
+);
 </script>
 
 <template>

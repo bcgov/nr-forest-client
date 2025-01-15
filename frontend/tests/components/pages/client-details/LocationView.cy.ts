@@ -1,5 +1,6 @@
 import type { ClientLocation } from "@/dto/CommonTypesDto";
 import LocationView from "@/pages/client-details/LocationView.vue";
+import { formatPhoneNumber } from "@/services/ForestClientService";
 
 describe("<location-view />", () => {
   const getDefaultProps = () => ({
@@ -10,16 +11,16 @@ describe("<location-view />", () => {
       addressTwo: "C/O Tony Pineda",
       addressThree: "Sample additional info",
       countryCode: "CA",
-      countryDesc: "Canada",
-      provinceCode: "SK",
+      country: "Canada",
+      province: "SK",
       provinceDesc: "Saskatchewan",
       city: "Hampton",
       postalCode: "T4G5J1",
       emailAddress: "contact@mail.com",
-      businessPhone: "(250) 286-3767",
-      cellPhone: "(250) 555-3700",
-      homePhone: "(250) 555-3101",
-      faxNumber: "(250) 286-3768",
+      businessPhone: "2502863767",
+      cellPhone: "2505553700",
+      homePhone: "2505553101",
+      faxNumber: "2502863768",
       cliLocnComment: "Sample location 00 comment",
       locnExpiredInd: "N",
     } as ClientLocation,
@@ -63,10 +64,10 @@ describe("<location-view />", () => {
       // City, Province
       testField(
         "#location-00-city-province",
-        `${currentProps.data.city}, ${currentProps.data.provinceDesc}`,
+        `${currentProps.data.city}, ${currentProps.data.province}`,
       );
 
-      testField("#location-00-country", currentProps.data.countryDesc);
+      testField("#location-00-country", currentProps.data.country);
       testField("#location-00-postalCode", currentProps.data.postalCode);
     });
 
@@ -79,10 +80,22 @@ describe("<location-view />", () => {
     const phonePrefix = "tel:";
 
     cy.get("#location-00-phone-section").within(() => {
-      testField("#location-00-primaryPhoneNumber", currentProps.data.businessPhone, phonePrefix);
-      testField("#location-00-secondaryPhoneNumber", currentProps.data.cellPhone, phonePrefix);
-      testField("#location-00-tertiaryPhoneNumber", currentProps.data.homePhone, phonePrefix);
-      testField("#location-00-fax", currentProps.data.faxNumber, phonePrefix);
+      testField(
+        "#location-00-primaryPhoneNumber",
+        formatPhoneNumber(currentProps.data.businessPhone),
+        phonePrefix,
+      );
+      testField(
+        "#location-00-secondaryPhoneNumber",
+        formatPhoneNumber(currentProps.data.cellPhone),
+        phonePrefix,
+      );
+      testField(
+        "#location-00-tertiaryPhoneNumber",
+        formatPhoneNumber(currentProps.data.homePhone),
+        phonePrefix,
+      );
+      testField("#location-00-fax", formatPhoneNumber(currentProps.data.faxNumber), phonePrefix);
     });
 
     cy.get("#location-00-notes-section").within(() => {
@@ -140,13 +153,13 @@ describe("<location-view />", () => {
             cellPhone: "",
             homePhone: "",
             faxNumber: "",
-            [propName]: "(250) 555-9876",
+            [propName]: "2505559876",
           };
           mount({ data });
         });
         it(`displays the one phone with value: ${propName}`, () => {
           cy.get("#location-00-phone-section").within(() => {
-            testField(selector, currentProps.data[propName]);
+            testField(selector, formatPhoneNumber(currentProps.data[propName]));
           });
         });
         it("hides the other empty phones", () => {

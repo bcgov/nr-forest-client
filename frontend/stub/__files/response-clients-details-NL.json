@@ -1,0 +1,20 @@
+{
+    "registryCompanyTypeCode": "SP",
+    "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
+    "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
+    "clientName": "Scott",
+    "legalFirstName": "Michael",
+    "legalMiddleName": "",
+    "doingBusinessAs": [],
+    "birthdate": "1962-08-17T00:00",
+    "clientAcronym": "",
+    "clientTypeCode": "RSP",
+    "clientTypeDesc": "Registered sole proprietorship",
+    "goodStandingInd": "N",
+    "clientStatusCode": "A",
+    "clientStatusDesc": "Active",
+    "clientComment": "",
+    "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
+    "contacts": [],
+    "addresses": []
+}

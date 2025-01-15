@@ -7,6 +7,7 @@ import {
   toTitleCase,
   getTagColorByClientStatus,
   goodStanding,
+  formatPhoneNumber,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 
@@ -167,6 +168,28 @@ describe("ForestClientService.ts", () => {
         expect(nValue).not.toEqual(yExpected);
         expect(nValue).not.toEqual(emptyExpected);
       });
+    });
+  });
+
+  describe("formatPhoneNumber", () => {
+    it("formats 10-digit phone numbers properly", () => {
+      const result = formatPhoneNumber("1234567890");
+      expect(result).toEqual("(123) 456-7890");
+    });
+
+    it("doesn't crash when phone numbers has more than 10 digits", () => {
+      const result = formatPhoneNumber("1234567890123");
+      expect(result).toEqual("(123) 456-7890123");
+    });
+
+    it("doesn't crash when phone numbers has less than 10 digits", () => {
+      const result = formatPhoneNumber("12345678");
+      expect(result).toEqual("(123) 456-78");
+    });
+
+    it("returns an empty string if phone number is undefined", () => {
+      const result = formatPhoneNumber(undefined);
+      expect(result).toEqual("");
     });
   });
 });

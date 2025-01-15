@@ -9,6 +9,7 @@ public record ForestClientContactDto(
     String clientLocnCode,
     List<String> locationCode,
     String contactCode,
+    String contactCodeDescription,
     String contactName,
     String businessPhone,
     String secondaryPhone,

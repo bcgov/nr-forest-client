@@ -185,8 +185,7 @@ describe("Search Page", () => {
         cy.get("@windowOpen").should(
           "be.calledWith",
           `/clients/details/${clientNumber}`,
-          "_blank",
-          "noopener",
+          "_self",
         );
       });
       describe("and STAFF_CLIENT_DETAIL is turned off", () => {
@@ -241,8 +240,7 @@ describe("Search Page", () => {
           cy.get("@windowOpen").should(
             "be.calledWith",
             `/clients/details/${clientNumber}`,
-            "_blank",
-            "noopener",
+            "_self",
           );
         });
         describe("and STAFF_CLIENT_DETAIL is turned off", () => {

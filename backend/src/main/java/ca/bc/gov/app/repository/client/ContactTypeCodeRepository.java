@@ -2,6 +2,7 @@ package ca.bc.gov.app.repository.client;
 
 import ca.bc.gov.app.entity.client.ContactTypeCodeEntity;
 import java.time.LocalDate;
+import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
@@ -25,4 +26,6 @@ public interface ContactTypeCodeRepository
   Flux<ContactTypeCodeEntity> findActiveAt(LocalDate activeDate, Pageable pageable);
 
   Mono<ContactTypeCodeEntity> findByOrDescription(String id, String description);
+
+  Flux<ContactTypeCodeEntity> findByContactTypeCodeIn(Set<String> contactTypeCodes);
 }

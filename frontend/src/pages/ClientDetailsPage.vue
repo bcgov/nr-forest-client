@@ -70,8 +70,8 @@ const formatCount = (count = 0) => {
 };
 
 const formatAddress = (location: ClientLocation) => {
-  const { addressOne, city, provinceCode, countryDesc, postalCode } = location;
-  const list = [addressOne, city, provinceCode, countryDesc, postalCode];
+  const { addressOne, city, province, country, postalCode } = location;
+  const list = [addressOne, city, province, country, postalCode];
   return list.join(", ");
 };
 
@@ -100,16 +100,31 @@ const sortedContacts = computed(() =>
   data.value.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
 );
 
-const formatLocations = (
+const formatLocation = (location: ClientLocation) => {
+  const parts = [location.clientLocnCode];
+  if (location.clientLocnName) {
+    parts.push(location.clientLocnName);
+  }
+
+  const title = parts.join(" - ");
+
+  return title;
+};
+
+const formatLocationsList = (
   locationCodes: string[],
   allLocations: ClientLocation[] = data.value.addresses,
 ) => {
   const list: string[] = [];
-  for (const curLocationCode of locationCodes.toSorted()) {
-    const location = allLocations.find(
-      (curLocation) => curLocation.clientLocnCode === curLocationCode,
-    );
-    list.push(`${curLocationCode} - ${location.clientLocnName}`);
+  if (Array.isArray(locationCodes)) {
+    for (const curLocationCode of locationCodes.toSorted()) {
+      const location = allLocations.find(
+        (curLocation) => curLocation.clientLocnCode === curLocationCode,
+      );
+
+      const title = formatLocation(location);
+      list.push(title);
+    }
   }
   return list.join(", ");
 };
@@ -117,7 +132,7 @@ const formatLocations = (
 const associatedLocationsRecord = computed(() => {
   const result: Record<string, string> = {};
   sortedContacts.value?.forEach((contact, index) => {
-    result[index] = formatLocations(contact.locationCode);
+    result[index] = formatLocationsList(contact.locationCode);
   });
   return result;
 });
@@ -199,7 +214,7 @@ const toolsSvg = useSvg(tools);
       <div class="grouping-14" v-if="data">
         <div class="grouping-05-short">
           <div>
-            <h2 class="mg-tl-2 heading-06">Client summary</h2>
+            <h2 class="mg-tl-2 heading-05">Client summary</h2>
 
             <div class="grouping-10">
               <summary-view :data="data" />
@@ -252,7 +267,7 @@ const toolsSvg = useSvg(tools);
                 <span class="label-with-icon">
                   <LocationStar20 v-if="index === 0" />
                   <Location20 v-else />
-                  {{ location.clientLocnCode }} - {{ location.clientLocnName }}
+                  {{ formatLocation(location) }}
                   <cds-tag
                     :id="`location-${location.clientLocnCode}-deactivated`"
                     v-if="location.locnExpiredInd === 'Y'"
