@@ -11,7 +11,7 @@ spring:
         jwt:
           jwk-set-uri: ${JWK_SET_URI:https://cognito-idp.${ca.bc.gov.nrs.security.region}.amazonaws.com/${ca.bc.gov.nrs.security.user-pool}/.well-known/jwks.json}
   r2dbc:
-    url: r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
+    url: r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}?options=cryptic.key=${ca.bc.gov.nrs.postgres.cryptic-key}
     username: ${ca.bc.gov.nrs.postgres.username}
     password: ${ca.bc.gov.nrs.postgres.password}
     pool:
@@ -30,7 +30,7 @@ spring:
     baseline-on-migrate: true
     user: ${ca.bc.gov.nrs.postgres.username}
     password: ${ca.bc.gov.nrs.postgres.password}
-    url: jdbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
+    url: jdbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}?options=-c%20cryptic.key=${ca.bc.gov.nrs.postgres.cryptic-key}
   http:
     encoding:
       charset: UTF-8
@@ -123,6 +123,7 @@ ca:
           host: ${POSTGRESQL_HOST:localhost}:5432
           username: ${POSTGRESQL_USER:user}
           password: ${POSTGRESQL_PASSWORD:passwd}
+          cryptic-key: ${POSTGRESQL_KEY:saltandpepper}
         legacy:
           url: ${LEGACY_URL:http://127.0.0.1:9019}
         processor:
