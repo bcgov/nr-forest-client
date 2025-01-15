@@ -88,11 +88,11 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
     Set<String> roles = toRoles(MDC.get(ApplicationConstant.MDC_USERROLES));
 
     // Admins can see the BCSC
-    if(
+    if (
         CLIENT_IDENTIFICATION.equals(propName)
         && "BCSC".equals(propType)
         && roles.contains(ApplicationConstant.ROLE_ADMIN)
-    ){
+    ) {
       return value.toString();
     }
     
