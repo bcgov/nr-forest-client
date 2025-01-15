@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -88,6 +87,20 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
   private String obfuscate(String propName, String propType, Object value) {
     Set<String> roles = toRoles(MDC.get(ApplicationConstant.MDC_USERROLES));
 
+    // Admins can see the BCSC
+    if (
+        CLIENT_IDENTIFICATION.equals(propName)
+        && "BCSC".equals(propType)
+        && roles.contains(ApplicationConstant.ROLE_ADMIN)
+    ) {
+      return value.toString();
+    }
+    
+    // BC Services card uses a UUID, so we just say it is verified
+    if (CLIENT_IDENTIFICATION.equals(propName) && "BCSC".equals(propType)) {
+      return "BC Service card verified";
+    }
+
     // Admins and Editors can see with no restrictions
     if (
         roles.contains(ApplicationConstant.ROLE_EDITOR)
@@ -95,11 +108,6 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
         || roles.contains(ApplicationConstant.ROLE_SUSPEND)
     ) {
       return value.toString();
-    }
-
-    // BC Services card uses a UUID, so we just say it is verified
-    if (CLIENT_IDENTIFICATION.equals(propName) && "BCSC".equals(propType)) {
-      return "BC Service card verified";
     }
 
     if (CLIENT_IDENTIFICATION.equals(propName) && "BCRE".equals(propType)) {

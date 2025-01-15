@@ -24,5 +24,8 @@ public interface ClientDoingBusinessAsRepository extends
   Flux<ClientDoingBusinessAsEntity> matchBy(String companyName);
 
   Flux<ClientDoingBusinessAsEntity> findByDoingBusinessAsName(String doingBusinessAsName);
+
+  Flux<ClientDoingBusinessAsEntity> findByClientNumber(String clientNumber);
+
   
 }
