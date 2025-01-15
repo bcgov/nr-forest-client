@@ -5,6 +5,7 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.AddressSearchDto;
+import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
@@ -27,7 +28,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -444,22 +448,45 @@ public class ClientSearchService {
       return Mono.error(new MissingRequiredParameterException("clientNumber"));
     }
 
-    return forestClientRepository.findDetailsByClientNumber(clientNumber).flatMap(
-            dto -> locationRepository.findAllByClientNumber(clientNumber).map(locationMapper::toDto)
-                .collectList().map(dto::withAddresses).defaultIfEmpty(dto)).flatMap(
-            dto -> contactRepository.findAllByClientNumber(clientNumber).map(contactMapper::toDto)
+    return forestClientRepository
+        .findDetailsByClientNumber(clientNumber)
+        .flatMap(dto ->
+                doingBusinessAsRepository
+                    .findByClientNumber(dto.clientNumber())
+                    .sort(Comparator.comparing(ClientDoingBusinessAsEntity::getCreatedAt))
+                    .map(dba -> new ClientDoingBusinessAsDto(
+                        dba.getClientNumber(),
+                        dba.getDoingBusinessAsName(),
+                        dba.getCreatedBy(),
+                        dba.getUpdatedBy(),
+                        dba.getCreatedByUnit()
+                    ))
+                    .collectList()
+                    .map(dto::withDoingBusinessAs)
+                    .defaultIfEmpty(dto)
+            )
+        .flatMap(dto -> locationRepository
+                .findAllByClientNumber(clientNumber)
+                .map(locationMapper::toDto)
                 .collectList()
-                // sometimes we will have duplicated contacts with different locationCode values. We need to remove duplicates and merge the contents of the locationCode field
-                .map(contacts -> new ArrayList<>(contacts.stream().collect(
-                    Collectors.toMap(ForestClientContactDto::contactName, contact -> contact,
-                        (contact1, contact2) -> contact1.withLocationCode(
-                            Stream.concat(contact1.locationCode().stream(),
-                                contact2.locationCode().stream()).distinct().toList()))).values()))
-                .map(dto::withContacts).defaultIfEmpty(dto))
+                .map(dto::withAddresses)
+                .defaultIfEmpty(dto)
+        )
+        .flatMap(dto -> contactRepository
+            .findAllByClientNumber(clientNumber)
+            .map(contactMapper::toDto)
+            .collectList()
+            // sometimes we will have duplicated contacts with different locationCode values.
+            // We need to remove duplicates and merge the contents of the locationCode field
+            .map(contactMapper())
+            .map(dto::withContacts)
+            .defaultIfEmpty(dto)
+        )
         .switchIfEmpty(Mono.error(new NoValueFoundException("Client with number: " + clientNumber)))
         .doOnNext(dto -> log.info("Found client with client number {}", clientNumber,
             dto.clientNumber()));
   }
+
 
   /**
    * Performs a complex search for clients based on a predictive search value. Logs the search
@@ -524,6 +551,31 @@ public class ClientSearchService {
     return template.select(searchQuery.with(PageRequest.of(0, 1000))
             .sort(Sort.by(Sort.Order.asc(ApplicationConstants.CLIENT_NUMBER_LITERAL))), entityClass)
         .doOnNext(client -> log.info("Found client for query {}", queryCriteria));
+  }
+
+  private BinaryOperator<ForestClientContactDto> mergeContactLocations() {
+    return (contact1, contact2) -> contact1.withLocationCode(
+        Stream.concat(
+            contact1.locationCode().stream(),
+            contact2.locationCode().stream()
+        ).distinct().toList()
+    );
+  }
+
+  private Function<List<ForestClientContactDto>, ArrayList<ForestClientContactDto>> contactMapper() {
+    return contacts ->
+        new ArrayList<>(
+            contacts
+                .stream()
+                .collect(
+                    Collectors
+                        .toMap(
+                            ForestClientContactDto::contactName,
+                            contact -> contact,
+                            mergeContactLocations())
+                )
+                .values()
+        );
   }
 
 }
