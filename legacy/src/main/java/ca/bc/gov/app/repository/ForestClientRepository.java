@@ -1,6 +1,6 @@
 package ca.bc.gov.app.repository;
 
-import ca.bc.gov.app.dto.ForestClientDetailsDto;
+import ca.bc.gov.app.dto.ForestClientInformationDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import java.time.LocalDateTime;
@@ -60,7 +60,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
   Flux<ForestClientEntity> matchBy(String companyName);
 
   Mono<ForestClientEntity> findByClientNumber(String clientNumber);
-  
+
   @Query("""
       select
           c.client_number,
@@ -106,7 +106,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
             where rn = 1
         ) fca on c.client_number = fca.client_number
       where c.client_number = :clientNumber""")
-  Mono<ForestClientDetailsDto> findDetailsByClientNumber(String clientNumber);
+  Mono<ForestClientInformationDto> findDetailsByClientNumber(String clientNumber);
 
   @Query("""
       SELECT
@@ -261,7 +261,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       ORDER BY c.ADD_TIMESTAMP DESC
       OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
   Flux<PredictiveSearchResultDto> findByEmptyFullSearch(int limit, long offset, LocalDateTime date);
-  
+
   @Query("""
       SELECT
           count(c.client_number)
@@ -274,5 +274,5 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
         cl.CLIENT_LOCN_CODE = '00'
         AND (c.update_timestamp >= :date OR c.add_timestamp >= :date)""")
   Mono<Long> countByEmptyFullSearch(LocalDateTime date);
-  
+
 }
