@@ -450,9 +450,10 @@ public class ClientSearchService {
 
     return forestClientRepository
         .findDetailsByClientNumber(clientNumber)
+        .map(dto -> new ForestClientDetailsDto(dto, null, null, null))
         .flatMap(dto ->
                 doingBusinessAsRepository
-                    .findByClientNumber(dto.clientNumber())
+                    .findByClientNumber(clientNumber)
                     .sort(Comparator.comparing(ClientDoingBusinessAsEntity::getCreatedAt))
                     .map(dba -> new ClientDoingBusinessAsDto(
                         dba.getClientNumber(),
@@ -483,8 +484,7 @@ public class ClientSearchService {
             .defaultIfEmpty(dto)
         )
         .switchIfEmpty(Mono.error(new NoValueFoundException("Client with number: " + clientNumber)))
-        .doOnNext(dto -> log.info("Found client with client number {}", clientNumber,
-            dto.clientNumber()));
+        .doOnNext(dto -> log.info("Found client with client number {}", clientNumber));
   }
 
 
