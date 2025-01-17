@@ -14,7 +14,7 @@ import reactor.core.publisher.Flux;
  */
 @Repository
 public interface ForestClientContactRepository
-    extends ReactiveCrudRepository<ForestClientContactEntity, String> {
+    extends ReactiveCrudRepository<ForestClientContactEntity, Long> {
 
   /**
    * Finds client contacts by matching the contact name, business phone, or email address.

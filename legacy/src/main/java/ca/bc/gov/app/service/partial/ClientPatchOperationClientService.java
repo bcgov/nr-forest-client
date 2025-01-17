@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.partial;
 
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.repository.ForestClientRepository;
+import ca.bc.gov.app.utils.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
@@ -9,6 +10,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -16,7 +18,8 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-public class ClientPartialClientService implements ClientPartialService<ForestClientEntity> {
+@Order(1)
+public class ClientPatchOperationClientService implements ClientPatchOperationService {
 
   private final ForestClientRepository clientRepository;
 
@@ -49,20 +52,30 @@ public class ClientPartialClientService implements ClientPartialService<ForestCl
       ObjectMapper mapper
   ) {
 
-    if (checkOperation(patch, getPrefix(), mapper)) {
-      JsonNode filteredNode = filterPatchOperations(patch, mapper);
-
-      log.info("Base client change {}", filteredNode);
+    if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
+      JsonNode filteredNode = PatchUtils.filterPatchOperations(
+          patch,
+          getPrefix(),
+          getRestrictedPaths(),
+          mapper
+      );
 
       return
           clientRepository
               .findByClientNumber(clientNumber)
-              .map(entity -> patchClient(
-                      filteredNode,
-                      entity,
-                      ForestClientEntity.class,
-                      mapper
+              .flatMap(entity ->
+
+                  Mono
+                      .just(
+                      PatchUtils.patchClient(
+                          filteredNode,
+                          entity,
+                          ForestClientEntity.class,
+                          mapper
+                      )
                   )
+                  .filter(client -> !entity.equals(client))
+                  .doOnNext(client -> log.info("Applying Forest Client changes {}", client))
               )
               .flatMap(clientRepository::save)
               .then();
@@ -70,6 +83,5 @@ public class ClientPartialClientService implements ClientPartialService<ForestCl
 
     return Mono.empty();
   }
-
 
 }

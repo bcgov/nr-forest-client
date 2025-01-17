@@ -1,6 +1,6 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.service.partial.ClientPartialBaseService;
+import ca.bc.gov.app.service.partial.ClientPatchService;
 import com.github.fge.jsonpatch.JsonPatch;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,13 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/api/clients/partial", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Observed
-public class ClientPartialController {
+public class ClientPatchController {
 
-  private final ClientPartialBaseService service;
+  private final ClientPatchService service;
 
   @PatchMapping(value = "/{clientNumber}", consumes = "application/json-patch+json")
   @ResponseStatus(HttpStatus.ACCEPTED)
-  public Mono<Void> patchCustomer(
+  public Mono<Void> patchForestClient(
       @PathVariable String clientNumber,
       @RequestBody JsonPatch forestClient
   ) {
