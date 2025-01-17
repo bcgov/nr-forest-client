@@ -53,6 +53,9 @@
     <mapstruct.version>1.5.5.Fina</mapstruct.version>
     <netty.version>4.1.114.Final</netty.version>
     <flyway.version>10.13.0</flyway.version>
+    <findbugs.version>3.0.2</findbugs.version>
+    <guava.version>33.4.0-jre</guava.version>
+    <spring-web.version>6.1.14</spring-web.version>
   </properties>
 
   <dependencies>
@@ -204,12 +207,22 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
-        <version>6.1.14</version>
+        <version>${spring-web.version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec-http</artifactId>
         <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>${findbugs.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
