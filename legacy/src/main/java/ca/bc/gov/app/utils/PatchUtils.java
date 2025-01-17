@@ -24,6 +24,17 @@ import org.apache.commons.lang3.tuple.Pair;
 public class PatchUtils {
 
 
+  /**
+   * Applies a JSON Patch to a target object and returns the patched object.
+   *
+   * @param <T> the type of the target object
+   * @param patch the JSON Patch to apply
+   * @param target the target object to patch
+   * @param entityClass the class of the target object
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return the patched object
+   * @throws CannotApplyPatchException if an error occurs while applying the patch
+   */
   public static <T> T patchClient(
       JsonNode patch,
       T target,
@@ -47,6 +58,14 @@ public class PatchUtils {
     }
   }
 
+  /**
+   * Checks if any operation in the given JSON Patch has a path that starts with the specified path prefix.
+   *
+   * @param patch the JSON Patch to check
+   * @param checkPath the path prefix to check for
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return true if any operation's path starts with the specified path prefix, false otherwise
+   */
   public static boolean checkOperation(
       JsonPatch patch,
       String checkPath,
@@ -69,6 +88,15 @@ public class PatchUtils {
     return filteredNode.get();
   }
 
+  /**
+   * Filters the operations in a JSON Patch based on a specified prefix and restricted paths.
+   *
+   * @param patch the JSON Patch to filter
+   * @param prefix the prefix to filter the operations by
+   * @param restrictedPaths the list of restricted paths to filter the operations by
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations
+   */
   public static JsonNode filterPatchOperations(
       JsonPatch patch,
       String prefix,
@@ -82,6 +110,15 @@ public class PatchUtils {
         mapper);
   }
 
+  /**
+   * Filters the operations in a JSON Patch based on a specified prefix and restricted paths.
+   *
+   * @param patch the JSON Patch to filter
+   * @param prefix the prefix to filter the operations by
+   * @param restrictedPaths the list of restricted paths to filter the operations by
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations
+   */
   public static JsonNode filterPatchOperations(
       JsonNode patch,
       String prefix,
@@ -141,6 +178,15 @@ public class PatchUtils {
     return filteredNode;
   }
 
+  /**
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and restricted paths.
+   *
+   * @param patch the JSON Patch to filter
+   * @param operationName the name of the operation to filter by (e.g., "add", "remove", "replace")
+   * @param prefix the prefix to filter the operations by
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations
+   */
   public static JsonNode filterOperationsByOp(
       JsonPatch patch,
       String operationName,
@@ -155,6 +201,16 @@ public class PatchUtils {
         mapper);
   }
 
+  /**
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and restricted paths.
+   *
+   * @param patch the JSON Patch to filter
+   * @param operationName the name of the operation to filter by (e.g., "add", "remove", "replace")
+   * @param prefix the prefix to filter the operations by
+   * @param restrictedPaths the list of restricted paths to filter the operations by
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations
+   */
   public static JsonNode filterOperationsByOp(
       JsonPatch patch,
       String operationName,
@@ -170,6 +226,16 @@ public class PatchUtils {
         mapper);
   }
 
+  /**
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and restricted paths.
+   *
+   * @param patch the JSON Patch to filter
+   * @param operationName the name of the operation to filter by (e.g., "add", "remove", "replace")
+   * @param prefix the prefix to filter the operations by
+   * @param restrictedPaths the list of restricted paths to filter the operations by
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations
+   */
   public static JsonNode filterOperationsByOp(
       JsonNode patch,
       String operationName,
@@ -210,6 +276,16 @@ public class PatchUtils {
     return filteredNode;
   }
 
+  /**
+   * Loads the value from a JSON Patch "add" operation and converts it to the specified entity class.
+   *
+   * @param <T> the type of the entity class
+   * @param patch the JSON Patch containing the "add" operation
+   * @param entityClass the class of the entity to convert the value to
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return the value from the "add" operation converted to the specified entity class
+   * @throws RuntimeException if an error occurs while processing the JSON
+   */
   public static <T> T loadAddValue(
       JsonNode patch,
       Class<T> entityClass,
@@ -247,6 +323,13 @@ public class PatchUtils {
     }
   }
 
+  /**
+   * Removes the specified prefix from the given path.
+   *
+   * @param path the original path
+   * @param prefix the prefix to remove
+   * @return the path without the prefix, or the original path if the prefix is not present
+   */
   public static String removePrefix(String path, String prefix) {
 
     // We generate the prefixed path for later use
@@ -260,6 +343,12 @@ public class PatchUtils {
     return path;
   }
 
+  /**
+   * Extracts and returns a set of unique IDs from the given filtered JSON Patch operations.
+   *
+   * @param filteredNode the JsonNode containing the filtered JSON Patch operations
+   * @return a Set of unique IDs extracted from the paths of the JSON Patch operations
+   */
   public static Set<String> loadIds(JsonNode filteredNode) {
     Set<String> ids = new HashSet<>();
 
