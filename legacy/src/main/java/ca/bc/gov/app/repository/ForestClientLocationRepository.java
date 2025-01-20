@@ -78,4 +78,6 @@ public interface ForestClientLocationRepository
    */
   Flux<ForestClientLocationEntity> findAllByClientNumber(String clientNumber);
 
+  Flux<ForestClientLocationEntity> findByClientNumberAndClientLocnCode(String clientNumber, String clientLocnCode);
+
 }

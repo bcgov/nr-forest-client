@@ -1,7 +1,10 @@
 package ca.bc.gov.app.service.partial;
 
+import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
+import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientContactRepository;
+import ca.bc.gov.app.service.ClientContactService;
 import ca.bc.gov.app.utils.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +30,8 @@ import reactor.core.publisher.Mono;
 public class ClientPatchOperationContactService implements ClientPatchOperationService {
 
   private final ForestClientContactRepository contactRepository;
+  private final ClientContactService clientContactService;
+  private final AbstractForestClientMapper<ForestClientContactDto, ForestClientContactEntity> contactMapper;
 
   @Override
   public String getPrefix() {
@@ -45,6 +50,15 @@ public class ClientPatchOperationContactService implements ClientPatchOperationS
     );
   }
 
+  /**
+   * Applies a JSON patch to the client's contacts. This method handles the removal, addition, and
+   * updating of contacts based on the operations specified in the JSON patch. It starts with the
+   *
+   * @param clientNumber the client number to which the contacts belong
+   * @param contactPatch the JSON patch containing the operations to be applied
+   * @param mapper       the ObjectMapper to parse JSON nodes
+   * @return a Mono that completes when all patch operations have been applied
+   */
   @Override
   public Mono<Void> applyPatch(String clientNumber, JsonPatch contactPatch, ObjectMapper mapper) {
 
@@ -53,6 +67,19 @@ public class ClientPatchOperationContactService implements ClientPatchOperationS
             .fromIterable(removePatchedContacts(contactPatch, mapper))
             .map(Long::valueOf)
             .filterWhen(contactRepository::existsById)
+
+            // After checking of that ID exists, we will need to load all entries with the same
+            // client number and contact name, due to the multiple contact-location association.
+            .flatMap(contactRepository::findById)
+            .flatMap(contact ->
+                contactRepository
+                    .findAllByClientNumberAndContactName(
+                        contact.getClientNumber(),
+                        contact.getContactName()
+                    )
+                    .map(ForestClientContactEntity::getClientContactId)
+            )
+
             .doOnNext(contactId -> log.info("Removing Forest Client Contact with id {}", contactId))
             .flatMap(contactRepository::deleteById)
             .collectList()
@@ -62,7 +89,7 @@ public class ClientPatchOperationContactService implements ClientPatchOperationS
         Flux
             .fromIterable(addPatchedContact(contactPatch, clientNumber, mapper))
             .doOnNext(contact -> log.info("Adding Forest Client Contact {}", contact))
-            .flatMap(contactRepository::save)
+            .flatMap(clientContactService::saveAndGetIndex)
             .collectList()
             .then();
 
@@ -74,31 +101,51 @@ public class ClientPatchOperationContactService implements ClientPatchOperationS
             .then();
 
     return removeMono.then(addMono).then(updateMono);
-
   }
 
-  private List<ForestClientContactEntity> addPatchedContact(JsonPatch patch, String clientNumber,
-      ObjectMapper mapper) {
+  /**
+   * Adds new contacts specified in the JSON patch. It filters the JSON patch to only include add
+   * operations on the contacts array and creates new contact entities.
+   *
+   * @param patch        the JSON patch containing the add operations
+   * @param clientNumber the client number to associate with the new contacts
+   * @param mapper       the ObjectMapper to parse JSON nodes
+   * @return a list of newly added ForestClientContactEntity objects
+   */
+  private List<ForestClientContactDto> addPatchedContact(
+      JsonPatch patch,
+      String clientNumber,
+      ObjectMapper mapper
+  ) {
 
-    List<ForestClientContactEntity> addedVehicle = new ArrayList<>();
+    List<ForestClientContactDto> addedContact = new ArrayList<>();
 
     JsonNode filteredNode = PatchUtils.filterOperationsByOp(patch, "add", "contacts", mapper);
 
     filteredNode.forEach(node ->
-        addedVehicle.add(
+        addedContact.add(
             PatchUtils
                 .loadAddValue(
                     node,
-                    ForestClientContactEntity.class,
+                    ForestClientContactDto.class,
                     mapper
                 )
                 .withClientNumber(clientNumber)
         )
     );
 
-    return addedVehicle;
+    return addedContact;
   }
 
+  /**
+   * Updates the contacts specified in the JSON patch. It filters the JSON patch to only include
+   * replace operations on the contacts array and applies the changes to the existing contacts. It
+   * only updates the fields specified in the restricted paths.
+   *
+   * @param patch  the JSON patch containing the replace operations
+   * @param mapper the ObjectMapper to parse JSON nodes
+   * @return a Flux of updated ForestClientContactEntity objects
+   */
   private Flux<ForestClientContactEntity> updatePatchedContact(JsonPatch patch,
       ObjectMapper mapper) {
 
@@ -117,27 +164,55 @@ public class ClientPatchOperationContactService implements ClientPatchOperationS
         .collect(Collectors.toSet());
 
     return
+        // Due to the oracle nature of having multiple entries for the same person due to the
+        // multiple contact-location association, we will have to use the data to find the
+        // other contacts as well
         contactRepository
             .findAllById(contactIds)
-            .flatMap(contact ->
-                Mono
-                    .just(PatchUtils.patchClient(
+            // We have to go for the client number and contact name as the contact id is unique
+            // but that's just a single contact
+            .flatMap(contact -> patchContact(mapper, contact, filteredNode));
+  }
+
+  private Flux<ForestClientContactEntity> patchContact(
+      ObjectMapper mapper,
+      ForestClientContactEntity contact,
+      JsonNode filteredNode
+  ) {
+    return contactRepository.
+        findAllByClientNumberAndContactName(
+            contact.getClientNumber(),
+            contact.getContactName()
+        )
+        // Then we just update it with the patch
+        .flatMap(currentContact ->
+            Mono
+                .just(PatchUtils.patchClient(
                         PatchUtils.filterPatchOperations(
                             filteredNode,
                             contact.getClientContactId().toString(),
                             getRestrictedPaths(),
                             mapper
                         ),
-                        contact,
+                        currentContact,
                         ForestClientContactEntity.class,
                         mapper
                     )
-                    )
-                    .filter(client -> !contact.equals(client))
-                    .doOnNext(client -> log.info("Detected Forest Client Contact changes {}", client))
-            );
+                )
+                .filter(client -> !currentContact.equals(client))
+                .doOnNext(
+                    client -> log.info("Detected Forest Client Contact changes {}", client))
+        );
   }
 
+  /**
+   * List contacts specified in the JSON patch to be removed. It filters the JSON patch to only
+   * include remove operations on the contacts array.
+   *
+   * @param patch  the JSON patch containing the remove operations
+   * @param mapper the ObjectMapper to parse JSON nodes
+   * @return a list of contact IDs to be removed
+   */
   private List<String> removePatchedContacts(JsonPatch patch, ObjectMapper mapper) {
 
     List<String> removedContacts = new ArrayList<>();

@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +55,7 @@ public class PatchUtils {
       // Convert the JsonNode back to the entity object to be saved
       return mapper.treeToValue(patched, entityClass);
     } catch (Exception e) {
-      throw new CannotApplyPatchException("Error while applying patch to customer");
+      throw new CannotApplyPatchException("Error while applying patch to Object",e);
     }
   }
 
@@ -351,14 +352,16 @@ public class PatchUtils {
    */
   public static Set<String> loadIds(JsonNode filteredNode) {
     Set<String> ids = new HashSet<>();
+    filteredNode.forEach(node -> ids.add(loadId(node)));
+    return ids.stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet());
+  }
 
-    filteredNode.forEach(node -> {
-      String id = PatchUtils.extractPathInfo(node.get("path").asText()).getLeft();
-      if (StringUtils.isNotBlank(id)) {
-        ids.add(id);
-      }
-    });
-    return ids;
+  public static String loadId(JsonNode node) {
+    String id = PatchUtils.extractPathInfo(node.get("path").asText()).getLeft();
+    if (StringUtils.isNotBlank(id)) {
+      return id;
+    }
+    return StringUtils.EMPTY;
   }
 
 }

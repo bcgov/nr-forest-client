@@ -46,6 +46,18 @@ public class ClientPatchOperationClientService implements ClientPatchOperationSe
     );
   }
 
+  /**
+   * Applies a JSON Patch to a ForestClientEntity identified by the given client number.
+   * This is super straightforward, just a few lines of code. First it checks if the patch
+   * is applicable to the ForestClientEntity, then it filters the patch operations to only
+   * include the ones  listed on restricted paths.
+   * Finally, it applies the patch to the entity and saves it.
+   *
+   * @param clientNumber the client number identifying the ForestClientEntity
+   * @param patch the JSON Patch to apply
+   * @param mapper the ObjectMapper used for JSON processing
+   * @return a Mono that completes when the patch has been applied
+   */
   public Mono<Void> applyPatch(
       String clientNumber,
       JsonPatch patch,
