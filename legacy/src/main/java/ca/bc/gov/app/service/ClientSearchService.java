@@ -456,6 +456,7 @@ public class ClientSearchService {
                     .findByClientNumber(clientNumber)
                     .sort(Comparator.comparing(ClientDoingBusinessAsEntity::getCreatedAt))
                     .map(dba -> new ClientDoingBusinessAsDto(
+                        dba.getId(),
                         dba.getClientNumber(),
                         dba.getDoingBusinessAsName(),
                         dba.getCreatedBy(),

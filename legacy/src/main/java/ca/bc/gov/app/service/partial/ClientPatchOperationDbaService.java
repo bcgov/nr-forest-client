@@ -1,7 +1,8 @@
 package ca.bc.gov.app.service.partial;
 
+import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
-import ca.bc.gov.app.repository.ForestClientLocationRepository;
+import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
 import ca.bc.gov.app.utils.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,35 +22,20 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(3)
-public class ClientPatchOperationLocationService implements ClientPatchOperationService {
+@Order(5)
+public class ClientPatchOperationDbaService implements ClientPatchOperationService {
 
-  private final ForestClientLocationRepository locationRepository;
+  private final ClientDoingBusinessAsRepository dbaRepository;
 
   @Override
   public String getPrefix() {
-    return "locations";
+    return "doingBusinessAs";
   }
 
   @Override
   public List<String> getRestrictedPaths() {
     return List.of(
-        "/locationName",
-        "/locationTypeCode",
-        "/addressOne",
-        "/addressTwo",
-        "/addressThree",
-        "/city",
-        "/province",
-        "/postalCode",
-        "/country",
-        "/businessPhone",
-        "/homePhone",
-        "/cellPhone",
-        "/faxNumber",
-        "/emailAddress",
-        "/cliLocnComment",
-        "/locnExpiredInd"
+        "/doingBusinessAsName"
     );
   }
 
@@ -59,37 +45,43 @@ public class ClientPatchOperationLocationService implements ClientPatchOperation
     Mono<Void> addMono =
         Flux
             .fromIterable(addPatchedLocation(clientNumber, patch, mapper))
-            .doOnNext(contact -> log.info("Adding Forest Client Location {}", contact))
-            .flatMap(locationRepository::save)
+            .doOnNext(contact -> log.info("Adding Forest Client doing business as Location {}", contact))
+            .flatMap(dbaRepository::save)
             .collectList()
             .then();
 
     Mono<Void> updateMono =
-        updatePatchedLocation(clientNumber, patch, mapper)
-            .doOnNext(contact -> log.info("Updating Forest Client Location {}", contact))
-            .flatMap(locationRepository::save)
+        updatePatchedLocation(patch, mapper)
+            .doOnNext(contact -> log.info("Updating Forest Client doing business as Location {}", contact))
+            .flatMap(dbaRepository::save)
             .collectList()
             .then();
 
     return addMono.then(updateMono);
   }
 
-  private List<ForestClientLocationEntity> addPatchedLocation(
+
+  private List<ClientDoingBusinessAsEntity> addPatchedLocation(
       String clientNumber,
       JsonPatch patch,
       ObjectMapper mapper
   ) {
 
-    List<ForestClientLocationEntity> addedLocation = new ArrayList<>();
+    List<ClientDoingBusinessAsEntity> addedLocation = new ArrayList<>();
 
-    JsonNode filteredNode = PatchUtils.filterOperationsByOp(patch, "add", "locations", mapper);
+    JsonNode filteredNode = PatchUtils.filterOperationsByOp(
+        patch,
+        "add",
+        getPrefix(),
+        mapper
+    );
 
     filteredNode.forEach(node ->
         addedLocation.add(
             PatchUtils
                 .loadAddValue(
                     node,
-                    ForestClientLocationEntity.class,
+                    ClientDoingBusinessAsEntity.class,
                     mapper
                 )
                 .withClientNumber(clientNumber)
@@ -99,8 +91,7 @@ public class ClientPatchOperationLocationService implements ClientPatchOperation
     return addedLocation;
   }
 
-  private Flux<ForestClientLocationEntity> updatePatchedLocation(
-      String clientNumber,
+  private Flux<ClientDoingBusinessAsEntity> updatePatchedLocation(
       JsonPatch patch,
       ObjectMapper mapper) {
 
@@ -112,35 +103,36 @@ public class ClientPatchOperationLocationService implements ClientPatchOperation
         mapper
     );
 
-    Stream<String> locationIds = PatchUtils
+    Stream<String> dbaIds = PatchUtils
         .loadIds(filteredNode)
         .stream()
         .distinct();
 
+    log.info("DEBUG :: DBA IDs {} -> {}", dbaIds, filteredNode);
+
     return
         Flux
-            .fromStream(locationIds)
-            .flatMap(locationCode ->
-                locationRepository
-                    .findByClientNumberAndClientLocnCode(clientNumber, locationCode)
-            )
-            .flatMap(location ->
+            .fromStream(dbaIds)
+            .doOnNext(c -> log.info("DEBUG :: DBA ID {}", c))
+            .flatMap(dbaRepository::findById)
+            .doOnNext(c -> log.info("DEBUG :: DBA {}", c))
+            .flatMap(dbaEntity ->
                 Mono
                     .just(PatchUtils.patchClient(
                             PatchUtils.filterPatchOperations(
                                 filteredNode,
-                                location.getClientLocnCode(),
+                                dbaEntity.getId().toString(),
                                 getRestrictedPaths(),
                                 mapper
                             ),
-                            location,
-                            ForestClientLocationEntity.class,
+                            dbaEntity,
+                            ClientDoingBusinessAsEntity.class,
                             mapper
                         )
                     )
-                    .filter(client -> !location.equals(client))
+                    .filter(client -> !dbaEntity.equals(client))
                     .doOnNext(
-                        client -> log.info("Detected Forest Client Location changes {}", client))
+                        client -> log.info("Detected Forest Client Doing business as changes {}", client))
             );
   }
 }

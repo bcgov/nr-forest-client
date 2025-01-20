@@ -39,6 +39,7 @@ class ClientContactControllerIntegrationTest extends
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
         .body(BodyInserters.fromValue(
                 new ForestClientContactDto(
+                    "1",
                     clientNumber,
                     "00",
                     List.of("00"),

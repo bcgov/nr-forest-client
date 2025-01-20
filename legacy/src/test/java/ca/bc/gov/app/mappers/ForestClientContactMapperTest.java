@@ -19,6 +19,7 @@ class ForestClientContactMapperTest {
       ForestClientContactMapper.class);
 
   ForestClientContactDto dto =  new ForestClientContactDto(
+      "1",
       "00000001",
       "00",
       List.of("00"),

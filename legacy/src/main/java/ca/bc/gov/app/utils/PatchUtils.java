@@ -339,7 +339,7 @@ public class PatchUtils {
     // If the path starts with the prefixed path
     if (path.startsWith(prefixedPath)) {
       // We generate a new operation path without the prefix
-      return path.replace(prefixedPath, StringUtils.EMPTY);
+      return path.substring(prefixedPath.length());
     }
     return path;
   }

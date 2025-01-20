@@ -19,6 +19,7 @@ class ForestClientDoingBusinessAsMapperTest {
       ForestClientDoingBusinessAsMapper.class);
 
   ClientDoingBusinessAsDto dto = new ClientDoingBusinessAsDto(
+      1,
       "00000001",
       "Spaldingnad",
       "Test",
