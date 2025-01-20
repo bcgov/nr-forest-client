@@ -49,6 +49,8 @@ const formatAuditLogDate = (timestamp: number): string => {
 // Computed property to group audit logs
 const groupedAuditLogs = computed(() => {
   const groups: { [key: string]: AuditLogResult[] } = {};
+
+  // Group the logs
   auditLogs.value.forEach(log => {
     const key = `${log.idx}-${log.changeType}-${log.updateTimestamp}-${log.updateUserid}`;
     if (!groups[key]) {
@@ -56,9 +58,13 @@ const groupedAuditLogs = computed(() => {
     }
     groups[key].push(log);
   });
+
   return Object.values(groups);
 });
 
+
+
+// TODO: Remove this code
 // Initialize detailsVisible dynamically when groupedAuditLogs changes
 watch(groupedAuditLogs, (newGroups) => {
   newGroups.forEach((_, index) => {
@@ -88,18 +94,20 @@ const toggleDetails = (index: number) => {
             </td>
             <td class="label-02" style="vertical-align: middle;">
               <h4>
-                <span v-if="group[0].tableName === 'FOR_CLI_AUDIT'">Client summary </span>
-                <span v-if="group[0].tableName === 'CLI_LOCN_AUDIT'">Location </span>
-                <span v-if="group[0].tableName === 'CLI_CON_AUDIT'">Contact </span>
-                
+                <span v-if="group[0].tableName === 'FOR_CLI_AUDIT'">
+                  Client summary 
+                </span>
+                <span v-if="group[0].tableName === 'CLI_LOCN_AUDIT'">
+                  Location "{{ group[0].idx }} {{ group[0].identifierLabel }}"
+                </span>
+                <span v-if="group[0].tableName === 'CLI_CON_AUDIT'">
+                  Contact "{{ group[0].identifierLabel }}"
+                </span>
+
                 <span v-if="group[0].changeType === 'UPDATE'">updated</span>
                 <span v-if="group[0].changeType === 'DELETE'">updated</span><!-- TBD based on the table -->
                 <span v-if="group[0].changeType === 'INSERT'">added</span>
 
-                <span v-if="group[0].tableName === 'FOR_CLI_AUDIT' &&
-                      group[0].changeType === 'INSERT'">
-                  Client created<!-- TBD based on the index -->
-                </span>
               </h4>
             </td>
           </tr>
@@ -121,12 +129,6 @@ const toggleDetails = (index: number) => {
 
         <div v-if="detailsVisible[index]" :id="'logDetails'+index" class="grouping-05" style="width: 80%;">
           <div class="body-compact-01">
-            <h4 class="label-with-icon"
-                v-if="group[0].tableName === 'CLI_LOCN_AUDIT'">
-                <Location20 />
-                <strong>Location {{ group[0].idx }}</strong>
-                <br /><br />
-            </h4>
 
             <div v-for="log in group">
               <!-- Contact Information Fields -->
@@ -162,13 +164,13 @@ const toggleDetails = (index: number) => {
               <p class="label-02" v-if="log.columnName === 'BIRTHDATE'">Date of birth</p>
               <p class="label-02" v-if="log.columnName === 'CLIENT_ID_TYPE_CODE'">ID type</p>
               <p class="label-02" v-if="log.columnName === 'CLIENT_IDENTIFICATION'">ID number</p>
-              <p class="label-02" v-if="log.columnName === 'REGISTRY_COMPANY_TYPE_CODE'">(TBC) Registry company type</p>
-              <p class="label-02" v-if="log.columnName === 'CORP_REGN_NMBR'">Registration number</p>
+              <p class="label-02" v-if="log.columnName === 'REGISTRATION_NUMBER'">Registration number</p>
               <p class="label-02" v-if="log.columnName === 'CLIENT_ACRONYM'">Acronym</p>
               <p class="label-02" v-if="log.columnName === 'WCB_FIRM_NUMBER'">WorkSafeBC number</p>
               <p class="label-02" v-if="log.columnName === 'OCG_SUPPLIER_NMBR'">OCG supplier number</p>
               <p class="label-02" v-if="log.columnName === 'CLIENT_COMMENT'">Notes</p>
 
+              <p class="label-02" v-if="log.columnName === 'REASON'">Reason</p>
               <p><del>{{ log.oldValue }}</del> {{ log.newValue }}</p>
               <br>
             </div>

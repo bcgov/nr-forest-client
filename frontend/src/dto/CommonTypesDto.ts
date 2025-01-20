@@ -97,7 +97,7 @@ export enum ClientTypeEnum {
   T,
   G,
   F,
-  U
+  U,
 }
 
 export enum IdentificationTypeEnum {
@@ -168,99 +168,98 @@ export interface ProgressNotification {
   value?: number | number[] | boolean;
 }
 
-
 export interface SubmissionList {
-  id: string
-  name: string
-  status: string
-  submittedAt: string
-  user: string
-  requestType: string
-  clientType: string
-  district: string
+  id: string;
+  name: string;
+  status: string;
+  submittedAt: string;
+  user: string;
+  requestType: string;
+  clientType: string;
+  district: string;
 }
 
 /**
  * Each item resulting from the client search.
  */
 export interface ClientSearchResult {
-  clientNumber: string
-  clientAcronym: string
-  clientFullName: string
-  clientType: string
-  city: string
-  clientStatus: string
+  clientNumber: string;
+  clientAcronym: string;
+  clientFullName: string;
+  clientType: string;
+  city: string;
+  clientStatus: string;
 }
 
 export interface AuditLogResult {
-  tableName: string
-  idx: string
-  identifierLabel: string
-  columnName: string
-  oldValue: string
-  newValue: string
-  updateTimestamp: string
-  updateUserid: string
-  changeType: string
-  reason: string
+  tableName: string;
+  idx: string;
+  identifierLabel: string;
+  columnName: string;
+  oldValue: string;
+  newValue: string;
+  updateTimestamp: string;
+  updateUserid: string;
+  changeType: string;
+  reason: string;
 }
 
 export interface SubmissionDetails {
-  submissionId: number
-  submissionStatus: string
-  submissionType: string
-  submittedTimestamp: Date
-  updateTimestamp: Date
-  approvedTimestamp: Date
-  updateUser: string
-  business: SubmissionDetailsBusiness
-  contact: SubmissionDetailsContact[]
-  address: SubmissionDetailsAddress[]
-  matchers: SubmissionDetailsMatchers
-  rejectionReason: string
-  confirmedMatchUserId: string
+  submissionId: number;
+  submissionStatus: string;
+  submissionType: string;
+  submittedTimestamp: Date;
+  updateTimestamp: Date;
+  approvedTimestamp: Date;
+  updateUser: string;
+  business: SubmissionDetailsBusiness;
+  contact: SubmissionDetailsContact[];
+  address: SubmissionDetailsAddress[];
+  matchers: SubmissionDetailsMatchers;
+  rejectionReason: string;
+  confirmedMatchUserId: string;
 }
 
 export interface SubmissionDetailsBusiness {
-  businessType: string
-  registrationNumber: string
-  clientNumber: string
-  organizationName: string
-  clientType: string
-  clientTypeDesc: string
-  goodStandingInd: string
-  birthdate: string,
-  district: string,
-  districtDesc: string
+  businessType: string;
+  registrationNumber: string;
+  clientNumber: string;
+  organizationName: string;
+  clientType: string;
+  clientTypeDesc: string;
+  goodStandingInd: string;
+  birthdate: string;
+  district: string;
+  districtDesc: string;
 }
 
 export interface SubmissionDetailsContact {
-  index: number
-  contactType: string
-  firstName: string
-  lastName: string
-  phoneNumber: string
-  emailAddress: string
-  locations: string[]
-  userId: string
+  index: number;
+  contactType: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  emailAddress: string;
+  locations: string[];
+  userId: string;
 }
 
 export interface SubmissionDetailsAddress {
-  index: number
-  streetAddress: string
-  country: string
-  province: string
-  city: string
-  postalCode: string
-  name: string
+  index: number;
+  streetAddress: string;
+  country: string;
+  province: string;
+  city: string;
+  postalCode: string;
+  name: string;
 }
 
 export interface SubmissionDetailsMatchers {
-  goodStanding: string
-  corporationName: string
-  registrationNumber: string
-  contact: string
-  location: string
+  goodStanding: string;
+  corporationName: string;
+  registrationNumber: string;
+  contact: string;
+  location: string;
 }
 
 export interface ClientDoingBusinessAs {

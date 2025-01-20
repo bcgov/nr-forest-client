@@ -522,16 +522,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
                IDX,
                L.CLIENT_LOCN_NAME AS IDENTIFIER_LABEL,
                COLUMN_NAME,
-               CASE
-                   WHEN TRIM(OLD_VALUE) = 'Y' THEN 'Yes'
-                   WHEN TRIM(OLD_VALUE) = 'N' THEN 'No'
-                   ELSE OLD_VALUE
-               END AS OLD_VALUE,
-               CASE
-                   WHEN TRIM(NEW_VALUE) = 'Y' THEN 'Yes'
-                   WHEN TRIM(NEW_VALUE) = 'N' THEN 'No'
-                   ELSE NEW_VALUE
-               END AS NEW_VALUE,
+               OLD_VALUE,
+               NEW_VALUE,
                A.UPDATE_TIMESTAMP,
                A.UPDATE_USERID,
                CASE
@@ -732,16 +724,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           IDX,
           '' AS IDENTIFIER_LABEL,
           COLUMN_NAME,
-          CASE
-            WHEN TRIM(OLD_VALUE) = 'Y' THEN 'Yes'
-            WHEN TRIM(OLD_VALUE) = 'N' THEN 'No'
-            ELSE OLD_VALUE
-          END AS OLD_VALUE,
-          CASE
-            WHEN TRIM(NEW_VALUE) = 'Y' THEN 'Yes'
-            WHEN TRIM(NEW_VALUE) = 'N' THEN 'No'
-            ELSE NEW_VALUE
-          END AS NEW_VALUE,
+          OLD_VALUE,
+          NEW_VALUE,
           UPDATE_TIMESTAMP,
           UPDATE_USERID,
           CASE
@@ -755,7 +739,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL)
           OR (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL)
           OR (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
-        ORDER BY UPDATE_TIMESTAMP DESC
+        ORDER BY UPDATE_TIMESTAMP DESC, CHANGE_TYPE ASC
       """)
   Flux<AuditLogDto> findClientInformationAuditLogsByClientNumber(String clientNumber);
 
@@ -841,22 +825,26 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       SELECT
         TABLE_NAME,
         IDX,
+        C.CONTACT_NAME AS IDENTIFIER_LABEL,
         COLUMN_NAME,
         OLD_VALUE,
         NEW_VALUE,
-        UPDATE_TIMESTAMP,
-        UPDATE_USERID,
+        A.UPDATE_TIMESTAMP,
+        A.UPDATE_USERID,
         CASE
           WHEN OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL THEN 'INSERT'
           WHEN OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL THEN 'DELETE'
           WHEN TRIM(OLD_VALUE) <> TRIM(NEW_VALUE) THEN 'UPDATE'
-        END AS CHANGE_TYPE
-      FROM AUDIT_DATA
+        END AS CHANGE_TYPE,
+        '' AS REASON
+      FROM AUDIT_DATA A
+      INNER JOIN THE.CLIENT_CONTACT C
+    ON A.IDX = C.CLIENT_CONTACT_ID
       WHERE
         (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL)
         OR (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL)
         OR (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
-      ORDER BY UPDATE_TIMESTAMP DESC
+      ORDER BY A.UPDATE_TIMESTAMP DESC
       """)
   Flux<AuditLogDto> findConctactAuditLogsByClientNumber(String clientNumber);
   
