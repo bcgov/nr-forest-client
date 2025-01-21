@@ -30,6 +30,7 @@ class ForestClientDoingBusinessAsMapperTest {
   ClientDoingBusinessAsEntity entity =
       ClientDoingBusinessAsEntity
           .builder()
+          .id(1)
           .clientNumber("00000001")
           .doingBusinessAsName("Spaldingnad")
           .createdAt(LocalDateTime.now())
