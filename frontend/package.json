@@ -58,9 +58,9 @@
     "axios": "^1.7.2",
     "date-fns": "^4.0.0",
     "dotenv": "^16.0.0",
-    "vue": "^3.5.12",
-    "vue-dompurify-html": "^5.0.1",
-    "vue-router": "^4.4.5",
+    "vue": "^3.5.13",
+    "vue-dompurify-html": "^5.2.0",
+    "vue-router": "^4.5.0",
     "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
@@ -104,9 +104,9 @@
     "vite-plugin-istanbul": "^5.0.0",
     "vitest": "^1.0.0",
     "volar-service-vetur": "latest",
-    "vue-eslint-parser": "^9.3.1",
+    "vue-eslint-parser": "^9.4.3",
     "vue-svg-loader": "^0.16.0",
-    "vue-tsc": "^2.1.10",
+    "vue-tsc": "^2.2.0",
     "wiremock": "^3.9.2"
   },
   "overrides": {
