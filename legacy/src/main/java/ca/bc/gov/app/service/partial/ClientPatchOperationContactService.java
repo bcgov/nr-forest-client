@@ -120,7 +120,7 @@ public class ClientPatchOperationContactService implements ClientPatchOperationS
 
     List<ForestClientContactDto> addedContact = new ArrayList<>();
 
-    JsonNode filteredNode = PatchUtils.filterOperationsByOp(patch, "add", "contacts", mapper);
+    JsonNode filteredNode = PatchUtils.filterOperationsByOp(patch, "add", getPrefix(), mapper);
 
     filteredNode.forEach(node ->
         addedContact.add(
@@ -217,7 +217,7 @@ public class ClientPatchOperationContactService implements ClientPatchOperationS
 
     List<String> removedContacts = new ArrayList<>();
 
-    JsonNode filteredNode = PatchUtils.filterOperationsByOp(patch, "remove", "contacts", mapper);
+    JsonNode filteredNode = PatchUtils.filterOperationsByOp(patch, "remove", getPrefix(), mapper);
 
     filteredNode.forEach(node ->
         removedContacts.add(

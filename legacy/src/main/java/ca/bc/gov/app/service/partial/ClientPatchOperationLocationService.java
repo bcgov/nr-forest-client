@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import io.micrometer.observation.annotation.Observed;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -28,7 +29,7 @@ public class ClientPatchOperationLocationService implements ClientPatchOperation
 
   @Override
   public String getPrefix() {
-    return "locations";
+    return "addresses";
   }
 
   @Override
@@ -82,7 +83,7 @@ public class ClientPatchOperationLocationService implements ClientPatchOperation
 
     List<ForestClientLocationEntity> addedLocation = new ArrayList<>();
 
-    JsonNode filteredNode = PatchUtils.filterOperationsByOp(patch, "add", "locations", mapper);
+    JsonNode filteredNode = PatchUtils.filterOperationsByOp(patch, "add", getPrefix(), mapper);
 
     filteredNode.forEach(node ->
         addedLocation.add(
@@ -93,6 +94,11 @@ public class ClientPatchOperationLocationService implements ClientPatchOperation
                     mapper
                 )
                 .withClientNumber(clientNumber)
+                .withCreatedAt(LocalDateTime.now())
+                .withUpdatedAt(LocalDateTime.now())
+                .withUpdatedByUnit(70L)
+                .withCreatedByUnit(70L)
+                .withRevision(1L)
         )
     );
 

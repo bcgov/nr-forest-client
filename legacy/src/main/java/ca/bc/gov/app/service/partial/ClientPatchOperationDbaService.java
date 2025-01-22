@@ -108,14 +108,10 @@ public class ClientPatchOperationDbaService implements ClientPatchOperationServi
         .stream()
         .distinct();
 
-    log.info("DEBUG :: DBA IDs {} -> {}", dbaIds, filteredNode);
-
     return
         Flux
             .fromStream(dbaIds)
-            .doOnNext(c -> log.info("DEBUG :: DBA ID {}", c))
             .flatMap(dbaRepository::findById)
-            .doOnNext(c -> log.info("DEBUG :: DBA {}", c))
             .flatMap(dbaEntity ->
                 Mono
                     .just(PatchUtils.patchClient(
