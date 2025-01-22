@@ -6,6 +6,7 @@ import ca.bc.gov.app.dto.client.IdentificationTypeDto;
 import ca.bc.gov.app.service.client.ClientCodeService;
 import ca.bc.gov.app.service.client.ClientCountryProvinceService;
 import ca.bc.gov.app.service.client.ClientDistrictService;
+import ca.bc.gov.app.service.client.ClientLegacyService;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class ClientCodesController {
   private final ClientDistrictService clientDistrictService;
   private final ClientCountryProvinceService clientCountryProvinceService;
   private final ClientCodeService clientCodeService;
+  private final ClientLegacyService legacyService;
 
   @GetMapping("/client-types")
   public Flux<CodeNameDto> findActiveClientTypeCodes() {
@@ -126,4 +128,14 @@ public class ClientCodesController {
     return clientCodeService.getIdentificationTypeByCode(idCode);
   }
 
+  @GetMapping("/update-reasons/{clientTypeCode}/{actionCode}")
+  public Flux<CodeNameDto> findActiveByClientTypeAndActionCode(
+      @PathVariable String clientTypeCode,
+      @PathVariable String actionCode) {
+    log.info("Requesting a list of active client update reason codes from the client service.");
+    return legacyService.findActiveUpdateReasonsByClientTypeAndActionCode(
+        clientTypeCode,
+        actionCode);
+  }
+  
 }
