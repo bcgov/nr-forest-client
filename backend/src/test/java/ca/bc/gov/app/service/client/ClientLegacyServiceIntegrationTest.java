@@ -8,7 +8,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-
+import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
+import org.mockito.Mockito;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 @DisplayName("Integration Test | Client Legacy Service Test")
@@ -92,7 +94,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
   @ParameterizedTest
   @MethodSource("invalidValuesForMap")
   @DisplayName("searching legacy with invalid values for map")
-  void shouldNotSearchWhenInvalidCasesHitGeneric(Map<String, List<String>> parameters){
+  void shouldNotSearchWhenInvalidCasesHitGeneric(Map<String, List<String>> parameters) {
     service.searchGeneric("generic",parameters)
         .as(StepVerifier::create)
         .verifyComplete();
@@ -244,5 +246,32 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           })
           .verifyComplete();
   }
+  
+  @Test
+  void testGetReasonCodes() {
+      CodeNameDto expectedDto = new CodeNameDto("CORR", "Correction");
+      String clientTypeCode = "C";
+      String actionCode = "NAME";
 
+      Mockito
+          .when(service.findActiveUpdateReasonsByClientTypeAndActionCode(clientTypeCode, actionCode))
+          .thenReturn(Flux.just(expectedDto));
+
+      service
+          .findActiveUpdateReasonsByClientTypeAndActionCode(
+              clientTypeCode, 
+              actionCode
+          )
+          .as(StepVerifier::create)
+          .expectNext(expectedDto)
+          .verifyComplete();
+
+      Mockito
+        .verify(service)
+        .findActiveUpdateReasonsByClientTypeAndActionCode(
+            clientTypeCode, 
+            actionCode
+        );
+  }
+  
 }
