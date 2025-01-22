@@ -28,7 +28,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -48,7 +47,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       .configureStaticDsl(true)
       .build();
 
-  @MockBean
+  @Autowired
   private ClientLegacyService service;
 
   @BeforeEach
