@@ -20,7 +20,7 @@ import reactor.core.publisher.Flux;
 public class ClientCodesController {
 
   private final ClientCodeService clientCodeService;
-
+  
   @GetMapping("/update-reasons/{clientTypeCode}/{actionCode}")
   public Flux<CodeNameDto> findActiveByClientTypeAndActionCode(
       @PathVariable String clientTypeCode,

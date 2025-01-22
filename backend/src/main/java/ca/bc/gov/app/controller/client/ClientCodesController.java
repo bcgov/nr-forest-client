@@ -128,6 +128,16 @@ public class ClientCodesController {
     return clientCodeService.getIdentificationTypeByCode(idCode);
   }
 
+  /**
+   * Handles HTTP GET requests to retrieve a list of active update reason codes for a specific client
+   * type and action code. This endpoint interacts with the client service to fetch the relevant data.
+   *
+   * @param clientTypeCode the code representing the type of client (e.g., individual, corporation)
+   * @param actionCode the code representing the action being performed (e.g., name change, address
+   *        change)
+   * @return a {@link Flux} emitting {@link CodeNameDto} objects representing the active update
+   *         reasons for the specified client type and action code
+   */
   @GetMapping("/update-reasons/{clientTypeCode}/{actionCode}")
   public Flux<CodeNameDto> findActiveByClientTypeAndActionCode(
       @PathVariable String clientTypeCode,
