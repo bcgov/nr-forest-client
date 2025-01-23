@@ -142,7 +142,6 @@ public class ClientCodesController {
   public Flux<CodeNameDto> findActiveByClientTypeAndActionCode(
       @PathVariable String clientTypeCode,
       @PathVariable String actionCode) {
-    log.info("Requesting a list of active client update reason codes from the client service.");
     return legacyService.findActiveUpdateReasonsByClientTypeAndActionCode(
         clientTypeCode,
         actionCode);
