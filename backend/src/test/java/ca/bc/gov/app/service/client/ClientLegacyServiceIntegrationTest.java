@@ -248,30 +248,26 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
   }
   
   @Test
-  void testGetReasonCodes() {
-      CodeNameDto expectedDto = new CodeNameDto("CORR", "Correction");
+  @DisplayName("Retrieve active update reasons by client type and action code")
+  void testFindActiveUpdateReasonsByClientTypeAndActionCode() {
       String clientTypeCode = "C";
       String actionCode = "NAME";
 
-      Mockito
-          .when(service.findActiveUpdateReasonsByClientTypeAndActionCode(clientTypeCode, actionCode))
-          .thenReturn(Flux.just(expectedDto));
+      CodeNameDto expectedDto = new CodeNameDto("CORR", "Correction");
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/update-reasons/" + clientTypeCode + "/" + actionCode))
+              .willReturn(okJson("[{\"code\":\"CORR\",\"name\":\"Correction\"}]"))
+      );
 
       service
-          .findActiveUpdateReasonsByClientTypeAndActionCode(
-              clientTypeCode, 
-              actionCode
-          )
+          .findActiveUpdateReasonsByClientTypeAndActionCode(clientTypeCode, actionCode)
           .as(StepVerifier::create)
-          .expectNext(expectedDto)
+          .assertNext(dto -> {
+              assertEquals(expectedDto.code(), dto.code());
+              assertEquals(expectedDto.name(), dto.name());
+          })
           .verifyComplete();
-
-      Mockito
-        .verify(service)
-        .findActiveUpdateReasonsByClientTypeAndActionCode(
-            clientTypeCode, 
-            actionCode
-        );
   }
   
 }
