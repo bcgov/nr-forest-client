@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
 @DisplayName("Integration Test | Client Legacy Service Test")
