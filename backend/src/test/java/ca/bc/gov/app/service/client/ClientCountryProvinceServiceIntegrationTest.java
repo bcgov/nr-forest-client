@@ -27,5 +27,16 @@ class ClientCountryProvinceServiceIntegrationTest extends AbstractTestContainerI
         .verifyComplete();
   }
 
+  @Test
+  void testGetProvinceByCountryAndProvinceCode() {
+
+    CodeNameDto expectedDto = new CodeNameDto("BC", "British Columbia");
+
+    service
+        .getProvinceByCountryAndProvinceCode("CA", "BC")
+        .as(StepVerifier::create)
+        .expectNext(expectedDto)
+        .verifyComplete();
+  }
 
 }
