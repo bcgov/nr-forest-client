@@ -258,7 +258,7 @@ public class ClientLegacyService {
       String actionCode
   ) {
     // Log the parameters for debugging purposes
-    log.info("Searching for client type {} and action {} in legacy", 
+    log.info("Searching for client type {} and action code {} in legacy", 
              clientTypeCode, 
              actionCode);
 

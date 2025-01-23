@@ -16,21 +16,22 @@ import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
-import org.mockito.Mockito;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import reactor.core.publisher.Flux;
+import org.slf4j.LoggerFactory;
 import reactor.test.StepVerifier;
 
 @DisplayName("Integration Test | Client Legacy Service Test")
@@ -257,6 +258,12 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
 
       CodeNameDto expectedDto = new CodeNameDto("CORR", "Correction");
 
+      Logger logger = (Logger) LoggerFactory.getLogger(ClientLegacyService.class);
+
+      ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+      listAppender.start();
+      logger.addAppender(listAppender);
+      
       legacyStub.stubFor(
           get(urlPathEqualTo("/api/codes/update-reasons/" + clientTypeCode + "/" + actionCode))
               .willReturn(okJson("[{\"code\":\"CORR\",\"name\":\"Correction\"}]"))
@@ -270,6 +277,19 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
               assertEquals(expectedDto.name(), dto.name());
           })
           .verifyComplete();
+      
+      boolean logMessage1Found = listAppender.list.stream()
+          .anyMatch(event -> event.getFormattedMessage().contains("Searching for client type") &&
+                             event.getFormattedMessage().contains(clientTypeCode) &&
+                             event.getFormattedMessage().contains(actionCode));
+
+      boolean logMessage2Found = listAppender.list.stream()
+          .anyMatch(event -> event.getFormattedMessage().contains("Found data for client type") &&
+                             event.getFormattedMessage().contains(clientTypeCode) &&
+                             event.getFormattedMessage().contains(actionCode));
+
+      assertTrue(logMessage1Found, "Expected log message for searching not found.");
+      assertTrue(logMessage2Found, "Expected log message for found data not found.");
   }
   
   @Test
