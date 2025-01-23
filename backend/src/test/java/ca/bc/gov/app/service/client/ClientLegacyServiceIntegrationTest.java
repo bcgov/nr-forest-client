@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.client;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
@@ -8,6 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
@@ -270,4 +272,60 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .verifyComplete();
   }
   
+  @Test
+  @DisplayName("Search clients by keyword with pagination")
+  void shouldSearchClientsByKeyword() {
+      int page = 1;
+      int size = 10;
+      String keyword = "John";
+
+      Long expectedTotalCount = 25L;
+      ClientListDto expectedDto = new ClientListDto(
+          "00000001",
+          "ACR",
+          "John Doe",
+          "Corporation",
+          "Victoria",
+          "Active"
+      );
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/search"))
+              .withQueryParam("page", equalTo(String.valueOf(page)))
+              .withQueryParam("size", equalTo(String.valueOf(size)))
+              .withQueryParam("value", equalTo(keyword))
+              .willReturn(
+                  aResponse()
+                      .withHeader("Content-Type", "application/json")
+                      .withHeader("X-Total-Count", expectedTotalCount.toString())
+                      .withBody("[{"
+                          + "\"clientNumber\":\"00000001\","
+                          + "\"clientAcronym\":\"ACR\","
+                          + "\"clientFullName\":\"John Doe\","
+                          + "\"clientType\":\"Corporation\","
+                          + "\"city\":\"Victoria\","
+                          + "\"clientStatus\":\"Active\""
+                          + "}]")
+              )
+      );
+      
+      service
+          .search(page, size, keyword)
+          .as(StepVerifier::create)
+          .assertNext(pair -> {
+              ClientListDto actualDto = pair.getFirst();
+              Long actualTotalCount = pair.getSecond();
+
+              assertEquals(expectedDto.clientNumber(), actualDto.clientNumber());
+              assertEquals(expectedDto.clientAcronym(), actualDto.clientAcronym());
+              assertEquals(expectedDto.clientFullName(), actualDto.clientFullName());
+              assertEquals(expectedDto.clientType(), actualDto.clientType());
+              assertEquals(expectedDto.city(), actualDto.city());
+              assertEquals(expectedDto.clientStatus(), actualDto.clientStatus());
+
+              assertEquals(expectedTotalCount, actualTotalCount);
+          })
+          .verifyComplete();
+  }
+
 }
