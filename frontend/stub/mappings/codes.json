@@ -121,5 +121,20 @@
         }
       }
     }
+    ,
+    {
+      "name": "Get Province by CountryCode and ProvinceCode",
+      "request": {
+        "urlPattern": "/api/codes/update-reasons/([A-Z]+)/([A-Z]+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-update-reasons-{{request.path.[3]}}-{{request.path.[4]}}.json"
+      }
+    }
   ]
 }
