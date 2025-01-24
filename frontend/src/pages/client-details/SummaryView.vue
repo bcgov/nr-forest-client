@@ -7,13 +7,17 @@ import {
   goodStanding,
 } from "@/services/ForestClientService";
 
-// @ts-ignore
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
-// @ts-ignore
 import Warning20 from "@carbon/icons-vue/es/warning--filled/20";
+import Edit16 from "@carbon/icons-vue/es/edit/16";
 
 const props = defineProps<{
   data: ClientDetails;
+  canEdit: boolean;
+}>();
+
+const emit = defineEmits<{
+  (e: "edit"): void;
 }>();
 
 const clientRegistrationNumber = computed(() => {
@@ -112,6 +116,12 @@ const birthdateLabel = computed(() =>
         v-dompurify-html="getFormattedHtml(props.data.clientComment)"
       ></span>
     </read-only-component>
+  </div>
+  <div class="grouping-10 no-padding" v-if="props.canEdit">
+    <cds-button id="clientEditBtn" kind="tertiary" size="md" @click="emit('edit')">
+      <span class="width-unset">Edit client information</span>
+      <Edit16 slot="icon" />
+    </cds-button>
   </div>
 </template>
 

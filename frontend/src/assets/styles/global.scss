@@ -1653,6 +1653,10 @@ cds-header-panel[expanded] {
   color: unset;
 }
 
+.width-unset {
+  width: unset;
+}
+
 cds-accordion-item[open] .hide-open {
   display: none;
 }
