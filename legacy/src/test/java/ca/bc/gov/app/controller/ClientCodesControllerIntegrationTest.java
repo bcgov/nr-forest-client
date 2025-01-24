@@ -2,7 +2,6 @@ package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.dto.CodeNameDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
-import java.util.Map;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -23,30 +22,25 @@ class ClientCodesControllerIntegrationTest extends
 
   @ParameterizedTest
   @MethodSource("getReasonCodes")
-  @DisplayName("Get reason codes")
-  void shouldGetReasons(
-      String clientTypeCode,
-      String actionCode
-  ) {
-    client
-        .get()
-        .uri(uriBuilder ->
-            uriBuilder
-                .path("/api/codes/update-reasons")
-                .queryParam("clientTypeCode", clientTypeCode)
-                .queryParam("actionCode", actionCode)
-                .build(Map.of())
-        )
-        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-        .exchange()
-        .expectStatus().isOk()
-        .expectBodyList(CodeNameDto.class);
+  @DisplayName("Retrieve update reasons by client type and action code")
+  void shouldGetReasons(String clientTypeCode, String actionCode) {
+      client
+          .get()
+          .uri(uriBuilder ->
+              uriBuilder
+                  .path("/api/codes/update-reasons/{clientTypeCode}/{actionCode}")
+                  .build(clientTypeCode, actionCode)
+          )
+          .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+          .exchange()
+          .expectStatus().isOk()
+          .expectBodyList(CodeNameDto.class);
   }
-  
+
   static Stream<Arguments> getReasonCodes() {
     return Stream.of(
-        Arguments.of("C", "NAME"),
-        Arguments.of("I", "NAME"),
+        Arguments.of("C", "NAME"), 
+        Arguments.of("I", "NAME"), 
         Arguments.of("I", "ID")
     );
   }
