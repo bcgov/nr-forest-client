@@ -24,6 +24,7 @@ describe("<summary-view />", () => {
       clientIdTypeDesc: "British Columbia Driver's Licence",
       clientIdentification: "64242646",
     } as ClientDetails,
+    canEdit: false,
   });
 
   let currentProps: ReturnType<typeof getDefaultProps> = null;
@@ -74,8 +75,9 @@ describe("<summary-view />", () => {
   });
 
   it("hides optional fields when they are empty", () => {
-    const data: ClientDetails = {
-      ...getDefaultProps().data,
+    const props = getDefaultProps();
+    props.data = {
+      ...props.data,
       registryCompanyTypeCode: "",
       corpRegnNmbr: "",
       doingBusinessAs: [],
@@ -86,7 +88,7 @@ describe("<summary-view />", () => {
       clientIdTypeDesc: "",
       clientIdentification: "",
     };
-    mount({ data });
+    mount(props);
 
     testFieldHidden("#acronym");
     testFieldHidden("#registrationNumber");
@@ -98,11 +100,12 @@ describe("<summary-view />", () => {
   });
 
   it("displays as many names the client has as Doing business as", () => {
-    const { data } = getDefaultProps();
+    const props = getDefaultProps();
+    const { data } = props;
     data.doingBusinessAs[1] = { doingBusinessAsName: "Name #2" };
     data.doingBusinessAs[2] = { doingBusinessAsName: "Name #3" };
 
-    mount({ data });
+    mount(props);
 
     testField("#doingBusinessAs", data.doingBusinessAs[0].doingBusinessAsName);
     testField("#doingBusinessAs", data.doingBusinessAs[1].doingBusinessAsName);
@@ -116,20 +119,53 @@ describe("<summary-view />", () => {
   });
 
   it("sets the birthdate label to 'Year of birth' when date's month and day are masked", () => {
-    const { data } = getDefaultProps();
+    const props = getDefaultProps();
+    const { data } = props;
     data.birthdate = "1985-**-**";
 
-    mount({ data });
+    mount(props);
 
     cy.get("#dateOfBirth").contains("Year of birth");
   });
 
   it("sets the birthdate label to 'Year of birth' when date has only four digits", () => {
-    const { data } = getDefaultProps();
+    const props = getDefaultProps();
+    const { data } = props;
     data.birthdate = "1985";
 
-    mount({ data });
+    mount(props);
 
     cy.get("#dateOfBirth").contains("Year of birth");
+  });
+
+  it("displays the Edit button if canEdit is true", () => {
+    const props = getDefaultProps();
+    props.canEdit = true;
+
+    mount(props);
+
+    cy.get("#clientEditBtn").should("be.visible");
+  });
+
+  it("hides the Edit button if canEdit is false", () => {
+    const props = getDefaultProps();
+    props.canEdit = false;
+
+    mount(props);
+
+    cy.get("#clientEditBtn").should("not.exist");
+  });
+
+  it("emits the 'edit' event when the Edit button is clicked", () => {
+    const props = getDefaultProps();
+    props.canEdit = true;
+
+    mount(props);
+
+    cy.get("#clientEditBtn").click();
+
+    cy.get("@vueWrapper").should((vueWrapper) => {
+      expect(vueWrapper.emitted("edit")).to.have.lengthOf(1);
+    });
   });
 });
