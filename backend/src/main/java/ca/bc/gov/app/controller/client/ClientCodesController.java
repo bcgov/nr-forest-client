@@ -6,6 +6,7 @@ import ca.bc.gov.app.dto.client.IdentificationTypeDto;
 import ca.bc.gov.app.service.client.ClientCodeService;
 import ca.bc.gov.app.service.client.ClientCountryProvinceService;
 import ca.bc.gov.app.service.client.ClientDistrictService;
+import ca.bc.gov.app.service.client.ClientLegacyService;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class ClientCodesController {
   private final ClientDistrictService clientDistrictService;
   private final ClientCountryProvinceService clientCountryProvinceService;
   private final ClientCodeService clientCodeService;
+  private final ClientLegacyService legacyService;
 
   @GetMapping("/client-types")
   public Flux<CodeNameDto> findActiveClientTypeCodes() {
@@ -126,4 +128,23 @@ public class ClientCodesController {
     return clientCodeService.getIdentificationTypeByCode(idCode);
   }
 
+  /**
+   * Handles HTTP GET requests to retrieve a list of active update reason codes for a specific client
+   * type and action code. This endpoint interacts with the client service to fetch the relevant data.
+   *
+   * @param clientTypeCode the code representing the type of client (e.g., individual, corporation)
+   * @param actionCode the code representing the action being performed (e.g., name change, address
+   *        change)
+   * @return a {@link Flux} emitting {@link CodeNameDto} objects representing the active update
+   *         reasons for the specified client type and action code
+   */
+  @GetMapping("/update-reasons/{clientTypeCode}/{actionCode}")
+  public Flux<CodeNameDto> findActiveByClientTypeAndActionCode(
+      @PathVariable String clientTypeCode,
+      @PathVariable String actionCode) {
+    return legacyService.findActiveUpdateReasonsByClientTypeAndActionCode(
+        clientTypeCode,
+        actionCode);
+  }
+  
 }

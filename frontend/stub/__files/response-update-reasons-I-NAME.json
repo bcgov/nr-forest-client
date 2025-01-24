@@ -1,0 +1,5 @@
+[
+  { "code": "CORR", "name": "Correction" },
+  { "code": "EXEC", "name": "Executor Acting on Behalf of Deceased Client" },
+  { "code": "LNAM", "name": "Legal Name Change" }
+]

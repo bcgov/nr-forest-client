@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.client.ClientListDto;
+import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
@@ -237,6 +238,45 @@ public class ClientLegacyService {
                     idType, identification, dto.clientNumber())
             );
 
+  }
+  
+  /**
+   * Retrieves a flux of {@link CodeNameDto} objects representing the update reasons for a
+   * specific client type and action code. This method queries in the legacy system to find the
+   * reasons associated with updating a client based on the given parameters.
+   *
+   * <p>The method logs the request parameters and the results for debugging purposes.
+   *
+   * @param clientTypeCode the code representing the type of client (e.g., individual, corporation)
+   * @param actionCode the code representing the action being performed (e.g., name change, address
+   *        change)
+   * @return a {@link Flux} emitting {@link CodeNameDto} objects that represent the update reasons
+   *         for the specified client type and action code
+   */
+  public Flux<CodeNameDto> findActiveUpdateReasonsByClientTypeAndActionCode(
+      String clientTypeCode,
+      String actionCode
+  ) {
+    // Log the parameters for debugging purposes
+    log.info("Searching for client type {} and action code {} in legacy", 
+             clientTypeCode, 
+             actionCode);
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/update-reasons/{clientTypeCode}/{actionCode}", 
+                 clientTypeCode, 
+                 actionCode)
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                        "Found data for client type {} and action code {} in legacy",
+                        clientTypeCode, 
+                        actionCode
+                )
+            );
   }
 
   /**
