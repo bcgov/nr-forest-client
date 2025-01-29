@@ -795,7 +795,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           A.UPDATE_USERID,
           CASE
             WHEN OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL THEN 'INSERT'
-            WHEN OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL THEN 'DELETE'
+            WHEN OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL THEN 'UPDATE'
             WHEN TRIM(OLD_VALUE) <> TRIM(NEW_VALUE) THEN 'UPDATE'
           END AS CHANGE_TYPE,
           REASON
@@ -817,7 +817,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           BUS_CONTACT_CODE AS NEW_VALUE,
           LAG(BUS_CONTACT_CODE) OVER (PARTITION BY CLIENT_CONTACT_ID ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
           UPDATE_TIMESTAMP,
-          UPDATE_USERID
+          UPDATE_USERID,
+          CLIENT_AUDIT_CODE
         FROM THE.CLI_CON_AUDIT
         WHERE CLIENT_NUMBER = :clientNumber
 
@@ -830,7 +831,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           CONTACT_NAME AS NEW_VALUE,
           LAG(CONTACT_NAME) OVER (PARTITION BY CLIENT_CONTACT_ID ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
           UPDATE_TIMESTAMP,
-          UPDATE_USERID
+          UPDATE_USERID,
+          CLIENT_AUDIT_CODE
         FROM THE.CLI_CON_AUDIT
         WHERE CLIENT_NUMBER = :clientNumber
 
@@ -843,7 +845,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           BUSINESS_PHONE AS NEW_VALUE,
           LAG(BUSINESS_PHONE) OVER (PARTITION BY CLIENT_CONTACT_ID ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
           UPDATE_TIMESTAMP,
-          UPDATE_USERID
+          UPDATE_USERID,
+          CLIENT_AUDIT_CODE
         FROM THE.CLI_CON_AUDIT
         WHERE CLIENT_NUMBER = :clientNumber
 
@@ -856,7 +859,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           CELL_PHONE AS NEW_VALUE,
           LAG(CELL_PHONE) OVER (PARTITION BY CLIENT_CONTACT_ID ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
           UPDATE_TIMESTAMP,
-          UPDATE_USERID
+          UPDATE_USERID,
+          CLIENT_AUDIT_CODE
         FROM THE.CLI_CON_AUDIT
         WHERE CLIENT_NUMBER = :clientNumber
 
@@ -869,7 +873,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           FAX_NUMBER AS NEW_VALUE,
           LAG(FAX_NUMBER) OVER (PARTITION BY CLIENT_CONTACT_ID ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
           UPDATE_TIMESTAMP,
-          UPDATE_USERID
+          UPDATE_USERID,
+          CLIENT_AUDIT_CODE
         FROM THE.CLI_CON_AUDIT
         WHERE CLIENT_NUMBER = :clientNumber
 
@@ -882,7 +887,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           EMAIL_ADDRESS AS NEW_VALUE,
           LAG(EMAIL_ADDRESS) OVER (PARTITION BY CLIENT_CONTACT_ID ORDER BY UPDATE_TIMESTAMP) AS OLD_VALUE,
           UPDATE_TIMESTAMP,
-          UPDATE_USERID
+          UPDATE_USERID,
+          CLIENT_AUDIT_CODE
         FROM THE.CLI_CON_AUDIT
         WHERE CLIENT_NUMBER = :clientNumber
       )
@@ -897,20 +903,69 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
         A.UPDATE_TIMESTAMP,
         A.UPDATE_USERID,
         CASE
-          WHEN OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL THEN 'INSERT'
-          WHEN OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL THEN 'DELETE'
-          WHEN TRIM(OLD_VALUE) <> TRIM(NEW_VALUE) THEN 'UPDATE'
+          WHEN C.CONTACT_NAME IS NULL THEN 'DELETE'
+          WHEN A.CLIENT_AUDIT_CODE = 'UPD' THEN 'UPDATE'
+          WHEN A.CLIENT_AUDIT_CODE = 'INS' THEN 'UPDATE'
         END AS CHANGE_TYPE,
         '' AS REASON
       FROM AUDIT_DATA A
-      INNER JOIN THE.CLIENT_CONTACT C
+      FULL OUTER JOIN THE.CLIENT_CONTACT C
     ON A.IDX = C.CLIENT_CONTACT_ID
       WHERE
         (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL)
         OR (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL)
         OR (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
       ORDER BY A.UPDATE_TIMESTAMP DESC
-      """)
-  Flux<AuditLogDto> findConctactAuditLogsByClientNumber(String clientNumber);
+        """)
+  Flux<AuditLogDto> findContactAuditLogsByClientNumber(String clientNumber);
+
+  @Query("""
+      WITH AUDIT_DATA AS (
+                SELECT
+                    'CLIENT_DOING_BUSINESS_AS_AUDIT' AS TABLE_NAME,
+                    CLIENT_DBA_ID AS IDX,
+                    'DOING_BUSINESS_AS_NAME' AS COLUMN_NAME,
+                    DOING_BUSINESS_AS_NAME AS NEW_VALUE,
+                    LAG(DOING_BUSINESS_AS_NAME) OVER (
+                        PARTITION BY CLIENT_NUMBER, CLIENT_DBA_ID
+                        ORDER BY UPDATE_TIMESTAMP
+                    ) AS OLD_VALUE,
+                    LEAD(DOING_BUSINESS_AS_NAME) OVER (
+                        PARTITION BY CLIENT_NUMBER, CLIENT_DBA_ID
+                        ORDER BY UPDATE_TIMESTAMP
+                    ) AS NEXT_VALUE,
+                    CLIENT_AUDIT_CODE,
+                    UPDATE_TIMESTAMP,
+                    UPDATE_USERID,
+                    '' AS REASON
+                FROM THE.CLIENT_DOING_BUSINESS_AS_AUDIT
+                WHERE CLIENT_NUMBER = :clientNumber
+            )
+
+            SELECT
+                TABLE_NAME,
+                IDX,
+                '' AS IDENTIFIER_LABEL,
+                COLUMN_NAME,
+                OLD_VALUE,
+                NEW_VALUE,
+                A.UPDATE_TIMESTAMP,
+                A.UPDATE_USERID,
+                CASE
+                    WHEN OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL THEN 'INSERT'
+                    WHEN OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL THEN 'UPDATE'
+                    WHEN TRIM(OLD_VALUE) <> TRIM(NEW_VALUE) THEN 'UPDATE'
+                    WHEN OLD_VALUE IS NOT NULL AND NEXT_VALUE IS NULL THEN 'DELETE'
+                END AS CHANGE_TYPE,
+                REASON
+            FROM AUDIT_DATA A
+            WHERE
+                (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL)
+                OR (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL)
+                OR (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
+                OR (OLD_VALUE IS NOT NULL AND NEXT_VALUE IS NULL)
+            ORDER BY A.UPDATE_TIMESTAMP DESC, CHANGE_TYPE ASC
+                  """)
+  Flux<AuditLogDto> findDoingBusinessAsAuditLogsByClientNumber(String clientNumber);
   
 }

@@ -590,7 +590,8 @@ public class ClientSearchService {
         .merge(
             forestClientRepository.findLocationAuditLogsByClientNumber(clientNumber),
             forestClientRepository.findClientInformationAuditLogsByClientNumber(clientNumber),
-            forestClientRepository.findConctactAuditLogsByClientNumber(clientNumber)
+            forestClientRepository.findContactAuditLogsByClientNumber(clientNumber),
+            forestClientRepository.findDoingBusinessAsAuditLogsByClientNumber(clientNumber)
         )
         .sort(Comparator
             .comparing(AuditLogDto::updateTimestamp, Comparator.nullsLast(Comparator.naturalOrder())).reversed()

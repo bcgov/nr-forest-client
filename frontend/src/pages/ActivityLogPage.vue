@@ -14,6 +14,8 @@ import "@carbon/web-components/es/components/tag/index";
 import Avatar16 from "@carbon/icons-vue/es/user--avatar/16";
 import Avatar20 from "@carbon/icons-vue/es/user--avatar/20";
 import Location20 from "@carbon/icons-vue/es/location/20";
+import User20 from "@carbon/icons-vue/es/user/20";
+import Multiple20 from "@carbon/icons-vue/es/user--multiple/20";
 
 const auditLogs = ref<AuditLogResult[]>([]);
 const detailsVisible = ref<{ [key: number]: boolean }>({});
@@ -91,6 +93,8 @@ const toggleDetails = (index: number) => {
             <td style="width: 2rem !important;">
               <span v-if="group[0].tableName === 'FOR_CLI_AUDIT'"><Avatar20 /></span>
               <span v-if="group[0].tableName === 'CLI_LOCN_AUDIT'"><Location20 /></span>
+              <span v-if="group[0].tableName === 'CLI_CON_AUDIT'"><User20 /></span>
+              <span v-if="group[0].tableName === 'CLIENT_DOING_BUSINESS_AS_AUDIT'"><Multiple20 /></span>
             </td>
             <td class="label-02" style="vertical-align: middle;">
               <h4>
@@ -103,9 +107,11 @@ const toggleDetails = (index: number) => {
                 <span v-if="group[0].tableName === 'CLI_CON_AUDIT'">
                   Contact "{{ group[0].identifierLabel }}"
                 </span>
-
+                <span v-if="group[0].tableName === 'CLIENT_DOING_BUSINESS_AS_AUDIT'">
+                  Doing business as 
+                </span>
                 <span v-if="group[0].changeType === 'UPDATE'">updated</span>
-                <span v-if="group[0].changeType === 'DELETE'">updated</span><!-- TBD based on the table -->
+                <span v-if="group[0].changeType === 'DELETE'">deleted</span>
                 <span v-if="group[0].changeType === 'INSERT'">added</span>
 
               </h4>
