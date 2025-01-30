@@ -432,4 +432,36 @@ public class ClientLegacyService {
         });
   }
 
+  public Flux<CodeNameDto> findActiveClientStatusCodes() {
+    log.info("Searching for active client statuses in legacy");
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/client-statuses")
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                        "Found active client statuses in legacy"
+                )
+            );
+  }
+
+  public Flux<CodeNameDto> findActiveRegistryTypeCodes() {
+    log.info("Searching for active registry types in legacy");
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/registry-types")
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                        "Found active registry types in legacy"
+                )
+            );
+  }
+
 }

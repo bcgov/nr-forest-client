@@ -147,4 +147,16 @@ public class ClientCodesController {
         actionCode);
   }
   
+  @GetMapping("/client-statuses")
+  public Flux<CodeNameDto> findActiveClientStatusCodes() {
+    log.info("Requesting a list of active client status codes from the client service.");
+    return legacyService.findActiveClientStatusCodes();
+  }
+  
+  @GetMapping("/registry-types")
+  public Flux<CodeNameDto> findActiveRegistryTypeCodes() {
+    log.info("Requesting a list of active registry type codes from the client service.");
+    return legacyService.findActiveRegistryTypeCodes();
+  }
+  
 }

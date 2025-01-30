@@ -30,4 +30,16 @@ public class ClientCodesController {
         .findActiveByClientTypeAndActionCode(clientTypeCode, actionCode);
   }
 
+  @GetMapping("/client-statuses")
+  public Flux<CodeNameDto> findActiveClientStatusCodes() {
+    log.info("Requesting a list of active client status codes from the client service.");
+    return clientCodeService.findActiveClientStatusCodes();
+  }
+  
+  @GetMapping("/registry-types")
+  public Flux<CodeNameDto> findActiveRegistryTypeCodes() {
+    log.info("Requesting a list of active client status codes from the client service.");
+    return clientCodeService.findActiveRegistryTypeCodes();
+  }
+  
 }
