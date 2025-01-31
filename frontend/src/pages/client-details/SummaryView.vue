@@ -10,6 +10,8 @@ import {
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
 import Warning20 from "@carbon/icons-vue/es/warning--filled/20";
 import Edit16 from "@carbon/icons-vue/es/edit/16";
+import Save16 from "@carbon/icons-vue/es/save/16";
+import Close16 from "@carbon/icons-vue/es/close/16";
 
 // Importing validators
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
@@ -176,7 +178,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
     <read-only-component :label="birthdateLabel" id="dateOfBirth" v-if="dateOfBirth">
       <span class="body-compact-01">{{ dateOfBirth }}</span>
     </read-only-component>
-    <read-only-component label="Status" id="status" v-if="displayReadonly('clientStatus')">
+    <read-only-component label="Client status" id="status" v-if="displayReadonly('clientStatus')">
       <span class="body-compact-01">
         <cds-tag :type="getTagColorByClientStatus(props.data.clientStatusDesc)">
           <span>{{ props.data.clientStatusDesc }}</span>
@@ -193,7 +195,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
     </read-only-component>
   </div>
   <div class="grouping-10 no-padding" v-if="canEdit && !isEditing">
-    <cds-button id="clientEditBtn" kind="tertiary" size="md" @click="isEditing = true">
+    <cds-button id="summaryEditBtn" kind="tertiary" size="md" @click="isEditing = true">
       <span class="width-unset">Edit client information</span>
       <Edit16 slot="icon" />
     </cds-button>
@@ -361,6 +363,16 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
         </cds-tooltip>
       </div>
     </textarea-input-component>
+    <div class="form-group-buttons form-group-buttons--stretched">
+      <cds-button id="summarySaveBtn" kind="primary" size="md" @click="isEditing = false">
+        <span class="width-unset">Save client information</span>
+        <Save16 slot="icon" />
+      </cds-button>
+      <cds-button id="summaryCancelBtn" kind="tertiary" size="md" @click="isEditing = false">
+        <span class="width-unset">Cancel</span>
+        <Close16 slot="icon" />
+      </cds-button>
+    </div>
   </div>
 </template>
 

@@ -821,6 +821,12 @@ cds-actionable-notification * {
 .form-group-buttons {
   display: flex;
   gap: 1rem;
+
+  &--stretched {
+    cds-button {
+      flex: 1;
+    }
+  }
 }
 
 .form-edit {
