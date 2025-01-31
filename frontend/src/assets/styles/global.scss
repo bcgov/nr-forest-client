@@ -272,11 +272,11 @@ cds-radio-button:not(:last-child) {
   margin-bottom: 0.5rem;
 }
 
-cds-combo-box::part(title-text) {
+:is(cds-combo-box, cds-multi-select, cds-dropdown)::part(title-text) {
   color: var(--light-theme-text-text-primary, #131315);
 }
 
-:is(cds-combo-box, cds-multi-select)[data-required-label="true"]::part(
+:is(cds-combo-box, cds-multi-select, cds-dropdown)[data-required-label="true"]::part(
     title-text
   )::before {
   color: var(--light-theme-text-text-error, #b32001);
@@ -823,6 +823,16 @@ cds-actionable-notification * {
   gap: 1rem;
 }
 
+.form-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  
+  .grouping-02, .grouping-03 {
+    max-width: 41rem;
+  }
+}
+
 .frame-01 {
   align-self: stretch;
   display: flex;
@@ -875,6 +885,17 @@ cds-actionable-notification * {
   gap: 0.25rem;
   background: var(--others-transparent-transparent, #fff);
   background-blend-mode: multiply;
+
+  // Defining as adjacent classes to reach the specificity level needed.
+  &.grouping-02 {
+    &--width-32rem {
+      width: 32rem;
+    }
+    
+    &--width-8rem {
+      width: 8rem;
+    }
+  }
 }
 
 .grouping-03 {

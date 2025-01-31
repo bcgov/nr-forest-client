@@ -1,0 +1,6 @@
+[
+  { "code": "A", "name": "Active" },
+  { "code": "D", "name": "Deactivated" },
+  { "code": "R", "name": "Receivership" },
+  { "code": "S", "name": "Suspend" }
+]

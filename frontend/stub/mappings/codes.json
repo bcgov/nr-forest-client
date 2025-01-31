@@ -120,8 +120,35 @@
           "name": "{{lookup parameters.clientTypeMapping code}}"
         }
       }
-    }
-    ,
+    },
+    {
+      "name": "Get ClientTypes List",
+      "request": {
+        "urlPattern": "/api/codes/client-types",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-client-types.json"
+      }
+    },
+    {
+      "name": "Get ClientStatus List",
+      "request": {
+        "urlPattern": "/api/codes/client-statuses",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-client-statuses.json"
+      }
+    },
     {
       "name": "Get Province by CountryCode and ProvinceCode",
       "request": {

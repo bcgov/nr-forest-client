@@ -217,7 +217,7 @@ const toolsSvg = useSvg(tools);
             <h2 class="mg-tl-2 heading-05">Client summary</h2>
 
             <div class="grouping-10">
-              <summary-view :data="data" :can-edit="userHasAuthority" />
+              <summary-view :data="data" user-role="CLIENT_ADMIN" />
             </div>
           </div>
         </div>
