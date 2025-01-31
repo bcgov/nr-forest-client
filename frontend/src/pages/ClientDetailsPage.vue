@@ -168,7 +168,7 @@ const toolsSvg = useSvg(tools);
         </h1>
         <div>
           <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle">
-            Check and manage this client data
+            Check and manage this client's data
           </p>
         </div>
       </div>
