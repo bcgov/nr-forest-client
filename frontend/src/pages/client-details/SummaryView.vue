@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, watch } from "vue";
+import * as jsonpatch from "fast-json-patch";
 import type { ClientDetails, CodeNameType } from "@/dto/CommonTypesDto";
 import {
   getFormattedHtml,
@@ -9,6 +10,7 @@ import {
 
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
 import Warning20 from "@carbon/icons-vue/es/warning--filled/20";
+import Information16 from "@carbon/icons-vue/es/information/16";
 import Edit16 from "@carbon/icons-vue/es/edit/16";
 import Save16 from "@carbon/icons-vue/es/save/16";
 import Close16 from "@carbon/icons-vue/es/close/16";
@@ -22,9 +24,43 @@ const props = defineProps<{
   userRole: string;
 }>();
 
-const formData = ref<ClientDetails>(props.data);
+let originalData: ClientDetails;
+const formData = ref<ClientDetails>();
 
 const isEditing = ref(false);
+const hasAnyChange = ref(false);
+
+const resetFormData = () => {
+  originalData = JSON.parse(JSON.stringify(props.data));
+  formData.value = JSON.parse(JSON.stringify(props.data));
+  hasAnyChange.value = false;
+};
+
+resetFormData();
+
+watch(
+  formData,
+  () => {
+    if (isEditing.value) {
+      hasAnyChange.value = JSON.stringify(formData.value) !== JSON.stringify(originalData);
+    }
+  },
+  { deep: true },
+);
+
+const edit = () => {
+  isEditing.value = true;
+};
+
+const cancel = () => {
+  isEditing.value = false;
+  resetFormData();
+};
+
+const save = () => {
+  const diff = jsonpatch.compare(originalData, formData.value);
+  console.log(diff);
+};
 
 const fieldIdList = [
   "clientName",
@@ -51,6 +87,12 @@ const validation = reactive<Record<FieldId, boolean>>({
   clientStatus: true,
   notes: true,
 });
+
+const checkValid = () =>
+  Object.values(validation).reduce(
+    (accumulator: boolean, currentValue: boolean) => accumulator && currentValue,
+    true,
+  );
 
 const editRoles: Record<FieldId, Role[]> = {
   clientName: ["CLIENT_ADMIN"],
@@ -195,7 +237,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
     </read-only-component>
   </div>
   <div class="grouping-10 no-padding" v-if="canEdit && !isEditing">
-    <cds-button id="summaryEditBtn" kind="tertiary" size="md" @click="isEditing = true">
+    <cds-button id="summaryEditBtn" kind="tertiary" size="md" @click="edit">
       <span class="width-unset">Edit client information</span>
       <Edit16 slot="icon" />
     </cds-button>
@@ -364,11 +406,17 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       </div>
     </textarea-input-component>
     <div class="form-group-buttons form-group-buttons--stretched">
-      <cds-button id="summarySaveBtn" kind="primary" size="md" @click="isEditing = false">
+      <cds-button
+        id="summarySaveBtn"
+        kind="primary"
+        size="md"
+        @click="save"
+        :disabled="!hasAnyChange || !checkValid()"
+      >
         <span class="width-unset">Save client information</span>
         <Save16 slot="icon" />
       </cds-button>
-      <cds-button id="summaryCancelBtn" kind="tertiary" size="md" @click="isEditing = false">
+      <cds-button id="summaryCancelBtn" kind="tertiary" size="md" @click="cancel">
         <span class="width-unset">Cancel</span>
         <Close16 slot="icon" />
       </cds-button>
