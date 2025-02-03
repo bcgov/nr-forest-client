@@ -466,42 +466,29 @@ public class ClientLegacyService {
   }
   
   private boolean isValidClientStatus(CodeNameDto dto, String clientTypeCode, Set<String> groups) {
-    Map<String, Set<String>> adminStatusMap = Map.of(
-        "C", Set.of("ACT", "DAC", "REC", "SPN"),
-        "I", Set.of("ACT", "DEC", "REC", "SPN"),
-        "A", Set.of("ACT", "DEC", "REC", "SPN"),
-        "B", Set.of("ACT", "DAC", "SPN"),
-        "F", Set.of("ACT", "DAC", "SPN"),
-        "G", Set.of("ACT", "DAC", "SPN"),
-        "L", Set.of("ACT", "DAC", "REC", "SPN"),
-        "P", Set.of("ACT", "DAC", "REC", "SPN"),
-        "S", Set.of("ACT", "DAC", "REC", "SPN"),
-        "U", Set.of("ACT", "DAC", "REC", "SPN")
-    );
-
-    Map<String, Set<String>> editorStatusMap = Map.of(
-        "C", Set.of("ACT", "DAC"),
-        "I", Set.of("ACT", "DEC"),
-        "A", Set.of("ACT", "DEC"),
-        "B", Set.of("ACT", "DAC"),
-        "F", Set.of("ACT", "DAC"),
-        "G", Set.of("ACT", "DAC"),
-        "L", Set.of("ACT", "DAC"),
-        "P", Set.of("ACT", "DAC"), 
-        "S", Set.of("ACT", "DAC", "REC"), 
-        "U", Set.of("ACT", "DAC")
-    );
-
-    if (groups.contains(ApplicationConstant.ROLE_ADMIN)) {
-      return adminStatusMap.getOrDefault(clientTypeCode, Set.of()).contains(dto.code());
+    if (groups.contains("CLIENT_ADMIN")) {
+      return getAdminStatuses(clientTypeCode).contains(dto.code());
     } 
-    else if (groups.contains(ApplicationConstant.ROLE_EDITOR)) {
-      return editorStatusMap.getOrDefault(clientTypeCode, Set.of()).contains(dto.code());
+    else if (groups.contains("CLIENT_EDITOR")) {
+      return getEditorStatuses(clientTypeCode).contains(dto.code());
     }
-    
     return false;
   }
+  
+  private Set<String> getAdminStatuses(String clientTypeCode) {
+    return switch (clientTypeCode) {
+      case "B", "F", "G" -> Set.of("ACT", "DAC", "SPN");
+      default -> Set.of("ACT", "DAC", "REC", "SPN");
+    };
+  }
 
+  private Set<String> getEditorStatuses(String clientTypeCode) {
+    return switch (clientTypeCode) {
+      case "I", "A" -> Set.of("ACT", "DEC");
+      case "S" -> Set.of("ACT", "DAC", "REC");
+      default -> Set.of("ACT", "DAC");
+    };
+  }
   
   public Flux<CodeNameDto> findActiveRegistryTypeCodes() {
     log.info("Searching for active registry types in legacy");
