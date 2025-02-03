@@ -11,7 +11,7 @@
     "clientTypeCode": "RSP",
     "clientTypeDesc": "Registered sole proprietorship",
     "goodStandingInd": "N",
-    "clientStatusCode": "A",
+    "clientStatusCode": "ACT",
     "clientStatusDesc": "Active",
     "clientComment": "",
     "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",

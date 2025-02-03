@@ -13,7 +13,7 @@
     "clientTypeCode": "I",
     "clientTypeDesc": "Individual",
     "goodStandingInd": null,
-    "clientStatusCode": "A",
+    "clientStatusCode": "ACT",
     "clientStatusDesc": "Active",
     "clientComment": "Sample line 1.\nSample line 2.\nSample line 3.",
     "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",

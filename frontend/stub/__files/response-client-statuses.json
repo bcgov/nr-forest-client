@@ -1,6 +1,22 @@
 [
-  { "code": "A", "name": "Active" },
-  { "code": "D", "name": "Deactivated" },
-  { "code": "R", "name": "Receivership" },
-  { "code": "S", "name": "Suspend" }
+  {
+      "code": "ACT",
+      "name": "Active"
+  },
+  {
+      "code": "DAC",
+      "name": "Deactivated"
+  },
+  {
+      "code": "DEC",
+      "name": "Deceased"
+  },
+  {
+      "code": "REC",
+      "name": "Receivership"
+  },
+  {
+      "code": "SPN",
+      "name": "Suspended"
+  }
 ]

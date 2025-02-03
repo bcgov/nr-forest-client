@@ -16,7 +16,7 @@ describe("<summary-view />", () => {
       clientTypeCode: "RSP",
       clientTypeDesc: "Registered sole proprietorship",
       goodStandingInd: "Y",
-      clientStatusCode: "A",
+      clientStatusCode: "ACT",
       clientStatusDesc: "Active",
       clientComment:
         "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton",
