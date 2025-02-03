@@ -469,4 +469,79 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .verifyComplete();
   }
   
+  @Test
+  @DisplayName("Test no client status is returned when role is not admin or editor")
+  void testFindActiveClientStatusCodesByClientTypeAndRole_NoValidRole() {
+      String clientTypeCode = "B";
+      Set<String> groups = Set.of("SOME_OTHER_ROLE");
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"REC\",\"name\":\"Receivership\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
+                  + "]"))
+      );
+
+      service
+          .findActiveClientStatusCodesByClientTypeAndRole(clientTypeCode, groups)
+          .as(StepVerifier::create)
+          .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Test admin default statuses are returned for unlisted clientTypeCode")
+  void testFindActiveClientStatusCodesByClientTypeAndRole_AdminDefaultCase() {
+      String clientTypeCode = "X";
+      Set<String> groups = Set.of(ApplicationConstant.ROLE_ADMIN);
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"REC\",\"name\":\"Receivership\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
+                  + "]"))
+      );
+
+      service
+          .findActiveClientStatusCodesByClientTypeAndRole(clientTypeCode, groups)
+          .as(StepVerifier::create)
+          .assertNext(dto -> assertEquals("ACT", dto.code()))
+          .assertNext(dto -> assertEquals("DAC", dto.code()))
+          .assertNext(dto -> assertEquals("REC", dto.code()))
+          .assertNext(dto -> assertEquals("SPN", dto.code()))
+          .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Test editor default statuses are returned for unlisted clientTypeCode")
+  void testFindActiveClientStatusCodesByClientTypeAndRole_EditorDefaultCase() {
+      String clientTypeCode = "X";
+      Set<String> groups = Set.of(ApplicationConstant.ROLE_EDITOR);
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"REC\",\"name\":\"Receivership\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
+                  + "]"))
+      );
+
+      service
+          .findActiveClientStatusCodesByClientTypeAndRole(clientTypeCode, groups)
+          .as(StepVerifier::create)
+          .assertNext(dto -> assertEquals("ACT", dto.code()))
+          .assertNext(dto -> assertEquals("DAC", dto.code()))
+          .verifyComplete();
+  }
+  
 }
