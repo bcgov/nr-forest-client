@@ -22,6 +22,7 @@ import ch.qos.logback.core.read.ListAppender;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -349,4 +350,33 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .verifyComplete();
   }
 
+  @Test
+  @DisplayName("Retrieve active client statuses by client type and role")
+  void testFindActiveClientStatusCodesByClientTypeAndRole() {
+      String clientTypeCode = "I";
+      Set<String> groups = Set.of("CLIENT_EDITOR");
+
+      CodeNameDto expectedActiveDto = new CodeNameDto("ACT", "Active");
+      CodeNameDto expectedDeceasedDto = new CodeNameDto("DEC", "Deceased");
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("[{\"code\":\"ACT\",\"name\":\"Active\"}, " 
+                                + "{\"code\":\"DEC\",\"name\":\"Deceased\"}]"))
+      );
+
+      service
+          .findActiveClientStatusCodesByClientTypeAndRole(clientTypeCode, groups)
+          .as(StepVerifier::create)
+          .assertNext(dto -> {
+              assertEquals(expectedActiveDto.code(), dto.code());
+              assertEquals(expectedActiveDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedDeceasedDto.code(), dto.code());
+              assertEquals(expectedDeceasedDto.name(), dto.name());
+          })
+          .verifyComplete();
+  }
+  
 }
