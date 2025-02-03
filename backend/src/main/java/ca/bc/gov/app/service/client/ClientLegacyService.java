@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -448,6 +450,59 @@ public class ClientLegacyService {
             );
   }
 
+  public Flux<CodeNameDto> findActiveClientStatusCodesByClientTypeAndRole(
+      String clientTypeCode, Set<String> groups) {
+    
+    log.info(
+        "Searching for active client statuses in legacy by client type {} and role {}",
+        clientTypeCode, groups);
+
+    return legacyApi
+        .get()
+        .uri("/api/codes/client-statuses")
+        .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+        .filter(dto -> isValidClientStatus(dto, clientTypeCode, groups))
+        .doOnNext(dto -> log.info("Filtered active client status: {}", dto));
+  }
+  
+  private boolean isValidClientStatus(CodeNameDto dto, String clientTypeCode, Set<String> groups) {
+    Map<String, Set<String>> adminStatusMap = Map.of(
+        "C", Set.of("ACT", "DAC", "REC", "SPN"),
+        "I", Set.of("ACT", "DEC", "REC", "SPN"),
+        "A", Set.of("ACT", "DEC", "REC", "SPN"),
+        "B", Set.of("ACT", "DAC", "SPN"),
+        "F", Set.of("ACT", "DAC", "SPN"),
+        "G", Set.of("ACT", "DAC", "SPN"),
+        "L", Set.of("ACT", "DAC", "REC", "SPN"),
+        "P", Set.of("ACT", "DAC", "REC", "SPN"),
+        "S", Set.of("ACT", "DAC", "REC", "SPN"),
+        "U", Set.of("ACT", "DAC", "REC", "SPN")
+    );
+
+    Map<String, Set<String>> editorStatusMap = Map.of(
+        "C", Set.of("ACT", "DAC"),
+        "I", Set.of("ACT", "DEC"),
+        "A", Set.of("ACT", "DEC"),
+        "B", Set.of("ACT", "DAC"),
+        "F", Set.of("ACT", "DAC"),
+        "G", Set.of("ACT", "DAC"),
+        "L", Set.of("ACT", "DAC"),
+        "P", Set.of("ACT", "DAC"), 
+        "S", Set.of("ACT", "DAC", "REC"), 
+        "U", Set.of("ACT", "DAC")
+    );
+
+    if (groups.contains(ApplicationConstant.ROLE_ADMIN)) {
+      return adminStatusMap.getOrDefault(clientTypeCode, Set.of()).contains(dto.code());
+    } 
+    else if (groups.contains(ApplicationConstant.ROLE_EDITOR)) {
+      return editorStatusMap.getOrDefault(clientTypeCode, Set.of()).contains(dto.code());
+    }
+    
+    return false;
+  }
+
+  
   public Flux<CodeNameDto> findActiveRegistryTypeCodes() {
     log.info("Searching for active registry types in legacy");
 
