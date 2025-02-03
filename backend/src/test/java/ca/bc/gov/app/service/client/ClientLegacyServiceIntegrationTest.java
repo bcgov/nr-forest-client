@@ -9,6 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
@@ -397,10 +398,48 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
   }
 
   @Test
-  @DisplayName("Retrieve active client statuses by client type and role")
-  void testFindActiveClientStatusCodesByClientTypeAndRole() {
+  @DisplayName("Test active client statuses for admin role")
+  void testFindActiveClientStatusForAdmin() {
+      String clientTypeCode = "B";
+      Set<String> groups = Set.of(ApplicationConstant.ROLE_ADMIN);
+
+      CodeNameDto expectedActiveDto = new CodeNameDto("ACT", "Active");
+      CodeNameDto expectedDeactivatedDto = new CodeNameDto("DAC", "Deactivated");
+      CodeNameDto expectedSuspendedDto = new CodeNameDto("SPN", "Suspended");
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
+                  + "]"))
+      );
+
+      service
+          .findActiveClientStatusCodesByClientTypeAndRole(clientTypeCode, groups)
+          .as(StepVerifier::create)
+          .assertNext(dto -> {
+              assertEquals(expectedActiveDto.code(), dto.code());
+              assertEquals(expectedActiveDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedDeactivatedDto.code(), dto.code());
+              assertEquals(expectedDeactivatedDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedSuspendedDto.code(), dto.code());
+              assertEquals(expectedSuspendedDto.name(), dto.name());
+          })
+          .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Test active client statuses for editor role")
+  void testFindActiveClientStatusForEditor() {
       String clientTypeCode = "I";
-      Set<String> groups = Set.of("CLIENT_EDITOR");
+      Set<String> groups = Set.of(ApplicationConstant.ROLE_EDITOR);
 
       CodeNameDto expectedActiveDto = new CodeNameDto("ACT", "Active");
       CodeNameDto expectedDeceasedDto = new CodeNameDto("DEC", "Deceased");
@@ -409,7 +448,10 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           get(urlPathEqualTo("/api/codes/client-statuses"))
               .willReturn(okJson("["
                   + "{\"code\":\"ACT\",\"name\":\"Active\"},"
-                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"}"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"REC\",\"name\":\"Receivership\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
                   + "]"))
       );
 

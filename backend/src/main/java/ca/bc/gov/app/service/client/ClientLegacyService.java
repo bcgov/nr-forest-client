@@ -466,10 +466,10 @@ public class ClientLegacyService {
   }
   
   private boolean isValidClientStatus(CodeNameDto dto, String clientTypeCode, Set<String> groups) {
-    if (groups.contains("CLIENT_ADMIN")) {
+    if (groups.contains(ApplicationConstant.ROLE_ADMIN)) {
       return getAdminStatuses(clientTypeCode).contains(dto.code());
     } 
-    else if (groups.contains("CLIENT_EDITOR")) {
+    else if (groups.contains(ApplicationConstant.ROLE_EDITOR)) {
       return getEditorStatuses(clientTypeCode).contains(dto.code());
     }
     return false;
