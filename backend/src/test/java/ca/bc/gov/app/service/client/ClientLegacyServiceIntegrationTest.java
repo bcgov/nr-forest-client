@@ -349,6 +349,52 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           })
           .verifyComplete();
   }
+  
+  @Test
+  @DisplayName("Retrieve active client statuses")
+  void testFindActiveClientStatusCodes() {
+      CodeNameDto expectedActiveDto = new CodeNameDto("ACT", "Active");
+      CodeNameDto expectedDeactivatedDto = new CodeNameDto("DAC", "Deactivated");
+      CodeNameDto expectedDeceasedDto = new CodeNameDto("DEC", "Deceased");
+      CodeNameDto expectedReceivershipDto = new CodeNameDto("REC", "Receivership");
+      CodeNameDto expectedSuspendedDto = new CodeNameDto("SPN", "Suspended");
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"REC\",\"name\":\"Receivership\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
+                  + "]"))
+      );
+
+      service
+          .findActiveClientStatusCodes()
+          .as(StepVerifier::create)
+          .assertNext(dto -> {
+              assertEquals(expectedActiveDto.code(), dto.code());
+              assertEquals(expectedActiveDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedDeactivatedDto.code(), dto.code());
+              assertEquals(expectedDeactivatedDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedDeceasedDto.code(), dto.code());
+              assertEquals(expectedDeceasedDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedReceivershipDto.code(), dto.code());
+              assertEquals(expectedReceivershipDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedSuspendedDto.code(), dto.code());
+              assertEquals(expectedSuspendedDto.name(), dto.name());
+          })
+          .verifyComplete();
+  }
 
   @Test
   @DisplayName("Retrieve active client statuses by client type and role")
@@ -361,8 +407,10 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
 
       legacyStub.stubFor(
           get(urlPathEqualTo("/api/codes/client-statuses"))
-              .willReturn(okJson("[{\"code\":\"ACT\",\"name\":\"Active\"}, " 
-                                + "{\"code\":\"DEC\",\"name\":\"Deceased\"}]"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"}"
+                  + "]"))
       );
 
       service
