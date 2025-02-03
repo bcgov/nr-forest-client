@@ -59,7 +59,8 @@ const cancel = () => {
 
 const save = () => {
   const diff = jsonpatch.compare(originalData, formData.value);
-  console.log(diff);
+  console.log({ patch: diff });
+  isEditing.value = false;
 };
 
 const fieldIdList = [
@@ -258,7 +259,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
           ...getValidations('businessInformation.businessName'),
           submissionValidation('businessInformation.businessName'),
         ]"
-        @empty="validation.clientName = false"
+        @empty="validation.clientName = !$event"
         @error="validation.clientName = !$event"
       />
       <text-input-component
