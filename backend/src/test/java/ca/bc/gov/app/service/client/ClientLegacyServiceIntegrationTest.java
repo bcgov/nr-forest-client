@@ -438,11 +438,13 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
   @Test
   @DisplayName("Test active client statuses for editor role")
   void testFindActiveClientStatusForEditor() {
-      String clientTypeCode = "I";
+      String individualClientTypeCode = "I";
       Set<String> groups = Set.of(ApplicationConstant.ROLE_EDITOR);
 
       CodeNameDto expectedActiveDto = new CodeNameDto("ACT", "Active");
       CodeNameDto expectedDeceasedDto = new CodeNameDto("DEC", "Deceased");
+      CodeNameDto expectedDeactivedDto = new CodeNameDto("DAC", "Deactivated");
+      CodeNameDto expectedReceivershipDto = new CodeNameDto("REC", "Receivership");
 
       legacyStub.stubFor(
           get(urlPathEqualTo("/api/codes/client-statuses"))
@@ -456,7 +458,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       );
 
       service
-          .findActiveClientStatusCodesByClientTypeAndRole(clientTypeCode, groups)
+          .findActiveClientStatusCodesByClientTypeAndRole(individualClientTypeCode, groups)
           .as(StepVerifier::create)
           .assertNext(dto -> {
               assertEquals(expectedActiveDto.code(), dto.code());
@@ -467,6 +469,25 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
               assertEquals(expectedDeceasedDto.name(), dto.name());
           })
           .verifyComplete();
+      
+      String societyClientTypeCode = "S";
+      
+      service
+      .findActiveClientStatusCodesByClientTypeAndRole(societyClientTypeCode, groups)
+      .as(StepVerifier::create)
+      .assertNext(dto -> {
+          assertEquals(expectedActiveDto.code(), dto.code());
+          assertEquals(expectedActiveDto.name(), dto.name());
+      })
+      .assertNext(dto -> {
+          assertEquals(expectedDeactivedDto.code(), dto.code());
+          assertEquals(expectedDeactivedDto.name(), dto.name());
+      })
+      .assertNext(dto -> {
+          assertEquals(expectedReceivershipDto.code(), dto.code());
+          assertEquals(expectedReceivershipDto.name(), dto.name());
+      })
+      .verifyComplete();
   }
   
   @Test
@@ -541,6 +562,26 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .as(StepVerifier::create)
           .assertNext(dto -> assertEquals("ACT", dto.code()))
           .assertNext(dto -> assertEquals("DAC", dto.code()))
+          .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Retrieve active registry types")
+  void testFindActiveRegistryTypeCodes() {
+      CodeNameDto expecteDto = new CodeNameDto("FM", "Sole Proprietorship");
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/registry-types"))
+              .willReturn(okJson("[{\"code\":\"FM\",\"name\":\"Sole Proprietorship\"}]"))
+      );
+
+      service
+          .findActiveRegistryTypeCodes()
+          .as(StepVerifier::create)
+          .assertNext(dto -> {
+              assertEquals(expecteDto.code(), dto.code());
+              assertEquals(expecteDto.name(), dto.name());
+          })
           .verifyComplete();
   }
   
