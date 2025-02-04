@@ -71,7 +71,6 @@ const fieldIdList = [
   "clientName",
   "acronym",
   "doingBusinessAs",
-  "clientType",
   "registrationNumber",
   "workSafeBCNumber",
   "clientStatus",
@@ -84,7 +83,6 @@ const validation = reactive<Record<FieldId, boolean>>({
   clientName: true,
   acronym: true,
   doingBusinessAs: true,
-  clientType: true,
   registrationNumber: true,
   workSafeBCNumber: true,
   clientStatus: true,
@@ -101,7 +99,6 @@ const editRoles: Record<FieldId, UserRole[]> = {
   clientName: ["CLIENT_ADMIN"],
   acronym: ["CLIENT_ADMIN"],
   doingBusinessAs: ["CLIENT_ADMIN"],
-  clientType: ["CLIENT_ADMIN"],
   registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   clientStatus: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
@@ -152,12 +149,6 @@ const birthdateLabel = computed(() =>
   dateOfBirth.value.length > 4 ? "Date of birth" : "Year of birth",
 );
 
-const updateClientType = (value: CodeNameType | undefined) => {
-  if (value) {
-    formData.value.clientTypeCode = value.code;
-  }
-};
-
 const updateClientStatus = (value: CodeNameType | undefined) => {
   if (value) {
     formData.value.clientStatusCode = value.code;
@@ -184,7 +175,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
     >
       <span class="body-compact-01" v-dompurify-html="getFormattedHtml(doingBusinessAs)"></span>
     </read-only-component>
-    <read-only-component label="Client type" id="clientType" v-if="displayReadonly('clientType')">
+    <read-only-component label="Client type" id="clientType">
       <span class="body-compact-01">{{ props.data.clientTypeDesc }}</span>
     </read-only-component>
     <read-only-component
@@ -297,32 +288,6 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       @empty="validation.doingBusinessAs = true"
       @error="validation.doingBusinessAs = !$event"
     />
-    <data-fetcher
-      v-if="displayEditable('clientType')"
-      url="/api/codes/client-types"
-      :min-length="0"
-      :init-value="[]"
-      :init-fetch="true"
-      :params="{ method: 'GET' }"
-      #="{ content }"
-    >
-      <combo-box-input-component
-        id="clientType"
-        label="Client type"
-        :initial-value="content?.find((item) => item.code === formData.clientTypeCode)?.name"
-        required
-        required-label
-        :model-value="content"
-        :enabled="true"
-        tip=""
-        :validations="[
-          ...getValidations('clientType.text'),
-          submissionValidation('businessInformation.clientType'),
-        ]"
-        @update:selected-value="updateClientType($event)"
-        @empty="validation.clientType = !$event"
-      />
-    </data-fetcher>
     <text-input-component
       id="registrationNumber"
       v-if="displayEditable('registrationNumber')"
