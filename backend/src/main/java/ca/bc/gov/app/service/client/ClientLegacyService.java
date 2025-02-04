@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -430,6 +432,78 @@ public class ClientLegacyService {
           Long totalCount = pair.getSecond();
           log.info("Found clients by keyword {}, total count: {}", dto.clientNumber(), totalCount);
         });
+  }
+
+  public Flux<CodeNameDto> findActiveClientStatusCodes() {
+    log.info("Searching for active client statuses in legacy");
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/client-statuses")
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                        "Found active client statuses in legacy"
+                )
+            );
+  }
+
+  public Flux<CodeNameDto> findActiveClientStatusCodesByClientTypeAndRole(
+      String clientTypeCode, Set<String> groups) {
+    
+    log.info(
+        "Searching for active client statuses in legacy by client type {} and role {}",
+        clientTypeCode, groups);
+
+    return legacyApi
+        .get()
+        .uri("/api/codes/client-statuses")
+        .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+        .filter(dto -> isValidClientStatus(dto, clientTypeCode, groups))
+        .doOnNext(dto -> log.info("Filtered active client status: {}", dto));
+  }
+  
+  private boolean isValidClientStatus(CodeNameDto dto, String clientTypeCode, Set<String> groups) {
+    if (groups.contains(ApplicationConstant.ROLE_ADMIN)) {
+      return getAdminStatuses(clientTypeCode).contains(dto.code());
+    } 
+    else if (groups.contains(ApplicationConstant.ROLE_EDITOR)) {
+      return getEditorStatuses(clientTypeCode).contains(dto.code());
+    }
+    return false;
+  }
+  
+  private Set<String> getAdminStatuses(String clientTypeCode) {
+    return switch (clientTypeCode) {
+      case "B", "F", "G" -> Set.of("ACT", "DAC", "SPN");
+      default -> Set.of("ACT", "DAC", "REC", "SPN");
+    };
+  }
+
+  private Set<String> getEditorStatuses(String clientTypeCode) {
+    return switch (clientTypeCode) {
+      case "I", "A" -> Set.of("ACT", "DEC");
+      case "S" -> Set.of("ACT", "DAC", "REC");
+      default -> Set.of("ACT", "DAC");
+    };
+  }
+  
+  public Flux<CodeNameDto> findActiveRegistryTypeCodes() {
+    log.info("Searching for active registry types in legacy");
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/registry-types")
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                        "Found active registry types in legacy"
+                )
+            );
   }
 
 }

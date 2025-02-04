@@ -7,11 +7,13 @@ import ca.bc.gov.app.service.client.ClientCodeService;
 import ca.bc.gov.app.service.client.ClientCountryProvinceService;
 import ca.bc.gov.app.service.client.ClientDistrictService;
 import ca.bc.gov.app.service.client.ClientLegacyService;
+import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -145,6 +147,30 @@ public class ClientCodesController {
     return legacyService.findActiveUpdateReasonsByClientTypeAndActionCode(
         clientTypeCode,
         actionCode);
+  }
+  
+  @GetMapping("/client-statuses")
+  public Flux<CodeNameDto> findActiveClientStatusCodes() {
+    log.info("Requesting a list of active client status codes from the client service.");
+    return legacyService.findActiveClientStatusCodes();
+  }
+  
+  @GetMapping("/client-statuses/{clientTypeCode}")
+  public Flux<CodeNameDto> findActiveClientStatusCodes(
+      @PathVariable String clientTypeCode,
+      JwtAuthenticationToken principal) {
+    log.info("Requesting a list of active client status codes from the client service.");
+    return legacyService
+        .findActiveClientStatusCodesByClientTypeAndRole(
+            clientTypeCode,
+            JwtPrincipalUtil.getGroups(principal)
+    );
+  }
+  
+  @GetMapping("/registry-types")
+  public Flux<CodeNameDto> findActiveRegistryTypeCodes() {
+    log.info("Requesting a list of active registry type codes from the client service.");
+    return legacyService.findActiveRegistryTypeCodes();
   }
   
 }
