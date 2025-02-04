@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 
-
 @Repository
 public interface ClientUpdateReasonCodeRepository 
   extends ReactiveCrudRepository<ClientUpdateReasonCodeEntity, String> {

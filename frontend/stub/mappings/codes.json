@@ -136,7 +136,35 @@
       }
     },
     {
-      "name": "Get ClientStatus List",
+      "name": "Get update reason codes by client type and action",
+      "request": {
+        "urlPattern": "/api/codes/update-reasons/([A-Z]+)/([A-Z]+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-update-reasons-{{request.path.[3]}}-{{request.path.[4]}}.json"
+      }
+    },
+    {
+      "name": "Get registry type codes",
+      "request": {
+        "urlPattern": "/api/codes/registry-types",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-registry-types.json"
+      }
+    },
+    {
+      "name": "Get client status codes",
       "request": {
         "urlPattern": "/api/codes/client-statuses",
         "method": "GET"
@@ -150,9 +178,9 @@
       }
     },
     {
-      "name": "Get Province by CountryCode and ProvinceCode",
+      "name": "Get client status codes by client type and action",
       "request": {
-        "urlPattern": "/api/codes/update-reasons/([A-Z]+)/([A-Z]+)",
+        "urlPattern": "/api/codes/client-statuses/([A-Z]+)",
         "method": "GET"
       },
       "response": {
@@ -160,7 +188,7 @@
         "transformers": [
           "response-template"
         ],
-        "bodyFileName": "response-update-reasons-{{request.path.[3]}}-{{request.path.[4]}}.json"
+        "bodyFileName": "response-client-statuses-{{request.path.[3]}}.json"
       }
     }
   ]

@@ -9,6 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
@@ -22,6 +23,7 @@ import ch.qos.logback.core.read.ListAppender;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -348,5 +350,239 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           })
           .verifyComplete();
   }
+  
+  @Test
+  @DisplayName("Retrieve active client statuses")
+  void testFindActiveClientStatusCodes() {
+      CodeNameDto expectedActiveDto = new CodeNameDto("ACT", "Active");
+      CodeNameDto expectedDeactivatedDto = new CodeNameDto("DAC", "Deactivated");
+      CodeNameDto expectedDeceasedDto = new CodeNameDto("DEC", "Deceased");
+      CodeNameDto expectedReceivershipDto = new CodeNameDto("REC", "Receivership");
+      CodeNameDto expectedSuspendedDto = new CodeNameDto("SPN", "Suspended");
 
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"REC\",\"name\":\"Receivership\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
+                  + "]"))
+      );
+
+      service
+          .findActiveClientStatusCodes()
+          .as(StepVerifier::create)
+          .assertNext(dto -> {
+              assertEquals(expectedActiveDto.code(), dto.code());
+              assertEquals(expectedActiveDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedDeactivatedDto.code(), dto.code());
+              assertEquals(expectedDeactivatedDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedDeceasedDto.code(), dto.code());
+              assertEquals(expectedDeceasedDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedReceivershipDto.code(), dto.code());
+              assertEquals(expectedReceivershipDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedSuspendedDto.code(), dto.code());
+              assertEquals(expectedSuspendedDto.name(), dto.name());
+          })
+          .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Test active client statuses for admin role")
+  void testFindActiveClientStatusForAdmin() {
+      String clientTypeCode = "B";
+      Set<String> groups = Set.of(ApplicationConstant.ROLE_ADMIN);
+
+      CodeNameDto expectedActiveDto = new CodeNameDto("ACT", "Active");
+      CodeNameDto expectedDeactivatedDto = new CodeNameDto("DAC", "Deactivated");
+      CodeNameDto expectedSuspendedDto = new CodeNameDto("SPN", "Suspended");
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
+                  + "]"))
+      );
+
+      service
+          .findActiveClientStatusCodesByClientTypeAndRole(clientTypeCode, groups)
+          .as(StepVerifier::create)
+          .assertNext(dto -> {
+              assertEquals(expectedActiveDto.code(), dto.code());
+              assertEquals(expectedActiveDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedDeactivatedDto.code(), dto.code());
+              assertEquals(expectedDeactivatedDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedSuspendedDto.code(), dto.code());
+              assertEquals(expectedSuspendedDto.name(), dto.name());
+          })
+          .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Test active client statuses for editor role")
+  void testFindActiveClientStatusForEditor() {
+      String individualClientTypeCode = "I";
+      Set<String> groups = Set.of(ApplicationConstant.ROLE_EDITOR);
+
+      CodeNameDto expectedActiveDto = new CodeNameDto("ACT", "Active");
+      CodeNameDto expectedDeceasedDto = new CodeNameDto("DEC", "Deceased");
+      CodeNameDto expectedDeactivedDto = new CodeNameDto("DAC", "Deactivated");
+      CodeNameDto expectedReceivershipDto = new CodeNameDto("REC", "Receivership");
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"REC\",\"name\":\"Receivership\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
+                  + "]"))
+      );
+
+      service
+          .findActiveClientStatusCodesByClientTypeAndRole(individualClientTypeCode, groups)
+          .as(StepVerifier::create)
+          .assertNext(dto -> {
+              assertEquals(expectedActiveDto.code(), dto.code());
+              assertEquals(expectedActiveDto.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedDeceasedDto.code(), dto.code());
+              assertEquals(expectedDeceasedDto.name(), dto.name());
+          })
+          .verifyComplete();
+      
+      String societyClientTypeCode = "S";
+      
+      service
+      .findActiveClientStatusCodesByClientTypeAndRole(societyClientTypeCode, groups)
+      .as(StepVerifier::create)
+      .assertNext(dto -> {
+          assertEquals(expectedActiveDto.code(), dto.code());
+          assertEquals(expectedActiveDto.name(), dto.name());
+      })
+      .assertNext(dto -> {
+          assertEquals(expectedDeactivedDto.code(), dto.code());
+          assertEquals(expectedDeactivedDto.name(), dto.name());
+      })
+      .assertNext(dto -> {
+          assertEquals(expectedReceivershipDto.code(), dto.code());
+          assertEquals(expectedReceivershipDto.name(), dto.name());
+      })
+      .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Test no client status is returned when role is not admin or editor")
+  void testFindActiveClientStatusCodesByClientTypeAndRole_NoValidRole() {
+      String clientTypeCode = "B";
+      Set<String> groups = Set.of("SOME_OTHER_ROLE");
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"REC\",\"name\":\"Receivership\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
+                  + "]"))
+      );
+
+      service
+          .findActiveClientStatusCodesByClientTypeAndRole(clientTypeCode, groups)
+          .as(StepVerifier::create)
+          .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Test admin default statuses are returned for unlisted clientTypeCode")
+  void testFindActiveClientStatusCodesByClientTypeAndRole_AdminDefaultCase() {
+      String clientTypeCode = "X";
+      Set<String> groups = Set.of(ApplicationConstant.ROLE_ADMIN);
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"REC\",\"name\":\"Receivership\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
+                  + "]"))
+      );
+
+      service
+          .findActiveClientStatusCodesByClientTypeAndRole(clientTypeCode, groups)
+          .as(StepVerifier::create)
+          .assertNext(dto -> assertEquals("ACT", dto.code()))
+          .assertNext(dto -> assertEquals("DAC", dto.code()))
+          .assertNext(dto -> assertEquals("REC", dto.code()))
+          .assertNext(dto -> assertEquals("SPN", dto.code()))
+          .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Test editor default statuses are returned for unlisted clientTypeCode")
+  void testFindActiveClientStatusCodesByClientTypeAndRole_EditorDefaultCase() {
+      String clientTypeCode = "X";
+      Set<String> groups = Set.of(ApplicationConstant.ROLE_EDITOR);
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-statuses"))
+              .willReturn(okJson("["
+                  + "{\"code\":\"ACT\",\"name\":\"Active\"},"
+                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"},"
+                  + "{\"code\":\"DEC\",\"name\":\"Deceased\"},"
+                  + "{\"code\":\"REC\",\"name\":\"Receivership\"},"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"}"
+                  + "]"))
+      );
+
+      service
+          .findActiveClientStatusCodesByClientTypeAndRole(clientTypeCode, groups)
+          .as(StepVerifier::create)
+          .assertNext(dto -> assertEquals("ACT", dto.code()))
+          .assertNext(dto -> assertEquals("DAC", dto.code()))
+          .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Retrieve active registry types")
+  void testFindActiveRegistryTypeCodes() {
+      CodeNameDto expecteDto = new CodeNameDto("FM", "Sole Proprietorship");
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/registry-types"))
+              .willReturn(okJson("[{\"code\":\"FM\",\"name\":\"Sole Proprietorship\"}]"))
+      );
+
+      service
+          .findActiveRegistryTypeCodes()
+          .as(StepVerifier::create)
+          .assertNext(dto -> {
+              assertEquals(expecteDto.code(), dto.code());
+              assertEquals(expecteDto.name(), dto.name());
+          })
+          .verifyComplete();
+  }
+  
 }

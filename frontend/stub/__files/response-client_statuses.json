@@ -1,22 +1,22 @@
 [
-    {
+  {
       "code": "ACT",
       "name": "Active"
-    },
-    {
+  },
+  {
       "code": "DAC",
       "name": "Deactivated"
-    },
-    {
+  },
+  {
       "code": "DEC",
       "name": "Deceased"
-    },
-    {
+  },
+  {
       "code": "REC",
       "name": "Receivership"
-    },
-    {
+  },
+  {
       "code": "SPN",
       "name": "Suspended"
-    }
-  ]
+  }
+]
