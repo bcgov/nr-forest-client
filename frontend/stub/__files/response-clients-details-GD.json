@@ -15,7 +15,7 @@
     "clientStatusCode": "ACT",
     "clientStatusDesc": "Active",
     "clientComment": "Email from Cheryl Bibby to request any letters for sec deposits be mailed to 3000, 28th St, Vernon",
-    "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
+    "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}",
     "contacts": [],
     "addresses": [
         {

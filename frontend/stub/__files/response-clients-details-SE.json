@@ -14,7 +14,7 @@
     "clientStatusCode": "ACT",
     "clientStatusDesc": "Active",
     "clientComment": "",
-    "wcbFirmNumber": "{{randomValue length=7 type='NUMERIC'}}",
+    "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}",
     "contacts": [{
         "locationCode": ["00"],
         "contactName": "Cheryl Bibby",
