@@ -478,6 +478,7 @@ public class ClientLegacyService {
   private Set<String> getAdminStatuses(String clientTypeCode) {
     return switch (clientTypeCode) {
       case "B", "F", "G" -> Set.of("ACT", "DAC", "SPN");
+      case "I", "A" -> Set.of("ACT", "DEC", "REC", "SPN");
       default -> Set.of("ACT", "DAC", "REC", "SPN");
     };
   }
