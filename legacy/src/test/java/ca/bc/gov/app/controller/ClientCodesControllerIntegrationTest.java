@@ -53,7 +53,7 @@ class ClientCodesControllerIntegrationTest extends
           .get()
           .uri(uriBuilder ->
               uriBuilder
-                  .path("/api/codes/client_statuses")
+                  .path("/api/codes/client-statuses")
                   .build()
           )
           .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
