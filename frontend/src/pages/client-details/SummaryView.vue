@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
-import type { ClientDetails, CodeNameType } from "@/dto/CommonTypesDto";
+import type { ClientDetails, CodeNameType, UserRole } from "@/dto/CommonTypesDto";
 import {
   getFormattedHtml,
   getTagColorByClientStatus,
@@ -21,7 +21,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 
 const props = defineProps<{
   data: ClientDetails;
-  userRole: string;
+  userRole: UserRole;
 }>();
 
 const emit = defineEmits<{
@@ -77,10 +77,8 @@ const fieldIdList = [
   "clientStatus",
   "notes",
 ] as const;
-const roles = ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR", "CLIENT_VIEWER"] as const;
 
 type FieldId = (typeof fieldIdList)[number];
-type Role = (typeof roles)[number];
 
 const validation = reactive<Record<FieldId, boolean>>({
   clientName: true,
@@ -99,7 +97,7 @@ const checkValid = () =>
     true,
   );
 
-const editRoles: Record<FieldId, Role[]> = {
+const editRoles: Record<FieldId, UserRole[]> = {
   clientName: ["CLIENT_ADMIN"],
   acronym: ["CLIENT_ADMIN"],
   doingBusinessAs: ["CLIENT_ADMIN"],
@@ -110,10 +108,11 @@ const editRoles: Record<FieldId, Role[]> = {
   notes: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
 };
 
-const canEdit = (role: Role) => ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"].includes(role);
+const canEdit = (role: UserRole) =>
+  ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"].includes(role);
 
 const displayEditable = (fieldId: FieldId) =>
-  isEditing.value && editRoles[fieldId]?.includes(props.userRole as Role);
+  isEditing.value && editRoles[fieldId]?.includes(props.userRole as UserRole);
 
 const displayReadonly = (fieldId: FieldId) => !isEditing.value || !displayEditable(fieldId);
 

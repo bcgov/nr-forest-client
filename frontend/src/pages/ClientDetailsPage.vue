@@ -28,7 +28,12 @@ import User20 from "@carbon/icons-vue/es/user/20";
 import Launch16 from "@carbon/icons-vue/es/launch/16";
 
 import { greenDomain } from "@/CoreConstants";
-import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
+import {
+  adminEmail,
+  getObfuscatedEmailLink,
+  getPrevailingRole,
+  toTitleCase,
+} from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
 import type { ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
@@ -47,6 +52,8 @@ const data = ref<ClientDetails>(undefined);
 const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"].some((authority) =>
   ForestClientUserSession.authorities.includes(authority),
 );
+
+const prevailingRole = getPrevailingRole(ForestClientUserSession.authorities);
 
 const { error: fetchError } = useFetchTo(`/api/clients/details/${clientNumber}`, data);
 
@@ -222,7 +229,7 @@ const saveSummary = (patch: jsonpatch.Operation[]) => {
             <h2 class="mg-tl-2 heading-05">Client summary</h2>
 
             <div class="grouping-10">
-              <summary-view :data="data" user-role="CLIENT_EDITOR" @save="saveSummary" />
+              <summary-view :data="data" :user-role="prevailingRole" @save="saveSummary" />
             </div>
           </div>
         </div>

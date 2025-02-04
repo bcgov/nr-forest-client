@@ -8,8 +8,10 @@ import {
   getTagColorByClientStatus,
   goodStanding,
   formatPhoneNumber,
+  getPrevailingRole,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
+import type { UserRole } from "@/dto/CommonTypesDto";
 
 describe("ForestClientService.ts", () => {
   describe("Address and Contact utils", () => {
@@ -190,6 +192,49 @@ describe("ForestClientService.ts", () => {
     it("returns an empty string if phone number is undefined", () => {
       const result = formatPhoneNumber(undefined);
       expect(result).toEqual("");
+    });
+  });
+
+  describe("getPrevailingRole", () => {
+    it("returns CLIENT_ADMIN if included in the input", () => {
+      const input: UserRole[] = [
+        "CLIENT_VIEWER",
+        "CLIENT_SUSPEND",
+        "CLIENT_ADMIN",
+        "CLIENT_EDITOR",
+      ];
+      const result = getPrevailingRole(input);
+      expect(result).toBe("CLIENT_ADMIN");
+    });
+
+    it("returns CLIENT_SUSPEND if the input includes it and doesn't include CLIENT_ADMIN", () => {
+      const input: UserRole[] = ["CLIENT_VIEWER", "CLIENT_SUSPEND", "CLIENT_EDITOR"];
+      const result = getPrevailingRole(input);
+      expect(result).toBe("CLIENT_SUSPEND");
+    });
+
+    it("returns CLIENT_EDITOR if the input includes it and doesn't include CLIENT_ADMIN or CLIENT_SUSPEND", () => {
+      const input: UserRole[] = ["CLIENT_VIEWER", "CLIENT_EDITOR"];
+      const result = getPrevailingRole(input);
+      expect(result).toBe("CLIENT_EDITOR");
+    });
+
+    it("returns CLIENT_VIEWER if the input includes it and doesn't include higher options", () => {
+      const input: UserRole[] = ["CLIENT_VIEWER"];
+      const result = getPrevailingRole(input);
+      expect(result).toBe("CLIENT_VIEWER");
+    });
+
+    it("returns null if the input is empty", () => {
+      const input = [];
+      const result = getPrevailingRole(input);
+      expect(result).toBe(null);
+    });
+
+    it("returns null if the input includes none of the roles sought", () => {
+      const input = ["ANYTHING"];
+      const result = getPrevailingRole(input);
+      expect(result).toBe(null);
     });
   });
 });
