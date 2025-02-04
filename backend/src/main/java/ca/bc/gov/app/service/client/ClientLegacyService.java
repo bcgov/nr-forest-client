@@ -434,6 +434,11 @@ public class ClientLegacyService {
         });
   }
 
+  /**
+   * Retrieves active client status codes from the legacy system.
+   *
+   * @return a Flux containing {@link CodeNameDto} objects representing active client statuses.
+   */
   public Flux<CodeNameDto> findActiveClientStatusCodes() {
     log.info("Searching for active client statuses in legacy");
 
@@ -442,7 +447,6 @@ public class ClientLegacyService {
             .get()
             .uri("/api/codes/client-statuses")
             .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
-            // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
                         "Found active client statuses in legacy"
@@ -450,6 +454,13 @@ public class ClientLegacyService {
             );
   }
 
+  /**
+   * Retrieves active client status codes filtered by client type and role from the legacy system.
+   *
+   * @param clientTypeCode the client type code to filter by.
+   * @param groups the set of roles to filter by.
+   * @return a Flux containing filtered {@link CodeNameDto} objects.
+   */
   public Flux<CodeNameDto> findActiveClientStatusCodesByClientTypeAndRole(
       String clientTypeCode, Set<String> groups) {
     
@@ -491,6 +502,11 @@ public class ClientLegacyService {
     };
   }
   
+  /**
+   * Retrieves active registry type codes from the legacy system.
+   *
+   * @return a Flux containing {@link CodeNameDto} objects representing active registry types.
+   */
   public Flux<CodeNameDto> findActiveRegistryTypeCodes() {
     log.info("Searching for active registry types in legacy");
 
