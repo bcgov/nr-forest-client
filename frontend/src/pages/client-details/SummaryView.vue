@@ -24,6 +24,10 @@ const props = defineProps<{
   userRole: string;
 }>();
 
+const emit = defineEmits<{
+  (e: "save", value: jsonpatch.Operation[]): void;
+}>();
+
 let originalData: ClientDetails;
 const formData = ref<ClientDetails>();
 
@@ -49,17 +53,17 @@ watch(
 );
 
 const edit = () => {
+  resetFormData();
   isEditing.value = true;
 };
 
 const cancel = () => {
   isEditing.value = false;
-  resetFormData();
 };
 
 const save = () => {
-  const diff = jsonpatch.compare(originalData, formData.value);
-  console.log({ patch: diff });
+  const patch = jsonpatch.compare(originalData, formData.value);
+  emit("save", patch);
   isEditing.value = false;
 };
 

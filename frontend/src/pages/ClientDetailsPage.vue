@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { AxiosError } from "axios";
+import * as jsonpatch from "fast-json-patch";
 
 // Carbon
 import "@carbon/web-components/es/components/breadcrumb/index";
@@ -149,6 +150,10 @@ const openMaintenanceLegacy = () => {
 
 const summitSvg = useSvg(summit);
 const toolsSvg = useSvg(tools);
+
+const saveSummary = (patch: jsonpatch.Operation[]) => {
+  console.log({ patch });
+};
 </script>
 
 <template>
@@ -217,7 +222,7 @@ const toolsSvg = useSvg(tools);
             <h2 class="mg-tl-2 heading-05">Client summary</h2>
 
             <div class="grouping-10">
-              <summary-view :data="data" user-role="CLIENT_EDITOR" />
+              <summary-view :data="data" user-role="CLIENT_EDITOR" @save="saveSummary" />
             </div>
           </div>
         </div>
