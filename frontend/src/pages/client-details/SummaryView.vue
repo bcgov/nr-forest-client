@@ -105,8 +105,9 @@ const editRoles: Record<FieldId, UserRole[]> = {
   notes: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
 };
 
-const canEdit = (role: UserRole) =>
-  ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"].includes(role);
+const canEdit = computed(() =>
+  ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"].includes(props.userRole),
+);
 
 const displayEditable = (fieldId: FieldId) =>
   isEditing.value && editRoles[fieldId]?.includes(props.userRole as UserRole);
@@ -238,9 +239,12 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
     </cds-button>
   </div>
   <div class="form-edit no-padding" v-if="isEditing">
-    <div class="horizontal-input-grouping">
+    <div
+      class="horizontal-input-grouping"
+      v-if="displayEditable('clientName') || displayEditable('acronym')"
+    >
       <text-input-component
-        id="clientName"
+        id="input-clientName"
         v-if="displayEditable('clientName')"
         class="grouping-02--width-32rem"
         label="Client name"
@@ -257,7 +261,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
         @error="validation.clientName = !$event"
       />
       <text-input-component
-        id="acronym"
+        id="input-acronym"
         v-if="displayEditable('acronym')"
         class="grouping-02--width-8rem"
         label="Acronym"
@@ -274,7 +278,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       />
     </div>
     <text-input-component
-      id="doingBusinessAs"
+      id="input-doingBusinessAs"
       v-if="displayEditable('doingBusinessAs')"
       label="Doing business as"
       placeholder=""
@@ -289,7 +293,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       @error="validation.doingBusinessAs = !$event"
     />
     <text-input-component
-      id="registrationNumber"
+      id="input-registrationNumber"
       v-if="displayEditable('registrationNumber')"
       label="Registration number"
       mask="NNNNNNNNNNN"
@@ -302,7 +306,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       @error="validation.workSafeBCNumber = !$event"
     />
     <text-input-component
-      id="workSafeBCNumber"
+      id="input-workSafeBCNumber"
       v-if="displayEditable('workSafeBCNumber')"
       label="WorkSafeBC number"
       mask="######"
@@ -327,7 +331,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       #="{ content }"
     >
       <dropdown-input-component
-        id="clientStatus"
+        id="input-clientStatus"
         label="Client status"
         :initial-value="content?.find((item) => item.code === formData.clientStatusCode)?.name"
         required
@@ -346,7 +350,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       </dropdown-input-component>
     </data-fetcher>
     <textarea-input-component
-      id="notes"
+      id="input-notes"
       v-if="displayEditable('notes')"
       label="Notes"
       enable-counter
