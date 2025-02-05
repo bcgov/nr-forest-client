@@ -319,7 +319,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
     />
     <data-fetcher
       v-if="displayEditable('clientStatus')"
-      url="/api/codes/client-statuses"
+      :url="`/api/codes/client-statuses/${props.data.clientTypeCode}`"
       :min-length="0"
       :init-value="[]"
       :init-fetch="true"
@@ -337,7 +337,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
         tip=""
         :validations="[]"
         @update:selected-value="updateClientStatus($event)"
-        @empty="validation.clientType = !$event"
+        @empty="validation.clientStatus = !$event"
         #="{ option }"
       >
         <cds-tag :type="getTagColorByClientStatus(option.name)" title="">
