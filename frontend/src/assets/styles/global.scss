@@ -833,9 +833,11 @@ cds-actionable-notification * {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  
+  max-width: 41rem;
+  width: 100%;
+
   .grouping-02, .grouping-03 {
-    max-width: 41rem;
+    width: 100%;
   }
 }
 
@@ -892,7 +894,7 @@ cds-actionable-notification * {
   background: var(--others-transparent-transparent, #fff);
   background-blend-mode: multiply;
 
-  // Defining as adjacent classes to reach the specificity level needed.
+  // Defining as an adjacent class to reach the specificity level needed.
   &.grouping-02 {
     &--width-32rem {
       width: 32rem;
