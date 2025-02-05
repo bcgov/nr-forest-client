@@ -1,6 +1,7 @@
 {
   "name": "forest-client-frontend",
   "version": "0.0.1",
+  "type": "module",
   "description": "Frontend for Forests Client Management System project",
   "repository": {
     "type": "git",
