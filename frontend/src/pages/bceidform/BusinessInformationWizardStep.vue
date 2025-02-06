@@ -620,7 +620,7 @@ onMounted(() => {
           <p class="cds--inline-notification-content">
             {{ receivedClientType.name }} client type is not supported. Please email your
             <a target="_blank"
-               href="https://www2.gov.bc.ca/gov/content/industry/forestry/managing-our-forest-resources/ministry-of-forests-lands-and-natural-resource-operations-region-district-contacts">
+               href="https://www2.gov.bc.ca/gov/content?id=D49E6A6A67C944AC80A9F5B5686543F1">
               local district
             </a> for help.
           </p>
