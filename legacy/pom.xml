@@ -33,25 +33,20 @@
     <maven.compiler.version>3.10.1</maven.compiler.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-
     <skip.integration.tests>true</skip.integration.tests>
     <skip.unit.tests>false</skip.unit.tests>
     <jacoco.skip>true</jacoco.skip>
     <checkstyle.skip>true</checkstyle.skip>
-
     <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
-
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-
     <testcontainers.version>1.20.3</testcontainers.version>
-
     <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
     <junit-platform.version>1.9.1</junit-platform.version>
-
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.5.5.Fina</mapstruct.version>
     <netty.version>4.1.114.Final</netty.version>
+    <logback.version>1.5.16</logback.version>
     <flyway.version>10.13.0</flyway.version>
   </properties>
 
@@ -59,6 +54,16 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webflux</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -175,6 +180,16 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-bom</artifactId>
