@@ -182,7 +182,7 @@ describe("<summary-view />", () => {
     });
   });
 
-  describe("when role is CLIENT_EDITOR or CLIENT_SUSPEND", () => {
+  describe("when role is CLIENT_EDITOR", () => {
     const props = getDefaultProps();
     props.userRole = "CLIENT_EDITOR";
     beforeEach(() => {
@@ -261,6 +261,22 @@ describe("<summary-view />", () => {
         testTextInput("#input-workSafeBCNumber", props.data.wcbFirmNumber);
         testDropdown("#input-clientStatus", props.data.clientStatusDesc);
         testTextarea("[data-id='input-input-notes']", props.data.clientComment);
+      });
+
+      it("emits a save event when the Save button gets clicked", () => {
+        // Change some information
+        cy.clearFormEntry("#input-workSafeBCNumber");
+
+        cy.get("#summarySaveBtn").click();
+
+        cy.get("@vueWrapper").should((vueWrapper) => {
+          const saveData = vueWrapper.emitted("save")[0][0];
+
+          expect(saveData).to.be.an("array");
+          expect(saveData).to.have.lengthOf(1);
+
+          expect(saveData[0].op).to.eq("replace");
+        });
       });
     });
   });

@@ -373,7 +373,8 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
         <cds-tooltip>
           <Information16 />
           <cds-tooltip-content>
-            For example, any information about the client, their locations or specific instructions for contacting them
+            For example, any information about the client, their locations or specific instructions
+            for contacting them
           </cds-tooltip-content>
         </cds-tooltip>
       </div>
