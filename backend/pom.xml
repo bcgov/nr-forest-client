@@ -43,7 +43,7 @@
         <testcontainers.version>1.20.3</testcontainers.version>
         <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
         <junit-platform.version>1.9.1</junit-platform.version>
-        <netty.version>4.1.117.Final</netty.version>
+        <netty.version>4.1.115.Final</netty.version>
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.0</nimbus-jose-jwt.version>
     </properties>
