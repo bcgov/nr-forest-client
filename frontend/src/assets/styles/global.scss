@@ -506,6 +506,10 @@ cds-accordion-item::part(title) {
   letter-spacing: 0.01rem;
 }
 
+.weight-700 {
+  font-weight: 700;
+}
+
 cds-tab > div {
   color: var(--light-theme-text-text-primary, #131315);
   font-size: var(--heading-compact-02-font-size);
