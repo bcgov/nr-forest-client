@@ -130,8 +130,8 @@ overlayBus.on(openOverlay)
       timeout="8000"
       kind="success"
       :title="toastContent.toastTitle"
-      :subtitle="toastContent.message"
     >
+    <div slot="subtitle" v-dompurify-html="toastContent.message"></div>
   </cds-toast-notification>
 
   <loading-overlay-component 
