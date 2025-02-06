@@ -61,10 +61,17 @@ const cancel = () => {
   isEditing.value = false;
 };
 
+const lockEditing = () => {
+  isEditing.value = false;
+};
+
+defineExpose({
+  lockEditing,
+});
+
 const save = () => {
   const patch = jsonpatch.compare(originalData, formData.value);
   emit("save", patch);
-  isEditing.value = false;
 };
 
 const fieldIdList = [
