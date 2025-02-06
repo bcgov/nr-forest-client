@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Initializing Deployment
-        uses: bcgov/action-deployer-openshift@v3.0.1
+        uses: bcgov/action-deployer-openshift@v3.1.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -78,7 +78,7 @@ jobs:
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
       - name: Deploy Database Backup
-        uses: bcgov/action-deployer-openshift@v3.0.1
+        uses: bcgov/action-deployer-openshift@v3.1.0
         with:
           file: database/openshift.backup.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -104,7 +104,7 @@ jobs:
             ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
 
       - name: Deploy Database
-        uses: bcgov/action-deployer-openshift@v3.0.1
+        uses: bcgov/action-deployer-openshift@v3.1.0
         with:
           file: database/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -117,7 +117,7 @@ jobs:
             -p TAG=${{ github.event.number }}
 
       - name: Deploy Legacy
-        uses: bcgov/action-deployer-openshift@v3.0.1
+        uses: bcgov/action-deployer-openshift@v3.1.0
         with:
           file: legacy/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -133,7 +133,7 @@ jobs:
             -p ORACLEDB_PORT=1521
 
       - name: Deploy Processor
-        uses: bcgov/action-deployer-openshift@v3.0.1
+        uses: bcgov/action-deployer-openshift@v3.1.0
         with:
           file: processor/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -148,7 +148,7 @@ jobs:
             -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
       - name: Deploy Backend ConfigMap
-        uses: bcgov/action-deployer-openshift@v3.0.1
+        uses: bcgov/action-deployer-openshift@v3.1.0
         with:
           file: backend/openshift.configmap.dev.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -160,7 +160,7 @@ jobs:
             -p ZONE=${{ github.event.number }}            
 
       - name: Deploy Backend
-        uses: bcgov/action-deployer-openshift@v3.0.1
+        uses: bcgov/action-deployer-openshift@v3.1.0
         with:
           file: backend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -179,7 +179,7 @@ jobs:
             -p FRONTEND_URL=${{ needs.vars.outputs.url }}
 
       - name: Dev data replacement
-        uses: bcgov/action-deployer-openshift@v3.0.1
+        uses: bcgov/action-deployer-openshift@v3.1.0
         with:
           file: database/openshift.dev.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -190,7 +190,7 @@ jobs:
           parameters: -p ZONE=${{ github.event.number }}
 
       - name: Deploy Frontend ConfigMap
-        uses: bcgov/action-deployer-openshift@v3.0.1
+        uses: bcgov/action-deployer-openshift@v3.1.0
         with:
           file: frontend/openshift.configmap.dev.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -202,7 +202,7 @@ jobs:
             -p ZONE=${{ github.event.number }}  
 
       - name: Deploy Frontend
-        uses: bcgov/action-deployer-openshift@v3.0.1
+        uses: bcgov/action-deployer-openshift@v3.1.0
         with:
           file: frontend/openshift.deploy.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
