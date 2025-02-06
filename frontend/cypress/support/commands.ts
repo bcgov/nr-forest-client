@@ -196,17 +196,17 @@ Cypress.Commands.add("clearFormEntry",(field: string, area: boolean = false) =>{
   .blur();
 });
 
-Cypress.Commands.add("selectFormEntry", (field: string, value: string, box: boolean) => {
+Cypress.Commands.add("selectFormEntry", (field: string, value: string) => {
   cy.get(field).find("[part='trigger-button']").click();
 
-  if (!box) {
-    cy.get(field).find(`cds-combo-box-item[data-value="${value}"]`).click();
-  } else {
-    cy.get(field)
-      .find(`cds-multi-select-item[data-value="${value}"]`)
-      .click();
-    cy.get(field).click();
-  }
+  cy.get(field).then(($el) => {
+    const tagName = $el.prop("tagName").toLowerCase();
+    cy.get(field).find(`${tagName}-item[data-value="${value}"]`).click();
+
+    if (tagName === "cds-multi-select") {
+      cy.get(field).click();
+    }
+  });
 });
 
 Cypress.Commands.add("selectAutocompleteEntry", (field: string, value: string, dataid: string,delayTarget: string = '') => {
