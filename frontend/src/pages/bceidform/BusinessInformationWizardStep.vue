@@ -618,8 +618,11 @@ onMounted(() => {
           title="Client type not supported"
         >
           <p class="cds--inline-notification-content">
-            {{ receivedClientType.name }} client type is not supported. Please email
-            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+            {{ receivedClientType.name }} client type is not supported. Please email your
+            <a target="_blank"
+               href="https://www2.gov.bc.ca/gov/content/industry/forestry/managing-our-forest-resources/ministry-of-forests-lands-and-natural-resource-operations-region-district-contacts">
+              local district
+            </a> for help.
           </p>
         </cds-inline-notification>
 
