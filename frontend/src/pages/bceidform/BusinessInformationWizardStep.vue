@@ -434,7 +434,7 @@ onMounted(() => {
   <p class="body-02">
     Select the district your application should go to. If you don’t know the district
     <a
-      href="https://www2.gov.bc.ca/gov/content/industry/forestry/managing-our-forest-resources/ministry-of-forests-lands-and-natural-resource-operations-region-district-contacts"
+      href="https://www2.gov.bc.ca/gov/content?id=D49E6A6A67C944AC80A9F5B5686543F1"
       target="_blank"
       rel="noopener noreferrer"
       >check this map</a
