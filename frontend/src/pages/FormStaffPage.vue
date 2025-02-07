@@ -216,7 +216,7 @@ const lookForMatches = (onEmpty: () => void) => {
       id = parts[0] + "-" + parts[1];
 
       // Result: location-addresses-0
-      id = id.replace("[", "-").replace("]", "");
+      id = id.replace(/\[/g, "-").replace(/]/g, "");
     }
     return id;
   };
