@@ -53,39 +53,27 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
-const isAdminInd = ["CLIENT_ADMIN"].some((authority) =>
-  ForestClientUserSession.authorities.includes(authority)
+const isAdminInd = computed(() =>
+  ["CLIENT_ADMIN"].some((authority) =>
+    ForestClientUserSession.authorities.includes(authority)
+  )
 );
 
-const clientTypesList: CodeNameType[] = [
-  {
-    code: "I",
-    name: "Individual",
-  },
-  {
-    code: "BCR",
-    name: "BC registered business",
-  },
-  {
-    code: "R",
-    name: "First Nation",
-  },
-  {
-    code: "G",
-    name: "Government",
-  },
-  {
-    code: "F",
-    name: "Ministry of Forests",
-  }
-];
+const clientTypesList = computed(() => {
+  const list: CodeNameType[] = [
+    { code: "I", name: "Individual" },
+    { code: "BCR", name: "BC registered business" },
+    { code: "R", name: "First Nation" },
+    { code: "G", name: "Government" },
+    { code: "F", name: "Ministry of Forests" }
+  ];
 
-if (isAdminInd) {
-  clientTypesList.push({
-    code: "U",
-    name: "Unregistered company",
-  });
-}
+  if (isAdminInd.value) {
+    list.push({ code: "U", name: "Unregistered company" });
+  }
+
+  return list;
+});
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
