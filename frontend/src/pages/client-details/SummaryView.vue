@@ -223,7 +223,11 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
     <read-only-component :label="birthdateLabel" id="dateOfBirth" v-if="dateOfBirth">
       <span class="body-compact-01">{{ dateOfBirth }}</span>
     </read-only-component>
-    <read-only-component label="Client status" id="status" v-if="displayReadonly('clientStatus')">
+    <read-only-component
+      label="Client status"
+      id="clientStatus"
+      v-if="displayReadonly('clientStatus')"
+    >
       <span class="body-compact-01">
         <cds-tag :type="getTagColorByClientStatus(props.data.clientStatusDesc)">
           <span>{{ props.data.clientStatusDesc }}</span>

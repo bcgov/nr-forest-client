@@ -92,7 +92,7 @@ describe("<summary-view />", () => {
     testReadonly("#identification", currentProps.data.clientIdentification);
 
     testReadonly("#dateOfBirth", currentProps.data.birthdate);
-    testReadonly("#status", currentProps.data.clientStatusDesc);
+    testReadonly("#clientStatus", currentProps.data.clientStatusDesc);
     testReadonly("#notes", currentProps.data.clientComment);
   });
 
