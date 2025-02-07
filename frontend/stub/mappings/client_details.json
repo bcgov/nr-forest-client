@@ -31,6 +31,21 @@
       }
     },
     {
+      "name": "Client Details General Partnership - Deactivated",
+      "request": {
+        "urlPattern": "/api/clients/details/[gG][dD][aA][cC](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-GDAC.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Client Details Sole Proprietorship",
       "request": {
         "urlPattern": "/api/clients/details/[sS](.*)",
