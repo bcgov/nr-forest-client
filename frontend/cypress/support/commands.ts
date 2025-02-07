@@ -129,6 +129,15 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add("hasLoggedIn", () => {
+  cy.getAllCookies().then((cookies) => {
+    cy.log(JSON.stringify(cookies));
+  });
+  return cy.getAllCookies().then((cookies) => {
+    return cookies.length > 0;
+  });
+});
+
 Cypress.Commands.add("logout", () => {
   cy.get("[data-id=logout-btn]").should("be.visible");
   cy.expireCookie("idToken");
