@@ -116,8 +116,25 @@ const canEdit = computed(() =>
   ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"].includes(props.userRole),
 );
 
+const canEditClientStatus = () => {
+  /*
+  TODO: update for the following roles:
+
+  CLIENT_SUSPEND
+  https://apps.nrs.gov.bc.ca/int/jira/browse/FSADT1-1622
+  */
+  if (props.userRole === "CLIENT_EDITOR") {
+    if (["DAC", "SPN", "REC"].includes(props.data.clientStatusCode)) {
+      return false;
+    }
+  }
+  return true;
+};
+
 const displayEditable = (fieldId: FieldId) =>
-  isEditing.value && editRoles[fieldId]?.includes(props.userRole as UserRole);
+  isEditing.value &&
+  editRoles[fieldId]?.includes(props.userRole as UserRole) &&
+  (fieldId !== "clientStatus" || canEditClientStatus());
 
 const displayReadonly = (fieldId: FieldId) => !isEditing.value || !displayEditable(fieldId);
 
