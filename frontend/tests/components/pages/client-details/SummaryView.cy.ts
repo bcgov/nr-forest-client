@@ -72,6 +72,13 @@ describe("<summary-view />", () => {
   const testTextarea = (rawSelector: string, value?: string) =>
     testInputTag("cds-textarea", rawSelector, value);
 
+  const getClientStatusesBaseUrl = "/api/codes/client-statuses";
+  beforeEach(() => {
+    cy.intercept("GET", `${getClientStatusesBaseUrl}/*`, {
+      fixture: "clientStatuses.json",
+    }).as("getClientStatuses");
+  });
+
   it("renders the SummaryView component", () => {
     mount();
 
@@ -190,9 +197,13 @@ describe("<summary-view />", () => {
     const props = getDefaultProps();
     props.userRoles = ["CLIENT_EDITOR"];
     describe("when the edit button in clicked", () => {
+      let getClientStatusesRequest;
       beforeEach(() => {
         mount(props);
         cy.get("#summaryEditBtn").click();
+        cy.wait("@getClientStatuses").then(({ request }) => {
+          getClientStatusesRequest = request;
+        });
       });
 
       it("enables the edition of some fields only", () => {
@@ -207,6 +218,13 @@ describe("<summary-view />", () => {
         testHidden("#input-registrationNumber");
         testHidden("#input-identification");
         testHidden("#input-dateOfBirth");
+      });
+
+      it("requests the client statuses according to the client type", () => {
+        cy.log(props.data.clientIdTypeCode);
+        expect(getClientStatusesRequest.url).to.match(
+          new RegExp(`${getClientStatusesBaseUrl}/${props.data.clientTypeCode}`),
+        );
       });
 
       it("keeps displaying the other fields in view mode", () => {
