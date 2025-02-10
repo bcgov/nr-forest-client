@@ -28,7 +28,7 @@ describe("<summary-view />", () => {
       clientIdTypeDesc: "British Columbia Driver's Licence",
       clientIdentification: "64242646",
     } as ClientDetails,
-    userRole: "CLIENT_VIEWER",
+    userRoles: ["CLIENT_VIEWER"],
   });
 
   let currentProps: ReturnType<typeof getDefaultProps> = null;
@@ -161,9 +161,9 @@ describe("<summary-view />", () => {
   });
 
   ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"].forEach((userRole) => {
-    it(`displays the Edit button if userRole is: ${userRole}`, () => {
+    it(`displays the Edit button if userRole contains: ${userRole}`, () => {
       const props = getDefaultProps();
-      props.userRole = userRole;
+      props.userRoles = [userRole];
 
       mount(props);
 
@@ -172,9 +172,9 @@ describe("<summary-view />", () => {
   });
 
   ["CLIENT_VIEWER", "UNKNOWN", null].forEach((userRole) => {
-    it(`hides the Edit button if userRole is: ${userRole}`, () => {
+    it(`hides the Edit button if userRole contains only: ${userRole}`, () => {
       const props = getDefaultProps();
-      props.userRole = userRole;
+      props.userRoles = [userRole];
 
       mount(props);
 
@@ -182,9 +182,9 @@ describe("<summary-view />", () => {
     });
   });
 
-  describe("when role is CLIENT_EDITOR", () => {
+  describe("when role contains CLIENT_EDITOR", () => {
     const props = getDefaultProps();
-    props.userRole = "CLIENT_EDITOR";
+    props.userRoles = ["CLIENT_EDITOR"];
     beforeEach(() => {
       mount(props);
     });
