@@ -42,30 +42,34 @@ describe("<summary-view />", () => {
       .as("vueWrapper");
   };
 
-  const testReadonly = (rawSelector: string, value: string) => {
+  const testReadonly = (rawSelector: string, value?: string) => {
     const selector = `div${rawSelector}`;
     cy.get(selector).should("be.visible");
-    cy.get(selector).contains(value);
-    expect(value.length).to.be.greaterThan(0);
+    if (value !== undefined) {
+      cy.get(selector).contains(value);
+      expect(value.length).to.be.greaterThan(0);
+    }
   };
 
   const testHidden = (selector: string) => {
     cy.get(selector).should("not.exist");
   };
 
-  const testInputTag = (inputTag: string, rawSelector: string, value: string) => {
+  const testInputTag = (inputTag: string, rawSelector: string, value?: string) => {
     const selector = `${inputTag}${rawSelector}`;
     cy.get(selector).should("be.visible");
-    cy.get(selector).should("have.value", value);
+    if (value !== undefined) {
+      cy.get(selector).should("have.value", value);
+    }
   }
 
-  const testTextInput = (rawSelector: string, value: string) =>
+  const testTextInput = (rawSelector: string, value?: string) =>
     testInputTag("cds-text-input", rawSelector, value);
 
-  const testDropdown = (rawSelector: string, value: string) =>
+  const testDropdown = (rawSelector: string, value?: string) =>
     testInputTag("cds-dropdown", rawSelector, value);
 
-  const testTextarea = (rawSelector: string, value: string) =>
+  const testTextarea = (rawSelector: string, value?: string) =>
     testInputTag("cds-textarea", rawSelector, value);
 
   it("renders the SummaryView component", () => {
@@ -185,11 +189,9 @@ describe("<summary-view />", () => {
   describe("when role contains CLIENT_EDITOR", () => {
     const props = getDefaultProps();
     props.userRoles = ["CLIENT_EDITOR"];
-    beforeEach(() => {
-      mount(props);
-    });
     describe("when the edit button in clicked", () => {
       beforeEach(() => {
+        mount(props);
         cy.get("#summaryEditBtn").click();
       });
 
@@ -276,6 +278,44 @@ describe("<summary-view />", () => {
           expect(saveData).to.have.lengthOf(1);
 
           expect(saveData[0].op).to.eq("replace");
+        });
+      });
+    });
+
+    ["SPN", "REC", "DAC"].forEach((clientStatus) => {
+      const props = getDefaultProps();
+      props.userRoles = ["CLIENT_EDITOR"];
+      props.data.clientStatusCode = clientStatus;
+      props.data.clientStatusDesc = clientStatus;
+      describe(`when current client status is: ${clientStatus}`, () => {
+        beforeEach(() => {
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+        });
+
+        it("locks the Client status field", () => {
+          // Check we are in edit mode
+          cy.get("#summarySaveBtn").should("be.visible");
+
+          testHidden("#input-clientStatus");
+          testReadonly("#clientStatus");
+        });
+      });
+    });
+
+    ["ACT", "DEC"].forEach((clientStatus) => {
+      const props = getDefaultProps();
+      props.userRoles = ["CLIENT_EDITOR"];
+      props.data.clientStatusCode = clientStatus;
+      props.data.clientStatusDesc = clientStatus;
+      describe(`when current client status is: ${clientStatus}`, () => {
+        beforeEach(() => {
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+        });
+
+        it("allows to update the Client status field", () => {
+          testDropdown("#input-clientStatus");
         });
       });
     });
