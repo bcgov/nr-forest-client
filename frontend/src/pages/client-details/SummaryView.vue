@@ -6,6 +6,7 @@ import {
   getFormattedHtml,
   getTagColorByClientStatus,
   goodStanding,
+  includesAnyOf,
 } from "@/services/ForestClientService";
 
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
@@ -21,7 +22,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 
 const props = defineProps<{
   data: ClientDetails;
-  userRole: UserRole;
+  userRoles: UserRole[];
 }>();
 
 const emit = defineEmits<{
@@ -113,27 +114,28 @@ const editRoles: Record<FieldId, UserRole[]> = {
 };
 
 const canEdit = computed(() =>
-  ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"].includes(props.userRole),
+  includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
 );
 
 const canEditClientStatus = () => {
-  /*
-  TODO: update for the following roles:
-
-  CLIENT_SUSPEND
-  https://apps.nrs.gov.bc.ca/int/jira/browse/FSADT1-1622
-  */
-  if (props.userRole === "CLIENT_EDITOR") {
-    if (["DAC", "SPN", "REC"].includes(props.data.clientStatusCode)) {
-      return false;
-    }
+  if (props.userRoles.includes("CLIENT_ADMIN")) {
+    return true;
   }
-  return true;
+  if (["SPN", "REC"].includes(props.data.clientStatusCode)) {
+    return props.userRoles.includes("CLIENT_SUSPEND");
+  }
+  if (["DEC"].includes(props.data.clientStatusCode)) {
+    return props.userRoles.includes("CLIENT_EDITOR");
+  }
+  if (["ACT"].includes(props.data.clientStatusCode)) {
+    return true;
+  }
+  return false;
 };
 
 const displayEditable = (fieldId: FieldId) =>
   isEditing.value &&
-  editRoles[fieldId]?.includes(props.userRole as UserRole) &&
+  includesAnyOf(props.userRoles, editRoles[fieldId]) &&
   (fieldId !== "clientStatus" || canEditClientStatus());
 
 const displayReadonly = (fieldId: FieldId) => !isEditing.value || !displayEditable(fieldId);
