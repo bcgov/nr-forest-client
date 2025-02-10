@@ -172,7 +172,10 @@ const toolsSvg = useSvg(tools);
 
 const summaryRef = ref<InstanceType<typeof SummaryView> | null>(null);
 
-const saveSummary = (patchData: jsonpatch.Operation[]) => {
+const reasonModalActiveInd = ref(false);
+let patchData = ref<jsonpatch.Operation[]>();
+
+const saveSummary = (operations: jsonpatch.Operation[]) => {
   const {
     fetch: patch,
     response,
@@ -181,7 +184,13 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
     skip: true,
   });
 
-  resetGlobalError();
+  patchData.value = operations;
+
+  console.log(data);
+  console.log(patchData);
+  reasonModalActiveInd.value = true;
+
+  /*resetGlobalError();
 
   patch().then(() => {
     if (response.value.status) {
@@ -208,7 +217,7 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
       toastBus.emit(toastNotification);
       globalError.value = error.value;
     }
-  });
+  });*/
 };
 
 const globalError = ref();
@@ -460,4 +469,40 @@ resetGlobalError();
       </div>
     </div>
   </div>
+
+  <cds-modal
+    id="reason-modal"
+    aria-labelledby="reason-modal-heading"
+    aria-describedby="reason-modal-body"
+    size="sm"
+    :open="reasonModalActiveInd"
+    @cds-modal-closed="reasonModalActiveInd = false"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading id="reason-modal-heading">
+        Reason for change
+      </cds-modal-heading>
+    </cds-modal-header>
+    
+    <cds-modal-body id="reason-modal-body">
+      Select a reason for the following change:
+      {{ patchData }}
+    </cds-modal-body>
+
+    <cds-modal-footer>
+      <cds-modal-footer-button 
+        kind="secondary" 
+        data-modal-close class="cds--modal-close-btn">
+        Cancel
+      </cds-modal-footer-button>
+      <!-- <cds-modal-footer-button 
+        kind="danger" 
+        class="cds--modal-submit-btn" 
+        v-on:click="logout">
+        Logout
+        <Logout16 slot="icon" />
+      </cds-modal-footer-button> -->
+    </cds-modal-footer>
+  </cds-modal>
 </template>
