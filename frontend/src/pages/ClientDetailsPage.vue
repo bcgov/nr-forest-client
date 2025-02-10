@@ -32,7 +32,7 @@ import { greenDomain } from "@/CoreConstants";
 import {
   adminEmail,
   getObfuscatedEmailLink,
-  getPrevailingRole,
+  includesAnyOf,
   toTitleCase,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
@@ -52,11 +52,13 @@ const toastBus = useEventBus<ModalNotification>("toast-notification");
 
 const data = ref<ClientDetails>(undefined);
 
-const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"].some((authority) =>
-  ForestClientUserSession.authorities.includes(authority),
-);
+const userRoles = ForestClientUserSession.authorities;
 
-const prevailingRole = getPrevailingRole(ForestClientUserSession.authorities);
+const userHasAuthority = includesAnyOf(userRoles, [
+  "CLIENT_ADMIN",
+  "CLIENT_SUSPEND",
+  "CLIENT_EDITOR",
+]);
 
 const { error: fetchError, fetch: fetchClientData } = useFetchTo(
   `/api/clients/details/${clientNumber}`,
@@ -287,7 +289,7 @@ resetGlobalError();
               <summary-view
                 ref="summaryRef"
                 :data="data"
-                :user-role="prevailingRole"
+                :userRoles="userRoles"
                 @save="saveSummary"
               />
             </div>

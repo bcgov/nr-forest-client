@@ -9,6 +9,7 @@ import {
   goodStanding,
   formatPhoneNumber,
   getPrevailingRole,
+  includesAnyOf,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type { UserRole } from "@/dto/CommonTypesDto";
@@ -235,6 +236,29 @@ describe("ForestClientService.ts", () => {
       const input = ["ANYTHING"];
       const result = getPrevailingRole(input);
       expect(result).toBe(null);
+    });
+  });
+
+  describe("includesAnyOf", () => {
+    it("returns true when the haystack includes one of the needles", () => {
+      const haystack = ["a", "b", "c", "d"];
+      const needles = ["x", "c", "z"];
+      const result = includesAnyOf(haystack, needles);
+      expect(result).toBe(true);
+    });
+
+    it("returns true when the haystack includes more than one of the needles", () => {
+      const haystack = ["a", "b", "c", "d"];
+      const needles = ["x", "c", "z", "a"];
+      const result = includesAnyOf(haystack, needles);
+      expect(result).toBe(true);
+    });
+
+    it("returns false when the haystack includes none of the needles", () => {
+      const haystack = ["a", "b", "c", "d"];
+      const needles = ["x", "y", "z"];
+      const result = includesAnyOf(haystack, needles);
+      expect(result).toBe(false);
     });
   });
 });
