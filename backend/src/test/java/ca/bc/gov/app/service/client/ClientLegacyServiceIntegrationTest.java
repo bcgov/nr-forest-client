@@ -473,7 +473,8 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           get(urlPathEqualTo("/api/codes/client-statuses"))
               .willReturn(okJson("["
                   + "{\"code\":\"ACT\",\"name\":\"Active\"},"
-                  + "{\"code\":\"DAC\",\"name\":\"Deactivated\"}"
+                  + "{\"code\":\"SPN\",\"name\":\"Suspended\"},"
+                  + "{\"code\":\"REC\",\"name\":\"Receivership\"}"
                   + "]"))
       );
 
