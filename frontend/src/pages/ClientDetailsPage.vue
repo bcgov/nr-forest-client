@@ -173,9 +173,9 @@ const toolsSvg = useSvg(tools);
 const summaryRef = ref<InstanceType<typeof SummaryView> | null>(null);
 
 const reasonModalActiveInd = ref(false);
-let patchData = ref<jsonpatch.Operation[]>();
+let reasonPatchData = ref<jsonpatch.Operation[]>();
 
-const saveSummary = (operations: jsonpatch.Operation[]) => {
+const saveSummary = (patchData: jsonpatch.Operation[]) => {
   const {
     fetch: patch,
     response,
@@ -184,11 +184,8 @@ const saveSummary = (operations: jsonpatch.Operation[]) => {
     skip: true,
   });
 
-  patchData.value = operations;
-
-  console.log(data);
-  console.log(patchData);
   reasonModalActiveInd.value = true;
+  reasonPatchData.value = patchData;
 
   /*resetGlobalError();
 
@@ -469,7 +466,6 @@ resetGlobalError();
       </div>
     </div>
   </div>
-
   <cds-modal
     id="reason-modal"
     aria-labelledby="reason-modal-heading"
@@ -487,7 +483,7 @@ resetGlobalError();
     
     <cds-modal-body id="reason-modal-body">
       Select a reason for the following change:
-      {{ patchData }}
+      {{ reasonPatchData }}
     </cds-modal-body>
 
     <cds-modal-footer>

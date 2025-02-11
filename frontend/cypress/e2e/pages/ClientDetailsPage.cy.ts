@@ -15,17 +15,32 @@ describe("Client Details Page", () => {
     return undefined;
   };
 
+<<<<<<< HEAD
   function init() {
     cy.hasLoggedIn().then((isLoggedIn) => {
       if (!isLoggedIn) {
+=======
+  let currentRole: string;
+
+  function init() {
+    const testRole = getTestRole(this) || "CLIENT_VIEWER";
+
+    cy.hasLoggedIn().then((hasLoggedIn) => {
+      let hasLoggedOut = false;
+      if (hasLoggedIn && testRole !== currentRole) {
+        cy.clearAllCookies();
+        hasLoggedOut = true;
+      }
+      if (!hasLoggedIn || hasLoggedOut) {
+>>>>>>> main
         cy.visit("/");
 
-        const role = getTestRole(this) || "CLIENT_VIEWER";
         cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
           given_name: "James",
           family_name: "Baxter",
-          "cognito:groups": [role],
+          "cognito:groups": [testRole],
         });
+        currentRole = testRole;
       }
     });
   }
@@ -203,7 +218,8 @@ describe("Client Details Page", () => {
   describe("locations tab", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
       describe("3 active locations", () => {
-        before(() => {
+        before(function () {
+          init.call(this);
           cy.visit("/clients/details/g");
         });
 
@@ -237,7 +253,8 @@ describe("Client Details Page", () => {
       });
 
       describe("2 locations - 1 deactivated and 1 active", () => {
-        before(() => {
+        before(function () {
+          init.call(this);
           cy.visit("/clients/details/gd");
         });
         it("displays the tag Deactivated when location is expired", () => {
@@ -250,7 +267,8 @@ describe("Client Details Page", () => {
       });
 
       describe("location without name", () => {
-        before(() => {
+        before(function () {
+          init.call(this);
           cy.visit("/clients/details/se");
         });
         it("displays only the location code, without the dash", () => {
@@ -305,7 +323,8 @@ describe("Client Details Page", () => {
 
   describe("contacts tab", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
-      before(() => {
+      before(function () {
+        init.call(this);
         cy.visit("/clients/details/g");
 
         // Switch to the Contacts tab
