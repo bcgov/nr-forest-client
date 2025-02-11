@@ -1,4 +1,8 @@
 import type { ClientDetails } from "@/dto/CommonTypesDto";
+
+// For some reason this import is needed during tests
+import "@carbon/web-components/es/components/button/index";
+
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 
 describe("<summary-view />", () => {
@@ -16,15 +20,15 @@ describe("<summary-view />", () => {
       clientTypeCode: "RSP",
       clientTypeDesc: "Registered sole proprietorship",
       goodStandingInd: "Y",
-      clientStatusCode: "A",
+      clientStatusCode: "ACT",
       clientStatusDesc: "Active",
       clientComment:
         "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton",
-      wcbFirmNumber: "7777777",
+      wcbFirmNumber: "123456",
       clientIdTypeDesc: "British Columbia Driver's Licence",
       clientIdentification: "64242646",
     } as ClientDetails,
-    canEdit: false,
+    userRoles: ["CLIENT_VIEWER"],
   });
 
   let currentProps: ReturnType<typeof getDefaultProps> = null;
@@ -38,40 +42,69 @@ describe("<summary-view />", () => {
       .as("vueWrapper");
   };
 
-  const testField = (selector: string, value: string) => {
+  const testReadonly = (rawSelector: string, value?: string) => {
+    const selector = `div${rawSelector}`;
     cy.get(selector).should("be.visible");
-    cy.get(selector).contains(value);
-    expect(value.length).to.be.greaterThan(0);
+    if (value !== undefined) {
+      cy.get(selector).contains(value);
+      expect(value.length).to.be.greaterThan(0);
+    }
   };
 
-  const testFieldHidden = (selector: string) => {
+  const testHidden = (selector: string) => {
     cy.get(selector).should("not.exist");
   };
+
+  const testInputTag = (inputTag: string, rawSelector: string, value?: string) => {
+    const selector = `${inputTag}${rawSelector}`;
+    cy.get(selector).should("be.visible");
+    if (value !== undefined) {
+      cy.get(selector).should("have.value", value);
+    }
+  }
+
+  const testTextInput = (rawSelector: string, value?: string) =>
+    testInputTag("cds-text-input", rawSelector, value);
+
+  const testDropdown = (rawSelector: string, value?: string) =>
+    testInputTag("cds-dropdown", rawSelector, value);
+
+  const testTextarea = (rawSelector: string, value?: string) =>
+    testInputTag("cds-textarea", rawSelector, value);
+
+  const getClientStatusesBaseUrl = "/api/codes/client-statuses";
+  beforeEach(() => {
+    cy.intercept("GET", `${getClientStatusesBaseUrl}/*`, {
+      fixture: "clientStatuses.json",
+    }).as("getClientStatuses");
+  });
 
   it("renders the SummaryView component", () => {
     mount();
 
-    testField("#clientNumber", currentProps.data.clientNumber);
-    testField("#acronym", currentProps.data.clientAcronym);
-    testField("#doingBusinessAs", currentProps.data.doingBusinessAs[0].doingBusinessAsName);
-    testField("#clientType", currentProps.data.clientTypeDesc);
+    testReadonly("#clientNumber", currentProps.data.clientNumber);
+    testReadonly("#acronym", currentProps.data.clientAcronym);
+    testReadonly("#doingBusinessAs", currentProps.data.doingBusinessAs[0].doingBusinessAsName);
+    testReadonly("#clientType", currentProps.data.clientTypeDesc);
 
     // registryCompanyTypeCode + corpRegnNmbr
-    testField(
+    testReadonly(
       "#registrationNumber",
       `${currentProps.data.registryCompanyTypeCode}${currentProps.data.corpRegnNmbr}`,
     );
 
-    testField("#goodStanding", "Good standing");
+    testReadonly("#workSafeBCNumber", currentProps.data.wcbFirmNumber);
+
+    testReadonly("#goodStanding", "Good standing");
 
     // identification Label
-    testField("#identification", currentProps.data.clientIdTypeDesc);
+    testReadonly("#identification", currentProps.data.clientIdTypeDesc);
     // identification Value
-    testField("#identification", currentProps.data.clientIdentification);
+    testReadonly("#identification", currentProps.data.clientIdentification);
 
-    testField("#dateOfBirth", currentProps.data.birthdate);
-    testField("#status", currentProps.data.clientStatusDesc);
-    testField("#notes", currentProps.data.clientComment);
+    testReadonly("#dateOfBirth", currentProps.data.birthdate);
+    testReadonly("#clientStatus", currentProps.data.clientStatusDesc);
+    testReadonly("#notes", currentProps.data.clientComment);
   });
 
   it("hides optional fields when they are empty", () => {
@@ -90,13 +123,13 @@ describe("<summary-view />", () => {
     };
     mount(props);
 
-    testFieldHidden("#acronym");
-    testFieldHidden("#registrationNumber");
-    testFieldHidden("#goodStanding");
-    testFieldHidden("#identification");
-    testFieldHidden("#doingBusinessAs");
-    testFieldHidden("#dataOfBirth");
-    testFieldHidden("#notes");
+    testHidden("#acronym");
+    testHidden("#registrationNumber");
+    testHidden("#goodStanding");
+    testHidden("#identification");
+    testHidden("#doingBusinessAs");
+    testHidden("#dataOfBirth");
+    testHidden("#notes");
   });
 
   it("displays as many names the client has as Doing business as", () => {
@@ -107,9 +140,9 @@ describe("<summary-view />", () => {
 
     mount(props);
 
-    testField("#doingBusinessAs", data.doingBusinessAs[0].doingBusinessAsName);
-    testField("#doingBusinessAs", data.doingBusinessAs[1].doingBusinessAsName);
-    testField("#doingBusinessAs", data.doingBusinessAs[2].doingBusinessAsName);
+    testReadonly("#doingBusinessAs", data.doingBusinessAs[0].doingBusinessAsName);
+    testReadonly("#doingBusinessAs", data.doingBusinessAs[1].doingBusinessAsName);
+    testReadonly("#doingBusinessAs", data.doingBusinessAs[2].doingBusinessAsName);
   });
 
   it("sets the birthdate label to 'Date of birth' when date is complete", () => {
@@ -138,34 +171,171 @@ describe("<summary-view />", () => {
     cy.get("#dateOfBirth").contains("Year of birth");
   });
 
-  it("displays the Edit button if canEdit is true", () => {
-    const props = getDefaultProps();
-    props.canEdit = true;
+  ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"].forEach((userRole) => {
+    it(`displays the Edit button if userRole contains: ${userRole}`, () => {
+      const props = getDefaultProps();
+      props.userRoles = [userRole];
 
-    mount(props);
+      mount(props);
 
-    cy.get("#clientEditBtn").should("be.visible");
+      cy.get("#summaryEditBtn").should("be.visible");
+    });
   });
 
-  it("hides the Edit button if canEdit is false", () => {
-    const props = getDefaultProps();
-    props.canEdit = false;
+  ["CLIENT_VIEWER", "UNKNOWN", null].forEach((userRole) => {
+    it(`hides the Edit button if userRole contains only: ${userRole}`, () => {
+      const props = getDefaultProps();
+      props.userRoles = [userRole];
 
-    mount(props);
+      mount(props);
 
-    cy.get("#clientEditBtn").should("not.exist");
+      cy.get("#summaryEditBtn").should("not.exist");
+    });
   });
 
-  it("emits the 'edit' event when the Edit button is clicked", () => {
+  describe("when role contains CLIENT_EDITOR", () => {
     const props = getDefaultProps();
-    props.canEdit = true;
+    props.userRoles = ["CLIENT_EDITOR"];
+    describe("when the edit button in clicked", () => {
+      let getClientStatusesRequest;
+      beforeEach(() => {
+        mount(props);
+        cy.get("#summaryEditBtn").click();
+        cy.wait("@getClientStatuses").then(({ request }) => {
+          getClientStatusesRequest = request;
+        });
+      });
 
-    mount(props);
+      it("enables the edition of some fields only", () => {
+        testTextInput("#input-workSafeBCNumber", props.data.wcbFirmNumber);
+        testDropdown("#input-clientStatus", props.data.clientStatusDesc);
+        testTextarea("[data-id='input-input-notes']", props.data.clientComment);
 
-    cy.get("#clientEditBtn").click();
+        testHidden("#input-clientName");
+        testHidden("#input-acronym");
+        testHidden("#input-doingBusinessAs");
+        testHidden("#input-clientType");
+        testHidden("#input-registrationNumber");
+        testHidden("#input-identification");
+        testHidden("#input-dateOfBirth");
+      });
 
-    cy.get("@vueWrapper").should((vueWrapper) => {
-      expect(vueWrapper.emitted("edit")).to.have.lengthOf(1);
+      it("requests the client statuses according to the client type", () => {
+        cy.log(props.data.clientIdTypeCode);
+        expect(getClientStatusesRequest.url).to.match(
+          new RegExp(`${getClientStatusesBaseUrl}/${props.data.clientTypeCode}`),
+        );
+      });
+
+      it("keeps displaying the other fields in view mode", () => {
+        testReadonly("#clientNumber", currentProps.data.clientNumber);
+        testReadonly("#acronym", currentProps.data.clientAcronym);
+        testReadonly("#doingBusinessAs", currentProps.data.doingBusinessAs[0].doingBusinessAsName);
+        testReadonly("#clientType", currentProps.data.clientTypeDesc);
+
+        // registryCompanyTypeCode + corpRegnNmbr
+        testReadonly(
+          "#registrationNumber",
+          `${currentProps.data.registryCompanyTypeCode}${currentProps.data.corpRegnNmbr}`,
+        );
+
+        testReadonly("#goodStanding", "Good standing");
+        testReadonly("#identification", currentProps.data.clientIdentification);
+        testReadonly("#dateOfBirth", currentProps.data.birthdate);
+
+        // Make sure the fields enabled for edition are not also displayed in read-only mode.
+        testHidden("#workSafeBCNumber");
+        testHidden("#clientStatus");
+        testHidden("#notes");
+      });
+
+      it("disables the Save button by default", () => {
+        cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+      });
+
+      it("enables the Save button once something gets changed", () => {
+        cy.clearFormEntry("#input-workSafeBCNumber");
+        cy.get("#summarySaveBtn").shadow().find("button").should("be.enabled");
+      });
+
+      it("disables the Save button again if values are restored to their original values", () => {
+        cy.clearFormEntry("#input-workSafeBCNumber");
+        cy.get("#summarySaveBtn").shadow().find("button").should("be.enabled");
+        cy.fillFormEntry("#input-workSafeBCNumber", "123456");
+        cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+      });
+
+      it("restores original values if the Cancel button gets clicked", () => {
+        // Change all values
+        cy.clearFormEntry("#input-workSafeBCNumber");
+        cy.selectFormEntry("#input-clientStatus", "Deactivated");
+        cy.clearFormEntry("[data-id='input-input-notes']", true);
+
+        // Cancel
+        cy.get("#summaryCancelBtn").click();
+
+        // Click to edit again
+        cy.get("#summaryEditBtn").click();
+
+        // Check values on the form
+        testTextInput("#input-workSafeBCNumber", props.data.wcbFirmNumber);
+        testDropdown("#input-clientStatus", props.data.clientStatusDesc);
+        testTextarea("[data-id='input-input-notes']", props.data.clientComment);
+      });
+
+      it("emits a save event when the Save button gets clicked", () => {
+        // Change some information
+        cy.clearFormEntry("#input-workSafeBCNumber");
+
+        cy.get("#summarySaveBtn").click();
+
+        cy.get("@vueWrapper").should((vueWrapper) => {
+          const saveData = vueWrapper.emitted("save")[0][0];
+
+          expect(saveData).to.be.an("array");
+          expect(saveData).to.have.lengthOf(1);
+
+          expect(saveData[0].op).to.eq("replace");
+        });
+      });
+    });
+
+    ["SPN", "REC", "DAC"].forEach((clientStatus) => {
+      const props = getDefaultProps();
+      props.userRoles = ["CLIENT_EDITOR"];
+      props.data.clientStatusCode = clientStatus;
+      props.data.clientStatusDesc = clientStatus;
+      describe(`when current client status is: ${clientStatus}`, () => {
+        beforeEach(() => {
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+        });
+
+        it("locks the Client status field", () => {
+          // Check we are in edit mode
+          cy.get("#summarySaveBtn").should("be.visible");
+
+          testHidden("#input-clientStatus");
+          testReadonly("#clientStatus");
+        });
+      });
+    });
+
+    ["ACT", "DEC"].forEach((clientStatus) => {
+      const props = getDefaultProps();
+      props.userRoles = ["CLIENT_EDITOR"];
+      props.data.clientStatusCode = clientStatus;
+      props.data.clientStatusDesc = clientStatus;
+      describe(`when current client status is: ${clientStatus}`, () => {
+        beforeEach(() => {
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+        });
+
+        it("allows to update the Client status field", () => {
+          testDropdown("#input-clientStatus");
+        });
+      });
     });
   });
 });

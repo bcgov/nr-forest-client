@@ -7,8 +7,8 @@
     "clientTypeCode": "P",
     "clientTypeDesc": "General Partnership",
     "goodStandingInd": "Y",
-    "clientStatusCode": "ACT",
-    "clientStatusDesc": "Active",
+    "clientStatusCode": "DAC",
+    "clientStatusDesc": "Deactivated",
     "clientComment": "Email from Cheryl Bibby to request any letters for sec deposits be mailed to 3000, 28th St, Vernon",
     "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}",
     "contacts": [

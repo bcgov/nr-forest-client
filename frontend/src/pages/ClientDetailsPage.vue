@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { AxiosError } from "axios";
+import * as jsonpatch from "fast-json-patch";
 
 // Carbon
 import "@carbon/web-components/es/components/breadcrumb/index";
@@ -13,9 +14,10 @@ import summit from "@carbon/pictograms/es/summit";
 import tools from "@carbon/pictograms/es/tools";
 
 // Composables
-import { useFetchTo } from "@/composables/useFetch";
+import { useFetchTo, useJsonPatch } from "@/composables/useFetch";
 import useSvg from "@/composables/useSvg";
 import { useRouter } from "vue-router";
+import { useEventBus } from "@vueuse/core";
 
 import Location16 from "@carbon/icons-vue/es/location/16";
 import User16 from "@carbon/icons-vue/es/user/16";
@@ -27,10 +29,15 @@ import User20 from "@carbon/icons-vue/es/user/20";
 import Launch16 from "@carbon/icons-vue/es/launch/16";
 
 import { greenDomain } from "@/CoreConstants";
-import { adminEmail, getObfuscatedEmailLink, toTitleCase } from "@/services/ForestClientService";
+import {
+  adminEmail,
+  getObfuscatedEmailLink,
+  includesAnyOf,
+  toTitleCase,
+} from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-import type { ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
+import type { ClientDetails, ClientLocation, ModalNotification } from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
@@ -41,13 +48,26 @@ import ContactView from "@/pages/client-details/ContactView.vue";
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id;
 
+const toastBus = useEventBus<ModalNotification>("toast-notification");
+
 const data = ref<ClientDetails>(undefined);
 
-const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"].some((authority) =>
-  ForestClientUserSession.authorities.includes(authority),
+const userRoles = ForestClientUserSession.authorities;
+
+const userHasAuthority = includesAnyOf(userRoles, [
+  "CLIENT_ADMIN",
+  "CLIENT_SUSPEND",
+  "CLIENT_EDITOR",
+]);
+
+const { error: fetchError, fetch: fetchClientData } = useFetchTo(
+  `/api/clients/details/${clientNumber}`,
+  data,
 );
 
-const { error: fetchError } = useFetchTo(`/api/clients/details/${clientNumber}`, data);
+watch(fetchError, (value) => {
+  globalError.value = value;
+});
 
 const clientFullName = computed(() => {
   if (data.value) {
@@ -149,6 +169,58 @@ const openMaintenanceLegacy = () => {
 
 const summitSvg = useSvg(summit);
 const toolsSvg = useSvg(tools);
+
+const summaryRef = ref<InstanceType<typeof SummaryView> | null>(null);
+
+const saveSummary = (patchData: jsonpatch.Operation[]) => {
+  const {
+    fetch: patch,
+    response,
+    error,
+  } = useJsonPatch(`/api/clients/details/${clientNumber}`, patchData, {
+    skip: true,
+  });
+
+  resetGlobalError();
+
+  patch().then(() => {
+    if (response.value.status) {
+      const toastNotification: ModalNotification = {
+        kind: "Success",
+        active: true,
+        handler: () => {},
+        message: `Client <span class="weight-700">“${clientFullName.value}”</span> was updated`,
+        toastTitle: undefined,
+      };
+      toastBus.emit(toastNotification);
+      summaryRef.value.lockEditing();
+
+      // reset data
+      data.value = undefined;
+
+      fetchClientData();
+    }
+    if (error.value.status) {
+      const toastNotification: ModalNotification = {
+        kind: "Error",
+        active: true,
+        handler: () => {},
+        message: "Failed to update client",
+        toastTitle: undefined,
+      };
+      toastBus.emit(toastNotification);
+      globalError.value = error.value;
+    }
+  });
+};
+
+const globalError = ref();
+
+const resetGlobalError = () => {
+  globalError.value = {};
+};
+
+resetGlobalError();
 </script>
 
 <template>
@@ -168,7 +240,7 @@ const toolsSvg = useSvg(tools);
         </h1>
         <div>
           <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle">
-            Check and manage this client data
+            Check and manage this client's data
           </p>
         </div>
       </div>
@@ -179,7 +251,7 @@ const toolsSvg = useSvg(tools);
         -->
         <div data-scroll="top-notification" class="header-offset"></div>
         <cds-actionable-notification
-          v-if="[AxiosError.ERR_BAD_RESPONSE, AxiosError.ERR_NETWORK].includes(fetchError.code)"
+          v-if="[AxiosError.ERR_BAD_RESPONSE, AxiosError.ERR_NETWORK].includes(globalError.code)"
           id="internalServerError"
           v-shadow="true"
           low-contrast="true"
@@ -195,7 +267,7 @@ const toolsSvg = useSvg(tools);
           </div>
         </cds-actionable-notification>
         <cds-actionable-notification
-          v-else-if="fetchError.code === AxiosError.ERR_BAD_REQUEST"
+          v-else-if="globalError.code === AxiosError.ERR_BAD_REQUEST"
           id="badRequestError"
           v-shadow="true"
           low-contrast="true"
@@ -217,7 +289,12 @@ const toolsSvg = useSvg(tools);
             <h2 class="mg-tl-2 heading-05">Client summary</h2>
 
             <div class="grouping-10">
-              <summary-view :data="data" :can-edit="userHasAuthority" />
+              <summary-view
+                ref="summaryRef"
+                :data="data"
+                :userRoles="userRoles"
+                @save="saveSummary"
+              />
             </div>
           </div>
         </div>

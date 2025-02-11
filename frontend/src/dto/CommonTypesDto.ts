@@ -321,3 +321,6 @@ export interface ClientDetails {
   addresses: ClientLocation[];
   contacts: ClientContact[];
 }
+
+const userRoles = ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR", "CLIENT_VIEWER"] as const;
+export type UserRole = (typeof userRoles)[number];

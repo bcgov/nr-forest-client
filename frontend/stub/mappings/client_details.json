@@ -31,6 +31,21 @@
       }
     },
     {
+      "name": "Client Details General Partnership - Deactivated",
+      "request": {
+        "urlPattern": "/api/clients/details/[gG][dD][aA][cC](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-GDAC.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Client Details Sole Proprietorship",
       "request": {
         "urlPattern": "/api/clients/details/[sS](.*)",
@@ -152,6 +167,38 @@
       },
       "response": {
         "fault": "MALFORMED_RESPONSE_CHUNK"
+      }
+    },
+    {
+      "name": "PATCH - Client Details - Success",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)",
+        "method": "PATCH"
+      },
+      "response": {
+        "status": 202,
+        "body": "Sample success message",
+        "fixedDelayMilliseconds": 200
+      }
+    },
+    {
+      "name": "PATCH - Client Details - Error",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)",
+        "method": "PATCH",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$[0].value",
+              "contains": "error"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 400,
+        "body": "Sample error message",
+        "fixedDelayMilliseconds": 200
       }
     }
   ]

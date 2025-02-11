@@ -122,6 +122,20 @@
       }
     },
     {
+      "name": "Get ClientTypes List",
+      "request": {
+        "urlPattern": "/api/codes/client-types",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-client-types.json"
+      }
+    },
+    {
       "name": "Get update reason codes by client type and action",
       "request": {
         "urlPattern": "/api/codes/update-reasons/([A-Z]+)/([A-Z]+)",
@@ -164,9 +178,23 @@
       }
     },
     {
-      "name": "Get client status codes by client type and action",
+      "name": "Get client status codes by client type (default)",
       "request": {
         "urlPattern": "/api/codes/client-statuses/([A-Z]+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-client-statuses-default.json"
+      }
+    },
+    {
+      "name": "Get client status codes by client type",
+      "request": {
+        "urlPattern": "/api/codes/client-statuses/(G|X)",
         "method": "GET"
       },
       "response": {

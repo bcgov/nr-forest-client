@@ -1,5 +1,5 @@
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
-import type { CodeDescrType } from "@/dto/CommonTypesDto";
+import type { CodeDescrType, UserRole } from "@/dto/CommonTypesDto";
 import { isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
 
 export const addNewAddress = (addresses: Address[]): number => {
@@ -152,3 +152,21 @@ export const formatPhoneNumber = (phoneNumber: string): string => {
 
   return `(${part1}) ${part2}-${part3}`;
 };
+
+/**
+ * This function should be used only if the roles are considered to be a hierarchy.
+ * @param authorities - the array of user roles
+ * @returns the highest role the user has.
+ */
+export const getPrevailingRole = (authorities: string[]): UserRole => {
+  const returnValueIfIncluded = (value: UserRole) => (authorities.includes(value) ? value : null);
+  return (
+    returnValueIfIncluded("CLIENT_ADMIN") ||
+    returnValueIfIncluded("CLIENT_SUSPEND") ||
+    returnValueIfIncluded("CLIENT_EDITOR") ||
+    returnValueIfIncluded("CLIENT_VIEWER")
+  );
+};
+
+export const includesAnyOf = (haystack: any[], needles: any[]): boolean =>
+  !!haystack?.find((item) => needles?.includes(item));

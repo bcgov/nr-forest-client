@@ -15,20 +15,31 @@ describe("Client Details Page", () => {
     return undefined;
   };
 
-  beforeEach(function () {
-    cy.location().then((location) => {
-      if (location.pathname === "blank") {
+  let currentRole: string;
+
+  function init() {
+    const testRole = getTestRole(this) || "CLIENT_VIEWER";
+
+    cy.hasLoggedIn().then((hasLoggedIn) => {
+      let hasLoggedOut = false;
+      if (hasLoggedIn && testRole !== currentRole) {
+        cy.clearAllCookies();
+        hasLoggedOut = true;
+      }
+      if (!hasLoggedIn || hasLoggedOut) {
         cy.visit("/");
 
-        const role = getTestRole(this) || "CLIENT_VIEWER";
         cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
           given_name: "James",
           family_name: "Baxter",
-          "cognito:groups": [role],
+          "cognito:groups": [testRole],
         });
+        currentRole = testRole;
       }
     });
-  });
+  }
+
+  beforeEach(init);
 
   it("renders the page skeleton", () => {
     cy.visit("/clients/details/0");
@@ -109,10 +120,100 @@ describe("Client Details Page", () => {
     });
   });
 
+  const testReadonly = (rawSelector: string, value?: string) => {
+    const selector = `div${rawSelector}`;
+    cy.get(selector).should("be.visible");
+    if (value !== undefined) {
+      cy.get(selector).contains(value);
+      expect(value.length).to.be.greaterThan(0);
+    }
+  };
+
+  const testHidden = (selector: string) => {
+    cy.get(selector).should("not.exist");
+  };
+
+  describe("summary (role:CLIENT_EDITOR)", () => {
+    describe("save", () => {
+      describe("on success", { testIsolation: false }, () => {
+        const getClientDetailsCounter = {
+          count: 0,
+        };
+
+        before(function () {
+          init.call(this);
+
+          cy.intercept(
+            {
+              method: "GET",
+              pathname: "/api/clients/details/*",
+            },
+            (req) => {
+              getClientDetailsCounter.count++;
+              req.continue();
+            },
+          ).as("getClientDetails");
+
+          cy.visit("/clients/details/g");
+          cy.get("#summaryEditBtn").click();
+          cy.clearFormEntry("#input-workSafeBCNumber");
+          cy.get("#summarySaveBtn").click();
+        });
+
+        it("shows the success toast", () => {
+          cy.get("cds-toast-notification[kind='success']").should("be.visible");
+        });
+
+        it("reloads data", () => {
+          // Called twice - one for the initial loading and one after saving.
+          cy.wrap(getClientDetailsCounter).its("count").should("eq", 2);
+        });
+
+        it("gets back into view mode", () => {
+          testHidden("#input-workSafeBCNumber");
+          testHidden("#input-clientStatus");
+          testHidden("[data-id='input-input-notes']");
+
+          cy.get("#summarySaveBtn").should("not.exist");
+
+          testReadonly("#workSafeBCNumber");
+          testReadonly("#clientStatus");
+          testReadonly("#notes");
+
+          cy.get("#summaryEditBtn").should("be.visible");
+        });
+      });
+
+      describe("on failure", { testIsolation: false }, () => {
+        before(function () {
+          init.call(this);
+
+          cy.visit("/clients/details/g");
+          cy.get("#summaryEditBtn").click();
+          cy.fillFormEntry("[data-id='input-input-notes']", "error", { area: true });
+          cy.get("#summarySaveBtn").click();
+        });
+
+        it("shows the error toast", () => {
+          cy.get("cds-toast-notification[kind='error']").should("be.visible");
+        });
+
+        it("stays in edit mode", () => {
+          cy.get("#input-workSafeBCNumber").should("be.visible");
+          cy.get("#input-clientStatus").should("be.visible");
+          cy.get("[data-id='input-input-notes']").should("be.visible");
+
+          cy.get("#summarySaveBtn").should("be.visible");
+        });
+      });
+    });
+  });
+
   describe("locations tab", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
       describe("3 active locations", () => {
-        before(() => {
+        before(function () {
+          init.call(this);
           cy.visit("/clients/details/g");
         });
 
@@ -146,7 +247,8 @@ describe("Client Details Page", () => {
       });
 
       describe("2 locations - 1 deactivated and 1 active", () => {
-        before(() => {
+        before(function () {
+          init.call(this);
           cy.visit("/clients/details/gd");
         });
         it("displays the tag Deactivated when location is expired", () => {
@@ -159,7 +261,8 @@ describe("Client Details Page", () => {
       });
 
       describe("location without name", () => {
-        before(() => {
+        before(function () {
+          init.call(this);
           cy.visit("/clients/details/se");
         });
         it("displays only the location code, without the dash", () => {
@@ -214,7 +317,8 @@ describe("Client Details Page", () => {
 
   describe("contacts tab", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
-      before(() => {
+      before(function () {
+        init.call(this);
         cy.visit("/clients/details/g");
 
         // Switch to the Contacts tab
@@ -277,17 +381,23 @@ describe("Client Details Page", () => {
           // Expand first and third contacts, leave second one collapsed
           cy.get("#contact-0 [slot='title']").click();
           cy.get("#contact-2 [slot='title']").click();
+
           // Switch to another tab (Locations)
           cy.get("#tab-locations").click();
+
           // Make sure the current tab panel was effectively switched
           cy.get("#panel-contacts").should("have.attr", "hidden");
           cy.get("#panel-locations").should("not.have.attr", "hidden");
+
           // Switch back to tab Contacts
           cy.get("#tab-contacts").click();
+
           // First contact is still open
           cy.get("#contact-0 cds-accordion-item").should("have.attr", "open");
+
           // Second contact is still closed
           cy.get("#contact-1 cds-accordion-item").should("not.have.attr", "open");
+
           // Third contact is still open
           cy.get("#contact-2 cds-accordion-item").should("have.attr", "open");
         });
