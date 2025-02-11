@@ -278,7 +278,6 @@ const color = "green";
           <slot :option="option">
             {{ option.name }}
           </slot>
-          <!-- <cds-tag :class="option.name > 'C' ? `cds--tag--green` : 'cds--tag--purple'"><span>{{ option.name }}</span></cds-tag> -->
         </cds-dropdown-item>
       </cds-dropdown>
     </div>
