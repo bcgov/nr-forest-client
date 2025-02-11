@@ -481,25 +481,28 @@ public class ClientLegacyService {
       return getAdminStatuses(clientTypeCode).contains(dto.code());
     } 
     else if (groups.contains(ApplicationConstant.ROLE_EDITOR)) {
-      return getEditorStatuses(clientTypeCode).contains(dto.code());
+      return getEditorStatuses().contains(dto.code());
+    }
+    else if (groups.contains(ApplicationConstant.ROLE_SUSPEND)) {
+      return getSuspendStatuses().contains(dto.code());
     }
     return false;
   }
   
   private Set<String> getAdminStatuses(String clientTypeCode) {
     return switch (clientTypeCode) {
-      case "B", "F", "G" -> Set.of("ACT", "DAC", "SPN");
-      case "I", "A" -> Set.of("ACT", "DEC", "REC", "SPN");
+      case "F", "G" -> Set.of("ACT", "DAC");
+      case "I" -> Set.of("ACT", "DEC", "REC", "DAC", "SPN");
       default -> Set.of("ACT", "DAC", "REC", "SPN");
     };
   }
 
-  private Set<String> getEditorStatuses(String clientTypeCode) {
-    return switch (clientTypeCode) {
-      case "I", "A" -> Set.of("ACT", "DEC");
-      case "S" -> Set.of("ACT", "DAC", "REC");
-      default -> Set.of("ACT", "DAC");
-    };
+  private Set<String> getEditorStatuses() {
+    return Set.of("ACT", "DAC");
+  }
+  
+  private Set<String> getSuspendStatuses() {
+    return Set.of("ACT", "SPN", "REC");
   }
   
   /**
