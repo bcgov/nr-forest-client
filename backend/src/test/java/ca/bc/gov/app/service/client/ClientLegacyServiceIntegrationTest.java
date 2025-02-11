@@ -463,7 +463,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
   @DisplayName("Test active client statuses for suspend role")
   void testFindActiveClientStatusForSuspend() {
       String individualClientTypeCode = "I";
-      Set<String> groups = Set.of(ApplicationConstant.ROLE_EDITOR);
+      Set<String> groups = Set.of(ApplicationConstant.ROLE_SUSPEND);
 
       CodeNameDto expectedActiveDto = new CodeNameDto("ACT", "Active");
       CodeNameDto expectedSuspendedDto = new CodeNameDto("SPN", "Suspended");
