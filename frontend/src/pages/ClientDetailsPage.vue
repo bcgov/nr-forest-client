@@ -194,7 +194,10 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
       };
       toastBus.emit(toastNotification);
       summaryRef.value.lockEditing();
+
+      // reset data
       data.value = undefined;
+
       fetchClientData();
     }
     if (error.value.status) {

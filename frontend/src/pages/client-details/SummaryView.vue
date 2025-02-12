@@ -126,12 +126,11 @@ const canEditClientStatus = () => {
   if (["SPN", "REC"].includes(clientStatusCode)) {
     return props.userRoles.includes("CLIENT_SUSPEND");
   }
-  if (["DEC"].includes(clientStatusCode)) {
-    return props.userRoles.includes("CLIENT_EDITOR");
-  }
   if (["ACT"].includes(clientStatusCode)) {
     return true;
   }
+
+  // status is (DEC or DAC) and userRoles doesn't include CLIENT_ADMIN
   return false;
 };
 

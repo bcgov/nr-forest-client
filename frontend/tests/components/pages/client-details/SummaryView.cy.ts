@@ -305,7 +305,7 @@ describe("<summary-view />", () => {
       });
     });
 
-    ["SPN", "REC", "DAC"].forEach((clientStatus) => {
+    ["SPN", "REC", "DAC", "DEC"].forEach((clientStatus) => {
       const props = getDefaultProps();
       props.userRoles = ["CLIENT_EDITOR"];
       props.data.client.clientStatusCode = clientStatus;
@@ -326,7 +326,7 @@ describe("<summary-view />", () => {
       });
     });
 
-    ["ACT", "DEC"].forEach((clientStatus) => {
+    ["ACT"].forEach((clientStatus) => {
       const props = getDefaultProps();
       props.userRoles = ["CLIENT_EDITOR"];
       props.data.client.clientStatusCode = clientStatus;
