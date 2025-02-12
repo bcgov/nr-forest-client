@@ -4,6 +4,7 @@ import lombok.With;
 
 @With
 public record ClientDoingBusinessAsDto(
+    Integer id,
     String clientNumber,
     String doingBusinessAsName,
     String createdBy,

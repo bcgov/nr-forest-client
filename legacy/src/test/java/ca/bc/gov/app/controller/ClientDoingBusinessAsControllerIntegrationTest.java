@@ -37,6 +37,7 @@ class ClientDoingBusinessAsControllerIntegrationTest extends
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
         .body(BodyInserters.fromValue(
                 new ClientDoingBusinessAsDto(
+                    1,
                     clientNumber,
                     "Elaricho",
                     "TEST",

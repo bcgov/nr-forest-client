@@ -19,6 +19,7 @@ class ForestClientDoingBusinessAsMapperTest {
       ForestClientDoingBusinessAsMapper.class);
 
   ClientDoingBusinessAsDto dto = new ClientDoingBusinessAsDto(
+      1,
       "00000001",
       "Spaldingnad",
       "Test",
@@ -29,6 +30,7 @@ class ForestClientDoingBusinessAsMapperTest {
   ClientDoingBusinessAsEntity entity =
       ClientDoingBusinessAsEntity
           .builder()
+          .id(1)
           .clientNumber("00000001")
           .doingBusinessAsName("Spaldingnad")
           .createdAt(LocalDateTime.now())

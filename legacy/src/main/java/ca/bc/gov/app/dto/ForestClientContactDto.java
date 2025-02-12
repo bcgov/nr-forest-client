@@ -5,6 +5,7 @@ import lombok.With;
 
 @With
 public record ForestClientContactDto(
+    String clientContactId,
     String clientNumber,
     String clientLocnCode,
     List<String> locationCode,

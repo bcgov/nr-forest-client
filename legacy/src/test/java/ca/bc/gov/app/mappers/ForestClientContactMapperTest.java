@@ -19,6 +19,7 @@ class ForestClientContactMapperTest {
       ForestClientContactMapper.class);
 
   ForestClientContactDto dto =  new ForestClientContactDto(
+      "1",
       "00000001",
       "00",
       List.of("00"),
@@ -36,6 +37,7 @@ class ForestClientContactMapperTest {
   ForestClientContactEntity entity =
       ForestClientContactEntity
           .builder()
+          .clientContactId(1L)
           .clientNumber("00000001")
           .clientLocnCode("00")
           .contactCode("BL")
