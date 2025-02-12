@@ -295,7 +295,7 @@ export interface ClientContact {
   updatedBy: string;
 }
 
-export interface ClientDetails {
+export interface ClientInformation {
   clientNumber: string;
   clientName: string;
   legalFirstName: string;
@@ -317,6 +317,10 @@ export interface ClientDetails {
   clientCommentUpdateUser: string;
   goodStandingInd: string;
   birthdate: string;
+}
+
+export interface ClientDetails {
+  client: ClientInformation;
   doingBusinessAs: ClientDoingBusinessAs[];
   addresses: ClientLocation[];
   contacts: ClientContact[];

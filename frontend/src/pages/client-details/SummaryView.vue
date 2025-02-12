@@ -119,13 +119,14 @@ const canEdit = computed(() =>
 );
 
 const canEditClientStatus = () => {
+  const { clientStatusCode } = props.data.client;
   if (props.userRoles.includes("CLIENT_ADMIN")) {
     return true;
   }
-  if (["SPN", "REC"].includes(props.data.clientStatusCode)) {
+  if (["SPN", "REC"].includes(clientStatusCode)) {
     return props.userRoles.includes("CLIENT_SUSPEND");
   }
-  if (["ACT"].includes(props.data.clientStatusCode)) {
+  if (["ACT"].includes(clientStatusCode)) {
     return true;
   }
 
@@ -141,7 +142,7 @@ const displayEditable = (fieldId: FieldId) =>
 const displayReadonly = (fieldId: FieldId) => !isEditing.value || !displayEditable(fieldId);
 
 const clientRegistrationNumber = computed(() => {
-  const { registryCompanyTypeCode, corpRegnNmbr } = props.data;
+  const { registryCompanyTypeCode, corpRegnNmbr } = props.data.client;
   if (!registryCompanyTypeCode || !corpRegnNmbr) {
     return undefined;
   }
@@ -157,17 +158,18 @@ const doingBusinessAs = computed(() => {
 });
 
 const dateOfBirth = computed(() => {
-  if (props.data.birthdate) {
-    if (props.data.birthdate.length === 4) {
-      return props.data.birthdate;
+  const { birthdate } = props.data.client;
+  if (birthdate) {
+    if (birthdate.length === 4) {
+      return birthdate;
     }
 
     // if masked (month and day)
-    if (props.data.birthdate.includes("*")) {
-      return props.data.birthdate.slice(0, 4);
+    if (birthdate.includes("*")) {
+      return birthdate.slice(0, 4);
     }
 
-    return new Date(props.data.birthdate).toISOString().split("T")[0];
+    return new Date(birthdate).toISOString().split("T")[0];
   }
   return "";
 });
@@ -178,22 +180,24 @@ const birthdateLabel = computed(() =>
 
 const updateClientStatus = (value: CodeNameType | undefined) => {
   if (value) {
-    formData.value.clientStatusCode = value.code;
+    formData.value.client.clientStatusCode = value.code;
   }
 };
+
+const client = computed(() => props.data.client);
 </script>
 
 <template>
   <div class="grouping-10 no-padding">
     <read-only-component label="Client number" id="clientNumber">
-      <span class="body-compact-01">{{ props.data.clientNumber }}</span>
+      <span class="body-compact-01">{{ client.clientNumber }}</span>
     </read-only-component>
     <read-only-component
       label="Acronym"
       id="acronym"
-      v-if="displayReadonly('acronym') && props.data.clientAcronym"
+      v-if="displayReadonly('acronym') && client.clientAcronym"
     >
-      <span class="body-compact-01">{{ props.data.clientAcronym }}</span>
+      <span class="body-compact-01">{{ client.clientAcronym }}</span>
     </read-only-component>
     <read-only-component
       label="Doing business as"
@@ -203,7 +207,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       <span class="body-compact-01" v-dompurify-html="getFormattedHtml(doingBusinessAs)"></span>
     </read-only-component>
     <read-only-component label="Client type" id="clientType">
-      <span class="body-compact-01">{{ props.data.clientTypeDesc }}</span>
+      <span class="body-compact-01">{{ client.clientTypeDesc }}</span>
     </read-only-component>
     <read-only-component
       label="Registration number"
@@ -215,9 +219,9 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
     <read-only-component
       label="WorkSafeBC number"
       id="workSafeBCNumber"
-      v-if="displayReadonly('workSafeBCNumber') && props.data.wcbFirmNumber"
+      v-if="displayReadonly('workSafeBCNumber') && client.wcbFirmNumber"
     >
-      <span class="body-compact-01">{{ props.data.wcbFirmNumber }}</span>
+      <span class="body-compact-01">{{ client.wcbFirmNumber }}</span>
     </read-only-component>
     <read-only-component
       label="BC Registries standing"
@@ -226,18 +230,18 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
     >
       <div class="internal-grouping-01">
         <span class="body-compact-01 default-typography">{{
-          goodStanding(props.data.goodStandingInd)
+          goodStanding(client.goodStandingInd)
         }}</span>
-        <Check20 v-if="props.data.goodStandingInd === 'Y'" class="good" />
-        <Warning20 v-if="props.data.goodStandingInd !== 'Y'" class="warning" />
+        <Check20 v-if="client.goodStandingInd === 'Y'" class="good" />
+        <Warning20 v-if="client.goodStandingInd !== 'Y'" class="warning" />
       </div>
     </read-only-component>
     <read-only-component
-      :label="props.data.clientIdTypeDesc"
+      :label="client.clientIdTypeDesc"
       id="identification"
-      v-if="props.data.clientIdTypeDesc && props.data.clientIdentification"
+      v-if="client.clientIdTypeDesc && client.clientIdentification"
     >
-      <span class="body-compact-01">{{ props.data.clientIdentification }}</span>
+      <span class="body-compact-01">{{ client.clientIdentification }}</span>
     </read-only-component>
     <read-only-component :label="birthdateLabel" id="dateOfBirth" v-if="dateOfBirth">
       <span class="body-compact-01">{{ dateOfBirth }}</span>
@@ -248,17 +252,17 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       v-if="displayReadonly('clientStatus')"
     >
       <span class="body-compact-01">
-        <cds-tag :type="getTagColorByClientStatus(props.data.clientStatusDesc)">
-          <span>{{ props.data.clientStatusDesc }}</span>
+        <cds-tag :type="getTagColorByClientStatus(client.clientStatusDesc)">
+          <span>{{ client.clientStatusDesc }}</span>
         </cds-tag>
       </span>
     </read-only-component>
   </div>
-  <div class="grouping-10 no-padding" v-if="displayReadonly('notes') && props.data.clientComment">
+  <div class="grouping-10 no-padding" v-if="displayReadonly('notes') && client.clientComment">
     <read-only-component label="Notes" id="notes">
       <span
         class="body-compact-01"
-        v-dompurify-html="getFormattedHtml(props.data.clientComment)"
+        v-dompurify-html="getFormattedHtml(client.clientComment)"
       ></span>
     </read-only-component>
   </div>
@@ -282,7 +286,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
         required
         required-label
         placeholder=""
-        v-model="formData.clientName"
+        v-model="formData.client.clientName"
         :validations="[
           ...getValidations('businessInformation.businessName'),
           submissionValidation('businessInformation.businessName'),
@@ -297,7 +301,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
         label="Acronym"
         placeholder=""
         autocomplete="off"
-        v-model="formData.clientAcronym"
+        v-model="formData.client.clientAcronym"
         :validations="[
           ...getValidations('businessInformation.clientAcronym'),
           submissionValidation(`businessInformation.clientAcronym`),
@@ -342,7 +346,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       mask="######"
       placeholder=""
       autocomplete="off"
-      v-model="formData.wcbFirmNumber"
+      v-model="formData.client.wcbFirmNumber"
       :validations="[
         ...getValidations('businessInformation.workSafeBcNumber'),
         submissionValidation(`businessInformation.workSafeBcNumber`),
@@ -353,7 +357,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
     />
     <data-fetcher
       v-if="displayEditable('clientStatus')"
-      :url="`/api/codes/client-statuses/${props.data.clientTypeCode}`"
+      :url="`/api/codes/client-statuses/${client.clientTypeCode}`"
       :min-length="0"
       :init-value="[]"
       :init-fetch="true"
@@ -363,7 +367,9 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       <dropdown-input-component
         id="input-clientStatus"
         label="Client status"
-        :initial-value="content?.find((item) => item.code === formData.clientStatusCode)?.name"
+        :initial-value="
+          content?.find((item) => item.code === formData.client.clientStatusCode)?.name
+        "
         required
         required-label
         :model-value="content"
@@ -387,7 +393,7 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
       :max-count="4000"
       :rows="7"
       placeholder=""
-      v-model="formData.clientComment"
+      v-model="formData.client.clientComment"
       :enabled="true"
       :validations="[
         ...getValidations('businessInformation.notes'),
