@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import type { ClientLocation, UserRole } from "@/dto/CommonTypesDto";
+import type { Address } from "@/dto/ApplyClientNumberDto";
 import { formatPhoneNumber, getFormattedHtml, includesAnyOf } from "@/services/ForestClientService";
 
 import Edit16 from "@carbon/icons-vue/es/edit/16";
+import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
+import { useFetchTo } from "@/composables/useFetch";
 
 const props = defineProps<{
   data: ClientLocation;
@@ -19,6 +22,70 @@ const faxNumber = computed(() => formatPhoneNumber(props.data.faxNumber));
 
 let originalData: ClientLocation;
 const formData = ref<ClientLocation>();
+
+const toStaffFormData = (location: ClientLocation, indexString: string) => {
+  const address: Address = {
+    streetAddress: location.addressOne,
+    complementaryAddressOne: location.addressTwo,
+    complementaryAddressTwo: location.addressThree,
+    country: {
+      value: location.countryCode,
+      text: location.countryDesc,
+    },
+    province: {
+      value: location.provinceCode,
+      text: location.provinceDesc,
+    },
+    city: location.city,
+    postalCode: location.postalCode,
+    businessPhoneNumber: location.businessPhone,
+    secondaryPhoneNumber: location.cellPhone,
+    tertiaryPhoneNumber: location.homePhone,
+    faxNumber: location.faxNumber,
+    emailAddress: location.emailAddress,
+    notes: location.cliLocnComment,
+    index: Number(indexString),
+    locationName: location.clientLocnName,
+  };
+  return address;
+};
+
+// As required by the StaffLocationGroupComponent
+const staffFormData = computed(() => toStaffFormData(formData.value, indexString));
+
+const uniqueValues = isUniqueDescriptive();
+
+// Country related data
+const countryList = ref([]);
+useFetchTo("/api/codes/countries?page=0&size=250", countryList);
+
+const revalidate = ref(false);
+
+const updateAddress = (value: Address | undefined, index: number) => {
+  if (index < formData.location.addresses.length) {
+    if (value) Object.assign(formData.location.addresses[index], value);
+    else {
+      const addressesCopy: Address[] = [...formData.location.addresses];
+      const removedAddressArray = addressesCopy.splice(index, 1);
+      formData.location.addresses = addressesCopy;
+
+      // Remove the deleted address from the contacts that are associated to it.
+      // (the condition is just a sanity check)
+      if (removedAddressArray.length > 0) {
+        const removedAddress = removedAddressArray[0];
+        formData.location.contacts.forEach((contact) => {
+          const indexWithinContact = contact.locationNames.findIndex(
+            (locationName) => locationName.text === removedAddress.locationName
+          );
+          if (indexWithinContact !== -1) {
+            contact.locationNames.splice(indexWithinContact, 1);
+          }
+        });
+      }
+    }
+    revalidate.value = !revalidate.value;
+  }
+};
 
 const isEditing = ref(false);
 const hasAnyChange = ref(false);
@@ -85,7 +152,11 @@ const canEdit = computed(() =>
           </div>
         </read-only-component>
       </div>
-      <div :id="`location-${indexString}-email-section`" class="grouping-23" v-if="data.emailAddress">
+      <div
+        :id="`location-${indexString}-email-section`"
+        class="grouping-23"
+        v-if="data.emailAddress"
+      >
         <read-only-component label="Email address" :id="`location-${indexString}-emailAddress`">
           <a :href="`mailto:${data.emailAddress}`">
             <span class="body-compact-01 colorless">{{ data.emailAddress }}</span>
@@ -148,6 +219,17 @@ const canEdit = computed(() =>
         <span class="width-unset">Edit location</span>
         <Edit16 slot="icon" />
       </cds-button>
+    </div>
+    <div class="tab-form">
+      <staff-location-group-component
+        :id="Number(indexString)"
+        v-bind:model-value="staffFormData"
+        :countryList="countryList"
+        :validations="[uniqueValues.add]"
+        :revalidate="revalidate"
+        includeTertiaryPhoneNumber
+        hideDeleteButton
+      />
     </div>
   </div>
 </template>

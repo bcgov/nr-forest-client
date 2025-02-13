@@ -833,7 +833,7 @@ cds-actionable-notification * {
   }
 }
 
-.form-edit {
+.form-edit, .tab-form {
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -843,6 +843,10 @@ cds-actionable-notification * {
   .grouping-02, .grouping-03 {
     width: 100%;
   }
+}
+
+.tab-form {
+  max-width: 36rem;
 }
 
 .frame-01 {
@@ -1179,6 +1183,21 @@ cds-accordion-item:not([open]) {
   flex-direction: row;
   gap: 1rem;
   align-items: end;
+}
+
+.grid {
+  display: grid;
+  column-gap: 1rem;
+  row-gap: inherit;
+  align-items: end;
+
+  &--2-per-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  &--3-per-row {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
 
 .input-with-instruction {
