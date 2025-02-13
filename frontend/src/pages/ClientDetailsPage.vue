@@ -37,7 +37,12 @@ import {
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-import type { ClientDetails, ClientLocation, ModalNotification } from "@/dto/CommonTypesDto";
+import type {
+  ClientDetails,
+  ClientLocation,
+  ModalNotification,
+  UserRole,
+} from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
@@ -52,7 +57,7 @@ const toastBus = useEventBus<ModalNotification>("toast-notification");
 
 const data = ref<ClientDetails>(undefined);
 
-const userRoles = ForestClientUserSession.authorities;
+const userRoles = ForestClientUserSession.authorities as UserRole[];
 
 const userHasAuthority = includesAnyOf(userRoles, [
   "CLIENT_ADMIN",
@@ -361,7 +366,7 @@ resetGlobalError();
                   {{ formatAddress(location) }}
                 </span>
               </div>
-              <location-view :data="location" />
+              <location-view :data="location" :user-roles="userRoles" />
             </cds-accordion-item>
           </cds-accordion>
         </div>
