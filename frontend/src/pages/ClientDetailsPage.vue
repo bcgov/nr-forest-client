@@ -47,6 +47,7 @@ import type { ClientDetails, ClientLocation, FieldUpdateReason, ModalNotificatio
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
+import { optional } from "@/helpers/validators/GlobalValidators";
 
 // Route related
 const router = useRouter();
@@ -181,18 +182,6 @@ const reasonModalActiveInd = ref(false);
 let reasonPatchData = ref<jsonpatch.Operation[]>([]);
 let originalPatchData: jsonpatch.Operation[] = []; 
 const finalPatchData = ref<jsonpatch.Operation[]>([]);
-
-//TODO: This is just a sample
-const getReasonOptions = (action) => {
-  const reasonOptions = {
-    ID: ['Incorrect ID', 'Updated Identification'],
-    NAME: ['Legal Name Change', 'Correction of Spelling'],
-    ADDR: ['Moved to New Address', 'Address Correction'],
-    DAC: ['Deactivated Account'],
-    OTHER: ['Other'] // Default option for unknown fields
-  };
-  return reasonOptions[action] || ['Other'];
-};
 
 const getOldValue = (path: string) => {
   const field = path.replace('/', '');
@@ -582,6 +571,7 @@ resetGlobalError();
         <span class="field-label">
           Select a reason for the following changes:
         </span>
+
         <div v-for="(patch, index) in reasonPatchData" 
               :key="index">
           <span class="field-label">
@@ -591,16 +581,31 @@ resetGlobalError();
           <span class="field-label">
             ({{ getAction(patch.path, getOldValue(patch.path), patch.value) }})
           </span>
-
-          <select v-model="patch.reason" 
-                  class="reason-dropdown"
-                  :id="'reason-select-' + index">
-            <option v-for="option in getReasonOptions(getAction(patch.path, getOldValue(patch.path), patch.value))" 
-                    :key="option" 
-                    :value="option">
-              {{ option }}
-            </option>
-          </select>
+          
+          <data-fetcher
+            :url="`/api/codes/update-reasons/${data.clientTypeCode}/${getAction(patch.path, getOldValue(patch.path), patch.value)}`"
+            :min-length="0"
+            :init-value="[]"
+            :init-fetch="true"
+            :params="{ method: 'GET' }"
+            #="{ content }"
+          >
+            <dropdown-input-component
+              id="input-reason"
+              label="Reason"
+              :initial-value="[]"
+              required
+              required-label
+              :model-value="content"
+              :enabled="true"
+              tip=""
+              :validations="[]"
+              style="width: 100% !important"
+              #="{ option }"
+            >
+            </dropdown-input-component>
+            {{ content }}
+          </data-fetcher>
         </div>
       </div>
     </cds-modal-body>
