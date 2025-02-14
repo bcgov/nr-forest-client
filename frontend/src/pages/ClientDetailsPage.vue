@@ -31,13 +31,17 @@ import Launch16 from "@carbon/icons-vue/es/launch/16";
 import { greenDomain } from "@/CoreConstants";
 import {
   adminEmail,
+  extractReasonFields,
   getObfuscatedEmailLink,
   includesAnyOf,
   toTitleCase,
+  getFieldLabel,
+  getAction,
+  reasonRequiredFields
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-import type { ClientDetails, ClientLocation, ModalNotification } from "@/dto/CommonTypesDto";
+import type { ClientDetails, ClientLocation, FieldUpdateReason, ModalNotification } from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
@@ -173,19 +177,110 @@ const toolsSvg = useSvg(tools);
 const summaryRef = ref<InstanceType<typeof SummaryView> | null>(null);
 
 const reasonModalActiveInd = ref(false);
-let reasonPatchData = ref<jsonpatch.Operation[]>();
 
-const saveSummary = (patchData: jsonpatch.Operation[]) => {
-  const {
-    fetch: patch,
-    response,
-    error,
-  } = useJsonPatch(`/api/clients/details/${clientNumber}`, patchData, {
-    skip: true,
+let reasonPatchData = ref<jsonpatch.Operation[]>([]);
+let originalPatchData: jsonpatch.Operation[] = []; 
+const finalPatchData = ref<jsonpatch.Operation[]>([]);
+
+//TODO: This is just a sample
+const getReasonOptions = (action) => {
+  const reasonOptions = {
+    ID: ['Incorrect ID', 'Updated Identification'],
+    NAME: ['Legal Name Change', 'Correction of Spelling'],
+    ADDR: ['Moved to New Address', 'Address Correction'],
+    DAC: ['Deactivated Account'],
+    OTHER: ['Other'] // Default option for unknown fields
+  };
+  return reasonOptions[action] || ['Other'];
+};
+
+const getOldValue = (path: string) => {
+  const field = path.replace('/', '');
+  
+  switch (field) {
+    case 'clientStatusCode':
+      return data.value.clientStatusCode;
+    default:
+      return '';
+  }
+};
+
+// Function to update reasons and send final PATCH request
+const confirmReasons = (reasons: FieldUpdateReason[]) => {
+  const updatedPatchData = [...reasonPatchData.value];
+
+  updatedPatchData.forEach((patch) => {
+    const reasonEntry = reasons.find((r) => r.field === patch.path.replace('/', ''));
+    if (reasonEntry) {
+      patch.reason = reasonEntry.reason;
+    }
   });
 
-  reasonModalActiveInd.value = true;
-  reasonPatchData.value = patchData;
+  reasonModalActiveInd.value = false;
+  sendPatchRequest(updatedPatchData);
+};
+
+const sendPatchRequest = (reasonUpdatedPatchData: jsonpatch.Operation[]) => {
+  console.log("Original Patch Data:", JSON.stringify(originalPatchData, null, 2));
+
+  const baseChanges = originalPatchData.map(({ reason, ...patch }) => patch);
+
+  const reasonChanges = reasonUpdatedPatchData.flatMap((patch, index) => {
+    return patch.reason
+      ? [
+          {
+            op: "add",
+            path: `/reasons/${index}/field`,
+            value: patch.path.replace("/", "")
+          },
+          {
+            op: "add",
+            path: `/reasons/${index}/reason`,
+            value: patch.reason
+          }
+        ]
+      : [];
+  });
+
+  finalPatchData.value = [...baseChanges, ...reasonChanges];
+
+  console.log("Final Patch Data:", JSON.stringify(finalPatchData.value, null, 2));
+
+  // Send API request
+  const { fetch: patch, response, error } = useJsonPatch(
+    `/api/clients/details/${clientNumber}`,
+    finalPatchData.value,
+    { skip: true }
+  );
+};
+
+// Function to save
+const saveSummary = (patchData: jsonpatch.Operation[]) => {
+  originalPatchData = [...patchData];
+  const reasonFields = extractReasonFields(patchData, data.value);
+
+  if (reasonFields.length > 0) {
+    reasonPatchData.value = patchData
+      .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
+      .map((patch) => {
+        const field = patch.path.replace('/', '');
+        const reasonEntry = reasonFields.find((r) => r.field === field);
+
+        if (field === 'clientStatusCode') {
+          const oldValue = data.value.clientStatusCode;
+          const newValue = patch.value;
+          const action = getAction(patch.path, oldValue, newValue);
+          return { ...patch, reason: action || '' };
+        }
+
+        return { ...patch, reason: reasonEntry?.reason || '' };
+      });
+
+    reasonModalActiveInd.value = true;
+  } else {
+    sendPatchRequest(patchData);
+  }
+
 
   /*resetGlobalError();
 
@@ -466,6 +561,7 @@ resetGlobalError();
       </div>
     </div>
   </div>
+
   <cds-modal
     id="reason-modal"
     aria-labelledby="reason-modal-heading"
@@ -480,10 +576,33 @@ resetGlobalError();
         Reason for change
       </cds-modal-heading>
     </cds-modal-header>
-    
+  
     <cds-modal-body id="reason-modal-body">
-      Select a reason for the following change:
-      {{ reasonPatchData }}
+      <div v-if="reasonPatchData && reasonPatchData.length > 0">
+        <span class="field-label">
+          Select a reason for the following changes:
+        </span>
+        <div v-for="(patch, index) in reasonPatchData" 
+              :key="index">
+          <span class="field-label">
+            {{ getFieldLabel(patch.path) }}
+          </span>
+
+          <span class="field-label">
+            ({{ getAction(patch.path, getOldValue(patch.path), patch.value) }})
+          </span>
+
+          <select v-model="patch.reason" 
+                  class="reason-dropdown"
+                  :id="'reason-select-' + index">
+            <option v-for="option in getReasonOptions(getAction(patch.path, getOldValue(patch.path), patch.value))" 
+                    :key="option" 
+                    :value="option">
+              {{ option }}
+            </option>
+          </select>
+        </div>
+      </div>
     </cds-modal-body>
 
     <cds-modal-footer>
@@ -492,13 +611,14 @@ resetGlobalError();
         data-modal-close class="cds--modal-close-btn">
         Cancel
       </cds-modal-footer-button>
-      <!-- <cds-modal-footer-button 
-        kind="danger" 
+      <cds-modal-footer-button 
+        kind="primary" 
         class="cds--modal-submit-btn" 
-        v-on:click="logout">
-        Logout
+        v-on:click="confirmReasons(reasonPatchData)">
+        Save changes
         <Logout16 slot="icon" />
-      </cds-modal-footer-button> -->
+      </cds-modal-footer-button> 
     </cds-modal-footer>
   </cds-modal>
+
 </template>

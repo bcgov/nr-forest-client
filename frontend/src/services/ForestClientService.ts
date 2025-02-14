@@ -1,6 +1,7 @@
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
-import type { CodeDescrType, UserRole } from "@/dto/CommonTypesDto";
+import type { ClientDetails, CodeDescrType, UserRole } from "@/dto/CommonTypesDto";
 import { isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
+import * as jsonpatch from "fast-json-patch";
 
 export const addNewAddress = (addresses: Address[]): number => {
   const blankAddress: Address = {
@@ -170,3 +171,112 @@ export const getPrevailingRole = (authorities: string[]): UserRole => {
 
 export const includesAnyOf = (haystack: any[], needles: any[]): boolean =>
   !!haystack?.find((item) => needles?.includes(item));
+
+//Fields that require a reason when changing
+export const reasonRequiredFields = new Set<string>([
+  'clientStatusCode',
+  'clientIdentification',
+  'clientName',
+  'legalFirstName',
+  'legalMiddleName',
+  'addressOne',
+  'addressTwo',
+  'addressThree',
+  'city',
+  'provinceCode',
+  'countryCode',
+  'postalCode'
+]);
+
+// Map for general field reasons
+const fieldReasonMap = new Map<string, string>([
+  ['clientIdentification', 'ID'],
+  ['clientName', 'NAME'],
+  ['legalFirstName', 'NAME'],
+  ['legalMiddleName', 'NAME'],
+  ['addressOne', 'ADDR'],
+  ['addressTwo', 'ADDR'],
+  ['addressThree', 'ADDR'],
+  ['city', 'ADDR'],
+  ['provinceCode', 'ADDR'],
+  ['countryCode', 'ADDR'],
+  ['postalCode', 'ADDR']
+]);
+
+// Map for client status transitions
+const statusTransitionMap = new Map<string, string>([
+  ['ACT-DEC', 'ACDC'],  // Active → Deceased
+  ['ACT-DAC', 'DAC'],   // Active → Deactivated
+  ['DEC-ACT', 'RACT'],  // Deceased → Active
+  ['REC-ACT', 'RACT'],  // Receivership → Active
+  ['DAC-ACT', 'RACT'],  // Deactivated → Active
+  ['DAC-REC', ''],      // Deactivated → Receivership (No reason needed)
+  ['DEC-REC', ''],      // Deceased → Receivership (No reason needed)
+  ['SPN-ACT', 'USPN'],  // Suspended → Active
+  ['ACT-SPN', 'SPN'],   // Active → Suspended
+  ['REC-SPN', 'SPN'],   // Receivership → Suspended
+  ['ACT-REC', ''],      // Active → Receivership (No reason needed)
+  ['REC-DAC', 'DAC'],   // Receivership → Deactivated
+  ['SPN-DAC', 'DAC'],   // Suspended → Deactivated
+  ['DAC-DEC', ''],      // Deactivated → Deceased (No reason needed)
+  ['REC-DEC', ''],      // Receivership → Deceased (No reason needed)
+  ['SPN-DEC', ''],      // Suspended → Deceased (No reason needed)
+  ['DAC-SPN', 'SPN'],   // Deactivated → Suspended
+  ['DEC-DAC', 'DAC'],   // Deceased → Deactivated
+  ['DEC-SPN', 'SPN'],   // Deceased → Suspended
+  ['SPN-REC', '']       // Suspended → Receivership (No reason needed)
+]);
+
+// Function to extract required reason fields from patch data
+export const extractReasonFields = (patchData: jsonpatch.Operation[], originalData: ClientDetails) => {
+  console.log("Original patchData: " + JSON.stringify(patchData));
+  return patchData
+    .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
+    .map((patch) => {
+      const field = patch.path.replace('/', '');
+      let reason = '';
+
+      if (field === 'clientStatusCode') {
+        const oldValue = originalData.clientStatusCode;
+        const newValue = patch.value;
+        const transitionKey = `${oldValue}-${newValue}`;
+        reason = statusTransitionMap.get(transitionKey) || '';
+      } 
+      else {
+        reason = fieldReasonMap.get(field) || '';
+      }
+
+      return { field, reason };
+    });
+};
+
+//TODO: Complete this function
+export const getFieldLabel = (path: string) => {
+  let fieldName = path.replace('/', '');
+  switch (fieldName) {
+    case "clientNumber":
+      return "Client number";
+    case "clientName":
+      return "Client name";
+    case "legalFirstName":
+      return "First name";
+    case "legalMiddleName":
+      return "Middle Name";
+    case "clientStatusCode":
+      return "Client status";
+    default:
+      return "Unknown";
+  }
+};
+
+export const getAction = (path: string, oldValue?: string, newValue?: string) => {
+  const field = path.replace('/', '');
+
+  if (field === 'clientStatusCode' && oldValue && newValue) {
+    const transitionKey = `${oldValue}-${newValue}`;
+    const transitionAction = statusTransitionMap.get(transitionKey);
+    return transitionAction || null;
+  }
+
+  return fieldReasonMap.get(field) || null;
+};
