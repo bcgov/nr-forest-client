@@ -829,6 +829,12 @@ cds-actionable-notification * {
   &--stretched {
     cds-button {
       flex: 1;
+
+      &::part(button) {
+        // We don't need this padding since the button is already stretched thanks to "flex: 1".
+        // This allows adjacent buttons to have the same size.
+        padding-inline-end: unset;
+      }
     }
   }
 }
@@ -1527,6 +1533,14 @@ cds-side-nav {
 
 cds-accordion-item::part(expando) {
   min-block-size: 3rem;
+}
+
+cds-accordion-item[open]::part(cds--accordion__wrapper) {
+  /*
+  Fixes issue where accordions would not auto-adjust size (height) according to its content, when
+  it grows dynammically.
+  */
+  max-block-size: unset;
 }
 
 cds-accordion-item[open]:not([disabled])::part(content),

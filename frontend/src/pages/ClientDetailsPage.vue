@@ -48,6 +48,7 @@ import type {
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
+import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 
 // Route related
 const router = useRouter();
@@ -118,12 +119,23 @@ const compareString = (a: string, b: string) => {
 };
 
 const sortedLocations = computed(() =>
-  data.value.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
+  data.value?.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
 );
 
 const sortedContacts = computed(() =>
-  data.value.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
+  data.value?.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
 );
+
+const uniqueLocations = isUniqueDescriptive();
+
+watch(sortedLocations, (value) => {
+  if (value?.length) {
+    value.forEach((location) => {
+      const index = String(Number(location.clientLocnCode));
+      uniqueLocations.add("Names", index)(location.clientLocnName);
+    });
+  }
+});
 
 const formatLocation = (location: ClientLocation) => {
   const parts = [location.clientLocnCode];
@@ -344,7 +356,7 @@ resetGlobalError();
             :key="location.clientLocnCode"
             :id="`location-${location.clientLocnCode}`"
           >
-            <cds-accordion-item size="lg" class="grouping-13">
+            <cds-accordion-item size="lg" class="grouping-13" v-shadow="1">
               <div slot="title" class="flex-column-0_25rem">
                 <span class="label-with-icon">
                   <LocationStar20 v-if="index === 0" />
@@ -366,7 +378,11 @@ resetGlobalError();
                   {{ formatAddress(location) }}
                 </span>
               </div>
-              <location-view :data="location" :user-roles="userRoles" />
+              <location-view
+                :data="location"
+                :user-roles="userRoles"
+                :validations="[uniqueLocations.add]"
+              />
             </cds-accordion-item>
           </cds-accordion>
         </div>

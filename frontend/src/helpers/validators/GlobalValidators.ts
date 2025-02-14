@@ -232,7 +232,7 @@ export const isUniqueDescriptive = (): {
   add: (
     key: string,
     fieldId: string
-  ) => (value: string, message: string) => string;
+  ) => (value: string, message?: string) => string;
   remove: (key: string, fieldId: string) => boolean;
 } => {
   const record: Record<string, Record<string, string>> = {};

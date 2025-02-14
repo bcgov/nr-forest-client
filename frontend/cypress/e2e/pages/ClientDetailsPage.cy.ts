@@ -235,7 +235,7 @@ describe("Client Details Page", () => {
 
         it("displays the location name on the accordion's title", () => {
           cy.get("#location-00 [slot='title']").contains("00 - Mailing address");
-          cy.get("#location-01 [slot='title']").contains("01 - Accountant's address");
+          cy.get("#location-01 [slot='title']").contains("01 - Accountant address");
           cy.get("#location-02 [slot='title']").contains("02 - Warehouse");
         });
 

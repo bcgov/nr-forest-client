@@ -153,6 +153,11 @@ export const formatPhoneNumber = (phoneNumber: string): string => {
   return `(${part1}) ${part2}-${part3}`;
 };
 
+export const keepOnlyNumbersAndLetters = (input: string): string => {
+  const result = input.replaceAll(/[^A-Za-z0-9]/g, "");
+  return result;
+};
+
 /**
  * This function should be used only if the roles are considered to be a hierarchy.
  * @param authorities - the array of user roles

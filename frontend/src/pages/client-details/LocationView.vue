@@ -1,19 +1,38 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import type { ClientLocation, UserRole } from "@/dto/CommonTypesDto";
+import * as jsonpatch from "fast-json-patch";
+import type { ClientLocation, ModalNotification, UserRole } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
-import { formatPhoneNumber, getFormattedHtml, includesAnyOf } from "@/services/ForestClientService";
+import {
+  formatPhoneNumber,
+  getFormattedHtml,
+  includesAnyOf,
+  keepOnlyNumbersAndLetters,
+} from "@/services/ForestClientService";
 
 import Edit16 from "@carbon/icons-vue/es/edit/16";
-import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
+import Save16 from "@carbon/icons-vue/es/save/16";
+import Close16 from "@carbon/icons-vue/es/close/16";
+import Undefined16 from "@carbon/icons-vue/es/undefined/16";
+
 import { useFetchTo } from "@/composables/useFetch";
+import { useEventBus } from "@vueuse/core";
 
 const props = defineProps<{
   data: ClientLocation;
   userRoles: UserRole[];
+  validations: Array<Function>;
 }>();
 
+const emit = defineEmits<{
+  (e: "save", value: jsonpatch.Operation[]): void;
+}>();
+
+// Defining the event bus to send notifications up
+const modalBus = useEventBus<ModalNotification>("modal-notification");
+
 const indexString = props.data.clientLocnCode;
+const index = Number(indexString);
 
 const businessPhone = computed(() => formatPhoneNumber(props.data.businessPhone));
 const cellPhone = computed(() => formatPhoneNumber(props.data.cellPhone));
@@ -21,9 +40,10 @@ const homePhone = computed(() => formatPhoneNumber(props.data.homePhone));
 const faxNumber = computed(() => formatPhoneNumber(props.data.faxNumber));
 
 let originalData: ClientLocation;
-const formData = ref<ClientLocation>();
+let originalAddressData: Address;
+const formAddressData = ref<Address>();
 
-const toStaffFormData = (location: ClientLocation, indexString: string) => {
+const toCreateFormat = (location: ClientLocation, index: number) => {
   const address: Address = {
     streetAddress: location.addressOne,
     complementaryAddressOne: location.addressTwo,
@@ -38,22 +58,17 @@ const toStaffFormData = (location: ClientLocation, indexString: string) => {
     },
     city: location.city,
     postalCode: location.postalCode,
-    businessPhoneNumber: location.businessPhone,
-    secondaryPhoneNumber: location.cellPhone,
-    tertiaryPhoneNumber: location.homePhone,
-    faxNumber: location.faxNumber,
+    businessPhoneNumber: formatPhoneNumber(location.businessPhone),
+    secondaryPhoneNumber: formatPhoneNumber(location.cellPhone),
+    tertiaryPhoneNumber: formatPhoneNumber(location.homePhone),
+    faxNumber: formatPhoneNumber(location.faxNumber),
     emailAddress: location.emailAddress,
     notes: location.cliLocnComment,
-    index: Number(indexString),
+    index,
     locationName: location.clientLocnName,
   };
   return address;
 };
-
-// As required by the StaffLocationGroupComponent
-const staffFormData = computed(() => toStaffFormData(formData.value, indexString));
-
-const uniqueValues = isUniqueDescriptive();
 
 // Country related data
 const countryList = ref([]);
@@ -61,65 +76,115 @@ useFetchTo("/api/codes/countries?page=0&size=250", countryList);
 
 const revalidate = ref(false);
 
-const updateAddress = (value: Address | undefined, index: number) => {
-  if (index < formData.location.addresses.length) {
-    if (value) Object.assign(formData.location.addresses[index], value);
-    else {
-      const addressesCopy: Address[] = [...formData.location.addresses];
-      const removedAddressArray = addressesCopy.splice(index, 1);
-      formData.location.addresses = addressesCopy;
-
-      // Remove the deleted address from the contacts that are associated to it.
-      // (the condition is just a sanity check)
-      if (removedAddressArray.length > 0) {
-        const removedAddress = removedAddressArray[0];
-        formData.location.contacts.forEach((contact) => {
-          const indexWithinContact = contact.locationNames.findIndex(
-            (locationName) => locationName.text === removedAddress.locationName
-          );
-          if (indexWithinContact !== -1) {
-            contact.locationNames.splice(indexWithinContact, 1);
-          }
-        });
-      }
-    }
-    revalidate.value = !revalidate.value;
-  }
-};
-
 const isEditing = ref(false);
 const hasAnyChange = ref(false);
 
 const resetFormData = () => {
   originalData = JSON.parse(JSON.stringify(props.data));
-  formData.value = JSON.parse(JSON.stringify(props.data));
+
+  // As required by the StaffLocationGroupComponent
+  const createFormData = toCreateFormat(props.data, index);
+
+  const stringifiedData = JSON.stringify(createFormData);
+  originalAddressData = JSON.parse(stringifiedData);
+  formAddressData.value = JSON.parse(stringifiedData);
+
   hasAnyChange.value = false;
 };
 
 resetFormData();
 
 watch(
-  formData,
+  formAddressData,
   () => {
     if (isEditing.value) {
-      hasAnyChange.value = JSON.stringify(formData.value) !== JSON.stringify(originalData);
+      hasAnyChange.value =
+        JSON.stringify(formAddressData.value) !== JSON.stringify(originalAddressData);
     }
   },
   { deep: true },
 );
 
 const edit = () => {
-  // TODO
+  resetFormData();
+  isEditing.value = true;
+};
+
+const cancel = () => {
+  isEditing.value = false;
+};
+
+const lockEditing = () => {
+  isEditing.value = false;
+};
+
+defineExpose({
+  lockEditing,
+});
+
+const toEditFormat = (address: Address) => {
+  const location: ClientLocation = {
+    ...props.data,
+    clientLocnName: address.locationName,
+    addressOne: address.streetAddress,
+    addressTwo: address.complementaryAddressOne,
+    addressThree: address.complementaryAddressTwo,
+    city: address.city,
+    provinceCode: address.province.value,
+    provinceDesc: address.province.text,
+    postalCode: address.postalCode,
+    countryCode: address.country.value,
+    countryDesc: address.country.text,
+    businessPhone: keepOnlyNumbersAndLetters(address.businessPhoneNumber),
+    homePhone: keepOnlyNumbersAndLetters(address.tertiaryPhoneNumber),
+    cellPhone: keepOnlyNumbersAndLetters(address.secondaryPhoneNumber),
+    faxNumber: keepOnlyNumbersAndLetters(address.faxNumber),
+    emailAddress: address.emailAddress,
+    cliLocnComment: address.notes,
+  };
+
+  return location;
+};
+
+const save = () => {
+  const location = toEditFormat(formAddressData.value);
+  const patch = jsonpatch.compare(originalData, location);
+  emit("save", patch);
 };
 
 const canEdit = computed(() =>
   includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
 );
+
+const removeAdditionalDelivery = () => () => {
+  formAddressData.value.complementaryAddressTwo = null;
+  modalBus.emit({
+    active: false,
+    message: "",
+    kind: "",
+    toastTitle: "",
+    handler: () => {},
+  });
+};
+
+const handleRemoveAdditionalDelivery = () => {
+  const selectedDeliveryInformation = formAddressData.value.complementaryAddressTwo;
+  modalBus.emit({
+    name: selectedDeliveryInformation,
+    toastTitle: "Success",
+    kind: "delivery information",
+    message: `“${selectedDeliveryInformation}” additional delivery information was deleted`,
+    handler: removeAdditionalDelivery(),
+    active: true,
+  });
+};
+
+const valid = ref(false);
 </script>
 
 <template>
   <div class="grouping-12">
-    <div class="flex-column-1_5rem">
+    <div v-if="!isEditing" class="flex-column-1_5rem">
       <div :id="`location-${indexString}-address-section`" class="grouping-23">
         <read-only-component label="Address" :id="`location-${indexString}-address`">
           <div class="grouping-23 no-margin">
@@ -220,16 +285,50 @@ const canEdit = computed(() =>
         <Edit16 slot="icon" />
       </cds-button>
     </div>
-    <div class="tab-form">
+    <div class="tab-form" v-if="isEditing">
       <staff-location-group-component
-        :id="Number(indexString)"
-        v-bind:model-value="staffFormData"
+        :id="index"
+        v-bind:model-value="formAddressData"
         :countryList="countryList"
-        :validations="[uniqueValues.add]"
+        :validations="props.validations"
         :revalidate="revalidate"
         includeTertiaryPhoneNumber
         hideDeleteButton
+        @remove-additional-delivery="handleRemoveAdditionalDelivery()"
+        @valid="valid = $event"
+        @update:model-value="revalidate = !revalidate"
       />
+      <div class="form-group-buttons form-group-buttons--stretched">
+        <cds-button
+          :id="`location-${indexString}-SaveBtn`"
+          kind="primary"
+          size="md"
+          @click="save"
+          :disabled="!hasAnyChange || !valid"
+        >
+          <span class="width-unset">Save changes</span>
+          <Save16 slot="icon" />
+        </cds-button>
+        <cds-button
+          :id="`location-${indexString}-CancelBtn`"
+          kind="tertiary"
+          size="md"
+          @click="cancel"
+        >
+          <span class="width-unset">Cancel</span>
+          <Close16 slot="icon" />
+        </cds-button>
+        <cds-button
+          v-if="index > 0"
+          :id="`location-${indexString}-DeactivateBtn`"
+          kind="danger--tertiary"
+          size="md"
+          @click="cancel"
+        >
+          <span class="width-unset">Deactivate location</span>
+          <Undefined16 slot="icon" />
+        </cds-button>
+      </div>
     </div>
   </div>
 </template>
