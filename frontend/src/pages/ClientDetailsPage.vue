@@ -568,19 +568,21 @@ resetGlobalError();
   
     <cds-modal-body id="reason-modal-body">
       <div v-if="reasonPatchData && reasonPatchData.length > 0">
-        <span class="field-label">
-          Select a reason for the following changes:
-        </span>
 
+        <p class="body-compact-01">
+          Select a reason for the following changes:
+        </p>
+        <br />
         <div v-for="(patch, index) in reasonPatchData" 
               :key="index">
-          <span class="field-label">
+          <p class="label-02">
             {{ getFieldLabel(patch.path) }}
-          </span>
+          </p>
 
-          <span class="field-label">
-            ({{ getAction(patch.path, getOldValue(patch.path), patch.value) }})
-          </span>
+          <p class="field-label">
+            <del>{{ getOldValue(patch.path) }}</del> {{ patch.value }}
+            {{data.clientTypeCode}}
+          </p>
           
           <data-fetcher
             :url="`/api/codes/update-reasons/${data.clientTypeCode}/${getAction(patch.path, getOldValue(patch.path), patch.value)}`"
