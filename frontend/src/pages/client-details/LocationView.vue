@@ -7,7 +7,8 @@ import {
   formatPhoneNumber,
   getFormattedHtml,
   includesAnyOf,
-  keepOnlyNumbersAndLetters,
+  locationToCreateFormat,
+  locationToEditFormat,
 } from "@/services/ForestClientService";
 
 import Edit16 from "@carbon/icons-vue/es/edit/16";
@@ -43,33 +44,6 @@ let originalData: ClientLocation;
 let originalAddressData: Address;
 const formAddressData = ref<Address>();
 
-const toCreateFormat = (location: ClientLocation, index: number) => {
-  const address: Address = {
-    streetAddress: location.addressOne,
-    complementaryAddressOne: location.addressTwo,
-    complementaryAddressTwo: location.addressThree,
-    country: {
-      value: location.countryCode,
-      text: location.countryDesc,
-    },
-    province: {
-      value: location.provinceCode,
-      text: location.provinceDesc,
-    },
-    city: location.city,
-    postalCode: location.postalCode,
-    businessPhoneNumber: formatPhoneNumber(location.businessPhone),
-    secondaryPhoneNumber: formatPhoneNumber(location.cellPhone),
-    tertiaryPhoneNumber: formatPhoneNumber(location.homePhone),
-    faxNumber: formatPhoneNumber(location.faxNumber),
-    emailAddress: location.emailAddress,
-    notes: location.cliLocnComment,
-    index,
-    locationName: location.clientLocnName,
-  };
-  return address;
-};
-
 // Country related data
 const countryList = ref([]);
 useFetchTo("/api/codes/countries?page=0&size=250", countryList);
@@ -83,7 +57,7 @@ const resetFormData = () => {
   originalData = JSON.parse(JSON.stringify(props.data));
 
   // As required by the StaffLocationGroupComponent
-  const createFormData = toCreateFormat(props.data, index);
+  const createFormData = locationToCreateFormat(props.data);
 
   const stringifiedData = JSON.stringify(createFormData);
   originalAddressData = JSON.parse(stringifiedData);
@@ -122,32 +96,8 @@ defineExpose({
   lockEditing,
 });
 
-const toEditFormat = (address: Address) => {
-  const location: ClientLocation = {
-    ...props.data,
-    clientLocnName: address.locationName,
-    addressOne: address.streetAddress,
-    addressTwo: address.complementaryAddressOne,
-    addressThree: address.complementaryAddressTwo,
-    city: address.city,
-    provinceCode: address.province.value,
-    provinceDesc: address.province.text,
-    postalCode: address.postalCode,
-    countryCode: address.country.value,
-    countryDesc: address.country.text,
-    businessPhone: keepOnlyNumbersAndLetters(address.businessPhoneNumber),
-    homePhone: keepOnlyNumbersAndLetters(address.tertiaryPhoneNumber),
-    cellPhone: keepOnlyNumbersAndLetters(address.secondaryPhoneNumber),
-    faxNumber: keepOnlyNumbersAndLetters(address.faxNumber),
-    emailAddress: address.emailAddress,
-    cliLocnComment: address.notes,
-  };
-
-  return location;
-};
-
 const save = () => {
-  const location = toEditFormat(formAddressData.value);
+  const location = locationToEditFormat(formAddressData.value, props.data);
   const patch = jsonpatch.compare(originalData, location);
   emit("save", patch);
 };
@@ -156,7 +106,7 @@ const canEdit = computed(() =>
   includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
 );
 
-const removeAdditionalDelivery = () => () => {
+const removeAdditionalDelivery = () => {
   formAddressData.value.complementaryAddressTwo = null;
   modalBus.emit({
     active: false,
@@ -174,7 +124,7 @@ const handleRemoveAdditionalDelivery = () => {
     toastTitle: "Success",
     kind: "delivery information",
     message: `“${selectedDeliveryInformation}” additional delivery information was deleted`,
-    handler: removeAdditionalDelivery(),
+    handler: removeAdditionalDelivery,
     active: true,
   });
 };
@@ -294,7 +244,7 @@ const valid = ref(false);
         :revalidate="revalidate"
         includeTertiaryPhoneNumber
         hideDeleteButton
-        @remove-additional-delivery="handleRemoveAdditionalDelivery()"
+        @remove-additional-delivery="handleRemoveAdditionalDelivery"
         @valid="valid = $event"
         @update:model-value="revalidate = !revalidate"
       />

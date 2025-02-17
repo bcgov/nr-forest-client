@@ -1,5 +1,5 @@
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
-import type { CodeDescrType, UserRole } from "@/dto/CommonTypesDto";
+import type { ClientLocation, CodeDescrType, UserRole } from "@/dto/CommonTypesDto";
 import { isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
 
 export const addNewAddress = (addresses: Address[]): number => {
@@ -175,3 +175,75 @@ export const getPrevailingRole = (authorities: string[]): UserRole => {
 
 export const includesAnyOf = (haystack: any[], needles: any[]): boolean =>
   !!haystack?.find((item) => needles?.includes(item));
+
+/**
+ * Converts location data from ClientLocation format to Address format, as required by the
+ * StaffLocationGroupComponent, first developed for the staff create form.
+ *
+ * @param location - ClientLocation formatted data
+ * @returns Address data
+ */
+export const locationToCreateFormat = (location: ClientLocation): Address => {
+  const address: Address = {
+    streetAddress: location.addressOne,
+    complementaryAddressOne: location.addressTwo,
+    complementaryAddressTwo: location.addressThree,
+    country: {
+      value: location.countryCode,
+      text: location.countryDesc,
+    },
+    province: {
+      value: location.provinceCode,
+      text: location.provinceDesc,
+    },
+    city: location.city,
+    postalCode: location.postalCode,
+    businessPhoneNumber: formatPhoneNumber(location.businessPhone),
+    secondaryPhoneNumber: formatPhoneNumber(location.cellPhone),
+    tertiaryPhoneNumber: formatPhoneNumber(location.homePhone),
+    faxNumber: formatPhoneNumber(location.faxNumber),
+    emailAddress: location.emailAddress,
+    notes: location.cliLocnComment,
+    index: Number(location.clientLocnCode),
+    locationName: location.clientLocnName,
+  };
+  return address;
+};
+
+/**
+ * Converts location data from Address format to ClientLocation format, as required by the Patch
+ * API.
+ * Note: data which don't exist in the Address format can be provided in the baseLocation
+ * parameter.
+ *
+ * @param address - Address formatted data
+ * @param baseLocation - ClientLocation data to fulfill data non-existent in the Address format
+ * @returns ClientLocation data
+ */
+export const locationToEditFormat = (
+  address: Address,
+  baseLocation: ClientLocation,
+): ClientLocation => {
+  const location: ClientLocation = {
+    ...baseLocation,
+    clientLocnName: address.locationName,
+    clientLocnCode: String(address.index).padStart(2, "0"),
+    addressOne: address.streetAddress,
+    addressTwo: address.complementaryAddressOne,
+    addressThree: address.complementaryAddressTwo,
+    city: address.city,
+    provinceCode: address.province.value,
+    provinceDesc: address.province.text,
+    postalCode: address.postalCode,
+    countryCode: address.country.value,
+    countryDesc: address.country.text,
+    businessPhone: keepOnlyNumbersAndLetters(address.businessPhoneNumber),
+    homePhone: keepOnlyNumbersAndLetters(address.tertiaryPhoneNumber),
+    cellPhone: keepOnlyNumbersAndLetters(address.secondaryPhoneNumber),
+    faxNumber: keepOnlyNumbersAndLetters(address.faxNumber),
+    emailAddress: address.emailAddress,
+    cliLocnComment: address.notes,
+  };
+
+  return location;
+};
