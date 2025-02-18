@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, nextTick, reactive, ref, watch } from "vue";
 import { AxiosError } from "axios";
 import * as jsonpatch from "fast-json-patch";
 
@@ -296,6 +296,21 @@ const saveLocation =
         toastBus.emit(toastNotification);
 
         locationsRef.value[index].lockEditing();
+
+        const app = document.getElementById("app");
+        const lastHeightFromBottom = app.scrollHeight - window.scrollY;
+
+        nextTick(() => {
+          /*
+          This will keep the *bottom* of the accordion at the same scroll position after it
+          shrinks.
+          The browser by default would keep the same *top* position of the scrollbar, which would
+          end up displaying only the final portion of the updated location at the top (even on a
+          large, full HD display) and thus pulling the next content up and making the user get
+          lost.
+          */
+          window.scrollTo({ top: app.scrollHeight - lastHeightFromBottom });
+        });
 
         if (!locationsState[locationCode]) {
           locationsState[locationCode] = createLocationState();
