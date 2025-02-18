@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { AxiosError } from "axios";
 import * as jsonpatch from "fast-json-patch";
 
@@ -124,6 +124,16 @@ const sortedLocations = computed(() =>
     .toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
 );
 
+interface LocationState {
+  isReloading: boolean;
+}
+
+const createLocationState = (): LocationState => ({
+  isReloading: false,
+});
+
+const locationsState = reactive<Record<string, LocationState>>({});
+
 const sortedContacts = computed(() =>
   data.value?.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
 );
@@ -247,7 +257,14 @@ const setLocationRef = (index: number) => (el: InstanceType<typeof LocationView>
 };
 
 const saveLocation =
-  (index: number) => (patchData: jsonpatch.Operation[], updatedLocation: ClientLocation) => {
+  (index: number) => (rawPatchData: jsonpatch.Operation[], updatedLocation: ClientLocation) => {
+    const locationCode = updatedLocation.clientLocnCode;
+
+    const patchData = rawPatchData.map((item) => ({
+      ...item,
+      path: `/addresses/${locationCode}${item.path}`,
+    }));
+
     const {
       fetch: patch,
       response,
@@ -275,14 +292,15 @@ const saveLocation =
 
         locationsRef.value[index].lockEditing();
 
-        const indexAddress = data.value.addresses.findIndex(
-          (location) => location.clientLocnCode === updatedLocation.clientLocnCode,
-        );
+        if (!locationsState[locationCode]) {
+          locationsState[locationCode] = createLocationState();
+        }
 
-        // reset data
-        data.value.addresses[indexAddress] = undefined;
+        locationsState[locationCode].isReloading = true;
 
-        fetchClientData();
+        fetchClientData().asyncResponse.then(() => {
+          locationsState[locationCode].isReloading = false;
+        });
       }
       if (error.value.status) {
         const toastNotification: ModalNotification = {
@@ -424,7 +442,11 @@ resetGlobalError();
             :id="`location-${location.clientLocnCode}`"
           >
             <cds-accordion-item size="lg" class="grouping-13" v-shadow="1">
-              <div slot="title" class="flex-column-0_25rem">
+              <div
+                slot="title"
+                class="flex-column-0_25rem"
+                :class="{ invisible: locationsState[location.clientLocnCode]?.isReloading }"
+              >
                 <span class="label-with-icon">
                   <LocationStar20 v-if="index === 0" />
                   <Location20 v-else />
@@ -448,6 +470,7 @@ resetGlobalError();
               <location-view
                 :ref="setLocationRef(index)"
                 :data="location"
+                :is-reloading="locationsState[location.clientLocnCode]?.isReloading"
                 :user-roles="userRoles"
                 :validations="[uniqueLocations.add]"
                 @save="(...args) => saveLocation(index)(...args)"

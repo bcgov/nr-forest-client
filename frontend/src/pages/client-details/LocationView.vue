@@ -23,6 +23,7 @@ const props = defineProps<{
   data: ClientLocation;
   userRoles: UserRole[];
   validations: Array<Function>;
+  isReloading: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -134,7 +135,7 @@ const valid = ref(false);
 </script>
 
 <template>
-  <div class="grouping-12">
+  <div class="grouping-12" :class="{ invisible: props.isReloading }">
     <div v-if="!isEditing" class="flex-column-1_5rem">
       <div :id="`location-${indexString}-address-section`" class="grouping-23">
         <read-only-component label="Address" :id="`location-${indexString}-address`">
