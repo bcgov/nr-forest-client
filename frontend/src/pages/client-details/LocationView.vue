@@ -15,6 +15,7 @@ import Edit16 from "@carbon/icons-vue/es/edit/16";
 import Save16 from "@carbon/icons-vue/es/save/16";
 import Close16 from "@carbon/icons-vue/es/close/16";
 import Undefined16 from "@carbon/icons-vue/es/undefined/16";
+import Renew16 from "@carbon/icons-vue/es/renew/16";
 
 import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
@@ -27,7 +28,12 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "save", value: jsonpatch.Operation[], updatedLocation: ClientLocation): void;
+  (
+    e: "save",
+    value: jsonpatch.Operation[],
+    updatedLocation: ClientLocation,
+    updateSuccessWord: string,
+  ): void;
 }>();
 
 // Defining the event bus to send notifications up
@@ -97,39 +103,49 @@ defineExpose({
   lockEditing,
 });
 
-const save = () => {
+const save = (newData: ClientLocation, updateSuccessWord = "updated") => {
+  const patch = jsonpatch.compare(originalData, newData);
+  emit("save", patch, newData, updateSuccessWord);
+};
+
+const saveForm = () => {
   const location = locationToEditFormat(formAddressData.value, props.data);
-  const patch = jsonpatch.compare(originalData, location);
-  emit("save", patch, location);
-  console.log("save");
+  save(location);
+};
+
+const displayDeactivateModal = ref(false);
+
+const handleDeactivate = () => {
+  displayDeactivateModal.value = true;
+};
+
+const deactivate = () => {
+  const newData: ClientLocation = {
+    ...originalData,
+    locnExpiredInd: "Y",
+  };
+  save(newData, "deactivated");
+  displayDeactivateModal.value = false;
+};
+
+const displayReactivateModal = ref(false);
+
+const handleReactivate = () => {
+  displayReactivateModal.value = true;
+};
+
+const reactivate = () => {
+  const newData: ClientLocation = {
+    ...originalData,
+    locnExpiredInd: "N",
+  };
+  save(newData, "reactivated");
+  displayReactivateModal.value = false;
 };
 
 const canEdit = computed(() =>
   includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
 );
-
-const removeAdditionalDelivery = () => {
-  formAddressData.value.complementaryAddressTwo = null;
-  modalBus.emit({
-    active: false,
-    message: "",
-    kind: "",
-    toastTitle: "",
-    handler: () => {},
-  });
-};
-
-const handleRemoveAdditionalDelivery = () => {
-  const selectedDeliveryInformation = formAddressData.value.complementaryAddressTwo;
-  modalBus.emit({
-    name: selectedDeliveryInformation,
-    toastTitle: "Success",
-    kind: "delivery information",
-    message: `“${selectedDeliveryInformation}” additional delivery information was deleted`,
-    handler: removeAdditionalDelivery,
-    active: true,
-  });
-};
 
 const valid = ref(false);
 </script>
@@ -232,9 +248,25 @@ const valid = ref(false);
       </div>
     </div>
     <div v-if="canEdit && !isEditing">
-      <cds-button :id="`location-${indexString}-EditBtn`" kind="tertiary" size="md" @click="edit">
+      <cds-button
+        v-if="props.data.locnExpiredInd === 'N'"
+        :id="`location-${indexString}-EditBtn`"
+        kind="tertiary"
+        size="md"
+        @click="edit"
+      >
         <span class="width-unset">Edit location</span>
         <Edit16 slot="icon" />
+      </cds-button>
+      <cds-button
+        v-if="props.data.locnExpiredInd === 'Y'"
+        :id="`location-${indexString}-ReactivateBtn`"
+        kind="tertiary"
+        size="md"
+        @click="handleReactivate"
+      >
+        <span class="width-unset">Reactivate location</span>
+        <Renew16 slot="icon" />
       </cds-button>
     </div>
     <div class="tab-form" v-if="isEditing">
@@ -255,7 +287,7 @@ const valid = ref(false);
           :id="`location-${indexString}-SaveBtn`"
           kind="primary"
           size="md"
-          @click="save"
+          @click="saveForm"
           :disabled="!hasAnyChange || !valid"
         >
           <span class="width-unset">Save changes</span>
@@ -275,7 +307,7 @@ const valid = ref(false);
           :id="`location-${indexString}-DeactivateBtn`"
           kind="danger--tertiary"
           size="md"
-          @click="cancel"
+          @click="handleDeactivate"
         >
           <span class="width-unset">Deactivate location</span>
           <Undefined16 slot="icon" />
@@ -283,6 +315,72 @@ const valid = ref(false);
       </div>
     </div>
   </div>
+  <cds-modal
+    id="modal-deactivate"
+    aria-labelledby="modal-deactivate-heading"
+    size="sm"
+    :open="displayDeactivateModal"
+    @cds-modal-closed="displayDeactivateModal = false"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading id="modal-deactivate-heading"
+        >Are you sure you want to deactivate "{{ props.data.clientLocnName }}" location?
+      </cds-modal-heading>
+    </cds-modal-header>
+
+    <cds-modal-body id="modal-deactivate-body">
+      <p>
+        This location will still display but it will not be editable or usable for business
+        purposes.
+      </p>
+    </cds-modal-body>
+
+    <cds-modal-footer>
+      <cds-modal-footer-button kind="secondary" data-modal-close class="cds--modal-close-btn">
+        Cancel
+      </cds-modal-footer-button>
+
+      <cds-modal-footer-button
+        kind="danger"
+        class="cds--modal-submit-btn"
+        v-on:click="deactivate"
+        :danger-descriptor="`Deactivate &quot;${props.data.clientLocnName}&quot;`"
+      >
+        Deactivate location
+        <Undefined16 slot="icon" />
+      </cds-modal-footer-button>
+    </cds-modal-footer>
+  </cds-modal>
+  <cds-modal
+    id="modal-reactivate"
+    aria-labelledby="modal-reactivate-heading"
+    size="sm"
+    :open="displayReactivateModal"
+    @cds-modal-closed="displayReactivateModal = false"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading id="modal-reactivate-heading"
+        >Are you sure you want to reactivate "{{ props.data.clientLocnName }}" location?
+      </cds-modal-heading>
+    </cds-modal-header>
+
+    <cds-modal-body id="modal-reactivate-body">
+      <p>This location will be usable and editable again.</p>
+    </cds-modal-body>
+
+    <cds-modal-footer>
+      <cds-modal-footer-button kind="secondary" data-modal-close class="cds--modal-close-btn">
+        Cancel
+      </cds-modal-footer-button>
+
+      <cds-modal-footer-button kind="primary" class="cds--modal-submit-btn" v-on:click="reactivate">
+        Reactivate location
+        <Renew16 slot="icon" />
+      </cds-modal-footer-button>
+    </cds-modal-footer>
+  </cds-modal>
 </template>
 
 <style scoped>

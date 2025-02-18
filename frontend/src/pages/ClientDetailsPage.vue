@@ -257,7 +257,12 @@ const setLocationRef = (index: number) => (el: InstanceType<typeof LocationView>
 };
 
 const saveLocation =
-  (index: number) => (rawPatchData: jsonpatch.Operation[], updatedLocation: ClientLocation) => {
+  (index: number) =>
+  (
+    rawPatchData: jsonpatch.Operation[],
+    updatedLocation: ClientLocation,
+    updateSuccessWord: string,
+  ) => {
     const locationCode = updatedLocation.clientLocnCode;
 
     const patchData = rawPatchData.map((item) => ({
@@ -285,7 +290,7 @@ const saveLocation =
           kind: "Success",
           active: true,
           handler: () => {},
-          message: `Location <span class="weight-700">“${updatedTitle}”</span> was updated`,
+          message: `Location <span class="weight-700">“${updatedTitle}”</span> was ${updateSuccessWord}`,
           toastTitle: undefined,
         };
         toastBus.emit(toastNotification);

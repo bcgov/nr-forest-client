@@ -36,7 +36,7 @@
             "homePhone": "",
             "faxNumber": "",
             "cliLocnComment": "Sample location 00 comment",
-            "locnExpiredInd": "Y"
+            "locnExpiredInd": "N"
         },
         {
             "clientLocnName": "Accountant address",
@@ -56,7 +56,7 @@
             "homePhone": "",
             "faxNumber": "",
             "cliLocnComment": "Sample location 01 comment",
-            "locnExpiredInd": "N"
+            "locnExpiredInd": "Y"
         }
     ]
 }
