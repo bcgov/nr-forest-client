@@ -26,7 +26,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "save", value: jsonpatch.Operation[]): void;
+  (e: "save", value: jsonpatch.Operation[], updatedLocation: ClientLocation): void;
 }>();
 
 // Defining the event bus to send notifications up
@@ -99,7 +99,8 @@ defineExpose({
 const save = () => {
   const location = locationToEditFormat(formAddressData.value, props.data);
   const patch = jsonpatch.compare(originalData, location);
-  emit("save", patch);
+  emit("save", patch, location);
+  console.log("save");
 };
 
 const canEdit = computed(() =>

@@ -119,7 +119,9 @@ const compareString = (a: string, b: string) => {
 };
 
 const sortedLocations = computed(() =>
-  data.value?.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
+  data.value?.addresses
+    ?.filter((item) => item !== undefined)
+    .toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
 );
 
 const sortedContacts = computed(() =>
@@ -130,10 +132,14 @@ const uniqueLocations = isUniqueDescriptive();
 
 watch(sortedLocations, (value) => {
   if (value?.length) {
-    value.forEach((location) => {
-      const index = String(Number(location.clientLocnCode));
-      uniqueLocations.add("Names", index)(location.clientLocnName);
-    });
+    console.log({ value });
+    value
+      .filter((item) => item !== undefined)
+      .forEach((location) => {
+        console.log({ location });
+        const index = String(Number(location.clientLocnCode));
+        uniqueLocations.add("Names", index)(location.clientLocnName);
+      });
   }
 });
 
@@ -150,7 +156,7 @@ const formatLocation = (location: ClientLocation) => {
 
 const formatLocationsList = (
   locationCodes: string[],
-  allLocations: ClientLocation[] = data.value.addresses,
+  allLocations: ClientLocation[] = sortedLocations.value,
 ) => {
   const list: string[] = [];
   if (Array.isArray(locationCodes)) {
@@ -159,8 +165,10 @@ const formatLocationsList = (
         (curLocation) => curLocation.clientLocnCode === curLocationCode,
       );
 
-      const title = formatLocation(location);
-      list.push(title);
+      if (location) {
+        const title = formatLocation(location);
+        list.push(title);
+      }
     }
   }
   return list.join(", ");
@@ -230,6 +238,65 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
     }
   });
 };
+
+const locationsRef = ref<InstanceType<typeof LocationView>[]>([]);
+
+const setLocationRef = (index: number) => (el: InstanceType<typeof LocationView>) => {
+  console.log(index);
+  locationsRef.value[index] = el;
+};
+
+const saveLocation =
+  (index: number) => (patchData: jsonpatch.Operation[], updatedLocation: ClientLocation) => {
+    const {
+      fetch: patch,
+      response,
+      error,
+    } = useJsonPatch(`/api/clients/details/${clientNumber}`, patchData, {
+      skip: true,
+    });
+
+    console.log(patchData);
+
+    resetGlobalError();
+
+    const updatedTitle = formatLocation(updatedLocation);
+
+    patch().then(() => {
+      if (response.value.status) {
+        const toastNotification: ModalNotification = {
+          kind: "Success",
+          active: true,
+          handler: () => {},
+          message: `Location <span class="weight-700">“${updatedTitle}”</span> was updated`,
+          toastTitle: undefined,
+        };
+        toastBus.emit(toastNotification);
+
+        locationsRef.value[index].lockEditing();
+
+        const indexAddress = data.value.addresses.findIndex(
+          (location) => location.clientLocnCode === updatedLocation.clientLocnCode,
+        );
+
+        // reset data
+        data.value.addresses[indexAddress] = undefined;
+
+        fetchClientData();
+      }
+      if (error.value.status) {
+        const toastNotification: ModalNotification = {
+          kind: "Error",
+          active: true,
+          handler: () => {},
+          message: "Failed to update location",
+          toastTitle: undefined,
+        };
+        toastBus.emit(toastNotification);
+        globalError.value = error.value;
+      }
+    });
+  };
 
 const globalError = ref();
 
@@ -379,9 +446,11 @@ resetGlobalError();
                 </span>
               </div>
               <location-view
+                :ref="setLocationRef(index)"
                 :data="location"
                 :user-roles="userRoles"
                 :validations="[uniqueLocations.add]"
+                @save="(...args) => saveLocation(index)(...args)"
               />
             </cds-accordion-item>
           </cds-accordion>
