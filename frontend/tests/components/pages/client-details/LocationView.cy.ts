@@ -1,6 +1,9 @@
+import type { Address } from "@/dto/ApplyClientNumberDto";
 import type { ClientLocation } from "@/dto/CommonTypesDto";
 import LocationView from "@/pages/client-details/LocationView.vue";
-import { formatPhoneNumber } from "@/services/ForestClientService";
+import { formatPhoneNumber, locationToCreateFormat } from "@/services/ForestClientService";
+
+import { VueWrapper } from "@vue/test-utils";
 
 describe("<location-view />", () => {
   const getDefaultProps = () => ({
@@ -11,8 +14,8 @@ describe("<location-view />", () => {
       addressTwo: "C/O Tony Pineda",
       addressThree: "Sample additional info",
       countryCode: "CA",
-      country: "Canada",
-      province: "SK",
+      countryDesc: "Canada",
+      provinceCode: "SK",
       provinceDesc: "Saskatchewan",
       city: "Hampton",
       postalCode: "T4G5J1",
@@ -24,6 +27,8 @@ describe("<location-view />", () => {
       cliLocnComment: "Sample location 00 comment",
       locnExpiredInd: "N",
     } as ClientLocation,
+    userRoles: ["CLIENT_EDITOR"],
+    validations: [],
   });
 
   let currentProps: ReturnType<typeof getDefaultProps> = null;
@@ -170,5 +175,100 @@ describe("<location-view />", () => {
         });
       });
     });
+  });
+
+  const testInputTag = (inputTag: string, rawSelector: string, value?: string) => {
+    const selector = `${inputTag}${rawSelector}`;
+    cy.get(selector).should("be.visible");
+    if (value !== undefined) {
+      cy.get(selector).should("have.value", value);
+    }
+  };
+
+  const testTextInput = (rawSelector: string, value?: string) =>
+    testInputTag("cds-text-input", rawSelector, value);
+
+  const testComboBox = (rawSelector: string, value?: string) =>
+    testInputTag("cds-combo-box", rawSelector, value);
+
+  describe("when the edit button in clicked", () => {
+    let props: ReturnType<typeof getDefaultProps>;
+    beforeEach(() => {
+      props = getDefaultProps();
+      mount(props);
+      cy.get("#location-00-EditBtn").click();
+    });
+
+    it("enables the edition of some fields by displaying the staff-location-group-component", () => {
+      cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
+        const staffCreateComponent = vueWrapper.getComponent({
+          name: "staff-location-group-component",
+        });
+
+        expect(staffCreateComponent.props("id")).to.eq(0);
+
+        const staffCreateData: Address = staffCreateComponent.props("modelValue");
+
+        expect(staffCreateData).to.deep.eq(locationToCreateFormat(props.data));
+      });
+    });
+
+    it("disables the Save button by default", () => {
+      cy.get("#location-00-SaveBtn").shadow().find("button").should("be.disabled");
+    });
+
+    it("enables the Save button once something gets changed", () => {
+      cy.clearFormEntry("#emailAddress_0");
+      cy.get("#location-00-SaveBtn").shadow().find("button").should("be.enabled");
+    });
+
+    it("disables the Save button again if values are restored to their original values", () => {
+      cy.clearFormEntry("#emailAddress_0");
+      cy.get("#location-00-SaveBtn").shadow().find("button").should("be.enabled");
+      cy.fillFormEntry("#emailAddress_0", props.data.emailAddress);
+      cy.get("#location-00-SaveBtn").shadow().find("button").should("be.disabled");
+    });
+
+    it("restores original values if the Cancel button gets clicked", () => {
+      // Change some values
+      cy.clearFormEntry("#name_0");
+      cy.fillFormEntry("#name_0", "Changed name");
+      cy.selectFormEntry("#province_0", "Quebec");
+      cy.clearFormEntry("#emailAddress_0");
+
+      // Cancel
+      cy.get("#location-00-CancelBtn").click();
+
+      // Click to edit again
+      cy.get("#location-00-EditBtn").click();
+
+      // Check changed values were restored on the form
+      testTextInput("#name_0", props.data.clientLocnName);
+      testComboBox("#province_0", props.data.provinceDesc);
+      testTextInput("#emailAddress_0", props.data.emailAddress);
+    });
+
+    it("emits a save event when the Save button gets clicked", () => {
+      // Change some information
+      cy.clearFormEntry("#emailAddress_0");
+
+      cy.get("#location-00-SaveBtn").click();
+
+      cy.get("@vueWrapper").should((vueWrapper) => {
+        const saveData = vueWrapper.emitted("save")[0][0];
+
+        expect(saveData).to.be.an("array");
+        expect(saveData).to.have.lengthOf(1);
+
+        expect(saveData[0].op).to.eq("replace");
+      });
+    });
+
+    it("doesn't display a Deactivate button when location code is '00'");
+    it("displays a confirmation dialog when Deactivate is clicked");
+    it("emits a save event when the intention to Deactivate is confirmed");
+
+    it("displays a confirmation dialog when Reactivate is clicked");
+    it("emits a save event when the intention to Reactivate is confirmed");
   });
 });

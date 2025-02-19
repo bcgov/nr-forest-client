@@ -188,6 +188,88 @@ describe("<StaffLocationGroupComponent />", () => {
       .and("include.text", "Error");
   });
 
+  const tertiarySeletor0 = "#tertiaryPhoneNumber_0";
+
+  it("should render the component without a tertiaryPhoneNumber input field by default", () => {
+    cy.get("@addressFixture").then((address: any) => {
+      cy.get("@countriesFixture").then((countries) => {
+        cy.mount(StaffLocationGroupComponent, {
+          props: {
+            id: 0,
+            modelValue: address,
+            countryList: countries,
+            validations: [],
+          },
+        });
+      });
+    });
+
+    cy.wait("@getProvinces");
+
+    cy.get(tertiarySeletor0).should("not.exist");
+  });
+
+  it("should render the component with a tertiaryPhoneNumber input field", () => {
+    cy.get("@addressFixture").then((address: any) => {
+      cy.get("@countriesFixture").then((countries) => {
+        cy.mount(StaffLocationGroupComponent, {
+          props: {
+            id: 0,
+            modelValue: address,
+            countryList: countries,
+            validations: [],
+            includeTertiaryPhoneNumber: true,
+          },
+        });
+      });
+    });
+
+    cy.wait("@getProvinces");
+
+    cy.get(tertiarySeletor0).should("be.visible");
+  });
+
+  const deleteSeletor1 = "#deleteAddress_1";
+
+  it("should render the component with a Delete button by default when id > 0", () => {
+    cy.get("@addressFixture").then((address: any) => {
+      cy.get("@countriesFixture").then((countries) => {
+        cy.mount(StaffLocationGroupComponent, {
+          props: {
+            id: 1,
+            modelValue: address,
+            countryList: countries,
+            validations: [],
+          },
+        });
+      });
+    });
+
+    cy.wait("@getProvinces");
+
+    cy.get(deleteSeletor1).should("be.visible");
+  });
+
+  it("should render the component without a Delete button", () => {
+    cy.get("@addressFixture").then((address: any) => {
+      cy.get("@countriesFixture").then((countries) => {
+        cy.mount(StaffLocationGroupComponent, {
+          props: {
+            id: 1,
+            modelValue: address,
+            countryList: countries,
+            validations: [],
+            hideDeleteButton: true,
+          },
+        });
+      });
+    });
+
+    cy.wait("@getProvinces");
+
+    cy.get(deleteSeletor1).should("not.exist");
+  });
+
   it("should render the component and show the address name regardless of id being 0", () => {
     cy.get("@addressFixture").then((address) => {
       cy.get("@countriesFixture").then((countries) => {

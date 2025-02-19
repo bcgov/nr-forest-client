@@ -1538,7 +1538,7 @@ cds-accordion-item::part(expando) {
 cds-accordion-item[open]::part(cds--accordion__wrapper) {
   /*
   Fixes issue where accordions would not auto-adjust size (height) according to its content, when
-  it grows dynammically.
+  it grows dynamically.
   */
   max-block-size: unset;
 }

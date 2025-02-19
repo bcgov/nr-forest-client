@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
-import type { ClientLocation, ModalNotification, UserRole } from "@/dto/CommonTypesDto";
+import type { ClientLocation, UserRole } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
 import {
   formatPhoneNumber,
@@ -18,7 +18,6 @@ import Undefined16 from "@carbon/icons-vue/es/undefined/16";
 import Renew16 from "@carbon/icons-vue/es/renew/16";
 
 import { useFetchTo } from "@/composables/useFetch";
-import { useEventBus } from "@vueuse/core";
 
 const props = defineProps<{
   data: ClientLocation;
@@ -35,9 +34,6 @@ const emit = defineEmits<{
     updateSuccessWord: string,
   ): void;
 }>();
-
-// Defining the event bus to send notifications up
-const modalBus = useEventBus<ModalNotification>("modal-notification");
 
 const indexString = props.data.clientLocnCode;
 const index = Number(indexString);
@@ -67,6 +63,7 @@ const resetFormData = () => {
   const createFormData = locationToCreateFormat(props.data);
 
   const stringifiedData = JSON.stringify(createFormData);
+
   originalAddressData = JSON.parse(stringifiedData);
   formAddressData.value = JSON.parse(stringifiedData);
 
