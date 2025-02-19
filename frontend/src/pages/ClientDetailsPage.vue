@@ -37,6 +37,8 @@ import {
   toTitleCase,
   getFieldLabel,
   getAction,
+  getOldValue,
+  getOldDescription,
   reasonRequiredFields
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
@@ -182,17 +184,6 @@ const reasonModalActiveInd = ref(false);
 let reasonPatchData = ref<jsonpatch.Operation[]>([]);
 let originalPatchData: jsonpatch.Operation[] = []; 
 const finalPatchData = ref<jsonpatch.Operation[]>([]);
-
-const getOldValue = (path: string) => {
-  const field = path.replace('/', '');
-  
-  switch (field) {
-    case 'clientStatusCode':
-      return data.value.clientStatusCode;
-    default:
-      return '';
-  }
-};
 
 // Function to update reasons and send final PATCH request
 const confirmReasons = (reasons: FieldUpdateReason[]) => {
@@ -580,12 +571,12 @@ resetGlobalError();
           </p>
 
           <p class="field-label">
-            <del>{{ getOldValue(patch.path) }}</del> {{ patch.value }}
-            {{data.clientTypeCode}}
+            <del>{{ getOldDescription(patch.path, data) }}</del> {{ patch.value }}
+            <!-- {{getOldValue(patch.path, data)}} -->
           </p>
           
           <data-fetcher
-            :url="`/api/codes/update-reasons/${data.clientTypeCode}/${getAction(patch.path, getOldValue(patch.path), patch.value)}`"
+            :url="`/api/codes/update-reasons/${data.clientTypeCode}/${getAction(patch.path, getOldValue(patch.path, data), patch.value)}`"
             :min-length="0"
             :init-value="[]"
             :init-fetch="true"

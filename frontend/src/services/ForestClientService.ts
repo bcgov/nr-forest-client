@@ -2,6 +2,7 @@ import type { Address, Contact } from "../dto/ApplyClientNumberDto";
 import type { ClientDetails, CodeDescrType, UserRole } from "@/dto/CommonTypesDto";
 import { isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
 import * as jsonpatch from "fast-json-patch";
+import { unref, type Ref } from "vue";
 
 export const addNewAddress = (addresses: Address[]): number => {
   const blankAddress: Address = {
@@ -250,33 +251,68 @@ export const extractReasonFields = (patchData: jsonpatch.Operation[], originalDa
     });
 };
 
-//TODO: Complete this function
-export const getFieldLabel = (path: string) => {
-  let fieldName = path.replace('/', '');
-  switch (fieldName) {
-    case "clientNumber":
-      return "Client number";
-    case "clientName":
-      return "Client name";
-    case "legalFirstName":
-      return "First name";
-    case "legalMiddleName":
-      return "Middle Name";
-    case "clientStatusCode":
-      return "Client status";
-    default:
-      return "Unknown";
-  }
-};
-
 export const getAction = (path: string, oldValue?: string, newValue?: string) => {
-  const field = path.replace('/', '');
+  const fieldName = path.split('/').pop();
 
-  if (field === 'clientStatusCode' && oldValue && newValue) {
+  if (fieldName === 'clientStatusCode' && oldValue && newValue) {
     const transitionKey = `${oldValue}-${newValue}`;
     const transitionAction = statusTransitionMap.get(transitionKey);
     return transitionAction || null;
   }
 
-  return fieldReasonMap.get(field) || null;
+  return fieldReasonMap.get(fieldName) || null;
 };
+
+//TODO: Complete this function
+const fieldLabels = new Map<string, string>([
+  ["clientNumber", "Client number"],
+  ["clientName", "Client name"],
+  ["legalFirstName", "First name"],
+  ["legalMiddleName", "Middle Name"],
+  ["clientStatusCode", "Client status"],
+  ["clientTypeCode", "Client type"],
+  ["clientIdTypeCode", "ID type"],
+  ["clientIdentification", "ID number"],
+]);
+
+export const getFieldLabel = (path: string) => {
+  const fieldName = path.split('/').pop(); 
+  return fieldLabels.get(fieldName || "") || "Unknown";
+};
+
+export const getOldValue = (path: string, data: Ref<ClientDetails> | ClientDetails) => {
+  if (!data) {
+    console.warn("Old value was called with undefined data!", path);
+    return 'N/A';
+  }
+
+  const clientData = unref(data);
+  const fieldName = path.split('/').pop() || "";
+
+  const clientKeys = Object.keys(clientData) as (keyof ClientDetails)[];
+
+  if (clientKeys.includes(fieldName as keyof ClientDetails)) {
+    return clientData[fieldName as keyof ClientDetails] || 'N/A';
+  }
+
+  return 'N/A';
+};
+
+export const getOldDescription = (path: string, data: Ref<ClientDetails> | ClientDetails) => {
+  if (!data) {
+    console.warn("Old description was called with undefined data!", path);
+    return 'N/A';
+  }
+
+  const clientData = unref(data);
+  const fieldName = path.split('/').pop();
+
+  switch (fieldName) {
+    case 'clientStatusCode':
+      return clientData.clientStatusDesc || 'N/A';  
+    default:
+      return 'N/A';
+  }
+};
+
+
