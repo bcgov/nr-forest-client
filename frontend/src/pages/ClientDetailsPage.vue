@@ -295,21 +295,6 @@ const saveLocation =
 
         locationsRef.value[index].lockEditing();
 
-        const app = document.getElementById("app");
-        const lastHeightFromBottom = app.scrollHeight - window.scrollY;
-
-        nextTick(() => {
-          /*
-          This will keep the *bottom* of the accordion at the same scroll position after it
-          shrinks.
-          The browser by default would keep the same *top* position of the scrollbar, which would
-          end up displaying only the final portion of the updated location at the top (even on a
-          large, full HD display) and thus pulling the next content up and making the user get
-          lost.
-          */
-          window.scrollTo({ top: app.scrollHeight - lastHeightFromBottom });
-        });
-
         if (!locationsState[locationCode]) {
           locationsState[locationCode] = createLocationState();
         }
@@ -491,6 +476,7 @@ resetGlobalError();
                 :is-reloading="locationsState[location.clientLocnCode]?.isReloading"
                 :user-roles="userRoles"
                 :validations="[uniqueLocations.add]"
+                keep-scroll-bottom-position
                 @save="(...args) => saveLocation(index)(...args)"
               />
             </cds-accordion-item>

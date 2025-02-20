@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import type { ClientLocation, UserRole } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
@@ -7,6 +7,7 @@ import {
   formatPhoneNumber,
   getFormattedHtml,
   includesAnyOf,
+  keepScrollBottomPosition as keepScrollBottomPositionFn,
   locationToCreateFormat,
   locationToEditFormat,
 } from "@/services/ForestClientService";
@@ -24,6 +25,7 @@ const props = defineProps<{
   userRoles: UserRole[];
   validations: Array<Function>;
   isReloading: boolean;
+  keepScrollBottomPosition?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -89,11 +91,14 @@ const edit = () => {
 };
 
 const cancel = () => {
-  isEditing.value = false;
+  lockEditing();
 };
 
 const lockEditing = () => {
   isEditing.value = false;
+  if (props.keepScrollBottomPosition) {
+    keepScrollBottomPositionFn(nextTick());
+  }
 };
 
 defineExpose({

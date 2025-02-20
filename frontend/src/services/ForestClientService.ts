@@ -247,3 +247,23 @@ export const locationToEditFormat = (
 
   return location;
 };
+
+/**
+ * Keeps the scrollbar at its current bottom position while the supplied promise resolves.
+ *
+ * What does this mean? This function should be used when the content on the viewport is about to
+ * shrink, specially when the user just sees the bottom of such content.
+ * The goal is to make the bottom of such content remain at the same Y position, kind of similarly
+ * to what the overflow-anchor CSS property is able to do while the content grows, so as to avoid
+ * scroll jumping in unexpected ways.
+ *
+ * @param uiUpdatePromise - The promise whose resolution should triggers the scroll fix.
+ */
+export const keepScrollBottomPosition = (uiUpdatePromise: Promise<void>): void => {
+  const app = document.getElementById("app");
+  const lastHeightFromBottom = app.scrollHeight - window.scrollY;
+
+  uiUpdatePromise.then(() => {
+    window.scrollTo({ top: app.scrollHeight - lastHeightFromBottom });
+  });
+};
