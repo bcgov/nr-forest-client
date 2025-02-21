@@ -231,28 +231,43 @@ const getValidations = (key: string): ((value: any) => string)[] => {
   return [];
 };
 
+const checkReasonCodesValidation = () => {
+  for (const valid of reasonCodesValidation.value) {
+    if (!valid) {
+      return false;
+    }
+  }
+  return true;
+};
+
+const reasonCodesValidation = ref<boolean[]>([]);
+watch(
+  reasonCodesValidation,
+  () => {
+    if (isSaveFirstClick.value) {
+      // Enables the Save button if not clicked for the first time yet
+      saveDisabled.value = false;
+
+      return;
+    }
+
+    // Possibly reenables the button
+    saveDisabled.value = !checkReasonCodesValidation();
+  },
+  {
+    deep: true,
+  },
+);
+
 // Function to update reasons and send final PATCH request
 const confirmReasons = (reasons: FieldUpdateReason[]) => {
   isSaveFirstClick.value = false;
   const reasonInputIdList = reasonPatchData.value.map((_, index) => `input-reason-${index}`);
   revalidateBus.emit(reasonInputIdList);
 
-  const missingReasons = reasonPatchData.value.some((_, index) => {
-    return !selectedReasons.value[index] || !selectedReasons.value[index].reason;
-  });
-
-  if (missingReasons) {
+  if (!checkReasonCodesValidation()) {
     saveDisabled.value = true;
     console.log("Validation failed: Some reasons are missing.");
-
-    selectedReasons.value.forEach((_, index) => {
-      const validation = getValidations(`selectedReasons.${index}.reason`);
-      validation.forEach((validate) => {
-        if (validate('')) {
-          console.log(`Validation error for index ${index}`);
-        }
-      });
-    });
     return;
   }
 
@@ -331,32 +346,6 @@ const sendPatchRequest = (reasonUpdatedPatchData: jsonpatch.Operation[]) => {
   });
 };
 
-const reasonCodesValidation = ref<boolean[]>([]);
-watch(
-  reasonCodesValidation,
-  (validation) => {
-    if (isSaveFirstClick.value) {
-      // Enables the Save button if not clicked for the first time yet
-      saveDisabled.value = false;
-
-      return;
-    }
-
-    saveDisabled.value = false;
-    for (const valid of validation) {
-      if (!valid) {
-        // Disables the Save button when invalid
-        saveDisabled.value = true;
-
-        break;
-      }
-    }
-  },
-  {
-    deep: true,
-  },
-);
-
 // Function to save
 const saveSummary = (patchData: jsonpatch.Operation[]) => {
   //Reset values
@@ -387,10 +376,13 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
         return { ...patch, reason: reasonEntry?.reason || '' };
       });
 
-    reasonModalActiveInd.value = true;
+    // Prevents focusing input field on the modal
+    setTimeout(() => {
+      reasonModalActiveInd.value = true;
+    }, 0);
+
     isSaveFirstClick.value = true;
-  } 
-  else {
+  } else {
     sendPatchRequest(patchData);
   }
 
@@ -669,9 +661,7 @@ resetGlobalError();
           Select a reason for the following changes:
         </p>
         <br />
-        <div v-for="(patch, index) in reasonPatchData" 
-              :key="index">
-          
+        <div v-for="(patch, index) in reasonPatchData" :key="index">
           <data-fetcher
             :url="`/api/codes/update-reasons/${data.clientTypeCode}/${getAction(patch.path, getOldValue(patch.path, data), patch.value)}`"
             :min-length="0"
@@ -693,7 +683,6 @@ resetGlobalError();
               tip=""
               :validations="[...getValidations(`selectedReasons.${index}.reason`)]"
               style="width: 100% !important"
-              #="{ option }"
               @update:model-value="
                 (selectedValue) => {
                   updateSelectedReason(selectedValue, content, index, patch, selectedReasons);
