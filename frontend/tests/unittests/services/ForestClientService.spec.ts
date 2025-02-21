@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { ref } from 'vue';
 import {
   addNewAddress,
   addNewContact,
@@ -10,9 +11,14 @@ import {
   formatPhoneNumber,
   getPrevailingRole,
   includesAnyOf,
+  extractReasonFields,
+  getAction,
+  getActionLabel,
+  getOldValue,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
-import type { UserRole } from "@/dto/CommonTypesDto";
+import type { UserRole, ClientDetails } from "@/dto/CommonTypesDto";
+import type * as jsonpatch from "fast-json-patch";
 
 describe("ForestClientService.ts", () => {
   describe("Address and Contact utils", () => {
@@ -259,6 +265,89 @@ describe("ForestClientService.ts", () => {
       const needles = ["x", "y", "z"];
       const result = includesAnyOf(haystack, needles);
       expect(result).toBe(false);
+    });
+  });
+});
+
+describe("Reason Fields Handling", () => {
+  const originalData: ClientDetails = {
+    clientStatusCode: "ACT",
+    clientIdentification: "12345",
+    clientName: "John Doe",
+    legalFirstName: "John",
+    legalMiddleName: "A.",
+    addressOne: "123 Main St",
+    addressTwo: "Apt 4",
+    addressThree: "",
+    city: "Metropolis",
+    provinceCode: "BC",
+    countryCode: "CA",
+    postalCode: "V1V1V1",
+  };
+
+  it("extracts reason fields from patch data", () => {
+    const patchData: jsonpatch.Operation[] = [
+      { op: "replace", path: "/clientIdentification", value: "67890" },
+      { op: "replace", path: "/clientStatusCode", value: "DEC" },
+      { op: "replace", path: "/city", value: "Gotham" },
+    ];
+
+    const result = extractReasonFields(patchData, originalData);
+    expect(result).toEqual([
+      { field: "clientIdentification", reason: "ID" },
+      { field: "clientStatusCode", reason: "ACDC" }, // Active -> Deceased
+      { field: "city", reason: "ADDR" },
+    ]);
+  });
+
+  it("returns empty array if no reason-required fields are changed", () => {
+    const patchData: jsonpatch.Operation[] = [
+      { op: "replace", path: "/someOtherField", value: "New Value" },
+    ];
+
+    const result = extractReasonFields(patchData, originalData);
+    expect(result).toEqual([]);
+  });
+
+  describe("getAction", () => {
+    it("returns correct action for client status changes", () => {
+      expect(getAction("/clientStatusCode", "ACT", "DAC")).toEqual("DAC");
+      expect(getAction("/clientStatusCode", "DEC", "ACT")).toEqual("RACT");
+      expect(getAction("/clientStatusCode", "SPN", "REC")).toBeNull(); // No reason needed
+    });
+
+    it("returns correct field mapping for other fields", () => {
+      expect(getAction("/clientIdentification")).toEqual("ID");
+      expect(getAction("/city")).toEqual("ADDR");
+      expect(getAction("/unknownField")).toBeNull();
+    });
+  });
+
+  describe("getActionLabel", () => {
+    it("returns correct label for known actions", () => {
+      expect(getActionLabel("RACT")).toEqual('Reason for "reactivated" status');
+      expect(getActionLabel("DAC")).toEqual('Reason for "deactivated" status');
+      expect(getActionLabel("ADDR")).toEqual("ID number");
+    });
+
+    it("returns 'Unknown' for an unrecognized action", () => {
+      expect(getActionLabel("UNKNOWN_ACTION")).toEqual("Unknown");
+    });
+  });
+
+  describe("getOldValue", () => {
+    it("returns old value from client details", () => {
+      expect(getOldValue("/clientName", originalData)).toEqual("John Doe");
+      expect(getOldValue("/provinceCode", originalData)).toEqual("BC");
+    });
+
+    it("returns 'N/A' for non-existent fields", () => {
+      expect(getOldValue("/nonExistentField", originalData)).toEqual("N/A");
+    });
+
+    it("handles Vue ref correctly", () => {
+      const clientRef = ref(originalData);
+      expect(getOldValue("/clientName", clientRef)).toEqual("John Doe");
     });
   });
 });
