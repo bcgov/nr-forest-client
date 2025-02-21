@@ -15,11 +15,6 @@ describe("Client Details Page", () => {
     return undefined;
   };
 
-<<<<<<< HEAD
-  function init() {
-    cy.hasLoggedIn().then((isLoggedIn) => {
-      if (!isLoggedIn) {
-=======
   let currentRole: string;
 
   function init() {
@@ -32,7 +27,6 @@ describe("Client Details Page", () => {
         hasLoggedOut = true;
       }
       if (!hasLoggedIn || hasLoggedOut) {
->>>>>>> main
         cy.visit("/");
 
         cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
