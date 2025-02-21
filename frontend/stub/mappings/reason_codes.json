@@ -1,0 +1,19 @@
+{
+  "mappings": [
+    {
+      "name": "Dummy reason codes",
+      "request": {
+        "urlPattern": "/api/codes/update-reasons/(.+)/(.+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-reason-codes.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    }
+  ]
+}
