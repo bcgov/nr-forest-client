@@ -12,6 +12,20 @@ import reactor.core.publisher.Flux;
 public interface ClientStatusCodeRepository
     extends ReactiveCrudRepository<ClientStatusCodeEntity, String> {
 
+  /**
+   * Retrieves active client status codes based on the given active date.
+   * <p>
+   * A client status code is considered active if:
+   * <ul>
+   *   <li>Its expiry date is either null or greater than the provided {@code activeDate}.</li>
+   *   <li>Its effective date is less than or equal to the provided {@code activeDate}.</li>
+   * </ul>
+   * </p>
+   *
+   * @param activeDate The date used to filter active client status codes.
+   * @return A {@link Flux} containing {@link CodeNameDto} objects representing 
+   *         active client status codes.
+   */
   @Query("""
       SELECT CLIENT_STATUS_CODE, DESCRIPTION AS NAME
       FROM THE.CLIENT_STATUS_CODE
