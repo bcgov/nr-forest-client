@@ -264,21 +264,19 @@ export const getAction = (path: string, oldValue?: string, newValue?: string) =>
   return fieldReasonMap.get(fieldName) || null;
 };
 
-//TODO: Complete this function
-const fieldLabels = new Map<string, string>([
-  ["clientNumber", "Client number"],
-  ["clientName", "Client name"],
-  ["legalFirstName", "First name"],
-  ["legalMiddleName", "Middle Name"],
-  ["clientStatusCode", "Client status"],
-  ["clientTypeCode", "Client type"],
-  ["clientIdTypeCode", "ID type"],
-  ["clientIdentification", "ID number"],
+const fieldLabelsByAction = new Map<string, string>([
+  ["RACT", 'Reason for "reactivated" status'],
+  ["ACDC", 'Reason for "deceased" status'],
+  ["DAC", 'Reason for "deactivated" status'],
+  ["USPN", 'Reason for "unsuspended" status'],
+  ["SPN", 'Reason for "suspended" status'],
+  ["ID", "Client type"],
+  ["NAME", "ID type"],
+  ["ADDR", "ID number"],
 ]);
 
-export const getFieldLabel = (path: string) => {
-  const fieldName = path.split('/').pop(); 
-  return fieldLabels.get(fieldName || "") || "Unknown";
+export const getActionLabel = (action: string) => {
+  return fieldLabelsByAction.get(action || "") || "Unknown";
 };
 
 export const getOldValue = (path: string, data: Ref<ClientDetails> | ClientDetails) => {

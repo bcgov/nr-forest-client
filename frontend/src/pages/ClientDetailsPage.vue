@@ -35,10 +35,9 @@ import {
   getObfuscatedEmailLink,
   includesAnyOf,
   toTitleCase,
-  getFieldLabel,
+  getActionLabel,
   getAction,
   getOldValue,
-  getOldDescription,
   reasonRequiredFields
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
@@ -637,9 +636,6 @@ resetGlobalError();
         <br />
         <div v-for="(patch, index) in reasonPatchData" 
               :key="index">
-          <p>
-            {{ getFieldLabel(patch.path) }}
-          </p>
           
           <data-fetcher
             :url="`/api/codes/update-reasons/${data.clientTypeCode}/${getAction(patch.path, getOldValue(patch.path, data), patch.value)}`"
@@ -651,7 +647,7 @@ resetGlobalError();
           >
             <dropdown-input-component
               id="input-reason"
-              label="Reason"
+              :label="getActionLabel(patch.reason)"
               :initial-value="[]"
               required
               required-label
