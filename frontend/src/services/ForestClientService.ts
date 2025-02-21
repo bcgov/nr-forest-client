@@ -247,8 +247,9 @@ export const extractReasonFields = (patchData: jsonpatch.Operation[], originalDa
         reason = fieldReasonMap.get(field) || '';
       }
 
-      return { field, reason };
-    });
+      return reason ? { field, reason } : null; 
+    })
+    .filter(Boolean);
 };
 
 export const getAction = (path: string, oldValue?: string, newValue?: string) => {
