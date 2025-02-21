@@ -55,6 +55,7 @@ const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id;
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const data = ref<ClientDetails>(undefined);
 
@@ -185,7 +186,7 @@ let originalPatchData: jsonpatch.Operation[] = [];
 const finalPatchData = ref<jsonpatch.Operation[]>([]);
 const selectedReasons = ref<FieldUpdateReason[]>([]);
 const saveDisabled = ref(false);
-
+const isSaveFirstClick = ref(false);
 
 const updateSelectedReason = (
   selectedValue: string,
@@ -232,6 +233,10 @@ const getValidations = (key: string): ((value: any) => string)[] => {
 
 // Function to update reasons and send final PATCH request
 const confirmReasons = (reasons: FieldUpdateReason[]) => {
+  isSaveFirstClick.value = false;
+  const reasonInputIdList = reasonPatchData.value.map((_, index) => `input-reason-${index}`);
+  revalidateBus.emit(reasonInputIdList);
+
   const missingReasons = reasonPatchData.value.some((_, index) => {
     return !selectedReasons.value[index] || !selectedReasons.value[index].reason;
   });
@@ -326,6 +331,32 @@ const sendPatchRequest = (reasonUpdatedPatchData: jsonpatch.Operation[]) => {
   });
 };
 
+const reasonCodesValidation = ref<boolean[]>([]);
+watch(
+  reasonCodesValidation,
+  (validation) => {
+    if (isSaveFirstClick.value) {
+      // Enables the Save button if not clicked for the first time yet
+      saveDisabled.value = false;
+
+      return;
+    }
+
+    saveDisabled.value = false;
+    for (const valid of validation) {
+      if (!valid) {
+        // Disables the Save button when invalid
+        saveDisabled.value = true;
+
+        break;
+      }
+    }
+  },
+  {
+    deep: true,
+  },
+);
+
 // Function to save
 const saveSummary = (patchData: jsonpatch.Operation[]) => {
   //Reset values
@@ -335,6 +366,9 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
 
   originalPatchData = [...patchData];
   const reasonFields = extractReasonFields(patchData, data.value);
+
+  // Initializes the validations array
+  reasonCodesValidation.value = Array(reasonFields.length).fill(false);
 
   if (reasonFields.length > 0) {
     reasonPatchData.value = patchData
@@ -354,6 +388,7 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
       });
 
     reasonModalActiveInd.value = true;
+    isSaveFirstClick.value = true;
   } 
   else {
     sendPatchRequest(patchData);
@@ -646,9 +681,11 @@ resetGlobalError();
             #="{ content }"
           >
             <dropdown-input-component
-              id="input-reason"
+              :id="`input-reason-${index}`"
               :label="getActionLabel(patch.reason)"
-              :initial-value="[]"
+              :initial-value="
+                content?.find((item) => item.code === selectedReasons[index]?.reason)?.name
+              "
               required
               required-label
               :model-value="content"
@@ -657,19 +694,13 @@ resetGlobalError();
               :validations="[...getValidations(`selectedReasons.${index}.reason`)]"
               style="width: 100% !important"
               #="{ option }"
-              @update:model-value="(selectedValue) => {
-                updateSelectedReason(selectedValue, content, index, patch, selectedReasons);
-                // Trigger validation
-                const validations = getValidations(`selectedReasons.${index}.reason`);
-                validations.forEach((validate) => {
-                  if (!validate(selectedValue)) {
-                    //saveDisabled = false;
-                    console.log(`Validation error cleared for index ${index}`);
-                  }
-                });
-              }"
-            >
-            </dropdown-input-component>
+              @update:model-value="
+                (selectedValue) => {
+                  updateSelectedReason(selectedValue, content, index, patch, selectedReasons);
+                }
+              "
+              @error="reasonCodesValidation[index] = !$event"
+            />
           </data-fetcher>
         </div>
       </div>
