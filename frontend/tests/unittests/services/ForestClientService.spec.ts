@@ -15,6 +15,8 @@ import {
   getAction,
   getActionLabel,
   getOldValue,
+  getEnumKeyByEnumValue,
+  getFormattedHtml,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type { UserRole, ClientDetails } from "@/dto/CommonTypesDto";
@@ -144,13 +146,24 @@ describe("ForestClientService.ts", () => {
 
   describe("getTagColorByClientStatus", () => {
     it.each([
-      ["Active", "green"], // existing value #1
-      ["Deactivated", "purple"], // existing value #2
-      ["Bogus", ""], // non-existent value
-    ])("gets the expected result from input '%s': '%s'", (input, expectedOutput) => {
-      expect(getTagColorByClientStatus(input)).toEqual(expectedOutput);
+      ["Active", "green"],
+      ["Deactivated", "purple"],
+      ["Receivership", "magenta"],
+      ["Suspended", "red"],
+      ["Deceased", "gray"],
+    ])("returns the correct color for status '%s': '%s'", (status, expectedColor) => {
+      expect(getTagColorByClientStatus(status)).toEqual(expectedColor);
     });
-  });
+  
+    it.each([
+      ["", ""],
+      [undefined, ""],
+      [null, ""],
+      ["NonExistent", ""],
+    ])("returns an empty string for invalid status '%s'", (status, expectedColor) => {
+      expect(getTagColorByClientStatus(status)).toEqual(expectedColor);
+    });
+  });  
 
   describe("goodStanding", () => {
     const yExpected = "Good standing";
@@ -266,6 +279,67 @@ describe("ForestClientService.ts", () => {
       const result = includesAnyOf(haystack, needles);
       expect(result).toBe(false);
     });
+  });
+});
+
+describe("getEnumKeyByEnumValue", () => {
+  const sampleEnum = {
+    ACTIVE: "ACT",
+    DEACTIVATED: "DEC",
+    SUSPENDED: "SPN",
+  };
+
+  it("returns the correct key for a known value", () => {
+    const result = getEnumKeyByEnumValue(sampleEnum, "ACT");
+    expect(result).toEqual("ACTIVE");
+
+    const result2 = getEnumKeyByEnumValue(sampleEnum, "DEC");
+    expect(result2).toEqual("DEACTIVATED");
+  });
+
+  it("returns 'Unknown' for an unknown value", () => {
+    const result = getEnumKeyByEnumValue(sampleEnum, "UNKNOWN");
+    expect(result).toEqual("Unknown");
+  });
+
+  it("returns 'Unknown' when passed a null or undefined value", () => {
+    const result = getEnumKeyByEnumValue(sampleEnum, null);
+    expect(result).toEqual("Unknown");
+
+    const result2 = getEnumKeyByEnumValue(sampleEnum, undefined);
+    expect(result2).toEqual("Unknown");
+  });
+});
+
+describe("getFormattedHtml", () => {
+  it("correctly formats text with newline characters", () => {
+    const input = "Hello\nWorld";
+    const expectedOutput = "Hello<br>World";
+    expect(getFormattedHtml(input)).toEqual(expectedOutput);
+  });
+
+  it("returns an empty string if input is empty", () => {
+    const input = "";
+    const expectedOutput = "";
+    expect(getFormattedHtml(input)).toEqual(expectedOutput);
+  });
+
+  it("returns an empty string if input is null", () => {
+    const input = null;
+    const expectedOutput = "";
+    expect(getFormattedHtml(input)).toEqual(expectedOutput);
+  });
+
+  it("returns an empty string if input is undefined", () => {
+    const input = undefined;
+    const expectedOutput = "";
+    expect(getFormattedHtml(input)).toEqual(expectedOutput);
+  });
+
+  it("doesn't alter the input if there are no newline characters", () => {
+    const input = "No newlines here";
+    const expectedOutput = "No newlines here";
+    expect(getFormattedHtml(input)).toEqual(expectedOutput);
   });
 });
 
