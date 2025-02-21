@@ -61,8 +61,8 @@ export const toTitleCase = (inputString: string): string => {
   return result;
 };
 
-export const toSentenceCase = (inputString: string): string => {
-  if (inputString === undefined) return "";
+export const toSentenceCase = (inputString: string | null): string => {
+  if (!inputString) return "";
   return inputString.charAt(0).toUpperCase() + inputString.slice(1).toLowerCase();
 };
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { ref } from 'vue';
 import {
   addNewAddress,
@@ -17,6 +17,7 @@ import {
   getOldValue,
   getEnumKeyByEnumValue,
   getFormattedHtml,
+  toSentenceCase,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type { UserRole, ClientDetails } from "@/dto/CommonTypesDto";
@@ -343,6 +344,32 @@ describe("getFormattedHtml", () => {
   });
 });
 
+describe("toSentenceCase", () => {
+  it.each([
+    ["hello", "Hello"],        // Normal lowercase word
+    ["HELLO", "Hello"],        // All uppercase
+    ["hELLo", "Hello"],        // Mixed case
+    ["hello world", "Hello world"], // Sentence case for multiple words
+    ["123abc", "123abc"],      // Starts with a number
+    ["", ""],                  // Empty string
+  ])("converts '%s' to '%s'", (input, expectedOutput) => {
+    expect(toSentenceCase(input)).toEqual(expectedOutput);
+  });
+
+  it("returns an empty string for undefined input", () => {
+    expect(toSentenceCase(undefined as unknown as string)).toEqual("");
+  });
+
+  it("returns an empty string for null input", () => {
+    expect(toSentenceCase(null as unknown as string)).toEqual("");
+  });
+
+  it("handles special characters correctly", () => {
+    expect(toSentenceCase("!hello")).toEqual("!hello");
+    expect(toSentenceCase("@TEST")).toEqual("@test");
+  });
+});
+
 describe("Reason Fields Handling", () => {
   const originalData: ClientDetails = {
     clientStatusCode: "ACT",
@@ -423,5 +450,16 @@ describe("Reason Fields Handling", () => {
       const clientRef = ref(originalData);
       expect(getOldValue("/clientName", clientRef)).toEqual("John Doe");
     });
+
+    it("returns 'N/A' and logs a warning when data is undefined", () => {
+      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    
+      expect(getOldValue("/clientName", undefined as unknown as ClientDetails)).toEqual("N/A");
+      expect(consoleWarnSpy).toHaveBeenCalledWith("Old value was called with undefined data!", "/clientName");
+    
+      consoleWarnSpy.mockRestore();
+    });
+    
   });
+
 });
