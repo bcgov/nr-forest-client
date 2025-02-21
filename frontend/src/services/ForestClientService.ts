@@ -297,22 +297,3 @@ export const getOldValue = (path: string, data: Ref<ClientDetails> | ClientDetai
 
   return 'N/A';
 };
-
-export const getOldDescription = (path: string, data: Ref<ClientDetails> | ClientDetails) => {
-  if (!data) {
-    console.warn("Old description was called with undefined data!", path);
-    return 'N/A';
-  }
-
-  const clientData = unref(data);
-  const fieldName = path.split('/').pop();
-
-  switch (fieldName) {
-    case 'clientStatusCode':
-      return clientData.clientStatusDesc || 'N/A';  
-    default:
-      return 'N/A';
-  }
-};
-
-

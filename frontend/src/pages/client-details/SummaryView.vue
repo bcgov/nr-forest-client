@@ -105,7 +105,7 @@ const checkValid = () =>
 
 const editRoles: Record<FieldId, UserRole[]> = {
   // TODO: add the following values back when working on FSADT1-1611 or FSADT1-1640
-  clientName: ["CLIENT_ADMIN"],
+  // clientName: ["CLIENT_ADMIN"],
   // acronym: ["CLIENT_ADMIN"],
   // doingBusinessAs: ["CLIENT_ADMIN"],
   // registrationNumber: ["CLIENT_ADMIN"],

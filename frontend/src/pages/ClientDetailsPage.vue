@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { AxiosError } from "axios";
 import * as jsonpatch from "fast-json-patch";
 
@@ -49,7 +49,7 @@ import type { ClientDetails, ClientLocation, FieldUpdateReason, ModalNotificatio
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
-import { optional } from "@/helpers/validators/GlobalValidators";
+import { isNotEmpty, optional } from "@/helpers/validators/GlobalValidators";
 
 // Route related
 const router = useRouter();
@@ -184,13 +184,79 @@ const reasonModalActiveInd = ref(false);
 let reasonPatchData = ref<jsonpatch.Operation[]>([]);
 let originalPatchData: jsonpatch.Operation[] = []; 
 const finalPatchData = ref<jsonpatch.Operation[]>([]);
+const selectedReasons = ref<FieldUpdateReason[]>([]);
+const saveDisabled = ref(false);
+
+
+const updateSelectedReason = (
+  selectedValue: string,
+  content: Array<{ code: string, name: string }>,
+  index: number,
+  patch: any,
+  selectedReasons: any[]
+) => {
+
+  const selectedOption = content.find((option) => option.name === selectedValue);
+  
+  if (selectedOption) {
+    selectedReasons[index] = {
+      field: patch.path.replace("/", ""),
+      reason: selectedOption.code,
+    };
+  } 
+  else {
+    selectedReasons[index] = { field: patch.path.replace("/", ""), reason: "" };
+  }
+};
+
+const fieldValidations: Record<string, ((value: string) => string)[]> = {};
+
+fieldValidations["selectedReasons.*.reason"] = [
+  isNotEmpty("You must select a reason")
+];
+
+const getValidations = (key: string): ((value: any) => string)[] => {
+
+  const match = Object.keys(fieldValidations).find((validationKey) =>
+    new RegExp(`^${validationKey.replace(/\*/g, "\\d+")}$`).test(key)
+  );
+
+  if (match) {
+    const validations = fieldValidations[match] ?? [];
+    if (!validations || validations.length === 0) {
+      return [];
+    }
+    return validations;
+  }
+  return [];
+};
 
 // Function to update reasons and send final PATCH request
 const confirmReasons = (reasons: FieldUpdateReason[]) => {
+  const missingReasons = reasonPatchData.value.some((_, index) => {
+    return !selectedReasons.value[index] || !selectedReasons.value[index].reason;
+  });
+
+  if (missingReasons) {
+    saveDisabled.value = true;
+    console.log("Validation failed: Some reasons are missing.");
+
+    selectedReasons.value.forEach((_, index) => {
+      const validation = getValidations(`selectedReasons.${index}.reason`);
+      validation.forEach((validate) => {
+        if (validate('')) {
+          console.log(`Validation error for index ${index}`);
+        }
+      });
+    });
+    return;
+  }
+
+  // Continue with the patch process
   const updatedPatchData = [...reasonPatchData.value];
 
-  updatedPatchData.forEach((patch) => {
-    const reasonEntry = reasons.find((r) => r.field === patch.path.replace('/', ''));
+  updatedPatchData.forEach((patch, index) => {
+    const reasonEntry = selectedReasons.value[index];
     if (reasonEntry) {
       patch.reason = reasonEntry.reason;
     }
@@ -232,37 +298,6 @@ const sendPatchRequest = (reasonUpdatedPatchData: jsonpatch.Operation[]) => {
     finalPatchData.value,
     { skip: true }
   );
-};
-
-// Function to save
-const saveSummary = (patchData: jsonpatch.Operation[]) => {
-  originalPatchData = [...patchData];
-  const reasonFields = extractReasonFields(patchData, data.value);
-
-  if (reasonFields.length > 0) {
-    reasonPatchData.value = patchData
-      .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
-      .map((patch) => {
-        const field = patch.path.replace('/', '');
-        const reasonEntry = reasonFields.find((r) => r.field === field);
-
-        if (field === 'clientStatusCode') {
-          const oldValue = data.value.clientStatusCode;
-          const newValue = patch.value;
-          const action = getAction(patch.path, oldValue, newValue);
-          return { ...patch, reason: action || '' };
-        }
-
-        return { ...patch, reason: reasonEntry?.reason || '' };
-      });
-
-    reasonModalActiveInd.value = true;
-  } else {
-    sendPatchRequest(patchData);
-  }
-
-
-  /*resetGlobalError();
 
   patch().then(() => {
     if (response.value.status) {
@@ -289,7 +324,43 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
       toastBus.emit(toastNotification);
       globalError.value = error.value;
     }
-  });*/
+  });
+};
+
+// Function to save
+const saveSummary = (patchData: jsonpatch.Operation[]) => {
+  //Reset values
+  selectedReasons.value = [];
+  saveDisabled.value = false;
+  //resetValidations();
+
+  originalPatchData = [...patchData];
+  const reasonFields = extractReasonFields(patchData, data.value);
+
+  if (reasonFields.length > 0) {
+    reasonPatchData.value = patchData
+      .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
+      .map((patch) => {
+        const field = patch.path.replace('/', '');
+        const reasonEntry = reasonFields.find((r) => r.field === field);
+
+        if (field === 'clientStatusCode') {
+          const oldValue = data.value.clientStatusCode;
+          const newValue = patch.value;
+          const action = getAction(patch.path, oldValue, newValue);
+          return { ...patch, reason: action || '' };
+        }
+
+        return { ...patch, reason: reasonEntry?.reason || '' };
+      });
+
+    reasonModalActiveInd.value = true;
+  } 
+  else {
+    sendPatchRequest(patchData);
+  }
+
+  resetGlobalError();
 };
 
 const globalError = ref();
@@ -566,13 +637,8 @@ resetGlobalError();
         <br />
         <div v-for="(patch, index) in reasonPatchData" 
               :key="index">
-          <p class="label-02">
+          <p>
             {{ getFieldLabel(patch.path) }}
-          </p>
-
-          <p class="field-label">
-            <del>{{ getOldDescription(patch.path, data) }}</del> {{ patch.value }}
-            <!-- {{getOldValue(patch.path, data)}} -->
           </p>
           
           <data-fetcher
@@ -592,12 +658,22 @@ resetGlobalError();
               :model-value="content"
               :enabled="true"
               tip=""
-              :validations="[]"
+              :validations="[...getValidations(`selectedReasons.${index}.reason`)]"
               style="width: 100% !important"
               #="{ option }"
+              @update:model-value="(selectedValue) => {
+                updateSelectedReason(selectedValue, content, index, patch, selectedReasons);
+                // Trigger validation
+                const validations = getValidations(`selectedReasons.${index}.reason`);
+                validations.forEach((validate) => {
+                  if (!validate(selectedValue)) {
+                    //saveDisabled = false;
+                    console.log(`Validation error cleared for index ${index}`);
+                  }
+                });
+              }"
             >
             </dropdown-input-component>
-            {{ content }}
           </data-fetcher>
         </div>
       </div>
@@ -612,7 +688,8 @@ resetGlobalError();
       <cds-modal-footer-button 
         kind="primary" 
         class="cds--modal-submit-btn" 
-        v-on:click="confirmReasons(reasonPatchData)">
+        v-on:click="confirmReasons(reasonPatchData)"
+        :disabled="saveDisabled">
         Save changes
         <Logout16 slot="icon" />
       </cds-modal-footer-button> 
