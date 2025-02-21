@@ -18,7 +18,6 @@ public interface ClientStatusCodeRepository
       WHERE (EXPIRY_DATE IS NULL OR EXPIRY_DATE > :activeDate)
       AND EFFECTIVE_DATE <= :activeDate
       """)
-  Flux<CodeNameDto> findActiveClientStatusCodes(
-      LocalDate activeDate);
+  Flux<CodeNameDto> findActiveClientStatusCodes(LocalDate activeDate);
   
 }
