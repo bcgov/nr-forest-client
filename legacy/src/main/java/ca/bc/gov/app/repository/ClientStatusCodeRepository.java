@@ -8,6 +8,17 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
+/**
+ * Repository interface for managing client status codes.
+ * <p>
+ * This repository provides reactive CRUD operations for {@link ClientStatusCodeEntity} 
+ * and includes a custom query method to retrieve active client status codes.
+ * </p>
+ * <p>
+ * The repository uses {@link ReactiveCrudRepository}, making it suitable for 
+ * non-blocking, reactive database interactions.
+ * </p>
+ */
 @Repository
 public interface ClientStatusCodeRepository
     extends ReactiveCrudRepository<ClientStatusCodeEntity, String> {
