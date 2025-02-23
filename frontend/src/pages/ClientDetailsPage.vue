@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { AxiosError } from "axios";
 import * as jsonpatch from "fast-json-patch";
 
@@ -48,7 +48,7 @@ import type { ClientDetails, ClientLocation, FieldUpdateReason, ModalNotificatio
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
-import { isNotEmpty, optional } from "@/helpers/validators/GlobalValidators";
+import { isNotEmpty } from "@/helpers/validators/GlobalValidators";
 
 // Route related
 const router = useRouter();
