@@ -176,10 +176,10 @@ const valid = ref(false);
               {{ data.addressOne }}
             </span>
             <span :id="`location-${indexString}-city-province`" class="body-compact-01">
-              {{ data.city }}, {{ data.province }}
+              {{ data.city }}, {{ data.provinceDesc }}
             </span>
             <span :id="`location-${indexString}-country`" class="body-compact-01">
-              {{ data.country }}
+              {{ data.countryDesc }}
             </span>
             <span :id="`location-${indexString}-postalCode`" class="body-compact-01">
               {{ data.postalCode }}
