@@ -230,7 +230,6 @@ const statusTransitionMap = new Map<string, string>([
 
 // Function to extract required reason fields from patch data
 export const extractReasonFields = (patchData: jsonpatch.Operation[], originalData: ClientDetails) => {
-  console.log("Original patchData: " + JSON.stringify(patchData));
   return patchData
     .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
     .map((patch) => {

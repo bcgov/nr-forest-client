@@ -209,6 +209,39 @@ describe("Client Details Page", () => {
     });
   });
 
+  describe("summary (role:CLIENT_EDITOR)", () => {
+    describe("save", () => {
+      describe("with reason modal", { testIsolation: false }, () => {
+        beforeEach(function () {
+          init.call(this);
+  
+          cy.intercept("PATCH", "/api/clients/details/*")
+            .as("saveClientDetails");
+  
+          cy.visit("/clients/details/g");
+          cy.get("#summaryEditBtn").click();
+  
+          cy.get("#input-clientStatus")
+            .find('[part="trigger-button"]')
+            .click();
+
+          cy.get("#input-clientStatus")
+            .find('cds-dropdown-item[data-id="DAC"]')
+            .should("be.visible")
+            .click()
+            .and("have.value", "Deactivated");
+
+          cy.get("#summarySaveBtn").click();
+        });
+
+        it("opens the reason modal when required", () => {
+          cy.get("#reason-modal").should("be.visible");
+        });
+
+      });
+    });
+  });  
+
   describe("locations tab", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
       describe("3 active locations", () => {

@@ -267,7 +267,6 @@ const confirmReasons = (reasons: FieldUpdateReason[]) => {
 
   if (!checkReasonCodesValidation()) {
     saveDisabled.value = true;
-    console.log("Validation failed: Some reasons are missing.");
     return;
   }
 
@@ -286,8 +285,6 @@ const confirmReasons = (reasons: FieldUpdateReason[]) => {
 };
 
 const sendPatchRequest = (reasonUpdatedPatchData: jsonpatch.Operation[]) => {
-  console.log("Original Patch Data:", JSON.stringify(originalPatchData, null, 2));
-
   const baseChanges = originalPatchData.map(({ reason, ...patch }) => patch);
 
   const reasonChanges = reasonUpdatedPatchData.flatMap((patch, index) => {
@@ -308,8 +305,6 @@ const sendPatchRequest = (reasonUpdatedPatchData: jsonpatch.Operation[]) => {
   });
 
   finalPatchData.value = [...baseChanges, ...reasonChanges];
-
-  console.log("Final Patch Data:", JSON.stringify(finalPatchData.value, null, 2));
 
   // Send API request
   const { fetch: patch, response, error } = useJsonPatch(
@@ -702,6 +697,7 @@ resetGlobalError();
         Cancel
       </cds-modal-footer-button>
       <cds-modal-footer-button 
+        id="reasonSaveBtn"
         kind="primary" 
         class="cds--modal-submit-btn" 
         v-on:click="confirmReasons(reasonPatchData)"
