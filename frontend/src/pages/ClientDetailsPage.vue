@@ -216,7 +216,6 @@ fieldValidations["selectedReasons.*.reason"] = [
 ];
 
 const getValidations = (key: string): ((value: any) => string)[] => {
-
   const match = Object.keys(fieldValidations).find((validationKey) =>
     new RegExp(`^${validationKey.replace(/\*/g, "\\d+")}$`).test(key)
   );
@@ -231,8 +230,8 @@ const getValidations = (key: string): ((value: any) => string)[] => {
   return [];
 };
 
-const checkReasonCodesValidation = () => {
-  for (const valid of reasonCodesValidation.value) {
+const checkReasonCodesValidations = () => {
+  for (const valid of reasonCodesValidations.value) {
     if (!valid) {
       return false;
     }
@@ -240,19 +239,19 @@ const checkReasonCodesValidation = () => {
   return true;
 };
 
-const reasonCodesValidation = ref<boolean[]>([]);
+const reasonCodesValidations = ref<boolean[]>([]);
+
 watch(
-  reasonCodesValidation,
+  reasonCodesValidations,
   () => {
     if (isSaveFirstClick.value) {
       // Enables the Save button if not clicked for the first time yet
       saveDisabled.value = false;
-
       return;
     }
 
     // Possibly reenables the button
-    saveDisabled.value = !checkReasonCodesValidation();
+    saveDisabled.value = !checkReasonCodesValidations();
   },
   {
     deep: true,
@@ -265,7 +264,7 @@ const confirmReasons = (reasons: FieldUpdateReason[]) => {
   const reasonInputIdList = reasonPatchData.value.map((_, index) => `input-reason-${index}`);
   revalidateBus.emit(reasonInputIdList);
 
-  if (!checkReasonCodesValidation()) {
+  if (!checkReasonCodesValidations()) {
     saveDisabled.value = true;
     return;
   }
@@ -352,7 +351,7 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
   const reasonFields = extractReasonFields(patchData, data.value);
 
   // Initializes the validations array
-  reasonCodesValidation.value = Array(reasonFields.length).fill(false);
+  reasonCodesValidations.value = Array(reasonFields.length).fill(false);
 
   if (reasonFields.length > 0) {
     reasonPatchData.value = patchData
@@ -653,10 +652,14 @@ resetGlobalError();
       <div v-if="reasonPatchData && reasonPatchData.length > 0">
 
         <p class="body-compact-01">
-          Select a reason for the following changes:
+          Select a reason for the following 
+          <span v-if="reasonPatchData.length == 1">change:</span>
+          <span v-if="reasonPatchData.length > 1">changes:</span>
         </p>
-        <br />
-        <div v-for="(patch, index) in reasonPatchData" :key="index">
+
+        <div v-for="(patch, index) in reasonPatchData" 
+            :key="index"
+            class="grouping-24">
           <data-fetcher
             :url="`/api/codes/update-reasons/${data.clientTypeCode}/${getAction(patch.path, getOldValue(patch.path, data), patch.value)}`"
             :min-length="0"
@@ -683,7 +686,7 @@ resetGlobalError();
                   updateSelectedReason(selectedValue, content, index, patch, selectedReasons);
                 }
               "
-              @error="reasonCodesValidation[index] = !$event"
+              @error="reasonCodesValidations[index] = !$event"
             />
           </data-fetcher>
         </div>
@@ -693,7 +696,8 @@ resetGlobalError();
     <cds-modal-footer>
       <cds-modal-footer-button 
         kind="secondary" 
-        data-modal-close class="cds--modal-close-btn">
+        data-modal-close 
+        class="cds--modal-close-btn">
         Cancel
       </cds-modal-footer-button>
       <cds-modal-footer-button 

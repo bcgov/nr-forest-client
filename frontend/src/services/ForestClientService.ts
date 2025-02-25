@@ -270,8 +270,8 @@ const fieldLabelsByAction = new Map<string, string>([
   ["USPN", 'Reason for "unsuspended" status'],
   ["SPN", 'Reason for "suspended" status'],
   ["ID", "Reason for ID change"],
-  ["NAME", "Reason for Name change"],
-  ["ADDR", "Reason for Address change"],
+  ["NAME", "Reason for name change"],
+  ["ADDR", "Reason for address change"],
 ]);
 
 export const getActionLabel = (action: string) => {
