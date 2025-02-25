@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { AxiosError } from "axios";
 import * as jsonpatch from "fast-json-patch";
 
@@ -254,13 +254,14 @@ const setLocationRef = (index: number) => (el: InstanceType<typeof LocationView>
   locationsRef.value[index] = el;
 };
 
+interface Action {
+  infinitive: string;
+  pastParticiple: string;
+}
+
 const saveLocation =
   (index: number) =>
-  (
-    rawPatchData: jsonpatch.Operation[],
-    updatedLocation: ClientLocation,
-    updateSuccessWord: string,
-  ) => {
+  (rawPatchData: jsonpatch.Operation[], updatedLocation: ClientLocation, action: Action) => {
     const locationCode = updatedLocation.clientLocnCode;
 
     const patchData = rawPatchData.map((item) => ({
@@ -288,7 +289,7 @@ const saveLocation =
           kind: "Success",
           active: true,
           handler: () => {},
-          message: `Location <span class="weight-700">“${updatedTitle}”</span> was ${updateSuccessWord}`,
+          message: `Location <span class="weight-700">“${updatedTitle}”</span> was ${action.pastParticiple}`,
           toastTitle: undefined,
         };
         toastBus.emit(toastNotification);
@@ -310,7 +311,7 @@ const saveLocation =
           kind: "Error",
           active: true,
           handler: () => {},
-          message: "Failed to update location",
+          message: `Failed to ${action.infinitive} location`,
           toastTitle: undefined,
         };
         toastBus.emit(toastNotification);

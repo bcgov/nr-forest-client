@@ -28,13 +28,13 @@ const props = defineProps<{
   keepScrollBottomPosition?: boolean;
 }>();
 
+interface Action {
+  infinitive: string;
+  pastParticiple: string;
+}
+
 const emit = defineEmits<{
-  (
-    e: "save",
-    value: jsonpatch.Operation[],
-    updatedLocation: ClientLocation,
-    updateSuccessWord: string,
-  ): void;
+  (e: "save", value: jsonpatch.Operation[], updatedLocation: ClientLocation, action: Action): void;
 }>();
 
 const indexString = props.data.clientLocnCode;
@@ -105,9 +105,15 @@ defineExpose({
   lockEditing,
 });
 
-const save = (newData: ClientLocation, updateSuccessWord = "updated") => {
+const save = (
+  newData: ClientLocation,
+  action: Action = {
+    infinitive: "update",
+    pastParticiple: "updated",
+  },
+) => {
   const patch = jsonpatch.compare(originalData, newData);
-  emit("save", patch, newData, updateSuccessWord);
+  emit("save", patch, newData, action);
 };
 
 const saveForm = () => {
@@ -126,7 +132,10 @@ const deactivate = () => {
     ...originalData,
     locnExpiredInd: "Y",
   };
-  save(newData, "deactivated");
+  save(newData, {
+    infinitive: "deactivate",
+    pastParticiple: "deactivated",
+  });
   displayDeactivateModal.value = false;
 };
 
@@ -141,7 +150,10 @@ const reactivate = () => {
     ...originalData,
     locnExpiredInd: "N",
   };
-  save(newData, "reactivated");
+  save(newData, {
+    infinitive: "reactivate",
+    pastParticiple: "reactivated",
+  });
   displayReactivateModal.value = false;
 };
 
