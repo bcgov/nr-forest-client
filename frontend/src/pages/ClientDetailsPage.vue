@@ -640,6 +640,7 @@ resetGlobalError();
     size="sm"
     :open="reasonModalActiveInd"
     @cds-modal-closed="reasonModalActiveInd = false"
+    v-if="data?.clientTypeCode"
   >
     <cds-modal-header>
       <cds-modal-close-button></cds-modal-close-button>

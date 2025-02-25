@@ -238,6 +238,30 @@ describe("Client Details Page", () => {
           cy.get("#reason-modal").should("be.visible");
         });
 
+        it("sends the correct PATCH request with reasons", () => {
+          cy.get("#input-reason-0")
+            .find('[part="trigger-button"]')
+            .click();
+        
+          cy.get("#input-reason-0")
+            .find("cds-dropdown-item")
+            .first()
+            .should("be.visible")
+            .click();
+        
+          cy.get("#reasonSaveBtn").click();
+
+          cy.wait("@saveClientDetails").then((interception) => {
+            
+            expect(interception.request.body).to.deep.include({
+              op: "add",
+              path: "/reasons/0/reason",
+              value: "R1",
+            });
+          });
+          
+        });
+
       });
     });
   });  
