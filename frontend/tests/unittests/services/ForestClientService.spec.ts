@@ -372,18 +372,57 @@ describe("toSentenceCase", () => {
 
 describe("Reason Fields Handling", () => {
   const originalData: ClientDetails = {
-    clientStatusCode: "ACT",
-    clientIdentification: "12345",
+    clientNumber: "12345",
     clientName: "John Doe",
     legalFirstName: "John",
     legalMiddleName: "A.",
-    addressOne: "123 Main St",
-    addressTwo: "Apt 4",
-    addressThree: "",
-    city: "Metropolis",
-    provinceCode: "BC",
-    countryCode: "CA",
-    postalCode: "V1V1V1",
+    clientStatusCode: "ACT",
+    clientStatusDesc: "",
+    clientTypeCode: "",
+    clientTypeDesc: "",
+    clientIdTypeCode: "",
+    clientIdTypeDesc: "",
+    clientIdentification: "12345",
+    registryCompanyTypeCode: "",
+    corpRegnNmbr: "",
+    clientAcronym: "",
+    wcbFirmNumber: "",
+    ocgSupplierNmbr: "",
+    clientComment: "",
+    clientCommentUpdateDate: "",
+    clientCommentUpdateUser: "",
+    goodStandingInd: "",
+    birthdate: "",
+    doingBusinessAs: [],
+    addresses: [
+      {
+        clientNumber: "12345",
+        clientLocnCode: "1",
+        clientLocnName: "",
+        addressOne: "123 Main St",
+        addressTwo: "Apt 4",
+        addressThree: "",
+        city: "Metropolis",
+        provinceCode: "BC",
+        provinceDesc: "",
+        postalCode: "V1V1V1",
+        countryCode: "CA",
+        countryDesc: "",
+        businessPhone: "",
+        homePhone: "",
+        cellPhone: "",
+        faxNumber: "",
+        emailAddress: "",
+        locnExpiredInd: "",
+        returnedMailDate: "",
+        trustLocationInd: "",
+        cliLocnComment: "",
+        createdBy: "",
+        updatedBy: "",
+      },
+    ],
+    contacts: [],
+    reasons: [],
   };
 
   it("extracts reason fields from patch data", () => {
@@ -428,7 +467,7 @@ describe("Reason Fields Handling", () => {
     it("returns correct label for known actions", () => {
       expect(getActionLabel("RACT")).toEqual('Reason for "reactivated" status');
       expect(getActionLabel("DAC")).toEqual('Reason for "deactivated" status');
-      expect(getActionLabel("ADDR")).toEqual("ID number");
+      expect(getActionLabel("ADDR")).toEqual("Reason for address change");
     });
 
     it("returns 'Unknown' for an unrecognized action", () => {
