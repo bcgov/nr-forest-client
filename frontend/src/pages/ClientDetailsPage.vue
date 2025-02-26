@@ -323,7 +323,7 @@ const saveLocation =
 const globalError = ref();
 
 watch(globalError, async (value) => {
-  if (value) {
+  if (value && value.code) {
     const element = document.querySelector('[data-scroll="top-notification"]');
     useElementVisibility(element, {
       threshold: 1,
@@ -335,14 +335,12 @@ watch(globalError, async (value) => {
     const elementIsVisibleRef = await elementIsVisibleRefPromise;
     stop();
 
-    if (elementIsVisibleRef.value) {
-      return;
+    if (!elementIsVisibleRef.value) {
+      // Wait some time for the toast notification to be shown before scrolling to the top.
+      setTimeout(() => {
+        scrollTo({ top: 0, behavior: "smooth" });
+      }, 500);
     }
-
-    // Wait some time for the toast notification to be shown before scrolling to the top.
-    setTimeout(() => {
-      scrollTo({ top: 0, behavior: "smooth" });
-    }, 500);
   }
 });
 
