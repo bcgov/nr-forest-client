@@ -38,7 +38,8 @@ import {
   getActionLabel,
   getAction,
   getOldValue,
-  reasonRequiredFields
+  reasonRequiredFields,
+  updateSelectedReason
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -187,27 +188,6 @@ const finalPatchData = ref<jsonpatch.Operation[]>([]);
 const selectedReasons = ref<FieldUpdateReason[]>([]);
 const saveDisabled = ref(false);
 const isSaveFirstClick = ref(false);
-
-const updateSelectedReason = (
-  selectedValue: string,
-  content: Array<{ code: string, name: string }>,
-  index: number,
-  patch: any,
-  selectedReasons: any[]
-) => {
-
-  const selectedOption = content.find((option) => option.name === selectedValue);
-  
-  if (selectedOption) {
-    selectedReasons[index] = {
-      field: patch.path.replace("/", ""),
-      reason: selectedOption.code,
-    };
-  } 
-  else {
-    selectedReasons[index] = { field: patch.path.replace("/", ""), reason: "" };
-  }
-};
 
 const fieldValidations: Record<string, ((value: string) => string)[]> = {};
 

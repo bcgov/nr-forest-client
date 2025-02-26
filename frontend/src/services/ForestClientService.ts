@@ -307,3 +307,24 @@ export const getOldValue = (path: string, data: Ref<ClientDetails> | ClientDetai
 
   return "N/A";
 };
+
+export const updateSelectedReason = (
+  selectedValue: string,
+  content: Array<{ code: string, name: string }>,
+  index: number,
+  patch: any,
+  selectedReasons: any[]
+) => {
+
+  const selectedOption = content.find((option) => option.name === selectedValue);
+  
+  if (selectedOption) {
+    selectedReasons[index] = {
+      field: patch.path.replace("/", ""),
+      reason: selectedOption.code,
+    };
+  } 
+  else {
+    selectedReasons[index] = { field: patch.path.replace("/", ""), reason: "" };
+  }
+};
