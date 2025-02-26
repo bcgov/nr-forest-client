@@ -143,13 +143,11 @@ const uniqueLocations = isUniqueDescriptive();
 watch(sortedLocations, (value) => {
   if (value?.length) {
     console.log({ value });
-    value
-      .filter((item) => item !== undefined)
-      .forEach((location) => {
-        console.log({ location });
-        const index = String(Number(location.clientLocnCode));
-        uniqueLocations.add("Names", index)(location.clientLocnName);
-      });
+    value.forEach((location) => {
+      console.log({ location });
+      const index = String(Number(location.clientLocnCode));
+      uniqueLocations.add("Names", index)(location.clientLocnName);
+    });
   }
 });
 
@@ -502,7 +500,7 @@ resetGlobalError();
                 :data="location"
                 :is-reloading="locationsState[location.clientLocnCode]?.isReloading"
                 :user-roles="userRoles"
-                :validations="[uniqueLocations.add]"
+                :validations="[uniqueLocations.check]"
                 keep-scroll-bottom-position
                 @save="(...args) => saveLocation(index)(...args)"
               />
