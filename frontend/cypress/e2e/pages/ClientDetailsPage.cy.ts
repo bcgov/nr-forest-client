@@ -250,19 +250,27 @@ describe("Client Details Page", () => {
             .click();
         
           cy.get("#reasonSaveBtn").click();
-
+        
           cy.wait("@saveClientDetails").then((interception) => {
-            
-            expect(interception.request.body).to.deep.include({
+
+            const requestBody = interception.request.body;
+
+            expect(requestBody).to.deep.include({
               op: "add",
               path: "/reasons/0/reason",
               value: "R1",
             });
+
+            expect(requestBody).to.deep.include({
+              op: "add",
+              path: "/reasons/0/field",
+              value: "clientStatusCode",
+            });
           });
-          
         });
 
       });
+
     });
   });  
 

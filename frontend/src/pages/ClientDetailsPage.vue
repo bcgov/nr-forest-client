@@ -345,7 +345,6 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
   //Reset values
   selectedReasons.value = [];
   saveDisabled.value = false;
-  //resetValidations();
 
   originalPatchData = [...patchData];
   const reasonFields = extractReasonFields(patchData, data.value);
