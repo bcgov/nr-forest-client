@@ -97,7 +97,7 @@ describe("<location-view />", () => {
       // City, Province
       testField(
         "#location-00-city-province",
-        `${currentProps.data.city}, ${currentProps.data.provinceCode}`,
+        `${currentProps.data.city}, ${currentProps.data.provinceDesc}`,
       );
 
       testField("#location-00-country", currentProps.data.countryDesc);
