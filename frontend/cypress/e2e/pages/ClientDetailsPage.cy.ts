@@ -315,12 +315,34 @@ describe("Client Details Page", () => {
     });
 
     describe("when role:CLIENT_EDITOR", () => {
+      describe("name duplication", () => {
+        beforeEach(() => {
+          cy.visit("/clients/details/g");
+
+          // Clicks to expand the accordion
+          cy.get("#location-00 [slot='title']").click();
+
+          cy.get("#location-00-EditBtn").click();
+
+          cy.clearFormEntry("#name_0");
+
+          // This is the same name of the third location
+          cy.fillFormEntry("#name_0", "Warehouse");
+        });
+
+        it("shows the error on field Location name", () => {
+          cy.checkInputErrorMessage("#name_0", "This value is already in use");
+
+          cy.get("#location-00-SaveBtn").shadow().find("button").should("be.disabled");
+        });
+      });
       describe("save", () => {
         describe("on success", { testIsolation: false }, () => {
           const getClientDetailsCounter = {
             count: 0,
           };
 
+          let patchClientDetailsRequest;
           before(function () {
             init.call(this);
 
@@ -335,6 +357,17 @@ describe("Client Details Page", () => {
               },
             ).as("getClientDetails");
 
+            cy.intercept(
+              {
+                method: "PATCH",
+                pathname: "/api/clients/details/*",
+              },
+              (req) => {
+                patchClientDetailsRequest = req;
+                req.continue();
+              },
+            ).as("patchClientDetails");
+
             cy.visit("/clients/details/g");
 
             // Clicks to expand the accordion
@@ -343,6 +376,10 @@ describe("Client Details Page", () => {
             cy.get("#location-00-EditBtn").click();
             cy.clearFormEntry("#emailAddress_0");
             cy.get("#location-00-SaveBtn").click();
+          });
+
+          it("prefixes the path with the corresponding location code", () => {
+            expect(patchClientDetailsRequest.body[0].path).to.eq("/addresses/00/emailAddress");
           });
 
           it("shows the success toast", () => {
