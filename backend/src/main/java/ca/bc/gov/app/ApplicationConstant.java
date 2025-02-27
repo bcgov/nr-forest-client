@@ -46,11 +46,11 @@ public final class ApplicationConstant {
         btc.business_type_code as business_type,
         sd.incorporation_number,
         sd.client_number,
-        sd.organization_name,
+        pgp_sym_decrypt(sd.organization_name, current_setting('cryptic.key')) as organization_name,
         ctc.client_type_code as client_type,
         ctc.description as client_type_desc,
         sd.good_standing_ind as good_standing,
-        sd.birthdate,
+        pgp_sym_decrypt(sd.birthdate, current_setting('cryptic.key'))::date as birthdate,
         dc.district_code as district,
         dc.district_code || ' - ' || dc.description as district_desc
       FROM nrfc.submission s
@@ -73,10 +73,10 @@ public final class ApplicationConstant {
         ROW_NUMBER() OVER (order by sc.submission_contact_id ) AS index,
         sc.contact_type_code,
         ctc.description as contact_desc,
-        sc.first_name,
-        sc.last_name,
-        sc.business_phone_number,
-        sc.email_address,
+        pgp_sym_decrypt(sc.first_name, current_setting('cryptic.key')) as first_name,
+        pgp_sym_decrypt(sc.last_name, current_setting('cryptic.key')) as last_name,
+        pgp_sym_decrypt(sc.business_phone_number, current_setting('cryptic.key')) as business_phone_number,
+        pgp_sym_decrypt(sc.email_address, current_setting('cryptic.key')) as email_address,       
         (
           select STRING_AGG(sl.location_name,', ') as locations 
           from nrfc.submission_location sl 
@@ -94,13 +94,13 @@ public final class ApplicationConstant {
   public static final String SUBMISSION_LOCATION_QUERY = """
       SELECT
         ROW_NUMBER() OVER (order by sl.submission_location_id ) AS index,
-        sl.street_address,
+        pgp_sym_decrypt(sl.street_address, current_setting('cryptic.key')) as street_address,
         sl.country_code,
         cc.description as country_desc,
         sl.province_code,
         pc.description as province_desc,
-        sl.city_name,
-        sl.postal_code,
+        pgp_sym_decrypt(sl.city_name, current_setting('cryptic.key')) as city_name,
+        pgp_sym_decrypt(sl.postal_code, current_setting('cryptic.key')) as postal_code,
         sl.location_name
       FROM nrfc.submission_location sl
       left join nrfc.country_code cc on cc.country_code = sl.country_code
