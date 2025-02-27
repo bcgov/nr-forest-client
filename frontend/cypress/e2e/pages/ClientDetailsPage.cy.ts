@@ -219,7 +219,9 @@ describe("Client Details Page", () => {
             .as("saveClientDetails");
   
           cy.visit("/clients/details/g");
-          cy.get("#summaryEditBtn").click();
+
+          cy.get("#summaryEditBtn")
+            .click();
   
           cy.get("#input-clientStatus")
             .find('[part="trigger-button"]')
@@ -231,14 +233,20 @@ describe("Client Details Page", () => {
             .click()
             .and("have.value", "Deactivated");
 
-          cy.get("#summarySaveBtn").click();
+          cy.get("#summarySaveBtn")
+            .click();
         });
 
-        it("opens the reason modal when required", () => {
-          cy.get("#reason-modal").should("be.visible");
-        });
-
-        it("sends the correct PATCH request with reasons", () => {
+        it("opens the reason modal and sends the correct PATCH request with reasons", () => {
+          // Verify modal opens
+          cy.get("#reason-modal")
+            .should("be.visible");
+        
+          // Assert that the reason input for clientStatusCode exists (which proves extractReasonFields worked)
+          cy.get("#input-reason-0")
+            .should("exist");
+        
+          // Select a reason
           cy.get("#input-reason-0")
             .find('[part="trigger-button"]')
             .click();
@@ -251,23 +259,25 @@ describe("Client Details Page", () => {
         
           cy.get("#reasonSaveBtn").click();
         
+          // Check the PATCH request body
           cy.wait("@saveClientDetails").then((interception) => {
-
             const requestBody = interception.request.body;
-
+        
+            // Verify that the correct reason and field are included in the request
             expect(requestBody).to.deep.include({
               op: "add",
               path: "/reasons/0/reason",
               value: "R1",
             });
-
+        
             expect(requestBody).to.deep.include({
               op: "add",
               path: "/reasons/0/field",
-              value: "clientStatusCode",
+              value: "clientStatusCode",  // Confirming reason was extracted and linked to the correct field
             });
           });
         });
+        
 
       });
 
