@@ -49,8 +49,6 @@ import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
 import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
-import useElementVisibility from "@/composables/useElementVisibility";
-import { useFocus } from "@/composables/useFocus";
 
 // Route related
 const router = useRouter();
@@ -321,28 +319,6 @@ const saveLocation =
   };
 
 const globalError = ref();
-
-watch(globalError, async (value) => {
-  if (value && value.code) {
-    const element = document.querySelector('[data-scroll="top-notification"]');
-    useElementVisibility(element, {
-      threshold: 1,
-    });
-    const { elementIsVisibleRefPromise, stop } = useElementVisibility(element, {
-      threshold: 1,
-    });
-
-    const elementIsVisibleRef = await elementIsVisibleRefPromise;
-    stop();
-
-    if (!elementIsVisibleRef.value) {
-      // Wait some time for the toast notification to be shown before scrolling to the top.
-      setTimeout(() => {
-        scrollTo({ top: 0, behavior: "smooth" });
-      }, 500);
-    }
-  }
-});
 
 const resetGlobalError = () => {
   globalError.value = {};
