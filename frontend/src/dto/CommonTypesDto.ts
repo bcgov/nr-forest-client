@@ -300,6 +300,11 @@ export interface FieldUpdateReason {
   reason: string;
 }
 
+export interface FieldAction {
+  field: string;
+  action: string;
+}
+
 export interface ClientDetails {
   clientNumber: string;
   clientName: string;

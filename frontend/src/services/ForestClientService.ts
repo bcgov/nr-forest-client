@@ -1,5 +1,12 @@
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
-import type { ClientDetails, CodeDescrType, UserRole } from "@/dto/CommonTypesDto";
+import type {
+  ClientDetails,
+  CodeDescrType,
+  CodeNameType,
+  FieldAction,
+  FieldUpdateReason,
+  UserRole,
+} from "@/dto/CommonTypesDto";
 import { isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
 import * as jsonpatch from "fast-json-patch";
 import { unref, type Ref } from "vue";
@@ -189,8 +196,8 @@ export const reasonRequiredFields = new Set<string>([
   'postalCode'
 ]);
 
-// Map for general field reasons
-const fieldReasonMap = new Map<string, string>([
+// Map for general field actions
+const fieldActionMap = new Map<string, string>([
   ['clientIdentification', 'ID'],
   ['clientName', 'NAME'],
   ['legalFirstName', 'NAME'],
@@ -229,24 +236,26 @@ const statusTransitionMap = new Map<string, string>([
 ]);
 
 // Function to extract required reason fields from patch data
-export const extractReasonFields = (patchData: jsonpatch.Operation[], originalData: ClientDetails) => {
+export const extractReasonFields = (
+  patchData: jsonpatch.Operation[],
+  originalData: ClientDetails,
+): FieldAction[] => {
   return patchData
     .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
     .map((patch) => {
       const field = patch.path.replace('/', '');
-      let reason = '';
+      let action = '';
 
       if (field === 'clientStatusCode') {
         const oldValue = originalData.clientStatusCode;
         const newValue = patch.value;
         const transitionKey = `${oldValue}-${newValue}`;
-        reason = statusTransitionMap.get(transitionKey) || '';
-      } 
-      else {
-        reason = fieldReasonMap.get(field) || '';
+        action = statusTransitionMap.get(transitionKey) || '';
+      } else {
+        action = fieldActionMap.get(field) || '';
       }
 
-      return reason ? { field, reason } : null; 
+      return action ? { field, action } : null; 
     })
     .filter(Boolean);
 };
@@ -260,7 +269,7 @@ export const getAction = (path: string, oldValue?: string, newValue?: string) =>
     return transitionAction || null;
   }
 
-  return fieldReasonMap.get(fieldName) || null;
+  return fieldActionMap.get(fieldName) || null;
 };
 
 const fieldLabelsByAction = new Map<string, string>([
@@ -309,22 +318,17 @@ export const getOldValue = (path: string, data: Ref<ClientDetails> | ClientDetai
 };
 
 export const updateSelectedReason = (
-  selectedValue: string,
-  content: Array<{ code: string, name: string }>,
+  selectedOption: CodeNameType,
   index: number,
-  patch: any,
-  selectedReasons: any[]
-) => {
-
-  const selectedOption = content.find((option) => option.name === selectedValue);
-  
+  patch: jsonpatch.Operation,
+  selectedReasons: FieldUpdateReason[],
+): void => {
   if (selectedOption) {
     selectedReasons[index] = {
       field: patch.path.replace("/", ""),
       reason: selectedOption.code,
     };
-  } 
-  else {
+  } else {
     selectedReasons[index] = { field: patch.path.replace("/", ""), reason: "" };
   }
 };
