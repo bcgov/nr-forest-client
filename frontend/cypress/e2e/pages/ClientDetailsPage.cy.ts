@@ -238,15 +238,12 @@ describe("Client Details Page", () => {
         });
 
         it("opens the reason modal and sends the correct PATCH request with reasons", () => {
-          // Verify modal opens
           cy.get("#reason-modal")
             .should("be.visible");
         
-          // Assert that the reason input for clientStatusCode exists (which proves extractReasonFields worked)
           cy.get("#input-reason-0")
             .should("exist");
-        
-          // Select a reason
+
           cy.get("#input-reason-0")
             .find('[part="trigger-button"]')
             .click();
@@ -259,11 +256,11 @@ describe("Client Details Page", () => {
         
           cy.get("#reasonSaveBtn").click();
         
-          // Check the PATCH request body
           cy.wait("@saveClientDetails").then((interception) => {
             const requestBody = interception.request.body;
+
+            cy.log("Request Body:", JSON.stringify(requestBody));
         
-            // Verify that the correct reason and field are included in the request
             expect(requestBody).to.deep.include({
               op: "add",
               path: "/reasons/0/reason",
@@ -273,11 +270,10 @@ describe("Client Details Page", () => {
             expect(requestBody).to.deep.include({
               op: "add",
               path: "/reasons/0/field",
-              value: "clientStatusCode",  // Confirming reason was extracted and linked to the correct field
+              value: "clientStatusCode",
             });
           });
-        });
-        
+        });        
 
       });
 
