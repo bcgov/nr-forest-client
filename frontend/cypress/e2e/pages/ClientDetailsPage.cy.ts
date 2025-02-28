@@ -369,6 +369,7 @@ describe("Client Details Page", () => {
             ).as("patchClientDetails");
 
             cy.visit("/clients/details/g");
+            cy.wait("@getClientDetails");
 
             // Clicks to expand the accordion
             cy.get("#location-00 [slot='title']").click();
@@ -376,6 +377,7 @@ describe("Client Details Page", () => {
             cy.get("#location-00-EditBtn").click();
             cy.clearFormEntry("#emailAddress_0");
             cy.get("#location-00-SaveBtn").click();
+            cy.wait("@getClientDetails");
           });
 
           it("prefixes the path with the corresponding location code", () => {
