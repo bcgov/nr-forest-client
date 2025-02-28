@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { ref } from 'vue';
 import {
   addNewAddress,
   addNewContact,
@@ -10,12 +11,20 @@ import {
   formatPhoneNumber,
   getPrevailingRole,
   includesAnyOf,
+  extractReasonFields,
+  getAction,
+  getActionLabel,
+  getOldValue,
+  getEnumKeyByEnumValue,
+  getFormattedHtml,
   locationToCreateFormat,
   locationToEditFormat,
   keepOnlyNumbersAndLetters,
+  toSentenceCase,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
-import type { ClientLocation, UserRole } from "@/dto/CommonTypesDto";
+import type { UserRole, ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
+import type * as jsonpatch from "fast-json-patch";
 
 describe("ForestClientService.ts", () => {
   describe("Address and Contact utils", () => {
@@ -141,13 +150,24 @@ describe("ForestClientService.ts", () => {
 
   describe("getTagColorByClientStatus", () => {
     it.each([
-      ["Active", "green"], // existing value #1
-      ["Deactivated", "purple"], // existing value #2
-      ["Bogus", ""], // non-existent value
-    ])("gets the expected result from input '%s': '%s'", (input, expectedOutput) => {
-      expect(getTagColorByClientStatus(input)).toEqual(expectedOutput);
+      ["Active", "green"],
+      ["Deactivated", "purple"],
+      ["Receivership", "magenta"],
+      ["Suspended", "red"],
+      ["Deceased", "gray"],
+    ])("returns the correct color for status '%s': '%s'", (status, expectedColor) => {
+      expect(getTagColorByClientStatus(status)).toEqual(expectedColor);
     });
-  });
+  
+    it.each([
+      ["", ""],
+      [undefined, ""],
+      [null, ""],
+      ["NonExistent", ""],
+    ])("returns an empty string for invalid status '%s'", (status, expectedColor) => {
+      expect(getTagColorByClientStatus(status)).toEqual(expectedColor);
+    });
+  });  
 
   describe("goodStanding", () => {
     const yExpected = "Good standing";
@@ -425,4 +445,224 @@ describe("ForestClientService.ts", () => {
       }
     });
   });
+});
+
+describe("getEnumKeyByEnumValue", () => {
+  const sampleEnum = {
+    ACTIVE: "ACT",
+    DEACTIVATED: "DEC",
+    SUSPENDED: "SPN",
+  };
+
+  it("returns the correct key for a known value", () => {
+    const result = getEnumKeyByEnumValue(sampleEnum, "ACT");
+    expect(result).toEqual("ACTIVE");
+
+    const result2 = getEnumKeyByEnumValue(sampleEnum, "DEC");
+    expect(result2).toEqual("DEACTIVATED");
+  });
+
+  it("returns 'Unknown' for an unknown value", () => {
+    const result = getEnumKeyByEnumValue(sampleEnum, "UNKNOWN");
+    expect(result).toEqual("Unknown");
+  });
+
+  it("returns 'Unknown' when passed a null or undefined value", () => {
+    const result = getEnumKeyByEnumValue(sampleEnum, null);
+    expect(result).toEqual("Unknown");
+
+    const result2 = getEnumKeyByEnumValue(sampleEnum, undefined);
+    expect(result2).toEqual("Unknown");
+  });
+});
+
+describe("getFormattedHtml", () => {
+  it("correctly formats text with newline characters", () => {
+    const input = "Hello\nWorld";
+    const expectedOutput = "Hello<br>World";
+    expect(getFormattedHtml(input)).toEqual(expectedOutput);
+  });
+
+  it("returns an empty string if input is empty", () => {
+    const input = "";
+    const expectedOutput = "";
+    expect(getFormattedHtml(input)).toEqual(expectedOutput);
+  });
+
+  it("returns an empty string if input is null", () => {
+    const input = null;
+    const expectedOutput = "";
+    expect(getFormattedHtml(input)).toEqual(expectedOutput);
+  });
+
+  it("returns an empty string if input is undefined", () => {
+    const input = undefined;
+    const expectedOutput = "";
+    expect(getFormattedHtml(input)).toEqual(expectedOutput);
+  });
+
+  it("doesn't alter the input if there are no newline characters", () => {
+    const input = "No newlines here";
+    const expectedOutput = "No newlines here";
+    expect(getFormattedHtml(input)).toEqual(expectedOutput);
+  });
+});
+
+describe("toSentenceCase", () => {
+  it.each([
+    ["hello", "Hello"],        // Normal lowercase word
+    ["HELLO", "Hello"],        // All uppercase
+    ["hELLo", "Hello"],        // Mixed case
+    ["hello world", "Hello world"], // Sentence case for multiple words
+    ["123abc", "123abc"],      // Starts with a number
+    ["", ""],                  // Empty string
+  ])("converts '%s' to '%s'", (input, expectedOutput) => {
+    expect(toSentenceCase(input)).toEqual(expectedOutput);
+  });
+
+  it("returns an empty string for undefined input", () => {
+    expect(toSentenceCase(undefined as unknown as string)).toEqual("");
+  });
+
+  it("returns an empty string for null input", () => {
+    expect(toSentenceCase(null as unknown as string)).toEqual("");
+  });
+
+  it("handles special characters correctly", () => {
+    expect(toSentenceCase("!hello")).toEqual("!hello");
+    expect(toSentenceCase("@TEST")).toEqual("@test");
+  });
+});
+
+describe("Reason Fields Handling", () => {
+  const originalData: ClientDetails = {
+    clientNumber: "12345",
+    clientName: "John Doe",
+    legalFirstName: "John",
+    legalMiddleName: "A.",
+    clientStatusCode: "ACT",
+    clientStatusDesc: "",
+    clientTypeCode: "",
+    clientTypeDesc: "",
+    clientIdTypeCode: "",
+    clientIdTypeDesc: "",
+    clientIdentification: "12345",
+    registryCompanyTypeCode: "",
+    corpRegnNmbr: "",
+    clientAcronym: "",
+    wcbFirmNumber: "",
+    ocgSupplierNmbr: "",
+    clientComment: "",
+    clientCommentUpdateDate: "",
+    clientCommentUpdateUser: "",
+    goodStandingInd: "",
+    birthdate: "",
+    doingBusinessAs: [],
+    addresses: [
+      {
+        clientNumber: "12345",
+        clientLocnCode: "1",
+        clientLocnName: "",
+        addressOne: "123 Main St",
+        addressTwo: "Apt 4",
+        addressThree: "",
+        city: "Metropolis",
+        provinceCode: "BC",
+        provinceDesc: "",
+        postalCode: "V1V1V1",
+        countryCode: "CA",
+        countryDesc: "",
+        businessPhone: "",
+        homePhone: "",
+        cellPhone: "",
+        faxNumber: "",
+        emailAddress: "",
+        locnExpiredInd: "",
+        returnedMailDate: "",
+        trustLocationInd: "",
+        cliLocnComment: "",
+        createdBy: "",
+        updatedBy: "",
+      },
+    ],
+    contacts: [],
+    reasons: [],
+  };
+
+  it("extracts reason fields from patch data", () => {
+    const patchData: jsonpatch.Operation[] = [
+      { op: "replace", path: "/clientIdentification", value: "67890" },
+      { op: "replace", path: "/clientStatusCode", value: "DEC" },
+      { op: "replace", path: "/city", value: "Gotham" },
+    ];
+
+    const result = extractReasonFields(patchData, originalData);
+    expect(result).toEqual([
+      { field: "clientIdentification", action: "ID" },
+      { field: "clientStatusCode", action: "ACDC" }, // Active -> Deceased
+      { field: "city", action: "ADDR" },
+    ]);
+  });
+
+  it("returns empty array if no reason-required fields are changed", () => {
+    const patchData: jsonpatch.Operation[] = [
+      { op: "replace", path: "/someOtherField", value: "New Value" },
+    ];
+
+    const result = extractReasonFields(patchData, originalData);
+    expect(result).toEqual([]);
+  });
+
+  describe("getAction", () => {
+    it("returns correct action for client status changes", () => {
+      expect(getAction("/clientStatusCode", "ACT", "DAC")).toEqual("DAC");
+      expect(getAction("/clientStatusCode", "DEC", "ACT")).toEqual("RACT");
+      expect(getAction("/clientStatusCode", "SPN", "REC")).toBeNull(); // No reason needed
+    });
+
+    it("returns correct field mapping for other fields", () => {
+      expect(getAction("/clientIdentification")).toEqual("ID");
+      expect(getAction("/city")).toEqual("ADDR");
+      expect(getAction("/unknownField")).toBeNull();
+    });
+  });
+
+  describe("getActionLabel", () => {
+    it("returns correct label for known actions", () => {
+      expect(getActionLabel("RACT")).toEqual('Reason for "reactivated" status');
+      expect(getActionLabel("DAC")).toEqual('Reason for "deactivated" status');
+      expect(getActionLabel("ADDR")).toEqual("Reason for address change");
+    });
+
+    it("returns 'Unknown' for an unrecognized action", () => {
+      expect(getActionLabel("UNKNOWN_ACTION")).toEqual("Unknown");
+    });
+  });
+
+  describe("getOldValue", () => {
+    it("returns old value from client details", () => {
+      expect(getOldValue("/clientName", originalData)).toEqual("John Doe");
+      expect(getOldValue("/provinceCode", originalData)).toEqual("BC");
+    });
+
+    it("returns 'N/A' for non-existent fields", () => {
+      expect(getOldValue("/nonExistentField", originalData)).toEqual("N/A");
+    });
+
+    it("handles Vue ref correctly", () => {
+      const clientRef = ref(originalData);
+      expect(getOldValue("/clientName", clientRef)).toEqual("John Doe");
+    });
+
+    it("returns 'N/A' and logs a warning when data is undefined", () => {
+      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    
+      expect(getOldValue("/clientName", undefined as unknown as ClientDetails)).toEqual("N/A");
+      expect(consoleWarnSpy).toHaveBeenCalledWith("Old value was called with undefined data!", "/clientName");
+    
+      consoleWarnSpy.mockRestore();
+    });
+    
+  });
+
 });

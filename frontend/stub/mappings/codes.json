@@ -148,6 +148,19 @@
         ],
         "bodyFileName": "response-update-reasons-{{request.path.[3]}}-{{request.path.[4]}}.json"
       }
+    },{
+      "name": "Get update reason codes by client type and action - default Dummy list",
+      "request": {
+        "urlPattern": "/api/codes/update-reasons/P/[A-Z]+",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-reason-codes-dummy.json"
+      }
     },
     {
       "name": "Get registry type codes",

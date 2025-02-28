@@ -1056,6 +1056,7 @@ cds-actionable-notification * {
   width: 100%;
   box-sizing: border-box;
 }
+
 .grouping-10-internal {
   display: flex;
   align-items: flex-start;
@@ -1077,10 +1078,6 @@ cds-actionable-notification * {
   gap: 2rem;
 }
 
-cds-accordion-item:not([open]) {
-  gap: 0; // removes unwanted extra space when accordion item is closed.
-}
-
 .grouping-13 {
   align-self: stretch;
   display: flex;
@@ -1091,6 +1088,7 @@ cds-accordion-item:not([open]) {
   border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
   background: #fff;
 }
+
 .grouping-14 {
   flex-grow: 1;
   align-self: stretch;
@@ -1098,11 +1096,13 @@ cds-accordion-item:not([open]) {
   flex-direction: column;
   gap: 2.5rem;
 }
+
 .grouping-15 {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
 }
+
 .grouping-16 {
   display: flex;
   padding: 1rem;
@@ -1110,12 +1110,14 @@ cds-accordion-item:not([open]) {
   align-items: center;
   align-self: stretch;
 }
+
 .grouping-17 {
   display: flex;
   flex-direction: column;
   align-items: center;
   align-self: stretch;
 }
+
 .grouping-18 {
   display: flex;
   padding: 1rem;
@@ -1124,11 +1126,13 @@ cds-accordion-item:not([open]) {
   align-items: flex-start;
   align-self: stretch;
 }
+
 .grouping-19 {
   display: flex;
   align-items: center;
   gap: 2rem;
 }
+
 .grouping-20 {
   display: flex;
   flex-direction: column;
@@ -1168,8 +1172,17 @@ cds-accordion-item:not([open]) {
   margin-left: 1.75rem;
 }
 
+.grouping-24 {
+  width: 100%;
+  padding-top: 2rem;
+}
+
 .grouping-divider {
   margin: 0.5rem 0;
+}
+
+cds-accordion-item:not([open]) {
+  gap: 0; // removes unwanted extra space when accordion item is closed.
 }
 
 .flex-column-1_5rem {

@@ -209,6 +209,82 @@ describe("Client Details Page", () => {
     });
   });
 
+  describe("summary (role:CLIENT_EDITOR)", () => {
+    describe("save", () => {
+      describe("with reason modal", { testIsolation: false }, () => {
+        beforeEach(function () {
+          init.call(this);
+  
+          cy.intercept("PATCH", "/api/clients/details/*")
+            .as("saveClientDetails");
+          
+          cy.intercept("GET", "/api/codes/update-reasons/*/*")
+            .as("getReasonsList");
+  
+          cy.visit("/clients/details/g");
+
+          cy.get("#summaryEditBtn")
+            .click();
+  
+          cy.get("#input-clientStatus")
+            .find('[part="trigger-button"]')
+            .click();
+
+          cy.get("#input-clientStatus")
+            .find('cds-dropdown-item[data-id="DAC"]')
+            .should("be.visible")
+            .click()
+            .and("have.value", "Deactivated");
+
+          cy.get("#summarySaveBtn")
+            .click();
+
+          cy.wait("@getReasonsList");
+        });
+
+        it("opens the reason modal and sends the correct PATCH request with reasons", () => {
+          cy.get("#reason-modal")
+            .should("be.visible");
+        
+          cy.get("#input-reason-0")
+            .should("exist");
+
+          cy.get("#input-reason-0")
+            .find('[part="trigger-button"]')
+            .click();
+        
+          cy.get("#input-reason-0")
+            .find("cds-dropdown-item")
+            .first()
+            .should("be.visible")
+            .click();
+        
+          cy.get("#reasonSaveBtn").click();
+        
+          cy.wait("@saveClientDetails").then((interception) => {
+            const requestBody = interception.request.body;
+
+            cy.log("Request Body:", JSON.stringify(requestBody));
+        
+            expect(requestBody).to.deep.include({
+              op: "add",
+              path: "/reasons/0/reason",
+              value: "R1",
+            });
+        
+            expect(requestBody).to.deep.include({
+              op: "add",
+              path: "/reasons/0/field",
+              value: "clientStatusCode",
+            });
+          });
+        });        
+
+      });
+
+    });
+  });  
+
   describe("locations tab", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
       describe("3 active locations", () => {
