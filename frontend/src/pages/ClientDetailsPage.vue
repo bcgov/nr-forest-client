@@ -185,9 +185,12 @@ const summaryRef = ref<InstanceType<typeof SummaryView> | null>(null);
 
 const reasonModalActiveInd = ref(false);
 
-type ActionPatch = jsonpatch.Operation & { action: string };
+type ReasonPatch = jsonpatch.Operation & {
+  action: string;
+  reason?: string;
+};
 
-const actionPatchData = ref<ActionPatch[]>([]);
+const reasonPatchData = ref<ReasonPatch[]>([]);
 let originalPatchData: jsonpatch.Operation[] = []; 
 const finalPatchData = ref<jsonpatch.Operation[]>([]);
 const selectedReasons = ref<FieldUpdateReason[]>([]);
@@ -243,12 +246,10 @@ watch(
   },
 );
 
-type ReasonPatch = jsonpatch.Operation & { reason?: string };
-
 // Function to update reasons and send final PATCH request
 const confirmReasons = () => {
   isSaveFirstClick.value = false;
-  const reasonInputIdList = actionPatchData.value.map((_, index) => `input-reason-${index}`);
+  const reasonInputIdList = reasonPatchData.value.map((_, index) => `input-reason-${index}`);
   revalidateBus.emit(reasonInputIdList);
 
   if (!checkReasonCodesValidations()) {
@@ -257,13 +258,13 @@ const confirmReasons = () => {
   }
 
   // Continue with the patch process
-  const updatedPatchData = [...actionPatchData.value].map((patch, index) => {
+  const updatedPatchData = [...reasonPatchData.value];
+
+  updatedPatchData.forEach((patch, index) => {
     const reasonEntry = selectedReasons.value[index];
-    const reasonPatch: ReasonPatch = {
-      ...patch,
-      reason: reasonEntry?.reason,
-    };
-    return reasonPatch;
+    if (reasonEntry) {
+      patch.reason = reasonEntry.reason;
+    }
   });
 
   reasonModalActiveInd.value = false;
@@ -338,7 +339,7 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
   reasonCodesValidations.value = Array(reasonFields.length).fill(false);
 
   if (reasonFields.length > 0) {
-    actionPatchData.value = patchData
+    reasonPatchData.value = patchData
       .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
       .map((patch) => {
         const field = patch.path.replace('/', '');
@@ -627,15 +628,15 @@ resetGlobalError();
     </cds-modal-header>
   
     <cds-modal-body id="reason-modal-body">
-      <div v-if="actionPatchData && actionPatchData.length > 0">
+      <div v-if="reasonPatchData && reasonPatchData.length > 0">
 
         <p class="body-compact-01">
           Select a reason for the following 
-          <span v-if="actionPatchData.length == 1">change:</span>
-          <span v-if="actionPatchData.length > 1">changes:</span>
+          <span v-if="reasonPatchData.length == 1">change:</span>
+          <span v-if="reasonPatchData.length > 1">changes:</span>
         </p>
 
-        <div v-for="(patch, index) in actionPatchData" 
+        <div v-for="(patch, index) in reasonPatchData" 
             :key="index"
             class="grouping-24">
           <data-fetcher
