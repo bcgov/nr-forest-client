@@ -434,9 +434,9 @@ describe("Reason Fields Handling", () => {
 
     const result = extractReasonFields(patchData, originalData);
     expect(result).toEqual([
-      { field: "clientIdentification", reason: "ID" },
-      { field: "clientStatusCode", reason: "ACDC" }, // Active -> Deceased
-      { field: "city", reason: "ADDR" },
+      { field: "clientIdentification", action: "ID" },
+      { field: "clientStatusCode", action: "ACDC" }, // Active -> Deceased
+      { field: "city", action: "ADDR" },
     ]);
   });
 
