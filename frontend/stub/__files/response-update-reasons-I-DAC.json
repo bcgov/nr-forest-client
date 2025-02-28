@@ -1,0 +1,7 @@
+[
+  { "code": "BKR", "name": "Bankruptcy" },
+  { "code": "CORR", "name": "Correction" },
+  { "code": "DEC", "name": "Deceased" },
+  { "code": "DUPL", "name": "Duplicate Client" },
+  { "code": "NLDB", "name": "No Longer Doing Business with MoFR" }
+]
