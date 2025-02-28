@@ -71,7 +71,7 @@ describe("<location-view />", () => {
   };
 
   beforeEach(() => {
-    cy.intercept("GET", "/api/codes/countries/CA/provinces?page=0&size=250").as("getProvinces");
+    cy.viewport(1280, 720);
   });
 
   const testField = (selector: string, value: string, linkPrefix?: string) => {
@@ -242,7 +242,6 @@ describe("<location-view />", () => {
     beforeEach(() => {
       mount(customProps);
       cy.get(`#location-${customProps.data.clientLocnCode}-EditBtn`).click();
-      cy.wait("@getProvinces");
     });
 
     it("enables the edition of some fields by displaying the staff-location-group-component", () => {
