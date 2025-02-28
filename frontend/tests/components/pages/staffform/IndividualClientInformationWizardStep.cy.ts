@@ -3,6 +3,7 @@ import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
 
 describe("<individual-client-information-wizard-step />", () => {
   beforeEach(() => {
+    cy.viewport(1280, 720);
     cy.intercept("GET", "/api/codes/countries/CA/provinces?page=0&size=250", {
       fixture: "provinces.json",
     }).as("getProvinces");
