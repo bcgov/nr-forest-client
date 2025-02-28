@@ -217,6 +217,9 @@ describe("Client Details Page", () => {
   
           cy.intercept("PATCH", "/api/clients/details/*")
             .as("saveClientDetails");
+          
+          cy.intercept("GET", "/api/codes/update-reasons/*/*")
+            .as("getReasonsList");
   
           cy.visit("/clients/details/g");
 
@@ -235,6 +238,8 @@ describe("Client Details Page", () => {
 
           cy.get("#summarySaveBtn")
             .click();
+
+          cy.wait("@getReasonsList");
         });
 
         it("opens the reason modal and sends the correct PATCH request with reasons", () => {
