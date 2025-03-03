@@ -1942,7 +1942,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
     padding: 0 var(--p) var(--p) var(--p);
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: var(--tab-panel-gap);
     width: 100%;
 
     &[hidden] {
