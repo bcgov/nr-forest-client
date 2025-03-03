@@ -27,6 +27,7 @@ import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
 import Location20 from "@carbon/icons-vue/es/location/20";
 import User20 from "@carbon/icons-vue/es/user/20";
 import Launch16 from "@carbon/icons-vue/es/launch/16";
+import Add16 from "@carbon/icons-vue/es/add/16";
 
 import { greenDomain } from "@/CoreConstants";
 import {
@@ -544,42 +545,56 @@ resetGlobalError();
             </div>
           </div>
         </div>
-
-        <cds-tabs value="locations" type="contained">
-          <cds-tab id="tab-locations" target="panel-locations" value="locations">
-            <div>
-              Client locations
-              <Location16 />
-            </div>
-          </cds-tab>
-          <cds-tab id="tab-contacts" target="panel-contacts" value="contacts">
-            <div>
-              Client contacts
-              <User16 />
-            </div>
-          </cds-tab>
-          <cds-tab id="tab-related" target="panel-related" value="related">
-            <div>
-              Related clients
-              <NetworkEnterprise16 />
-            </div>
-          </cds-tab>
-          <cds-tab id="tab-activity" target="panel-activity" value="activity">
-            <div>
-              Activity log
-              <RecentlyViewed16 />
-            </div>
-          </cds-tab>
-        </cds-tabs>
       </div>
+      <div class="invisible"></div>
+    </div>
+    <div class="client-details-content tabs-container opaque-background" v-if="data">
+      <cds-tabs value="locations" type="contained">
+        <cds-tab id="tab-locations" target="panel-locations" value="locations">
+          <div>
+            Client locations
+            <Location16 />
+          </div>
+        </cds-tab>
+        <cds-tab id="tab-contacts" target="panel-contacts" value="contacts">
+          <div>
+            Client contacts
+            <User16 />
+          </div>
+        </cds-tab>
+        <cds-tab id="tab-related" target="panel-related" value="related">
+          <div>
+            Related clients
+            <NetworkEnterprise16 />
+          </div>
+        </cds-tab>
+        <cds-tab id="tab-activity" target="panel-activity" value="activity">
+          <div>
+            Activity log
+            <RecentlyViewed16 />
+          </div>
+        </cds-tab>
+      </cds-tabs>
     </div>
     <div class="tab-panels-container" v-if="data">
       <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
-        <div class="tab-panel tab-panel--populated">
+        <div class="tab-header space-between">
           <h3 class="padding-left-1rem">
             {{ formatCount(data.addresses?.length) }}
             {{ pluralize("location", data.addresses?.length) }}
           </h3>
+          <cds-button
+            v-if="userHasAuthority"
+            id="addlocationBtn"
+            kind="primary"
+            size="md"
+            @click="() => {}"
+          >
+            <span class="width-unset">Add location</span>
+            <Add16 slot="icon" />
+          </cds-button>
+        </div>
+        <div class="tab-panel tab-panel--populated">
           <cds-accordion
             v-for="(location, index) in sortedLocations"
             :key="location.clientLocnCode"
@@ -625,37 +640,41 @@ resetGlobalError();
         </div>
       </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
-        <div class="tab-panel tab-panel--populated" v-if="data.contacts?.length">
-          <h3 class="padding-left-1rem">
-            {{ formatCount(data.contacts?.length) }}
-            {{ pluralize("contact", data.contacts?.length) }}
-          </h3>
-          <cds-accordion
-            v-for="(contact, index) in sortedContacts"
-            :key="contact.contactName"
-            :id="`contact-${index}`"
-          >
-            <cds-accordion-item size="lg" class="grouping-13">
-              <div slot="title" class="flex-column-0_25rem">
-                <span class="label-with-icon">
-                  <User20 />
-                  {{ contact.contactName }}
-                </span>
-                <span
-                  :id="`contact-${index}-title-locations`"
-                  class="hide-open body-compact-01 padding-left-1_625rem"
-                >
-                  {{ associatedLocationsRecord[index] }}
-                </span>
-              </div>
-              <contact-view
-                :data="contact"
-                :index="index"
-                :associatedLocationsString="associatedLocationsRecord[index]"
-              />
-            </cds-accordion-item>
-          </cds-accordion>
-        </div>
+        <template v-if="data.contacts?.length">
+          <div class="tab-header space-between">
+            <h3 class="padding-left-1rem">
+              {{ formatCount(data.contacts?.length) }}
+              {{ pluralize("contact", data.contacts?.length) }}
+            </h3>
+          </div>
+          <div class="tab-panel tab-panel--populated">
+            <cds-accordion
+              v-for="(contact, index) in sortedContacts"
+              :key="contact.contactName"
+              :id="`contact-${index}`"
+            >
+              <cds-accordion-item size="lg" class="grouping-13">
+                <div slot="title" class="flex-column-0_25rem">
+                  <span class="label-with-icon">
+                    <User20 />
+                    {{ contact.contactName }}
+                  </span>
+                  <span
+                    :id="`contact-${index}-title-locations`"
+                    class="hide-open body-compact-01 padding-left-1_625rem"
+                  >
+                    {{ associatedLocationsRecord[index] }}
+                  </span>
+                </div>
+                <contact-view
+                  :data="contact"
+                  :index="index"
+                  :associatedLocationsString="associatedLocationsRecord[index]"
+                />
+              </cds-accordion-item>
+            </cds-accordion>
+          </div>
+        </template>
         <div class="tab-panel tab-panel--empty" v-else>
           <div class="empty-table-list">
             <summit-svg alt="Summit pictogram" class="standard-svg" />
