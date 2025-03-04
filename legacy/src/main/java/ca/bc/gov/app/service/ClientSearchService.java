@@ -10,7 +10,6 @@ import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
-import ca.bc.gov.app.dto.ForestClientLocationDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
@@ -62,14 +61,18 @@ public class ClientSearchService {
 
   public static final String CLIENT_NAME = "clientName";
   public static final String CLIENT_IDENTIFICATION = "clientIdentification";
+
   private final ForestClientRepository forestClientRepository;
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository;
   private final ForestClientRepository clientRepository;
   private final ForestClientContactRepository contactRepository;
   private final ForestClientLocationRepository locationRepository;
-  private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> forestClientMapper;
-  private final AbstractForestClientMapper<ForestClientLocationDto, ForestClientLocationEntity> locationMapper;
-  private final AbstractForestClientMapper<ForestClientContactDto, ForestClientContactEntity> contactMapper;
+
+  private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity>
+      forestClientMapper;
+  private final AbstractForestClientMapper<ForestClientContactDto, ForestClientContactEntity>
+      contactMapper;
+
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
 
@@ -124,37 +127,68 @@ public class ClientSearchService {
    * @param identification The identification of the client to be searched for. Optional.
    * @return A Flux stream of ForestClientDto objects that match the search criteria.
    */
-  public Flux<ForestClientDto> findByIndividual(String firstName, String lastName, LocalDate dob,
-      String identification, boolean fuzzy) {
+  public Flux<ForestClientDto> findByIndividual(
+      String firstName, String lastName, LocalDate dob, String identification, boolean fuzzy) {
 
     if (StringUtils.isAnyBlank(firstName, lastName) || dob == null) {
       log.error("Missing required parameter to search for individual");
-      return Flux.error(new MissingRequiredParameterException("firstName, lastName, or dob"));
+      return Flux.error(
+          new MissingRequiredParameterException("firstName, lastName, or dob"));
     }
 
-    log.info("Searching for individual: {} {} {} {}", firstName, lastName, dob,
+    log.info(
+        "Searching for individual: {} {} {} {}",
+        firstName,
+        lastName,
+        dob,
         StringUtils.defaultString(identification));
 
     if (StringUtils.isBlank(identification) && fuzzy) {
-      return clientRepository.findByIndividualFuzzy(String.format("%s %s", firstName, lastName),
-              dob.atStartOfDay()).map(forestClientMapper::toDto).distinct(ForestClientDto::clientNumber)
-          .sort(Comparator.comparing(ForestClientDto::clientNumber)).doOnNext(
-              dto -> log.info("Found individual matching {} {} {} as {} {}", firstName, lastName,
-                  dob, dto.clientNumber(), dto.clientName()));
+      return clientRepository
+          .findByIndividualFuzzy(String.format("%s %s", firstName, lastName), dob.atStartOfDay())
+          .map(forestClientMapper::toDto)
+          .distinct(ForestClientDto::clientNumber)
+          .sort(Comparator.comparing(ForestClientDto::clientNumber))
+          .doOnNext(dto ->
+              log.info(
+                  "Found individual matching {} {} {} as {} {}",
+                  firstName,
+                  lastName,
+                  dob,
+                  dto.clientNumber(),
+                  dto.clientName()));
     }
 
-    Criteria queryCriteria = where("legalFirstName").is(firstName).ignoreCase(true).and(CLIENT_NAME)
-        .is(lastName).ignoreCase(true).and("birthdate").is(dob.atStartOfDay()).and("clientTypeCode")
-        .is("I").ignoreCase(true);
+    Criteria queryCriteria = where("legalFirstName")
+        .is(firstName)
+        .ignoreCase(true)
+        .and(CLIENT_NAME)
+        .is(lastName)
+        .ignoreCase(true)
+        .and("birthdate")
+        .is(dob.atStartOfDay())
+        .and("clientTypeCode")
+        .is("I")
+        .ignoreCase(true);
 
     if (StringUtils.isNotBlank(identification)) {
-      queryCriteria = queryCriteria.and(CLIENT_IDENTIFICATION).is(identification).ignoreCase(true);
+      queryCriteria = queryCriteria
+          .and(CLIENT_IDENTIFICATION)
+          .is(identification)
+          .ignoreCase(true);
     }
 
-    return searchClientByQuery(queryCriteria, ForestClientEntity.class).map(
-        forestClientMapper::toDto).doOnNext(
-        dto -> log.info("Found individual matching {} {} {} {} as {} {}", firstName, lastName, dob,
-            StringUtils.defaultString(identification), dto.clientNumber(), dto.clientName()));
+    return searchClientByQuery(queryCriteria, ForestClientEntity.class)
+        .map(forestClientMapper::toDto)
+        .doOnNext(dto ->
+            log.info(
+                "Found individual matching {} {} {} {} as {} {}",
+                firstName,
+                lastName,
+                dob,
+                StringUtils.defaultString(identification),
+                dto.clientNumber(),
+                dto.clientName()));
   }
 
   /**
@@ -466,8 +500,8 @@ public class ClientSearchService {
                     .defaultIfEmpty(dto)
             )
         .flatMap(dto -> locationRepository
-                .findAllByClientNumber(clientNumber)
-                .map(locationMapper::toDto)
+                .findLocationsByClientNumber(clientNumber)
+                //.map(locationMapper::toDto)
                 .collectList()
                 .map(dto::withAddresses)
                 .defaultIfEmpty(dto)
@@ -562,20 +596,17 @@ public class ClientSearchService {
     );
   }
 
-  private Function<List<ForestClientContactDto>, ArrayList<ForestClientContactDto>> contactMapper() {
+  private Function<List<ForestClientContactDto>, ArrayList<ForestClientContactDto>> 
+    contactMapper() {
     return contacts ->
         new ArrayList<>(
-            contacts
-                .stream()
+            contacts.stream()
                 .collect(
-                    Collectors
-                        .toMap(
-                            ForestClientContactDto::contactName,
-                            contact -> contact,
-                            mergeContactLocations())
-                )
-                .values()
-        );
+                    Collectors.toMap(
+                        ForestClientContactDto::contactName,
+                        contact -> contact,
+                        mergeContactLocations()))
+                .values());
   }
 
 }
