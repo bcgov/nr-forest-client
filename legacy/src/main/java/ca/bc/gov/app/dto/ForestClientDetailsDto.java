@@ -27,7 +27,7 @@ public record ForestClientDetailsDto(
     String goodStandingInd,
     LocalDateTime birthdate,
 
-    List<ForestClientLocationDto> addresses,
+    List<ForestClientLocationDetailsDto> addresses,
     List<ForestClientContactDto> contacts,
     List<ClientDoingBusinessAsDto> doingBusinessAs
 ) {
