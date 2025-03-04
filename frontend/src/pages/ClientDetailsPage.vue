@@ -446,6 +446,7 @@ const saveLocation =
           locationsState[locationCode].isReloading = false;
         });
       }
+
       if (error.value.status) {
         const toastNotification: ModalNotification = {
           kind: "Error",
