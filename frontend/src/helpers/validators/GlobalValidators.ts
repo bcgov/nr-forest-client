@@ -229,16 +229,14 @@ export const isOnlyNumbers =
  * isUnique.remove('key', 'field'); // true
  */
 export const isUniqueDescriptive = (): {
-  add: (
-    key: string,
-    fieldId: string
-  ) => (value: string, message: string) => string;
+  add: (key: string, fieldId: string) => (value: string, message?: string) => string;
   remove: (key: string, fieldId: string) => boolean;
+  check: (key: string, fieldId: string) => (value: string, message?: string) => string;
 } => {
   const record: Record<string, Record<string, string>> = {};
 
   const add =
-    (key: string, fieldId: string) =>
+    (key: string, fieldId: string, dryRun = false) =>
     (
       value: string,
       message: string = "This value is already in use"
@@ -249,7 +247,9 @@ export const isUniqueDescriptive = (): {
       );
       // Get all the values of the fields to check, except the one of my fieldId
       const values = fieldsToCheck.map((field: string) => record[key][field]);
-      record[key] = { ...record[key], [fieldId]: value };
+      if (!dryRun) {
+        record[key] = { ...record[key], [fieldId]: value };
+      }
 
       if (
         values.some(
@@ -262,12 +262,15 @@ export const isUniqueDescriptive = (): {
       return "";
     };
 
+  const check = (key: string, fieldId: string) => add(key, fieldId, true);
+
   const remove = (key: string, fieldId: string): boolean =>
     delete record[key][fieldId];
 
   return {
     add,
     remove,
+    check,
   };
 };
 

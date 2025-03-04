@@ -6,7 +6,8 @@ import './commands'
 import { mount } from 'cypress/vue'
 import '@cypress/code-coverage/support'
 import VueDOMPurifyHTML from "vue-dompurify-html";
-import '@/styles'
+import '@/styles';
+import directivesMap from '@/directivesMap';
 
 declare global {
   namespace Cypress {
@@ -18,6 +19,7 @@ declare global {
 
 Cypress.Commands.add('mount', (component, options = {}) => {
   options.global = options.global || {};
+  options.global.directives = directivesMap;
   options.global.plugins = options.global.plugins || [];
   options.global.plugins.push(VueDOMPurifyHTML);
 

@@ -13,7 +13,7 @@ declare namespace Cypress {
     fillFormEntry(field: string, value: string, delayMS?: number, area?: boolean): Chainable<void>;
     fillFormEntry(field: string, value: string, options: FillFormEntryOptions): Chainable<void>;
     clearFormEntry(field: string, area?: boolean): Chainable<void>;
-    selectFormEntry(field: string, value: string, box: boolean): Chainable<void>;
+    selectFormEntry(field: string, value: string): Chainable<void>;
     markCheckbox(field: string): Chainable<void>;
     unmarkCheckbox(field: string): Chainable<void>;
     selectAutocompleteEntry(

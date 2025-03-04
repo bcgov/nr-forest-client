@@ -1,6 +1,7 @@
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
 import type {
   ClientDetails,
+  ClientLocation,
   CodeDescrType,
   CodeNameType,
   FieldAction,
@@ -160,6 +161,11 @@ export const formatPhoneNumber = (phoneNumber: string): string => {
   const part3 = phoneNumber.slice(6);
 
   return `(${part1}) ${part2}-${part3}`;
+};
+
+export const keepOnlyNumbersAndLetters = (input: string): string => {
+  const result = input.replaceAll(/[^A-Za-z0-9]/g, "");
+  return result;
 };
 
 /**
@@ -331,4 +337,96 @@ export const updateSelectedReason = (
   } else {
     selectedReasons[index] = { field: patch.path.replace("/", ""), reason: "" };
   }
+};
+
+/**
+ * Converts location data from ClientLocation format to Address format, as required by the
+ * StaffLocationGroupComponent, first developed for the staff create form.
+ *
+ * @param location - ClientLocation formatted data
+ * @returns Address data
+ */
+export const locationToCreateFormat = (location: ClientLocation): Address => {
+  const address: Address = {
+    streetAddress: location.addressOne,
+    complementaryAddressOne: location.addressTwo,
+    complementaryAddressTwo: location.addressThree,
+    country: {
+      value: location.countryCode,
+      text: location.countryDesc,
+    },
+    province: {
+      value: location.provinceCode,
+      text: location.provinceDesc,
+    },
+    city: location.city,
+    postalCode: location.postalCode,
+    businessPhoneNumber: formatPhoneNumber(location.businessPhone),
+    secondaryPhoneNumber: formatPhoneNumber(location.cellPhone),
+    tertiaryPhoneNumber: formatPhoneNumber(location.homePhone),
+    faxNumber: formatPhoneNumber(location.faxNumber),
+    emailAddress: location.emailAddress,
+    notes: location.cliLocnComment,
+    index: Number(location.clientLocnCode),
+    locationName: location.clientLocnName,
+  };
+  return address;
+};
+
+/**
+ * Converts location data from Address format to ClientLocation format, as required by the Patch
+ * API.
+ * Note: data which don't exist in the Address format can be provided in the baseLocation
+ * parameter.
+ *
+ * @param address - Address formatted data
+ * @param baseLocation - ClientLocation data to fulfill data non-existent in the Address format
+ * @returns ClientLocation data
+ */
+export const locationToEditFormat = (
+  address: Address,
+  baseLocation: ClientLocation,
+): ClientLocation => {
+  const location: ClientLocation = {
+    ...baseLocation,
+    clientLocnName: address.locationName,
+    clientLocnCode: String(address.index).padStart(2, "0"),
+    addressOne: address.streetAddress,
+    addressTwo: address.complementaryAddressOne,
+    addressThree: address.complementaryAddressTwo,
+    city: address.city,
+    provinceCode: address.province.value,
+    provinceDesc: address.province.text,
+    postalCode: address.postalCode,
+    countryCode: address.country.value,
+    countryDesc: address.country.text,
+    businessPhone: keepOnlyNumbersAndLetters(address.businessPhoneNumber),
+    homePhone: keepOnlyNumbersAndLetters(address.tertiaryPhoneNumber),
+    cellPhone: keepOnlyNumbersAndLetters(address.secondaryPhoneNumber),
+    faxNumber: keepOnlyNumbersAndLetters(address.faxNumber),
+    emailAddress: address.emailAddress,
+    cliLocnComment: address.notes,
+  };
+
+  return location;
+};
+
+/**
+ * Keeps the scrollbar at its current bottom position while the supplied promise resolves.
+ *
+ * What does this mean? This function should be used when the content on the viewport is about to
+ * shrink, specially when the user just sees the bottom of such content.
+ * The goal is to make the bottom of such content remain at the same Y position, kind of similarly
+ * to what the overflow-anchor CSS property is able to do while the content grows, so as to avoid
+ * scroll jumping in unexpected ways.
+ *
+ * @param uiUpdatePromise - The promise whose resolution should triggers the scroll fix.
+ */
+export const keepScrollBottomPosition = (uiUpdatePromise: Promise<void>): void => {
+  const app = document.getElementById("app");
+  const lastHeightFromBottom = app.scrollHeight - window.scrollY;
+
+  uiUpdatePromise.then(() => {
+    window.scrollTo({ top: app.scrollHeight - lastHeightFromBottom });
+  });
 };

@@ -219,6 +219,7 @@ const phoneValidations = [
 
 fieldValidations["location.addresses.*.businessPhoneNumber"] = [...phoneValidations];
 fieldValidations["location.addresses.*.secondaryPhoneNumber"] = [...phoneValidations];
+fieldValidations["location.addresses.*.tertiaryPhoneNumber"] = [...phoneValidations];
 fieldValidations["location.addresses.*.faxNumber"] = [...phoneValidations];
 
 fieldValidations["location.addresses.*.notes"] = [

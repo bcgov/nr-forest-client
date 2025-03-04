@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { AxiosError } from "axios";
 import * as jsonpatch from "fast-json-patch";
 
@@ -44,15 +44,16 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import type {
   ClientDetails,
   ClientLocation,
-  FieldUpdateReason,
   ModalNotification,
+  FieldUpdateReason,
+  UserRole,
 } from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
-import { isNotEmpty } from "@/helpers/validators/GlobalValidators";
+import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 
 // Route related
 const router = useRouter();
@@ -63,7 +64,7 @@ const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const data = ref<ClientDetails>(undefined);
 
-const userRoles = ForestClientUserSession.authorities;
+const userRoles = ForestClientUserSession.authorities as UserRole[];
 
 const userHasAuthority = includesAnyOf(userRoles, [
   "CLIENT_ADMIN",
@@ -101,8 +102,8 @@ const formatCount = (count = 0) => {
 };
 
 const formatAddress = (location: ClientLocation) => {
-  const { addressOne, city, province, country, postalCode } = location;
-  const list = [addressOne, city, province, country, postalCode];
+  const { addressOne, city, provinceCode, countryDesc, postalCode } = location;
+  const list = [addressOne, city, provinceCode, countryDesc, postalCode];
   return list.join(", ");
 };
 
@@ -124,12 +125,35 @@ const compareString = (a: string, b: string) => {
 };
 
 const sortedLocations = computed(() =>
-  data.value.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
+  data.value?.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
 );
 
+interface LocationState {
+  isReloading: boolean;
+}
+
+const createLocationState = (): LocationState => ({
+  isReloading: false,
+});
+
+const locationsState = reactive<Record<string, LocationState>>({});
+
 const sortedContacts = computed(() =>
-  data.value.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
+  data.value?.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
 );
+
+const uniqueLocations = isUniqueDescriptive();
+
+watch(sortedLocations, (value) => {
+  if (value?.length) {
+    console.log({ value });
+    value.forEach((location) => {
+      console.log({ location });
+      const index = String(Number(location.clientLocnCode));
+      uniqueLocations.add("Names", index)(location.clientLocnName);
+    });
+  }
+});
 
 const formatLocation = (location: ClientLocation) => {
   const parts = [location.clientLocnCode];
@@ -144,7 +168,7 @@ const formatLocation = (location: ClientLocation) => {
 
 const formatLocationsList = (
   locationCodes: string[],
-  allLocations: ClientLocation[] = data.value.addresses,
+  allLocations: ClientLocation[] = sortedLocations.value,
 ) => {
   const list: string[] = [];
   if (Array.isArray(locationCodes)) {
@@ -153,8 +177,10 @@ const formatLocationsList = (
         (curLocation) => curLocation.clientLocnCode === curLocationCode,
       );
 
-      const title = formatLocation(location);
-      list.push(title);
+      if (location) {
+        const title = formatLocation(location);
+        list.push(title);
+      }
     }
   }
   return list.join(", ");
@@ -361,6 +387,80 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
   resetGlobalError();
 };
 
+const locationsRef = ref<InstanceType<typeof LocationView>[]>([]);
+
+const setLocationRef = (index: number) => (el: InstanceType<typeof LocationView>) => {
+  console.log(index);
+  locationsRef.value[index] = el;
+};
+
+interface Action {
+  infinitive: string;
+  pastParticiple: string;
+}
+
+const saveLocation =
+  (index: number) =>
+  (rawPatchData: jsonpatch.Operation[], updatedLocation: ClientLocation, action: Action) => {
+    const locationCode = updatedLocation.clientLocnCode;
+
+    const patchData = rawPatchData.map((item) => ({
+      ...item,
+      path: `/addresses/${locationCode}${item.path}`,
+    }));
+
+    const {
+      fetch: patch,
+      response,
+      error,
+    } = useJsonPatch(`/api/clients/details/${clientNumber}`, patchData, {
+      skip: true,
+    });
+
+    console.log(patchData);
+
+    resetGlobalError();
+
+    const updatedTitle = formatLocation(updatedLocation);
+
+    patch().then(() => {
+      if (response.value.status) {
+        const toastNotification: ModalNotification = {
+          kind: "Success",
+          active: true,
+          handler: () => {},
+          message: `Location <span class="weight-700">“${updatedTitle}”</span> was ${action.pastParticiple}`,
+          toastTitle: undefined,
+        };
+        toastBus.emit(toastNotification);
+
+        locationsRef.value[index].lockEditing();
+
+        if (!locationsState[locationCode]) {
+          locationsState[locationCode] = createLocationState();
+        }
+
+        locationsState[locationCode].isReloading = true;
+
+        fetchClientData().asyncResponse.then(() => {
+          locationsState[locationCode].isReloading = false;
+        });
+      }
+
+      if (error.value.status) {
+        const toastNotification: ModalNotification = {
+          kind: "Error",
+          active: true,
+          handler: () => {},
+          message: `Failed to ${action.infinitive} location`,
+          toastTitle: undefined,
+        };
+        toastBus.emit(toastNotification);
+        globalError.value = error.value;
+      }
+    });
+  };
+
 const globalError = ref();
 
 const resetGlobalError = () => {
@@ -486,8 +586,12 @@ resetGlobalError();
             :key="location.clientLocnCode"
             :id="`location-${location.clientLocnCode}`"
           >
-            <cds-accordion-item size="lg" class="grouping-13">
-              <div slot="title" class="flex-column-0_25rem">
+            <cds-accordion-item size="lg" class="grouping-13" v-shadow="1">
+              <div
+                slot="title"
+                class="flex-column-0_25rem"
+                :class="{ invisible: locationsState[location.clientLocnCode]?.isReloading }"
+              >
                 <span class="label-with-icon">
                   <LocationStar20 v-if="index === 0" />
                   <Location20 v-else />
@@ -508,7 +612,15 @@ resetGlobalError();
                   {{ formatAddress(location) }}
                 </span>
               </div>
-              <location-view :data="location" />
+              <location-view
+                :ref="setLocationRef(index)"
+                :data="location"
+                :is-reloading="locationsState[location.clientLocnCode]?.isReloading"
+                :user-roles="userRoles"
+                :validations="[uniqueLocations.check]"
+                keep-scroll-bottom-position
+                @save="(...args) => saveLocation(index)(...args)"
+              />
             </cds-accordion-item>
           </cds-accordion>
         </div>

@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.base.json",
-  "exclude": [],
+  "exclude": [
+    "tests/components/**/*.ts",
+  ],
   "include": [
     "tests/**/*",
     "env.d.ts",

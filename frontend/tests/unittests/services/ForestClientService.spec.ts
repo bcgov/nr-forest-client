@@ -17,10 +17,13 @@ import {
   getOldValue,
   getEnumKeyByEnumValue,
   getFormattedHtml,
+  locationToCreateFormat,
+  locationToEditFormat,
+  keepOnlyNumbersAndLetters,
   toSentenceCase,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
-import type { UserRole, ClientDetails } from "@/dto/CommonTypesDto";
+import type { UserRole, ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
 import type * as jsonpatch from "fast-json-patch";
 
 describe("ForestClientService.ts", () => {
@@ -279,6 +282,167 @@ describe("ForestClientService.ts", () => {
       const needles = ["x", "y", "z"];
       const result = includesAnyOf(haystack, needles);
       expect(result).toBe(false);
+    });
+  });
+
+  describe("keepOnlyNumbersAndLetters", () => {
+    it("strips off any characters that are not a number or a simple letter", () => {
+      const result = keepOnlyNumbersAndLetters("A@b(1)2-C 3");
+      expect(result).toEqual("Ab12C3");
+    });
+  });
+
+  describe("locationToCreateFormat", () => {
+    const location = {
+      clientLocnName: "Mailing address",
+      clientLocnCode: "00",
+      addressOne: "123 Richmond Ave",
+      addressTwo: "C/O Tony Pineda",
+      addressThree: "Sample additional info",
+      countryCode: "CA",
+      countryDesc: "Canada",
+      provinceCode: "SK",
+      provinceDesc: "Saskatchewan",
+      city: "Hampton",
+      postalCode: "A1B2C3",
+      emailAddress: "contact@mail.com",
+      businessPhone: "2502863767",
+      cellPhone: "2505553700",
+      homePhone: "2505553101",
+      faxNumber: "2502863768",
+      cliLocnComment: "Sample location 00 comment",
+      locnExpiredInd: "N",
+    } as ClientLocation;
+
+    it("converts from ClientLocation format to Address format properly", () => {
+      const address = locationToCreateFormat(location);
+      expect(address.streetAddress).toEqual(location.addressOne);
+      expect(address.complementaryAddressOne).toEqual(location.addressTwo);
+      expect(address.complementaryAddressTwo).toEqual(location.addressThree);
+      expect(address.country).toStrictEqual({
+        value: location.countryCode,
+        text: location.countryDesc,
+      });
+      expect(address.province).toEqual({
+        value: location.provinceCode,
+        text: location.provinceDesc,
+      });
+      expect(address.city).toEqual(location.city);
+      expect(address.postalCode).toEqual(location.postalCode);
+      expect(address.businessPhoneNumber).toEqual(formatPhoneNumber(location.businessPhone));
+      expect(address.secondaryPhoneNumber).toEqual(formatPhoneNumber(location.cellPhone));
+      expect(address.tertiaryPhoneNumber).toEqual(formatPhoneNumber(location.homePhone));
+      expect(address.faxNumber).toEqual(formatPhoneNumber(location.faxNumber));
+      expect(address.emailAddress).toEqual(location.emailAddress);
+      expect(address.notes).toEqual(location.cliLocnComment);
+      expect(address.index).toEqual(Number(location.clientLocnCode));
+      expect(address.locationName).toEqual(location.clientLocnName);
+    });
+  });
+
+  describe("locationToEditFormat", () => {
+    const address = {
+      streetAddress: "2975 Jutland Rd",
+      complementaryAddressOne: "C/O Mary Anne",
+      complementaryAddressTwo: "Call Mary",
+      country: {
+        value: "US",
+        text: "United States of America",
+      },
+      province: {
+        value: "PA",
+        text: "Pennsylvania",
+      },
+      city: "Bethlehem",
+      postalCode: "12345-1234",
+      businessPhoneNumber: "(121) 212-1212",
+      secondaryPhoneNumber: "(343) 434-3434",
+      tertiaryPhoneNumber: "(565) 656-5656",
+      faxNumber: "(787) 878-7878",
+      emailAddress: "john@company.com",
+      notes: "Updated notes",
+
+      // This is not supposed to be changed, but that's not this function's responsibility
+      index: 1,
+
+      locationName: "Updated mailing address",
+    } as Address;
+
+    const baseLocation: ClientLocation = {
+      clientNumber: "121314",
+      clientLocnName: "Mailing address",
+      clientLocnCode: "00",
+      addressOne: "123 Richmond Ave",
+      addressTwo: "C/O Tony Pineda",
+      addressThree: "Sample additional info",
+      countryCode: "CA",
+      countryDesc: "Canada",
+      provinceCode: "SK",
+      provinceDesc: "Saskatchewan",
+      city: "Hampton",
+      postalCode: "A1B2C3",
+      emailAddress: "contact@mail.com",
+      businessPhone: "2502863767",
+      cellPhone: "2505553700",
+      homePhone: "2505553101",
+      faxNumber: "2502863768",
+      cliLocnComment: "Sample location 00 comment",
+      locnExpiredInd: "N",
+      returnedMailDate: "2000-01-02",
+      trustLocationInd: "Y",
+      createdBy: "peter",
+      updatedBy: "mike",
+    };
+
+    it("converts from Address format to ClientLocation format properly", () => {
+      const location = locationToEditFormat(address, baseLocation);
+
+      expect(location.addressOne).toEqual(address.streetAddress);
+      expect(location.addressOne).toEqual(address.streetAddress);
+      expect(location.addressTwo).toEqual(address.complementaryAddressOne);
+      expect(location.addressThree).toEqual(address.complementaryAddressTwo);
+      expect(location.countryCode).toEqual(address.country.value);
+      expect(location.countryDesc).toEqual(address.country.text);
+      expect(location.provinceCode).toEqual(address.province.value);
+      expect(location.provinceDesc).toEqual(address.province.text);
+      expect(location.city).toEqual(address.city);
+      expect(location.postalCode).toEqual(address.postalCode);
+      expect(location.businessPhone).toEqual(
+        keepOnlyNumbersAndLetters(address.businessPhoneNumber),
+      );
+      expect(location.cellPhone).toEqual(keepOnlyNumbersAndLetters(address.secondaryPhoneNumber));
+      expect(location.homePhone).toEqual(keepOnlyNumbersAndLetters(address.tertiaryPhoneNumber));
+      expect(location.faxNumber).toEqual(keepOnlyNumbersAndLetters(address.faxNumber));
+      expect(location.emailAddress).toEqual(address.emailAddress);
+      expect(location.cliLocnComment).toEqual(address.notes);
+      expect(location.clientLocnCode).toEqual(String(address.index).padStart(2, "0"));
+      expect(location.clientLocnName).toEqual(address.locationName);
+
+      // Information that doesn't exist on the Address format
+      const missingProperties: (keyof ClientLocation)[] = [
+        "clientNumber",
+        "locnExpiredInd",
+        "returnedMailDate",
+        "trustLocationInd",
+        "createdBy",
+        "updatedBy",
+      ];
+
+      for (const key in location) {
+        if (!missingProperties.includes(key as keyof ClientLocation)) {
+          /*
+          This assertion makes sure data comes primarily from the input address instead of the
+          baseLocation.
+          */
+          expect(location[key]).not.toEqual(baseLocation[key]);
+        }
+      }
+      for (const propName of missingProperties) {
+        /*
+        While this one makes sure the remaining data is properly copied from the baseLocation.
+        */
+        expect(location[propName]).toEqual(baseLocation[propName]);
+      }
     });
   });
 });

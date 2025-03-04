@@ -23,6 +23,8 @@ const props = defineProps<{
   countryList: Array<CodeNameType>;
   validations: Array<Function>;
   revalidate?: boolean;
+  includeTertiaryPhoneNumber?: boolean;
+  hideDeleteButton?: boolean;
 }>();
 
 // Events we emit during component lifecycle
@@ -102,6 +104,7 @@ const validation = reactive<Record<string, boolean>>({
   emailAddress: true,
   primaryPhoneNumber: true,
   secondaryPhoneNumber: true,
+  tertiaryPhoneNumber: true,
   faxNumber: true,
   notes: true,
 });
@@ -448,7 +451,7 @@ const getLocationDescription = (address: Address, index: number): string =>
       @error="validation.emailAddress = !$event"
     />
 
-    <div class="horizontal-input-grouping">
+    <div :class="`grid ${includeTertiaryPhoneNumber ? 'grid--2-per-row' : 'grid--3-per-row'}`">
       <text-input-component
         :id="'businessPhoneNumber_' + id"
         label="Primary phone number"
@@ -481,6 +484,24 @@ const getLocationDescription = (address: Address, index: number): string =>
         ]"
         @empty="validation.secondaryPhoneNumber = true"
         @error="validation.secondaryPhoneNumber = !$event"
+      />
+
+      <text-input-component
+        v-if="includeTertiaryPhoneNumber"
+        :id="'tertiaryPhoneNumber_' + id"
+        label="Tertiary phone number"
+        type="tel"
+        autocomplete="off"
+        placeholder="( ) ___-____"
+        mask="(###) ###-####"
+        v-model="selectedValue.tertiaryPhoneNumber"
+        :enabled="true"
+        :validations="[
+          ...getValidations('location.addresses.*.tertiaryPhoneNumber'),
+          submissionValidation(`location.addresses[${id}].tertiaryPhoneNumber`)
+        ]"
+        @empty="validation.tertiaryPhoneNumber = true"
+        @error="validation.tertiaryPhoneNumber = !$event"
       />
 
       <text-input-component
@@ -530,9 +551,8 @@ const getLocationDescription = (address: Address, index: number): string =>
       </div>
     </textarea-input-component>
 
-    <div class="grouping-06">
+    <div class="grouping-06" v-if="!hideDeleteButton && id > 0">
       <cds-button
-        v-if="id > 0"
         :id="'deleteAddress_' + id"
         :danger-descriptor="`Delete location &quot;${getLocationDescription(
           selectedValue,

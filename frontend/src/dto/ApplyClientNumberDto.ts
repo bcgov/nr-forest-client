@@ -11,6 +11,7 @@ export interface Address {
   postalCode: string;
   businessPhoneNumber?: string;
   secondaryPhoneNumber?: string;
+  tertiaryPhoneNumber?: string; // only for the Client View/Edit page
   faxNumber?: string;
   emailAddress?: string;
   notes?: string;
