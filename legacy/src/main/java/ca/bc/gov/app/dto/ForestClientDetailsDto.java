@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.With;
 
+/**
+ * DTO representing detailed information about a forest client, including personal information,
+ * status, type, identification, comments, and related lists of addresses, contacts, and DBAs.
+ */
 @With
 public record ForestClientDetailsDto(
     String clientNumber,

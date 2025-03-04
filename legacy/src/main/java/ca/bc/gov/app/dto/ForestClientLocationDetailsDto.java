@@ -2,6 +2,10 @@ package ca.bc.gov.app.dto;
 
 import lombok.With;
 
+/**
+ * DTO representing location details for a forest client, including addresses, contact numbers, 
+ * and additional comments.
+ */
 @With
 public record ForestClientLocationDetailsDto(
     String clientNumber,
