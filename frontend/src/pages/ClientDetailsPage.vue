@@ -141,11 +141,14 @@ const sortedLocations = computed(() => {
 });
 
 interface LocationState {
-  isReloading: boolean;
+  isReloading?: boolean;
+  startOpen?: boolean;
 }
 
-const createLocationState = (): LocationState => ({
+const createLocationState = (locationState?: LocationState): LocationState => ({
   isReloading: false,
+  startOpen: false,
+  ...locationState,
 });
 
 const locationsState = reactive<Record<string, LocationState>>({});
@@ -215,6 +218,7 @@ const addLocation = () => {
   }
   const codeString = formatCount(codeNumber);
   newLocation.value = createClientLocation(clientNumber, codeString);
+  locationsState[codeString] = createLocationState({ startOpen: true });
   setScrollPoint(`location-${index}-heading`);
   setFocusedComponent(`location-${index}-heading`);
 };
@@ -493,6 +497,9 @@ const saveLocation =
 
         fetchClientData().asyncResponse.then(() => {
           locationsState[locationCode].isReloading = false;
+
+          // Reset the newLocation variable
+          newLocation.value = undefined;
         });
       }
       if (error.value.status) {
@@ -653,7 +660,7 @@ resetGlobalError();
               size="lg"
               class="grouping-13"
               v-shadow="1"
-              :open="location === newLocation"
+              :open="locationsState[location.clientLocnCode]?.startOpen"
               :data-focus="`location-${index}-heading`"
             >
               <div
