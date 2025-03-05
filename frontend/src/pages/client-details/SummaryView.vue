@@ -1,20 +1,144 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import type { ClientDetails } from "@/dto/CommonTypesDto";
+import { computed, reactive, ref, watch } from "vue";
+import * as jsonpatch from "fast-json-patch";
+import type { ClientDetails, CodeNameType, UserRole } from "@/dto/CommonTypesDto";
 import {
   getFormattedHtml,
   getTagColorByClientStatus,
   goodStanding,
+  includesAnyOf,
 } from "@/services/ForestClientService";
 
-// @ts-ignore
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
-// @ts-ignore
 import Warning20 from "@carbon/icons-vue/es/warning--filled/20";
+import Information16 from "@carbon/icons-vue/es/information/16";
+import Edit16 from "@carbon/icons-vue/es/edit/16";
+import Save16 from "@carbon/icons-vue/es/save/16";
+import Close16 from "@carbon/icons-vue/es/close/16";
+
+// Importing validators
+import { getValidations } from "@/helpers/validators/StaffFormValidations";
+import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 
 const props = defineProps<{
   data: ClientDetails;
+  userRoles: UserRole[];
 }>();
+
+const emit = defineEmits<{
+  (e: "save", value: jsonpatch.Operation[]): void;
+}>();
+
+let originalData: ClientDetails;
+const formData = ref<ClientDetails>();
+
+const isEditing = ref(false);
+const hasAnyChange = ref(false);
+
+const resetFormData = () => {
+  originalData = JSON.parse(JSON.stringify(props.data));
+  formData.value = JSON.parse(JSON.stringify(props.data));
+  hasAnyChange.value = false;
+};
+
+resetFormData();
+
+watch(
+  formData,
+  () => {
+    if (isEditing.value) {
+      hasAnyChange.value = JSON.stringify(formData.value) !== JSON.stringify(originalData);
+    }
+  },
+  { deep: true },
+);
+
+const edit = () => {
+  resetFormData();
+  isEditing.value = true;
+};
+
+const cancel = () => {
+  isEditing.value = false;
+};
+
+const lockEditing = () => {
+  isEditing.value = false;
+};
+
+defineExpose({
+  lockEditing,
+});
+
+const save = () => {
+  const patch = jsonpatch.compare(originalData, formData.value);
+  emit("save", patch);
+};
+
+const fieldIdList = [
+  "clientName",
+  "acronym",
+  "doingBusinessAs",
+  "registrationNumber",
+  "workSafeBCNumber",
+  "clientStatus",
+  "notes",
+] as const;
+
+type FieldId = (typeof fieldIdList)[number];
+
+const validation = reactive<Record<FieldId, boolean>>({
+  clientName: true,
+  acronym: true,
+  doingBusinessAs: true,
+  registrationNumber: true,
+  workSafeBCNumber: true,
+  clientStatus: true,
+  notes: true,
+});
+
+const checkValid = () =>
+  Object.values(validation).reduce(
+    (accumulator: boolean, currentValue: boolean) => accumulator && currentValue,
+    true,
+  );
+
+const editRoles: Record<FieldId, UserRole[]> = {
+  // TODO: add the following values back when working on FSADT1-1611 or FSADT1-1640
+  // clientName: ["CLIENT_ADMIN"],
+  // acronym: ["CLIENT_ADMIN"],
+  // doingBusinessAs: ["CLIENT_ADMIN"],
+  // registrationNumber: ["CLIENT_ADMIN"],
+  workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
+  clientStatus: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
+  notes: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
+};
+
+const canEdit = computed(() =>
+  includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
+);
+
+const canEditClientStatus = () => {
+  if (props.userRoles.includes("CLIENT_ADMIN")) {
+    return true;
+  }
+  if (["SPN", "REC"].includes(props.data.clientStatusCode)) {
+    return props.userRoles.includes("CLIENT_SUSPEND");
+  }
+  if (["ACT"].includes(props.data.clientStatusCode)) {
+    return true;
+  }
+
+  // status is (DEC or DAC) and userRoles doesn't include CLIENT_ADMIN
+  return false;
+};
+
+const displayEditable = (fieldId: FieldId) =>
+  isEditing.value &&
+  includesAnyOf(props.userRoles, editRoles[fieldId]) &&
+  (fieldId !== "clientStatus" || canEditClientStatus());
+
+const displayReadonly = (fieldId: FieldId) => !isEditing.value || !displayEditable(fieldId);
 
 const clientRegistrationNumber = computed(() => {
   const { registryCompanyTypeCode, corpRegnNmbr } = props.data;
@@ -32,17 +156,31 @@ const doingBusinessAs = computed(() => {
   return undefined;
 });
 
+const dateOfBirth = computed(() => {
+  if (props.data.birthdate) {
+    if (props.data.birthdate.length === 4) {
+      return props.data.birthdate;
+    }
+
+    // if masked (month and day)
+    if (props.data.birthdate.includes("*")) {
+      return props.data.birthdate.slice(0, 4);
+    }
+
+    return new Date(props.data.birthdate).toISOString().split("T")[0];
+  }
+  return "";
+});
+
 const birthdateLabel = computed(() =>
-  props.data.birthdate.length > 4 ? "Date of birth" : "Year of birth",
+  dateOfBirth.value.length > 4 ? "Date of birth" : "Year of birth",
 );
 
-const dateOfBirth = computed(() => {
-
-  if(props.data.birthdate) {
-    return new Date(props.data.birthdate).toISOString().split('T')[0];
+const updateClientStatus = (value: CodeNameType | undefined) => {
+  if (value) {
+    formData.value.clientStatusCode = value.code;
   }
-  return '';
-});
+};
 </script>
 
 <template>
@@ -50,10 +188,18 @@ const dateOfBirth = computed(() => {
     <read-only-component label="Client number" id="clientNumber">
       <span class="body-compact-01">{{ props.data.clientNumber }}</span>
     </read-only-component>
-    <read-only-component label="Acronym" id="acronym" v-if="props.data.clientAcronym">
+    <read-only-component
+      label="Acronym"
+      id="acronym"
+      v-if="displayReadonly('acronym') && props.data.clientAcronym"
+    >
       <span class="body-compact-01">{{ props.data.clientAcronym }}</span>
     </read-only-component>
-    <read-only-component label="Doing business as" id="doingBusinessAs" v-if="doingBusinessAs">
+    <read-only-component
+      label="Doing business as"
+      id="doingBusinessAs"
+      v-if="displayReadonly('doingBusinessAs') && doingBusinessAs"
+    >
       <span class="body-compact-01" v-dompurify-html="getFormattedHtml(doingBusinessAs)"></span>
     </read-only-component>
     <read-only-component label="Client type" id="clientType">
@@ -62,9 +208,16 @@ const dateOfBirth = computed(() => {
     <read-only-component
       label="Registration number"
       id="registrationNumber"
-      v-if="clientRegistrationNumber"
+      v-if="displayReadonly('registrationNumber') && clientRegistrationNumber"
     >
       <span class="body-compact-01">{{ clientRegistrationNumber }}</span>
+    </read-only-component>
+    <read-only-component
+      label="WorkSafeBC number"
+      id="workSafeBCNumber"
+      v-if="displayReadonly('workSafeBCNumber') && props.data.wcbFirmNumber"
+    >
+      <span class="body-compact-01">{{ props.data.wcbFirmNumber }}</span>
     </read-only-component>
     <read-only-component
       label="BC Registries standing"
@@ -89,7 +242,11 @@ const dateOfBirth = computed(() => {
     <read-only-component :label="birthdateLabel" id="dateOfBirth" v-if="dateOfBirth">
       <span class="body-compact-01">{{ dateOfBirth }}</span>
     </read-only-component>
-    <read-only-component label="Status" id="status">
+    <read-only-component
+      label="Client status"
+      id="clientStatus"
+      v-if="displayReadonly('clientStatus')"
+    >
       <span class="body-compact-01">
         <cds-tag :type="getTagColorByClientStatus(props.data.clientStatusDesc)">
           <span>{{ props.data.clientStatusDesc }}</span>
@@ -97,13 +254,177 @@ const dateOfBirth = computed(() => {
       </span>
     </read-only-component>
   </div>
-  <div class="grouping-10 no-padding" v-if="props.data.clientComment">
-    <read-only-component label="Notes" id="notes" v-if="props.data.clientComment">
+  <div class="grouping-10 no-padding" v-if="displayReadonly('notes') && props.data.clientComment">
+    <read-only-component label="Notes" id="notes">
       <span
         class="body-compact-01"
         v-dompurify-html="getFormattedHtml(props.data.clientComment)"
       ></span>
     </read-only-component>
+  </div>
+  <div class="grouping-10 no-padding" v-if="canEdit && !isEditing">
+    <cds-button id="summaryEditBtn" kind="tertiary" size="md" @click="edit">
+      <span class="width-unset">Edit client information</span>
+      <Edit16 slot="icon" />
+    </cds-button>
+  </div>
+  <div class="form-edit no-padding" v-if="isEditing">
+    <div
+      class="horizontal-input-grouping"
+      v-if="displayEditable('clientName') || displayEditable('acronym')"
+    >
+      <text-input-component
+        id="input-clientName"
+        v-if="displayEditable('clientName')"
+        class="grouping-02--width-32rem"
+        label="Client name"
+        autocomplete="off"
+        required
+        required-label
+        placeholder=""
+        v-model="formData.clientName"
+        :validations="[
+          ...getValidations('businessInformation.businessName'),
+          submissionValidation('businessInformation.businessName'),
+        ]"
+        @empty="validation.clientName = !$event"
+        @error="validation.clientName = !$event"
+      />
+      <text-input-component
+        id="input-acronym"
+        v-if="displayEditable('acronym')"
+        class="grouping-02--width-8rem"
+        label="Acronym"
+        placeholder=""
+        autocomplete="off"
+        v-model="formData.clientAcronym"
+        :validations="[
+          ...getValidations('businessInformation.clientAcronym'),
+          submissionValidation(`businessInformation.clientAcronym`),
+        ]"
+        enabled
+        @empty="validation.acronym = true"
+        @error="validation.acronym = !$event"
+      />
+    </div>
+    <text-input-component
+      id="input-doingBusinessAs"
+      v-if="displayEditable('doingBusinessAs')"
+      label="Doing business as"
+      placeholder=""
+      autocomplete="off"
+      v-model="doingBusinessAs"
+      :validations="[
+        ...getValidations('businessInformation.doingBusinessAs'),
+        submissionValidation(`businessInformation.doingBusinessAs`),
+      ]"
+      enabled
+      @empty="validation.doingBusinessAs = true"
+      @error="validation.doingBusinessAs = !$event"
+    />
+    <text-input-component
+      id="input-registrationNumber"
+      v-if="displayEditable('registrationNumber')"
+      label="Registration number"
+      mask="NNNNNNNNNNN"
+      placeholder=""
+      autocomplete="off"
+      v-model="clientRegistrationNumber"
+      :validations="[]"
+      enabled
+      @empty="validation.workSafeBCNumber = true"
+      @error="validation.workSafeBCNumber = !$event"
+    />
+    <text-input-component
+      id="input-workSafeBCNumber"
+      v-if="displayEditable('workSafeBCNumber')"
+      label="WorkSafeBC number"
+      mask="######"
+      placeholder=""
+      autocomplete="off"
+      v-model="formData.wcbFirmNumber"
+      :validations="[
+        ...getValidations('businessInformation.workSafeBcNumber'),
+        submissionValidation(`businessInformation.workSafeBcNumber`),
+      ]"
+      enabled
+      @empty="validation.workSafeBCNumber = true"
+      @error="validation.workSafeBCNumber = !$event"
+    />
+    <data-fetcher
+      v-if="displayEditable('clientStatus')"
+      :url="`/api/codes/client-statuses/${props.data.clientTypeCode}`"
+      :min-length="0"
+      :init-value="[]"
+      :init-fetch="true"
+      :params="{ method: 'GET' }"
+      #="{ content }"
+    >
+      <dropdown-input-component
+        id="input-clientStatus"
+        label="Client status"
+        :initial-value="content?.find((item) => item.code === formData.clientStatusCode)?.name"
+        required
+        required-label
+        :model-value="content"
+        :enabled="true"
+        tip=""
+        :validations="[]"
+        @update:selected-value="updateClientStatus($event)"
+        @empty="validation.clientStatus = !$event"
+        #="{ option }"
+      >
+        <cds-tag :type="getTagColorByClientStatus(option.name)" title="">
+          <span>{{ option.name }}</span>
+        </cds-tag>
+      </dropdown-input-component>
+    </data-fetcher>
+    <textarea-input-component
+      id="input-notes"
+      v-if="displayEditable('notes')"
+      label="Notes"
+      enable-counter
+      :max-count="4000"
+      :rows="7"
+      placeholder=""
+      v-model="formData.clientComment"
+      :enabled="true"
+      :validations="[
+        ...getValidations('businessInformation.notes'),
+        submissionValidation('businessInformation.notes'),
+      ]"
+      @empty="validation.notes = true"
+      @error="validation.notes = !$event"
+    >
+      <div slot="label-text" class="label-with-icon line-height-0">
+        <div class="cds-text-input-label">
+          <span>Notes</span>
+        </div>
+        <cds-tooltip>
+          <Information16 />
+          <cds-tooltip-content>
+            For example, any information about the client, their locations or specific instructions
+            for contacting them
+          </cds-tooltip-content>
+        </cds-tooltip>
+      </div>
+    </textarea-input-component>
+    <div class="form-group-buttons form-group-buttons--stretched">
+      <cds-button
+        id="summarySaveBtn"
+        kind="primary"
+        size="md"
+        @click="save"
+        :disabled="!hasAnyChange || !checkValid()"
+      >
+        <span class="width-unset">Save client information</span>
+        <Save16 slot="icon" />
+      </cds-button>
+      <cds-button id="summaryCancelBtn" kind="tertiary" size="md" @click="cancel">
+        <span class="width-unset">Cancel</span>
+        <Close16 slot="icon" />
+      </cds-button>
+    </div>
   </div>
 </template>
 

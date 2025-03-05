@@ -1,0 +1,11 @@
+[
+  { "code": "BKR", "name": "Bankruptcy" },
+  { "code": "CNTI", "name": "Continuation In" },
+  { "code": "CNTO", "name": "Continuation Out" },
+  { "code": "CORR", "name": "Correction" },
+  { "code": "DIS", "name": "Dissolved" },
+  { "code": "DUPL", "name": "Duplicate Client" },
+  { "code": "NLDB", "name": "No Longer Doing Business with MoFR" },
+  { "code": "REC", "name": "Receivership" },
+  { "code": "RORG", "name": "Company Reorganization" }
+]

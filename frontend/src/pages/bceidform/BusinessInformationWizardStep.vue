@@ -24,7 +24,7 @@ import type {
 import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // Importing helper functions
-import { retrieveClientType, exportAddress } from "@/helpers/DataConverters";
+import { retrieveClientType } from "@/helpers/DataConverters";
 import {
   getEnumKeyByEnumValue,
   adminEmail,
@@ -434,7 +434,7 @@ onMounted(() => {
   <p class="body-02">
     Select the district your application should go to. If you don’t know the district
     <a
-      href="https://www2.gov.bc.ca/gov/content/industry/forestry/managing-our-forest-resources/ministry-of-forests-lands-and-natural-resource-operations-region-district-contacts"
+      href="https://www2.gov.bc.ca/gov/content?id=D49E6A6A67C944AC80A9F5B5686543F1"
       target="_blank"
       rel="noopener noreferrer"
       >check this map</a
@@ -618,8 +618,11 @@ onMounted(() => {
           title="Client type not supported"
         >
           <p class="cds--inline-notification-content">
-            {{ receivedClientType.name }} client type is not supported. Please email
-            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+            {{ receivedClientType.name }} client type is not supported. Please email your
+            <a target="_blank"
+               href="https://www2.gov.bc.ca/gov/content?id=D49E6A6A67C944AC80A9F5B5686543F1">
+              local district
+            </a> for help.
           </p>
         </cds-inline-notification>
 

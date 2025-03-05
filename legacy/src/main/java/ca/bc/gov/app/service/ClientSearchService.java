@@ -5,11 +5,11 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.AddressSearchDto;
+import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
-import ca.bc.gov.app.dto.ForestClientLocationDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
@@ -27,7 +27,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -58,14 +61,18 @@ public class ClientSearchService {
 
   public static final String CLIENT_NAME = "clientName";
   public static final String CLIENT_IDENTIFICATION = "clientIdentification";
+
   private final ForestClientRepository forestClientRepository;
   private final ClientDoingBusinessAsRepository doingBusinessAsRepository;
   private final ForestClientRepository clientRepository;
   private final ForestClientContactRepository contactRepository;
   private final ForestClientLocationRepository locationRepository;
-  private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> forestClientMapper;
-  private final AbstractForestClientMapper<ForestClientLocationDto, ForestClientLocationEntity> locationMapper;
-  private final AbstractForestClientMapper<ForestClientContactDto, ForestClientContactEntity> contactMapper;
+
+  private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity>
+      forestClientMapper;
+  private final AbstractForestClientMapper<ForestClientContactDto, ForestClientContactEntity>
+      contactMapper;
+
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
 
@@ -120,37 +127,68 @@ public class ClientSearchService {
    * @param identification The identification of the client to be searched for. Optional.
    * @return A Flux stream of ForestClientDto objects that match the search criteria.
    */
-  public Flux<ForestClientDto> findByIndividual(String firstName, String lastName, LocalDate dob,
-      String identification, boolean fuzzy) {
+  public Flux<ForestClientDto> findByIndividual(
+      String firstName, String lastName, LocalDate dob, String identification, boolean fuzzy) {
 
     if (StringUtils.isAnyBlank(firstName, lastName) || dob == null) {
       log.error("Missing required parameter to search for individual");
-      return Flux.error(new MissingRequiredParameterException("firstName, lastName, or dob"));
+      return Flux.error(
+          new MissingRequiredParameterException("firstName, lastName, or dob"));
     }
 
-    log.info("Searching for individual: {} {} {} {}", firstName, lastName, dob,
+    log.info(
+        "Searching for individual: {} {} {} {}",
+        firstName,
+        lastName,
+        dob,
         StringUtils.defaultString(identification));
 
     if (StringUtils.isBlank(identification) && fuzzy) {
-      return clientRepository.findByIndividualFuzzy(String.format("%s %s", firstName, lastName),
-              dob.atStartOfDay()).map(forestClientMapper::toDto).distinct(ForestClientDto::clientNumber)
-          .sort(Comparator.comparing(ForestClientDto::clientNumber)).doOnNext(
-              dto -> log.info("Found individual matching {} {} {} as {} {}", firstName, lastName,
-                  dob, dto.clientNumber(), dto.clientName()));
+      return clientRepository
+          .findByIndividualFuzzy(String.format("%s %s", firstName, lastName), dob.atStartOfDay())
+          .map(forestClientMapper::toDto)
+          .distinct(ForestClientDto::clientNumber)
+          .sort(Comparator.comparing(ForestClientDto::clientNumber))
+          .doOnNext(dto ->
+              log.info(
+                  "Found individual matching {} {} {} as {} {}",
+                  firstName,
+                  lastName,
+                  dob,
+                  dto.clientNumber(),
+                  dto.clientName()));
     }
 
-    Criteria queryCriteria = where("legalFirstName").is(firstName).ignoreCase(true).and(CLIENT_NAME)
-        .is(lastName).ignoreCase(true).and("birthdate").is(dob.atStartOfDay()).and("clientTypeCode")
-        .is("I").ignoreCase(true);
+    Criteria queryCriteria = where("legalFirstName")
+        .is(firstName)
+        .ignoreCase(true)
+        .and(CLIENT_NAME)
+        .is(lastName)
+        .ignoreCase(true)
+        .and("birthdate")
+        .is(dob.atStartOfDay())
+        .and("clientTypeCode")
+        .is("I")
+        .ignoreCase(true);
 
     if (StringUtils.isNotBlank(identification)) {
-      queryCriteria = queryCriteria.and(CLIENT_IDENTIFICATION).is(identification).ignoreCase(true);
+      queryCriteria = queryCriteria
+          .and(CLIENT_IDENTIFICATION)
+          .is(identification)
+          .ignoreCase(true);
     }
 
-    return searchClientByQuery(queryCriteria, ForestClientEntity.class).map(
-        forestClientMapper::toDto).doOnNext(
-        dto -> log.info("Found individual matching {} {} {} {} as {} {}", firstName, lastName, dob,
-            StringUtils.defaultString(identification), dto.clientNumber(), dto.clientName()));
+    return searchClientByQuery(queryCriteria, ForestClientEntity.class)
+        .map(forestClientMapper::toDto)
+        .doOnNext(dto ->
+            log.info(
+                "Found individual matching {} {} {} {} as {} {}",
+                firstName,
+                lastName,
+                dob,
+                StringUtils.defaultString(identification),
+                dto.clientNumber(),
+                dto.clientName()));
   }
 
   /**
@@ -444,22 +482,45 @@ public class ClientSearchService {
       return Mono.error(new MissingRequiredParameterException("clientNumber"));
     }
 
-    return forestClientRepository.findDetailsByClientNumber(clientNumber).flatMap(
-            dto -> locationRepository.findAllByClientNumber(clientNumber).map(locationMapper::toDto)
-                .collectList().map(dto::withAddresses).defaultIfEmpty(dto)).flatMap(
-            dto -> contactRepository.findAllByClientNumber(clientNumber).map(contactMapper::toDto)
+    return forestClientRepository
+        .findDetailsByClientNumber(clientNumber)
+        .flatMap(dto ->
+                doingBusinessAsRepository
+                    .findByClientNumber(dto.clientNumber())
+                    .sort(Comparator.comparing(ClientDoingBusinessAsEntity::getCreatedAt))
+                    .map(dba -> new ClientDoingBusinessAsDto(
+                        dba.getClientNumber(),
+                        dba.getDoingBusinessAsName(),
+                        dba.getCreatedBy(),
+                        dba.getUpdatedBy(),
+                        dba.getCreatedByUnit()
+                    ))
+                    .collectList()
+                    .map(dto::withDoingBusinessAs)
+                    .defaultIfEmpty(dto)
+            )
+        .flatMap(dto -> locationRepository
+                .findLocationsByClientNumber(clientNumber)
+                //.map(locationMapper::toDto)
                 .collectList()
-                // sometimes we will have duplicated contacts with different locationCode values. We need to remove duplicates and merge the contents of the locationCode field
-                .map(contacts -> new ArrayList<>(contacts.stream().collect(
-                    Collectors.toMap(ForestClientContactDto::contactName, contact -> contact,
-                        (contact1, contact2) -> contact1.withLocationCode(
-                            Stream.concat(contact1.locationCode().stream(),
-                                contact2.locationCode().stream()).distinct().toList()))).values()))
-                .map(dto::withContacts).defaultIfEmpty(dto))
+                .map(dto::withAddresses)
+                .defaultIfEmpty(dto)
+        )
+        .flatMap(dto -> contactRepository
+            .findAllByClientNumber(clientNumber)
+            .map(contactMapper::toDto)
+            .collectList()
+            // sometimes we will have duplicated contacts with different locationCode values.
+            // We need to remove duplicates and merge the contents of the locationCode field
+            .map(contactMapper())
+            .map(dto::withContacts)
+            .defaultIfEmpty(dto)
+        )
         .switchIfEmpty(Mono.error(new NoValueFoundException("Client with number: " + clientNumber)))
         .doOnNext(dto -> log.info("Found client with client number {}", clientNumber,
             dto.clientNumber()));
   }
+
 
   /**
    * Performs a complex search for clients based on a predictive search value. Logs the search
@@ -524,6 +585,28 @@ public class ClientSearchService {
     return template.select(searchQuery.with(PageRequest.of(0, 1000))
             .sort(Sort.by(Sort.Order.asc(ApplicationConstants.CLIENT_NUMBER_LITERAL))), entityClass)
         .doOnNext(client -> log.info("Found client for query {}", queryCriteria));
+  }
+
+  private BinaryOperator<ForestClientContactDto> mergeContactLocations() {
+    return (contact1, contact2) -> contact1.withLocationCode(
+        Stream.concat(
+            contact1.locationCode().stream(),
+            contact2.locationCode().stream()
+        ).distinct().toList()
+    );
+  }
+
+  private Function<List<ForestClientContactDto>, ArrayList<ForestClientContactDto>> 
+    contactMapper() {
+    return contacts ->
+        new ArrayList<>(
+            contacts.stream()
+                .collect(
+                    Collectors.toMap(
+                        ForestClientContactDto::contactName,
+                        contact -> contact,
+                        mergeContactLocations()))
+                .values());
   }
 
 }

@@ -1,0 +1,7 @@
+[
+  { "code": "IBKR", "name": "Bankruptcy in Progress" },
+  { "code": "IEST", "name": "Estate in Progress" },
+  { "code": "RSPN", "name": "Related to a Suspended Client" },
+  { "code": "VFIN", "name": "Violation - Financial" },
+  { "code": "VTEN", "name": "Violation - Tenure" }
+]

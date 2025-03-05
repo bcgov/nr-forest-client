@@ -120,6 +120,103 @@
           "name": "{{lookup parameters.clientTypeMapping code}}"
         }
       }
+    },
+    {
+      "name": "Get ClientTypes List",
+      "request": {
+        "urlPattern": "/api/codes/client-types",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-client-types.json"
+      }
+    },
+    {
+      "name": "Get update reason codes by client type and action",
+      "request": {
+        "urlPattern": "/api/codes/update-reasons/([A-Z]+)/([A-Z]+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-update-reasons-{{request.path.[3]}}-{{request.path.[4]}}.json"
+      }
+    },{
+      "name": "Get update reason codes by client type and action - default Dummy list",
+      "request": {
+        "urlPattern": "/api/codes/update-reasons/P/[A-Z]+",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-reason-codes-dummy.json"
+      }
+    },
+    {
+      "name": "Get registry type codes",
+      "request": {
+        "urlPattern": "/api/codes/registry-types",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-registry-types.json"
+      }
+    },
+    {
+      "name": "Get client status codes",
+      "request": {
+        "urlPattern": "/api/codes/client-statuses",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-client-statuses.json"
+      }
+    },
+    {
+      "name": "Get client status codes by client type (default)",
+      "request": {
+        "urlPattern": "/api/codes/client-statuses/([A-Z]+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-client-statuses-default.json"
+      }
+    },
+    {
+      "name": "Get client status codes by client type",
+      "request": {
+        "urlPattern": "/api/codes/client-statuses/(G|X)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "response-client-statuses-{{request.path.[3]}}.json"
+      }
     }
   ]
 }

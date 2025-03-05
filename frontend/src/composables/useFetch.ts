@@ -112,14 +112,7 @@ export const useFetchTo = (
   return apiDataHandler;
 };
 
-/**
- * Sends a POST request to the backend
- * @param url resource URI
- * @param body the body of the request
- * @param config axios configuration
- * @returns a series of parameters containing the data fetched, the response, the error and the loading status
- */
-export const usePost = (url: string, body: any, config: any = {}) => {
+const useMethod = (method: string, url: string, body: any, config: any = {}) => {
   const responseBody: any = ref({});
   const response = ref<any>({});
   const error = ref<AxiosError>({});
@@ -142,7 +135,7 @@ export const usePost = (url: string, body: any, config: any = {}) => {
         ...parameters,
         url,
         baseURL: backendUrl,
-        method: "POST",
+        method,
         data: body,
       });
       response.value = result;
@@ -170,3 +163,29 @@ export const usePost = (url: string, body: any, config: any = {}) => {
 
   return apiDataHandler;
 };
+
+/**
+ * Sends a POST request to the backend
+ * @param url resource URI
+ * @param body the body of the request
+ * @param config axios configuration
+ * @returns a series of parameters containing the data fetched, the response, the error and the loading status
+ */
+export const usePost = (url: string, body: any, config: any = {}) =>
+  useMethod("POST", url, body, config);
+
+/**
+ * Sends a PATCH request to the backend using the JSON-Patch standard
+ * @param url resource URI
+ * @param body the body of the request
+ * @param config axios configuration
+ * @returns a series of parameters containing the data fetched, the response, the error and the loading status
+ */
+export const useJsonPatch = (url: string, body: any, config: any = {}) =>
+  useMethod("PATCH", url, body, {
+    ...config,
+    headers: {
+      ...config.headers,
+      "Content-Type": "application/json-patch+json",
+    },
+  });

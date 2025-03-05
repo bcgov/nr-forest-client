@@ -295,6 +295,16 @@ export interface ClientContact {
   updatedBy: string;
 }
 
+export interface FieldUpdateReason {
+  field: string;
+  reason: string;
+}
+
+export interface FieldAction {
+  field: string;
+  action: string;
+}
+
 export interface ClientDetails {
   clientNumber: string;
   clientName: string;
@@ -320,4 +330,8 @@ export interface ClientDetails {
   doingBusinessAs: ClientDoingBusinessAs[];
   addresses: ClientLocation[];
   contacts: ClientContact[];
+  reasons: FieldUpdateReason[];
 }
+
+const userRoles = ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR", "CLIENT_VIEWER"] as const;
+export type UserRole = (typeof userRoles)[number];

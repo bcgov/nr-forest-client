@@ -1,6 +1,8 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
+import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
@@ -10,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -238,6 +241,45 @@ public class ClientLegacyService {
             );
 
   }
+  
+  /**
+   * Retrieves a flux of {@link CodeNameDto} objects representing the update reasons for a
+   * specific client type and action code. This method queries in the legacy system to find the
+   * reasons associated with updating a client based on the given parameters.
+   *
+   * <p>The method logs the request parameters and the results for debugging purposes.
+   *
+   * @param clientTypeCode the code representing the type of client (e.g., individual, corporation)
+   * @param actionCode the code representing the action being performed (e.g., name change, address
+   *        change)
+   * @return a {@link Flux} emitting {@link CodeNameDto} objects that represent the update reasons
+   *         for the specified client type and action code
+   */
+  public Flux<CodeNameDto> findActiveUpdateReasonsByClientTypeAndActionCode(
+      String clientTypeCode,
+      String actionCode
+  ) {
+    // Log the parameters for debugging purposes
+    log.info("Searching for client type {} and action code {} in legacy", 
+             clientTypeCode, 
+             actionCode);
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/update-reasons/{clientTypeCode}/{actionCode}", 
+                 clientTypeCode, 
+                 actionCode)
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                        "Found data for client type {} and action code {} in legacy",
+                        clientTypeCode, 
+                        actionCode
+                )
+            );
+  }
 
   /**
    * Searches for a list of {@link ForestClientDto} in the legacy API based on the given search type
@@ -390,6 +432,98 @@ public class ClientLegacyService {
           Long totalCount = pair.getSecond();
           log.info("Found clients by keyword {}, total count: {}", dto.clientNumber(), totalCount);
         });
+  }
+
+  /**
+   * Retrieves active client status codes from the legacy system.
+   *
+   * @return a Flux containing {@link CodeNameDto} objects representing active client statuses.
+   */
+  public Flux<CodeNameDto> findActiveClientStatusCodes() {
+    log.info("Searching for active client statuses in legacy");
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/client-statuses")
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            .doOnNext(
+                dto -> log.info(
+                        "Found active client statuses in legacy"
+                )
+            );
+  }
+
+  /**
+   * Retrieves active client status codes filtered by client type and role from the legacy system.
+   *
+   * @param clientTypeCode the client type code to filter by.
+   * @param groups the set of roles to filter by.
+   * @return a Flux containing filtered {@link CodeNameDto} objects.
+   */
+  public Flux<CodeNameDto> findActiveClientStatusCodesByClientTypeAndRole(
+      String clientTypeCode, Set<String> groups) {
+    
+    log.info(
+        "Searching for active client statuses in legacy by client type {} and role {}",
+        clientTypeCode, groups);
+
+    return legacyApi
+        .get()
+        .uri("/api/codes/client-statuses")
+        .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+        .filter(dto -> isValidClientStatus(dto, clientTypeCode, groups))
+        .doOnNext(dto -> log.info("Filtered active client status: {}", dto));
+  }
+  
+  private boolean isValidClientStatus(CodeNameDto dto, String clientTypeCode, Set<String> groups) {
+    if (groups.contains(ApplicationConstant.ROLE_ADMIN)) {
+      return getAdminStatuses(clientTypeCode).contains(dto.code());
+    } 
+    else if (groups.contains(ApplicationConstant.ROLE_EDITOR)) {
+      return getEditorStatuses().contains(dto.code());
+    }
+    else if (groups.contains(ApplicationConstant.ROLE_SUSPEND)) {
+      return getSuspendStatuses().contains(dto.code());
+    }
+    return false;
+  }
+  
+  private Set<String> getAdminStatuses(String clientTypeCode) {
+    return switch (clientTypeCode) {
+      case "F", "G" -> Set.of("ACT", "DAC");
+      case "I" -> Set.of("ACT", "DEC", "REC", "DAC", "SPN");
+      default -> Set.of("ACT", "DAC", "REC", "SPN");
+    };
+  }
+
+  private Set<String> getEditorStatuses() {
+    return Set.of("ACT", "DAC");
+  }
+  
+  private Set<String> getSuspendStatuses() {
+    return Set.of("ACT", "SPN", "REC");
+  }
+  
+  /**
+   * Retrieves active registry type codes from the legacy system.
+   *
+   * @return a Flux containing {@link CodeNameDto} objects representing active registry types.
+   */
+  public Flux<CodeNameDto> findActiveRegistryTypeCodes() {
+    log.info("Searching for active registry types in legacy");
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/registry-types")
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                        "Found active registry types in legacy"
+                )
+            );
   }
 
 }

@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import type { ClientLocation } from "@/dto/CommonTypesDto";
-import { getFormattedHtml } from "@/services/ForestClientService";
+import { formatPhoneNumber, getFormattedHtml } from "@/services/ForestClientService";
 
 const props = defineProps<{
   data: ClientLocation;
 }>();
 
 const indexString = props.data.clientLocnCode;
+
+const businessPhone = computed(() => formatPhoneNumber(props.data.businessPhone));
+const cellPhone = computed(() => formatPhoneNumber(props.data.cellPhone));
+const homePhone = computed(() => formatPhoneNumber(props.data.homePhone));
+const faxNumber = computed(() => formatPhoneNumber(props.data.faxNumber));
 </script>
 
 <template>
@@ -32,10 +38,10 @@ const indexString = props.data.clientLocnCode;
             {{ data.addressOne }}
           </span>
           <span :id="`location-${indexString}-city-province`" class="body-compact-01">
-            {{ data.city }}, {{ data.provinceDesc }}
+            {{ data.city }}, {{ data.province }}
           </span>
           <span :id="`location-${indexString}-country`" class="body-compact-01">
-            {{ data.countryDesc }}
+            {{ data.country }}
           </span>
           <span :id="`location-${indexString}-postalCode`" class="body-compact-01">
             {{ data.postalCode }}
@@ -60,8 +66,8 @@ const indexString = props.data.clientLocnCode;
         :id="`location-${indexString}-primaryPhoneNumber`"
         v-if="data.businessPhone"
       >
-        <a :href="`tel:${data.businessPhone}`">
-          <span class="body-compact-01 colorless">{{ data.businessPhone }}</span>
+        <a :href="`tel:${businessPhone}`">
+          <span class="body-compact-01 colorless">{{ businessPhone }}</span>
         </a>
       </read-only-component>
       <read-only-component
@@ -69,8 +75,8 @@ const indexString = props.data.clientLocnCode;
         :id="`location-${indexString}-secondaryPhoneNumber`"
         v-if="data.cellPhone"
       >
-        <a :href="`tel:${data.cellPhone}`">
-          <span class="body-compact-01 colorless">{{ data.cellPhone }}</span>
+        <a :href="`tel:${cellPhone}`">
+          <span class="body-compact-01 colorless">{{ cellPhone }}</span>
         </a>
       </read-only-component>
       <read-only-component
@@ -78,13 +84,13 @@ const indexString = props.data.clientLocnCode;
         :id="`location-${indexString}-tertiaryPhoneNumber`"
         v-if="data.homePhone"
       >
-        <a :href="`tel:${data.homePhone}`">
-          <span class="body-compact-01 colorless">{{ data.homePhone }}</span>
+        <a :href="`tel:${homePhone}`">
+          <span class="body-compact-01 colorless">{{ homePhone }}</span>
         </a>
       </read-only-component>
       <read-only-component label="Fax" :id="`location-${indexString}-fax`" v-if="data.faxNumber">
-        <a :href="`tel:${data.faxNumber}`">
-          <span class="body-compact-01 colorless">{{ data.faxNumber }}</span>
+        <a :href="`tel:${faxNumber}`">
+          <span class="body-compact-01 colorless">{{ faxNumber }}</span>
         </a>
       </read-only-component>
     </div>

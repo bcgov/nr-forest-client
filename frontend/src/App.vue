@@ -128,10 +128,10 @@ overlayBus.on(openOverlay)
       v-if="toastContent.active"
       class="wizard-head-toast"
       timeout="8000"
-      kind="success"
+      :kind="toastContent.kind.toLowerCase()"
       :title="toastContent.toastTitle"
-      :subtitle="toastContent.message"
     >
+    <div slot="subtitle" v-dompurify-html="toastContent.message"></div>
   </cds-toast-notification>
 
   <loading-overlay-component 

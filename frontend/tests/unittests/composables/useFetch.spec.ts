@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { ref, watch } from 'vue'
 import axios from 'axios'
-import { useFetch, usePost, useFetchTo } from '@/composables/useFetch'
+import { useFetch, usePost, useFetchTo, useJsonPatch } from '@/composables/useFetch'
 import MockAbortController from "../../mocks/MockAbortController";
 
 describe('useFetch', () => {
@@ -379,5 +379,48 @@ describe('useFetch', () => {
 
     expect(testError).toStrictEqual(new Error(abortErrorMessage));
     expect(spyHandleErrorDefault).toHaveBeenCalled();
+  });
+
+  describe("useJsonPatch", () => {
+    it("should make a PATCH request with application/json-patch+json", async () => {
+      axiosMock = vi
+        .spyOn(axios, "request")
+        .mockImplementation(() => Promise.resolve({ data: "Mock data" }));
+      const responseData = ref("");
+
+      const TestComponent = {
+        template: "<div></div>",
+        setup: () => {
+          const { fetch, responseBody } = useJsonPatch(
+            "/api/data",
+            { name: "test" },
+            { skip: true },
+          );
+          watch(responseBody, (value) => (responseData.value = value));
+          fetch();
+        },
+      };
+
+      watch(responseData, (value) => {
+        expect(value).toEqual("Mock data");
+      });
+
+      const wrapper = mount(TestComponent);
+
+      await wrapper.vm.$nextTick();
+
+      expect(axiosMock).toHaveBeenCalledWith({
+        baseURL: "http://localhost:8080",
+        headers: {
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+          "Content-Type": "application/json-patch+json",
+          Authorization: "Bearer undefined",
+        },
+        skip: true,
+        url: "/api/data",
+        method: "PATCH",
+        data: { name: "test" },
+      });
+    });
   });
 });
