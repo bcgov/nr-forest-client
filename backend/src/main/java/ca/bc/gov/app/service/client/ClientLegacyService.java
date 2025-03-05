@@ -7,6 +7,7 @@ import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import com.github.fge.jsonpatch.JsonPatch;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.List;
@@ -17,8 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.util.Pair;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.MimeType;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -474,6 +477,23 @@ public class ClientLegacyService {
         .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
         .filter(dto -> isValidClientStatus(dto, clientTypeCode, groups))
         .doOnNext(dto -> log.info("Filtered active client status: {}", dto));
+  }
+
+  public Mono<Void> patchClient(String clientNumber, JsonPatch forestClient) {
+    log.info("Sending request to the legacy system to patch client {}", clientNumber);
+    return legacyApi
+        .patch()
+        .uri("/api/clients/partial/{clientNumber}", clientNumber)
+        .contentType(MediaType.asMediaType(new MimeType("application","json-patch+json")))
+        .body(BodyInserters.fromValue(forestClient))
+        .exchangeToMono(response -> {
+          //if 201 is good, else already exist, so move forward
+          if (response.statusCode().is2xxSuccessful()) {
+            return response.bodyToMono(Void.class);
+          } else {
+            return response.createError();
+          }
+        });
   }
   
   private boolean isValidClientStatus(CodeNameDto dto, String clientTypeCode, Set<String> groups) {
