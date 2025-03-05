@@ -35,6 +35,7 @@ interface Action {
 
 const emit = defineEmits<{
   (e: "save", value: jsonpatch.Operation[], updatedLocation: ClientLocation, action: Action): void;
+  (e: "canceled"): void;
   (e: "updateLocationName", value: "string"): void;
 }>();
 
@@ -93,6 +94,7 @@ const edit = () => {
 
 const cancel = () => {
   lockEditing();
+  emit("canceled");
 };
 
 const lockEditing = () => {

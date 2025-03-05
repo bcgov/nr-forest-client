@@ -209,6 +209,10 @@ const associatedLocationsRecord = computed(() => {
   return result;
 });
 
+const handleLocationCanceled = (location: ClientLocation) => {
+  locationsState[location.clientLocnCode].name = location.clientLocnName;
+};
+
 const updateLocationName = (locationName: string, locationCode: string) => {
   locationsState[locationCode].name = locationName;
 };
@@ -640,6 +644,7 @@ resetGlobalError();
                 keep-scroll-bottom-position
                 @update-location-name="updateLocationName($event, location.clientLocnCode)"
                 @save="(...args) => saveLocation(index)(...args)"
+                @canceled="handleLocationCanceled(location)"
               />
             </cds-accordion-item>
           </cds-accordion>
