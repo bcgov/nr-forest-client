@@ -1,7 +1,7 @@
 {
   "mappings": [
     {
-      "name": "Client Details General Partnership",
+      "name": "Client Details General Partnership - Default",
       "request": {
         "urlPattern": "/api/clients/details/[gG]?(.*)",
         "method": "GET"
@@ -9,6 +9,21 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-clients-details-G.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Corporation",
+      "request": {
+        "urlPattern": "/api/clients/details/[cC](.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-C.json",
         "transformers": [
           "response-template"
         ],

@@ -31,24 +31,35 @@ import Launch16 from "@carbon/icons-vue/es/launch/16";
 import { greenDomain } from "@/CoreConstants";
 import {
   adminEmail,
+  extractReasonFields,
   getObfuscatedEmailLink,
   includesAnyOf,
   toTitleCase,
+  getActionLabel,
+  reasonRequiredFields,
+  updateSelectedReason
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-import type { ClientDetails, ClientLocation, ModalNotification } from "@/dto/CommonTypesDto";
+import type {
+  ClientDetails,
+  ClientLocation,
+  FieldUpdateReason,
+  ModalNotification,
+} from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
+import { isNotEmpty } from "@/helpers/validators/GlobalValidators";
 
 // Route related
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id;
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const data = ref<ClientDetails>(undefined);
 
@@ -172,16 +183,120 @@ const toolsSvg = useSvg(tools);
 
 const summaryRef = ref<InstanceType<typeof SummaryView> | null>(null);
 
-const saveSummary = (patchData: jsonpatch.Operation[]) => {
+const reasonModalActiveInd = ref(false);
+
+type ReasonPatch = jsonpatch.Operation & {
+  action: string;
+  reason?: string;
+};
+
+const reasonPatchData = ref<ReasonPatch[]>([]);
+let originalPatchData: jsonpatch.Operation[] = []; 
+const finalPatchData = ref<jsonpatch.Operation[]>([]);
+const selectedReasons = ref<FieldUpdateReason[]>([]);
+const saveDisabled = ref(false);
+const isSaveFirstClick = ref(false);
+
+const fieldValidations: Record<string, ((value: string) => string)[]> = {};
+
+fieldValidations["selectedReasons.*.reason"] = [
+  isNotEmpty("You must select a reason")
+];
+
+const getValidations = (key: string): ((value: any) => string)[] => {
+  const match = Object.keys(fieldValidations).find((validationKey) =>
+    new RegExp(`^${validationKey.replace(/\*/g, "\\d+")}$`).test(key)
+  );
+
+  if (match) {
+    const validations = fieldValidations[match] ?? [];
+    if (!validations || validations.length === 0) {
+      return [];
+    }
+    return validations;
+  }
+  return [];
+};
+
+const checkReasonCodesValidations = () => {
+  for (const valid of reasonCodesValidations.value) {
+    if (!valid) {
+      return false;
+    }
+  }
+  return true;
+};
+
+const reasonCodesValidations = ref<boolean[]>([]);
+
+watch(
+  reasonCodesValidations,
+  () => {
+    if (isSaveFirstClick.value) {
+      // Enables the Save button if not clicked for the first time yet
+      saveDisabled.value = false;
+      return;
+    }
+
+    // Possibly reenables the button
+    saveDisabled.value = !checkReasonCodesValidations();
+  },
+  {
+    deep: true,
+  },
+);
+
+// Function to update reasons and send final PATCH request
+const confirmReasons = () => {
+  isSaveFirstClick.value = false;
+  const reasonInputIdList = reasonPatchData.value.map((_, index) => `input-reason-${index}`);
+  revalidateBus.emit(reasonInputIdList);
+
+  if (!checkReasonCodesValidations()) {
+    saveDisabled.value = true;
+    return;
+  }
+
+  // Continue with the patch process
+  const updatedPatchData = [...reasonPatchData.value];
+
+  updatedPatchData.forEach((patch, index) => {
+    const reasonEntry = selectedReasons.value[index];
+    if (reasonEntry) {
+      patch.reason = reasonEntry.reason;
+    }
+  });
+
+  reasonModalActiveInd.value = false;
+  sendPatchRequest(updatedPatchData);
+};
+
+const sendPatchRequest = (reasonUpdatedPatchData: ReasonPatch[]) => {
+  const reasonChanges: jsonpatch.Operation[] = reasonUpdatedPatchData.flatMap((patch, index) => {
+    return patch.reason
+      ? [
+          {
+            op: "add",
+            path: `/reasons/${index}/field`,
+            value: patch.path.replace("/", "")
+          },
+          {
+            op: "add",
+            path: `/reasons/${index}/reason`,
+            value: patch.reason
+          }
+        ]
+      : [];
+  });
+
+  finalPatchData.value = [...originalPatchData, ...reasonChanges];
+
+  // Send API request
   const {
     fetch: patch,
     response,
     error,
-  } = useJsonPatch(`/api/clients/details/${clientNumber}`, patchData, {
-    skip: true,
-  });
-
-  resetGlobalError();
+  } = useJsonPatch(`/api/clients/details/${clientNumber}`, finalPatchData.value, { skip: true });
 
   patch().then(() => {
     if (response.value.status) {
@@ -194,10 +309,7 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
       };
       toastBus.emit(toastNotification);
       summaryRef.value.lockEditing();
-
-      // reset data
       data.value = undefined;
-
       fetchClientData();
     }
     if (error.value.status) {
@@ -212,6 +324,41 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
       globalError.value = error.value;
     }
   });
+};
+
+// Function to save
+const saveSummary = (patchData: jsonpatch.Operation[]) => {
+  //Reset values
+  selectedReasons.value = [];
+  saveDisabled.value = false;
+
+  originalPatchData = [...patchData];
+  const reasonFields = extractReasonFields(patchData, data.value);
+
+  // Initializes the validations array
+  reasonCodesValidations.value = Array(reasonFields.length).fill(false);
+
+  if (reasonFields.length > 0) {
+    reasonPatchData.value = patchData
+      .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
+      .map((patch) => {
+        const field = patch.path.replace('/', '');
+        const reasonEntry = reasonFields.find((r) => r.field === field);
+
+        return { ...patch, action: reasonEntry?.action || '' };
+      });
+
+    // Prevents focusing input field on the modal
+    setTimeout(() => {
+      reasonModalActiveInd.value = true;
+    }, 0);
+
+    isSaveFirstClick.value = true;
+  } else {
+    sendPatchRequest(patchData);
+  }
+
+  resetGlobalError();
 };
 
 const globalError = ref();
@@ -463,4 +610,86 @@ resetGlobalError();
       </div>
     </div>
   </div>
+
+  <cds-modal
+    id="reason-modal"
+    aria-labelledby="reason-modal-heading"
+    aria-describedby="reason-modal-body"
+    size="sm"
+    :open="reasonModalActiveInd"
+    @cds-modal-closed="reasonModalActiveInd = false"
+    v-if="data?.clientTypeCode"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading id="reason-modal-heading">
+        Reason for change
+      </cds-modal-heading>
+    </cds-modal-header>
+  
+    <cds-modal-body id="reason-modal-body">
+      <div v-if="reasonPatchData && reasonPatchData.length > 0">
+
+        <p class="body-compact-01">
+          Select a reason for the following 
+          <span v-if="reasonPatchData.length == 1">change:</span>
+          <span v-if="reasonPatchData.length > 1">changes:</span>
+        </p>
+
+        <div v-for="(patch, index) in reasonPatchData" 
+            :key="index"
+            class="grouping-24">
+          <data-fetcher
+            :url="`/api/codes/update-reasons/${data.clientTypeCode}/${patch.action}`"
+            :min-length="0"
+            :init-value="[]"
+            :init-fetch="true"
+            :params="{ method: 'GET' }"
+            :disabled="!reasonModalActiveInd"
+            #="{ content }"
+          >
+            <dropdown-input-component
+              :id="`input-reason-${index}`"
+              :label="getActionLabel(patch.action)"
+              :initial-value="
+                content?.find((item) => item.code === selectedReasons[index]?.reason)?.name
+              "
+              required
+              required-label
+              :model-value="content"
+              :enabled="true"
+              tip=""
+              :validations="[...getValidations(`selectedReasons.${index}.reason`)]"
+              style="width: 100% !important"
+              @update:selected-value="
+                (selectedValue) => {
+                  updateSelectedReason(selectedValue, index, patch, selectedReasons);
+                }
+              "
+              @error="reasonCodesValidations[index] = !$event"
+            />
+          </data-fetcher>
+        </div>
+      </div>
+    </cds-modal-body>
+
+    <cds-modal-footer>
+      <cds-modal-footer-button 
+        kind="secondary" 
+        data-modal-close 
+        class="cds--modal-close-btn">
+        Cancel
+      </cds-modal-footer-button>
+      <cds-modal-footer-button 
+        id="reasonSaveBtn"
+        kind="primary" 
+        class="cds--modal-submit-btn" 
+        v-on:click="confirmReasons()"
+        :disabled="saveDisabled">
+        Save changes
+        <Logout16 slot="icon" />
+      </cds-modal-footer-button> 
+    </cds-modal-footer>
+  </cds-modal>
+
 </template>
