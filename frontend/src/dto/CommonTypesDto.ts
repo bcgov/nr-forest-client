@@ -280,6 +280,35 @@ export interface ClientLocation {
   updatedBy: string;
 }
 
+export const createClientLocation = (code: string): ClientLocation => {
+  const location = {
+    clientNumber: "",
+    clientLocnCode: code,
+    clientLocnName: "",
+    addressOne: "",
+    addressTwo: "",
+    addressThree: "",
+    city: "",
+    provinceCode: "",
+    provinceDesc: "",
+    postalCode: "",
+    countryCode: "",
+    countryDesc: "",
+    businessPhone: "",
+    homePhone: "",
+    cellPhone: "",
+    faxNumber: "",
+    emailAddress: "",
+    locnExpiredInd: "",
+    returnedMailDate: "",
+    trustLocationInd: "",
+    cliLocnComment: "",
+    createdBy: "",
+    updatedBy: "",
+  };
+  return location;
+};
+
 export interface ClientContact {
   clientNumber: string;
   clientLocnCode: string;

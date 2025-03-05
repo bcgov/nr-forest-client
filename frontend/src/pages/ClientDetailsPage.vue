@@ -42,12 +42,13 @@ import {
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-import type {
-  ClientDetails,
-  ClientLocation,
-  ModalNotification,
-  FieldUpdateReason,
-  UserRole,
+import {
+  type ClientDetails,
+  type ClientLocation,
+  type ModalNotification,
+  type FieldUpdateReason,
+  type UserRole,
+  createClientLocation,
 } from "@/dto/CommonTypesDto";
 
 // Page components
@@ -125,9 +126,17 @@ const compareString = (a: string, b: string) => {
   return 0;
 };
 
-const sortedLocations = computed(() =>
-  data.value?.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
-);
+const newLocation = ref<ClientLocation>();
+
+const sortedLocations = computed(() => {
+  const result = data.value?.addresses?.toSorted((a, b) =>
+    compareString(a.clientLocnCode, b.clientLocnCode),
+  );
+  if (newLocation.value) {
+    result.push(newLocation.value);
+  }
+  return result;
+});
 
 interface LocationState {
   isReloading: boolean;
@@ -147,9 +156,7 @@ const uniqueLocations = isUniqueDescriptive();
 
 watch(sortedLocations, (value) => {
   if (value?.length) {
-    console.log({ value });
     value.forEach((location) => {
-      console.log({ location });
       const index = String(Number(location.clientLocnCode));
       uniqueLocations.add("Names", index)(location.clientLocnName);
     });
@@ -194,6 +201,18 @@ const associatedLocationsRecord = computed(() => {
   });
   return result;
 });
+
+const addLocation = () => {
+  let codeNumber = 1;
+  if (sortedLocations.value.length) {
+    const lastCode = sortedLocations.value?.slice(-1)[0]?.clientLocnCode;
+    if (lastCode) {
+      codeNumber = Number(lastCode) + 1;
+    }
+  }
+  const codeString = formatCount(codeNumber);
+  newLocation.value = createClientLocation(codeString);
+};
 
 const openRelatedClientsLegacy = () => {
   const url = `https://${greenDomain}/int/client/client04RelatedClientListAction.do?bean.clientNumber=${clientNumber}`;
@@ -588,7 +607,7 @@ resetGlobalError();
             id="addlocationBtn"
             kind="primary"
             size="md"
-            @click="() => {}"
+            @click="addLocation"
           >
             <span class="width-unset">Add location</span>
             <Add16 slot="icon" />
