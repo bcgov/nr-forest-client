@@ -80,7 +80,6 @@ export default defineConfig(({ command, mode }) => {
     },
     optimizeDeps: {
       exclude: ["@carbon/web-components"],
-      include: ["vite-plugin-istanbul"],
       entries:
         process.env.VITE_MODE === "test"
           ? ["./src/**/*.{vue,js,jsx,ts,tsx}"]
@@ -97,5 +96,10 @@ export default defineConfig(({ command, mode }) => {
         ],
       },
     },
+    build: {
+      rollupOptions: {
+        external: ['vite-plugin-istanbul'],
+      },
+    }    
   };
 });
