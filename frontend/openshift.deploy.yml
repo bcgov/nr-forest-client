@@ -209,7 +209,7 @@ objects:
         haproxy.router.openshift.io/rate-limit-connections.rate-http: "150"
         haproxy.router.openshift.io/rate-limit-connections.rate-tcp: "75"
     spec:
-      host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
+      host: ${URL}
       port:
         targetPort: 3000-tcp
       to:
