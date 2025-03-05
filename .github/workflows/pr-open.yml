@@ -20,6 +20,7 @@ jobs:
         id: calculate
         run: |
           echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
+          echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca"
 
   builds:
     name: Builds
@@ -222,7 +223,6 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=DEV
             -p LANDING_URL=${{ needs.vars.outputs.url }}
-            -p FRONTEND_URL=${{ needs.vars.outputs.url }}
 
   tests:
     name: Tests

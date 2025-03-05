@@ -214,7 +214,6 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=TEST
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
-            -p FRONTEND_URL=${{ env.URL }}
 
   prod-init:
     name: PROD Init
@@ -401,7 +400,6 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=PROD
             -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
-            -p FRONTEND_URL=${{ env.URL }}
 
   images-prod:
     name: Promote images to PROD
