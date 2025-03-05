@@ -45,7 +45,7 @@
     <junit-platform.version>1.9.1</junit-platform.version>
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.5.5.Fina</mapstruct.version>
-    <netty.version>4.1.118.Final</netty.version>
+    <netty.version>4.1.119.Final</netty.version>
     <logback.version>1.5.17</logback.version>
     <flyway.version>10.13.0</flyway.version>
   </properties>
