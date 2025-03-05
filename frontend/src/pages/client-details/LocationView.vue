@@ -26,6 +26,7 @@ const props = defineProps<{
   validations: Array<Function>;
   isReloading: boolean;
   keepScrollBottomPosition?: boolean;
+  createMode?: boolean;
 }>();
 
 interface Action {
@@ -35,6 +36,7 @@ interface Action {
 
 const emit = defineEmits<{
   (e: "save", value: jsonpatch.Operation[], updatedLocation: ClientLocation, action: Action): void;
+  (e: "canceled"): void;
 }>();
 
 const indexString = props.data.clientLocnCode;
@@ -55,7 +57,7 @@ useFetchTo("/api/codes/countries?page=0&size=250", countryList);
 
 const revalidate = ref(false);
 
-const isEditing = ref(false);
+const isEditing = ref(!!props.createMode);
 const hasAnyChange = ref(false);
 
 const resetFormData = () => {
@@ -92,6 +94,7 @@ const edit = () => {
 
 const cancel = () => {
   lockEditing();
+  emit("canceled");
 };
 
 const lockEditing = () => {
@@ -317,7 +320,7 @@ const valid = ref(false);
           <Close16 slot="icon" />
         </cds-button>
         <cds-button
-          v-if="index > 0"
+          v-if="index > 0 && !props.createMode"
           :id="`location-${indexString}-DeactivateBtn`"
           kind="danger--tertiary"
           size="md"

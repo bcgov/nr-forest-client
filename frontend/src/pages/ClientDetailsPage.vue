@@ -15,6 +15,7 @@ import tools from "@carbon/pictograms/es/tools";
 
 // Composables
 import { useFetchTo, useJsonPatch } from "@/composables/useFetch";
+import { useFocus } from "@/composables/useFocus";
 import useSvg from "@/composables/useSvg";
 import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
@@ -63,6 +64,7 @@ const clientNumber = router.currentRoute.value.params.id;
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
+const { setFocusedComponent, setScrollPoint } = useFocus();
 
 const data = ref<ClientDetails>(undefined);
 
@@ -203,8 +205,9 @@ const associatedLocationsRecord = computed(() => {
 });
 
 const addLocation = () => {
-  let codeNumber = 1;
-  if (sortedLocations.value.length) {
+  let codeNumber = 0;
+  const index = sortedLocations.value.length;
+  if (index > 0) {
     const lastCode = sortedLocations.value?.slice(-1)[0]?.clientLocnCode;
     if (lastCode) {
       codeNumber = Number(lastCode) + 1;
@@ -212,6 +215,14 @@ const addLocation = () => {
   }
   const codeString = formatCount(codeNumber);
   newLocation.value = createClientLocation(codeString);
+  setScrollPoint(`location-${index}-heading`);
+  setFocusedComponent(`location-${index}-heading`);
+};
+
+const handleLocationCanceled = (location: ClientLocation) => {
+  if (location === newLocation.value) {
+    newLocation.value = undefined;
+  }
 };
 
 const openRelatedClientsLegacy = () => {
@@ -619,7 +630,14 @@ resetGlobalError();
             :key="location.clientLocnCode"
             :id="`location-${location.clientLocnCode}`"
           >
-            <cds-accordion-item size="lg" class="grouping-13" v-shadow="1">
+            <div :data-scroll="`location-${index}-heading`" class="header-tabs-offset"></div>
+            <cds-accordion-item
+              size="lg"
+              class="grouping-13"
+              v-shadow="1"
+              :open="location === newLocation"
+              :data-focus="`location-${index}-heading`"
+            >
               <div
                 slot="title"
                 class="flex-column-0_25rem"
@@ -652,7 +670,9 @@ resetGlobalError();
                 :user-roles="userRoles"
                 :validations="[uniqueLocations.check]"
                 keep-scroll-bottom-position
+                :createMode="location === newLocation"
                 @save="(...args) => saveLocation(index)(...args)"
+                @canceled="handleLocationCanceled(location)"
               />
             </cds-accordion-item>
           </cds-accordion>
