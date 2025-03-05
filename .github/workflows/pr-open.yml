@@ -222,7 +222,6 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_ENVIRONMENT=DEV
             -p LANDING_URL=${{ needs.vars.outputs.url }}
-            -p FRONTEND_URL=${{ needs.vars.outputs.url }}
 
   tests:
     name: Tests
