@@ -129,14 +129,28 @@ const sortedLocations = computed(() =>
 );
 
 interface LocationState {
-  isReloading: boolean;
+  isReloading?: boolean;
+  name: string;
 }
 
-const createLocationState = (): LocationState => ({
+const createLocationState = (locationState?: Partial<LocationState>): LocationState => ({
   isReloading: false,
+  name: "",
+  ...locationState,
 });
 
 const locationsState = reactive<Record<string, LocationState>>({});
+
+watch(sortedLocations, () => {
+  sortedLocations.value.forEach((location) => {
+    const locationCode = location.clientLocnCode;
+    if (!locationsState[locationCode]) {
+      locationsState[locationCode] = createLocationState({
+        name: location.clientLocnName,
+      });
+    }
+  });
+});
 
 const sortedContacts = computed(() =>
   data.value?.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
@@ -157,8 +171,9 @@ watch(sortedLocations, (value) => {
 
 const formatLocation = (location: ClientLocation) => {
   const parts = [location.clientLocnCode];
-  if (location.clientLocnName) {
-    parts.push(location.clientLocnName);
+  const locationName = locationsState[location.clientLocnCode].name;
+  if (locationName) {
+    parts.push(locationName);
   }
 
   const title = parts.join(" - ");
@@ -193,6 +208,10 @@ const associatedLocationsRecord = computed(() => {
   });
   return result;
 });
+
+const updateLocationName = (locationName: string, locationCode: string) => {
+  locationsState[locationCode].name = locationName;
+};
 
 const openRelatedClientsLegacy = () => {
   const url = `https://${greenDomain}/int/client/client04RelatedClientListAction.do?bean.clientNumber=${clientNumber}`;
@@ -619,6 +638,7 @@ resetGlobalError();
                 :user-roles="userRoles"
                 :validations="[uniqueLocations.check]"
                 keep-scroll-bottom-position
+                @update-location-name="updateLocationName($event, location.clientLocnCode)"
                 @save="(...args) => saveLocation(index)(...args)"
               />
             </cds-accordion-item>

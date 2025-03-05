@@ -35,6 +35,7 @@ interface Action {
 
 const emit = defineEmits<{
   (e: "save", value: jsonpatch.Operation[], updatedLocation: ClientLocation, action: Action): void;
+  (e: "updateLocationName", value: "string"): void;
 }>();
 
 const indexString = props.data.clientLocnCode;
@@ -295,6 +296,7 @@ const valid = ref(false);
         @remove-additional-delivery="handleRemoveAdditionalDelivery"
         @valid="valid = $event"
         @update:model-value="revalidate = !revalidate"
+        @update-location-name="emit('updateLocationName', $event)"
       />
       <div class="form-group-buttons form-group-buttons--stretched">
         <cds-button
