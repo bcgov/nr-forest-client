@@ -104,6 +104,7 @@
   --header-height: 3.5rem;
   --staff-header-height: 3.0625rem;
   --staff-tabs-height: 3rem;
+  --tab-header-height: 7rem;
 
   //Data-table
   --col-padding-rem: 1.5;
@@ -1771,11 +1772,23 @@ cds-accordion-item[open] .hide-open {
 }
 
 /* 
-Useful for scrolling to the *start* of an HTML element without having it covered under the page's header.
+Useful for scrolling to the *start* of an HTML element without having it covered under the page
+header.
 */
 .header-offset {
   position: relative;
   top: calc(-1 * var(--header-height));
+}
+
+/* 
+Useful for scrolling to the *start* of an HTML element without having it covered under the Staff's
+page header and tabs.
+*/
+.header-tabs-offset {
+  position: relative;
+  top: calc(-1 * (
+    var(--staff-header-height) + var(--staff-tabs-height) + var(--tab-header-height)
+  ));
 }
 
 .hide-when-less-than-two-children {
