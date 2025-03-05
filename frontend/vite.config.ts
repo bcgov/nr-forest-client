@@ -95,11 +95,6 @@ export default defineConfig(({ command, mode }) => {
           "**/reports*/**", // Ignore reports directory
         ],
       },
-    },
-    build: {
-      rollupOptions: {
-        external: ['vite-plugin-istanbul'],
-      },
-    }    
+    }  
   };
 });
