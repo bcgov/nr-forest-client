@@ -214,7 +214,6 @@ jobs:
             -p ZONE=${{ github.event.number }}
             -p TAG=${{ github.event.number }}
             -p VITE_NODE_ENV=openshift-dev
-            -p URL=${{ needs.vars.outputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
