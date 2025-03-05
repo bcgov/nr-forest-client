@@ -60,7 +60,7 @@ import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalVali
 
 // Route related
 const router = useRouter();
-const clientNumber = router.currentRoute.value.params.id;
+const clientNumber = router.currentRoute.value.params.id as string;
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
@@ -214,7 +214,7 @@ const addLocation = () => {
     }
   }
   const codeString = formatCount(codeNumber);
-  newLocation.value = createClientLocation(codeString);
+  newLocation.value = createClientLocation(clientNumber, codeString);
   setScrollPoint(`location-${index}-heading`);
   setFocusedComponent(`location-${index}-heading`);
 };
@@ -328,9 +328,9 @@ const confirmReasons = () => {
   sendPatchRequest(updatedPatchData);
 };
 
-const sendPatchRequest = (reasonUpdatedPatchData: ReasonPatch[]) => {
+const sendPatchRequest = (reasonUpdatedPatchData: (ReasonPatch | jsonpatch.Operation)[]) => {
   const reasonChanges: jsonpatch.Operation[] = reasonUpdatedPatchData.flatMap((patch, index) => {
-    return patch.reason
+    return "reason" in patch
       ? [
           {
             op: "add",
@@ -430,15 +430,33 @@ interface Action {
   pastParticiple: string;
 }
 
+const adjustPatchPath = (rawPatchData: jsonpatch.Operation[], prefix: string) => {
+  const patchData = rawPatchData.map((item) => ({
+    ...item,
+    path: `${prefix}${item.path}`,
+  }));
+  return patchData;
+};
+
+const addPatch = <T>(value: T, path: string) => {
+  const patch: jsonpatch.AddOperation<T> = {
+    op: "add",
+    path,
+    value,
+  };
+  return patch;
+};
+
 const saveLocation =
   (index: number) =>
-  (rawPatchData: jsonpatch.Operation[], updatedLocation: ClientLocation, action: Action) => {
+  (rawPatchData: jsonpatch.Operation[] | null, updatedLocation: ClientLocation, action: Action) => {
     const locationCode = updatedLocation.clientLocnCode;
 
-    const patchData = rawPatchData.map((item) => ({
-      ...item,
-      path: `/addresses/${locationCode}${item.path}`,
-    }));
+    const isNew = updatedLocation.clientLocnCode === newLocation.value?.clientLocnCode;
+
+    const patchData = isNew
+      ? addPatch(updatedLocation, "/addresses/null")
+      : adjustPatchPath(rawPatchData, `/addresses/${locationCode}`);
 
     const {
       fetch: patch,

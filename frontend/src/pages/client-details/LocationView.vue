@@ -35,7 +35,12 @@ interface Action {
 }
 
 const emit = defineEmits<{
-  (e: "save", value: jsonpatch.Operation[], updatedLocation: ClientLocation, action: Action): void;
+  (
+    e: "save",
+    patch: jsonpatch.Operation[] | null,
+    updatedLocation: ClientLocation,
+    action: Action,
+  ): void;
   (e: "canceled"): void;
 }>();
 
@@ -115,7 +120,7 @@ const save = (
     pastParticiple: "updated",
   },
 ) => {
-  const patch = jsonpatch.compare(originalData, newData);
+  const patch = props.createMode ? null : jsonpatch.compare(originalData, newData);
   emit("save", patch, newData, action);
 };
 
