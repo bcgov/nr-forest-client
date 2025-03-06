@@ -126,7 +126,6 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           oc_version: "4.13"
           overwrite: true
-          verification_path: health
           parameters:
             -p ZONE=${{ github.event.number }}
             -p TAG=${{ github.event.number }}
@@ -142,7 +141,6 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           oc_version: "4.13"
           overwrite: true
-          verification_path: health
           parameters:
             -p ZONE=${{ github.event.number }}
             -p TAG=${{ github.event.number }}
@@ -169,7 +167,6 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           oc_version: "4.13"
           overwrite: true
-          verification_path: health
           parameters:
             -p ZONE=${{ github.event.number }}
             -p TAG=${{ github.event.number }}

@@ -118,7 +118,6 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           oc_version: "4.13"
           overwrite: true
-          verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }}
             -p TAG=${{ env.TAG }}
@@ -133,7 +132,6 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           oc_version: "4.13"
           overwrite: true
-          verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }}
             -p TAG=${{ env.TAG }}
@@ -160,7 +158,6 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           oc_version: "4.13"
           overwrite: true
-          verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }}
             -p TAG=${{ env.TAG }}
@@ -315,7 +312,6 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           oc_version: "4.13"
           overwrite: true
-          verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }}
             -p TAG=${{ env.TAG }}
@@ -330,7 +326,6 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           oc_version: "4.13"
           overwrite: true
-          verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }}
             -p TAG=${{ env.TAG }}
@@ -357,7 +352,6 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           oc_version: "4.13"
           overwrite: true
-          verification_path: health
           parameters:
             -p ZONE=${{ env.ZONE }}
             -p TAG=${{ env.TAG }}
