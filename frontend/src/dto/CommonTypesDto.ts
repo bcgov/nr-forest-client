@@ -335,3 +335,8 @@ export interface ClientDetails {
 
 const userRoles = ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR", "CLIENT_VIEWER"] as const;
 export type UserRole = (typeof userRoles)[number];
+
+export interface ActionWords {
+  infinitive: string;
+  pastParticiple: string;
+}

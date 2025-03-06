@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
-import type { ClientLocation, UserRole } from "@/dto/CommonTypesDto";
+import type { ActionWords, ClientLocation, UserRole } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
 import {
   formatPhoneNumber,
@@ -28,13 +28,13 @@ const props = defineProps<{
   keepScrollBottomPosition?: boolean;
 }>();
 
-interface Action {
-  infinitive: string;
-  pastParticiple: string;
-}
-
 const emit = defineEmits<{
-  (e: "save", value: jsonpatch.Operation[], updatedLocation: ClientLocation, action: Action): void;
+  (
+    e: "save",
+    value: jsonpatch.Operation[],
+    updatedLocation: ClientLocation,
+    action: ActionWords,
+  ): void;
   (e: "canceled"): void;
   (e: "updateLocationName", value: "string"): void;
 }>();
@@ -110,7 +110,7 @@ defineExpose({
 
 const save = (
   newData: ClientLocation,
-  action: Action = {
+  action: ActionWords = {
     infinitive: "update",
     pastParticiple: "updated",
   },

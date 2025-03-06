@@ -241,15 +241,24 @@ const statusTransitionMap = new Map<string, string>([
   ['SPN-REC', '']       // Suspended → Receivership (No reason needed)
 ]);
 
+export const pathToFieldName = (path: string): string => {
+  const fieldName = path.split("/").slice(-1)[0];
+  return fieldName;
+};
+
 // Function to extract required reason fields from patch data
 export const extractReasonFields = (
   patchData: jsonpatch.Operation[],
   originalData: ClientDetails,
 ): FieldAction[] => {
   return patchData
-    .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
+    .filter(
+      (patch) =>
+        ["replace", "remove", "move"].includes(patch.op) &&
+        reasonRequiredFields.has(pathToFieldName(patch.path)),
+    )
     .map((patch) => {
-      const field = patch.path.replace('/', '');
+      const field = pathToFieldName(patch.path);
       let action = '';
 
       if (field === 'clientStatusCode') {
@@ -331,11 +340,11 @@ export const updateSelectedReason = (
 ): void => {
   if (selectedOption) {
     selectedReasons[index] = {
-      field: patch.path.replace("/", ""),
+      field: pathToFieldName(patch.path),
       reason: selectedOption.code,
     };
   } else {
-    selectedReasons[index] = { field: patch.path.replace("/", ""), reason: "" };
+    selectedReasons[index] = { field: pathToFieldName(patch.path), reason: "" };
   }
 };
 

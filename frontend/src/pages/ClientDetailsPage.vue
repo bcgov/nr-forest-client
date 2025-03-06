@@ -37,7 +37,8 @@ import {
   toTitleCase,
   getActionLabel,
   reasonRequiredFields,
-  updateSelectedReason
+  updateSelectedReason,
+  pathToFieldName,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -47,6 +48,7 @@ import type {
   ModalNotification,
   FieldUpdateReason,
   UserRole,
+  ActionWords,
 } from "@/dto/CommonTypesDto";
 
 // Page components
@@ -142,7 +144,7 @@ const createLocationState = (locationState?: Partial<LocationState>): LocationSt
 const locationsState = reactive<Record<string, LocationState>>({});
 
 watch(sortedLocations, () => {
-  sortedLocations.value.forEach((location) => {
+  sortedLocations.value?.forEach((location) => {
     const locationCode = location.clientLocnCode;
     if (!locationsState[locationCode]) {
       locationsState[locationCode] = createLocationState({
@@ -239,9 +241,14 @@ type ReasonPatch = jsonpatch.Operation & {
   reason?: string;
 };
 
+type OnSuccess = (response: any) => void;
+type OnFailure = (error: AxiosError) => void;
+
 const reasonPatchData = ref<ReasonPatch[]>([]);
-let originalPatchData: jsonpatch.Operation[] = []; 
+let originalPatchData: jsonpatch.Operation[] = [];
 const finalPatchData = ref<jsonpatch.Operation[]>([]);
+const onSuccessPatch = ref<(response: any) => void>();
+const onFailurePatch = ref<(error: AxiosError) => void>();
 const selectedReasons = ref<FieldUpdateReason[]>([]);
 const saveDisabled = ref(false);
 const isSaveFirstClick = ref(false);
@@ -320,20 +327,20 @@ const confirmReasons = () => {
   sendPatchRequest(updatedPatchData);
 };
 
-const sendPatchRequest = (reasonUpdatedPatchData: ReasonPatch[]) => {
+const sendPatchRequest = (reasonUpdatedPatchData: (jsonpatch.Operation | ReasonPatch)[]) => {
   const reasonChanges: jsonpatch.Operation[] = reasonUpdatedPatchData.flatMap((patch, index) => {
-    return patch.reason
+    return "reason" in patch
       ? [
           {
             op: "add",
             path: `/reasons/${index}/field`,
-            value: patch.path.replace("/", "")
+            value: pathToFieldName(patch.path),
           },
           {
             op: "add",
             path: `/reasons/${index}/reason`,
-            value: patch.reason
-          }
+            value: patch.reason,
+          },
         ]
       : [];
   });
@@ -349,35 +356,20 @@ const sendPatchRequest = (reasonUpdatedPatchData: ReasonPatch[]) => {
 
   patch().then(() => {
     if (response.value.status) {
-      const toastNotification: ModalNotification = {
-        kind: "Success",
-        active: true,
-        handler: () => {},
-        message: `Client <span class="weight-700">“${clientFullName.value}”</span> was updated`,
-        toastTitle: undefined,
-      };
-      toastBus.emit(toastNotification);
-      summaryRef.value.lockEditing();
-      data.value = undefined;
-      fetchClientData();
+      onSuccessPatch.value(response.value);
     }
     if (error.value.status) {
-      const toastNotification: ModalNotification = {
-        kind: "Error",
-        active: true,
-        handler: () => {},
-        message: "Failed to update client",
-        toastTitle: undefined,
-      };
-      toastBus.emit(toastNotification);
-      globalError.value = error.value;
+      onFailurePatch.value(error.value);
     }
   });
 };
 
-// Function to save
-const saveSummary = (patchData: jsonpatch.Operation[]) => {
-  //Reset values
+const handlePatch = (
+  patchData: jsonpatch.Operation[],
+  onSuccess: OnSuccess,
+  onFailure: OnFailure,
+) => {
+  // Reset values
   selectedReasons.value = [];
   saveDisabled.value = false;
 
@@ -387,11 +379,15 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
   // Initializes the validations array
   reasonCodesValidations.value = Array(reasonFields.length).fill(false);
 
+  // Store on global variables to use later
+  onSuccessPatch.value = onSuccess;
+  onFailurePatch.value = onFailure;
+
   if (reasonFields.length > 0) {
     reasonPatchData.value = patchData
-      .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
+      .filter((patch) => reasonRequiredFields.has(pathToFieldName(patch.path)))
       .map((patch) => {
-        const field = patch.path.replace('/', '');
+        const field = pathToFieldName(patch.path);
         const reasonEntry = reasonFields.find((r) => r.field === field);
 
         return { ...patch, action: reasonEntry?.action || '' };
@@ -410,6 +406,36 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
   resetGlobalError();
 };
 
+// Function to save
+const saveSummary = (patchData: jsonpatch.Operation[]) => {
+  const onSuccess: OnSuccess = () => {
+    const toastNotification: ModalNotification = {
+      kind: "Success",
+      active: true,
+      handler: () => {},
+      message: `Client <span class="weight-700">“${clientFullName.value}”</span> was updated`,
+      toastTitle: undefined,
+    };
+    toastBus.emit(toastNotification);
+    summaryRef.value.lockEditing();
+    data.value = undefined;
+    fetchClientData();
+  };
+
+  const onFailure: OnFailure = (error) => {
+    const toastNotification: ModalNotification = {
+      kind: "Error",
+      active: true,
+      handler: () => {},
+      message: "Failed to update client",
+      toastTitle: undefined,
+    };
+    toastBus.emit(toastNotification);
+    globalError.value = error;
+  };
+  handlePatch(patchData, onSuccess, onFailure);
+};
+
 const locationsRef = ref<InstanceType<typeof LocationView>[]>([]);
 
 const setLocationRef = (index: number) => (el: InstanceType<typeof LocationView>) => {
@@ -417,14 +443,9 @@ const setLocationRef = (index: number) => (el: InstanceType<typeof LocationView>
   locationsRef.value[index] = el;
 };
 
-interface Action {
-  infinitive: string;
-  pastParticiple: string;
-}
-
 const saveLocation =
   (index: number) =>
-  (rawPatchData: jsonpatch.Operation[], updatedLocation: ClientLocation, action: Action) => {
+  (rawPatchData: jsonpatch.Operation[], updatedLocation: ClientLocation, action: ActionWords) => {
     const locationCode = updatedLocation.clientLocnCode;
 
     const patchData = rawPatchData.map((item) => ({
@@ -432,56 +453,44 @@ const saveLocation =
       path: `/addresses/${locationCode}${item.path}`,
     }));
 
-    const {
-      fetch: patch,
-      response,
-      error,
-    } = useJsonPatch(`/api/clients/details/${clientNumber}`, patchData, {
-      skip: true,
-    });
-
-    console.log(patchData);
-
-    resetGlobalError();
-
     const updatedTitle = formatLocation(updatedLocation);
 
-    patch().then(() => {
-      if (response.value.status) {
-        const toastNotification: ModalNotification = {
-          kind: "Success",
-          active: true,
-          handler: () => {},
-          message: `Location <span class="weight-700">“${updatedTitle}”</span> was ${action.pastParticiple}`,
-          toastTitle: undefined,
-        };
-        toastBus.emit(toastNotification);
+    const onSuccess: OnSuccess = () => {
+      const toastNotification: ModalNotification = {
+        kind: "Success",
+        active: true,
+        handler: () => {},
+        message: `Location <span class="weight-700">“${updatedTitle}”</span> was ${action.pastParticiple}`,
+        toastTitle: undefined,
+      };
+      toastBus.emit(toastNotification);
 
-        locationsRef.value[index].lockEditing();
+      locationsRef.value[index].lockEditing();
 
-        if (!locationsState[locationCode]) {
-          locationsState[locationCode] = createLocationState();
-        }
-
-        locationsState[locationCode].isReloading = true;
-
-        fetchClientData().asyncResponse.then(() => {
-          locationsState[locationCode].isReloading = false;
-        });
+      if (!locationsState[locationCode]) {
+        locationsState[locationCode] = createLocationState();
       }
 
-      if (error.value.status) {
-        const toastNotification: ModalNotification = {
-          kind: "Error",
-          active: true,
-          handler: () => {},
-          message: `Failed to ${action.infinitive} location`,
-          toastTitle: undefined,
-        };
-        toastBus.emit(toastNotification);
-        globalError.value = error.value;
-      }
-    });
+      locationsState[locationCode].isReloading = true;
+
+      fetchClientData().asyncResponse.then(() => {
+        locationsState[locationCode].isReloading = false;
+      });
+    };
+
+    const onFailure: OnFailure = (error) => {
+      const toastNotification: ModalNotification = {
+        kind: "Error",
+        active: true,
+        handler: () => {},
+        message: `Failed to ${action.infinitive} location`,
+        toastTitle: undefined,
+      };
+      toastBus.emit(toastNotification);
+      globalError.value = error;
+    };
+
+    handlePatch(patchData, onSuccess, onFailure);
   };
 
 const globalError = ref();
