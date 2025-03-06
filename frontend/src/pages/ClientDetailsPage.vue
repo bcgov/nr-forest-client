@@ -210,6 +210,7 @@ const associatedLocationsRecord = computed(() => {
 });
 
 const handleLocationCanceled = (location: ClientLocation) => {
+  // reset to the original value
   locationsState[location.clientLocnCode].name = location.clientLocnName;
 };
 
@@ -331,13 +332,11 @@ const sendPatchRequest = (reasonUpdatedPatchData: (jsonpatch.Operation | ReasonP
       ? [
           {
             op: "add",
-            path: `/reasons/${index}/field`,
-            value: pathToFieldName(patch.path),
-          },
-          {
-            op: "add",
-            path: `/reasons/${index}/reason`,
-            value: patch.reason,
+            path: `/reasons/${index}`,
+            value: {
+              field: pathToFieldName(patch.path),
+              reason: patch.reason,
+            },
           },
         ]
       : [];
