@@ -82,7 +82,7 @@ watch(fetchError, (value) => {
 
 const clientFullName = computed(() => {
   if (data.value) {
-    const { legalFirstName, legalMiddleName, clientName } = data.value;
+    const { legalFirstName, legalMiddleName, clientName } = data.value.client;
     const rawParts = [legalFirstName, legalMiddleName, clientName];
     const populatedParts = [];
     for (const part of rawParts) {

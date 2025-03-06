@@ -116,7 +116,7 @@ public class ClientLegacyService {
             .doOnNext(
                 dto -> log.info(
                     "Found Legacy data for in legacy with client number {}",
-                    dto.clientNumber())
+                    dto.client().clientNumber())
             );
   }
 

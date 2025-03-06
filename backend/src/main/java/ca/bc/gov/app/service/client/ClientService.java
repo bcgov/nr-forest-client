@@ -156,15 +156,15 @@ public class ClientService {
         .flatMap(this::populateContactTypes)
         .flatMap(forestClientDetailsDto -> Mono
             .just(forestClientDetailsDto)
-            .filter(dto -> (StringUtils.isNotBlank(dto.corpRegnNmbr())))
+            .filter(dto -> (StringUtils.isNotBlank(dto.client().corpRegnNmbr())))
             .doOnNext(dto -> log.info("Retrieved corporation registration number: {}",
-                forestClientDetailsDto.corpRegnNmbr()))
+                forestClientDetailsDto.client().corpRegnNmbr()))
             .flatMap(dto ->
                 bcRegistryService
-                    .requestDocumentData(dto.corpRegnNmbr())
+                    .requestDocumentData(dto.client().corpRegnNmbr())
                     .next()
             )
-            .flatMap(documentMono -> populateGoodStandingInd(forestClientDetailsDto, documentMono))
+            .map(documentMono -> populateGoodStandingInd(forestClientDetailsDto, documentMono))
 
             .onErrorContinue(NoClientDataFound.class, (ex, obj) ->
                 log.error("No data found on BC Registry for client number: {}", clientNumber)
@@ -289,7 +289,7 @@ public class ClientService {
   }
 
 
-  private Mono<ForestClientDetailsDto> populateGoodStandingInd(
+  private ForestClientDetailsDto populateGoodStandingInd(
       ForestClientDetailsDto forestClientDetailsDto,
       BcRegistryDocumentDto document
   ) {
@@ -302,12 +302,14 @@ public class ClientService {
     );
 
     log.info("Setting goodStandingInd for client: {} to {}",
-        forestClientDetailsDto.clientNumber(), goodStanding);
+        forestClientDetailsDto.client().clientNumber(), goodStanding);
 
-    ForestClientDetailsDto updatedDetails =
-        forestClientDetailsDto.withGoodStandingInd(goodStanding);
-
-    return Mono.just(updatedDetails);
+    return
+        forestClientDetailsDto.withClient(
+        forestClientDetailsDto
+            .client()
+            .withGoodStandingInd(goodStanding)
+        );
   }
 
   private Function<BcRegistryDocumentDto, Mono<ClientDetailsDto>> buildDetails() {
