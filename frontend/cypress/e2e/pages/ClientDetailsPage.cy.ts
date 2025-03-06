@@ -268,14 +268,11 @@ describe("Client Details Page", () => {
         
             expect(requestBody).to.deep.include({
               op: "add",
-              path: "/reasons/0/reason",
-              value: "R1",
-            });
-        
-            expect(requestBody).to.deep.include({
-              op: "add",
-              path: "/reasons/0/field",
-              value: "clientStatusCode",
+              path: "/reasons/0",
+              value: {
+                field: "clientStatusCode",
+                reason: "R1",
+              },
             });
           });
         });        
@@ -509,6 +506,71 @@ describe("Client Details Page", () => {
             cy.get("[data-id='input-notes_0']").should("be.visible");
 
             cy.get("#location-00-SaveBtn").should("be.visible");
+          });
+        });
+
+        describe("with reason modal", { testIsolation: false }, () => {
+          beforeEach(function () {
+            init.call(this);
+
+            cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
+
+            cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
+
+            cy.visit("/clients/details/g");
+
+            // Clicks to expand the accordion
+            cy.get("#location-00 [slot='title']").click();
+
+            cy.get("#location-00-EditBtn").click();
+            cy.fillFormEntry("#addr_0", "2 Update Av");
+            cy.fillFormEntry("#city_0", "Updateland");
+            cy.selectFormEntry("#province_0", "Quebec");
+            cy.get("#location-00-SaveBtn").click();
+
+            cy.wait("@getReasonsList").then(({ request }) => {
+              // requests the list of options related to Address change
+              expect(request.url.endsWith("/ADDR")).to.eq(true);
+            });
+          });
+
+          it("opens the reason modal and sends the correct PATCH request with reasons", () => {
+            cy.get("#reason-modal").should("be.visible");
+
+            cy.get("#input-reason-0").should("exist");
+
+            // Only one reason should be required
+            cy.get("#input-reason-1").should("not.exist");
+
+            cy.get("#input-reason-0").find('[part="trigger-button"]').click();
+
+            cy.get("#input-reason-0")
+              .find("cds-dropdown-item")
+              .first()
+              .should("be.visible")
+              .click();
+
+            cy.get("#reasonSaveBtn").click();
+
+            cy.wait("@saveClientDetails").then((interception) => {
+              const requestBody = interception.request.body;
+
+              cy.log("Request Body:", JSON.stringify(requestBody));
+
+              expect(requestBody).to.deep.include({
+                op: "add",
+                path: "/reasons/0",
+                value: {
+                  field: "/addresses/00",
+                  reason: "R1",
+                },
+              });
+
+              // Only 1 "add" operation (the reason one)
+              expect((requestBody as any[]).filter((item) => item.op === "add")).to.have.lengthOf(
+                1,
+              );
+            });
           });
         });
       });
