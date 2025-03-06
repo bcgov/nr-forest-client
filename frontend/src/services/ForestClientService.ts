@@ -5,7 +5,7 @@ import type {
   CodeDescrType,
   CodeNameType,
   FieldAction,
-  FieldUpdateReason,
+  FieldReason,
   UserRole,
 } from "@/dto/CommonTypesDto";
 import { isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
@@ -289,27 +289,21 @@ export const extractReasonFields = (
         return;
       }
 
-      /*
-      Note: when the change belongs to a group, we only store the first field.
-      While the specific field doesn't matter, we still use it instead of the "action field" (i.e.
-      "/addresses/<index>") just because it's a static value, which we can use as a key to the
-      fieldActionMap.
-      */
-      const field = extractFieldName(patch.path);
+      const fieldName = extractFieldName(patch.path);
 
       let action = '';
 
-      if (field === 'clientStatusCode') {
+      if (fieldName === 'clientStatusCode') {
         const oldValue = originalData.clientStatusCode;
         const newValue = patch.value;
         const transitionKey = `${oldValue}-${newValue}`;
         action = statusTransitionMap.get(transitionKey) || '';
       } else {
-        action = fieldActionMap.get(extractFieldName(patch.path)) || '';
+        action = fieldActionMap.get(fieldName) || '';
       }
 
       if (action) {
-        reasonActions[actionField] = { field, action };
+        reasonActions[actionField] = { field: actionField, action };
       }
     });
 
@@ -377,7 +371,7 @@ export const updateSelectedReason = (
   selectedOption: CodeNameType,
   index: number,
   patch: jsonpatch.Operation,
-  selectedReasons: FieldUpdateReason[],
+  selectedReasons: FieldReason[],
 ): void => {
   if (selectedOption) {
     selectedReasons[index] = {

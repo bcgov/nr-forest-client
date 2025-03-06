@@ -37,8 +37,6 @@ import {
   toTitleCase,
   getActionLabel,
   updateSelectedReason,
-  extractFieldName,
-  extractActionField,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -46,7 +44,7 @@ import type {
   ClientDetails,
   ClientLocation,
   ModalNotification,
-  FieldUpdateReason,
+  FieldReason,
   UserRole,
   ActionWords,
 } from "@/dto/CommonTypesDto";
@@ -235,9 +233,8 @@ const summaryRef = ref<InstanceType<typeof SummaryView> | null>(null);
 
 const reasonModalActiveInd = ref(false);
 
-type ReasonPatch = jsonpatch.Operation & {
+type ReasonPatch = jsonpatch.AddOperation<FieldReason> & {
   action: string;
-  reason?: string;
 };
 
 type OnSuccess = (response: any) => void;
@@ -248,7 +245,7 @@ let originalPatchData: jsonpatch.Operation[] = [];
 const finalPatchData = ref<jsonpatch.Operation[]>([]);
 const onSuccessPatch = ref<(response: any) => void>();
 const onFailurePatch = ref<(error: AxiosError) => void>();
-const selectedReasons = ref<FieldUpdateReason[]>([]);
+const selectedReasons = ref<FieldReason[]>([]);
 const saveDisabled = ref(false);
 const isSaveFirstClick = ref(false);
 
@@ -313,33 +310,23 @@ const confirmReasons = () => {
   }
 
   // Continue with the patch process
-  const updatedPatchData = [...reasonPatchData.value];
-
-  updatedPatchData.forEach((patch, index) => {
+  reasonPatchData.value.forEach((patch, index) => {
     const reasonEntry = selectedReasons.value[index];
     if (reasonEntry) {
-      patch.reason = reasonEntry.reason;
+      patch.value.reason = reasonEntry.reason;
     }
   });
 
   reasonModalActiveInd.value = false;
-  sendPatchRequest(updatedPatchData);
+  sendPatchRequest(reasonPatchData.value);
 };
 
-const sendPatchRequest = (reasonUpdatedPatchData: (jsonpatch.Operation | ReasonPatch)[]) => {
-  const reasonChanges: jsonpatch.Operation[] = reasonUpdatedPatchData.flatMap((patch, index) => {
-    return "reason" in patch
-      ? [
-          {
-            op: "add",
-            path: `/reasons/${index}`,
-            value: {
-              field: extractActionField(patch.path),
-              reason: patch.reason,
-            },
-          },
-        ]
-      : [];
+const sendPatchRequest = (reasonPatchData: ReasonPatch[]) => {
+  const reasonChanges: jsonpatch.Operation[] = reasonPatchData.map((patch) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { action, ...operation } = patch;
+
+    return operation;
   });
 
   finalPatchData.value = [...originalPatchData, ...reasonChanges];
@@ -381,19 +368,15 @@ const handlePatch = (
   onFailurePatch.value = onFailure;
 
   if (reasonFields.length > 0) {
-    reasonPatchData.value = patchData
-      // .filter((patch) => reasonRequiredFields.has(extractFieldName(patch.path)))
-      .filter((patch) => {
-        const field = extractFieldName(patch.path);
-        const found = !!reasonFields.find((item) => item.field === field);
-        return found;
-      })
-      .map((patch) => {
-        const field = extractFieldName(patch.path);
-        const reasonEntry = reasonFields.find((r) => r.field === field);
-
-        return { ...patch, action: reasonEntry?.action || '' };
-      });
+    reasonPatchData.value = reasonFields.map((item, index) => ({
+      op: "add",
+      path: `/reasons/${index}`,
+      value: {
+        field: item.field,
+        reason: "", // To be selected later
+      },
+      action: item.action,
+    }));
 
     // Prevents focusing input field on the modal
     setTimeout(() => {
@@ -402,7 +385,8 @@ const handlePatch = (
 
     isSaveFirstClick.value = true;
   } else {
-    sendPatchRequest(patchData);
+    reasonPatchData.value = [];
+    sendPatchRequest([]); // No reasons required
   }
 
   resetGlobalError();
