@@ -1,6 +1,6 @@
 package ca.bc.gov.app.controller;
 
-import ca.bc.gov.app.service.partial.ClientPatchService;
+import ca.bc.gov.app.service.patch.ClientPatchService;
 import com.github.fge.jsonpatch.JsonPatch;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package ca.bc.gov.app.service.partial;
+package ca.bc.gov.app.service.patch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
