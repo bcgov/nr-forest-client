@@ -162,9 +162,7 @@ const uniqueLocations = isUniqueDescriptive();
 
 watch(sortedLocations, (value) => {
   if (value?.length) {
-    console.log({ value });
     value.forEach((location) => {
-      console.log({ location });
       const index = String(Number(location.clientLocnCode));
       uniqueLocations.add("Names", index)(location.clientLocnName);
     });
@@ -439,7 +437,6 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
 const locationsRef = ref<InstanceType<typeof LocationView>[]>([]);
 
 const setLocationRef = (index: number) => (el: InstanceType<typeof LocationView>) => {
-  console.log(index);
   locationsRef.value[index] = el;
 };
 
