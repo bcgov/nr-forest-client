@@ -36,9 +36,9 @@ import {
   includesAnyOf,
   toTitleCase,
   getActionLabel,
-  reasonRequiredFields,
   updateSelectedReason,
-  pathToFieldName,
+  extractFieldName,
+  extractActionField,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -334,7 +334,7 @@ const sendPatchRequest = (reasonUpdatedPatchData: (jsonpatch.Operation | ReasonP
             op: "add",
             path: `/reasons/${index}`,
             value: {
-              field: pathToFieldName(patch.path),
+              field: extractActionField(patch.path),
               reason: patch.reason,
             },
           },
@@ -382,9 +382,14 @@ const handlePatch = (
 
   if (reasonFields.length > 0) {
     reasonPatchData.value = patchData
-      .filter((patch) => reasonRequiredFields.has(pathToFieldName(patch.path)))
+      // .filter((patch) => reasonRequiredFields.has(extractFieldName(patch.path)))
+      .filter((patch) => {
+        const field = extractFieldName(patch.path);
+        const found = !!reasonFields.find((item) => item.field === field);
+        return found;
+      })
       .map((patch) => {
-        const field = pathToFieldName(patch.path);
+        const field = extractFieldName(patch.path);
         const reasonEntry = reasonFields.find((r) => r.field === field);
 
         return { ...patch, action: reasonEntry?.action || '' };

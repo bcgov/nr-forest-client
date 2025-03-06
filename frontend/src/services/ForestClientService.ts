@@ -241,8 +241,33 @@ const statusTransitionMap = new Map<string, string>([
   ['SPN-REC', '']       // Suspended → Receivership (No reason needed)
 ]);
 
-export const pathToFieldName = (path: string): string => {
+/**
+ * Extracts the last segment of the path which corresponds to the specific field name.
+ *
+ * @param path
+ * @returns string
+ */
+export const extractFieldName = (path: string): string => {
   const fieldName = path.split("/").slice(-1)[0];
+  return fieldName;
+};
+
+/**
+ * Extracts the field path to be sent in the reason patch.
+ * It might be a specific field or the parent field where the change occurred.
+ *
+ * @param path
+ * @returns string
+ */
+export const extractActionField = (path: string): string => {
+  const fieldName = extractFieldName(path);
+
+  if (path.startsWith("/addresses")) {
+    // Should return something like "/addresses/00"
+    const fieldKey = path.split(`/${fieldName}`)[0];
+    return fieldKey;
+  }
+
   return fieldName;
 };
 
@@ -251,14 +276,27 @@ export const extractReasonFields = (
   patchData: jsonpatch.Operation[],
   originalData: ClientDetails,
 ): FieldAction[] => {
-  return patchData
+  const reasonActions: Record<string, FieldAction> = {};
+  patchData
     .filter(
-      (patch) =>
-        ["replace", "remove", "move"].includes(patch.op) &&
-        reasonRequiredFields.has(pathToFieldName(patch.path)),
+      (patch) => patch.op === "replace" && reasonRequiredFields.has(extractFieldName(patch.path)),
     )
-    .map((patch) => {
-      const field = pathToFieldName(patch.path);
+    .forEach((patch) => {
+      const actionField = extractActionField(patch.path);
+
+      if (reasonActions[actionField]) {
+        // If the field corresponds to a "group change", like an address, we only need it once.
+        return;
+      }
+
+      /*
+      Note: when the change belongs to a group, we only store the first field.
+      While the specific field doesn't matter, we still use it instead of the "action field" (i.e.
+      "/addresses/<index>") just because it's a static value, which we can use as a key to the
+      fieldActionMap.
+      */
+      const field = extractFieldName(patch.path);
+
       let action = '';
 
       if (field === 'clientStatusCode') {
@@ -267,12 +305,15 @@ export const extractReasonFields = (
         const transitionKey = `${oldValue}-${newValue}`;
         action = statusTransitionMap.get(transitionKey) || '';
       } else {
-        action = fieldActionMap.get(field) || '';
+        action = fieldActionMap.get(extractFieldName(patch.path)) || '';
       }
 
-      return action ? { field, action } : null; 
-    })
-    .filter(Boolean);
+      if (action) {
+        reasonActions[actionField] = { field, action };
+      }
+    });
+
+  return Object.values(reasonActions);
 };
 
 export const getAction = (path: string, oldValue?: string, newValue?: string) => {
@@ -340,11 +381,11 @@ export const updateSelectedReason = (
 ): void => {
   if (selectedOption) {
     selectedReasons[index] = {
-      field: pathToFieldName(patch.path),
+      field: extractFieldName(patch.path),
       reason: selectedOption.code,
     };
   } else {
-    selectedReasons[index] = { field: pathToFieldName(patch.path), reason: "" };
+    selectedReasons[index] = { field: extractFieldName(patch.path), reason: "" };
   }
 };
 
