@@ -73,9 +73,6 @@ parameters:
     required: true  
   - name: LANDING_URL
     required: true
-  - name: FRONTEND_URL
-    description: Frontend URL
-    required: true
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
@@ -143,7 +140,7 @@ objects:
                 - name: BACKEND_URL
                   value: https://${NAME}-${ZONE}-backend.${DOMAIN}
                 - name: FRONTEND_URL
-                  value: https://${FRONTEND_URL}
+                  value: https://${URL}
                 - name: COGNITO_REGION
                   value: ${COGNITO_REGION}
                 - name: COGNITO_DOMAIN
@@ -207,6 +204,10 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
+      annotations:
+        haproxy.router.openshift.io/rate-limit-connections: "true"
+        haproxy.router.openshift.io/rate-limit-connections.rate-http: "150"
+        haproxy.router.openshift.io/rate-limit-connections.rate-tcp: "75"
     spec:
       host: ${URL}
       port:
