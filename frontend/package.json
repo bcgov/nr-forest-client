@@ -102,6 +102,7 @@
     "vite": "^5.4.10",
     "vite-plugin-istanbul": "^5.0.0",
     "vitest": "^3.0.5",
+    "vue-component-type-helpers": "^2.2.2",
     "vue-eslint-parser": "^9.4.3",
     "vue-svg-loader": "^0.16.0",
     "vue-tsc": "^2.2.0",

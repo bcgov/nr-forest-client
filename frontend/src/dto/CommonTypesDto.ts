@@ -295,7 +295,7 @@ export interface ClientContact {
   updatedBy: string;
 }
 
-export interface FieldUpdateReason {
+export interface FieldReason {
   field: string;
   reason: string;
 }
@@ -330,8 +330,13 @@ export interface ClientDetails {
   doingBusinessAs: ClientDoingBusinessAs[];
   addresses: ClientLocation[];
   contacts: ClientContact[];
-  reasons: FieldUpdateReason[];
+  reasons: FieldReason[];
 }
 
 const userRoles = ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR", "CLIENT_VIEWER"] as const;
 export type UserRole = (typeof userRoles)[number];
+
+export interface ActionWords {
+  infinitive: string;
+  pastParticiple: string;
+}

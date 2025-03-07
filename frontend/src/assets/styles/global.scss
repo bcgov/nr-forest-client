@@ -829,11 +829,17 @@ cds-actionable-notification * {
   &--stretched {
     cds-button {
       flex: 1;
+
+      &::part(button) {
+        // We don't need this padding since the button is already stretched thanks to "flex: 1".
+        // This allows adjacent buttons to have the same size.
+        padding-inline-end: unset;
+      }
     }
   }
 }
 
-.form-edit {
+.form-edit, .tab-form {
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -843,6 +849,10 @@ cds-actionable-notification * {
   .grouping-02, .grouping-03 {
     width: 100%;
   }
+}
+
+.tab-form {
+  max-width: 36rem;
 }
 
 .frame-01 {
@@ -1194,6 +1204,21 @@ cds-accordion-item:not([open]) {
   align-items: end;
 }
 
+.grid {
+  display: grid;
+  column-gap: 1rem;
+  row-gap: inherit;
+  align-items: end;
+
+  &--2-per-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  &--3-per-row {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
 .input-with-instruction {
   display: flex;
   flex-direction: column;
@@ -1521,6 +1546,14 @@ cds-side-nav {
 
 cds-accordion-item::part(expando) {
   min-block-size: 3rem;
+}
+
+cds-accordion-item[open]::part(cds--accordion__wrapper) {
+  /*
+  Fixes issue where accordions would not auto-adjust size (height) according to its content, when
+  it grows dynamically.
+  */
+  max-block-size: unset;
 }
 
 cds-accordion-item[open]:not([disabled])::part(content),
