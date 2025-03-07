@@ -387,7 +387,7 @@ const getLocationDescription = (address: Address, index: number): string =>
         autocomplete="off"
         required
         required-label
-        :initial-value="selectedValue.province.text"
+        :initial-value="content?.find((item) => item.code === selectedValue.province.value)?.name"
         :model-value="content"
         :enabled="true"
         tip=""
@@ -406,7 +406,7 @@ const getLocationDescription = (address: Address, index: number): string =>
       autocomplete="off"
       required
       required-label
-      :initial-value="selectedValue.country.text"
+      :initial-value="countryList?.find((item) => item.code === selectedValue.country.value)?.name"
       tip=""
       :enabled="true"
       :model-value="countryList"

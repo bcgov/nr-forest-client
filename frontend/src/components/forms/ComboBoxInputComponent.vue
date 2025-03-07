@@ -56,7 +56,7 @@ const emitValueChange = (newValue: string): void => {
     ? props.modelValue.find((entry) => entry.name === newValue)
     : { code: "", name: "" };
 
-  emit("update:modelValue", reference?.name);
+  emit("update:modelValue", reference?.code);
   emit("update:selectedValue", reference);
   emit("empty", isEmpty(newValue));
 };
