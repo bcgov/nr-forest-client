@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
+import ca.bc.gov.app.dto.legacy.ForestClientInformationDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -40,7 +41,7 @@ class ForestClientObfuscateTest {
   @Test
   void shouldObfuscateBCSC() throws Exception {
     MDC.put(ApplicationConstant.MDC_USERROLES, ApplicationConstant.ROLE_VIEWER);
-    String json = mapper.writeValueAsString(getDto().withClientIdTypeCode("BCSC"));
+    String json = mapper.writeValueAsString(getDto().withClient(getDto().client().withClientIdTypeCode("BCSC")));
     assertThat(json)
         .contains("\"clientIdentification\":\"BC Service card verified\"")
         .contains("\"birthdate\":\"1070-**-**\"");
@@ -49,7 +50,7 @@ class ForestClientObfuscateTest {
   @Test
   void shouldNotObfuscateSmallIds() throws Exception {
     MDC.put(ApplicationConstant.MDC_USERROLES, ApplicationConstant.ROLE_VIEWER);
-    String json = mapper.writeValueAsString(getDto().withClientIdentification("1234"));
+    String json = mapper.writeValueAsString(getDto().withClient(getDto().client().withClientIdentification("1234")));
     assertThat(json)
         .contains("\"clientIdentification\":\"1234\"")
         .contains("\"birthdate\":\"1070-**-**\"");
@@ -75,26 +76,28 @@ class ForestClientObfuscateTest {
 
   private ForestClientDetailsDto getDto() {
     return new ForestClientDetailsDto(
-        "123456789",
-        "Wick",
-        "Johnathan",
-        null,
-        "ACT",
-        "Active",
-        "I",
-        "Individual",
-        "BCDL",
-        "BC Drivers License",
-        "12345678",
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        LocalDateTime.of(LocalDate.of(1070, 12, 13), LocalTime.MIN),
+        new ForestClientInformationDto(
+            "123456789",
+            "Wick",
+            "Johnathan",
+            null,
+            "ACT",
+            "Active",
+            "I",
+            "Individual",
+            "BCDL",
+            "BC Drivers License",
+            "12345678",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            LocalDateTime.of(LocalDate.of(1070, 12, 13), LocalTime.MIN)
+        ),
         List.of(),
         List.of(),
         List.of()

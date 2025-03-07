@@ -15,6 +15,7 @@ import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
+import ca.bc.gov.app.dto.legacy.ForestClientInformationDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ch.qos.logback.classic.Logger;
@@ -162,26 +163,28 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       String clientNumber = "00000001";
 
       ForestClientDetailsDto expectedDto = new ForestClientDetailsDto(
-          clientNumber,
-          "MY COMPANY LTD.",
-          null,
-          null,
-          "ACT",
-          "Active",
-          "C",
-          "Corporation",
-          null,
-          null,
-          null,
-          "BC",
-          "9607514",
-          null,
-          "678",
-          "THIS TEST",
-          null,
-          null,
-          "Y",
-          null,
+          new ForestClientInformationDto(
+              clientNumber,
+              "MY COMPANY LTD.",
+              null,
+              null,
+              "ACT",
+              "Active",
+              "C",
+              "Corporation",
+              null,
+              null,
+              null,
+              "BC",
+              "9607514",
+              null,
+              "678",
+              "THIS TEST",
+              null,
+              null,
+              "Y",
+              null
+          ),
           null,
           null,
           null
@@ -190,32 +193,35 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       legacyStub
           .stubFor(
               get(urlPathEqualTo("/api/search/clientNumber/" + clientNumber))
-                  .willReturn(okJson("{"
-                      + "\"clientNumber\":\"00000001\","
-                      + "\"clientName\":\"MY COMPANY LTD.\","
-                      + "\"legalFirstName\":null,"
-                      + "\"legalMiddleName\":null,"
-                      + "\"clientStatusCode\":\"ACT\","
-                      + "\"clientStatusDesc\":\"Active\","
-                      + "\"clientTypeCode\":\"C\","
-                      + "\"clientTypeDesc\":\"Corporation\","
-                      + "\"clientIdTypeCode\":null,"
-                      + "\"clientIdTypeDesc\":null,"
-                      + "\"clientIdentification\":null,"
-                      + "\"registryCompanyTypeCode\":\"BC\","
-                      + "\"corpRegnNmbr\":\"9607514\","
-                      + "\"clientAcronym\":null,"
-                      + "\"wcbFirmNumber\":\"678\","
-                      + "\"ocgSupplierNmbr\":null,"
-                      + "\"clientComment\":\"THIS TEST\","
-                      + "\"clientCommentUpdateDate\":null,"
-                      + "\"clientCommentUpdateUser\":null,"
-                      + "\"goodStandingInd\":\"Y\","
-                      + "\"birthdate\":null,"
-                      + "\"addresses\":null,"
-                      + "\"contacts\":null,"
-                      + "\"doingBusinessAs\":null"
-                      + "}"))
+                  .willReturn(okJson("""
+                      {
+                        "client":{
+                          "clientNumber":"00000001",
+                          "clientName":"MY COMPANY LTD.",
+                          "legalFirstName":null,
+                          "legalMiddleName":null,
+                          "clientStatusCode":"ACT",
+                          "clientStatusDesc":"Active",
+                          "clientTypeCode":"C",
+                          "clientTypeDesc":"Corporation",
+                          "clientIdTypeCode":null,
+                          "clientIdTypeDesc":null,
+                          "clientIdentification":null,
+                          "registryCompanyTypeCode":"BC",
+                          "corpRegnNmbr":"9607514",
+                          "clientAcronym":null,
+                          "wcbFirmNumber":"678",
+                          "ocgSupplierNmbr":null,
+                          "clientComment":"THIS TEST",
+                          "clientCommentUpdateDate":null,
+                          "clientCommentUpdateUser":null,
+                          "goodStandingInd":"Y",
+                          "birthdate":null
+                        },
+                        "addresses":null,
+                        "contacts":null,
+                        "doingBusinessAs":null
+                      }"""))
                   .withHeader("Content-Type", equalTo("application/json"))
           );
 
@@ -224,30 +230,30 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .assertNext(clientDetailsDto -> {
               assertThat(clientDetailsDto)
                   .extracting(
-                      ForestClientDetailsDto::clientNumber,
-                      ForestClientDetailsDto::clientName,
-                      ForestClientDetailsDto::clientStatusCode,
-                      ForestClientDetailsDto::clientStatusDesc,
-                      ForestClientDetailsDto::clientTypeCode,
-                      ForestClientDetailsDto::clientTypeDesc,
-                      ForestClientDetailsDto::registryCompanyTypeCode,
-                      ForestClientDetailsDto::corpRegnNmbr,
-                      ForestClientDetailsDto::wcbFirmNumber,
-                      ForestClientDetailsDto::clientComment,
-                      ForestClientDetailsDto::goodStandingInd
+                      forestClientDetailsDto -> forestClientDetailsDto.client().clientNumber(),
+                      forestClientDetailsDto -> forestClientDetailsDto.client().clientName(),
+                      forestClientDetailsDto -> forestClientDetailsDto.client().clientStatusCode(),
+                      forestClientDetailsDto -> forestClientDetailsDto.client().clientStatusDesc(),
+                      forestClientDetailsDto -> forestClientDetailsDto.client().clientTypeCode(),
+                      forestClientDetailsDto -> forestClientDetailsDto.client().clientTypeDesc(),
+                      forestClientDetailsDto -> forestClientDetailsDto.client().registryCompanyTypeCode(),
+                      forestClientDetailsDto -> forestClientDetailsDto.client().corpRegnNmbr(),
+                      forestClientDetailsDto -> forestClientDetailsDto.client().wcbFirmNumber(),
+                      forestClientDetailsDto -> forestClientDetailsDto.client().clientComment(),
+                      forestClientDetailsDto -> forestClientDetailsDto.client().goodStandingInd()
                   )
                   .containsExactly(
-                      expectedDto.clientNumber(),
-                      expectedDto.clientName(),
-                      expectedDto.clientStatusCode(),
-                      expectedDto.clientStatusDesc(),
-                      expectedDto.clientTypeCode(),
-                      expectedDto.clientTypeDesc(),
-                      expectedDto.registryCompanyTypeCode(),
-                      expectedDto.corpRegnNmbr(),
-                      expectedDto.wcbFirmNumber(),
-                      expectedDto.clientComment(),
-                      expectedDto.goodStandingInd()
+                      expectedDto.client().clientNumber(),
+                      expectedDto.client().clientName(),
+                      expectedDto.client().clientStatusCode(),
+                      expectedDto.client().clientStatusDesc(),
+                      expectedDto.client().clientTypeCode(),
+                      expectedDto.client().clientTypeDesc(),
+                      expectedDto.client().registryCompanyTypeCode(),
+                      expectedDto.client().corpRegnNmbr(),
+                      expectedDto.client().wcbFirmNumber(),
+                      expectedDto.client().clientComment(),
+                      expectedDto.client().goodStandingInd()
                   );
           })
           .verifyComplete();
