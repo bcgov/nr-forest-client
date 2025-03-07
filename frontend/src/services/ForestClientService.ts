@@ -112,7 +112,7 @@ export const getFormattedHtml = ((value: string) => {
 });
 
 export const highlightMatch = (itemName: string, searchTerm: string): string => {
-  const trimmedSearchTerm = searchTerm.trim();
+  const trimmedSearchTerm = searchTerm?.trim();
   if (!trimmedSearchTerm) return itemName;
 
   // Escape special characters in the search term
