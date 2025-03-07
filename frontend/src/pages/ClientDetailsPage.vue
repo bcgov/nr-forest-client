@@ -471,13 +471,13 @@ const adjustPatchPath = (rawPatchData: jsonpatch.Operation[], prefix: string) =>
   return patchData;
 };
 
-const addPatch = <T>(value: T, path: string) => {
+const createAddPatch = <T>(value: T, path: string) => {
   const patch: jsonpatch.AddOperation<T> = {
     op: "add",
     path,
     value,
   };
-  return patch;
+  return [patch];
 };
 
 const saveLocation =
@@ -488,7 +488,7 @@ const saveLocation =
     const isNew = updatedLocation.clientLocnCode === newLocation.value?.clientLocnCode;
 
     const patchData = isNew
-      ? addPatch(updatedLocation, "/addresses/null")
+      ? createAddPatch(updatedLocation, "/addresses/null")
       : adjustPatchPath(rawPatchData, `/addresses/${locationCode}`);
 
     const updatedTitle = formatLocation(updatedLocation);
