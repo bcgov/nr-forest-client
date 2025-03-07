@@ -5,7 +5,7 @@ import type {
   CodeDescrType,
   CodeNameType,
   FieldAction,
-  FieldUpdateReason,
+  FieldReason,
   UserRole,
 } from "@/dto/CommonTypesDto";
 import { isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
@@ -241,29 +241,73 @@ const statusTransitionMap = new Map<string, string>([
   ['SPN-REC', '']       // Suspended → Receivership (No reason needed)
 ]);
 
+/**
+ * Extracts the last segment of the path which corresponds to the specific field name.
+ *
+ * @param path
+ * @returns string
+ */
+export const extractFieldName = (path: string): string => {
+  const fieldName = path.split("/").slice(-1)[0];
+  return fieldName;
+};
+
+/**
+ * Extracts the field path to be sent in the reason patch.
+ * It might be a specific field or the parent field where the change occurred.
+ *
+ * @param path
+ * @returns string
+ */
+export const extractActionField = (path: string): string => {
+  const fieldName = extractFieldName(path);
+
+  if (path.startsWith("/addresses")) {
+    // Should return something like "/addresses/00"
+    const fieldKey = path.split(`/${fieldName}`)[0];
+    return fieldKey;
+  }
+
+  return fieldName;
+};
+
 // Function to extract required reason fields from patch data
 export const extractReasonFields = (
   patchData: jsonpatch.Operation[],
   originalData: ClientDetails,
 ): FieldAction[] => {
-  return patchData
-    .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
-    .map((patch) => {
-      const field = patch.path.replace('/', '');
+  const reasonActions: Record<string, FieldAction> = {};
+  patchData
+    .filter(
+      (patch) => patch.op === "replace" && reasonRequiredFields.has(extractFieldName(patch.path)),
+    )
+    .forEach((patch) => {
+      const actionField = extractActionField(patch.path);
+
+      if (reasonActions[actionField]) {
+        // If the field corresponds to a "group change", like an address, we only need it once.
+        return;
+      }
+
+      const fieldName = extractFieldName(patch.path);
+
       let action = '';
 
-      if (field === 'clientStatusCode') {
+      if (fieldName === 'clientStatusCode') {
         const oldValue = originalData.clientStatusCode;
         const newValue = patch.value;
         const transitionKey = `${oldValue}-${newValue}`;
         action = statusTransitionMap.get(transitionKey) || '';
       } else {
-        action = fieldActionMap.get(field) || '';
+        action = fieldActionMap.get(fieldName) || '';
       }
 
-      return action ? { field, action } : null; 
-    })
-    .filter(Boolean);
+      if (action) {
+        reasonActions[actionField] = { field: actionField, action };
+      }
+    });
+
+  return Object.values(reasonActions);
 };
 
 export const getAction = (path: string, oldValue?: string, newValue?: string) => {
@@ -327,15 +371,15 @@ export const updateSelectedReason = (
   selectedOption: CodeNameType,
   index: number,
   patch: jsonpatch.Operation,
-  selectedReasons: FieldUpdateReason[],
+  selectedReasons: FieldReason[],
 ): void => {
   if (selectedOption) {
     selectedReasons[index] = {
-      field: patch.path.replace("/", ""),
+      field: extractFieldName(patch.path),
       reason: selectedOption.code,
     };
   } else {
-    selectedReasons[index] = { field: patch.path.replace("/", ""), reason: "" };
+    selectedReasons[index] = { field: extractFieldName(patch.path), reason: "" };
   }
 };
 

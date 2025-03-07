@@ -1,16 +1,5 @@
 package ca.bc.gov.app.service.client;
 
-import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
-import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.List;
-import org.junit.jupiter.api.DisplayName;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.junit.jupiter.api.Test;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAlternateNameDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
@@ -20,9 +9,20 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficerDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryRoleDto;
+import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
+import ca.bc.gov.app.dto.legacy.ForestClientLocationDetailsDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -396,7 +396,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         null,
         null,
         List.of(
-            new ForestClientLocationDto(
+            new ForestClientLocationDetailsDto(
                 clientNumber,
                 "00",
                 "Location",
@@ -405,20 +405,17 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
                 null,
                 "City",
                 "BC",
-                "A1B2C3",
+                "British Columbia",
+                "CA",
                 "Canada",
+                "A1B2C3",
                 "1234567890",
                 "0987654321",
                 "1234567890",
                 "0987654321",
                 "mail@notme.ca",
                 "N",
-                null,
-                null,
-                null,
-                "Admin",
-                "Admin",
-                70L
+                null
             )
         ),
         List.of(

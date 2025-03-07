@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
-import type { ClientLocation, UserRole } from "@/dto/CommonTypesDto";
+import type { ActionWords, ClientLocation, UserRole } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
 import {
   formatPhoneNumber,
@@ -42,6 +42,7 @@ const emit = defineEmits<{
     action: Action,
   ): void;
   (e: "canceled"): void;
+  (e: "updateLocationName", value: "string"): void;
 }>();
 
 const indexString = props.data.clientLocnCode;
@@ -115,7 +116,7 @@ defineExpose({
 
 const save = (
   newData: ClientLocation,
-  action: Action = {
+  action: ActionWords = {
     infinitive: "update",
     pastParticiple: "updated",
   },
@@ -303,6 +304,7 @@ const valid = ref(false);
         @remove-additional-delivery="handleRemoveAdditionalDelivery"
         @valid="valid = $event"
         @update:model-value="revalidate = !revalidate"
+        @update-location-name="emit('updateLocationName', $event)"
       />
       <div class="form-group-buttons form-group-buttons--stretched">
         <cds-button
