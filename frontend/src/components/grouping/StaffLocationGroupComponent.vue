@@ -172,14 +172,7 @@ const postalCodePlaceholder = computed(() => {
   }
 });
 
-const postalCodeNumeric = computed<boolean>(() => {
-  switch (selectedValue.country.value) {
-    case "CA":
-      return false;
-    default:
-      return true;
-  }
-});
+const postalCodeNumeric = computed<boolean>(() => selectedValue.country.value !== "CA");
 
 const provinceNaming = computed(() => {
   switch (selectedValue.country.value) {

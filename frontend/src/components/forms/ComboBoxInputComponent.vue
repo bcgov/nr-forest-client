@@ -6,8 +6,7 @@ import type { CDSComboBox } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
-import type { CodeNameType } from "@/dto/CommonTypesDto";
-import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
+import { isEmpty, type CodeNameType, type ValidationMessageType } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
 const props = defineProps<{
