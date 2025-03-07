@@ -182,7 +182,10 @@ watch(sortedLocations, (value) => {
 });
 
 const formatLocation = (location: ClientLocation) => {
-  const parts = [location.clientLocnCode];
+  if (location === newLocation.value && !locationsState[location.clientLocnCode].name) {
+    return "New location";
+  }
+  const parts = location === newLocation.value ? [] : [location.clientLocnCode];
   const locationName = locationsState[location.clientLocnCode].name;
   if (locationName) {
     parts.push(locationName);
@@ -221,16 +224,11 @@ const associatedLocationsRecord = computed(() => {
   return result;
 });
 
+const NEW_IDENTIFIER = "new";
+
 const addLocation = () => {
-  let codeNumber = 0;
-  const index = sortedLocations.value.length;
-  if (index > 0) {
-    const lastCode = sortedLocations.value?.slice(-1)[0]?.clientLocnCode;
-    if (lastCode) {
-      codeNumber = Number(lastCode) + 1;
-    }
-  }
-  const codeString = formatCount(codeNumber);
+  const codeString = NEW_IDENTIFIER;
+  const index = NEW_IDENTIFIER;
   newLocation.value = createClientLocation(clientNumber, codeString);
   locationsState[codeString] = createLocationState({ startOpen: true });
   setScrollPoint(`location-${index}-heading`);
@@ -485,10 +483,13 @@ const saveLocation =
   (rawPatchData: jsonpatch.Operation[], updatedLocation: ClientLocation, action: ActionWords) => {
     const locationCode = updatedLocation.clientLocnCode;
 
-    const isNew = updatedLocation.clientLocnCode === newLocation.value?.clientLocnCode;
+    const isNew = updatedLocation.clientLocnCode === NEW_IDENTIFIER;
+
+    // Removes the location code from the new data it is a bogus value.
+    const { clientLocnCode, ...newLocationData } = updatedLocation;
 
     const patchData = isNew
-      ? createAddPatch(updatedLocation, "/addresses/null")
+      ? createAddPatch(newLocationData, "/addresses/null")
       : adjustPatchPath(rawPatchData, `/addresses/${locationCode}`);
 
     const updatedTitle = formatLocation(updatedLocation);
@@ -514,8 +515,10 @@ const saveLocation =
       fetchClientData().asyncResponse.then(() => {
         locationsState[locationCode].isReloading = false;
 
-        // Reset the newLocation variable
-        newLocation.value = undefined;
+        if (isNew) {
+          // Reset the newLocation variable
+          newLocation.value = undefined;
+        }
       });
     };
 

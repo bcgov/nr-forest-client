@@ -44,7 +44,7 @@ export const addNewContact = (contacts: Contact[]): number => {
 
 export const getAddressDescription = (
   address: Address,
-  index: number,
+  index: number | string,
   entityName = "Address",
 ): string => (address.locationName.length !== 0 ? address.locationName : `${entityName} #` + index);
 
@@ -411,7 +411,7 @@ export const locationToCreateFormat = (location: ClientLocation): Address => {
     faxNumber: formatPhoneNumber(location.faxNumber),
     emailAddress: location.emailAddress,
     notes: location.cliLocnComment,
-    index: Number(location.clientLocnCode),
+    index: Number(location.clientLocnCode) || location.clientLocnCode,
     locationName: location.clientLocnName,
   };
   return address;
@@ -434,7 +434,8 @@ export const locationToEditFormat = (
   const location: ClientLocation = {
     ...baseLocation,
     clientLocnName: address.locationName,
-    clientLocnCode: String(address.index).padStart(2, "0"),
+    clientLocnCode:
+      typeof address.index === "string" ? address.index : String(address.index).padStart(2, "0"),
     addressOne: address.streetAddress,
     addressTwo: address.complementaryAddressOne,
     addressThree: address.complementaryAddressTwo,
