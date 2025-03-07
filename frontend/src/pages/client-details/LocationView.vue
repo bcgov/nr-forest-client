@@ -47,11 +47,13 @@ const emit = defineEmits<{
 
 const indexString = props.data.clientLocnCode;
 
+const indexNumber = Number(indexString);
+
 /* 
 If possible, converts the code into a number.
 Otherwise uses the code as it is.
 */
-const index = Number(indexString) || indexString;
+const index = isNaN(indexNumber) ? indexString : indexNumber;
 
 const businessPhone = computed(() => formatPhoneNumber(props.data.businessPhone));
 const cellPhone = computed(() => formatPhoneNumber(props.data.cellPhone));

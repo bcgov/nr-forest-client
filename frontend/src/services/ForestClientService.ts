@@ -391,6 +391,14 @@ export const updateSelectedReason = (
  * @returns Address data
  */
 export const locationToCreateFormat = (location: ClientLocation): Address => {
+  const indexNumber = Number(location.clientLocnCode);
+
+  /* 
+  If possible, converts the code into a number.
+  Otherwise uses the code as it is.
+  */
+  const index = isNaN(indexNumber) ? location.clientLocnCode : indexNumber;
+
   const address: Address = {
     streetAddress: location.addressOne,
     complementaryAddressOne: location.addressTwo,
@@ -411,7 +419,7 @@ export const locationToCreateFormat = (location: ClientLocation): Address => {
     faxNumber: formatPhoneNumber(location.faxNumber),
     emailAddress: location.emailAddress,
     notes: location.cliLocnComment,
-    index: Number(location.clientLocnCode) || location.clientLocnCode,
+    index,
     locationName: location.clientLocnName,
   };
   return address;
