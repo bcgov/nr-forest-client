@@ -6,6 +6,10 @@ import { useEventBus } from "@vueuse/core";
 
 describe("<LocationsWizardStep />", () => {
   beforeEach(() => {
+    cy.intercept("GET", "/api/codes/countries?page=0&size=250", {
+      fixture: "countries.json",
+    });
+
     cy.intercept("GET", `/api/addresses?country=CA&maxSuggestions=10&searchTerm=*`, {
       fixture: "addressSearch.json",
     });
@@ -13,7 +17,6 @@ describe("<LocationsWizardStep />", () => {
     cy.intercept("GET", "/api/codes/countries/CA/provinces?page=0&size=250", {
       fixture: "provinces.json",
     });
-  
   });
 
   it("renders the LocationsWizardStep component", () => {
@@ -36,7 +39,7 @@ describe("<LocationsWizardStep />", () => {
             contacts: [],
           },
         } as FormDataDto,
-        active: false,
+        active: true,
       },
     });
 
@@ -75,7 +78,7 @@ describe("<LocationsWizardStep />", () => {
               contacts: [],
             },
           } as FormDataDto,
-          active: false,
+          active: true,
         },
       });
     });
@@ -218,7 +221,7 @@ describe("<LocationsWizardStep />", () => {
               contacts: [],
             },
           } as FormDataDto,
-          active: false,
+          active: true,
         },
       })
         .its("wrapper")
@@ -297,7 +300,7 @@ describe("<LocationsWizardStep />", () => {
             contacts: [],
           },
         } as FormDataDto,
-        active: false,
+        active: true,
       },
     });
 
@@ -341,7 +344,7 @@ describe("<LocationsWizardStep />", () => {
             contacts: [],
           },
         } as FormDataDto,
-        active: false,
+        active: true,
       },
     });
 
@@ -371,7 +374,7 @@ describe("<LocationsWizardStep />", () => {
             contacts: [],
           },
         } as FormDataDto,
-        active: false,
+        active: true,
         maxLocations,
       },
     });

@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
-import type { ActionWords, ClientLocation, UserRole } from "@/dto/CommonTypesDto";
+import type {
+  ActionWords,
+  ClientLocation,
+  ModalNotification,
+  UserRole,
+} from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
 import {
   formatPhoneNumber,
@@ -19,6 +24,7 @@ import Undefined16 from "@carbon/icons-vue/es/undefined/16";
 import Renew16 from "@carbon/icons-vue/es/renew/16";
 
 import { useFetchTo } from "@/composables/useFetch";
+import { useEventBus } from "@vueuse/core";
 
 const props = defineProps<{
   data: ClientLocation;
@@ -165,6 +171,32 @@ const canEdit = computed(() =>
 );
 
 const valid = ref(false);
+
+// Defining the event bus to send notifications up
+const bus = useEventBus<ModalNotification>("modal-notification");
+
+const removeAdditionalDelivery = () => {
+  formAddressData.value.complementaryAddressTwo = null;
+  bus.emit({
+    active: false,
+    message: "",
+    kind: "",
+    toastTitle: "",
+    handler: () => {},
+  });
+};
+
+const handleRemoveAdditionalDelivery = () => {
+  const selectedDeliveryInformation = formAddressData.value.complementaryAddressTwo;
+  bus.emit({
+    name: selectedDeliveryInformation,
+    toastTitle: "Success",
+    kind: "delivery information",
+    message: `“${selectedDeliveryInformation}” additional delivery information was deleted`,
+    handler: removeAdditionalDelivery,
+    active: true,
+  });
+};
 </script>
 
 <template>

@@ -112,11 +112,11 @@ export const getFormattedHtml = ((value: string) => {
 });
 
 export const highlightMatch = (itemName: string, searchTerm: string): string => {
-  const trimmedSearchTerm = searchTerm.trim();
+  const trimmedSearchTerm = searchTerm?.trim();
   if (!trimmedSearchTerm) return itemName;
 
   // Escape special characters in the search term
-  const escapedSearchTerm = trimmedSearchTerm.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const escapedSearchTerm = trimmedSearchTerm.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
   const regex = new RegExp(`(${escapedSearchTerm})`, 'i');
   const parts = itemName.split(regex);
 
@@ -350,7 +350,7 @@ export const getOldValue = (path: string, data: Ref<ClientDetails> | ClientDetai
     return clientData[fieldName as keyof ClientDetails] || "N/A";
   }
 
-  for (const [key, value] of Object.entries(clientData)) {
+  for (const [, value] of Object.entries(clientData)) {
     if (Array.isArray(value)) {
       for (const item of value) {
         if (fieldName in item) {

@@ -62,7 +62,7 @@ describe("ComboBoxInputComponent", () => {
     await dropdown.trigger("cds-combo-box-selected", eventContent("Value A"));
 
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
-    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("Value A");
+    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("A");
 
     expect(wrapper.emitted("update:selectedValue")).toBeTruthy();
     expect(wrapper.emitted("update:selectedValue")![0][0]).toStrictEqual({
@@ -119,7 +119,7 @@ describe("ComboBoxInputComponent", () => {
     await wrapper.trigger("click");
 
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
-    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("Value A");
+    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("A");
 
     expect(wrapper.emitted("update:selectedValue")).toBeTruthy();
     expect(wrapper.emitted("update:selectedValue")![0][0]).toStrictEqual({
@@ -149,7 +149,7 @@ describe("ComboBoxInputComponent", () => {
     await wrapper.setProps({ initialValue: "Value A" });
 
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
-    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("Value A");
+    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("A");
 
     expect(wrapper.emitted("update:selectedValue")).toBeTruthy();
     expect(wrapper.emitted("update:selectedValue")![0][0]).toStrictEqual({
@@ -178,7 +178,7 @@ describe("ComboBoxInputComponent", () => {
     await wrapper.setProps({ initialValue: "Value B" });
 
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
-    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("Value B");
+    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("B");
 
     expect(wrapper.emitted("update:selectedValue")).toBeTruthy();
     expect(wrapper.emitted("update:selectedValue")![0][0]).toStrictEqual({
@@ -235,7 +235,7 @@ describe("ComboBoxInputComponent", () => {
     await dropdown.trigger("cds-combo-box-selected", eventContent("Value B"));
 
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
-    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("Value B");
+    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("B");
 
     expect(wrapper.emitted("update:selectedValue")).toBeTruthy();
     expect(wrapper.emitted("update:selectedValue")![0][0]).toStrictEqual({
@@ -267,7 +267,7 @@ describe("ComboBoxInputComponent", () => {
     await dropdown.trigger("cds-combo-box-selected", eventContent("Value A"));
 
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
-    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("Value A");
+    expect(wrapper.emitted("update:modelValue")![0][0]).toBe("A");
 
     expect(wrapper.emitted("update:selectedValue")).toBeTruthy();
     expect(wrapper.emitted("update:selectedValue")![0][0]).toStrictEqual({
