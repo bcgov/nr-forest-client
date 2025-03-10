@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { AxiosError } from "axios";
 import * as jsonpatch from "fast-json-patch";
 
@@ -36,23 +36,24 @@ import {
   includesAnyOf,
   toTitleCase,
   getActionLabel,
-  reasonRequiredFields,
-  updateSelectedReason
+  updateSelectedReason,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
 import type {
   ClientDetails,
   ClientLocation,
-  FieldUpdateReason,
   ModalNotification,
+  FieldReason,
+  UserRole,
+  ActionWords,
 } from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
-import { isNotEmpty } from "@/helpers/validators/GlobalValidators";
+import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 
 // Route related
 const router = useRouter();
@@ -63,7 +64,7 @@ const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const data = ref<ClientDetails>(undefined);
 
-const userRoles = ForestClientUserSession.authorities;
+const userRoles = ForestClientUserSession.authorities as UserRole[];
 
 const userHasAuthority = includesAnyOf(userRoles, [
   "CLIENT_ADMIN",
@@ -101,8 +102,8 @@ const formatCount = (count = 0) => {
 };
 
 const formatAddress = (location: ClientLocation) => {
-  const { addressOne, city, province, country, postalCode } = location;
-  const list = [addressOne, city, province, country, postalCode];
+  const { addressOne, city, provinceCode, countryDesc, postalCode } = location;
+  const list = [addressOne, city, provinceCode, countryDesc, postalCode];
   return list.join(", ");
 };
 
@@ -124,17 +125,53 @@ const compareString = (a: string, b: string) => {
 };
 
 const sortedLocations = computed(() =>
-  data.value.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
+  data.value?.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
 );
 
+interface LocationState {
+  isReloading?: boolean;
+  name: string;
+}
+
+const createLocationState = (locationState?: Partial<LocationState>): LocationState => ({
+  isReloading: false,
+  name: "",
+  ...locationState,
+});
+
+const locationsState = reactive<Record<string, LocationState>>({});
+
+watch(sortedLocations, () => {
+  sortedLocations.value?.forEach((location) => {
+    const locationCode = location.clientLocnCode;
+    if (!locationsState[locationCode]) {
+      locationsState[locationCode] = createLocationState({
+        name: location.clientLocnName,
+      });
+    }
+  });
+});
+
 const sortedContacts = computed(() =>
-  data.value.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
+  data.value?.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
 );
+
+const uniqueLocations = isUniqueDescriptive();
+
+watch(sortedLocations, (value) => {
+  if (value?.length) {
+    value.forEach((location) => {
+      const index = String(Number(location.clientLocnCode));
+      uniqueLocations.add("Names", index)(location.clientLocnName);
+    });
+  }
+});
 
 const formatLocation = (location: ClientLocation) => {
   const parts = [location.clientLocnCode];
-  if (location.clientLocnName) {
-    parts.push(location.clientLocnName);
+  const locationName = locationsState[location.clientLocnCode].name;
+  if (locationName) {
+    parts.push(locationName);
   }
 
   const title = parts.join(" - ");
@@ -144,7 +181,7 @@ const formatLocation = (location: ClientLocation) => {
 
 const formatLocationsList = (
   locationCodes: string[],
-  allLocations: ClientLocation[] = data.value.addresses,
+  allLocations: ClientLocation[] = sortedLocations.value,
 ) => {
   const list: string[] = [];
   if (Array.isArray(locationCodes)) {
@@ -153,8 +190,10 @@ const formatLocationsList = (
         (curLocation) => curLocation.clientLocnCode === curLocationCode,
       );
 
-      const title = formatLocation(location);
-      list.push(title);
+      if (location) {
+        const title = formatLocation(location);
+        list.push(title);
+      }
     }
   }
   return list.join(", ");
@@ -167,6 +206,15 @@ const associatedLocationsRecord = computed(() => {
   });
   return result;
 });
+
+const handleLocationCanceled = (location: ClientLocation) => {
+  // reset to the original value
+  locationsState[location.clientLocnCode].name = location.clientLocnName;
+};
+
+const updateLocationName = (locationName: string, locationCode: string) => {
+  locationsState[locationCode].name = locationName;
+};
 
 const openRelatedClientsLegacy = () => {
   const url = `https://${greenDomain}/int/client/client04RelatedClientListAction.do?bean.clientNumber=${clientNumber}`;
@@ -185,15 +233,19 @@ const summaryRef = ref<InstanceType<typeof SummaryView> | null>(null);
 
 const reasonModalActiveInd = ref(false);
 
-type ReasonPatch = jsonpatch.Operation & {
+type ReasonPatch = jsonpatch.AddOperation<FieldReason> & {
   action: string;
-  reason?: string;
 };
 
+type OnSuccess = (response: any) => void;
+type OnFailure = (error: AxiosError) => void;
+
 const reasonPatchData = ref<ReasonPatch[]>([]);
-let originalPatchData: jsonpatch.Operation[] = []; 
+let originalPatchData: jsonpatch.Operation[] = [];
 const finalPatchData = ref<jsonpatch.Operation[]>([]);
-const selectedReasons = ref<FieldUpdateReason[]>([]);
+const onSuccessPatch = ref<(response: any) => void>();
+const onFailurePatch = ref<(error: AxiosError) => void>();
+const selectedReasons = ref<FieldReason[]>([]);
 const saveDisabled = ref(false);
 const isSaveFirstClick = ref(false);
 
@@ -258,35 +310,23 @@ const confirmReasons = () => {
   }
 
   // Continue with the patch process
-  const updatedPatchData = [...reasonPatchData.value];
-
-  updatedPatchData.forEach((patch, index) => {
+  reasonPatchData.value.forEach((patch, index) => {
     const reasonEntry = selectedReasons.value[index];
     if (reasonEntry) {
-      patch.reason = reasonEntry.reason;
+      patch.value.reason = reasonEntry.reason;
     }
   });
 
   reasonModalActiveInd.value = false;
-  sendPatchRequest(updatedPatchData);
+  sendPatchRequest(reasonPatchData.value);
 };
 
-const sendPatchRequest = (reasonUpdatedPatchData: ReasonPatch[]) => {
-  const reasonChanges: jsonpatch.Operation[] = reasonUpdatedPatchData.flatMap((patch, index) => {
-    return patch.reason
-      ? [
-          {
-            op: "add",
-            path: `/reasons/${index}/field`,
-            value: patch.path.replace("/", "")
-          },
-          {
-            op: "add",
-            path: `/reasons/${index}/reason`,
-            value: patch.reason
-          }
-        ]
-      : [];
+const sendPatchRequest = (reasonPatchData: ReasonPatch[]) => {
+  const reasonChanges: jsonpatch.Operation[] = reasonPatchData.map((patch) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { action, ...operation } = patch;
+
+    return operation;
   });
 
   finalPatchData.value = [...originalPatchData, ...reasonChanges];
@@ -300,35 +340,20 @@ const sendPatchRequest = (reasonUpdatedPatchData: ReasonPatch[]) => {
 
   patch().then(() => {
     if (response.value.status) {
-      const toastNotification: ModalNotification = {
-        kind: "Success",
-        active: true,
-        handler: () => {},
-        message: `Client <span class="weight-700">“${clientFullName.value}”</span> was updated`,
-        toastTitle: undefined,
-      };
-      toastBus.emit(toastNotification);
-      summaryRef.value.lockEditing();
-      data.value = undefined;
-      fetchClientData();
+      onSuccessPatch.value(response.value);
     }
     if (error.value.status) {
-      const toastNotification: ModalNotification = {
-        kind: "Error",
-        active: true,
-        handler: () => {},
-        message: "Failed to update client",
-        toastTitle: undefined,
-      };
-      toastBus.emit(toastNotification);
-      globalError.value = error.value;
+      onFailurePatch.value(error.value);
     }
   });
 };
 
-// Function to save
-const saveSummary = (patchData: jsonpatch.Operation[]) => {
-  //Reset values
+const handlePatch = (
+  patchData: jsonpatch.Operation[],
+  onSuccess: OnSuccess,
+  onFailure: OnFailure,
+) => {
+  // Reset values
   selectedReasons.value = [];
   saveDisabled.value = false;
 
@@ -338,15 +363,20 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
   // Initializes the validations array
   reasonCodesValidations.value = Array(reasonFields.length).fill(false);
 
-  if (reasonFields.length > 0) {
-    reasonPatchData.value = patchData
-      .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
-      .map((patch) => {
-        const field = patch.path.replace('/', '');
-        const reasonEntry = reasonFields.find((r) => r.field === field);
+  // Store on global variables to use later
+  onSuccessPatch.value = onSuccess;
+  onFailurePatch.value = onFailure;
 
-        return { ...patch, action: reasonEntry?.action || '' };
-      });
+  if (reasonFields.length > 0) {
+    reasonPatchData.value = reasonFields.map((item, index) => ({
+      op: "add",
+      path: `/reasons/${index}`,
+      value: {
+        field: item.field,
+        reason: "", // To be selected later
+      },
+      action: item.action,
+    }));
 
     // Prevents focusing input field on the modal
     setTimeout(() => {
@@ -355,11 +385,98 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
 
     isSaveFirstClick.value = true;
   } else {
-    sendPatchRequest(patchData);
+    reasonPatchData.value = [];
+    sendPatchRequest([]); // No reasons required
   }
 
   resetGlobalError();
 };
+
+// Function to save
+const saveSummary = (patchData: jsonpatch.Operation[]) => {
+  const onSuccess: OnSuccess = () => {
+    const toastNotification: ModalNotification = {
+      kind: "Success",
+      active: true,
+      handler: () => {},
+      message: `Client <span class="weight-700">“${clientFullName.value}”</span> was updated`,
+      toastTitle: undefined,
+    };
+    toastBus.emit(toastNotification);
+    summaryRef.value.lockEditing();
+    data.value = undefined;
+    fetchClientData();
+  };
+
+  const onFailure: OnFailure = (error) => {
+    const toastNotification: ModalNotification = {
+      kind: "Error",
+      active: true,
+      handler: () => {},
+      message: "Failed to update client",
+      toastTitle: undefined,
+    };
+    toastBus.emit(toastNotification);
+    globalError.value = error;
+  };
+  handlePatch(patchData, onSuccess, onFailure);
+};
+
+const locationsRef = ref<InstanceType<typeof LocationView>[]>([]);
+
+const setLocationRef = (index: number) => (el: InstanceType<typeof LocationView>) => {
+  locationsRef.value[index] = el;
+};
+
+const saveLocation =
+  (index: number) =>
+  (rawPatchData: jsonpatch.Operation[], updatedLocation: ClientLocation, action: ActionWords) => {
+    const locationCode = updatedLocation.clientLocnCode;
+
+    const patchData = rawPatchData.map((item) => ({
+      ...item,
+      path: `/addresses/${locationCode}${item.path}`,
+    }));
+
+    const updatedTitle = formatLocation(updatedLocation);
+
+    const onSuccess: OnSuccess = () => {
+      const toastNotification: ModalNotification = {
+        kind: "Success",
+        active: true,
+        handler: () => {},
+        message: `Location <span class="weight-700">“${updatedTitle}”</span> was ${action.pastParticiple}`,
+        toastTitle: undefined,
+      };
+      toastBus.emit(toastNotification);
+
+      locationsRef.value[index].lockEditing();
+
+      if (!locationsState[locationCode]) {
+        locationsState[locationCode] = createLocationState();
+      }
+
+      locationsState[locationCode].isReloading = true;
+
+      fetchClientData().asyncResponse.then(() => {
+        locationsState[locationCode].isReloading = false;
+      });
+    };
+
+    const onFailure: OnFailure = (error) => {
+      const toastNotification: ModalNotification = {
+        kind: "Error",
+        active: true,
+        handler: () => {},
+        message: `Failed to ${action.infinitive} location`,
+        toastTitle: undefined,
+      };
+      toastBus.emit(toastNotification);
+      globalError.value = error;
+    };
+
+    handlePatch(patchData, onSuccess, onFailure);
+  };
 
 const globalError = ref();
 
@@ -486,8 +603,12 @@ resetGlobalError();
             :key="location.clientLocnCode"
             :id="`location-${location.clientLocnCode}`"
           >
-            <cds-accordion-item size="lg" class="grouping-13">
-              <div slot="title" class="flex-column-0_25rem">
+            <cds-accordion-item size="lg" class="grouping-13" v-shadow="1">
+              <div
+                slot="title"
+                class="flex-column-0_25rem"
+                :class="{ invisible: locationsState[location.clientLocnCode]?.isReloading }"
+              >
                 <span class="label-with-icon">
                   <LocationStar20 v-if="index === 0" />
                   <Location20 v-else />
@@ -508,7 +629,17 @@ resetGlobalError();
                   {{ formatAddress(location) }}
                 </span>
               </div>
-              <location-view :data="location" />
+              <location-view
+                :ref="setLocationRef(index)"
+                :data="location"
+                :is-reloading="locationsState[location.clientLocnCode]?.isReloading"
+                :user-roles="userRoles"
+                :validations="[uniqueLocations.check]"
+                keep-scroll-bottom-position
+                @update-location-name="updateLocationName($event, location.clientLocnCode)"
+                @save="(...args) => saveLocation(index)(...args)"
+                @canceled="handleLocationCanceled(location)"
+              />
             </cds-accordion-item>
           </cds-accordion>
         </div>

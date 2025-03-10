@@ -235,6 +235,9 @@
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
         <version>2.3.4</version>
+        <groupId>com.oracle.database.jdbc</groupId>
+        <artifactId>ojdbc11</artifactId>
+        <version>21.9.0.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
