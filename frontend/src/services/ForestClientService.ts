@@ -1,10 +1,11 @@
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
 import type {
   ClientDetails,
+  ClientLocation,
   CodeDescrType,
   CodeNameType,
   FieldAction,
-  FieldUpdateReason,
+  FieldReason,
   UserRole,
 } from "@/dto/CommonTypesDto";
 import { isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
@@ -111,11 +112,11 @@ export const getFormattedHtml = ((value: string) => {
 });
 
 export const highlightMatch = (itemName: string, searchTerm: string): string => {
-  const trimmedSearchTerm = searchTerm.trim();
+  const trimmedSearchTerm = searchTerm?.trim();
   if (!trimmedSearchTerm) return itemName;
 
   // Escape special characters in the search term
-  const escapedSearchTerm = trimmedSearchTerm.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const escapedSearchTerm = trimmedSearchTerm.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
   const regex = new RegExp(`(${escapedSearchTerm})`, 'i');
   const parts = itemName.split(regex);
 
@@ -160,6 +161,11 @@ export const formatPhoneNumber = (phoneNumber: string): string => {
   const part3 = phoneNumber.slice(6);
 
   return `(${part1}) ${part2}-${part3}`;
+};
+
+export const keepOnlyNumbersAndLetters = (input: string): string => {
+  const result = input.replaceAll(/[^A-Za-z0-9]/g, "");
+  return result;
 };
 
 /**
@@ -235,15 +241,56 @@ const statusTransitionMap = new Map<string, string>([
   ['SPN-REC', '']       // Suspended → Receivership (No reason needed)
 ]);
 
+/**
+ * Extracts the last segment of the path which corresponds to the specific field name.
+ *
+ * @param path
+ * @returns string
+ */
+export const extractFieldName = (path: string): string => {
+  const fieldName = path.split("/").slice(-1)[0];
+  return fieldName;
+};
+
+/**
+ * Extracts the field path to be sent in the reason patch.
+ * It might be a specific field or the parent field where the change occurred.
+ *
+ * @param path
+ * @returns string
+ */
+export const extractActionField = (path: string): string => {
+  const fieldName = extractFieldName(path);
+
+  if (path.startsWith("/addresses")) {
+    // Should return something like "/addresses/00"
+    const fieldKey = path.split(`/${fieldName}`)[0];
+    return fieldKey;
+  }
+
+  return fieldName;
+};
+
 // Function to extract required reason fields from patch data
 export const extractReasonFields = (
   patchData: jsonpatch.Operation[],
   originalData: ClientDetails,
 ): FieldAction[] => {
-  return patchData
-    .filter((patch) => reasonRequiredFields.has(patch.path.replace('/', '')))
-    .map((patch) => {
-      const field = patch.path.replace('/', '');
+  const reasonActions: Record<string, FieldAction> = {};
+  patchData
+    .filter(
+      (patch) => patch.op === "replace" && reasonRequiredFields.has(extractFieldName(patch.path)),
+    )
+    .forEach((patch) => {
+      const actionField = extractActionField(patch.path);
+
+      if (reasonActions[actionField]) {
+        // If the field corresponds to a "group change", like an address, we only need it once.
+        return;
+      }
+
+      const fieldName = extractFieldName(patch.path);
+
       let action = '';
 
       if (fieldName === 'clientStatusCode') {
@@ -252,12 +299,15 @@ export const extractReasonFields = (
         const transitionKey = `${oldValue}-${newValue}`;
         action = statusTransitionMap.get(transitionKey) || '';
       } else {
-        action = fieldActionMap.get(field) || '';
+        action = fieldActionMap.get(fieldName) || '';
       }
 
-      return action ? { field, action } : null; 
-    })
-    .filter(Boolean);
+      if (action) {
+        reasonActions[actionField] = { field: actionField, action };
+      }
+    });
+
+  return Object.values(reasonActions);
 };
 
 export const getAction = (path: string, oldValue?: string, newValue?: string) => {
@@ -300,7 +350,7 @@ export const getOldValue = (path: string, data: Ref<ClientDetails> | ClientDetai
     return clientData[fieldName as keyof ClientDetails] || "N/A";
   }
 
-  for (const [key, value] of Object.entries(clientData)) {
+  for (const [, value] of Object.entries(clientData)) {
     if (Array.isArray(value)) {
       for (const item of value) {
         if (fieldName in item) {
@@ -321,14 +371,106 @@ export const updateSelectedReason = (
   selectedOption: CodeNameType,
   index: number,
   patch: jsonpatch.Operation,
-  selectedReasons: FieldUpdateReason[],
+  selectedReasons: FieldReason[],
 ): void => {
   if (selectedOption) {
     selectedReasons[index] = {
-      field: patch.path.replace("/", ""),
+      field: extractFieldName(patch.path),
       reason: selectedOption.code,
     };
   } else {
-    selectedReasons[index] = { field: patch.path.replace("/", ""), reason: "" };
+    selectedReasons[index] = { field: extractFieldName(patch.path), reason: "" };
   }
+};
+
+/**
+ * Converts location data from ClientLocation format to Address format, as required by the
+ * StaffLocationGroupComponent, first developed for the staff create form.
+ *
+ * @param location - ClientLocation formatted data
+ * @returns Address data
+ */
+export const locationToCreateFormat = (location: ClientLocation): Address => {
+  const address: Address = {
+    streetAddress: location.addressOne,
+    complementaryAddressOne: location.addressTwo,
+    complementaryAddressTwo: location.addressThree,
+    country: {
+      value: location.countryCode,
+      text: location.countryDesc,
+    },
+    province: {
+      value: location.provinceCode,
+      text: location.provinceDesc,
+    },
+    city: location.city,
+    postalCode: location.postalCode,
+    businessPhoneNumber: formatPhoneNumber(location.businessPhone),
+    secondaryPhoneNumber: formatPhoneNumber(location.cellPhone),
+    tertiaryPhoneNumber: formatPhoneNumber(location.homePhone),
+    faxNumber: formatPhoneNumber(location.faxNumber),
+    emailAddress: location.emailAddress,
+    notes: location.cliLocnComment,
+    index: Number(location.clientLocnCode),
+    locationName: location.clientLocnName,
+  };
+  return address;
+};
+
+/**
+ * Converts location data from Address format to ClientLocation format, as required by the Patch
+ * API.
+ * Note: data which don't exist in the Address format can be provided in the baseLocation
+ * parameter.
+ *
+ * @param address - Address formatted data
+ * @param baseLocation - ClientLocation data to fulfill data non-existent in the Address format
+ * @returns ClientLocation data
+ */
+export const locationToEditFormat = (
+  address: Address,
+  baseLocation: ClientLocation,
+): ClientLocation => {
+  const location: ClientLocation = {
+    ...baseLocation,
+    clientLocnName: address.locationName,
+    clientLocnCode: String(address.index).padStart(2, "0"),
+    addressOne: address.streetAddress,
+    addressTwo: address.complementaryAddressOne,
+    addressThree: address.complementaryAddressTwo,
+    city: address.city,
+    provinceCode: address.province.value,
+    provinceDesc: address.province.text,
+    postalCode: address.postalCode,
+    countryCode: address.country.value,
+    countryDesc: address.country.text,
+    businessPhone: keepOnlyNumbersAndLetters(address.businessPhoneNumber),
+    homePhone: keepOnlyNumbersAndLetters(address.tertiaryPhoneNumber),
+    cellPhone: keepOnlyNumbersAndLetters(address.secondaryPhoneNumber),
+    faxNumber: keepOnlyNumbersAndLetters(address.faxNumber),
+    emailAddress: address.emailAddress,
+    cliLocnComment: address.notes,
+  };
+
+  return location;
+};
+
+/**
+ * Keeps the scrollbar at its current bottom position while the supplied promise resolves.
+ *
+ * What does this mean? This function should be used when the content on the viewport is about to
+ * shrink, specially when the user just sees the bottom of such content.
+ * The goal is to make the bottom of such content remain at the same Y position, kind of similarly
+ * to what the overflow-anchor CSS property is able to do while the content grows, so as to avoid
+ * scroll jumping in unexpected ways.
+ *
+ * @param uiUpdatePromise - The promise whose resolution should triggers the scroll fix.
+ */
+export const keepScrollBottomPosition = (uiUpdatePromise: Promise<void>): void => {
+  const app = document.getElementById("app");
+  const lastHeightFromBottom = app.scrollHeight - window.scrollY;
+
+  uiUpdatePromise.then(() => {
+    window.scrollTo({ top: app.scrollHeight - lastHeightFromBottom });
+  });
 };

@@ -63,7 +63,7 @@ describe("<summary-view />", () => {
     if (value !== undefined) {
       cy.get(selector).should("have.value", value);
     }
-  }
+  };
 
   const testTextInput = (rawSelector: string, value?: string) =>
     testInputTag("cds-text-input", rawSelector, value);
@@ -226,7 +226,6 @@ describe("<summary-view />", () => {
       });
 
       it("requests the client statuses according to the client type", () => {
-        cy.log(props.data.client.clientIdTypeCode);
         expect(getClientStatusesRequest.url).to.match(
           new RegExp(`${getClientStatusesBaseUrl}/${props.data.client.clientTypeCode}`),
         );

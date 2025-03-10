@@ -121,7 +121,7 @@ describe("Client Details Page", () => {
   });
 
   const testReadonly = (rawSelector: string, value?: string) => {
-    const selector = `div${rawSelector}`;
+    const selector = `:is(div, span)${rawSelector}`;
     cy.get(selector).should("be.visible");
     if (value !== undefined) {
       cy.get(selector).contains(value);
@@ -268,14 +268,11 @@ describe("Client Details Page", () => {
         
             expect(requestBody).to.deep.include({
               op: "add",
-              path: "/reasons/0/reason",
-              value: "R1",
-            });
-        
-            expect(requestBody).to.deep.include({
-              op: "add",
-              path: "/reasons/0/field",
-              value: "clientStatusCode",
+              path: "/reasons/0",
+              value: {
+                field: "clientStatusCode",
+                reason: "R1",
+              },
             });
           });
         });        
@@ -311,7 +308,7 @@ describe("Client Details Page", () => {
 
         it("displays the location name on the accordion's title", () => {
           cy.get("#location-00 [slot='title']").contains("00 - Mailing address");
-          cy.get("#location-01 [slot='title']").contains("01 - Accountant's address");
+          cy.get("#location-01 [slot='title']").contains("01 - Accountant address");
           cy.get("#location-02 [slot='title']").contains("02 - Warehouse");
         });
 
@@ -322,17 +319,17 @@ describe("Client Details Page", () => {
         });
       });
 
-      describe("2 locations - 1 deactivated and 1 active", () => {
+      describe("2 locations - 1 active and 1 deactivated", () => {
         before(function () {
           init.call(this);
           cy.visit("/clients/details/gd");
         });
-        it("displays the tag Deactivated when location is expired", () => {
-          cy.get("cds-tag#location-00-deactivated").contains("Deactivated");
+        it("doesn't display the tag Deactivated when location is not expired", () => {
+          cy.get("cds-tag#location-00-deactivated").should("not.exist");
         });
 
-        it("doesn't display the tag Deactivated when location is not expired", () => {
-          cy.get("cds-tag#location-01-deactivated").should("not.exist");
+        it("displays the tag Deactivated when location is expired", () => {
+          cy.get("cds-tag#location-01-deactivated").contains("Deactivated");
         });
       });
 
@@ -387,6 +384,195 @@ describe("Client Details Page", () => {
 
         // Third location is still open
         cy.get("#location-02 cds-accordion-item").should("have.attr", "open");
+      });
+    });
+
+    describe("when role:CLIENT_EDITOR", () => {
+      describe("name duplication", () => {
+        beforeEach(() => {
+          cy.visit("/clients/details/g");
+
+          // Clicks to expand the accordion
+          cy.get("#location-00 [slot='title']").click();
+
+          cy.get("#location-00-EditBtn").click();
+
+          cy.clearFormEntry("#name_0");
+
+          // This is the same name of the third location
+          cy.fillFormEntry("#name_0", "Warehouse");
+        });
+
+        it("shows the error on field Location name", () => {
+          cy.checkInputErrorMessage("#name_0", "This value is already in use");
+
+          cy.get("#location-00-SaveBtn").shadow().find("button").should("be.disabled");
+        });
+      });
+      describe("save", () => {
+        describe("on success", { testIsolation: false }, () => {
+          const getClientDetailsCounter = {
+            count: 0,
+          };
+
+          let patchClientDetailsRequest;
+          before(function () {
+            init.call(this);
+
+            cy.intercept(
+              {
+                method: "GET",
+                pathname: "/api/clients/details/*",
+              },
+              (req) => {
+                getClientDetailsCounter.count++;
+                req.continue();
+              },
+            ).as("getClientDetails");
+
+            cy.intercept(
+              {
+                method: "PATCH",
+                pathname: "/api/clients/details/*",
+              },
+              (req) => {
+                patchClientDetailsRequest = req;
+                req.continue();
+              },
+            ).as("patchClientDetails");
+
+            cy.visit("/clients/details/g");
+            cy.wait("@getClientDetails");
+
+            // Clicks to expand the accordion
+            cy.get("#location-00 [slot='title']").click();
+
+            cy.get("#location-00-EditBtn").click();
+            cy.clearFormEntry("#emailAddress_0");
+            cy.get("#location-00-SaveBtn").click();
+            cy.wait("@getClientDetails");
+          });
+
+          it("prefixes the path with the corresponding location code", () => {
+            expect(patchClientDetailsRequest.body[0].path).to.eq("/addresses/00/emailAddress");
+          });
+
+          it("shows the success toast", () => {
+            cy.get("cds-toast-notification[kind='success']").should("be.visible");
+          });
+
+          it("reloads data", () => {
+            // Called twice - one for the initial loading and one after saving.
+            cy.wrap(getClientDetailsCounter).its("count").should("eq", 2);
+          });
+
+          it("gets back into view mode", () => {
+            // Fields that belong to the form (edit mode)
+            testHidden("#city_0");
+            testHidden("#emailAddress_0");
+            testHidden("[data-id='input-notes_0']");
+
+            cy.get("#location-00-SaveBtn").should("not.exist");
+
+            testReadonly("#location-00-city-province");
+            testReadonly("#location-00-emailAddress");
+            testReadonly("#location-00-notes");
+
+            cy.get("#location-00-EditBtn").should("be.visible");
+          });
+        });
+
+        describe("on failure", { testIsolation: false }, () => {
+          before(function () {
+            init.call(this);
+
+            cy.visit("/clients/details/g");
+
+            // Clicks to expand the accordion
+            cy.get("#location-00 [slot='title']").click();
+
+            cy.get("#location-00-EditBtn").click();
+            cy.fillFormEntry("[data-id='input-notes_0']", "error", { area: true });
+            cy.get("#location-00-SaveBtn").click();
+          });
+
+          it("shows the error toast", () => {
+            cy.get("cds-toast-notification[kind='error']").should("be.visible");
+          });
+
+          it("stays in edit mode", () => {
+            cy.get("#city_0").should("be.visible");
+            cy.get("#emailAddress_0").should("be.visible");
+            cy.get("[data-id='input-notes_0']").should("be.visible");
+
+            cy.get("#location-00-SaveBtn").should("be.visible");
+          });
+        });
+
+        describe("with reason modal", { testIsolation: false }, () => {
+          beforeEach(function () {
+            init.call(this);
+
+            cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
+
+            cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
+
+            cy.visit("/clients/details/g");
+
+            // Clicks to expand the accordion
+            cy.get("#location-00 [slot='title']").click();
+
+            cy.get("#location-00-EditBtn").click();
+            cy.fillFormEntry("#addr_0", "2 Update Av");
+            cy.fillFormEntry("#city_0", "Updateland");
+            cy.selectFormEntry("#province_0", "Quebec");
+            cy.get("#location-00-SaveBtn").click();
+
+            cy.wait("@getReasonsList").then(({ request }) => {
+              // requests the list of options related to Address change
+              expect(request.url.endsWith("/ADDR")).to.eq(true);
+            });
+          });
+
+          it("opens the reason modal and sends the correct PATCH request with reasons", () => {
+            cy.get("#reason-modal").should("be.visible");
+
+            cy.get("#input-reason-0").should("exist");
+
+            // Only one reason should be required
+            cy.get("#input-reason-1").should("not.exist");
+
+            cy.get("#input-reason-0").find('[part="trigger-button"]').click();
+
+            cy.get("#input-reason-0")
+              .find("cds-dropdown-item")
+              .first()
+              .should("be.visible")
+              .click();
+
+            cy.get("#reasonSaveBtn").click();
+
+            cy.wait("@saveClientDetails").then((interception) => {
+              const requestBody = interception.request.body;
+
+              cy.log("Request Body:", JSON.stringify(requestBody));
+
+              expect(requestBody).to.deep.include({
+                op: "add",
+                path: "/reasons/0",
+                value: {
+                  field: "/addresses/00",
+                  reason: "R1",
+                },
+              });
+
+              // Only 1 "add" operation (the reason one)
+              expect((requestBody as any[]).filter((item) => item.op === "add")).to.have.lengthOf(
+                1,
+              );
+            });
+          });
+        });
       });
     });
   });

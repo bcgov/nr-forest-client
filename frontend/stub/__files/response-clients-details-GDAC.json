@@ -67,7 +67,7 @@
             "locnExpiredInd": "N"
         },
         {
-            "clientLocnName": "Accountant's address",
+            "clientLocnName": "Accountant address",
             "clientLocnCode": "01",
             "addressOne":"{{randomValue length=4 type='NUMERIC'}} Oak St",
             "addressTwo":"C/O Mike Oliveira",
