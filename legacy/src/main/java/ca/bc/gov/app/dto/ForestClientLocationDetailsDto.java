@@ -1,5 +1,6 @@
 package ca.bc.gov.app.dto;
 
+import org.springframework.data.relational.core.mapping.Column;
 import lombok.With;
 
 /**
@@ -11,9 +12,9 @@ public record ForestClientLocationDetailsDto(
     String clientNumber,
     String clientLocnCode,
     String clientLocnName,
-    String addressOne,
-    String addressTwo,
-    String addressThree,
+    @Column("address_one") String addressOne,
+    @Column("address_two") String addressTwo,
+    @Column("address_three") String addressThree,
     String city,
     String provinceCode,
     String provinceDesc,
