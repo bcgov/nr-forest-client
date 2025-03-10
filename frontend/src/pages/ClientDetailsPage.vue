@@ -618,7 +618,7 @@ resetGlobalError();
     size="sm"
     :open="reasonModalActiveInd"
     @cds-modal-closed="reasonModalActiveInd = false"
-    v-if="data?.clientTypeCode"
+    v-if="data?.client.clientTypeCode"
   >
     <cds-modal-header>
       <cds-modal-close-button></cds-modal-close-button>
@@ -640,7 +640,7 @@ resetGlobalError();
             :key="index"
             class="grouping-24">
           <data-fetcher
-            :url="`/api/codes/update-reasons/${data.clientTypeCode}/${patch.action}`"
+            :url="`/api/codes/update-reasons/${data.client.clientTypeCode}/${patch.action}`"
             :min-length="0"
             :init-value="[]"
             :init-fetch="true"

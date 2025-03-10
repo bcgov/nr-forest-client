@@ -246,8 +246,8 @@ export const extractReasonFields = (
       const field = patch.path.replace('/', '');
       let action = '';
 
-      if (field === 'clientStatusCode') {
-        const oldValue = originalData.clientStatusCode;
+      if (fieldName === 'clientStatusCode') {
+        const oldValue = originalData.client.clientStatusCode;
         const newValue = patch.value;
         const transitionKey = `${oldValue}-${newValue}`;
         action = statusTransitionMap.get(transitionKey) || '';
