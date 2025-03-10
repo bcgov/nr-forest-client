@@ -501,7 +501,7 @@ public class ClientSearchService {
             )
         .flatMap(dto -> locationRepository
                 .findLocationsByClientNumber(clientNumber)
-                //.map(locationMapper::toDto)
+                .doOnNext(location -> log.info("Fetched location: {}", location))
                 .collectList()
                 .map(dto::withAddresses)
                 .defaultIfEmpty(dto)
