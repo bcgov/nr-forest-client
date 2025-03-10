@@ -228,11 +228,13 @@ const NEW_IDENTIFIER = "new";
 
 const addLocation = () => {
   const codeString = NEW_IDENTIFIER;
-  const index = NEW_IDENTIFIER;
   newLocation.value = createClientLocation(clientNumber, codeString);
   locationsState[codeString] = createLocationState({ startOpen: true });
-  setScrollPoint(`location-${index}-heading`);
-  setFocusedComponent(`location-${index}-heading`);
+
+  const index = sortedLocations.value.length - 1;
+  setScrollPoint(`location-${index}-heading`, undefined, () => {
+    setFocusedComponent(`location-${index}-heading`)
+  });
 };
 
 const handleLocationCanceled = (location: ClientLocation) => {
