@@ -182,10 +182,10 @@ watch(sortedLocations, (value) => {
 });
 
 const formatLocation = (location: ClientLocation) => {
-  if (location === newLocation.value && !locationsState[location.clientLocnCode].name) {
+  if (location.clientLocnCode === NEW_IDENTIFIER && !locationsState[location.clientLocnCode].name) {
     return "New location";
   }
-  const parts = location === newLocation.value ? [] : [location.clientLocnCode];
+  const parts = location.clientLocnCode === NEW_IDENTIFIER ? [] : [location.clientLocnCode];
   const locationName = locationsState[location.clientLocnCode].name;
   if (locationName) {
     parts.push(locationName);
@@ -236,7 +236,7 @@ const addLocation = () => {
 };
 
 const handleLocationCanceled = (location: ClientLocation) => {
-  if (location === newLocation.value) {
+  if (location.clientLocnCode === NEW_IDENTIFIER) {
     newLocation.value = undefined;
     delete locationsState[location.clientLocnCode];
   } else {
@@ -485,7 +485,7 @@ const saveLocation =
 
     const isNew = updatedLocation.clientLocnCode === NEW_IDENTIFIER;
 
-    // Removes the location code from the new data it is a bogus value.
+    // Removes the location code from the new data as it's just a pseudo id.
     const { clientLocnCode, ...newLocationData } = updatedLocation;
 
     const patchData = isNew

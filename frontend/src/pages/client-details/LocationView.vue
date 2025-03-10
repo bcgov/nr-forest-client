@@ -17,6 +17,7 @@ import Save16 from "@carbon/icons-vue/es/save/16";
 import Close16 from "@carbon/icons-vue/es/close/16";
 import Undefined16 from "@carbon/icons-vue/es/undefined/16";
 import Renew16 from "@carbon/icons-vue/es/renew/16";
+import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
 import { useFetchTo } from "@/composables/useFetch";
 
@@ -134,7 +135,16 @@ const save = (
 
 const saveForm = () => {
   const location = locationToEditFormat(formAddressData.value, props.data);
-  save(location);
+  const action = props.createMode
+    ? {
+        infinitive: "create",
+        pastParticiple: "created",
+      }
+    : {
+        infinitive: "update",
+        pastParticiple: "updated",
+      };
+  save(location, action);
 };
 
 const displayDeactivateModal = ref(false);
@@ -321,8 +331,14 @@ const valid = ref(false);
           @click="saveForm"
           :disabled="!hasAnyChange || !valid"
         >
-          <span class="width-unset">Save changes</span>
-          <Save16 slot="icon" />
+          <template v-if="props.createMode">
+            <span class="width-unset">Save location</span>
+            <Check16 slot="icon" />
+          </template>
+          <template v-else>
+            <span class="width-unset">Save changes</span>
+            <Save16 slot="icon" />
+          </template>
         </cds-button>
         <cds-button
           :id="`location-${indexString}-CancelBtn`"
