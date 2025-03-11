@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
@@ -148,6 +149,12 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
     if (exception instanceof ResponseStatusException responseStatusException) {
       errorMessage = responseStatusException.getReason();
       errorStatus = responseStatusException.getStatusCode();
+    }
+
+    if (exception instanceof WebClientResponseException wcre){
+      errorMessage = wcre.getResponseBodyAsString();
+      errorStatus = wcre.getStatusCode();
+
     }
 
     // If the error message is blank, set it to an empty string
