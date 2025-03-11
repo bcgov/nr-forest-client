@@ -465,6 +465,8 @@ describe("Client Details Page", () => {
 
                 cy.get("cds-accordion[id|='location']").should("have.length", 4);
 
+                cy.wait(100);
+
                 cy.get("[data-scroll='location-3-heading']")
                   .its(0)
                   .invoke("getBoundingClientRect")
@@ -554,6 +556,8 @@ describe("Client Details Page", () => {
                 cy.fillFormEntry("[data-id='input-notes_0']", "error", { area: true });
               } else {
                 cy.get("#addlocationBtn").click();
+
+                cy.wait(100);
 
                 cy.get("[data-scroll='location-3-heading']")
                   .its(0)
