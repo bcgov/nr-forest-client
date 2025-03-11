@@ -490,6 +490,16 @@ describe("Client Details Page", () => {
               }
             });
 
+            if (scenario.name === "edit") {
+              it("sends one or more 'replace' operations", () => {
+                expect(patchClientDetailsRequest.body[0].op).to.eq("replace");
+              });
+            } else {
+              it("sends an 'add' operation", () => {
+                expect(patchClientDetailsRequest.body[0].op).to.eq("add");
+              });
+            }
+
             it("shows the success toast", () => {
               if (scenario.name === "edit") {
                 cy.get("cds-toast-notification[kind='success']")
