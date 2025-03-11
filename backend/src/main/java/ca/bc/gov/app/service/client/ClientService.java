@@ -20,6 +20,7 @@ import ca.bc.gov.app.exception.ClientAlreadyExistException;
 import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.exception.UnableToProcessRequestException;
+import ca.bc.gov.app.exception.UnexpectedErrorException;
 import ca.bc.gov.app.exception.UnsupportedClientTypeException;
 import ca.bc.gov.app.exception.UnsupportedLegalTypeException;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
@@ -156,18 +157,29 @@ public class ClientService {
         .flatMap(this::populateContactTypes)
         .flatMap(forestClientDetailsDto -> Mono
             .just(forestClientDetailsDto)
-            .filter(dto -> (StringUtils.isNotBlank(dto.client().corpRegnNmbr())))
-            .doOnNext(dto -> log.info("Retrieved corporation registration number: {}",
-                forestClientDetailsDto.client().corpRegnNmbr()))
+            .filter(dto ->
+                StringUtils.isNotBlank(dto.client().registryCompanyTypeCode()) &&
+                StringUtils.isNotBlank(dto.client().corpRegnNmbr())
+            )            
             .flatMap(dto ->
                 bcRegistryService
-                    .requestDocumentData(dto.client().corpRegnNmbr())
+                    .requestDocumentData(
+                        String.format(
+                            "%s%s",
+                            dto.client().registryCompanyTypeCode(),
+                            dto.client().corpRegnNmbr()
+                        )
+                    )
                     .next()
             )
             .map(documentMono -> populateGoodStandingInd(forestClientDetailsDto, documentMono))
 
             .onErrorContinue(NoClientDataFound.class, (ex, obj) ->
                 log.error("No data found on BC Registry for client number: {}", clientNumber)
+            )
+            .onErrorContinue(UnexpectedErrorException.class, (ex, obj) ->
+                log.error("Unexpected error occurred while fetching data for client number: {}",
+                    clientNumber)
             )
             .switchIfEmpty(
                 Mono.just(forestClientDetailsDto)
@@ -259,32 +271,33 @@ public class ClientService {
       ForestClientDetailsDto forestClientDetailsDto
   ) {
 
-    if (CollectionUtils.isEmpty(forestClientDetailsDto.contacts()))
+    if (CollectionUtils.isEmpty(forestClientDetailsDto.contacts())) {
       return Mono.just(forestClientDetailsDto);
+    }
 
     Set<String> contactCodes =
-    forestClientDetailsDto
-        .contacts()
-        .stream()
-        .filter(Objects::nonNull)
-        .map(ForestClientContactDto::contactCode)
-        .filter(StringUtils::isNotBlank)
-        .collect(Collectors.toSet());
-
+        forestClientDetailsDto
+            .contacts()
+            .stream()
+            .filter(Objects::nonNull)
+            .map(ForestClientContactDto::contactCode)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toSet());
 
     return codeService
         .fetchContactTypesFromList(contactCodes)
         .map(map ->
-          forestClientDetailsDto
-              .withContacts(
-                 forestClientDetailsDto
-                .contacts()
-                .stream()
-                .map(contact ->
-                    contact.withContactCodeDescription(map.getOrDefault(contact.contactCode(), StringUtils.EMPTY))
+            forestClientDetailsDto
+                .withContacts(
+                    forestClientDetailsDto
+                        .contacts()
+                        .stream()
+                        .map(contact ->
+                            contact.withContactCodeDescription(
+                                map.getOrDefault(contact.contactCode(), StringUtils.EMPTY))
+                        )
+                        .toList()
                 )
-                .toList()
-              )
         );
   }
 
@@ -306,9 +319,9 @@ public class ClientService {
 
     return
         forestClientDetailsDto.withClient(
-        forestClientDetailsDto
-            .client()
-            .withGoodStandingInd(goodStanding)
+            forestClientDetailsDto
+                .client()
+                .withGoodStandingInd(goodStanding)
         );
   }
 

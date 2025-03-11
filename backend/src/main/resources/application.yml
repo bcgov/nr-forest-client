@@ -184,6 +184,7 @@ ca:
               - POST
               - PUT
               - DELETE
+              - PATCH
             age: 5m
         openData:
           sacBandUrl: https://data.sac-isc.gc.ca/geomatics/services/Donnees_Ouvertes-Open_Data/Premiere_Nation_First_Nation/MapServer/WFSServer

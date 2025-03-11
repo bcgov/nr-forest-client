@@ -153,6 +153,18 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
             ApplicationConstant.USERTYPE_BCSC_USER);
 
+    // Only Editors are allowed to PATCH to the clients details endpoint
+    authorize
+        .pathMatchers(HttpMethod.PATCH, "/api/clients/details/**")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_EDITOR);
+
+    // Only Editors are allowed to OPTIONS to the clients details endpoint
+    authorize
+        .pathMatchers(HttpMethod.OPTIONS, "/api/clients/details/**")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_EDITOR);
+
     // BCeIDBusiness, BCSC, viewer, editor and admin users can GET from the clients endpoint
     authorize
         .pathMatchers(HttpMethod.GET, "/api/clients/**")
