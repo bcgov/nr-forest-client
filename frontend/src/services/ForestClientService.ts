@@ -294,7 +294,7 @@ export const extractReasonFields = (
       let action = '';
 
       if (fieldName === 'clientStatusCode') {
-        const oldValue = originalData.clientStatusCode;
+        const oldValue = originalData.client.clientStatusCode;
         const newValue = patch.value;
         const transitionKey = `${oldValue}-${newValue}`;
         action = statusTransitionMap.get(transitionKey) || '';
@@ -335,36 +335,6 @@ const fieldLabelsByAction = new Map<string, string>([
 
 export const getActionLabel = (action: string) => {
   return fieldLabelsByAction.get(action || "") || "Unknown";
-};
-
-export const getOldValue = (path: string, data: Ref<ClientDetails> | ClientDetails) => {
-  if (!data) {
-    console.warn("Old value was called with undefined data!", path);
-    return "N/A";
-  }
-
-  const clientData = unref(data);
-  const fieldName = path.split("/").pop() || "";
-
-  if (fieldName in clientData) {
-    return clientData[fieldName as keyof ClientDetails] || "N/A";
-  }
-
-  for (const [, value] of Object.entries(clientData)) {
-    if (Array.isArray(value)) {
-      for (const item of value) {
-        if (fieldName in item) {
-          if (Array.isArray(item[fieldName])) {
-            const arrayValue = item[fieldName as keyof typeof item];
-            return arrayValue?.[0] || "N/A";
-          }
-          return item[fieldName as keyof typeof item] || "N/A";
-        }
-      }
-    }
-  }
-
-  return "N/A";
 };
 
 export const updateSelectedReason = (

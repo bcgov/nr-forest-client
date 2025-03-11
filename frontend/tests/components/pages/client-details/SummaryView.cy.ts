@@ -8,25 +8,27 @@ import SummaryView from "@/pages/client-details/SummaryView.vue";
 describe("<summary-view />", () => {
   const getDefaultProps = () => ({
     data: {
-      registryCompanyTypeCode: "SP",
-      corpRegnNmbr: "88888888",
-      clientNumber: "4444",
-      clientName: "Scott",
-      legalFirstName: "Michael",
-      legalMiddleName: "Gary",
+      client: {
+        registryCompanyTypeCode: "SP",
+        corpRegnNmbr: "88888888",
+        clientNumber: "4444",
+        clientName: "Scott",
+        legalFirstName: "Michael",
+        legalMiddleName: "Gary",
+        birthdate: "1962-08-17",
+        clientAcronym: "DMPC",
+        clientTypeCode: "RSP",
+        clientTypeDesc: "Registered sole proprietorship",
+        goodStandingInd: "Y",
+        clientStatusCode: "ACT",
+        clientStatusDesc: "Active",
+        clientComment:
+          "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton",
+        wcbFirmNumber: "123456",
+        clientIdTypeDesc: "British Columbia Driver's Licence",
+        clientIdentification: "64242646",
+      },
       doingBusinessAs: [{ doingBusinessAsName: "Dunder Mifflin Paper Company" }],
-      birthdate: "1962-08-17",
-      clientAcronym: "DMPC",
-      clientTypeCode: "RSP",
-      clientTypeDesc: "Registered sole proprietorship",
-      goodStandingInd: "Y",
-      clientStatusCode: "ACT",
-      clientStatusDesc: "Active",
-      clientComment:
-        "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton",
-      wcbFirmNumber: "123456",
-      clientIdTypeDesc: "British Columbia Driver's Licence",
-      clientIdentification: "64242646",
     } as ClientDetails,
     userRoles: ["CLIENT_VIEWER"],
   });
@@ -82,44 +84,47 @@ describe("<summary-view />", () => {
   it("renders the SummaryView component", () => {
     mount();
 
-    testReadonly("#clientNumber", currentProps.data.clientNumber);
-    testReadonly("#acronym", currentProps.data.clientAcronym);
+    testReadonly("#clientNumber", currentProps.data.client.clientNumber);
+    testReadonly("#acronym", currentProps.data.client.clientAcronym);
     testReadonly("#doingBusinessAs", currentProps.data.doingBusinessAs[0].doingBusinessAsName);
-    testReadonly("#clientType", currentProps.data.clientTypeDesc);
+    testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
 
     // registryCompanyTypeCode + corpRegnNmbr
     testReadonly(
       "#registrationNumber",
-      `${currentProps.data.registryCompanyTypeCode}${currentProps.data.corpRegnNmbr}`,
+      `${currentProps.data.client.registryCompanyTypeCode}${currentProps.data.client.corpRegnNmbr}`,
     );
 
-    testReadonly("#workSafeBCNumber", currentProps.data.wcbFirmNumber);
+    testReadonly("#workSafeBCNumber", currentProps.data.client.wcbFirmNumber);
 
     testReadonly("#goodStanding", "Good standing");
 
     // identification Label
-    testReadonly("#identification", currentProps.data.clientIdTypeDesc);
+    testReadonly("#identification", currentProps.data.client.clientIdTypeDesc);
     // identification Value
-    testReadonly("#identification", currentProps.data.clientIdentification);
+    testReadonly("#identification", currentProps.data.client.clientIdentification);
 
-    testReadonly("#dateOfBirth", currentProps.data.birthdate);
-    testReadonly("#clientStatus", currentProps.data.clientStatusDesc);
-    testReadonly("#notes", currentProps.data.clientComment);
+    testReadonly("#dateOfBirth", currentProps.data.client.birthdate);
+    testReadonly("#clientStatus", currentProps.data.client.clientStatusDesc);
+    testReadonly("#notes", currentProps.data.client.clientComment);
   });
 
   it("hides optional fields when they are empty", () => {
     const props = getDefaultProps();
     props.data = {
       ...props.data,
-      registryCompanyTypeCode: "",
-      corpRegnNmbr: "",
+      client: {
+        ...props.data.client,
+        registryCompanyTypeCode: "",
+        corpRegnNmbr: "",
+        birthdate: "",
+        clientAcronym: "",
+        goodStandingInd: null,
+        clientComment: "",
+        clientIdTypeDesc: "",
+        clientIdentification: "",
+      },
       doingBusinessAs: [],
-      birthdate: "",
-      clientAcronym: "",
-      goodStandingInd: null,
-      clientComment: "",
-      clientIdTypeDesc: "",
-      clientIdentification: "",
     };
     mount(props);
 
@@ -154,7 +159,7 @@ describe("<summary-view />", () => {
   it("sets the birthdate label to 'Year of birth' when date's month and day are masked", () => {
     const props = getDefaultProps();
     const { data } = props;
-    data.birthdate = "1985-**-**";
+    data.client.birthdate = "1985-**-**";
 
     mount(props);
 
@@ -164,7 +169,7 @@ describe("<summary-view />", () => {
   it("sets the birthdate label to 'Year of birth' when date has only four digits", () => {
     const props = getDefaultProps();
     const { data } = props;
-    data.birthdate = "1985";
+    data.client.birthdate = "1985";
 
     mount(props);
 
@@ -207,9 +212,9 @@ describe("<summary-view />", () => {
       });
 
       it("enables the edition of some fields only", () => {
-        testTextInput("#input-workSafeBCNumber", props.data.wcbFirmNumber);
-        testDropdown("#input-clientStatus", props.data.clientStatusDesc);
-        testTextarea("[data-id='input-input-notes']", props.data.clientComment);
+        testTextInput("#input-workSafeBCNumber", props.data.client.wcbFirmNumber);
+        testDropdown("#input-clientStatus", props.data.client.clientStatusDesc);
+        testTextarea("[data-id='input-input-notes']", props.data.client.clientComment);
 
         testHidden("#input-clientName");
         testHidden("#input-acronym");
@@ -222,25 +227,25 @@ describe("<summary-view />", () => {
 
       it("requests the client statuses according to the client type", () => {
         expect(getClientStatusesRequest.url).to.match(
-          new RegExp(`${getClientStatusesBaseUrl}/${props.data.clientTypeCode}`),
+          new RegExp(`${getClientStatusesBaseUrl}/${props.data.client.clientTypeCode}`),
         );
       });
 
       it("keeps displaying the other fields in view mode", () => {
-        testReadonly("#clientNumber", currentProps.data.clientNumber);
-        testReadonly("#acronym", currentProps.data.clientAcronym);
+        testReadonly("#clientNumber", currentProps.data.client.clientNumber);
+        testReadonly("#acronym", currentProps.data.client.clientAcronym);
         testReadonly("#doingBusinessAs", currentProps.data.doingBusinessAs[0].doingBusinessAsName);
-        testReadonly("#clientType", currentProps.data.clientTypeDesc);
+        testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
 
         // registryCompanyTypeCode + corpRegnNmbr
         testReadonly(
           "#registrationNumber",
-          `${currentProps.data.registryCompanyTypeCode}${currentProps.data.corpRegnNmbr}`,
+          `${currentProps.data.client.registryCompanyTypeCode}${currentProps.data.client.corpRegnNmbr}`,
         );
 
         testReadonly("#goodStanding", "Good standing");
-        testReadonly("#identification", currentProps.data.clientIdentification);
-        testReadonly("#dateOfBirth", currentProps.data.birthdate);
+        testReadonly("#identification", currentProps.data.client.clientIdentification);
+        testReadonly("#dateOfBirth", currentProps.data.client.birthdate);
 
         // Make sure the fields enabled for edition are not also displayed in read-only mode.
         testHidden("#workSafeBCNumber");
@@ -277,9 +282,9 @@ describe("<summary-view />", () => {
         cy.get("#summaryEditBtn").click();
 
         // Check values on the form
-        testTextInput("#input-workSafeBCNumber", props.data.wcbFirmNumber);
-        testDropdown("#input-clientStatus", props.data.clientStatusDesc);
-        testTextarea("[data-id='input-input-notes']", props.data.clientComment);
+        testTextInput("#input-workSafeBCNumber", props.data.client.wcbFirmNumber);
+        testDropdown("#input-clientStatus", props.data.client.clientStatusDesc);
+        testTextarea("[data-id='input-input-notes']", props.data.client.clientComment);
       });
 
       it("emits a save event when the Save button gets clicked", () => {
@@ -302,8 +307,8 @@ describe("<summary-view />", () => {
     ["SPN", "REC", "DAC", "DEC"].forEach((clientStatus) => {
       const props = getDefaultProps();
       props.userRoles = ["CLIENT_EDITOR"];
-      props.data.clientStatusCode = clientStatus;
-      props.data.clientStatusDesc = clientStatus;
+      props.data.client.clientStatusCode = clientStatus;
+      props.data.client.clientStatusDesc = clientStatus;
       describe(`when current client status is: ${clientStatus}`, () => {
         beforeEach(() => {
           mount(props);
@@ -323,8 +328,8 @@ describe("<summary-view />", () => {
     ["ACT"].forEach((clientStatus) => {
       const props = getDefaultProps();
       props.userRoles = ["CLIENT_EDITOR"];
-      props.data.clientStatusCode = clientStatus;
-      props.data.clientStatusDesc = clientStatus;
+      props.data.client.clientStatusCode = clientStatus;
+      props.data.client.clientStatusDesc = clientStatus;
       describe(`when current client status is: ${clientStatus}`, () => {
         beforeEach(() => {
           mount(props);

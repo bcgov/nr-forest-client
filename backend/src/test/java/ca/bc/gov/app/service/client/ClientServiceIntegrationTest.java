@@ -1,5 +1,17 @@
 package ca.bc.gov.app.service.client;
 
+import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
+import ca.bc.gov.app.dto.legacy.ForestClientInformationDto;
+import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.Test;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAlternateNameDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
@@ -47,26 +59,26 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
     LocalDateTime date = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
 
     ForestClientDetailsDto initialDto = new ForestClientDetailsDto(
-        clientNumber, 
-        "MY COMPANY LTD.", 
-        null, 
-        null, 
-        "ACT", 
-        "Active",
-        "C", 
-        "Corporation", 
-        "ID", 
-        "Client Identification", 
-        "123456789", 
-        "BC", 
-        corpRegnNmbr,
-        "MYCO", 
-        "678", 
-        "Test Client", 
-        date,
-        "Admin", 
-        null, 
-        null, 
+        new ForestClientInformationDto(clientNumber,
+            "MY COMPANY LTD.",
+            null,
+            null,
+            "ACT",
+            "Active",
+            "C",
+            "Corporation",
+            "ID",
+            "Client Identification",
+            "123456789",
+            "BC",
+            corpRegnNmbr,
+            "MYCO",
+            "678",
+            "Test Client",
+            date,
+            "Admin",
+            null,
+            null),
         null, 
         null, 
         null);
@@ -131,26 +143,28 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         new BcRegistryDocumentDto(mockBusinessDto, mockOffices, List.of(mockParty));
 
     ForestClientDetailsDto expectedDto = new ForestClientDetailsDto(
-        clientNumber, 
-        "MY COMPANY LTD.", 
-        null, 
-        null, 
-        "ACT", 
-        "Active",
-        "C", 
-        "Corporation", 
-        "ID", 
-        "Client Identification", 
-        "123456789", 
-        "BC", 
-        corpRegnNmbr,
-        "MYCO", 
-        "678", 
-        "Test Client", 
-        date,
-        "Admin", 
-        "Y", 
-        null, 
+        new ForestClientInformationDto(
+            clientNumber,
+            "MY COMPANY LTD.",
+            null,
+            null,
+            "ACT",
+            "Active",
+            "C",
+            "Corporation",
+            "ID",
+            "Client Identification",
+            "123456789",
+            "BC",
+            corpRegnNmbr,
+            "MYCO",
+            "678",
+            "Test Client",
+            date,
+            "Admin",
+            "Y",
+            null
+        ),
         null, 
         null, 
         null);
@@ -178,8 +192,6 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
     String corpRegnNmbr = "C00123456";
     String userId = "idir\\jwick";
     String businessId = "123456";
-    LocalDateTime date = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
-
 
     BcRegistryOfficerDto mockOfficer = new BcRegistryOfficerDto(
         "officer@email.com",
@@ -211,11 +223,9 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         mockOfficer,
         List.of(mockRole));
 
-    BcRegistryAddressDto mockMailingAddress = mockAddress;
-    BcRegistryAddressDto mockDeliveryAddress = mockAddress;
     BcRegistryBusinessAdressesDto mockBusinessOffice = new BcRegistryBusinessAdressesDto(
-        mockMailingAddress,
-        mockDeliveryAddress);
+        mockAddress,
+        mockAddress);
 
     BcRegistryAlternateNameDto mockAlternateName = new BcRegistryAlternateNameDto(
         "EntityType",
@@ -263,29 +273,28 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     String clientNumber = "00123456";
     String corpRegnNmbr = "C00123456";
-    LocalDateTime date = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
 
     ForestClientDetailsDto clientDto = new ForestClientDetailsDto(
-        clientNumber,
-        "MY COMPANY LTD.",
-        null,
-        null,
-        "ACT",
-        "Active",
-        "C",
-        "Corporation",
-        "ID",
-        "Client Identification",
-        "00123456",
-        "B",
-        corpRegnNmbr,
-        "MYCO",
-        "678",
-        "Test Client",
-        date,
-        "Admin",
-        null,
-        null,
+        new ForestClientInformationDto(clientNumber,
+            "MY COMPANY LTD.",
+            null,
+            null,
+            "ACT",
+            "Active",
+            "C",
+            "Corporation",
+            "ID",
+            "Client Identification",
+            "00123456",
+            "B",
+            corpRegnNmbr,
+            "MYCO",
+            "678",
+            "Test Client",
+            LocalDateTime.of(2021, 1, 1, 0, 0, 0),
+            "Admin",
+            null,
+            null),
         null,
         null,
         null);
@@ -321,11 +330,9 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         mockOfficer,
         List.of(mockRole));
 
-    BcRegistryAddressDto mockMailingAddress = mockAddress;
-    BcRegistryAddressDto mockDeliveryAddress = mockAddress;
     BcRegistryBusinessAdressesDto mockBusinessOffice = new BcRegistryBusinessAdressesDto(
-        mockMailingAddress,
-        mockDeliveryAddress);
+        mockAddress,
+        mockAddress);
 
     BcRegistryAlternateNameDto mockAlternateName = new BcRegistryAlternateNameDto(
         "EntityType",
@@ -362,7 +369,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     service.getClientDetailsByClientNumber(clientNumber)
         .as(StepVerifier::create)
-        .expectNext(clientDto.withGoodStandingInd("Y"))
+        .expectNext(clientDto.withClient(clientDto.client().withGoodStandingInd("Y")))
         .verifyComplete();
   }
 
@@ -372,29 +379,28 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     String clientNumber = "00123456";
     String corpRegnNmbr = "C00123456";
-    LocalDateTime date = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
 
     ForestClientDetailsDto clientDto = new ForestClientDetailsDto(
-        clientNumber,
-        "MY COMPANY LTD.",
-        null,
-        null,
-        "ACT",
-        "Active",
-        "C",
-        "Corporation",
-        "ID",
-        "Client Identification",
-        "00123456",
-        "B",
-        corpRegnNmbr,
-        "MYCO",
-        "678",
-        "Test Client",
-        date,
-        "Admin",
-        null,
-        null,
+        new ForestClientInformationDto(clientNumber,
+            "MY COMPANY LTD.",
+            null,
+            null,
+            "ACT",
+            "Active",
+            "C",
+            "Corporation",
+            "ID",
+            "Client Identification",
+            "00123456",
+            "B",
+            corpRegnNmbr,
+            "MYCO",
+            "678",
+            "Test Client",
+            LocalDateTime.of(2021, 1, 1, 0, 0, 0),
+            "Admin",
+            null,
+            null),
         List.of(
             new ForestClientLocationDetailsDto(
                 clientNumber,
@@ -469,11 +475,9 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         mockOfficer,
         List.of(mockRole));
 
-    BcRegistryAddressDto mockMailingAddress = mockAddress;
-    BcRegistryAddressDto mockDeliveryAddress = mockAddress;
     BcRegistryBusinessAdressesDto mockBusinessOffice = new BcRegistryBusinessAdressesDto(
-        mockMailingAddress,
-        mockDeliveryAddress);
+        mockAddress,
+        mockAddress);
 
     BcRegistryAlternateNameDto mockAlternateName = new BcRegistryAlternateNameDto(
         "EntityType",
@@ -510,7 +514,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     service.getClientDetailsByClientNumber(clientNumber)
         .as(StepVerifier::create)
-        .expectNext(clientDto.withGoodStandingInd("Y"))
+        .expectNext(clientDto.withClient(clientDto.client().withGoodStandingInd("Y")))
         .verifyComplete();
   }
 
