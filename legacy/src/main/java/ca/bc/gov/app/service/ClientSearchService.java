@@ -485,26 +485,25 @@ public class ClientSearchService {
     return forestClientRepository
         .findDetailsByClientNumber(clientNumber)
         .flatMap(dto ->
-                doingBusinessAsRepository
-                    .findByClientNumber(dto.clientNumber())
-                    .sort(Comparator.comparing(ClientDoingBusinessAsEntity::getCreatedAt))
-                    .map(dba -> new ClientDoingBusinessAsDto(
-                        dba.getClientNumber(),
-                        dba.getDoingBusinessAsName(),
-                        dba.getCreatedBy(),
-                        dba.getUpdatedBy(),
-                        dba.getCreatedByUnit()
-                    ))
-                    .collectList()
-                    .map(dto::withDoingBusinessAs)
-                    .defaultIfEmpty(dto)
-            )
-        .flatMap(dto -> locationRepository
-                .findLocationsByClientNumber(clientNumber)
-                //.map(locationMapper::toDto)
+            doingBusinessAsRepository
+                .findByClientNumber(dto.clientNumber())
+                .sort(Comparator.comparing(ClientDoingBusinessAsEntity::getCreatedAt))
+                .map(dba -> new ClientDoingBusinessAsDto(
+                    dba.getClientNumber(),
+                    dba.getDoingBusinessAsName(),
+                    dba.getCreatedBy(),
+                    dba.getUpdatedBy(),
+                    dba.getCreatedByUnit()
+                ))
                 .collectList()
-                .map(dto::withAddresses)
+                .map(dto::withDoingBusinessAs)
                 .defaultIfEmpty(dto)
+        )
+        .flatMap(dto -> locationRepository
+            .findLocationsByClientNumber(clientNumber)
+            .collectList()
+            .map(dto::withAddresses)
+            .defaultIfEmpty(dto)
         )
         .flatMap(dto -> contactRepository
             .findAllByClientNumber(clientNumber)
@@ -596,8 +595,8 @@ public class ClientSearchService {
     );
   }
 
-  private Function<List<ForestClientContactDto>, ArrayList<ForestClientContactDto>> 
-    contactMapper() {
+  private Function<List<ForestClientContactDto>, ArrayList<ForestClientContactDto>>
+  contactMapper() {
     return contacts ->
         new ArrayList<>(
             contacts.stream()
