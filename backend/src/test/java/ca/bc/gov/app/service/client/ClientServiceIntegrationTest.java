@@ -2,7 +2,6 @@ package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientInformationDto;
-import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -21,20 +20,10 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficerDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryRoleDto;
-import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientLocationDetailsDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.List;
-import org.junit.jupiter.api.DisplayName;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -113,11 +102,9 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         mockOfficer, 
         List.of(mockRole));
 
-    BcRegistryAddressDto mockMailingAddress = mockAddress;
-    BcRegistryAddressDto mockDeliveryAddress = mockAddress;
     BcRegistryBusinessAdressesDto mockBusinessOffice = new BcRegistryBusinessAdressesDto(
-        mockMailingAddress, 
-        mockDeliveryAddress);
+        mockAddress,
+        mockAddress);
 
     BcRegistryAlternateNameDto mockAlternateName = new BcRegistryAlternateNameDto(
         "EntityType",
@@ -175,7 +162,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     Mockito
       .when(bcRegistryService
-      .requestDocumentData(corpRegnNmbr))
+      .requestDocumentData("BC"+corpRegnNmbr))
       .thenReturn(Flux.just(mockDocumentDto));
 
     service
@@ -269,7 +256,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
   @Test
   @DisplayName("Search by client number and succeed")
-  void shouldSearchByClientNumberAndgetResult(){
+  void shouldSearchByClientNumberAndGetResult(){
 
     String clientNumber = "00123456";
     String corpRegnNmbr = "C00123456";
@@ -359,7 +346,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     Mockito
         .when(bcRegistryService
-            .requestDocumentData(corpRegnNmbr))
+            .requestDocumentData("B"+corpRegnNmbr))
         .thenReturn(Flux.just(mockDocumentDto));
 
     Mockito
@@ -375,7 +362,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
   @Test
   @DisplayName("Search by client number and succeed including dependencies")
-  void shouldSearchByClientNumberAndgetResultWithContactAndLocation(){
+  void shouldSearchByClientNumberAndGetResultWithContactAndLocation(){
 
     String clientNumber = "00123456";
     String corpRegnNmbr = "C00123456";
@@ -504,7 +491,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     Mockito
         .when(bcRegistryService
-            .requestDocumentData(corpRegnNmbr))
+            .requestDocumentData("B"+corpRegnNmbr))
         .thenReturn(Flux.just(mockDocumentDto));
 
     Mockito
