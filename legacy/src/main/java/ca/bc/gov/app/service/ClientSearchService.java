@@ -486,22 +486,22 @@ public class ClientSearchService {
     return forestClientRepository
         .findDetailsByClientNumber(clientNumber)
         .flatMap(dto ->
-                doingBusinessAsRepository
-                    .findByClientNumber(dto.clientNumber())
-                    .sort(Comparator.comparing(ClientDoingBusinessAsEntity::getCreatedAt))
-                    .map(dba -> new ClientDoingBusinessAsDto(
-                        dba.getClientNumber(),
-                        dba.getDoingBusinessAsName(),
-                        dba.getCreatedBy(),
-                        dba.getUpdatedBy(),
-                        dba.getCreatedByUnit()
-                    ))
-                    .collectList()
-                    .map(dto::withDoingBusinessAs)
-                    .defaultIfEmpty(dto)
-            )
+            doingBusinessAsRepository
+                .findByClientNumber(dto.clientNumber())
+                .sort(Comparator.comparing(ClientDoingBusinessAsEntity::getCreatedAt))
+                .map(dba -> new ClientDoingBusinessAsDto(
+                    dba.getClientNumber(),
+                    dba.getDoingBusinessAsName(),
+                    dba.getCreatedBy(),
+                    dba.getUpdatedBy(),
+                    dba.getCreatedByUnit()
+                ))
+                .collectList()
+                .map(dto::withDoingBusinessAs)
+                .defaultIfEmpty(dto)
+        )
         .flatMap(dto -> locationRepository
-                .findLocationsByClientNumber(clientNumber)
+            .findLocationsByClientNumber(clientNumber)
             .map(proj -> new ForestClientLocationDetailsDto(
                 proj.getClientNumber(),
                 proj.getClientLocnCode(),
@@ -523,9 +523,9 @@ public class ClientSearchService {
                 proj.getLocnExpiredInd(),
                 proj.getCliLocnComment()
             ))
-                .collectList()
-                .map(dto::withAddresses)
-                .defaultIfEmpty(dto)
+            .collectList()
+            .map(dto::withAddresses)
+            .defaultIfEmpty(dto)
         )
         .flatMap(dto -> contactRepository
             .findAllByClientNumber(clientNumber)
@@ -617,8 +617,8 @@ public class ClientSearchService {
     );
   }
 
-  private Function<List<ForestClientContactDto>, ArrayList<ForestClientContactDto>> 
-    contactMapper() {
+  private Function<List<ForestClientContactDto>, ArrayList<ForestClientContactDto>>
+  contactMapper() {
     return contacts ->
         new ArrayList<>(
             contacts.stream()
