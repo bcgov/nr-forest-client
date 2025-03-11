@@ -78,33 +78,34 @@ public interface ForestClientLocationRepository
    * @return a Flux containing the matching ForestClientLocationEntity objects
    */
   Flux<ForestClientLocationEntity> findAllByClientNumber(String clientNumber);
-  
+
   @Query("""
       select 
-        client_number,
-        client_locn_code,
-        client_locn_name,
-        address_1 as address_one,
-        address_2 as address_two,
-        address_3 as address_three,
-        city,
-        province as province_code,
-        province_state_name as province_desc,
-        country_code,
-        country as country_desc,
-        postal_code,
-        business_phone,
-        home_phone,
-        cell_phone,
-        fax_number,
-        email_address,
-        locn_expired_ind,
-        cli_locn_comment
+        l.client_number,
+        l.client_locn_code,
+        l.client_locn_name,
+        l.address_1,
+        l.address_2,
+        l.address_3,
+        l.city,
+        l.province as province_code,
+        p.province_state_name as province_desc,
+        c.country_code,
+        l.country as country_desc,
+        l.postal_code,
+        l.business_phone,
+        l.home_phone,
+        l.cell_phone,
+        l.fax_number,
+        l.email_address,
+        l.locn_expired_ind,
+        l.cli_locn_comment
       from the.client_location l left outer join the.mailing_province_state p
       on l.province = p.province_state_code
       left outer join the.mailing_country c
       on l.country = c.country_name
-      where client_number = :clientNumber""")
+      where client_number = :clientNumber
+      order by client_locn_code""")
   Flux<ForestClientLocationDetailsDto> findLocationsByClientNumber(String clientNumber);
 
 }
