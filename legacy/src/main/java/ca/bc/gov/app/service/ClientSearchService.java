@@ -484,10 +484,15 @@ public class ClientSearchService {
 
     return forestClientRepository
         .findDetailsByClientNumber(clientNumber)
-        .map(informationDto -> new ForestClientDetailsDto(informationDto,List.of(),List.of(),List.of()))
+        .map(informationDto -> new ForestClientDetailsDto(
+            informationDto,
+            List.of(),
+            List.of(),
+            List.of())
+        )
         .flatMap(dto ->
             doingBusinessAsRepository
-                 .findByClientNumber(dto.client().clientNumber())
+                .findByClientNumber(dto.client().clientNumber())
                 .sort(Comparator.comparing(ClientDoingBusinessAsEntity::getCreatedAt))
                 .map(dba -> new ClientDoingBusinessAsDto(
                     dba.getClientNumber(),
@@ -530,7 +535,7 @@ public class ClientSearchService {
    * @param value the predictive search value
    * @param page  the pagination information
    * @return a Flux containing pairs of PredictiveSearchResultDto objects and the total count of
-   * matching clients
+   *         matching clients
    */
   public Flux<Pair<PredictiveSearchResultDto, Long>> complexSearch(String value, Pageable page) {
     // This condition is for predictive search, and we will stop here if no query param is provided

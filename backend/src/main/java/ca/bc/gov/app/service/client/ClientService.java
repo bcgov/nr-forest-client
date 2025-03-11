@@ -160,12 +160,7 @@ public class ClientService {
             .filter(dto ->
                 StringUtils.isNotBlank(dto.client().registryCompanyTypeCode()) &&
                 StringUtils.isNotBlank(dto.client().corpRegnNmbr())
-            )
-            .doOnNext(dto -> log.info("Retrieved corporation registration number: {}{}",
-                dto.client().registryCompanyTypeCode(),
-                forestClientDetailsDto.client().corpRegnNmbr()
-                )
-            )
+            )            
             .flatMap(dto ->
                 bcRegistryService
                     .requestDocumentData(
