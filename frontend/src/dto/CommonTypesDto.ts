@@ -1,4 +1,5 @@
 import { isRef } from "vue";
+import * as jsonpatch from "fast-json-patch";
 import type { Address } from "./ApplyClientNumberDto";
 
 export interface CodeDescrType {
@@ -371,4 +372,10 @@ export type UserRole = (typeof userRoles)[number];
 export interface ActionWords {
   infinitive: string;
   pastParticiple: string;
+}
+
+export interface SaveLocationEvent {
+  patch: jsonpatch.Operation[] | null;
+  updatedLocation: ClientLocation;
+  action: ActionWords;
 }

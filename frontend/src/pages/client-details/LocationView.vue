@@ -5,6 +5,7 @@ import type {
   ActionWords,
   ClientLocation,
   ModalNotification,
+  SaveLocationEvent,
   UserRole,
 } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
@@ -36,18 +37,8 @@ const props = defineProps<{
   createMode?: boolean;
 }>();
 
-interface Action {
-  infinitive: string;
-  pastParticiple: string;
-}
-
 const emit = defineEmits<{
-  (
-    e: "save",
-    patch: jsonpatch.Operation[] | null,
-    updatedLocation: ClientLocation,
-    action: Action,
-  ): void;
+  (e: "save", payload: SaveLocationEvent): void;
   (e: "canceled"): void;
   (e: "updateLocationName", value: "string"): void;
 }>();
@@ -129,14 +120,18 @@ defineExpose({
 });
 
 const save = (
-  newData: ClientLocation,
+  updatedLocation: ClientLocation,
   action: ActionWords = {
     infinitive: "update",
     pastParticiple: "updated",
   },
 ) => {
-  const patch = props.createMode ? null : jsonpatch.compare(originalData, newData);
-  emit("save", patch, newData, action);
+  const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedLocation);
+  emit("save", {
+    patch,
+    updatedLocation,
+    action,
+  });
 };
 
 const saveForm = () => {

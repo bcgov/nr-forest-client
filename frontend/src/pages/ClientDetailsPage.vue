@@ -48,7 +48,7 @@ import {
   type ModalNotification,
   type FieldReason,
   type UserRole,
-  type ActionWords,
+  type SaveLocationEvent,
   createClientLocation,
 } from "@/dto/CommonTypesDto";
 
@@ -482,7 +482,13 @@ const createAddPatch = <T>(value: T, path: string) => {
 
 const saveLocation =
   (index: number) =>
-  (rawPatchData: jsonpatch.Operation[], updatedLocation: ClientLocation, action: ActionWords) => {
+  (payload: SaveLocationEvent) => {
+    const {
+      patch: rawPatchData,
+      updatedLocation,
+      action,
+    } = payload;
+
     const locationCode = updatedLocation.clientLocnCode;
 
     const isNew = updatedLocation.clientLocnCode === NEW_IDENTIFIER;
@@ -721,7 +727,7 @@ resetGlobalError();
                 keep-scroll-bottom-position
                 :createMode="location === newLocation"
                 @update-location-name="updateLocationName($event, location.clientLocnCode)"
-                @save="(...args) => saveLocation(index)(...args)"
+                @save="saveLocation(index)($event)"
                 @canceled="handleLocationCanceled(location)"
               />
             </cds-accordion-item>
