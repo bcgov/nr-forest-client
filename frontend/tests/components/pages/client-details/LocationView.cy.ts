@@ -248,7 +248,10 @@ describe("<location-view />", () => {
     });
     beforeEach(() => {
       mount(customProps);
-      cy.get(`#location-${customProps.data.clientLocnCode}-EditBtn`).click();
+
+      if (!customProps.createMode) {
+        cy.get(`#location-${customProps.data.clientLocnCode}-EditBtn`).click();
+      }
     });
 
     it("enables the edition of some fields by displaying the staff-location-group-component", () => {
@@ -346,19 +349,41 @@ describe("<location-view />", () => {
       testTextInput("#emailAddress_0", currentProps.data.emailAddress);
     });
 
-    it("emits a save event when the Save button gets clicked", () => {
-      // Change some information
-      cy.clearFormEntry("#emailAddress_0");
+    const booleanValues = [false, true];
+    booleanValues.forEach((createMode) => {
+      describe(`createMode: ${createMode}`, () => {
+        before(() => {
+          customProps.createMode = createMode;
+        });
+        after(() => {
+          defaultInit();
+        });
+        it("emits a save event when the Save button gets clicked", () => {
+          // Change some information
+          cy.clearFormEntry("#emailAddress_0");
 
-      cy.get("#location-00-SaveBtn").click();
+          cy.get("#location-00-SaveBtn").click();
 
-      cy.get("@vueWrapper").should((vueWrapper) => {
-        const saveData = vueWrapper.emitted("save")[0][0];
+          cy.get("@vueWrapper").should((vueWrapper) => {
+            const saveData = vueWrapper.emitted("save")[0][0];
 
-        expect(saveData).to.be.an("array");
-        expect(saveData).to.have.lengthOf(1);
+            const { patch, updatedLocation } = saveData;
 
-        expect(saveData[0].op).to.eq("replace");
+            if (createMode) {
+              expect(patch).to.eq(null);
+            } else {
+              expect(patch).to.be.an("array");
+              expect(patch).to.have.lengthOf(1);
+              expect(patch[0].op).to.eq("replace");
+            }
+
+            // Contains the location data as edited/created by the user
+            expect(updatedLocation).to.deep.eq({
+              ...customProps.data,
+              emailAddress: "",
+            });
+          });
+        });
       });
     });
 
@@ -397,13 +422,14 @@ describe("<location-view />", () => {
 
           cy.get("@vueWrapper").should((vueWrapper) => {
             const saveData = vueWrapper.emitted("save")[0][0];
+            const { patch } = saveData;
 
-            expect(saveData).to.be.an("array");
-            expect(saveData).to.have.lengthOf(1);
+            expect(patch).to.be.an("array");
+            expect(patch).to.have.lengthOf(1);
 
-            expect(saveData[0].op).to.eq("replace");
-            expect(saveData[0].path).to.eq("/locnExpiredInd");
-            expect(saveData[0].value).to.eq("Y");
+            expect(patch[0].op).to.eq("replace");
+            expect(patch[0].path).to.eq("/locnExpiredInd");
+            expect(patch[0].value).to.eq("Y");
           });
         });
       });
@@ -432,13 +458,14 @@ describe("<location-view />", () => {
 
         cy.get("@vueWrapper").should((vueWrapper) => {
           const saveData = vueWrapper.emitted("save")[0][0];
+          const { patch } = saveData;
 
-          expect(saveData).to.be.an("array");
-          expect(saveData).to.have.lengthOf(1);
+          expect(patch).to.be.an("array");
+          expect(patch).to.have.lengthOf(1);
 
-          expect(saveData[0].op).to.eq("replace");
-          expect(saveData[0].path).to.eq("/locnExpiredInd");
-          expect(saveData[0].value).to.eq("N");
+          expect(patch[0].op).to.eq("replace");
+          expect(patch[0].path).to.eq("/locnExpiredInd");
+          expect(patch[0].value).to.eq("N");
         });
       });
     });
