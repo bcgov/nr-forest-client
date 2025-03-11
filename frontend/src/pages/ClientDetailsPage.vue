@@ -667,6 +667,7 @@ resetGlobalError();
             kind="primary"
             size="md"
             @click="addLocation"
+            :disabled="newLocation"
           >
             <span class="width-unset">Add location</span>
             <Add16 slot="icon" />
