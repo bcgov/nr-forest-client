@@ -1,10 +1,8 @@
 package ca.bc.gov.app.repository;
 
-import ca.bc.gov.app.dto.ForestClientLocationDetailsDto;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import ca.bc.gov.app.entity.ForestClientLocationEntityId;
 import ca.bc.gov.app.entity.ForestClientLocationProjection;
-import java.util.Map;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
@@ -80,7 +78,7 @@ public interface ForestClientLocationRepository
    * @return a Flux containing the matching ForestClientLocationEntity objects
    */
   Flux<ForestClientLocationEntity> findAllByClientNumber(String clientNumber);
-  
+
   @Query("""
       select 
         client_number,
