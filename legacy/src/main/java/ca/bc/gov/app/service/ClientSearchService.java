@@ -10,6 +10,7 @@ import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.ForestClientLocationDetailsDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
@@ -501,6 +502,27 @@ public class ClientSearchService {
             )
         .flatMap(dto -> locationRepository
                 .findLocationsByClientNumber(clientNumber)
+            .map(proj -> new ForestClientLocationDetailsDto(
+                proj.getClientNumber(),
+                proj.getClientLocnCode(),
+                proj.getClientLocnName(),
+                proj.getAddressOne(),
+                proj.getAddressTwo(),
+                proj.getAddressThree(),
+                proj.getCity(),
+                proj.getProvinceCode(),
+                proj.getProvinceDesc(),
+                proj.getCountryCode(),
+                proj.getCountryDesc(),
+                proj.getPostalCode(),
+                proj.getBusinessPhone(),
+                proj.getHomePhone(),
+                proj.getCellPhone(),
+                proj.getFaxNumber(),
+                proj.getEmailAddress(),
+                proj.getLocnExpiredInd(),
+                proj.getCliLocnComment()
+            ))
                 .collectList()
                 .map(dto::withAddresses)
                 .defaultIfEmpty(dto)

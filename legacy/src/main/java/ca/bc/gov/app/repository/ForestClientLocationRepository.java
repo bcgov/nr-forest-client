@@ -3,6 +3,8 @@ package ca.bc.gov.app.repository;
 import ca.bc.gov.app.dto.ForestClientLocationDetailsDto;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import ca.bc.gov.app.entity.ForestClientLocationEntityId;
+import ca.bc.gov.app.entity.ForestClientLocationProjection;
+import java.util.Map;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
@@ -84,9 +86,9 @@ public interface ForestClientLocationRepository
         client_number,
         client_locn_code,
         client_locn_name,
-        address_1 as address_one,
-        address_2 as address_two,
-        address_3 as address_three,
+        address_1,
+        address_2,
+        address_3,
         city,
         province as province_code,
         province_state_name as province_desc,
@@ -104,7 +106,8 @@ public interface ForestClientLocationRepository
       on l.province = p.province_state_code
       left outer join the.mailing_country c
       on l.country = c.country_name
-      where client_number = :clientNumber""")
-  Flux<ForestClientLocationDetailsDto> findLocationsByClientNumber(String clientNumber);
+      where client_number = :clientNumber
+      Order by client_locn_code""")
+  Flux<ForestClientLocationProjection> findLocationsByClientNumber(String clientNumber);
 
 }
