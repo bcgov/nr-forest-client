@@ -599,8 +599,8 @@ class ClientSearchControllerIntegrationTest extends
       response
           .expectStatus().isOk()
           .expectBody()
-          .jsonPath("$.clientNumber").isNotEmpty()
-          .jsonPath("$.clientNumber").isEqualTo(expectedClientNumber)
+          .jsonPath("$.client.clientNumber").isNotEmpty()
+          .jsonPath("$.client.clientNumber").isEqualTo(expectedClientNumber)
           .consumeWith(System.out::println);
     }
 

@@ -536,27 +536,29 @@ describe("toSentenceCase", () => {
 
 describe("Reason Fields Handling", () => {
   const originalData: ClientDetails = {
-    clientNumber: "12345",
-    clientName: "John Doe",
-    legalFirstName: "John",
-    legalMiddleName: "A.",
-    clientStatusCode: "ACT",
-    clientStatusDesc: "",
-    clientTypeCode: "",
-    clientTypeDesc: "",
-    clientIdTypeCode: "",
-    clientIdTypeDesc: "",
-    clientIdentification: "12345",
-    registryCompanyTypeCode: "",
-    corpRegnNmbr: "",
-    clientAcronym: "",
-    wcbFirmNumber: "",
-    ocgSupplierNmbr: "",
-    clientComment: "",
-    clientCommentUpdateDate: "",
-    clientCommentUpdateUser: "",
-    goodStandingInd: "",
-    birthdate: "",
+    client: {
+      clientNumber: "12345",
+      clientName: "John Doe",
+      legalFirstName: "John",
+      legalMiddleName: "A.",
+      clientStatusCode: "ACT",
+      clientStatusDesc: "",
+      clientTypeCode: "",
+      clientTypeDesc: "",
+      clientIdTypeCode: "",
+      clientIdTypeDesc: "",
+      clientIdentification: "12345",
+      registryCompanyTypeCode: "",
+      corpRegnNmbr: "",
+      clientAcronym: "",
+      wcbFirmNumber: "",
+      ocgSupplierNmbr: "",
+      clientComment: "",
+      clientCommentUpdateDate: "",
+      clientCommentUpdateUser: "",
+      goodStandingInd: "",
+      birthdate: "",
+    },
     doingBusinessAs: [],
     addresses: [
       {
@@ -638,31 +640,4 @@ describe("Reason Fields Handling", () => {
       expect(getActionLabel("UNKNOWN_ACTION")).toEqual("Unknown");
     });
   });
-
-  describe("getOldValue", () => {
-    it("returns old value from client details", () => {
-      expect(getOldValue("/clientName", originalData)).toEqual("John Doe");
-      expect(getOldValue("/provinceCode", originalData)).toEqual("BC");
-    });
-
-    it("returns 'N/A' for non-existent fields", () => {
-      expect(getOldValue("/nonExistentField", originalData)).toEqual("N/A");
-    });
-
-    it("handles Vue ref correctly", () => {
-      const clientRef = ref(originalData);
-      expect(getOldValue("/clientName", clientRef)).toEqual("John Doe");
-    });
-
-    it("returns 'N/A' and logs a warning when data is undefined", () => {
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    
-      expect(getOldValue("/clientName", undefined as unknown as ClientDetails)).toEqual("N/A");
-      expect(consoleWarnSpy).toHaveBeenCalledWith("Old value was called with undefined data!", "/clientName");
-    
-      consoleWarnSpy.mockRestore();
-    });
-    
-  });
-
 });

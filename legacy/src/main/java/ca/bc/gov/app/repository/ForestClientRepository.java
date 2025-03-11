@@ -1,6 +1,6 @@
 package ca.bc.gov.app.repository;
 
-import ca.bc.gov.app.dto.ForestClientDetailsDto;
+import ca.bc.gov.app.dto.ForestClientInformationDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import java.time.LocalDateTime;
@@ -106,7 +106,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
             where rn = 1
         ) fca on c.client_number = fca.client_number
       where c.client_number = :clientNumber""")
-  Mono<ForestClientDetailsDto> findDetailsByClientNumber(String clientNumber);
+  Mono<ForestClientInformationDto> findDetailsByClientNumber(String clientNumber);
 
   @Query("""
       SELECT
