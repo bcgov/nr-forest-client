@@ -1,5 +1,5 @@
 import type { Address } from "@/dto/ApplyClientNumberDto";
-import type { ClientLocation } from "@/dto/CommonTypesDto";
+import type { ClientLocation, ModalNotification } from "@/dto/CommonTypesDto";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import { formatPhoneNumber, locationToCreateFormat } from "@/services/ForestClientService";
 
@@ -7,6 +7,7 @@ import { VueWrapper } from "@vue/test-utils";
 import type { ComponentProps } from "vue-component-type-helpers";
 
 import "@carbon/web-components/es/components/modal/index";
+import { useEventBus } from "@vueuse/core";
 
 describe("<location-view />", () => {
   type RawProps = ComponentProps<typeof LocationView>;
@@ -261,6 +262,52 @@ describe("<location-view />", () => {
         const staffCreateData: Address = staffCreateComponent.props("modelValue");
 
         expect(staffCreateData).to.deep.eq(locationToCreateFormat(currentProps.data));
+      });
+    });
+
+    describe("additional delivery information", () => {
+      let bus: ReturnType<typeof useEventBus<ModalNotification>>;
+
+      before(() => {
+        customProps.data.addressThree = null;
+      });
+
+      beforeEach(() => {
+        bus = useEventBus<ModalNotification>("modal-notification");
+        bus.on((payload) => {
+          payload.handler(); // automatically proceed with the deletion
+        });
+      });
+
+      afterEach(() => {
+        bus.reset();
+      });
+
+      after(() => {
+        defaultInit();
+      });
+
+      it("should add the Additional delivery information and then remove it", () => {
+        // should not display the Additional delivery information input initially
+        cy.get("#complementaryAddressTwo_0").should("not.exist");
+
+        // click to add it
+        cy.contains("Add more delivery information").should("be.visible").click();
+
+        // should display the Additional delivery information input
+        cy.get("#complementaryAddressTwo_0").should("be.visible");
+
+        // should hide the button
+        cy.contains("Add more delivery information").should("not.exist");
+
+        // click to remove it
+        cy.get("#deleteAdditionalDeliveryInformation_0").click();
+
+        // should hide the Additional delivery information input again
+        cy.get("#complementaryAddressTwo_0").should("not.exist");
+
+        // the button to add it is visible again
+        cy.contains("Add more delivery information").should("be.visible");
       });
     });
 
