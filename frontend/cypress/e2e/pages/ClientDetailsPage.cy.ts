@@ -465,15 +465,17 @@ describe("Client Details Page", () => {
 
                 cy.get("cds-accordion[id|='location']").should("have.length", 4);
 
-                cy.wait(100);
+                /*
+                Wait to have a focused element.
+                Prevents error with focus switching.
+                */
+                cy.focused().its(0).should("not.eq", undefined);
 
                 cy.get("[data-scroll='location-3-heading']")
                   .its(0)
                   .invoke("getBoundingClientRect")
                   .its("top")
                   .should("eq", 0); // The scrollbar is right at this element.
-
-                cy.wait(100);
 
                 cy.fillFormEntry("#name_new", "Beach office");
 
@@ -557,15 +559,17 @@ describe("Client Details Page", () => {
               } else {
                 cy.get("#addlocationBtn").click();
 
-                cy.wait(100);
+                /*
+                Wait to have a focused element.
+                Prevents error with focus switching.
+                */
+                cy.focused().its(0).should("not.eq", undefined);
 
                 cy.get("[data-scroll='location-3-heading']")
                   .its(0)
                   .invoke("getBoundingClientRect")
                   .its("top")
                   .should("eq", 0); // The scrollbar is right at this element.
-
-                cy.wait(100);
 
                 cy.fillFormEntry("#name_new", "Beach office");
 
