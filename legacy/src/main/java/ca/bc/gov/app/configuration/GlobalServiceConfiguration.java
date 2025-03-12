@@ -10,6 +10,7 @@ import ca.bc.gov.app.dto.ForestClientLocationDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jackson.jsonpointer.JsonPointerMessages;
 import com.github.fge.jsonpatch.AddOperation;
 import com.github.fge.jsonpatch.CopyOperation;
 import com.github.fge.jsonpatch.DualPathOperation;
@@ -47,7 +48,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
     JsonPatchOperation.class,
     TestOperation.class,
     JsonPointer.class,
-    com.github.fge.jackson.jsonpointer.JsonPointer.class
+    com.github.fge.jackson.jsonpointer.JsonPointer.class,
+    JsonPointerMessages.class
 })
 public class GlobalServiceConfiguration {
   @Bean

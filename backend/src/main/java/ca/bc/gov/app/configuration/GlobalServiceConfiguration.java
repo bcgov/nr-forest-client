@@ -58,6 +58,7 @@ import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.fge.jackson.jsonpointer.JsonPointerMessages;
 import com.github.fge.jsonpatch.AddOperation;
 import com.github.fge.jsonpatch.CopyOperation;
 import com.github.fge.jsonpatch.DualPathOperation;
@@ -157,7 +158,8 @@ import org.springframework.web.reactive.function.client.WebClient;
     JsonPatchOperation.class,
     TestOperation.class,
     JsonPointer.class,
-    com.github.fge.jackson.jsonpointer.JsonPointer.class
+    com.github.fge.jackson.jsonpointer.JsonPointer.class,
+    JsonPointerMessages.class
 })
 public class GlobalServiceConfiguration {
 
