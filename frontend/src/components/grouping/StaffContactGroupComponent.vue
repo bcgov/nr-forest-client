@@ -25,6 +25,7 @@ const props = defineProps<{
   revalidate?: boolean;
   readOnlyName?: boolean;
   requiredLabel?: boolean;
+  hideDeleteButton?: boolean;
 }>();
 
 //Events we emit during component lifecycle
@@ -271,9 +272,8 @@ const updateContactType = (value: CodeNameType | undefined) => {
       @error="validation.locationNames = !$event"
     />
 
-    <div class="grouping-06">
+    <div class="grouping-06" v-if="!hideDeleteButton && id > 0">
       <cds-button
-        v-if="id > 0"
         :id="'deleteContact_' + id"
         :danger-descriptor="`Delete contact &quot;${getContactDescription(
           selectedValue,
