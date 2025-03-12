@@ -45,7 +45,7 @@ public class PatchOperationClientService implements ClientPatchOperation {
    */
   public Mono<Void> applyPatch(
       String clientNumber,
-      JsonPatch patch,
+      Object patch,
       ObjectMapper mapper
   ) {
 

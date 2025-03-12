@@ -1,6 +1,5 @@
 package ca.bc.gov.app.service.client;
 
-import com.github.fge.jsonpatch.JsonPatch;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,7 @@ public class ClientPatchService {
 
   private final ClientLegacyService legacyService;
 
-  public Mono<Void> patchClient(String clientNumber, JsonPatch forestClient) {
+  public Mono<Void> patchClient(String clientNumber, Object forestClient) {
     log.info("Sending request to the legacy system to patch client {}", clientNumber);
     return legacyService.patchClient(clientNumber, forestClient);
   }

@@ -69,7 +69,7 @@ public class PatchUtils {
    * @return true if any operation's path starts with the specified path prefix, false otherwise
    */
   public static boolean checkOperation(
-      JsonPatch patch,
+      Object patch,
       String checkPath,
       ObjectMapper mapper
   ) {
@@ -100,7 +100,7 @@ public class PatchUtils {
    * @return a JsonNode containing the filtered operations
    */
   public static JsonNode filterPatchOperations(
-      JsonPatch patch,
+      Object patch,
       String prefix,
       List<String> restrictedPaths,
       ObjectMapper mapper

@@ -1,7 +1,6 @@
 package ca.bc.gov.app.service.patch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatch;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,7 @@ public class ClientPatchService {
   private final ObjectMapper mapper;
   private final List<ClientPatchOperation> partialServices;
 
-  public Mono<Void> patchClient(String clientNumber, JsonPatch forestClient) {
+  public Mono<Void> patchClient(String clientNumber, Object forestClient) {
     log.info("Patching client with client number {} if any changes are detected", clientNumber);
 
     return

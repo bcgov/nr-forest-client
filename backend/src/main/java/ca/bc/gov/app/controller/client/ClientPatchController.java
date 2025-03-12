@@ -1,7 +1,6 @@
 package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.service.client.ClientPatchService;
-import com.github.fge.jsonpatch.JsonPatch;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +27,7 @@ public class ClientPatchController {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Mono<Void> patchForestClient(
       @PathVariable String clientNumber,
-      @RequestBody JsonPatch forestClient
+      @RequestBody Object forestClient //Setting as object because it's irrelevant for this service
   ) {
     log.info("Received a partial update request for client {}", clientNumber);
     return service.patchClient(clientNumber, forestClient);
