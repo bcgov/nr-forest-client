@@ -5,6 +5,7 @@ import type {
   ActionWords,
   ClientLocation,
   ModalNotification,
+  SaveLocationEvent,
   UserRole,
 } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
@@ -22,6 +23,7 @@ import Save16 from "@carbon/icons-vue/es/save/16";
 import Close16 from "@carbon/icons-vue/es/close/16";
 import Undefined16 from "@carbon/icons-vue/es/undefined/16";
 import Renew16 from "@carbon/icons-vue/es/renew/16";
+import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
 import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
@@ -32,21 +34,24 @@ const props = defineProps<{
   validations: Array<Function>;
   isReloading: boolean;
   keepScrollBottomPosition?: boolean;
+  createMode?: boolean;
 }>();
 
 const emit = defineEmits<{
-  (
-    e: "save",
-    value: jsonpatch.Operation[],
-    updatedLocation: ClientLocation,
-    action: ActionWords,
-  ): void;
+  (e: "save", payload: SaveLocationEvent): void;
   (e: "canceled"): void;
   (e: "updateLocationName", value: "string"): void;
 }>();
 
 const indexString = props.data.clientLocnCode;
-const index = Number(indexString);
+
+const indexNumber = Number(indexString);
+
+/* 
+If possible, converts the code into a number.
+Otherwise uses the code as it is.
+*/
+const index = isNaN(indexNumber) ? indexString : indexNumber;
 
 const businessPhone = computed(() => formatPhoneNumber(props.data.businessPhone));
 const cellPhone = computed(() => formatPhoneNumber(props.data.cellPhone));
@@ -63,7 +68,7 @@ useFetchTo("/api/codes/countries?page=0&size=250", countryList);
 
 const revalidate = ref(false);
 
-const isEditing = ref(false);
+const isEditing = ref(!!props.createMode);
 const hasAnyChange = ref(false);
 
 const resetFormData = () => {
@@ -115,19 +120,32 @@ defineExpose({
 });
 
 const save = (
-  newData: ClientLocation,
+  updatedLocation: ClientLocation,
   action: ActionWords = {
     infinitive: "update",
     pastParticiple: "updated",
   },
 ) => {
-  const patch = jsonpatch.compare(originalData, newData);
-  emit("save", patch, newData, action);
+  const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedLocation);
+  emit("save", {
+    patch,
+    updatedLocation,
+    action,
+  });
 };
 
 const saveForm = () => {
   const location = locationToEditFormat(formAddressData.value, props.data);
-  save(location);
+  const action = props.createMode
+    ? {
+        infinitive: "create",
+        pastParticiple: "created",
+      }
+    : {
+        infinitive: "update",
+        pastParticiple: "updated",
+      };
+  save(location, action);
 };
 
 const displayDeactivateModal = ref(false);
@@ -340,8 +358,14 @@ const handleRemoveAdditionalDelivery = () => {
           @click="saveForm"
           :disabled="!hasAnyChange || !valid"
         >
-          <span class="width-unset">Save changes</span>
-          <Save16 slot="icon" />
+          <template v-if="props.createMode">
+            <span class="width-unset">Save location</span>
+            <Check16 slot="icon" />
+          </template>
+          <template v-else>
+            <span class="width-unset">Save changes</span>
+            <Save16 slot="icon" />
+          </template>
         </cds-button>
         <cds-button
           :id="`location-${indexString}-CancelBtn`"
@@ -353,7 +377,7 @@ const handleRemoveAdditionalDelivery = () => {
           <Close16 slot="icon" />
         </cds-button>
         <cds-button
-          v-if="index > 0"
+          v-if="index > 0 && !props.createMode"
           :id="`location-${indexString}-DeactivateBtn`"
           kind="danger--tertiary"
           size="md"

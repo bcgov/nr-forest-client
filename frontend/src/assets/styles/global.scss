@@ -102,6 +102,9 @@
 
   //Layout
   --header-height: 3.5rem;
+  --staff-header-height: 3.0625rem;
+  --staff-tabs-height: 3rem;
+  --tab-header-height: 7rem;
 
   //Data-table
   --col-padding-rem: 1.5;
@@ -113,6 +116,9 @@
   */
   --scroll-bar-width-px: 15;
   --scroll-bar-width: calc(1rem * var(--scroll-bar-width-px) / 16);
+
+  --tab-panel-padding: 2.5rem;
+  --tab-panel-gap: 2rem;
 }
 
 @media screen and (hover: none) {
@@ -1736,6 +1742,16 @@ cds-header-panel[expanded] {
   width: unset;
 }
 
+.space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.opaque-background {
+  background-color: var(--cds-background, #ffffff);
+  z-index: 3;
+}
+
 cds-accordion-item[open] .hide-open {
   display: none;
 }
@@ -1756,11 +1772,23 @@ cds-accordion-item[open] .hide-open {
 }
 
 /* 
-Useful for scrolling to the *start* of an HTML element without having it covered under the page's header.
+Useful for scrolling to the *start* of an HTML element without having it covered under the page
+header.
 */
 .header-offset {
   position: relative;
   top: calc(-1 * var(--header-height));
+}
+
+/* 
+Useful for scrolling to the *start* of an HTML element without having it covered under the Staff's
+page header and tabs.
+*/
+.header-tabs-offset {
+  position: relative;
+  top: calc(-1 * (
+    var(--staff-header-height) + var(--staff-tabs-height) + var(--tab-header-height)
+  ));
 }
 
 .hide-when-less-than-two-children {
@@ -1891,6 +1919,11 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   width: 7.875rem;
 }
 
+.tabs-container {
+  position: sticky;
+  top: var(--staff-header-height);
+}
+
 .tab-panels-container {
   height: 100%;
 
@@ -1899,16 +1932,30 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   }
 }
 
+.tab-header {
+  --p: var(--tab-panel-padding);
+  --g: var(--tab-panel-gap);
+
+  background: var(--light-theme-layer-layer-01, #f3f3f5);
+  padding: var(--p) var(--p) var(--g) var(--p);
+
+  position: sticky;
+  top: calc(var(--staff-header-height) + var(--staff-tabs-height));
+  z-index: 3;
+}
+
 .tab-panel {
   height: 100%;
   background: var(--light-theme-layer-layer-01, #f3f3f5);
   box-sizing: border-box;
 
+  --p: var(--tab-panel-padding);
+
   &--populated {
-    padding: 2.5rem;
+    padding: 0 var(--p) var(--p) var(--p);
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: var(--tab-panel-gap);
     width: 100%;
 
     &[hidden] {
@@ -2116,7 +2163,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
     width: 0rem;
   }
 
-  .submission-content, .client-details-screen, .client-details-content {
+  .submission-content, .client-details-screen {
     padding: 2.5rem 1rem !important;
   }
 

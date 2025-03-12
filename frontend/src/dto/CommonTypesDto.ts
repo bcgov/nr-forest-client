@@ -1,4 +1,5 @@
 import { isRef } from "vue";
+import * as jsonpatch from "fast-json-patch";
 import type { Address } from "./ApplyClientNumberDto";
 
 export interface CodeDescrType {
@@ -280,6 +281,38 @@ export interface ClientLocation {
   updatedBy: string;
 }
 
+export const createClientLocation = (
+  clientNumber: string,
+  clientLocnCode: string,
+): ClientLocation => {
+  const location = {
+    clientNumber,
+    clientLocnCode,
+    clientLocnName: "",
+    addressOne: "",
+    addressTwo: "",
+    addressThree: null, // hides the input field and displays the button to add it
+    city: "",
+    provinceCode: "BC",
+    provinceDesc: "British Columbia",
+    postalCode: "",
+    countryCode: "CA",
+    countryDesc: "Canada",
+    businessPhone: "",
+    homePhone: "",
+    cellPhone: "",
+    faxNumber: "",
+    emailAddress: "",
+    locnExpiredInd: "N",
+    returnedMailDate: undefined,
+    trustLocationInd: undefined,
+    cliLocnComment: "",
+    createdBy: undefined,
+    updatedBy: undefined,
+  };
+  return location;
+};
+
 export interface ClientContact {
   clientNumber: string;
   clientLocnCode: string;
@@ -343,4 +376,10 @@ export type UserRole = (typeof userRoles)[number];
 export interface ActionWords {
   infinitive: string;
   pastParticiple: string;
+}
+
+export interface SaveLocationEvent {
+  patch: jsonpatch.Operation[] | null;
+  updatedLocation: ClientLocation;
+  action: ActionWords;
 }

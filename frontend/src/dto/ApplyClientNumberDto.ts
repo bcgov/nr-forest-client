@@ -81,7 +81,7 @@ export const indexedEmptyAddress = (index: number): Address =>
     JSON.stringify({
       locationName: "",
       complementaryAddressOne: "",
-      complementaryAddressTwo: null,
+      complementaryAddressTwo: null, // hides the input field and displays the button to add it
       streetAddress: "",
       country: { value: "CA", text: "Canada" },
       province: { value: "BC", text: "British Columbia" },

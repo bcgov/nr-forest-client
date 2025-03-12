@@ -409,169 +409,277 @@ describe("Client Details Page", () => {
           cy.get("#location-00-SaveBtn").shadow().find("button").should("be.disabled");
         });
       });
-      describe("save", () => {
-        describe("on success", { testIsolation: false }, () => {
-          const getClientDetailsCounter = {
-            count: 0,
-          };
 
-          let patchClientDetailsRequest;
-          before(function () {
-            init.call(this);
+      const scenarios = [{ name: "edit" }, { name: "create" }];
+      scenarios.forEach((scenario) => {
+        describe(`${scenario.name} - save`, () => {
+          describe("on success", { testIsolation: false }, () => {
+            const getClientDetailsCounter = {
+              count: 0,
+            };
 
-            cy.intercept(
-              {
-                method: "GET",
-                pathname: "/api/clients/details/*",
-              },
-              (req) => {
-                getClientDetailsCounter.count++;
-                req.continue();
-              },
-            ).as("getClientDetails");
+            let patchClientDetailsRequest;
+            before(function () {
+              init.call(this);
 
-            cy.intercept(
-              {
-                method: "PATCH",
-                pathname: "/api/clients/details/*",
-              },
-              (req) => {
-                patchClientDetailsRequest = req;
-                req.continue();
-              },
-            ).as("patchClientDetails");
+              cy.intercept(
+                {
+                  method: "GET",
+                  pathname: "/api/clients/details/*",
+                },
+                (req) => {
+                  getClientDetailsCounter.count++;
+                  req.continue();
+                },
+              ).as("getClientDetails");
 
-            cy.visit("/clients/details/g");
-            cy.wait("@getClientDetails");
+              cy.intercept(
+                {
+                  method: "PATCH",
+                  pathname: "/api/clients/details/*",
+                },
+                (req) => {
+                  patchClientDetailsRequest = req;
+                  req.continue();
+                },
+              ).as("patchClientDetails");
 
-            // Clicks to expand the accordion
-            cy.get("#location-00 [slot='title']").click();
+              cy.visit("/clients/details/g");
+              cy.wait("@getClientDetails");
 
-            cy.get("#location-00-EditBtn").click();
-            cy.clearFormEntry("#emailAddress_0");
-            cy.get("#location-00-SaveBtn").click();
-            cy.wait("@getClientDetails");
+              if (scenario.name === "edit") {
+                // Clicks to expand the accordion
+                cy.get("#location-00 [slot='title']").click();
+
+                cy.get("#location-00-EditBtn").click();
+                cy.clearFormEntry("#emailAddress_0");
+
+                cy.get("#location-00-SaveBtn").click();
+                cy.wait("@getClientDetails");
+              }
+            });
+
+            if (scenario.name === "create") {
+              it("scrolls down to the new form", () => {
+                cy.get("#addlocationBtn").click();
+
+                cy.get("[data-scroll='location-3-heading']").then(($el) => {
+                  const element = $el[0];
+                  cy.spy(element, "scrollIntoView").as("scrollToNewLocation");
+                });
+
+                cy.get("[data-focus='location-3-heading']").then(($el) => {
+                  const element = $el[0];
+                  cy.spy(element, "focus").as("focusNewLocation");
+                });
+
+                cy.get("cds-accordion[id|='location']").should("have.length", 4);
+
+                cy.get("@scrollToNewLocation").should("be.called");
+
+                /*
+                Wait to have a focused element.
+                Prevents error with focus switching.
+                */
+                cy.get("@focusNewLocation").should("be.called");
+
+                cy.fillFormEntry("#name_new", "Beach office");
+
+                cy.selectAutocompleteEntry("#addr_new", "123", "V8V8V8");
+
+                cy.get("#location-new-SaveBtn").click();
+                cy.wait("@getClientDetails");
+              });
+            }
+
+            it("prefixes the path with the corresponding location code", () => {
+              if (scenario.name === "edit") {
+                expect(patchClientDetailsRequest.body[0].path).to.eq("/addresses/00/emailAddress");
+              } else {
+                expect(patchClientDetailsRequest.body[0].path).to.eq("/addresses/null");
+              }
+            });
+
+            if (scenario.name === "edit") {
+              it("sends one or more 'replace' operations", () => {
+                expect(patchClientDetailsRequest.body[0].op).to.eq("replace");
+              });
+            } else {
+              it("sends an 'add' operation", () => {
+                expect(patchClientDetailsRequest.body[0].op).to.eq("add");
+              });
+            }
+
+            it("shows the success toast", () => {
+              if (scenario.name === "edit") {
+                cy.get("cds-toast-notification[kind='success']")
+                  .should("be.visible")
+                  .contains("00 - Mailing address");
+
+                cy.get("cds-toast-notification[kind='success']").contains("updated");
+              } else {
+                cy.get("cds-toast-notification[kind='success']")
+                  .should("be.visible")
+                  .contains("Beach office");
+
+                cy.get("cds-toast-notification[kind='success']").contains("created");
+              }
+            });
+
+            it("reloads data", () => {
+              // Called twice - one for the initial loading and one after saving.
+              cy.wrap(getClientDetailsCounter).its("count").should("eq", 2);
+            });
+
+            if (scenario.name === "edit") {
+              it("gets back into view mode", () => {
+                // Fields that belong to the form (edit mode)
+                testHidden("#city_0");
+                testHidden("#emailAddress_0");
+                testHidden("[data-id='input-notes_0']");
+
+                cy.get("#location-00-SaveBtn").should("not.exist");
+
+                testReadonly("#location-00-city-province");
+                testReadonly("#location-00-emailAddress");
+                testReadonly("#location-00-notes");
+
+                cy.get("#location-00-EditBtn").should("be.visible");
+              });
+            }
           });
 
-          it("prefixes the path with the corresponding location code", () => {
-            expect(patchClientDetailsRequest.body[0].path).to.eq("/addresses/00/emailAddress");
-          });
+          describe("on failure", { testIsolation: false }, () => {
+            before(function () {
+              init.call(this);
 
-          it("shows the success toast", () => {
-            cy.get("cds-toast-notification[kind='success']").should("be.visible");
-          });
+              cy.visit("/clients/details/g");
 
-          it("reloads data", () => {
-            // Called twice - one for the initial loading and one after saving.
-            cy.wrap(getClientDetailsCounter).its("count").should("eq", 2);
-          });
+              if (scenario.name === "edit") {
+                // Clicks to expand the accordion
+                cy.get("#location-00 [slot='title']").click();
 
-          it("gets back into view mode", () => {
-            // Fields that belong to the form (edit mode)
-            testHidden("#city_0");
-            testHidden("#emailAddress_0");
-            testHidden("[data-id='input-notes_0']");
+                cy.get("#location-00-EditBtn").click();
 
-            cy.get("#location-00-SaveBtn").should("not.exist");
+                cy.fillFormEntry("[data-id='input-notes_0']", "error", { area: true });
+              } else {
+                cy.get("#addlocationBtn").click();
 
-            testReadonly("#location-00-city-province");
-            testReadonly("#location-00-emailAddress");
-            testReadonly("#location-00-notes");
+                cy.get("[data-focus='location-3-heading']").then(($el) => {
+                  const element = $el[0];
+                  cy.spy(element, "focus").as("focusNewLocation");
+                });
 
-            cy.get("#location-00-EditBtn").should("be.visible");
-          });
-        });
+                /*
+                Wait to have a focused element.
+                Prevents error with focus switching.
+                */
+                cy.get("@focusNewLocation").should("be.called");
 
-        describe("on failure", { testIsolation: false }, () => {
-          before(function () {
-            init.call(this);
+                cy.fillFormEntry("#name_new", "Beach office");
 
-            cy.visit("/clients/details/g");
+                cy.selectAutocompleteEntry("#addr_new", "123", "V8V8V8");
 
-            // Clicks to expand the accordion
-            cy.get("#location-00 [slot='title']").click();
+                cy.fillFormEntry("[data-id='input-notes_new']", "error", { area: true });
+              }
 
-            cy.get("#location-00-EditBtn").click();
-            cy.fillFormEntry("[data-id='input-notes_0']", "error", { area: true });
-            cy.get("#location-00-SaveBtn").click();
-          });
+              if (scenario.name === "edit") {
+                cy.get("#location-00-SaveBtn").click();
+              } else {
+                cy.get("#location-new-SaveBtn").click();
+              }
+            });
 
-          it("shows the error toast", () => {
-            cy.get("cds-toast-notification[kind='error']").should("be.visible");
-          });
+            it("shows the error toast", () => {
+              cy.get("cds-toast-notification[kind='error']").should("be.visible");
 
-          it("stays in edit mode", () => {
-            cy.get("#city_0").should("be.visible");
-            cy.get("#emailAddress_0").should("be.visible");
-            cy.get("[data-id='input-notes_0']").should("be.visible");
+              if (scenario.name === "edit") {
+                cy.get("cds-toast-notification[kind='error']").contains("Failed to update");
+              } else {
+                cy.get("cds-toast-notification[kind='error']").contains("Failed to create");
+              }
+            });
 
-            cy.get("#location-00-SaveBtn").should("be.visible");
-          });
-        });
+            it("stays in edit mode", () => {
+              const id = scenario.name === "edit" ? 0 : "new";
+              cy.get(`#city_${id}`).should("be.visible");
+              cy.get(`#emailAddress_${id}`).should("be.visible");
+              cy.get(`[data-id='input-notes_${id}'`).should("be.visible");
 
-        describe("with reason modal", { testIsolation: false }, () => {
-          beforeEach(function () {
-            init.call(this);
-
-            cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
-
-            cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
-
-            cy.visit("/clients/details/g");
-
-            // Clicks to expand the accordion
-            cy.get("#location-00 [slot='title']").click();
-
-            cy.get("#location-00-EditBtn").click();
-            cy.fillFormEntry("#addr_0", "2 Update Av");
-            cy.fillFormEntry("#city_0", "Updateland");
-            cy.selectFormEntry("#province_0", "Quebec");
-            cy.get("#location-00-SaveBtn").click();
-
-            cy.wait("@getReasonsList").then(({ request }) => {
-              // requests the list of options related to Address change
-              expect(request.url.endsWith("/ADDR")).to.eq(true);
+              if (scenario.name === "edit") {
+                cy.get("#location-00-SaveBtn").should("be.visible");
+              } else {
+                cy.get("#location-new-SaveBtn").should("be.visible");
+              }
             });
           });
 
-          it("opens the reason modal and sends the correct PATCH request with reasons", () => {
-            cy.get("#reason-modal").should("be.visible");
+          if (scenario.name === "edit") {
+            describe("with reason modal", { testIsolation: false }, () => {
+              beforeEach(function () {
+                init.call(this);
 
-            cy.get("#input-reason-0").should("exist");
+                cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
 
-            // Only one reason should be required
-            cy.get("#input-reason-1").should("not.exist");
+                cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
 
-            cy.get("#input-reason-0").find('[part="trigger-button"]').click();
+                cy.visit("/clients/details/g");
 
-            cy.get("#input-reason-0")
-              .find("cds-dropdown-item")
-              .first()
-              .should("be.visible")
-              .click();
+                // Clicks to expand the accordion
+                cy.get("#location-00 [slot='title']").click();
 
-            cy.get("#reasonSaveBtn").click();
+                cy.get("#location-00-EditBtn").click();
+                cy.fillFormEntry("#addr_0", "2 Update Av");
+                cy.fillFormEntry("#city_0", "Updateland");
+                cy.selectFormEntry("#province_0", "Quebec");
+                cy.get("#location-00-SaveBtn").click();
 
-            cy.wait("@saveClientDetails").then((interception) => {
-              const requestBody = interception.request.body;
-
-              cy.log("Request Body:", JSON.stringify(requestBody));
-
-              expect(requestBody).to.deep.include({
-                op: "add",
-                path: "/reasons/0",
-                value: {
-                  field: "/addresses/00",
-                  reason: "R1",
-                },
+                cy.wait("@getReasonsList").then(({ request }) => {
+                  // requests the list of options related to Address change
+                  expect(request.url.endsWith("/ADDR")).to.eq(true);
+                });
               });
 
-              // Only 1 "add" operation (the reason one)
-              expect((requestBody as any[]).filter((item) => item.op === "add")).to.have.lengthOf(
-                1,
-              );
+              it("opens the reason modal and sends the correct PATCH request with reasons", () => {
+                cy.get("#reason-modal").should("be.visible");
+
+                cy.get("#input-reason-0").should("exist");
+
+                // Only one reason should be required
+                cy.get("#input-reason-1").should("not.exist");
+
+                cy.get("#input-reason-0").find('[part="trigger-button"]').click();
+
+                cy.get("#input-reason-0")
+                  .find("cds-dropdown-item")
+                  .first()
+                  .should("be.visible")
+                  .click();
+
+                cy.get("#reasonSaveBtn").click();
+
+                cy.wait("@saveClientDetails").then((interception) => {
+                  const requestBody = interception.request.body;
+
+                  cy.log("Request Body:", JSON.stringify(requestBody));
+
+                  expect(requestBody).to.deep.include({
+                    op: "add",
+                    path: "/reasons/0",
+                    value: {
+                      field: "/addresses/00",
+                      reason: "R1",
+                    },
+                  });
+
+                  // Only 1 "add" operation (the reason one)
+                  expect(
+                    (requestBody as any[]).filter((item) => item.op === "add"),
+                  ).to.have.lengthOf(1);
+                });
+              });
             });
-          });
+          }
         });
       });
     });

@@ -15,6 +15,7 @@ import tools from "@carbon/pictograms/es/tools";
 
 // Composables
 import { useFetchTo, useJsonPatch } from "@/composables/useFetch";
+import { useFocus } from "@/composables/useFocus";
 import useSvg from "@/composables/useSvg";
 import { useRouter } from "vue-router";
 import { useEventBus } from "@vueuse/core";
@@ -27,6 +28,7 @@ import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
 import Location20 from "@carbon/icons-vue/es/location/20";
 import User20 from "@carbon/icons-vue/es/user/20";
 import Launch16 from "@carbon/icons-vue/es/launch/16";
+import Add16 from "@carbon/icons-vue/es/add/16";
 
 import { greenDomain } from "@/CoreConstants";
 import {
@@ -40,13 +42,14 @@ import {
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
-import type {
-  ClientDetails,
-  ClientLocation,
-  ModalNotification,
-  FieldReason,
-  UserRole,
-  ActionWords,
+import {
+  type ClientDetails,
+  type ClientLocation,
+  type ModalNotification,
+  type FieldReason,
+  type UserRole,
+  type SaveLocationEvent,
+  createClientLocation,
 } from "@/dto/CommonTypesDto";
 
 // Page components
@@ -57,10 +60,11 @@ import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalVali
 
 // Route related
 const router = useRouter();
-const clientNumber = router.currentRoute.value.params.id;
+const clientNumber = router.currentRoute.value.params.id as string;
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
+const { setFocusedComponent, setScrollPoint } = useFocus();
 
 const data = ref<ClientDetails>(undefined);
 
@@ -124,18 +128,28 @@ const compareString = (a: string, b: string) => {
   return 0;
 };
 
-const sortedLocations = computed(() =>
-  data.value?.addresses?.toSorted((a, b) => compareString(a.clientLocnCode, b.clientLocnCode)),
-);
+const newLocation = ref<ClientLocation>();
+
+const sortedLocations = computed(() => {
+  const result = data.value?.addresses?.toSorted((a, b) =>
+    compareString(a.clientLocnCode, b.clientLocnCode),
+  );
+  if (newLocation.value) {
+    result.push(newLocation.value);
+  }
+  return result;
+});
 
 interface LocationState {
   isReloading?: boolean;
   name: string;
+  startOpen?: boolean;
 }
 
 const createLocationState = (locationState?: Partial<LocationState>): LocationState => ({
   isReloading: false,
   name: "",
+  startOpen: false,
   ...locationState,
 });
 
@@ -168,7 +182,10 @@ watch(sortedLocations, (value) => {
 });
 
 const formatLocation = (location: ClientLocation) => {
-  const parts = [location.clientLocnCode];
+  if (location.clientLocnCode === NEW_IDENTIFIER && !locationsState[location.clientLocnCode].name) {
+    return "New location";
+  }
+  const parts = location.clientLocnCode === NEW_IDENTIFIER ? [] : [location.clientLocnCode];
   const locationName = locationsState[location.clientLocnCode].name;
   if (locationName) {
     parts.push(locationName);
@@ -207,9 +224,27 @@ const associatedLocationsRecord = computed(() => {
   return result;
 });
 
+const NEW_IDENTIFIER = "new";
+
+const addLocation = () => {
+  const codeString = NEW_IDENTIFIER;
+  newLocation.value = createClientLocation(clientNumber, codeString);
+  locationsState[codeString] = createLocationState({ startOpen: true });
+
+  const index = sortedLocations.value.length - 1;
+  setScrollPoint(`location-${index}-heading`, undefined, () => {
+    setFocusedComponent(`location-${index}-heading`)
+  });
+};
+
 const handleLocationCanceled = (location: ClientLocation) => {
-  // reset to the original value
-  locationsState[location.clientLocnCode].name = location.clientLocnName;
+  if (location.clientLocnCode === NEW_IDENTIFIER) {
+    newLocation.value = undefined;
+    delete locationsState[location.clientLocnCode];
+  } else {
+    // reset location name
+    locationsState[location.clientLocnCode].name = location.clientLocnName;
+  }
 };
 
 const updateLocationName = (locationName: string, locationCode: string) => {
@@ -428,15 +463,42 @@ const setLocationRef = (index: number) => (el: InstanceType<typeof LocationView>
   locationsRef.value[index] = el;
 };
 
+const adjustPatchPath = (rawPatchData: jsonpatch.Operation[], prefix: string) => {
+  const patchData = rawPatchData.map((item) => ({
+    ...item,
+    path: `${prefix}${item.path}`,
+  }));
+  return patchData;
+};
+
+const createAddPatch = <T>(value: T, path: string) => {
+  const patch: jsonpatch.AddOperation<T> = {
+    op: "add",
+    path,
+    value,
+  };
+  return [patch];
+};
+
 const saveLocation =
   (index: number) =>
-  (rawPatchData: jsonpatch.Operation[], updatedLocation: ClientLocation, action: ActionWords) => {
+  (payload: SaveLocationEvent) => {
+    const {
+      patch: rawPatchData,
+      updatedLocation,
+      action,
+    } = payload;
+
     const locationCode = updatedLocation.clientLocnCode;
 
-    const patchData = rawPatchData.map((item) => ({
-      ...item,
-      path: `/addresses/${locationCode}${item.path}`,
-    }));
+    const isNew = updatedLocation.clientLocnCode === NEW_IDENTIFIER;
+
+    // Removes the location code from the new data as it's just a pseudo id.
+    const { clientLocnCode, ...newLocationData } = updatedLocation;
+
+    const patchData = isNew
+      ? createAddPatch(newLocationData, "/addresses/null")
+      : adjustPatchPath(rawPatchData, `/addresses/${locationCode}`);
 
     const updatedTitle = formatLocation(updatedLocation);
 
@@ -460,6 +522,11 @@ const saveLocation =
 
       fetchClientData().asyncResponse.then(() => {
         locationsState[locationCode].isReloading = false;
+
+        if (isNew) {
+          // Reset the newLocation variable
+          newLocation.value = undefined;
+        }
       });
     };
 
@@ -562,48 +629,70 @@ resetGlobalError();
             </div>
           </div>
         </div>
-
-        <cds-tabs value="locations" type="contained">
-          <cds-tab id="tab-locations" target="panel-locations" value="locations">
-            <div>
-              Client locations
-              <Location16 />
-            </div>
-          </cds-tab>
-          <cds-tab id="tab-contacts" target="panel-contacts" value="contacts">
-            <div>
-              Client contacts
-              <User16 />
-            </div>
-          </cds-tab>
-          <cds-tab id="tab-related" target="panel-related" value="related">
-            <div>
-              Related clients
-              <NetworkEnterprise16 />
-            </div>
-          </cds-tab>
-          <cds-tab id="tab-activity" target="panel-activity" value="activity">
-            <div>
-              Activity log
-              <RecentlyViewed16 />
-            </div>
-          </cds-tab>
-        </cds-tabs>
       </div>
+      <div class="invisible"></div>
+    </div>
+    <div class="client-details-content tabs-container opaque-background" v-if="data">
+      <cds-tabs value="locations" type="contained">
+        <cds-tab id="tab-locations" target="panel-locations" value="locations">
+          <div>
+            Client locations
+            <Location16 />
+          </div>
+        </cds-tab>
+        <cds-tab id="tab-contacts" target="panel-contacts" value="contacts">
+          <div>
+            Client contacts
+            <User16 />
+          </div>
+        </cds-tab>
+        <cds-tab id="tab-related" target="panel-related" value="related">
+          <div>
+            Related clients
+            <NetworkEnterprise16 />
+          </div>
+        </cds-tab>
+        <cds-tab id="tab-activity" target="panel-activity" value="activity">
+          <div>
+            Activity log
+            <RecentlyViewed16 />
+          </div>
+        </cds-tab>
+      </cds-tabs>
     </div>
     <div class="tab-panels-container" v-if="data">
       <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
-        <div class="tab-panel tab-panel--populated">
+        <div class="tab-header space-between">
           <h3 class="padding-left-1rem">
             {{ formatCount(data.addresses?.length) }}
             {{ pluralize("location", data.addresses?.length) }}
           </h3>
+          <cds-button
+            v-if="userHasAuthority"
+            id="addlocationBtn"
+            kind="primary"
+            size="md"
+            @click="addLocation"
+            :disabled="newLocation"
+          >
+            <span class="width-unset">Add location</span>
+            <Add16 slot="icon" />
+          </cds-button>
+        </div>
+        <div class="tab-panel tab-panel--populated">
           <cds-accordion
             v-for="(location, index) in sortedLocations"
             :key="location.clientLocnCode"
             :id="`location-${location.clientLocnCode}`"
           >
-            <cds-accordion-item size="lg" class="grouping-13" v-shadow="1">
+            <div :data-scroll="`location-${index}-heading`" class="header-tabs-offset"></div>
+            <cds-accordion-item
+              size="lg"
+              class="grouping-13"
+              v-shadow="1"
+              :open="locationsState[location.clientLocnCode]?.startOpen"
+              :data-focus="`location-${index}-heading`"
+            >
               <div
                 slot="title"
                 class="flex-column-0_25rem"
@@ -636,8 +725,9 @@ resetGlobalError();
                 :user-roles="userRoles"
                 :validations="[uniqueLocations.check]"
                 keep-scroll-bottom-position
+                :createMode="location === newLocation"
                 @update-location-name="updateLocationName($event, location.clientLocnCode)"
-                @save="(...args) => saveLocation(index)(...args)"
+                @save="saveLocation(index)($event)"
                 @canceled="handleLocationCanceled(location)"
               />
             </cds-accordion-item>
@@ -645,37 +735,41 @@ resetGlobalError();
         </div>
       </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
-        <div class="tab-panel tab-panel--populated" v-if="data.contacts?.length">
-          <h3 class="padding-left-1rem">
-            {{ formatCount(data.contacts?.length) }}
-            {{ pluralize("contact", data.contacts?.length) }}
-          </h3>
-          <cds-accordion
-            v-for="(contact, index) in sortedContacts"
-            :key="contact.contactName"
-            :id="`contact-${index}`"
-          >
-            <cds-accordion-item size="lg" class="grouping-13">
-              <div slot="title" class="flex-column-0_25rem">
-                <span class="label-with-icon">
-                  <User20 />
-                  {{ contact.contactName }}
-                </span>
-                <span
-                  :id="`contact-${index}-title-locations`"
-                  class="hide-open body-compact-01 padding-left-1_625rem"
-                >
-                  {{ associatedLocationsRecord[index] }}
-                </span>
-              </div>
-              <contact-view
-                :data="contact"
-                :index="index"
-                :associatedLocationsString="associatedLocationsRecord[index]"
-              />
-            </cds-accordion-item>
-          </cds-accordion>
-        </div>
+        <template v-if="data.contacts?.length">
+          <div class="tab-header space-between">
+            <h3 class="padding-left-1rem">
+              {{ formatCount(data.contacts?.length) }}
+              {{ pluralize("contact", data.contacts?.length) }}
+            </h3>
+          </div>
+          <div class="tab-panel tab-panel--populated">
+            <cds-accordion
+              v-for="(contact, index) in sortedContacts"
+              :key="contact.contactName"
+              :id="`contact-${index}`"
+            >
+              <cds-accordion-item size="lg" class="grouping-13">
+                <div slot="title" class="flex-column-0_25rem">
+                  <span class="label-with-icon">
+                    <User20 />
+                    {{ contact.contactName }}
+                  </span>
+                  <span
+                    :id="`contact-${index}-title-locations`"
+                    class="hide-open body-compact-01 padding-left-1_625rem"
+                  >
+                    {{ associatedLocationsRecord[index] }}
+                  </span>
+                </div>
+                <contact-view
+                  :data="contact"
+                  :index="index"
+                  :associatedLocationsString="associatedLocationsRecord[index]"
+                />
+              </cds-accordion-item>
+            </cds-accordion>
+          </div>
+        </template>
         <div class="tab-panel tab-panel--empty" v-else>
           <div class="empty-table-list">
             <summit-svg alt="Summit pictogram" class="standard-svg" />
