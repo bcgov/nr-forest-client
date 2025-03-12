@@ -16,7 +16,6 @@ jobs:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
-          triggers: ${{ inputs.triggers }}
           commands: |
             # This removes a new pluggable database, user and service for the PR
             for i in {1..5}; do

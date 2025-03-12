@@ -98,7 +98,6 @@ jobs:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
-          triggers: ${{ inputs.triggers }}
           cronjob: ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup
 
       - name: Deploy Database

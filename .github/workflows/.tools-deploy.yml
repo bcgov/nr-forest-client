@@ -38,7 +38,6 @@ jobs:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
-          triggers: ${{ inputs.triggers }}
           commands: |
             oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=0 -n ${{ secrets.OC_NAMESPACE }}
             undesired_replicas=0  
@@ -95,7 +94,6 @@ jobs:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
-          triggers: ${{ inputs.triggers }}
           commands: |
             # This creates a new pluggable database for the PR
             for i in {1..5}; do
@@ -121,7 +119,6 @@ jobs:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
-          triggers: ${{ inputs.triggers }}
           commands: |
             # This creates a new pluggable database for the PR
             for i in {1..5}; do
@@ -147,7 +144,6 @@ jobs:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
-          triggers: ${{ inputs.triggers }}
           commands: |
             BRANCH_NAME="${{ github.head_ref }}"
             ESCAPED_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[\/&]/\\&/g')
@@ -167,6 +163,5 @@ jobs:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
-          triggers: ${{ inputs.triggers }}
           commands: |
             oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=1
