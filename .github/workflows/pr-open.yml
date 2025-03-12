@@ -90,19 +90,16 @@ jobs:
           parameters:
             -p ZONE=${{ github.event.number }}
             -p TAG=${{ github.event.number }}
-      - name: Install CLI tools from OpenShift Mirror
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:        
-          oc: "4.13"
+
       - name: Backup database before update
         continue-on-error: true
-        run: |
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }} # Safeguard!
-
-          # Run a backup before deploying a new version
-          oc create job --from=cronjob/${{ github.event.repository.name }}-${{ github.event.number }}-database-backup \
-            ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup-$(date +%Y%m%d%H%M%S)
+        uses: bcgov/action-oc-runner@v1.0.0
+        with:
+          oc_namespace: ${{ secrets.oc_namespace }}
+          oc_token: ${{ secrets.oc_token }}
+          oc_server: ${{ secrets.oc_server }}
+          triggers: ${{ inputs.triggers }}
+          cronjob: ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup
 
       - name: Deploy Database
         uses: bcgov/action-deployer-openshift@v4.0.0
