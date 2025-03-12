@@ -1,5 +1,14 @@
-{
-  "name" : "com.github.fge.jackson.jsonpointer.JsonPointer",
-  "allDeclaredFields" : true,
-  "allDeclaredMethods" : true
-}
+[
+  {
+    "name": "com.github.fge.jackson.jsonpointer.JsonPointer",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.github.fge.jackson.jsonpointer.JsonPointerMessages",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  }
+]
