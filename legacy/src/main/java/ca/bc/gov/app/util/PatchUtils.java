@@ -2,11 +2,13 @@ package ca.bc.gov.app.util;
 
 
 import ca.bc.gov.app.exception.CannotApplyPatchException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchOperation;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +49,13 @@ public class PatchUtils {
       JsonNode node = mapper.convertValue(target, JsonNode.class);
 
       // This maps the JsonNode to a JsonPatch object.
-      JsonPatch filteredPatch = mapper.treeToValue(patch, JsonPatch.class);
+
+      List<JsonPatchOperation> operations = mapper.treeToValue(patch,
+          new TypeReference<List<JsonPatchOperation>>() {
+          });
+
+      JsonPatch filteredPatch = new JsonPatch(
+          operations); //mapper.treeToValue(patch, JsonPatch.class);
 
       // Apply the patch to the original object in order to create a new object with the changes.
       JsonNode patched = filteredPatch.apply(node);
