@@ -38,8 +38,6 @@ jobs:
           tag: ${{ github.event.number }}
           tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
-          build_args: |
-            APP_VERSION=${{ github.event.number }}
 
   deploy:
     name: Deploy Application

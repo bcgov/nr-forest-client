@@ -22,8 +22,6 @@ jobs:
           tag: ${{ github.event.number }}
           tag_fallback: latest
           triggers: ('legacydb/')
-          build_args: |
-            APP_VERSION=${{ github.event.number }}
 
   pre-tools:
     name: Pre Deploy Tools
