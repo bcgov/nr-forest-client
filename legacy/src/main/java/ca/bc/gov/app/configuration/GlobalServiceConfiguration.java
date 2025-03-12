@@ -46,7 +46,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
     PathValueOperation.class,
     JsonPatchOperation.class,
     TestOperation.class,
-    JsonPointer.class
+    JsonPointer.class,
+    com.github.fge.jackson.jsonpointer.JsonPointer.class
 })
 public class GlobalServiceConfiguration {
   @Bean

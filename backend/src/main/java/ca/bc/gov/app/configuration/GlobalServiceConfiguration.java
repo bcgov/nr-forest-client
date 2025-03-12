@@ -156,7 +156,8 @@ import org.springframework.web.reactive.function.client.WebClient;
     PathValueOperation.class,
     JsonPatchOperation.class,
     TestOperation.class,
-    JsonPointer.class
+    JsonPointer.class,
+    com.github.fge.jackson.jsonpointer.JsonPointer.class
 })
 public class GlobalServiceConfiguration {
 
