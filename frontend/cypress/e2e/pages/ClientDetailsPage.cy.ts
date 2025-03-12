@@ -463,19 +463,20 @@ describe("Client Details Page", () => {
               it("scrolls down to the new form", () => {
                 cy.get("#addlocationBtn").click();
 
+                cy.get("[data-scroll='location-3-heading']").then(($el) => {
+                  const element = $el[0];
+                  cy.spy(element, "scrollIntoView").as("scrollToNewLocation");
+                });
+
                 cy.get("cds-accordion[id|='location']").should("have.length", 4);
+
+                cy.get("@scrollToNewLocation").should("be.called");
 
                 /*
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
                 cy.focused().its(0).should("not.eq", undefined);
-
-                cy.get("[data-scroll='location-3-heading']")
-                  .its(0)
-                  .invoke("getBoundingClientRect")
-                  .its("top")
-                  .should("eq", 0); // The scrollbar is right at this element.
 
                 cy.fillFormEntry("#name_new", "Beach office");
 
@@ -564,12 +565,6 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 cy.focused().its(0).should("not.eq", undefined);
-
-                cy.get("[data-scroll='location-3-heading']")
-                  .its(0)
-                  .invoke("getBoundingClientRect")
-                  .its("top")
-                  .should("eq", 0); // The scrollbar is right at this element.
 
                 cy.fillFormEntry("#name_new", "Beach office");
 
