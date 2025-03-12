@@ -57,6 +57,16 @@ import ca.bc.gov.app.health.ManualHealthIndicator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.fge.jsonpatch.AddOperation;
+import com.github.fge.jsonpatch.CopyOperation;
+import com.github.fge.jsonpatch.DualPathOperation;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchOperation;
+import com.github.fge.jsonpatch.MoveOperation;
+import com.github.fge.jsonpatch.PathValueOperation;
+import com.github.fge.jsonpatch.RemoveOperation;
+import com.github.fge.jsonpatch.ReplaceOperation;
+import com.github.fge.jsonpatch.TestOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -134,7 +144,17 @@ import org.springframework.web.reactive.function.client.WebClient;
     BcRegistryAlternateNameDto.class,
     BcRegistryFacetPartyDto.class,
     BcRegistryFacetRequestBodyDto.class,
-    BcRegistryFacetRequestQueryDto.class
+    BcRegistryFacetRequestQueryDto.class,
+    JsonPatch.class,
+    ReplaceOperation.class,
+    RemoveOperation.class,
+    MoveOperation.class,
+    AddOperation.class,
+    CopyOperation.class,
+    DualPathOperation.class,
+    PathValueOperation.class,
+    JsonPatchOperation.class,
+    TestOperation.class
 })
 public class GlobalServiceConfiguration {
 
