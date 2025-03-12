@@ -5,7 +5,6 @@ import ca.bc.gov.app.repository.ForestClientRepository;
 import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatch;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

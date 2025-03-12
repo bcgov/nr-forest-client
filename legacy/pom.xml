@@ -124,11 +124,17 @@
       <artifactId>mapstruct-processor</artifactId>
       <version>${mapstruct.version}l</version>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>com.github.java-json-tools</groupId>
       <artifactId>json-patch</artifactId>
       <version>1.13</version>
+    </dependency>-->
+    <dependency>
+      <groupId>com.flipkart.zjsonpatch</groupId>
+      <artifactId>zjsonpatch</artifactId>
+      <version>0.4.16</version>
     </dependency>
+
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -270,10 +276,6 @@
           <buildArgs>
             <buildArg>-H:+ReportExceptionStackTraces</buildArg>
             <buildArg>--initialize-at-build-time=org.apache.commons.logging.LogFactoryService</buildArg>
-            <buildArg>--initialize-at-run-time=com.github.fge.jsonpatch.JsonPatchMessages</buildArg>
-            <buildArg>--initialize-at-run-time=com.github.fge.msgsimple.load.MessageBundles</buildArg>
-            <buildArg>-H:IncludeResources=com/github/fge/jsonpatch/.*</buildArg>
-            <buildArg>-H:IncludeResources=com/github/fge/msgsimple/.*</buildArg>
           </buildArgs>
         </configuration>
       </plugin>
