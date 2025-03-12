@@ -468,6 +468,11 @@ describe("Client Details Page", () => {
                   cy.spy(element, "scrollIntoView").as("scrollToNewLocation");
                 });
 
+                cy.get("[data-focus='location-3-heading']").then(($el) => {
+                  const element = $el[0];
+                  cy.spy(element, "focus").as("focusNewLocation");
+                });
+
                 cy.get("cds-accordion[id|='location']").should("have.length", 4);
 
                 cy.get("@scrollToNewLocation").should("be.called");
@@ -476,7 +481,7 @@ describe("Client Details Page", () => {
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.focused().its(0).should("not.eq", undefined);
+                cy.get("@focusNewLocation").should("be.called");
 
                 cy.fillFormEntry("#name_new", "Beach office");
 
@@ -560,11 +565,16 @@ describe("Client Details Page", () => {
               } else {
                 cy.get("#addlocationBtn").click();
 
+                cy.get("[data-focus='location-3-heading']").then(($el) => {
+                  const element = $el[0];
+                  cy.spy(element, "focus").as("focusNewLocation");
+                });
+
                 /*
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.focused().its(0).should("not.eq", undefined);
+                cy.get("@focusNewLocation").should("be.called");
 
                 cy.fillFormEntry("#name_new", "Beach office");
 
