@@ -82,15 +82,9 @@ parameters:
   - name: COGNITO_CLIENT_ID
     description: Cognito client id
     required: true
-  - name: COGNITO_USER_POOL
-    description: Cognito user pool id
-    required: true
   - name: COGNITO_DOMAIN
     description: Cognito domain
     required: true
-  - name: COGNITO_ENVIRONMENT
-    description: Cognito environment
-    required: true  
   - name: LANDING_URL
     required: true
   - name: URL_FRONTEND
