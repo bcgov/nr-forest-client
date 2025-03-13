@@ -156,7 +156,7 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
+      name: ${NAME}-${ZONE}-frontend
     data:
       config.js: |
         window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${ZONE}-backend.${DOMAIN}');
