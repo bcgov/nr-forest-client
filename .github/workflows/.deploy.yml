@@ -64,9 +64,16 @@ jobs:
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
             -p DB_PASSWORD=$(echo ${{github.ref}}${{github.event.number}}|md5sum|cut -d' ' -f1)
-            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p COGNITO_ENVIRONMENT=DEV
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
+            -p VITE_NODE_ENV=openshift-dev
+            -p URL_FRONTEND=${{ steps.calculate.outputs.url }}
+            -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
+            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
+            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
+            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+            -p LANDING_URL=${{ needs.init.outputs.url }}
 
       - name: Backup database before update
         continue-on-error: true
@@ -98,7 +105,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        name: [database-bk, legacy, processor, backend, backend-cm, database-dev, frontend-cm]
+        name: [database-bk, legacy, processor, backend, backend-cm, database-dev, frontend frontend-cm]
         include:
           - name: database-bk
             file: database/openshift.backup.yml
@@ -126,19 +133,8 @@ jobs:
             file: backend/openshift.configmap.dev.yml
           - name: database-dev
             file: database/openshift.dev.yml
-          # - name: frontend
-          #   file: frontend/openshift.deploy.yml
-          #   parameters:
-          #     -p TAG=${{ inputs.tag }}
-          #     -p VITE_NODE_ENV=openshift-dev
-          #     -p URL=${{ needs.init.outputs.url }}
-          #     -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
-          #     -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-          #     -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
-          #     -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-          #     -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
-          #     -p COGNITO_ENVIRONMENT=DEV
-          #     -p LANDING_URL=${{ needs.init.outputs.url }}
+          - name: frontend
+            file: frontend/openshift.deploy.yml
           - name: frontend-cm
             file: frontend/openshift.configmap.dev.yml
     steps:
