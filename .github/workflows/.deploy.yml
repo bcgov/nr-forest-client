@@ -63,7 +63,6 @@ jobs:
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
-            -p DB_PASSWORD=$(echo ${{github.ref}}${{github.event.number}}|md5sum|cut -d' ' -f1)
             -p COGNITO_ENVIRONMENT=DEV
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
             -p VITE_NODE_ENV=openshift-dev
@@ -73,7 +72,8 @@ jobs:
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p LANDING_URL=${{ needs.init.outputs.url }}
+            -p LANDING_URL=${{ steps.calculate.outputs.url }}
+            -p DB_PASSWORD="$(echo ${{github.ref}}${{github.event.number}}|md5sum|cut -d' ' -f1)"
 
       - name: Backup database before update
         continue-on-error: true
