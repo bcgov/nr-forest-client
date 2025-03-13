@@ -26,35 +26,26 @@ on:
 permissions: {}
 
 jobs:
-  vars:
-    name: Variables
+  init:
+    name: Deploy (init)
     runs-on: ubuntu-24.04
     outputs:
       url: ${{ steps.calculate.outputs.url }}
     steps:
-      # steps.calculate.outputs.url => needs.vars.outputs.url
+      # steps.calculate.outputs.url => needs.init.outputs.url
       - name: Calculate the deployment number
         id: calculate
         run: |
           echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
           echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca"
 
-  deploy:
-    name: Deploy Application
-    needs: [vars]
-    environment: ${{ inputs.environment }}
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Initializing Deployment
+      - name: Deployment Init
         uses: bcgov/action-deployer-openshift@v4.0.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: "4.13"
           overwrite: true
           parameters:
             -p ZONE=${{ inputs.target }}
@@ -76,21 +67,9 @@ jobs:
             -p COGNITO_ENVIRONMENT=DEV
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
 
-      - name: Deploy Database Backup
-        uses: bcgov/action-deployer-openshift@v4.0.0
-        with:
-          file: database/openshift.backup.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: "4.13"
-          overwrite: true
-          parameters:
-            -p ZONE=${{ inputs.target }}
-            -p TAG=${{ inputs.tag }}
-
       - name: Backup database before update
         continue-on-error: true
+        if: github.event_name != 'pull_request'
         uses: bcgov/action-oc-runner@v1.0.0
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
@@ -105,113 +84,115 @@ jobs:
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: "4.13"
           overwrite: false
           parameters:
             -p ZONE=${{ inputs.target }}
             -p TAG=${{ inputs.tag }}
 
-      - name: Deploy Legacy
-        uses: bcgov/action-deployer-openshift@v4.0.0
+  deploy:
+    name: Deploy Application
+    needs: [init]
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        name: [database-bk]
+        include:
+          - name: database-bk
+            file: database/openshift.backup.yml
+            parameters: -p TAG=${{ inputs.tag }}
+    steps:
+      - uses: bcgov/action-deployer-openshift@v3.2.0
+        id: deploys
         with:
-          file: legacy/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
+          file: ${{ matrix.file }}
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: "4.13"
           overwrite: true
           parameters:
             -p ZONE=${{ inputs.target }}
-            -p TAG=${{ inputs.tag }}
-            -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
-            -p ORACLEDB_PORT=1521
+            ${{ matrix.parameters }}
 
-      - name: Deploy Processor
-        uses: bcgov/action-deployer-openshift@v4.0.0
-        with:
-          file: processor/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: "4.13"
-          overwrite: true
-          parameters:
-            -p ZONE=${{ inputs.target }}
-            -p TAG=${{ inputs.tag }}
-            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+      # - name: Deploy Legacy
+      #   uses: bcgov/action-deployer-openshift@v4.0.0
+      #   with:
+      #     file: legacy/openshift.deploy.yml
+      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      #     oc_server: ${{ secrets.OC_SERVER }}
+      #     oc_token: ${{ secrets.OC_TOKEN }}
+      #     parameters:
+      #       -p TAG=${{ inputs.tag }}
+      #       -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
+      #       -p ORACLEDB_PORT=1521
 
-      - name: Deploy Backend ConfigMap
-        uses: bcgov/action-deployer-openshift@v4.0.0
-        with:
-          file: backend/openshift.configmap.dev.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: "4.13"
-          overwrite: true          
-          parameters:
-            -p ZONE=${{ inputs.target }}            
+      # - name: Deploy Processor
+      #   uses: bcgov/action-deployer-openshift@v4.0.0
+      #   with:
+      #     file: processor/openshift.deploy.yml
+      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      #     oc_server: ${{ secrets.OC_SERVER }}
+      #     oc_token: ${{ secrets.OC_TOKEN }}
+      #     parameters:
+      #       -p TAG=${{ inputs.tag }}
+      #       -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
-      - name: Deploy Backend
-        uses: bcgov/action-deployer-openshift@v4.0.0
-        with:
-          file: backend/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: "4.13"
-          overwrite: true
-          parameters:
-            -p ZONE=${{ inputs.target }}
-            -p TAG=${{ inputs.tag }}
-            -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-            -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
-            -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
-            -p COGNITO_REGION=ca-central-1
-            -p FRONTEND_URL=${{ needs.vars.outputs.url }}
+      # - name: Deploy Backend ConfigMap
+      #   uses: bcgov/action-deployer-openshift@v4.0.0
+      #   with:
+      #     file: backend/openshift.configmap.dev.yml
+      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      #     oc_server: ${{ secrets.OC_SERVER }}
+      #     oc_token: ${{ secrets.OC_TOKEN }}
 
-      - name: Dev data replacement
-        uses: bcgov/action-deployer-openshift@v4.0.0
-        with:
-          file: database/openshift.dev.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: "4.13"
-          overwrite: true
-          parameters: -p ZONE=${{ inputs.target }}
+      # - name: Deploy Backend
+      #   uses: bcgov/action-deployer-openshift@v4.0.0
+      #   with:
+      #     file: backend/openshift.deploy.yml
+      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      #     oc_server: ${{ secrets.OC_SERVER }}
+      #     oc_token: ${{ secrets.OC_TOKEN }}
+      #     parameters:
+      #       -p TAG=${{ inputs.tag }}
+      #       -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
+      #       -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
+      #       -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
+      #       -p COGNITO_REGION=ca-central-1
+      #       -p FRONTEND_URL=${{ needs.init.outputs.url }}
 
-      - name: Deploy Frontend ConfigMap
-        uses: bcgov/action-deployer-openshift@v4.0.0
-        with:
-          file: frontend/openshift.configmap.dev.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: "4.13"
-          overwrite: true          
-          parameters:
-            -p ZONE=${{ inputs.target }}  
+      # - name: Dev data replacement
+      #   uses: bcgov/action-deployer-openshift@v4.0.0
+      #   with:
+      #     file: database/openshift.dev.yml
+      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      #     oc_server: ${{ secrets.OC_SERVER }}
+      #     oc_token: ${{ secrets.OC_TOKEN }}
 
-      - name: Deploy Frontend
-        uses: bcgov/action-deployer-openshift@v4.0.0
-        with:
-          file: frontend/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: "4.13"
-          overwrite: true
-          parameters:
-            -p ZONE=${{ inputs.target }}
-            -p TAG=${{ inputs.tag }}
-            -p VITE_NODE_ENV=openshift-dev
-            -p URL=${{ needs.vars.outputs.url }}
-            -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
-            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
-            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
-            -p COGNITO_ENVIRONMENT=DEV
-            -p LANDING_URL=${{ needs.vars.outputs.url }}
+      # - name: Deploy Frontend ConfigMap
+      #   uses: bcgov/action-deployer-openshift@v4.0.0
+      #   with:
+      #     file: frontend/openshift.configmap.dev.yml
+      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      #     oc_server: ${{ secrets.OC_SERVER }}
+      #     oc_token: ${{ secrets.OC_TOKEN }}
+
+      # - name: Deploy Frontend
+      #   uses: bcgov/action-deployer-openshift@v4.0.0
+      #   with:
+      #     file: frontend/openshift.deploy.yml
+      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      #     oc_server: ${{ secrets.OC_SERVER }}
+      #     oc_token: ${{ secrets.OC_TOKEN }}
+      #     parameters:
+      #       -p TAG=${{ inputs.tag }}
+      #       -p VITE_NODE_ENV=openshift-dev
+      #       -p URL=${{ needs.init.outputs.url }}
+      #       -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
+      #       -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
+      #       -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+      #       -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+      #       -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
+      #       -p COGNITO_ENVIRONMENT=DEV
+      #       -p LANDING_URL=${{ needs.init.outputs.url }}
 
