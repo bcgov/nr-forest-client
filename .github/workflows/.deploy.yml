@@ -141,7 +141,7 @@ jobs:
           - name: frontend-cm
             file: frontend/openshift.configmap.dev.yml
     steps:
-      - uses: bcgov/action-deployer-openshift@v3.2.0
+      - uses: bcgov/action-deployer-openshift@v4.0.0
         id: deploys
         with:
           file: ${{ matrix.file }}
