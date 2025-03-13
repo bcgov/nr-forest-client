@@ -156,9 +156,9 @@
             <artifactId>reactor-extra</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.java-json-tools</groupId>
-            <artifactId>json-patch</artifactId>
-            <version>1.13</version>
+            <groupId>com.flipkart.zjsonpatch</groupId>
+            <artifactId>zjsonpatch</artifactId>
+            <version>0.4.16</version>
         </dependency>
 
         <dependency>
@@ -308,7 +308,6 @@
                     <buildArgs>
                         <buildArg>-H:+ReportExceptionStackTraces</buildArg>
                         <buildArg>--initialize-at-build-time=org.apache.commons.logging.LogFactoryService</buildArg>
-                        <buildArg>--initialize-at-run-time=com.github.fge.jsonpatch.JsonPatchMessages</buildArg>
                     </buildArgs>
                 </configuration>
             </plugin>

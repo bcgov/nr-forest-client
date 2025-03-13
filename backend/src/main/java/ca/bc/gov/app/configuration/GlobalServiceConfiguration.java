@@ -54,21 +54,10 @@ import ca.bc.gov.app.dto.opendata.Geometry;
 import ca.bc.gov.app.dto.opendata.OpenData;
 import ca.bc.gov.app.health.HealthExchangeFilterFunction;
 import ca.bc.gov.app.health.ManualHealthIndicator;
-import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.fge.jackson.jsonpointer.JsonPointerMessages;
-import com.github.fge.jsonpatch.AddOperation;
-import com.github.fge.jsonpatch.CopyOperation;
-import com.github.fge.jsonpatch.DualPathOperation;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchOperation;
-import com.github.fge.jsonpatch.MoveOperation;
-import com.github.fge.jsonpatch.PathValueOperation;
-import com.github.fge.jsonpatch.RemoveOperation;
-import com.github.fge.jsonpatch.ReplaceOperation;
-import com.github.fge.jsonpatch.TestOperation;
+import com.flipkart.zjsonpatch.JsonPatch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -147,19 +136,7 @@ import org.springframework.web.reactive.function.client.WebClient;
     BcRegistryFacetPartyDto.class,
     BcRegistryFacetRequestBodyDto.class,
     BcRegistryFacetRequestQueryDto.class,
-    JsonPatch.class,
-    ReplaceOperation.class,
-    RemoveOperation.class,
-    MoveOperation.class,
-    AddOperation.class,
-    CopyOperation.class,
-    DualPathOperation.class,
-    PathValueOperation.class,
-    JsonPatchOperation.class,
-    TestOperation.class,
-    JsonPointer.class,
-    com.github.fge.jackson.jsonpointer.JsonPointer.class,
-    JsonPointerMessages.class
+    JsonPatch.class
 })
 public class GlobalServiceConfiguration {
 
