@@ -135,6 +135,9 @@ jobs:
             file: database/openshift.dev.yml
           - name: frontend
             file: frontend/openshift.deploy.yml
+            parameters:
+              -p TAG=${{ inputs.tag }}
+              -p URL=${{ needs.init.outputs.url }}
           - name: frontend-cm
             file: frontend/openshift.configmap.dev.yml
     steps:
