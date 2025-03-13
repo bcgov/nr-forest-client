@@ -98,11 +98,21 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        name: [database-bk]
+        name: [database-bk, legacy, processor]
         include:
           - name: database-bk
             file: database/openshift.backup.yml
             parameters: -p TAG=${{ inputs.tag }}
+          - name: legacy
+            file: legacy/openshift.deploy.yml
+              -p TAG=${{ inputs.tag }}
+              -p ENVIRONMENT=d2723f-dev
+              -p ORACLEDB_PORT=1521
+          - name: processor
+            file: processor/openshift.deploy.yml
+            parameters:
+              -p TAG=${{ inputs.tag }}
+              -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
     steps:
       - uses: bcgov/action-deployer-openshift@v3.2.0
         id: deploys
@@ -115,29 +125,6 @@ jobs:
           parameters:
             -p ZONE=${{ inputs.target }}
             ${{ matrix.parameters }}
-
-      # - name: Deploy Legacy
-      #   uses: bcgov/action-deployer-openshift@v4.0.0
-      #   with:
-      #     file: legacy/openshift.deploy.yml
-      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
-      #     oc_server: ${{ secrets.oc_server }}
-      #     oc_token: ${{ secrets.oc_token }}
-      #     parameters:
-      #       -p TAG=${{ inputs.tag }}
-      #       -p ENVIRONMENT=${{ secrets.OC_NAMESPACE }}
-      #       -p ORACLEDB_PORT=1521
-
-      # - name: Deploy Processor
-      #   uses: bcgov/action-deployer-openshift@v4.0.0
-      #   with:
-      #     file: processor/openshift.deploy.yml
-      #     oc_namespace: ${{ secrets.OC_NAMESPACE }}
-      #     oc_server: ${{ secrets.oc_server }}
-      #     oc_token: ${{ secrets.oc_token }}
-      #     parameters:
-      #       -p TAG=${{ inputs.tag }}
-      #       -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
 
       # - name: Deploy Backend ConfigMap
       #   uses: bcgov/action-deployer-openshift@v4.0.0
