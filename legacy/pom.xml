@@ -124,11 +124,6 @@
       <artifactId>mapstruct-processor</artifactId>
       <version>${mapstruct.version}l</version>
     </dependency>
-    <!--<dependency>
-      <groupId>com.github.java-json-tools</groupId>
-      <artifactId>json-patch</artifactId>
-      <version>1.13</version>
-    </dependency>-->
     <dependency>
       <groupId>com.flipkart.zjsonpatch</groupId>
       <artifactId>zjsonpatch</artifactId>

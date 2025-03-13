@@ -1,4 +1,3 @@
-/*
 package ca.bc.gov.app.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,7 +8,7 @@ import ca.bc.gov.app.exception.CannotApplyPatchException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatch;
+import com.flipkart.zjsonpatch.JsonPatch;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -74,7 +73,7 @@ class PatchUtilsTest {
   @DisplayName("Check and allow or deny patch op")
   @CsvSource({"'value',true", "'value/1',false", "'name',false"})
   void shouldCheckAndAllowOrDenyPatchOp(String path, boolean exist) throws JsonProcessingException {
-    JsonPatch patch = mapper.readValue(CONTENT, JsonPatch.class);
+    JsonNode patch = mapper.readValue(CONTENT, JsonNode.class);
     assertEquals(exist, PatchUtils.checkOperation(patch, path, mapper));
   }
 
@@ -83,7 +82,7 @@ class PatchUtilsTest {
   @DisplayName("Filter patch ops")
   void shouldFilterPatchOps(String prefix, List<String> paths, String expectation)
       throws JsonProcessingException {
-    JsonPatch patch = mapper.readValue(CONTENT, JsonPatch.class);
+    JsonNode patch = mapper.readValue(CONTENT, JsonNode.class);
     JsonNode result = PatchUtils.filterPatchOperations(patch, prefix, paths, mapper);
     assertEquals(expectation, result.toString());
   }
@@ -94,6 +93,7 @@ class PatchUtilsTest {
       "'/user/name','user','/name'",
       "'/entries/0/personalId','entries','/0/personalId'"
   })
+  @DisplayName("Remove prefixes")
   void shouldRemovePrefixes(String path, String prefix, String expectation) {
     assertEquals(expectation, PatchUtils.removePrefix(path, prefix));
   }
@@ -152,4 +152,4 @@ class PatchUtilsTest {
     private String value;
   }
 
-}*/
+}
