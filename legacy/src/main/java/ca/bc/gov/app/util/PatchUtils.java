@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonpatch.JsonPatch;
+import com.flipkart.zjsonpatch.JsonPatch;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * Utility class for applying JSON Patches to objects.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public class PatchUtils {
@@ -46,11 +49,8 @@ public class PatchUtils {
       // Convert the original entity object to a JsonNode for patching.
       JsonNode node = mapper.convertValue(target, JsonNode.class);
 
-      // This maps the JsonNode to a JsonPatch object.
-      JsonPatch filteredPatch = mapper.treeToValue(patch, JsonPatch.class);
-
       // Apply the patch to the original object in order to create a new object with the changes.
-      JsonNode patched = filteredPatch.apply(node);
+      JsonNode patched = JsonPatch.apply(patch, node);
 
       // Convert the JsonNode back to the entity object to be saved
       return mapper.treeToValue(patched, entityClass);
@@ -69,7 +69,7 @@ public class PatchUtils {
    * @return true if any operation's path starts with the specified path prefix, false otherwise
    */
   public static boolean checkOperation(
-      JsonPatch patch,
+      Object patch,
       String checkPath,
       ObjectMapper mapper
   ) {
@@ -100,7 +100,7 @@ public class PatchUtils {
    * @return a JsonNode containing the filtered operations
    */
   public static JsonNode filterPatchOperations(
-      JsonPatch patch,
+      Object patch,
       String prefix,
       List<String> restrictedPaths,
       ObjectMapper mapper
@@ -148,8 +148,8 @@ public class PatchUtils {
             // If we don't have a list of restricted fields or
             // if we the current field is part of the restricted fields
             if (
-                restrictedPaths.isEmpty() ||
-                restrictedPaths.stream().anyMatch(patchCheck::equals)
+                restrictedPaths.isEmpty()
+                || restrictedPaths.stream().anyMatch(patchCheck::equals)
             ) {
               // We create a deep copy of the operation
               ObjectNode updatedOperation = operation.deepCopy();
@@ -167,8 +167,8 @@ public class PatchUtils {
             // If we don't have a list of restricted fields or
             // if we the current field is part of the restricted fields
             if (
-                restrictedPaths.isEmpty() ||
-                restrictedPaths.stream().anyMatch(patchCheck::equals)
+                restrictedPaths.isEmpty()
+                || restrictedPaths.stream().anyMatch(patchCheck::equals)
             ) {
               // Finally we add the operation to the filteredNode
               filteredNode.add(operation);
@@ -237,6 +237,12 @@ public class PatchUtils {
     return ids.stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet());
   }
 
+  /**
+   * Extracts and returns the ID from the given JSON Patch operation.
+   *
+   * @param node the JsonNode containing the JSON Patch operation
+   * @return the ID extracted from the path of the JSON Patch operation
+   */
   public static String loadId(JsonNode node) {
     String id = PatchUtils.extractPathInfo(node.get("path").asText()).getLeft();
     if (StringUtils.isNotBlank(id)) {

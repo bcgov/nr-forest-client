@@ -57,6 +57,7 @@ import ca.bc.gov.app.health.ManualHealthIndicator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.flipkart.zjsonpatch.JsonPatch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -134,7 +135,8 @@ import org.springframework.web.reactive.function.client.WebClient;
     BcRegistryAlternateNameDto.class,
     BcRegistryFacetPartyDto.class,
     BcRegistryFacetRequestBodyDto.class,
-    BcRegistryFacetRequestQueryDto.class
+    BcRegistryFacetRequestQueryDto.class,
+    JsonPatch.class
 })
 public class GlobalServiceConfiguration {
 
@@ -314,8 +316,7 @@ public class GlobalServiceConfiguration {
    *                         configuration details.
    * @param webClientBuilder A pre-configured {@link WebClient.Builder} for creating WebClient
    *                         instances.
-   * @return A fully configured {@link WebClient} instance ready for interacting with the Processor
-   * API.
+   * @return A {@link WebClient} instance ready for interacting with the Processor API.
    */
   @Bean
   public WebClient processorApi(
