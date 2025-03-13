@@ -43,7 +43,7 @@ jobs:
         uses: bcgov/action-deployer-openshift@v4.0.0
         with:
           file: common/openshift.init.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_namespace: d2723f-dev
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: true
