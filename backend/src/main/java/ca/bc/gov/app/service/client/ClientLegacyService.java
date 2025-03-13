@@ -255,7 +255,7 @@ public class ClientLegacyService {
    * @param actionCode     the code representing the action being performed (e.g., name change,
    *                       address change)
    * @return a {@link Flux} emitting {@link CodeNameDto} objects that represent the update reasons
-   * for the specified client type and action code
+   *        for the specified client type and action code
    */
   public Flux<CodeNameDto> findActiveUpdateReasonsByClientTypeAndActionCode(
       String clientTypeCode,
@@ -478,6 +478,13 @@ public class ClientLegacyService {
         .doOnNext(dto -> log.info("Filtered active client status: {}", dto));
   }
 
+  /**
+   * Sends a PATCH request to the legacy system to update a client with the given client number.
+   *
+   * @param clientNumber the client number to update
+   * @param forestClient the JSON Patch document describing the modifications
+   * @return a {@link Mono} that completes when the patch is applied successfully
+   */
   public Mono<Void> patchClient(String clientNumber, Object forestClient) {
     log.info("Sending request to the legacy system to patch client {}", clientNumber);
     return legacyApi

@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+/**
+ * The Client patch controller. This is where the patch request arrives to be handled.
+ */
 @RestController
 @Slf4j
 @RequestMapping(value = "/api/clients/details", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -23,6 +26,19 @@ public class ClientPatchController {
 
   private final ClientPatchService service;
 
+  /**
+   * Handles a **JSON Patch** request to partially update a forest client.
+   * <p>
+   * This endpoint follows the JSON Patch specification as defined in
+   * <a href="https://datatracker.ietf.org/doc/html/rfc6902">RFC 6902</a>.
+   * Clients must send a request body formatted as a JSON Patch document
+   * (`application/json-patch+json`).
+   * </p>
+   *
+   * @param clientNumber The unique identifier of the forest client to update.
+   * @param forestClient The JSON Patch document describing the modifications.
+   * @return A {@link Mono} that completes when the patch is applied successfully.
+   */
   @PatchMapping(value = "/{clientNumber}", consumes = "application/json-patch+json")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Mono<Void> patchForestClient(

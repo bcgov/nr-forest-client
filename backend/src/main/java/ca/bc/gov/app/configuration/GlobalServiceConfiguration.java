@@ -316,8 +316,7 @@ public class GlobalServiceConfiguration {
    *                         configuration details.
    * @param webClientBuilder A pre-configured {@link WebClient.Builder} for creating WebClient
    *                         instances.
-   * @return A fully configured {@link WebClient} instance ready for interacting with the Processor
-   * API.
+   * @return A {@link WebClient} instance ready for interacting with the Processor API.
    */
   @Bean
   public WebClient processorApi(
