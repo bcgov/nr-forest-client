@@ -65,8 +65,9 @@ class PatchUtilsTest {
   @DisplayName("Fail when patching with invalid value")
   void shouldFailWhenPatching() throws Exception {
     JsonNode patchNode = mapper.readValue(CONTENT.replace("replace", "join"), JsonNode.class);
+    TestEntity abc123 = new TestEntity("abc123");
     assertThrows(CannotApplyPatchException.class, () ->
-        PatchUtils.patchClient(patchNode, new TestEntity("abc123"), TestEntity.class, mapper));
+        PatchUtils.patchClient(patchNode, abc123, TestEntity.class, mapper));
   }
 
   @ParameterizedTest
