@@ -256,18 +256,18 @@ const updateContactType = (value: CodeNameType | undefined) => {
       :id="'addressname_' + id"      
       label="Location name"
       tip="A contact can have more than one address"
-      :initial-value="''"
+      :initial-value="selectedValue.locationNames.join(',')"
       :model-value="addressList"
-      :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.text)"
+      :selectedValues="
+        selectedValue.locationNames?.map((location: CodeDescrType) => location?.text)
+      "
       :validations="[
         ...getValidations('location.contacts.*.locationNames'),
         submissionValidation(`location.contacts[${id}].locationNames`)
       ]"
       required
       required-label
-      @update:selected-value="
-        selectedValue.locationNames = nameTypesToCodeDescr($event)
-      "
+      @update:selected-value="selectedValue.locationNames = nameTypesToCodeDescr($event)"
       @empty="validation.locationNames = !$event"
       @error="validation.locationNames = !$event"
     />

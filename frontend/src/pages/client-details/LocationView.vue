@@ -5,7 +5,7 @@ import type {
   ActionWords,
   ClientLocation,
   ModalNotification,
-  SaveLocationEvent,
+  SaveEvent,
   UserRole,
 } from "@/dto/CommonTypesDto";
 import type { Address } from "@/dto/ApplyClientNumberDto";
@@ -38,7 +38,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "save", payload: SaveLocationEvent): void;
+  (e: "save", payload: SaveEvent<ClientLocation>): void;
   (e: "canceled"): void;
   (e: "updateLocationName", value: "string"): void;
 }>();
@@ -129,7 +129,7 @@ const save = (
   const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedLocation);
   emit("save", {
     patch,
-    updatedLocation,
+    updatedData: updatedLocation,
     action,
   });
 };
