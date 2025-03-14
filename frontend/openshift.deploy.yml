@@ -57,10 +57,10 @@ parameters:
     generate: expression
   - name: COGNITO_REGION
     description: Cognito region
-    default: "ca-central-1"
+    value: "ca-central-1"
   - name: COGNITO_DOMAIN
     description: Cognito domain
-    default: "prod-fam-user-pool-domain"
+    value: "prod-fam-user-pool-domain"
 objects:
   - kind: Deployment
     apiVersion: apps/v1
