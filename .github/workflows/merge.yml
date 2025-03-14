@@ -59,9 +59,16 @@ jobs:
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
             -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_ENVIRONMENT=TEST
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
+            -p URL_FRONTEND=forestclient-tst.nrs.gov.bc.ca
+            -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
+            -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
+            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
+            -p COGNITO_ENVIRONMENT=TEST
+            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
+            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+            -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
 
   test-deploy:
     name: TEST Deployment
@@ -203,15 +210,7 @@ jobs:
           parameters:
             -p ZONE=${{ env.ZONE }}
             -p TAG=${{ env.TAG }}
-            -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
-            -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
             -p URL=${{ env.URL }}
-            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
-            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
-            -p COGNITO_ENVIRONMENT=TEST
-            -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
 
   prod-init:
     name: PROD Init
@@ -248,9 +247,16 @@ jobs:
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
             -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_ENVIRONMENT=PROD
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
+            -p URL_FRONTEND=forestclient.nrs.gov.bc.ca
+            -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
+            -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
+            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
+            -p COGNITO_ENVIRONMENT=PROD
+            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
+            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+            -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
 
   prod-deploy:
     name: PROD Deployment
@@ -384,12 +390,6 @@ jobs:
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p VITE_NODE_ENV=openshift-${{ env.ZONE }}
             -p URL=${{ env.URL }}
-            -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
-            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
-            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
-            -p COGNITO_ENVIRONMENT=PROD
-            -p LANDING_URL='${{ secrets.COGNITO_LOGOUT_URI }}'
 
   images-prod:
     name: Promote images to PROD

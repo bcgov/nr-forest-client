@@ -41,8 +41,6 @@ parameters:
     value: 50Mi
   - name: MEMORY_LIMIT
     value: 50Mi
-  - name: VITE_NODE_ENV
-    value: ""
   - name: VITE_KEYCLOAK_URL
     value: https://loginproxy.gov.bc.ca/auth
   - name: VITE_KEYCLOAK_CLIENT_ID
@@ -53,52 +51,17 @@ parameters:
   - name: URL
     description: Frontend URL
     required: true
-  - name: GREEN_DOMAIN
-    description: Green domain
-    required: true
-  - name: COGNITO_REGION
-    description: Cognito region information
-    required: true
-  - name: COGNITO_CLIENT_ID
-    description: Cognito client id
-    required: true
-  - name: COGNITO_USER_POOL
-    description: Cognito user pool id
-    required: true
-  - name: COGNITO_DOMAIN
-    description: Cognito domain
-    required: true
-  - name: COGNITO_ENVIRONMENT
-    description: Cognito environment
-    required: true  
-  - name: LANDING_URL
-    required: true
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
     generate: expression
+  - name: COGNITO_REGION
+    description: Cognito region
+    value: "ca-central-1"
+  - name: COGNITO_DOMAIN
+    description: Cognito domain
+    value: "prod-fam-user-pool-domain"
 objects:
-objects:
-  - kind: ConfigMap
-    apiVersion: v1
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    data:
-      config.js: |
-        window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${ZONE}-backend.${DOMAIN}');
-        window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${URL}');
-        window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
-        window.localStorage.setItem('VITE_GREEN_DOMAIN', '${GREEN_DOMAIN}');        
-        window.localStorage.setItem('VITE_AWS_COGNITO_REGION','${COGNITO_REGION}');
-        window.localStorage.setItem('VITE_AWS_COGNITO_POOL_ID','${COGNITO_USER_POOL}');
-        window.localStorage.setItem('VITE_AWS_COGNITO_CLIENT_ID','${COGNITO_CLIENT_ID}');
-        window.localStorage.setItem('VITE_AWS_COGNITO_DOMAIN','${COGNITO_DOMAIN}');
-        window.localStorage.setItem('VITE_AWS_COGNITO_ENVIRONMENT','${COGNITO_ENVIRONMENT}');
-        window.localStorage.setItem('VITE_LOGOUT_BCSC_URL','${LANDING_URL}');
-        window.localStorage.setItem('VITE_LOGOUT_BCEIDBUSINESS_URL','${LANDING_URL}');
-        window.localStorage.setItem('VITE_LOGOUT_IDIR_URL','https://${URL}');
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
