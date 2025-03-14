@@ -90,6 +90,8 @@ parameters:
   - name: URL_FRONTEND
     description: Frontend URL
     required: true
+  - name: DOMAIN
+    value: apps.silver.devops.gov.bc.ca
   - name: VITE_NODE_ENV
     value: ""
     from: "[a-zA-Z0-9]{16}"
