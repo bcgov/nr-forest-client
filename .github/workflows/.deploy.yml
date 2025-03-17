@@ -31,11 +31,11 @@ jobs:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-24.04
     outputs:
-      url: ${{ steps.calculate.outputs.url }}
+      url: ${{ steps.set-url.outputs.url }}
     steps:
-      # steps.calculate.outputs.url => needs.init.outputs.url
-      - name: Calculate the deployment number
-        id: calculate
+      # steps.set-url.outputs.url => needs.init.outputs.url
+      - name: Set the deployment URL
+        id: set-url
         run: |
           echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
           echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca"
@@ -66,13 +66,13 @@ jobs:
             -p COGNITO_ENVIRONMENT=DEV
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
             -p VITE_NODE_ENV=openshift-dev
-            -p URL_FRONTEND=${{ steps.calculate.outputs.url }}
+            -p URL_FRONTEND=${{ steps.set-url.outputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p LANDING_URL=${{ steps.calculate.outputs.url }}
+            -p LANDING_URL=${{ steps.set-url.outputs.url }}
             -p DB_PASSWORD="$(echo ${{github.ref}}${{github.event.number}}|md5sum|cut -d' ' -f1)"
 
       - name: Backup database before update
