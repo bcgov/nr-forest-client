@@ -129,7 +129,7 @@ jobs:
           - name: backend-cm
             file: backend/openshift.configmap.${{ inputs.environment }}.yml
           - name: database-dev
-            file: database/openshift.${{ inputs.environment }}.yml
+            file: database/openshift.dev.yml
           - name: frontend
             file: frontend/openshift.deploy.yml
             parameters:
