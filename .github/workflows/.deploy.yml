@@ -23,7 +23,7 @@ on:
         required: false
         type: string
       url:
-        description: Frontend URL; omit to use default
+        description: Frontend URL; omit for PRs
         default: ${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca
         required: false
         type: string
@@ -50,20 +50,20 @@ jobs:
             -p ZONE=${{ inputs.target }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
-            -p ORACLEDB_USER_W=THE
+            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
             -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST="nr-forest-client-tools-legacydb.d2723f-tools.svc.cluster.local"
-            -p ORACLEDB_SERVICENAME=PR_${{ github.event.number }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME || github.event.number }}
             -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
             -p BCREGISTRY_KEY=${{ secrets.BCREGISTRY_KEY }}
             -p BCREGISTRY_ACCOUNT=${{ secrets.BCREGISTRY_ACCOUNT }}
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
-            -p COGNITO_ENVIRONMENT=DEV
+            -p COGNITO_ENVIRONMENT=${{ inputs.target || 'dev' }}
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
-            -p VITE_NODE_ENV=openshift-dev
+            -p VITE_NODE_ENV=${{ inputs.target || 'dev' }}
             -p URL_FRONTEND=${{ inputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
@@ -71,7 +71,8 @@ jobs:
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p LANDING_URL=${{ inputs.url }}
-            -p DB_PASSWORD="$(echo ${{github.ref}}${{github.event.number}}|md5sum|cut -d' ' -f1)"
+            -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            -p SPRING_PROFILE=${{ secrets.SPRING_PROFILE }}
 
       - name: Backup database before update
         continue-on-error: true
@@ -123,14 +124,14 @@ jobs:
           - name: backend-cm
             file: backend/openshift.configmap.dev.yml
           - name: database-dev
-            file: database/openshift.dev.yml
+            file: database/openshift.${{ inputs.target || 'dev' }}.yml
           - name: frontend
             file: frontend/openshift.deploy.yml
             parameters:
               -p TAG=${{ inputs.tag }}
               -p URL=${{ inputs.url }}
           - name: frontend-cm
-            file: frontend/openshift.configmap.dev.yml
+            file: frontend/openshift.configmap.${{ inputs.target || 'dev' }}.yml
     steps:
       - uses: bcgov/action-deployer-openshift@v4.0.0
         id: deploys
