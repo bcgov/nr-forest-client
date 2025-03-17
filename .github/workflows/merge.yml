@@ -1,12 +1,13 @@
 name: Merge
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - ".github/ISSUE_TEMPLATE/*"
-      - "**.md"
-  workflow_dispatch:
+  pull_request:
+  # push:
+  #   branches: [main]
+  #   paths-ignore:
+  #     - ".github/ISSUE_TEMPLATE/*"
+  #     - "**.md"
+  # workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}
@@ -27,13 +28,11 @@ jobs:
 
   deploy-test:
     name: Deploy (TEST)
-    needs: [vars]
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
       environment: test
       target: test
-      tag: ${{ needs.vars.outputs.pr }}
       url: forestclient-tst.nrs.gov.bc.ca
 
   prod-init:
