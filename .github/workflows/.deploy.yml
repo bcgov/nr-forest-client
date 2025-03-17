@@ -12,11 +12,6 @@ on:
         default: 'dev'
         required: false
         type: string
-      tag:
-        description: Container tag; usually PR number
-        default: ${{ github.event.number }}
-        required: false
-        type: string
       target:
         description: Deployment target; usually PR number, test or prod
         default: ${{ github.event.number }}
@@ -31,6 +26,17 @@ on:
 permissions: {}
 
 jobs:
+  tag:
+    name: Get Tag
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.pr.outputs.pr }}
+    steps:
+      # Get PR number for squash merges to main
+      - name: PR Number
+        id: pr
+        uses: bcgov/action-get-pr@v0.0.1
+
   init:
     name: Deploy (init)
     environment: ${{ inputs.environment }}
@@ -86,7 +92,7 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: [init]
+    needs: [init, tag]
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -97,24 +103,24 @@ jobs:
           - name: database
             file: database/openshift.deploy.yml
             overwrite: false
-            parameters: -p TAG=${{ inputs.tag }}
+            parameters: -p TAG=${{ needs.tag.outputs.tag }}
           - name: database-bk
             file: database/openshift.backup.yml
-            parameters: -p TAG=${{ inputs.tag }}
+            parameters: -p TAG=${{ needs.tag.outputs.tag }}
           - name: legacy
             file: legacy/openshift.deploy.yml
             parameters:
-              -p TAG=${{ inputs.tag }}
+              -p TAG=${{ needs.tag.outputs.tag }}
               -p ORACLEDB_PORT=1521
           - name: processor
             file: processor/openshift.deploy.yml
             parameters:
-              -p TAG=${{ inputs.tag }}
+              -p TAG=${{ needs.tag.outputs.tag }}
               -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
           - name: backend
             file: backend/openshift.deploy.yml
             parameters:
-              -p TAG=${{ inputs.tag }}
+              -p TAG=${{ needs.tag.outputs.tag }}
               -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
               -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
               -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
@@ -127,7 +133,7 @@ jobs:
           - name: frontend
             file: frontend/openshift.deploy.yml
             parameters:
-              -p TAG=${{ inputs.tag }}
+              -p TAG=${{ needs.tag.outputs.tag }}
               -p URL=${{ inputs.url }}
           - name: frontend-cm
             file: frontend/openshift.configmap.${{ inputs.environment }}.yml
