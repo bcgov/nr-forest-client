@@ -208,6 +208,7 @@ watch(sortedContacts, (_value, oldValue) => {
   oldValue?.forEach((oldContact) => {
     const oldContactId = oldContact.contactId;
     if (!sortedContacts.value?.find((contact) => contact.contactId === oldContactId)) {
+      // remove deleted contact's state
       delete contactsState[oldContactId];
     }
   });
