@@ -41,8 +41,6 @@ jobs:
     name: Deploy (init)
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-24.04
-    outputs:
-      url: ${{ inputs.url }}
     steps:
       - name: Deployment Init
         uses: bcgov/action-deployer-openshift@v4.0.0
