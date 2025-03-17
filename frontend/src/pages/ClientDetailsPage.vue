@@ -220,7 +220,7 @@ watch(sortedContacts, (value) => {
   if (value?.length) {
     value.forEach((contact) => {
       const index = String(contact.contactId);
-      uniqueContacts.add("Names", index)(contact.contactName);
+      uniqueContacts.add("Name", index)(contact.contactName);
     });
   }
 });
@@ -892,7 +892,7 @@ resetGlobalError();
           </div>
           <div class="tab-panel tab-panel--populated">
             <cds-accordion
-              v-for="(contact) in sortedContacts"
+              v-for="contact in sortedContacts"
               :key="contact.contactId"
               :id="`contact-${contact.contactId}`"
             >
