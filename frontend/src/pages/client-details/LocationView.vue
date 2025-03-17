@@ -40,7 +40,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "save", payload: SaveEvent<ClientLocation>): void;
   (e: "canceled"): void;
-  (e: "updateLocationName", value: "string"): void;
+  (e: "updateLocationName", value: string): void;
 }>();
 
 const indexString = props.data.clientLocnCode;

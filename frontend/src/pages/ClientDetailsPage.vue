@@ -904,7 +904,7 @@ resetGlobalError();
                 >
                   <span class="label-with-icon">
                     <User20 />
-                    {{ contact.contactName }}
+                    {{ contactsState[contact.contactId].name }}
                   </span>
                   <span
                     :id="`contact-${contact.contactId}-title-locations`"

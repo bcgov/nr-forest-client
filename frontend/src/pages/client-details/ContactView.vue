@@ -39,7 +39,7 @@ const emit = defineEmits<{
   (e: "save", payload: SaveEvent<ClientContact>): void;
   (e: "delete", contact: ClientContact): void;
   (e: "canceled"): void;
-  (e: "updateContactName", value: "string"): void;
+  (e: "updateContactName", value: string): void;
 }>();
 
 const businessPhone = computed(() => formatPhoneNumber(props.data.businessPhone));
@@ -68,6 +68,8 @@ const revalidate = ref(false);
 const isEditing = ref(false);
 const hasAnyChange = ref(false);
 
+let previousValue: Contact;
+
 const resetFormData = () => {
   originalData = JSON.parse(JSON.stringify(props.data));
 
@@ -78,6 +80,7 @@ const resetFormData = () => {
 
   originalContactData = JSON.parse(stringifiedData);
   formContactData.value = JSON.parse(stringifiedData);
+  previousValue = JSON.parse(JSON.stringify(formContactData.value));
 
   hasAnyChange.value = false;
 };
@@ -90,6 +93,12 @@ watch(
     if (isEditing.value) {
       hasAnyChange.value =
         JSON.stringify(formContactData.value) !== JSON.stringify(originalContactData);
+
+      if (formContactData.value.fullName !== previousValue.fullName) {
+        emit("updateContactName", formContactData.value.fullName);
+      }
+
+      previousValue = JSON.parse(JSON.stringify(formContactData.value));
     }
   },
   { deep: true },
@@ -227,7 +236,6 @@ const valid = ref(false);
         hideDeleteButton
         @valid="valid = $event"
         @update:model-value="revalidate = !revalidate"
-        @update-contact-name="emit('updateContactName', $event)"
       />
       <div class="form-group-buttons form-group-buttons--stretched">
         <cds-button
