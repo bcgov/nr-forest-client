@@ -58,7 +58,7 @@ jobs:
             -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
-            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME || 'PR_${{ github.event.number }}'}}
             -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
             -p BCREGISTRY_KEY=${{ secrets.BCREGISTRY_KEY }}
             -p BCREGISTRY_ACCOUNT=${{ secrets.BCREGISTRY_ACCOUNT }}
@@ -67,7 +67,7 @@ jobs:
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
             -p COGNITO_ENVIRONMENT=${{ inputs.environment }}
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
-            -p VITE_NODE_ENV=${{ inputs.target }}
+            -p VITE_NODE_ENV=openshift-${{ inputs.target }}
             -p URL_FRONTEND=${{ inputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
