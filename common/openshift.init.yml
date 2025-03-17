@@ -91,6 +91,9 @@ parameters:
     required: true
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
+  - name: SPRING_PROFILE
+    description: Spring profile
+    required: true
   - name: VITE_NODE_ENV
     value: ""
     from: "[a-zA-Z0-9]{16}"
@@ -124,6 +127,7 @@ objects:
       ches-mail-copy: ${CHES_MAIL_COPY}
       processor-service-account-secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
       processor-service-account-name: processor-service-account
+      spring-profiles-active: "container,${SPRING_PROFILE}"
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
