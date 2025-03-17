@@ -195,13 +195,20 @@ const createContactState = (contactState?: Partial<ContactState>): ContactState 
 
 const contactsState = reactive<Record<string, LocationState>>({});
 
-watch(sortedContacts, () => {
+watch(sortedContacts, (_value, oldValue) => {
   sortedContacts.value?.forEach((contact) => {
     const contactId = contact.contactId;
     if (!contactsState[contactId]) {
       contactsState[contactId] = createContactState({
         name: contact.contactName,
       });
+    }
+  });
+
+  oldValue?.forEach((oldContact) => {
+    const oldContactId = oldContact.contactId;
+    if (!sortedContacts.value?.find((contact) => contact.contactId === oldContactId)) {
+      delete contactsState[oldContactId];
     }
   });
 });
@@ -604,9 +611,13 @@ const setContactRef = (index: number) => (el: InstanceType<typeof ContactView>) 
   contactsRef.value[index] = el;
 };
 
-const saveContact =
+interface OperationOptions {
+  preserveRawPatch?: boolean;
+}
+
+const operateContact =
   (index: number) =>
-  (payload: SaveEvent<ClientContact>, preserveRawPatch = false) => {
+  (payload: SaveEvent<ClientContact>, rawOptions?: OperationOptions) => {
     const {
       patch: rawPatchData,
       updatedData: updatedContact,
@@ -614,6 +625,9 @@ const saveContact =
     } = payload;
 
     const contactId = updatedContact.contactId;
+
+    const options: OperationOptions = rawOptions ?? {};
+    const { preserveRawPatch } = options;
 
     const patchData = preserveRawPatch ? rawPatchData : rawPatchData.map((item) => ({
       ...item,
@@ -635,13 +649,16 @@ const saveContact =
       contactsRef.value[index].lockEditing();
 
       if (!contactsState[contactId]) {
-        contactsState[contactId] = createLocationState();
+        contactsState[contactId] = createContactState();
       }
 
       contactsState[contactId].isReloading = true;
 
       fetchClientData().asyncResponse.then(() => {
-        contactsState[contactId].isReloading = false;
+        // Checking for existence because it might have just been deleted.
+        if (contactsState[contactId]) {
+          contactsState[contactId].isReloading = false;
+        }
       });
     };
 
@@ -664,14 +681,15 @@ const deleteContact =
   (index: number) =>
   (contact: ClientContact) => {
     const patch = createRemovePatch(`/contacts/${contact.contactId}`);
-    saveContact(index)({
+    operateContact(index)({
       action: {
         infinitive: "delete",
         pastParticiple: "deleted",
       },
       patch,
       updatedData: contact,
-    }, true);
+      operationType: "delete",
+    }, { preserveRawPatch: true });
   };
 
 const globalError = ref();
@@ -905,7 +923,7 @@ resetGlobalError();
                   :validations="[uniqueContacts.check]"
                   keep-scroll-bottom-position
                   @update-contact-name="updateContactName($event, contact.contactId)"
-                  @save="saveContact(contact.contactId)($event)"
+                  @save="operateContact(contact.contactId)($event)"
                   @delete="deleteContact(contact.contactId)($event)"
                   @canceled="handleContactCanceled(contact)"
                 />

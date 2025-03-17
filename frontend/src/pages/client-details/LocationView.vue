@@ -127,10 +127,14 @@ const save = (
   },
 ) => {
   const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedLocation);
+
+  const operationType = props.createMode ? "insert" : "update";
+
   emit("save", {
     patch,
     updatedData: updatedLocation,
     action,
+    operationType,
   });
 };
 

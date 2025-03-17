@@ -32,6 +32,7 @@ const props = defineProps<{
   validations: Array<Function>;
   isReloading: boolean;
   keepScrollBottomPosition?: boolean;
+  createMode?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -123,10 +124,14 @@ const save = (
   },
 ) => {
   const patch = jsonpatch.compare(originalData, updatedContact);
+
+  const operationType = props.createMode ? "insert" : "update";
+
   emit("save", {
     patch,
     updatedData: updatedContact,
     action,
+    operationType,
   });
 };
 

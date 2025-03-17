@@ -379,8 +379,11 @@ export interface ActionWords {
   pastParticiple: string;
 }
 
+type OperationType = "update" | "insert" | "delete";
+
 export interface SaveEvent<T> {
   patch: jsonpatch.Operation[] | null;
   updatedData: T;
   action: ActionWords;
+  operationType: OperationType;
 }
