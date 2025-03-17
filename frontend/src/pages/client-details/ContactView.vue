@@ -223,7 +223,7 @@ const valid = ref(false);
         :address-list="addressList"
         :validations="props.validations"
         :revalidate="revalidate"
-        includeTertiaryPhoneNumber
+        single-input-for-name
         hideDeleteButton
         @valid="valid = $event"
         @update:model-value="revalidate = !revalidate"

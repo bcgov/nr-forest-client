@@ -24,6 +24,7 @@ const props = defineProps<{
   validations: Array<Function>;
   revalidate?: boolean;
   readOnlyName?: boolean;
+  singleInputForName?: boolean;
   requiredLabel?: boolean;
   hideDeleteButton?: boolean;
 }>();
@@ -47,9 +48,10 @@ const validateData =
 const error = ref<string | undefined>("");
 
 const uniquenessValidation = () => {
-  error.value = validateData(
-    `${selectedValue.firstName} ${selectedValue.lastName}`
-  );
+  const fullName = props.singleInputForName
+    ? selectedValue.fullName
+    : `${selectedValue.firstName} ${selectedValue.lastName}`;
+  error.value = validateData(fullName);
 };
 
 //Watch for changes on the input
@@ -67,8 +69,9 @@ watch(
 //Validations
 const validation = reactive<Record<string, boolean>>({
   contactType: false,
-  firstName: !!selectedValue.firstName,
-  lastName: !!selectedValue.lastName,
+  firstName: props.singleInputForName || !!selectedValue.firstName,
+  lastName: props.singleInputForName || !!selectedValue.lastName,
+  fullName: !props.singleInputForName || !!selectedValue.fullName,
   phoneNumber: false,
   secondaryPhoneNumber: true,
   faxNumber: true,
@@ -110,58 +113,79 @@ const updateContactType = (value: CodeNameType | undefined) => {
 </script>
 
 <template>
-  <div class="frame-01">    
+  <div class="frame-01">
     <text-input-component
-        :id="'fullName_' + id"
-        label="Full name"
-        placeholder=""
-        autocomplete="off"
-        v-bind:model-value="selectedValue.firstName + ' ' + selectedValue.lastName"
-        :validations="[]"
-        :enabled="false"
-        required
-        :requiredLabel="requiredLabel"
-        :error-message="error"
-        v-if="readOnlyName"
-      />
+      :id="'fullName_' + id"
+      label="Full name"
+      placeholder=""
+      autocomplete="off"
+      v-bind:model-value="selectedValue.firstName + ' ' + selectedValue.lastName"
+      :validations="[]"
+      :enabled="false"
+      required
+      :requiredLabel="requiredLabel"
+      :error-message="error"
+      v-if="readOnlyName"
+    />
 
-      <text-input-component
-        :id="'firstName_' + id"
-        label="First name"
-        placeholder=""
-        autocomplete="off"
-        v-model="selectedValue.firstName"
-        :validations="[
-          ...getValidations('location.contacts.*.firstName'),
-          submissionValidation(`location.contacts[${id}].firstName`)
-        ]"
-        :enabled="true"
-        required
-        required-label
-        :error-message="error"
-        @empty="validation.firstName = !$event"
-        @error="validation.firstName = !$event"
-        v-if="!readOnlyName"
-      />
+    <template v-if="!readOnlyName">
+      <template v-if="singleInputForName">
+        <text-input-component
+          :id="'fullName_' + id"
+          label="Full name"
+          placeholder=""
+          autocomplete="off"
+          v-model="selectedValue.fullName"
+          :validations="[
+            ...getValidations('location.contacts.*.fullName'),
+            submissionValidation(`location.contacts[${id}].fullName`),
+          ]"
+          :enabled="true"
+          required
+          required-label
+          :error-message="error"
+          @empty="validation.fullName = !$event"
+          @error="validation.fullName = !$event"
+        />
+      </template>
+      <template v-else>
+        <text-input-component
+          :id="'firstName_' + id"
+          label="First name"
+          placeholder=""
+          autocomplete="off"
+          v-model="selectedValue.firstName"
+          :validations="[
+            ...getValidations('location.contacts.*.firstName'),
+            submissionValidation(`location.contacts[${id}].firstName`)
+          ]"
+          :enabled="true"
+          required
+          required-label
+          :error-message="error"
+          @empty="validation.firstName = !$event"
+          @error="validation.firstName = !$event"
+        />
 
-      <text-input-component
-        :id="'lastName_' + id"
-        label="Last name"
-        placeholder=""
-        autocomplete="off"
-        v-model="selectedValue.lastName"
-        :validations="[
-          ...getValidations('location.contacts.*.lastName'),
-          submissionValidation(`location.contacts[${id}].lastName`)
-        ]"
-        :enabled="true"
-        required
-        required-label
-        :error-message="error"
-        @empty="validation.lastName = !$event"
-        @error="validation.lastName = !$event"
-        v-if="!readOnlyName"
-      />
+        <text-input-component
+          :id="'lastName_' + id"
+          label="Last name"
+          placeholder=""
+          autocomplete="off"
+          v-model="selectedValue.lastName"
+          :validations="[
+            ...getValidations('location.contacts.*.lastName'),
+            submissionValidation(`location.contacts[${id}].lastName`)
+          ]"
+          :enabled="true"
+          required
+          required-label
+          :error-message="error"
+          @empty="validation.lastName = !$event"
+          @error="validation.lastName = !$event"
+        />
+      </template>
+    </template>
 
     <combo-box-input-component
       :id="'role_' + id"
