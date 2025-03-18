@@ -7,23 +7,14 @@ on:
       # Nothing! Only `secrets: inherit` is required
 
       ### Typical / recommended
-      configmap:
+      configmap-backend:
         description: Configuration map for application.yml
         required: true
         type: string
-        # default: |
-        #   features:
-        #     staff:
-        #       match: true
-        #   info:
-        #     app:
-        #       component: ${COMPONENT}
-        #   ca:
-        #     bc:
-        #       gov:
-        #         nrs:                
-        #           idirMaxSubmissions: 65535                
-        #           otherMaxSubmissions: 65535
+      configmap-frontend:
+        description: Configuration map for params.js
+        required: true
+        type: string
       environment:
         description: GitHub/OpenShift environment; usually PR number, test or prod
         default: 'dev'
@@ -121,7 +112,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        name: [database, database-bk, legacy, processor, backend, database-dev, frontend, frontend-cm]
+        name: [database, database-bk, legacy, processor, backend, database-dev, frontend]
         include:
           - name: database
             file: database/openshift.deploy.yml
@@ -148,7 +139,7 @@ jobs:
               -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
               -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
               -p FRONTEND_URL=${{ inputs.url }}
-              -p CONFIG_MAP='${{ inputs.configmap }}'
+              -p CONFIG_MAP='${{ inputs.configmap-backend }}'
           - name: database-dev
             file: database/openshift.dev.yml
           - name: frontend
@@ -156,8 +147,7 @@ jobs:
             parameters:
               -p TAG=${{ needs.vars.outputs.tag }}
               -p URL=${{ inputs.url }}
-          - name: frontend-cm
-            file: frontend/openshift.configmap.${{ inputs.environment }}.yml
+              -p CONFIG_MAP='${{ inputs.configmap-backend }}'
     steps:
       - uses: bcgov/action-deployer-openshift@v4.0.0
         id: deploys

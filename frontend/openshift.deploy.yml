@@ -47,6 +47,9 @@ parameters:
   - name: URL
     description: Frontend URL
     required: true
+  - name: CONFIG_MAP
+    description: Configuration map for application.yml
+    required: true
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
@@ -175,3 +178,13 @@ objects:
       tls:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
+objects:
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}-config
+    data:
+      params.js: |
+        window.localStorage.setItem('VITE_FEATURE_FLAGS','{"STAFF_CLIENT_DETAIL":true}');
