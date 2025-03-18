@@ -182,6 +182,16 @@ const sortedContacts = computed(() =>
   data.value?.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
 );
 
+const uniqueContacts = isUniqueDescriptive();
+
+watch(sortedContacts, (value) => {
+  if (value?.length) {
+    value.forEach((contact) => {
+      uniqueContacts.add("Name", contact.contactId.toString())(contact.contactName);
+    });
+  }
+});
+
 interface ContactState {
   isReloading?: boolean;
   name: string;
@@ -210,19 +220,9 @@ watch(sortedContacts, (_value, oldValue) => {
     if (!sortedContacts.value?.find((contact) => contact.contactId === oldContactId)) {
       // remove deleted contact's state
       delete contactsState[oldContactId];
+      uniqueContacts.remove("Name", oldContactId.toString());
     }
   });
-});
-
-const uniqueContacts = isUniqueDescriptive();
-
-watch(sortedContacts, (value) => {
-  if (value?.length) {
-    value.forEach((contact) => {
-      const index = String(contact.contactId);
-      uniqueContacts.add("Name", index)(contact.contactName);
-    });
-  }
 });
 
 const formatLocation = (location: ClientLocation) => {
