@@ -9,8 +9,7 @@ parameters:
     required: true
   - name: DB_PASSWORD
     description: Password for the PostgreSQL connection user.
-    from: "[a-zA-Z0-9]{16}"
-    generate: expression
+    required: true
   - name: ORACLEDB_USER
     description: Oracle database user name
     required: true
@@ -72,7 +71,34 @@ parameters:
     description: Email address to copy all CHES emails to
     required: true
   - name: PROCESSOR_SERVICE_ACCOUNT_SECRET
-    description: Password for the Processor service.
+    description: Password for the Processor service
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+  - name: GREEN_DOMAIN
+    description: Green domain
+    required: true
+  - name: COGNITO_REGION
+    description: Cognito region information
+    value: 'ca-central-1'
+  - name: COGNITO_CLIENT_ID
+    description: Cognito client id
+    required: true
+  - name: COGNITO_DOMAIN
+    description: Cognito domain
+    value: 'prod-fam-user-pool-domain'
+    required: true
+  - name: LANDING_URL
+    required: true
+  - name: URL_FRONTEND
+    description: Frontend URL
+    required: true
+  - name: DOMAIN
+    value: apps.silver.devops.gov.bc.ca
+  - name: SPRING_PROFILES_ACTIVE
+    description: Spring profile
+    required: true
+  - name: VITE_NODE_ENV
+    value: ""
     from: "[a-zA-Z0-9]{16}"
     generate: expression
 objects:
@@ -104,6 +130,8 @@ objects:
       ches-mail-copy: ${CHES_MAIL_COPY}
       processor-service-account-secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
       processor-service-account-name: processor-service-account
+      processor-service-account-secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
+      spring-profiles-active: "container,${SPRING_PROFILES_ACTIVE}"
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
@@ -132,3 +160,23 @@ objects:
             - podSelector: {}
       policyTypes:
         - Ingress
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-frontend
+    data:
+      config.js: |
+        window.localStorage.setItem('VITE_BACKEND_URL', 'https://${NAME}-${ZONE}-backend.${DOMAIN}');
+        window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${URL_FRONTEND}');
+        window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
+        window.localStorage.setItem('VITE_GREEN_DOMAIN', '${GREEN_DOMAIN}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_REGION','${COGNITO_REGION}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_POOL_ID','${COGNITO_USER_POOL}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_CLIENT_ID','${COGNITO_CLIENT_ID}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_DOMAIN','${COGNITO_DOMAIN}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_ENVIRONMENT','${COGNITO_ENVIRONMENT}');
+        window.localStorage.setItem('VITE_LOGOUT_BCSC_URL','${LANDING_URL}');
+        window.localStorage.setItem('VITE_LOGOUT_BCEIDBUSINESS_URL','${LANDING_URL}');
+        window.localStorage.setItem('VITE_LOGOUT_IDIR_URL','https://${URL_FRONTEND}');

@@ -95,7 +95,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${COMPONENT}
-                  image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
+                  image: postgres:13
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
@@ -190,7 +190,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-restore
-                  image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
+                  image: postgres:13
                   command: ["/bin/sh", "-c"]
                   args:
                   - |

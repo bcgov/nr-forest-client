@@ -8,7 +8,7 @@ import ca.bc.gov.app.exception.CannotApplyPatchException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatch;
+import com.flipkart.zjsonpatch.JsonPatch;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -65,15 +65,16 @@ class PatchUtilsTest {
   @DisplayName("Fail when patching with invalid value")
   void shouldFailWhenPatching() throws Exception {
     JsonNode patchNode = mapper.readValue(CONTENT.replace("replace", "join"), JsonNode.class);
+    TestEntity abc123 = new TestEntity("abc123");
     assertThrows(CannotApplyPatchException.class, () ->
-        PatchUtils.patchClient(patchNode, new TestEntity("abc123"), TestEntity.class, mapper));
+        PatchUtils.patchClient(patchNode, abc123, TestEntity.class, mapper));
   }
 
   @ParameterizedTest
   @DisplayName("Check and allow or deny patch op")
   @CsvSource({"'value',true", "'value/1',false", "'name',false"})
   void shouldCheckAndAllowOrDenyPatchOp(String path, boolean exist) throws JsonProcessingException {
-    JsonPatch patch = mapper.readValue(CONTENT, JsonPatch.class);
+    JsonNode patch = mapper.readValue(CONTENT, JsonNode.class);
     assertEquals(exist, PatchUtils.checkOperation(patch, path, mapper));
   }
 
@@ -82,7 +83,7 @@ class PatchUtilsTest {
   @DisplayName("Filter patch ops")
   void shouldFilterPatchOps(String prefix, List<String> paths, String expectation)
       throws JsonProcessingException {
-    JsonPatch patch = mapper.readValue(CONTENT, JsonPatch.class);
+    JsonNode patch = mapper.readValue(CONTENT, JsonNode.class);
     JsonNode result = PatchUtils.filterPatchOperations(patch, prefix, paths, mapper);
     assertEquals(expectation, result.toString());
   }
@@ -93,6 +94,7 @@ class PatchUtilsTest {
       "'/user/name','user','/name'",
       "'/entries/0/personalId','entries','/0/personalId'"
   })
+  @DisplayName("Remove prefixes")
   void shouldRemovePrefixes(String path, String prefix, String expectation) {
     assertEquals(expectation, PatchUtils.removePrefix(path, prefix));
   }
