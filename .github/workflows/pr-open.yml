@@ -9,58 +9,58 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # vars:
-  #   name: Variables
-  #   runs-on: ubuntu-24.04
-  #   outputs:
-  #     url: ${{ steps.calculate.outputs.url }}
-  #   steps:
-  #     # steps.calculate.outputs.url => needs.vars.outputs.url
-  #     - name: Calculate the deployment number
-  #       id: calculate
-  #       run: |
-  #         echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
-  #         echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca"
+  vars:
+    name: Variables
+    runs-on: ubuntu-24.04
+    outputs:
+      url: ${{ steps.calculate.outputs.url }}
+    steps:
+      # steps.calculate.outputs.url => needs.vars.outputs.url
+      - name: Calculate the deployment number
+        id: calculate
+        run: |
+          echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
+          echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca"
 
-  # builds:
-  #   name: Builds
-  #   runs-on: ubuntu-24.04
-  #   permissions:
-  #     packages: write
-  #   strategy:
-  #     matrix:
-  #       package: [backend, database, frontend, legacy, processor]
-  #   steps:
-  #     - uses: bcgov/action-builder-ghcr@v2.3.0
-  #       name: Build (${{ matrix.package }})
-  #       with:
-  #         package: ${{ matrix.package }}
-  #         tag: ${{ github.event.number }}
-  #         tag_fallback: latest
-  #         triggers: ('${{ matrix.package }}/')
+  builds:
+    name: Builds
+    runs-on: ubuntu-24.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [backend, database, frontend, legacy, processor]
+    steps:
+      - uses: bcgov/action-builder-ghcr@v2.3.0
+        name: Build (${{ matrix.package }})
+        with:
+          package: ${{ matrix.package }}
+          tag: ${{ github.event.number }}
+          tag_fallback: latest
+          triggers: ('${{ matrix.package }}/')
 
   deploy:
     name: Deploy (${{ github.event.number }})
-    # needs: [builds]
+    needs: [builds]
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
       oracledb-servicename: PR_${{ github.event.number }}
 
-  # tests:
-  #   name: Tests
-  #   needs: [deploy, vars]
-  #   uses: ./.github/workflows/.automated-tests.yml
-  #   secrets: inherit
-  #   with:
-  #     url: ${{ needs.vars.outputs.url }}
+  tests:
+    name: Tests
+    needs: [deploy, vars]
+    uses: ./.github/workflows/.automated-tests.yml
+    secrets: inherit
+    with:
+      url: ${{ needs.vars.outputs.url }}
 
-  # results:
-  #   name: PR Results
-  #   needs: [builds, deploy, tests]
-  #   if: always()
-  #   runs-on: ubuntu-24.04
-  #   steps:
-  #     - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
-  #       run: echo "At least one job has failed." && exit 1
-  #     - run: echo "Success!"
+  results:
+    name: PR Results
+    needs: [builds, deploy, tests]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
+        run: echo "At least one job has failed." && exit 1
+      - run: echo "Success!"
