@@ -44,6 +44,8 @@ jobs:
     # needs: [builds]
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
+    with:
+      oracledb-servicename: PR_${{ github.event.number }}
 
   # tests:
   #   name: Tests
