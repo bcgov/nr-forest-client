@@ -150,6 +150,7 @@ jobs:
   database-dev-job:
     name: Database Dev Job
     if: inputs.environment == 'dev'
+    environment: ${{ inputs.environment }}
     needs: [deploy]
     runs-on: ubuntu-24.04
     steps:
