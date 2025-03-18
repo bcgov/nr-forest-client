@@ -46,7 +46,7 @@ parameters:
     required: true
   - name: COGNITO_REGION
     description: Cognito region to be used
-    required: true
+    value: 'ca-central-1'
   - name: FRONTEND_URL
     description: Frontend URL
     required: true

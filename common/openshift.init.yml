@@ -72,17 +72,20 @@ parameters:
     required: true
   - name: PROCESSOR_SERVICE_ACCOUNT_SECRET
     description: Password for the Processor service
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
   - name: GREEN_DOMAIN
     description: Green domain
     required: true
   - name: COGNITO_REGION
     description: Cognito region information
-    required: true
+    value: 'ca-central-1'
   - name: COGNITO_CLIENT_ID
     description: Cognito client id
     required: true
   - name: COGNITO_DOMAIN
     description: Cognito domain
+    value: 'prod-fam-user-pool-domain'
     required: true
   - name: LANDING_URL
     required: true
@@ -127,6 +130,7 @@ objects:
       ches-mail-copy: ${CHES_MAIL_COPY}
       processor-service-account-secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
       processor-service-account-name: processor-service-account
+      processor-service-account-secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
       spring-profiles-active: "container,${SPRING_PROFILES_ACTIVE}"
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
