@@ -45,6 +45,7 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
+      oracledb-port: 1521
       oracledb-servicename: PR_${{ github.event.number }}
 
   tests:
