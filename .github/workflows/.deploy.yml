@@ -12,6 +12,10 @@ on:
         default: 'dev'
         required: false
         type: string
+      oracledb-port:
+        description: Oracle database port
+        default: "1543"
+        type: string
       oracledb-servicename:
         description: Oracle service name
         required: false
@@ -111,7 +115,7 @@ jobs:
             file: legacy/openshift.deploy.yml
             parameters:
               -p TAG=${{ needs.vars.outputs.tag }}
-              -p ORACLEDB_PORT=1521
+              -p ORACLEDB_PORT=${{ inputs.oracledb-port }}
           - name: processor
             file: processor/openshift.deploy.yml
             parameters:
