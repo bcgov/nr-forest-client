@@ -112,23 +112,17 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        name: [database, database-bk, legacy, processor, backend, frontend]
+        name: [database, legacy, processor, backend, frontend]
         include:
           - name: database
-            file: database/openshift.deploy.yml
             overwrite: false
-          - name: database-bk
-            file: database/openshift.backup.yml
           - name: legacy
-            file: legacy/openshift.deploy.yml
             parameters:
               -p ORACLEDB_PORT=${{ inputs.oracledb-port }}
           - name: processor
-            file: processor/openshift.deploy.yml
             parameters:
               -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
           - name: backend
-            file: backend/openshift.deploy.yml
             parameters:
               -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
               -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
@@ -136,7 +130,6 @@ jobs:
               -p FRONTEND_URL=${{ inputs.url }}
               -p CONFIG_MAP='${{ inputs.configmap-backend }}'
           - name: frontend
-            file: frontend/openshift.deploy.yml
             parameters:
               -p URL=${{ inputs.url }}
               -p CONFIG_MAP='${{ inputs.configmap-backend }}'
@@ -144,7 +137,7 @@ jobs:
       - uses: bcgov/action-deployer-openshift@v4.0.0
         id: deploys
         with:
-          file: ${{ matrix.file }}
+          file: ${{ matrix.name }}/openshift.deploy.yml
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_server: ${{ secrets.oc_server }}
           oc_token: ${{ secrets.oc_token }}
