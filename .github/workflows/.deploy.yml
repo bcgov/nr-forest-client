@@ -112,7 +112,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        name: [database, database-bk, legacy, processor, backend, database-dev, frontend]
+        name: [database, database-bk, legacy, processor, backend, frontend]
         include:
           - name: database
             file: database/openshift.deploy.yml
@@ -140,8 +140,6 @@ jobs:
               -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
               -p FRONTEND_URL=${{ inputs.url }}
               -p CONFIG_MAP='${{ inputs.configmap-backend }}'
-          - name: database-dev
-            file: database/openshift.dev.yml
           - name: frontend
             file: frontend/openshift.deploy.yml
             parameters:
@@ -160,3 +158,19 @@ jobs:
           parameters:
             -p ZONE=${{ inputs.target }}
             ${{ matrix.parameters }}
+
+  database-dev-job:
+    name: Database Dev Job
+    if: inputs.environment == 'dev'
+    needs: [deploy]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Database Dev settings
+        uses: bcgov/action-deployer-openshift@v4.0.0
+        with:
+          file: database/openshift.dev.yml
+          oc_namespace: ${{ secrets.oc_namespace }}
+          oc_server: ${{ secrets.oc_server }}
+          oc_token: ${{ secrets.oc_token }}
+          overwrite: true
+          parameters: -p ZONE=${{ inputs.target }}
