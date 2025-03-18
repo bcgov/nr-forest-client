@@ -7,6 +7,23 @@ on:
       # Nothing! Only `secrets: inherit` is required
 
       ### Typical / recommended
+      configmap:
+        description: Configuration map for application.yml
+        required: true
+        type: string
+        # default: |
+        #   features:
+        #     staff:
+        #       match: true
+        #   info:
+        #     app:
+        #       component: ${COMPONENT}
+        #   ca:
+        #     bc:
+        #       gov:
+        #         nrs:                
+        #           idirMaxSubmissions: 65535                
+        #           otherMaxSubmissions: 65535
       environment:
         description: GitHub/OpenShift environment; usually PR number, test or prod
         default: 'dev'
@@ -133,6 +150,8 @@ jobs:
               -p FRONTEND_URL=${{ inputs.url }}
           - name: backend-cm
             file: backend/openshift.configmap.${{ inputs.environment }}.yml
+            parameters:
+              -p CONFIGMAP='${{ inputs.configmap }}'
           - name: database-dev
             file: database/openshift.dev.yml
           - name: frontend

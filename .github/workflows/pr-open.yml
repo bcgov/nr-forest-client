@@ -48,6 +48,19 @@ jobs:
       oracledb-port: 1521
       oracledb-servicename: PR_${{ github.event.number }}
       oracledb-username: THE
+      configmap: |
+        features:
+          staff:
+            match: true
+        info:
+          app:
+            component: backend
+        ca:
+          bc:
+            gov:
+              nrs:
+                idirMaxSubmissions: 65535
+                otherMaxSubmissions: 65535
 
   tests:
     name: Tests
