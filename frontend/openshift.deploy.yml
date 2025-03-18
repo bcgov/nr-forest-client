@@ -187,4 +187,4 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}-config
     data:
       params.js: |
-        window.localStorage.setItem('VITE_FEATURE_FLAGS','{"STAFF_CLIENT_DETAIL":true}');
+        ${CONFIG_MAP}
