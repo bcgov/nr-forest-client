@@ -34,6 +34,13 @@ jobs:
       environment: test
       target: test
       url: forestclient-tst.nrs.gov.bc.ca
+      configmap: |
+        features:
+          staff:
+            match: true
+        info:
+          app:
+            component: backend
 
   deploy-prod:
     name: Deploy (PROD)
@@ -45,6 +52,13 @@ jobs:
       environment: prod
       target: prod
       url: forestclient.nrs.gov.bc.ca
+      configmap: |
+        features:
+          staff:
+            match: false
+        info:
+          app:
+            component: backend
 
   images-prod:
     name: Promote images to PROD

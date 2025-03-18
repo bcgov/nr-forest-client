@@ -46,9 +46,9 @@ parameters:
   - name: FRONTEND_URL
     description: Frontend URL
     required: true
-  - name: CONFIG_MAP_NAME
-    description: ConfigMap name specific to each environment
-    value: ${NAME}-${ZONE}-${COMPONENT}-config
+  - name: CONFIG_MAP
+    description: Configuration map for application.yml
+    required: true
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
@@ -235,3 +235,12 @@ objects:
       tls:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}-config
+    data:
+      application.yml: |
+        ${CONFIG_MAP}

@@ -121,7 +121,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        name: [database, database-bk, legacy, processor, backend, backend-cm, database-dev, frontend, frontend-cm]
+        name: [database, database-bk, legacy, processor, backend, database-dev, frontend, frontend-cm]
         include:
           - name: database
             file: database/openshift.deploy.yml
@@ -148,9 +148,6 @@ jobs:
               -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
               -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
               -p FRONTEND_URL=${{ inputs.url }}
-          - name: backend-cm
-            file: backend/openshift.configmap.${{ inputs.environment }}.yml
-            parameters:
               -p CONFIG_MAP='${{ inputs.configmap }}'
           - name: database-dev
             file: database/openshift.dev.yml
