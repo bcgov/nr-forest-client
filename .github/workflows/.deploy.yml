@@ -12,9 +12,8 @@ on:
         default: 'dev'
         required: false
         type: string
-      tag:
-        description: Container tag; usually PR number
-        default: ${{ github.event.number }}
+      oracledb-servicename:
+        description: Oracle service name
         required: false
         type: string
       target:
@@ -22,24 +21,31 @@ on:
         default: ${{ github.event.number }}
         required: false
         type: string
+      url:
+        description: Frontend URL; omit for PRs
+        default: ${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca
+        required: false
+        type: string
 
 permissions: {}
 
 jobs:
+  vars:
+    name: Variables
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.pr.outputs.pr }}
+    steps:
+      # Get PR number for squash merges to main
+      - name: PR Number
+        id: pr
+        uses: bcgov/action-get-pr@v0.0.1
+
   init:
     name: Deploy (init)
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-24.04
-    outputs:
-      url: ${{ steps.calculate.outputs.url }}
     steps:
-      # steps.calculate.outputs.url => needs.init.outputs.url
-      - name: Calculate the deployment number
-        id: calculate
-        run: |
-          echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
-          echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca"
-
       - name: Deployment Init
         uses: bcgov/action-deployer-openshift@v4.0.0
         with:
@@ -52,28 +58,29 @@ jobs:
             -p ZONE=${{ inputs.target }}
             -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
-            -p ORACLEDB_USER_W=THE
-            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}
+            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
+            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
-            -p ORACLEDB_HOST="nr-forest-client-tools-legacydb.d2723f-tools.svc.cluster.local"
-            -p ORACLEDB_SERVICENAME=PR_${{ github.event.number }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ inputs.oracledb-servicename || secrets.ORACLEDB_SERVICENAME }}
             -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
             -p BCREGISTRY_KEY=${{ secrets.BCREGISTRY_KEY }}
             -p BCREGISTRY_ACCOUNT=${{ secrets.BCREGISTRY_ACCOUNT }}
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
-            -p COGNITO_ENVIRONMENT=DEV
+            -p COGNITO_ENVIRONMENT=${{ inputs.environment }}
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
-            -p VITE_NODE_ENV=openshift-dev
-            -p URL_FRONTEND=${{ steps.calculate.outputs.url }}
+            -p VITE_NODE_ENV=openshift-${{ inputs.target }}
+            -p URL_FRONTEND=${{ inputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
-            -p LANDING_URL=${{ steps.calculate.outputs.url }}
-            -p DB_PASSWORD="$(echo ${{github.ref}}${{github.event.number}}|md5sum|cut -d' ' -f1)"
+            -p LANDING_URL=${{ inputs.url }}
+            -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            -p SPRING_PROFILES_ACTIVE=${{ secrets.OC_NAMESPACE }}
 
       - name: Backup database before update
         continue-on-error: true
@@ -83,63 +90,55 @@ jobs:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
-          cronjob: ${{ github.event.repository.name }}-${{ github.event.number }}-database-backup
-
-      - name: Deploy Database
-        uses: bcgov/action-deployer-openshift@v4.0.0
-        with:
-          file: database/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.oc_server }}
-          oc_token: ${{ secrets.oc_token }}
-          overwrite: false
-          parameters:
-            -p ZONE=${{ inputs.target }}
-            -p TAG=${{ inputs.tag }}
+          cronjob: ${{ github.event.repository.name }}-${{ inputs.target }}-database-backup
 
   deploy:
     name: Deploy
-    needs: [init]
+    needs: [init, vars]
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
       matrix:
-        name: [database-bk, legacy, processor, backend, backend-cm, database-dev, frontend, frontend-cm]
+        name: [database, database-bk, legacy, processor, backend, backend-cm, database-dev, frontend, frontend-cm]
         include:
+          - name: database
+            file: database/openshift.deploy.yml
+            overwrite: false
+            parameters: -p TAG=${{ needs.vars.outputs.tag }}
           - name: database-bk
             file: database/openshift.backup.yml
-            parameters: -p TAG=${{ inputs.tag }}
+            parameters: -p TAG=${{ needs.vars.outputs.tag }}
           - name: legacy
             file: legacy/openshift.deploy.yml
-              -p TAG=${{ inputs.tag }}
-              -p ENVIRONMENT=d2723f-dev
+            parameters:
+              -p TAG=${{ needs.vars.outputs.tag }}
               -p ORACLEDB_PORT=1521
           - name: processor
             file: processor/openshift.deploy.yml
             parameters:
-              -p TAG=${{ inputs.tag }}
+              -p TAG=${{ needs.vars.outputs.tag }}
               -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
           - name: backend
             file: backend/openshift.deploy.yml
             parameters:
-              -p TAG=${{ inputs.tag }}
+              -p TAG=${{ needs.vars.outputs.tag }}
               -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
               -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
               -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
               -p COGNITO_REGION=ca-central-1
-              -p FRONTEND_URL=${{ needs.init.outputs.url }}
+              -p FRONTEND_URL=${{ inputs.url }}
           - name: backend-cm
-            file: backend/openshift.configmap.dev.yml
+            file: backend/openshift.configmap.${{ inputs.environment }}.yml
           - name: database-dev
             file: database/openshift.dev.yml
           - name: frontend
             file: frontend/openshift.deploy.yml
             parameters:
-              -p TAG=${{ inputs.tag }}
-              -p URL=${{ needs.init.outputs.url }}
+              -p TAG=${{ needs.vars.outputs.tag }}
+              -p URL=${{ inputs.url }}
           - name: frontend-cm
-            file: frontend/openshift.configmap.dev.yml
+            file: frontend/openshift.configmap.${{ inputs.environment }}.yml
     steps:
       - uses: bcgov/action-deployer-openshift@v4.0.0
         id: deploys
@@ -148,7 +147,7 @@ jobs:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_server: ${{ secrets.oc_server }}
           oc_token: ${{ secrets.oc_token }}
-          overwrite: true
+          overwrite: ${{ matrix.overwrite }}
           parameters:
             -p ZONE=${{ inputs.target }}
             ${{ matrix.parameters }}

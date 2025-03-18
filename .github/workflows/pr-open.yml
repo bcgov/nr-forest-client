@@ -40,10 +40,12 @@ jobs:
           triggers: ('${{ matrix.package }}/')
 
   deploy:
-    name: Deploys (${{ github.event.number }})
+    name: Deploy (${{ github.event.number }})
     needs: [builds]
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
+    with:
+      oracledb-servicename: PR_${{ github.event.number }}
 
   tests:
     name: Tests
