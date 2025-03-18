@@ -151,7 +151,7 @@ jobs:
           - name: backend-cm
             file: backend/openshift.configmap.${{ inputs.environment }}.yml
             parameters:
-              -p CONFIGMAP='${{ inputs.configmap }}'
+              -p CONFIG_MAP='${{ inputs.configmap }}'
           - name: database-dev
             file: database/openshift.dev.yml
           - name: frontend
