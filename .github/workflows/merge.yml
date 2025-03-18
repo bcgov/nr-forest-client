@@ -31,6 +31,7 @@ jobs:
     uses: ./.github/workflows/.deploy.yml
     with:
       environment: test
+      oracle-service-name: ${{ secrets.ORACLEDB_SERVICENAME}}
       target: test
       url: forestclient-tst.nrs.gov.bc.ca
 
