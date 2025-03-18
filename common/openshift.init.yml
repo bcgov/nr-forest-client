@@ -83,6 +83,7 @@ parameters:
     required: true
   - name: COGNITO_DOMAIN
     description: Cognito domain
+    value: 'prod-fam-user-pool-domain'
     required: true
   - name: LANDING_URL
     required: true

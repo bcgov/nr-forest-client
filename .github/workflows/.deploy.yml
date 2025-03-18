@@ -75,7 +75,6 @@ jobs:
             -p URL_FRONTEND=${{ inputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
-            -p COGNITO_DOMAIN=${{ secrets.COGNITO_DOMAIN }}
             -p COGNITO_REGION=${{ secrets.COGNITO_REGION }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p LANDING_URL=${{ inputs.url }}
