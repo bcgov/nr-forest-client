@@ -168,7 +168,11 @@ const valid = ref(false);
 </script>
 
 <template>
-  <div class="grouping-12" :class="{ invisible: props.isReloading }">
+  <div
+    :id="`contact-${index}-general-section`"
+    class="grouping-12"
+    :class="{ invisible: props.isReloading }"
+  >
     <div v-if="!isEditing" class="flex-column-1_5rem">
       <read-only-component label="Contact type" :id="`contact-${index}-contactType`">
         <span class="body-compact-01">{{ data.contactTypeDesc }}</span>
