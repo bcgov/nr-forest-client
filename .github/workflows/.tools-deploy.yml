@@ -26,7 +26,6 @@ jobs:
   pre-tools:
     name: Pre Deploy Tools
     needs: [builds]
-    environment: dev
     runs-on: ubuntu-24.04
     steps:
       - name: Scale down legacy
@@ -150,7 +149,6 @@ jobs:
   scale-up-legacy:
     name: Scale up legacy
     needs: [deploy-tools]
-    environment: dev
     if: always()    
     runs-on: ubuntu-24.04
     steps:
