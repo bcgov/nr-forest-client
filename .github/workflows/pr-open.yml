@@ -48,7 +48,6 @@ jobs:
       oracledb-port: 1521
       oracledb-servicename: PR_${{ github.event.number }}
       oracledb-username: PR_${{ github.event.number }}
-      oracledb-password: ${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}
 
   tests:
     name: Tests

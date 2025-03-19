@@ -123,7 +123,7 @@ jobs:
               POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
               if [ -n "$POD_NAME" ]; then
                 echo "Pod found: $POD_NAME"
-                oc exec $POD_NAME -- /opt/oracle/createAppUser "THE" "${{ secrets.ORACLEDB_PASSWORD_W }}_${{ github.event.number }}" "PR_${{ github.event.number }}"
+                oc exec $POD_NAME -- /opt/oracle/createAppUser "THE" "${{ secrets.ORACLEDB_PASSWORD_W }}" "PR_${{ github.event.number }}"
                 break
               else
                 echo "Pod not found, retrying in 10 seconds... ($i/5)"
