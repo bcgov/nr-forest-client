@@ -601,11 +601,18 @@ public class ClientSubmissionService {
   private Map<String, Object> registrationParameters(
       Map<String, Object> clientSubmission,
       String districtName,
-      String districtEmail
+      String districtEmailsAsCsv
   ) {
     Map<String, Object> descMap = new HashMap<>(clientSubmission);
     descMap.put("districtName", StringUtils.defaultString(districtName));
-    descMap.put("districtEmail", StringUtils.defaultString(districtEmail));
+    
+	List<String> districtEmailList = Arrays
+			.stream(StringUtils.defaultString(districtEmailsAsCsv)
+			.split(","))
+			.map(String::trim)
+			.filter(StringUtils::isNotEmpty).toList();
+
+	descMap.put("districtEmailList", districtEmailList);
     return descMap;
   }
 
