@@ -130,7 +130,6 @@ objects:
       ches-mail-copy: ${CHES_MAIL_COPY}
       processor-service-account-secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
       processor-service-account-name: processor-service-account
-      processor-service-account-secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
       spring-profiles-active: "container,${SPRING_PROFILES_ACTIVE}"
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
