@@ -233,7 +233,7 @@ objects:
                       valueFrom:
                         secretKeyRef:
                           name: ${NAME}-${ZONE}
-                          key: oracle-password-write
+                          key: oracle-password
                     - name: PR_NUMBER
                       value: "0"
                   volumeMounts:
