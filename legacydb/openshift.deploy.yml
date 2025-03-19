@@ -89,10 +89,7 @@ objects:
                 timeoutSeconds: 5
               env:
                 - name: APP_USER_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-password-write
+                  value: ${ORACLEDB_PASSWORD}
                 - name: ORACLE_RANDOM_PASSWORD
                   value: "true"
                 - name: APP_USER
@@ -218,7 +215,10 @@ objects:
                     - name: FLYWAY_USER
                       value: THE   
                     - name: FLYWAY_PASSWORD
-                      value: ${ORACLEDB_PASSWORD}
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${NAME}-${ZONE}
+                          key: oracle-password
                     - name: PR_NUMBER
                       value: "0"
                   volumeMounts:
