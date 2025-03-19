@@ -243,4 +243,4 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}-config
     data:
       application.yml: |
-        ${CONFIG_MAP}
+        '${CONFIG_MAP}'

@@ -186,4 +186,4 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}-config
     data:
       params.js: |
-        ${CONFIG_MAP}
+        '${CONFIG_MAP}'
