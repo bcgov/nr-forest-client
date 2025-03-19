@@ -54,7 +54,6 @@ jobs:
   deploy-oracle:
     name: Deploy Oracle Database
     needs: [pre-tools, builds]
-    environment: tools
     runs-on: ubuntu-24.04
     steps:
       - name: Initializing Deployment
@@ -68,8 +67,8 @@ jobs:
           overwrite: false
           parameters:
             -p ZONE=tools
-            -p ORACLEDB_USER_W=THE
-            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_USER=THE
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p TAG=latest
 
   remove-tools:
@@ -81,7 +80,6 @@ jobs:
   deploy-tools:
     name: Deploy Tools
     needs: [remove-tools, deploy-oracle]
-    environment: tools
     runs-on: ubuntu-24.04
     steps:
       - name: Create the PR database

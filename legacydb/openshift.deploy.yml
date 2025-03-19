@@ -13,6 +13,12 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - name: ORACLEDB_USER
+    description: Oracle database user
+    value: THE
+  - name: ORACLEDB_PASSWORD
+    description: Oracle database password
+    required: true
   - name: TAG
     description: Image tag to use
     value: latest
