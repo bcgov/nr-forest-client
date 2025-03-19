@@ -125,6 +125,7 @@ jobs:
             parameters:
               -p FRONTEND_URL=${{ inputs.url }}
               -p CONFIG_MAP='${{ inputs.configmap-backend }}'
+            verification_path: health
           - name: frontend
             parameters:
               -p URL=${{ inputs.url }}
@@ -142,6 +143,7 @@ jobs:
             -p TAG=${{ needs.vars.outputs.tag }}
             -p ZONE=${{ inputs.target }}
             ${{ matrix.parameters }}
+          verification_path: ${{ matrix.verification_path }}
 
   database-dev-job:
     name: Database Dev Job
