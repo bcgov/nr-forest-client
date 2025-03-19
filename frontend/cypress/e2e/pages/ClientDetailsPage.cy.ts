@@ -468,12 +468,12 @@ describe("Client Details Page", () => {
                   cy.spy(element, "scrollIntoView").as("scrollToNewLocation");
                 });
 
+                cy.get("cds-accordion[id|='location']").should("have.length", 4);
+
                 cy.get("[data-focus='location-3-heading']").then(($el) => {
                   const element = $el[0];
                   cy.spy(element, "focus").as("focusNewLocation");
                 });
-
-                cy.get("cds-accordion[id|='location']").should("have.length", 4);
 
                 cy.get("@scrollToNewLocation").should("be.called");
 
@@ -564,6 +564,8 @@ describe("Client Details Page", () => {
                 cy.fillFormEntry("[data-id='input-notes_0']", "error", { area: true });
               } else {
                 cy.get("#addlocationBtn").click();
+
+                cy.get("cds-accordion[id|='location']").should("have.length", 4);
 
                 cy.get("[data-focus='location-3-heading']").then(($el) => {
                   const element = $el[0];

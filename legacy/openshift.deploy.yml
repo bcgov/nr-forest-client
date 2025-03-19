@@ -13,9 +13,6 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-  - name: ENVIRONMENT
-    description: Environment name used by the application
-    required: true
   - name: TAG
     description: Image tag; e.g. PR number, latest or prod
     required: true
@@ -128,12 +125,12 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: oracle-user-write
+                      key: oracle-user
                 - name: ORACLEDB_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}
-                      key: oracle-password-write
+                      key: oracle-password
                 - name: ORACLEDB_DATABASE
                   valueFrom:
                     secretKeyRef:
@@ -152,7 +149,10 @@ objects:
                 - name: ORACLEDB_PORT
                   value: ${ORACLEDB_PORT}
                 - name: SPRING_PROFILES_ACTIVE
-                  value: "container,${ENVIRONMENT}"
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: spring-profiles-active
                 - name: ORACLEDB_SECRET
                   valueFrom:
                     secretKeyRef:

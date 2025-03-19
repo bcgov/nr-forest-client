@@ -29,7 +29,9 @@
 		<#if business.districtEmail?has_content>
 			<p>
 				If you need to contact us, please contact the ${business.districtName} at 
-				<a href="mailto:${business.districtEmail}">${business.districtEmail}.</a>
+				<#list business.districtEmail?split(",") as email>
+		            <a href="mailto:${email?trim}">${email?trim}</a><#if email_has_next>, </#if>
+		        </#list>.
 			</p>
 			<div>&nbsp;</div>
 		</#if>

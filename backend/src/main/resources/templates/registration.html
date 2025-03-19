@@ -32,7 +32,9 @@
 		<#if districtEmail?has_content>
 			<p>
 				If you need to contact us before then please contact the ${districtName} at  
-				<a href="mailto:${districtEmail}">${districtEmail}.</a>
+				<#list districtEmail?split(",") as email>
+		            <a href="mailto:${email?trim}">${email?trim}</a><#if email_has_next>, </#if>
+		        </#list>.
 			</p>
 			<div>&nbsp;</div>
 		</#if>

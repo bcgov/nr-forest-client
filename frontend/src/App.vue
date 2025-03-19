@@ -140,4 +140,3 @@ overlayBus.on(openOverlay)
       :show-loading="overlayContent.showLoading"
     />
 </template>
-
