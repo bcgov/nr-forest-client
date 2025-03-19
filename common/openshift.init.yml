@@ -55,12 +55,18 @@ parameters:
     displayName: Database Backup Volume Capacity
     required: true
     value: 256Mi
+  - name: COGNITO_CLIENT_ID
+    required: true
+  - name: COGNITO_DOMAIN
+    value: 'prod-fam-user-pool-domain'
+  - name: COGNITO_ENVIRONMENT
+    required: true
   - name: COGNITO_USER_POOL
     description: Cognito user pool id
     required: true
-  - name: COGNITO_ENVIRONMENT
-    description: Cognito environment
-    required: true
+  - name: COGNITO_REGION
+    description: Cognito region information
+    value: 'ca-central-1'
   - name: CHES_MAIL_COPY
     description: Email address to copy all CHES emails to
     required: true
@@ -70,16 +76,6 @@ parameters:
     generate: expression
   - name: GREEN_DOMAIN
     description: Green domain
-    required: true
-  - name: COGNITO_REGION
-    description: Cognito region information
-    value: 'ca-central-1'
-  - name: COGNITO_CLIENT_ID
-    description: Cognito client id
-    required: true
-  - name: COGNITO_DOMAIN
-    description: Cognito domain
-    value: 'prod-fam-user-pool-domain'
     required: true
   - name: LANDING_URL
     required: true
@@ -92,9 +88,7 @@ parameters:
     description: Spring profile
     required: true
   - name: VITE_NODE_ENV
-    value: ""
-    from: "[a-zA-Z0-9]{16}"
-    generate: expression
+    required: true
 objects:
   - apiVersion: v1
     kind: Secret
@@ -163,11 +157,11 @@ objects:
         window.localStorage.setItem('VITE_FRONTEND_URL', 'https://${URL_FRONTEND}');
         window.localStorage.setItem('VITE_NODE_ENV', '${VITE_NODE_ENV}');
         window.localStorage.setItem('VITE_GREEN_DOMAIN', '${GREEN_DOMAIN}');
-        window.localStorage.setItem('VITE_AWS_COGNITO_REGION','${COGNITO_REGION}');
-        window.localStorage.setItem('VITE_AWS_COGNITO_POOL_ID','${COGNITO_USER_POOL}');
         window.localStorage.setItem('VITE_AWS_COGNITO_CLIENT_ID','${COGNITO_CLIENT_ID}');
         window.localStorage.setItem('VITE_AWS_COGNITO_DOMAIN','${COGNITO_DOMAIN}');
         window.localStorage.setItem('VITE_AWS_COGNITO_ENVIRONMENT','${COGNITO_ENVIRONMENT}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_POOL_ID','${COGNITO_USER_POOL}');
+        window.localStorage.setItem('VITE_AWS_COGNITO_REGION','${COGNITO_REGION}');
         window.localStorage.setItem('VITE_LOGOUT_BCSC_URL','${LANDING_URL}');
         window.localStorage.setItem('VITE_LOGOUT_BCEIDBUSINESS_URL','${LANDING_URL}');
         window.localStorage.setItem('VITE_LOGOUT_IDIR_URL','https://${URL_FRONTEND}');
