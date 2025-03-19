@@ -22,12 +22,6 @@ parameters:
   - name: ORG
     description: Organization name
     value: bcgov
-  - name: ORACLEDB_USER_W
-    description: Oracle database user name with write permission
-    required: true
-  - name: ORACLEDB_PASSWORD_W
-    description: Oracle database password with write permission
-    required: true
   - name: CPU_REQUEST
     value: 125m
   - name: MEMORY_REQUEST
@@ -37,15 +31,6 @@ parameters:
     from: "[a-zA-Z0-9]{32}"
     generate: expression
 objects:
-  - kind: Secret
-    apiVersion: v1    
-    metadata:
-      name: ${NAME}-${ZONE}
-      labels:
-        app: ${NAME}-${ZONE}
-    stringData:      
-      oracle-user-write: ${ORACLEDB_USER_W}
-      oracle-password-write: ${ORACLEDB_PASSWORD_W}
   - kind: Deployment
     apiVersion: apps/v1
     metadata:

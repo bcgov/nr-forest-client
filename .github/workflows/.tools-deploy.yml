@@ -68,8 +68,6 @@ jobs:
           overwrite: false
           parameters:
             -p ZONE=tools            
-            -p ORACLEDB_USER_W=THE
-            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p TAG=latest
 
   remove-tools:
