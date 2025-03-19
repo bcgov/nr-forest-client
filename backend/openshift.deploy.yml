@@ -29,17 +29,17 @@ parameters:
     value: ghcr.io
   - name: CHES_TOKEN_URL
     description: CHES service authentication url
-    required: true
+    value: 'https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
   - name: CHES_API_URL
     description: CHES service api url
-    required: true
+    value: 'https://ches.api.gov.bc.ca/api/v1'
   - name: CPU_REQUEST
     value: 75m
   - name: MEMORY_REQUEST
     value: 200Mi
   - name: BCREGISTRY_URI
     description: Bc Registry API address
-    required: true
+    value: https://bcregistry-prod.apigee.net
   - name: COGNITO_REGION
     description: Cognito region to be used
     value: 'ca-central-1'

@@ -120,13 +120,8 @@ jobs:
             parameters:
               -p ORACLEDB_PORT=${{ inputs.oracledb-port }}
           - name: processor
-            parameters:
-              -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
           - name: backend
             parameters:
-              -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-              -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
-              -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
               -p FRONTEND_URL=${{ inputs.url }}
               -p CONFIG_MAP='${{ inputs.configmap-backend }}'
           - name: frontend
