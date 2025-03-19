@@ -61,8 +61,8 @@ jobs:
         with:
           file: legacydb/openshift.deploy.yml
           oc_namespace: d2723f-tools
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
+          oc_server: ${{ secrets.oc_server }}
+          oc_token: ${{ secrets.oc_token_tools }}
           oc_version: "4.13"
           overwrite: false
           parameters:
@@ -86,8 +86,8 @@ jobs:
         uses: bcgov/action-oc-runner@v1.0.0
         with:
           oc_namespace: d2723f-tools
-          oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
+          oc_token: ${{ secrets.oc_token_tools }}
           commands: |
             # This creates a new pluggable database for the PR
             for i in {1..5}; do
@@ -111,8 +111,8 @@ jobs:
         uses: bcgov/action-oc-runner@v1.0.0
         with:
           oc_namespace: d2723f-tools
-          oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
+          oc_token: ${{ secrets.oc_token_tools }}
           commands: |
             # This creates a new pluggable database for the PR
             for i in {1..5}; do
@@ -136,8 +136,8 @@ jobs:
         uses: bcgov/action-oc-runner@v1.0.0
         with:
           oc_namespace: d2723f-tools
-          oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
+          oc_token: ${{ secrets.oc_token_tools }}
           commands: |
             BRANCH_NAME="${{ github.head_ref }}"
             ESCAPED_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[\/&]/\\&/g')
