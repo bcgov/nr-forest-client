@@ -33,7 +33,7 @@ parameters:
     value: 300Mi
   - name: BCREGISTRY_URI
     description: Bc Registry API address
-    value: https://bcregistry-prod.apigee.net
+    value: https://api.connect.gov.bc.ca
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"

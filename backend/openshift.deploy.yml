@@ -39,7 +39,7 @@ parameters:
     value: 200Mi
   - name: BCREGISTRY_URI
     description: Bc Registry API address
-    value: https://bcregistry-prod.apigee.net
+    value: https://api.connect.gov.bc.ca
   - name: COGNITO_REGION
     description: Cognito region to be used
     value: 'ca-central-1'
