@@ -22,10 +22,15 @@ public class ClientPatchService {
    *
    * @param clientNumber The unique identifier of the client to update.
    * @param forestClient The JSON Patch document describing the modifications.
+   * @param userName The user that triggered the patch request
    * @return A {@link Mono} that completes when the patch is applied successfully.
    */
-  public Mono<Void> patchClient(String clientNumber, Object forestClient) {
-    log.info("Sending request to the legacy system to patch client {}", clientNumber);
-    return legacyService.patchClient(clientNumber, forestClient);
+  public Mono<Void> patchClient(
+      String clientNumber,
+      Object forestClient,
+      String userName
+  ) {
+    log.info("{} requested to patch client {}", userName, clientNumber);
+    return legacyService.patchClient(clientNumber, forestClient, userName);
   }
 }

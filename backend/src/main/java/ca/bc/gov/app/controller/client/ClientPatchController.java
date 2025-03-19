@@ -1,11 +1,13 @@
 package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.service.client.ClientPatchService;
+import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,10 +45,14 @@ public class ClientPatchController {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Mono<Void> patchForestClient(
       @PathVariable String clientNumber,
-      @RequestBody Object forestClient //Setting as object because it's irrelevant for this service
+      @RequestBody Object forestClient, //Setting as object because it's irrelevant for this service
+      JwtAuthenticationToken principal
   ) {
-    log.info("Received a partial update request for client {}", clientNumber);
-    return service.patchClient(clientNumber, forestClient);
+    log.info("Received a partial update request for client {} from {}",
+        clientNumber,
+        JwtPrincipalUtil.getUserId(principal)
+    );
+    return service.patchClient(clientNumber, forestClient, JwtPrincipalUtil.getUserId(principal));
   }
 
 }

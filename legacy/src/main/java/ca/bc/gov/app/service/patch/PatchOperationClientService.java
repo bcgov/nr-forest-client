@@ -6,6 +6,7 @@ import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +75,8 @@ public class PatchOperationClientService implements ClientPatchOperation {
   public Mono<Void> applyPatch(
       String clientNumber,
       Object patch,
-      ObjectMapper mapper
+      ObjectMapper mapper,
+      String userName
   ) {
 
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
@@ -99,6 +101,13 @@ public class PatchOperationClientService implements ClientPatchOperation {
                           )
                       )
                       .filter(client -> !entity.equals(client))
+                      //Can only happen if there's a change
+                      .map(client ->
+                          client
+                              .withUpdatedAt(LocalDateTime.now())
+                              .withUpdatedBy(userName) // Is still missing the user org unit
+                              .withRevision(client.getRevision() + 1)
+                      )
                       .doOnNext(client -> log.info("Applying Forest Client changes {}", client))
               )
               .flatMap(clientRepository::save)
