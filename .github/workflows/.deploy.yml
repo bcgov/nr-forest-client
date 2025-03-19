@@ -127,7 +127,7 @@ jobs:
           - name: frontend
             parameters:
               -p URL=${{ inputs.url }}
-              -p CONFIG_MAP='${{ inputs.configmap-backend }}'
+              -p CONFIG_MAP='${{ inputs.configmap-frontend }}'
     steps:
       - uses: bcgov/action-deployer-openshift@v3.2.0
         id: deploys

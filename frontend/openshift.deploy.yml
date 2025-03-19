@@ -48,7 +48,7 @@ parameters:
     description: Frontend URL
     required: true
   - name: CONFIG_MAP
-    description: Configuration map for application.yml
+    description: Configuration map for params.js
     required: true
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
