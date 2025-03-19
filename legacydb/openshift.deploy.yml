@@ -213,12 +213,9 @@ objects:
                     - name: FLYWAY_URL
                       value: "jdbc:oracle:thin:@nr-forest-client-tools-legacydb.d2723f-tools.svc.cluster.local:1521/PR"
                     - name: FLYWAY_USER
-                      value: THE   
+                      value: ${ORACLEDB_USER}
                     - name: FLYWAY_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                          name: ${NAME}-${ZONE}
-                          key: oracle-password
+                      value: ${ORACLEDB_PASSWORD}
                     - name: PR_NUMBER
                       value: "0"
                   volumeMounts:

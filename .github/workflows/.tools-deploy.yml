@@ -67,9 +67,7 @@ jobs:
           overwrite: false
           parameters:
             -p ZONE=tools
-            -p ORACLEDB_USER=THE
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
-            -p TAG=latest
 
   remove-tools:
     name: Remove database and user
