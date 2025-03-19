@@ -20,6 +20,10 @@ on:
         description: Oracle service name
         required: false
         type: string
+      oracledb-username:
+        description: Oracle username
+        required: false
+        type: string
       target:
         description: Deployment target; usually PR number, test or prod
         default: ${{ github.event.number }}
@@ -60,10 +64,8 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ inputs.target }}
-            -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
-            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
-            -p ORACLEDB_USER_W=${{ secrets.ORACLEDB_USERNAME_W }}
-            -p ORACLEDB_PASSWORD_W=${{ secrets.ORACLEDB_PASSWORD_W }}
+            -p ORACLEDB_USER=${{ inputs.oracledb-username || secrets.ORACLEDB_USERNAME_W }}
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD_W }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ inputs.oracledb-servicename || secrets.ORACLEDB_SERVICENAME }}
