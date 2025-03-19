@@ -178,7 +178,6 @@ objects:
       tls:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
-objects:
   - kind: ConfigMap
     apiVersion: v1
     metadata:
