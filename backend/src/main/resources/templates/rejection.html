@@ -23,14 +23,14 @@
 		</p>
 		<div>&nbsp;</div>
 		
-		<#if business.districtEmailList?has_content>
-		    <p>
-		        If you need to contact us, please contact ${business.districtName} at 
-		        <#list business.districtEmailList as email>
-		            <a href="mailto:${email}">${email}</a><#if email_has_next>, </#if>
+		<#if business.districtEmail?has_content>
+			<p>
+				If you need to contact us, please contact the ${business.districtName} at 
+				<#list business.districtEmail?split(",") as email>
+		            <a href="mailto:${email?trim}">${email?trim}</a><#if email_has_next>, </#if>
 		        </#list>.
-		    </p>
-		    <div>&nbsp;</div>
+			</p>
+			<div>&nbsp;</div>
 		</#if>
 		
 		<p>Thank you,</p>
