@@ -96,10 +96,7 @@ objects:
                 - name: ORACLE_RANDOM_PASSWORD
                   value: "true"
                 - name: APP_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-user-write
+                  value: ${ORACLEDB_USER}
                 - name: RANDOM_EXPRESSION
                   value: ${RANDOM_EXPRESSION}
               terminationMessagePath: /dev/termination-log
@@ -221,10 +218,7 @@ objects:
                     - name: FLYWAY_USER
                       value: THE   
                     - name: FLYWAY_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                          name: ${NAME}-${ZONE}
-                          key: oracle-password
+                      value: ${ORACLEDB_PASSWORD}
                     - name: PR_NUMBER
                       value: "0"
                   volumeMounts:
