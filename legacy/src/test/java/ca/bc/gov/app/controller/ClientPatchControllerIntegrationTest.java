@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller;
 
+import static ca.bc.gov.app.ApplicationConstants.MDC_USERID;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
@@ -44,6 +45,7 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         .patch()
         .uri("/api/clients/partial/{clientNumber}", clientNumber)
         .header("Content-Type", "application/json-patch+json")
+        .header(MDC_USERID, "test-user")
         .bodyValue(partialBody)
         .exchange()
         .expectStatus().isAccepted()
@@ -89,6 +91,22 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.wcbFirmNumber",
             null,
             "142536"
+        ),
+        argumentSet(
+            "Deactivate client due to bankruptcy",
+            "00000103",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientStatusCode\",\"value\":\"DAC\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"clientStatusCode\",\"reason\":\"BKR\"}}]",
+            "$.client.clientStatusCode",
+            "ACT",
+            "DAC"
+        ),
+        argumentSet(
+            "Activate client due to correction",
+            "00000158",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientStatusCode\",\"value\":\"ACT\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"clientStatusCode\",\"reason\":\"CORR\"}}]",
+            "$.client.clientStatusCode",
+            "DAC",
+            "ACT"
         )
     );
   }
