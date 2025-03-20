@@ -29,26 +29,26 @@ parameters:
     value: ghcr.io
   - name: CHES_TOKEN_URL
     description: CHES service authentication url
-    required: true
+    value: 'https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
   - name: CHES_API_URL
     description: CHES service api url
-    required: true
+    value: 'https://ches.api.gov.bc.ca/api/v1'
   - name: CPU_REQUEST
     value: 75m
   - name: MEMORY_REQUEST
     value: 200Mi
   - name: BCREGISTRY_URI
     description: Bc Registry API address
-    required: true
+    value: https://api.connect.gov.bc.ca
   - name: COGNITO_REGION
     description: Cognito region to be used
     value: 'ca-central-1'
   - name: FRONTEND_URL
     description: Frontend URL
     required: true
-  - name: CONFIG_MAP_NAME
-    description: ConfigMap name specific to each environment
-    value: ${NAME}-${ZONE}-${COMPONENT}-config
+  - name: CONFIG_MAP
+    description: Configuration map for application.yml
+    required: true
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
@@ -235,3 +235,12 @@ objects:
       tls:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}-config
+    data:
+      application.yml: |
+        '${CONFIG_MAP}'
