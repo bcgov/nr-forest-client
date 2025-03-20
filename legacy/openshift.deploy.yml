@@ -34,12 +34,8 @@ parameters:
     value: "1543"
   - name: CPU_REQUEST
     value: 75m
-  - name: CPU_LIMIT
-    value: 200m
   - name: MEMORY_REQUEST
     value: 200Mi
-  - name: MEMORY_LIMIT
-    value: 256Mi
   - name: CERT_PVC_SIZE
     description: The amount of storage the cert PVC should have
     value: 25Mi
@@ -110,9 +106,6 @@ objects:
                 - name: ${NAME}-${ZONE}-certs
                   mountPath: /cert
               resources:
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
@@ -168,9 +161,6 @@ objects:
                 - containerPort: 9000
                   protocol: TCP
               resources:
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}

@@ -13,6 +13,12 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - name: ORACLEDB_USER
+    description: Oracle database user
+    value: THE
+  - name: ORACLEDB_PASSWORD
+    description: Oracle database password
+    required: true
   - name: TAG
     description: Image tag to use
     value: latest
@@ -22,34 +28,15 @@ parameters:
   - name: ORG
     description: Organization name
     value: bcgov
-  - name: ORACLEDB_USER_W
-    description: Oracle database user name with write permission
-    required: true
-  - name: ORACLEDB_PASSWORD_W
-    description: Oracle database password with write permission
-    required: true
   - name: CPU_REQUEST
     value: 125m
-  - name: CPU_LIMIT
-    value: 500m
   - name: MEMORY_REQUEST
     value: 3.5Gi
-  - name: MEMORY_LIMIT
-    value: 4Gi
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
     generate: expression
 objects:
-  - kind: Secret
-    apiVersion: v1    
-    metadata:
-      name: ${NAME}-${ZONE}
-      labels:
-        app: ${NAME}-${ZONE}
-    stringData:      
-      oracle-user-write: ${ORACLEDB_USER_W}
-      oracle-password-write: ${ORACLEDB_PASSWORD_W}
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
@@ -78,9 +65,6 @@ objects:
             - name: ${NAME}
               image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
               resources:
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
@@ -105,17 +89,11 @@ objects:
                 timeoutSeconds: 5
               env:
                 - name: APP_USER_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-password-write
+                  value: ${ORACLEDB_PASSWORD}
                 - name: ORACLE_RANDOM_PASSWORD
                   value: "true"
                 - name: APP_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}
-                      key: oracle-user-write
+                  value: ${ORACLEDB_USER}
                 - name: RANDOM_EXPRESSION
                   value: ${RANDOM_EXPRESSION}
               terminationMessagePath: /dev/termination-log
@@ -235,12 +213,9 @@ objects:
                     - name: FLYWAY_URL
                       value: "jdbc:oracle:thin:@nr-forest-client-tools-legacydb.d2723f-tools.svc.cluster.local:1521/PR"
                     - name: FLYWAY_USER
-                      value: THE   
+                      value: ${ORACLEDB_USER}
                     - name: FLYWAY_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                          name: ${NAME}-${ZONE}
-                          key: oracle-password-write
+                      value: ${ORACLEDB_PASSWORD}
                     - name: PR_NUMBER
                       value: "0"
                   volumeMounts:
