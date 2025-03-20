@@ -29,7 +29,7 @@
     }],
     "addresses": [
         {
-            "clientLocnName": "",
+            "clientLocnName": "Headquarters",
             "clientLocnCode": "00",
             "addressOne":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
             "addressTwo":"C/O Tony Pineda",
@@ -49,7 +49,7 @@
             "locnExpiredInd": "N"
         },
         {
-            "clientLocnName": "Accountant address",
+            "clientLocnName": null,
             "clientLocnCode": "01",
             "addressOne":"{{randomValue length=4 type='NUMERIC'}} Oak St",
             "addressTwo":"C/O Mike Oliveira",
