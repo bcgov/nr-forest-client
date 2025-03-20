@@ -544,7 +544,7 @@ const getLocationDescription = (address: Address, index: number | string): strin
       </div>
     </textarea-input-component>
 
-    <div class="grouping-06" v-if="!hideDeleteButton && id > 0">
+    <div class="grouping-06" v-if="!hideDeleteButton && Number(id) > 0">
       <cds-button
         :id="'deleteAddress_' + id"
         :danger-descriptor="`Delete location &quot;${getLocationDescription(

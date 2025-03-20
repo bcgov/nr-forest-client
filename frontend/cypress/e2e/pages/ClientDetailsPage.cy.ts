@@ -461,7 +461,7 @@ describe("Client Details Page", () => {
 
             if (scenario.name === "create") {
               it("scrolls down to the new form", () => {
-                cy.get("#addlocationBtn").click();
+                cy.get("#addLocationBtn").click();
 
                 cy.get("[data-scroll='location-3-heading']").then(($el) => {
                   const element = $el[0];
@@ -558,7 +558,7 @@ describe("Client Details Page", () => {
 
                 cy.fillFormEntry("[data-id='input-notes_0']", "error", { area: true });
               } else {
-                cy.get("#addlocationBtn").click();
+                cy.get("#addLocationBtn").click();
 
                 cy.get("cds-accordion[id|='location']").should("have.length", 4);
 

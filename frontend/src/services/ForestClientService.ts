@@ -49,7 +49,7 @@ export const getAddressDescription = (
   entityName = "Address",
 ): string => (address.locationName.length !== 0 ? address.locationName : `${entityName} #` + index);
 
-export const getContactDescription = (contact: Contact, index: number): string =>
+export const getContactDescription = (contact: Contact, index: number | string): string =>
   !isNullOrUndefinedOrBlank(contact.firstName)
     ? `${contact.firstName} ${contact.lastName}`
     : "Contact #" + index;

@@ -5,6 +5,7 @@ import Edit16 from "@carbon/icons-vue/es/edit/16";
 import Save16 from "@carbon/icons-vue/es/save/16";
 import Close16 from "@carbon/icons-vue/es/close/16";
 import Trash16 from "@carbon/icons-vue/es/trash-can/16";
+import Check16 from "@carbon/icons-vue/es/checkmark/16";
 import type {
   ActionWords,
   ClientContact,
@@ -25,7 +26,7 @@ import { useFetchTo } from "@/composables/useFetch";
 
 const props = defineProps<{
   data: ClientContact;
-  index: number;
+  index: number | string;
   associatedLocationsString: string;
   allLocations: ClientLocation[];
   userRoles: UserRole[];
@@ -65,7 +66,7 @@ const addressList = computed(() =>
 
 const revalidate = ref(false);
 
-const isEditing = ref(false);
+const isEditing = ref(!!props.createMode);
 const hasAnyChange = ref(false);
 
 let previousValue: Contact;
@@ -132,7 +133,7 @@ const save = (
     pastParticiple: "updated",
   },
 ) => {
-  const patch = jsonpatch.compare(originalData, updatedContact);
+  const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedContact);
 
   const operationType = props.createMode ? "insert" : "update";
 
@@ -146,7 +147,16 @@ const save = (
 
 const saveForm = () => {
   const contact = contactToEditFormat(formContactData.value, props.data);
-  save(contact);
+  const action = props.createMode
+    ? {
+        infinitive: "create",
+        pastParticiple: "created",
+      }
+    : {
+        infinitive: "update",
+        pastParticiple: "updated",
+      };
+  save(contact, action);
 };
 
 const displayDeleteModal = ref(false);
@@ -249,14 +259,21 @@ const valid = ref(false);
           @click="saveForm"
           :disabled="!hasAnyChange || !valid"
         >
-          <span class="width-unset">Save changes</span>
-          <Save16 slot="icon" />
+          <template v-if="props.createMode">
+            <span class="width-unset">Save contact</span>
+            <Check16 slot="icon" />
+          </template>
+          <template v-else>
+            <span class="width-unset">Save changes</span>
+            <Save16 slot="icon" />
+          </template>
         </cds-button>
         <cds-button :id="`contact-${index}-CancelBtn`" kind="tertiary" size="md" @click="cancel">
           <span class="width-unset">Cancel</span>
           <Close16 slot="icon" />
         </cds-button>
         <cds-button
+          v-if="!props.createMode"
           :id="`contact-${index}-DeleteBtn`"
           kind="danger--tertiary"
           size="md"

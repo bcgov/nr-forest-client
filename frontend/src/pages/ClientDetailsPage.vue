@@ -51,6 +51,7 @@ import {
   type SaveEvent,
   createClientLocation,
   type ClientContact,
+  createClientContact,
 } from "@/dto/CommonTypesDto";
 
 // Page components
@@ -178,9 +179,17 @@ watch(sortedLocations, (value) => {
   }
 });
 
-const sortedContacts = computed(() =>
-  data.value?.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
-);
+const newContact = ref<ClientContact>();
+
+const sortedContacts = computed(() => {
+  const result = data.value?.contacts?.toSorted((a, b) =>
+    compareString(a.contactName, b.contactName),
+  );
+  if (newContact.value) {
+    result.push(newContact.value);
+  }
+  return result;
+});
 
 const uniqueContacts = isUniqueDescriptive();
 
@@ -195,11 +204,13 @@ watch(sortedContacts, (value) => {
 interface ContactState {
   isReloading?: boolean;
   name: string;
+  startOpen?: boolean;
 }
 
 const createContactState = (contactState?: Partial<ContactState>): ContactState => ({
   isReloading: false,
   name: "",
+  startOpen: false,
   ...contactState,
 });
 
@@ -268,6 +279,13 @@ const associatedLocationsRecord = computed(() => {
   return result;
 });
 
+const formatContact = (contact: ClientContact) => {
+  if (contact.contactId === NEW_IDENTIFIER && !contactsState[contact.contactId].name) {
+    return "New contact";
+  }
+  return contactsState[contact.contactId].name;
+};
+
 const NEW_IDENTIFIER = "new";
 
 const addLocation = () => {
@@ -295,12 +313,27 @@ const updateLocationName = (locationName: string, locationCode: string) => {
   locationsState[locationCode].name = locationName;
 };
 
-const handleContactCanceled = (contact: ClientContact) => {
-  // reset to the original value
-  contactsState[contact.contactId].name = contact.contactName;
+const addContact = () => {
+  const contactId = NEW_IDENTIFIER;
+  newContact.value = createClientContact(contactId, clientNumber);
+  contactsState[contactId] = createContactState({ startOpen: true });
+  
+  setScrollPoint(`contact-${contactId}-heading`, undefined, () => {
+    setFocusedComponent(`contact-${contactId}-heading`)
+  });
 };
 
-const updateContactName = (contactName: string, contactId: number) => {
+const handleContactCanceled = (contact: ClientContact) => {
+  if (contact.contactId === NEW_IDENTIFIER) {
+    newContact.value = undefined;
+    delete contactsState[contact.contactId];
+  } else {
+    // reset to the original value
+    contactsState[contact.contactId].name = contact.contactName;
+  }
+};
+
+const updateContactName = (contactName: string, contactId: number | string) => {
   contactsState[contactId].name = contactName;
 };
 
@@ -617,23 +650,31 @@ interface OperationOptions {
 }
 
 const operateContact =
-  (index: number) =>
+  (index: number | string) =>
   (payload: SaveEvent<ClientContact>, rawOptions?: OperationOptions) => {
     const {
       patch: rawPatchData,
       updatedData: updatedContact,
       action,
     } = payload;
-
-    const contactId = updatedContact.contactId;
+    
+    // Removes the contactId from the new data as it's just a pseudo id.
+    const { contactId, ...newContactData } = updatedContact;
 
     const options: OperationOptions = rawOptions ?? {};
     const { preserveRawPatch } = options;
 
-    const patchData = preserveRawPatch ? rawPatchData : rawPatchData.map((item) => ({
-      ...item,
-      path: `/contacts/${contactId}${item.path}`,
-    }));
+    const isNew = contactId === NEW_IDENTIFIER;
+
+    let patchData: jsonpatch.Operation[];
+
+    if (preserveRawPatch) {
+      patchData = rawPatchData;
+    } else {
+      patchData = isNew
+        ? createAddPatch(newContactData, "/contacts/null")
+        : adjustPatchPath(rawPatchData, `/contacts/${contactId}`);
+    }
 
     const updatedTitle = updatedContact.contactName;
 
@@ -660,6 +701,10 @@ const operateContact =
         if (contactsState[contactId]) {
           contactsState[contactId].isReloading = false;
         }
+        if (isNew) {
+          // Reset the newContact variable
+          newContact.value = undefined;
+        }
       });
     };
 
@@ -679,7 +724,7 @@ const operateContact =
   };
 
 const deleteContact =
-  (index: number) =>
+  (index: number | string) =>
   (contact: ClientContact) => {
     const patch = createRemovePatch(`/contacts/${contact.contactId}`);
     operateContact(index)({
@@ -817,7 +862,7 @@ resetGlobalError();
           </h3>
           <cds-button
             v-if="userHasAuthority"
-            id="addlocationBtn"
+            id="addLocationBtn"
             kind="primary"
             size="md"
             @click="addLocation"
@@ -873,7 +918,7 @@ resetGlobalError();
                 :user-roles="userRoles"
                 :validations="[uniqueLocations.check]"
                 keep-scroll-bottom-position
-                :createMode="location === newLocation"
+                :createMode="location.code === newLocation"
                 @update-location-name="updateLocationName($event, location.clientLocnCode)"
                 @save="saveLocation(index)($event)"
                 @canceled="handleLocationCanceled(location)"
@@ -889,14 +934,32 @@ resetGlobalError();
               {{ formatCount(data.contacts?.length) }}
               {{ pluralize("contact", data.contacts?.length) }}
             </h3>
+            <cds-button
+              v-if="userHasAuthority"
+              id="addContactBtn"
+              kind="primary"
+              size="md"
+              @click="addContact"
+              :disabled="newContact"
+            >
+              <span class="width-unset">Add contact</span>
+              <Add16 slot="icon" />
+            </cds-button>
           </div>
           <div class="tab-panel tab-panel--populated">
             <cds-accordion
-              v-for="contact in sortedContacts"
+              v-for="(contact, index) in sortedContacts"
               :key="contact.contactId"
               :id="`contact-${contact.contactId}`"
             >
-              <cds-accordion-item size="lg" class="grouping-13" v-shadow="1">
+              <div :data-scroll="`contact-${contact.contactId}-heading`" class="header-tabs-offset"></div>
+              <cds-accordion-item
+                size="lg"
+                class="grouping-13"
+                v-shadow="1"
+                :open="contactsState[contact.contactId]?.startOpen"
+                :data-focus="`contact-${contact.contactId}-heading`"
+              >
                 <div
                   slot="title"
                   class="flex-column-0_25rem"
@@ -904,7 +967,7 @@ resetGlobalError();
                 >
                   <span class="label-with-icon">
                     <User20 />
-                    {{ contactsState[contact.contactId].name }}
+                    {{ formatContact(contact) }}
                   </span>
                   <span
                     :id="`contact-${contact.contactId}-title-locations`"
@@ -914,7 +977,7 @@ resetGlobalError();
                   </span>
                 </div>
                 <contact-view
-                  :ref="setContactRef(contact.contactId)"
+                  :ref="setContactRef(index)"
                   :data="contact"
                   :index="contact.contactId"
                   :associatedLocationsString="associatedLocationsRecord[contact.contactId]"
@@ -923,9 +986,10 @@ resetGlobalError();
                   :user-roles="userRoles"
                   :validations="[uniqueContacts.check]"
                   keep-scroll-bottom-position
+                  :createMode="contact.contactId === NEW_IDENTIFIER"
                   @update-contact-name="updateContactName($event, contact.contactId)"
-                  @save="operateContact(contact.contactId)($event)"
-                  @delete="deleteContact(contact.contactId)($event)"
+                  @save="operateContact(index)($event)"
+                  @delete="deleteContact(index)($event)"
                   @canceled="handleContactCanceled(contact)"
                 />
               </cds-accordion-item>
