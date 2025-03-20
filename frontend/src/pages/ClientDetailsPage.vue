@@ -614,8 +614,8 @@ const saveLocation =
 
       locationsState[locationCode].isReloading = true;
 
-      fetchClientData().asyncResponse.then(() => {
-        locationsState[locationCode].isReloading = false;
+        fetchClientData().asyncResponse.then(() => {
+          locationsState[locationCode].isReloading = false;
 
         if (isNew) {
           // Reset the newLocation variable
@@ -918,7 +918,7 @@ resetGlobalError();
                 :user-roles="userRoles"
                 :validations="[uniqueLocations.check]"
                 keep-scroll-bottom-position
-                :createMode="location.code === newLocation"
+                :createMode="location.clientLocnCode === NEW_IDENTIFIER"
                 @update-location-name="updateLocationName($event, location.clientLocnCode)"
                 @save="saveLocation(index)($event)"
                 @canceled="handleLocationCanceled(location)"
