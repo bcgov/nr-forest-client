@@ -131,7 +131,6 @@ const compareString = (a: string, b: string) => {
 };
 
 const newLocation = ref<ClientLocation>();
-const newlyCreatedLocation = ref<ClientLocation>();
 
 const sortedLocations = computed(() => {
   const result = data.value?.addresses?.toSorted((a, b) =>
@@ -162,15 +161,9 @@ watch(sortedLocations, () => {
   sortedLocations.value?.forEach((location) => {
     const locationCode = location.clientLocnCode;
     if (!locationsState[locationCode]) {
-      const isNew =
-        newlyCreatedLocation.value &&
-        location.clientLocnName?.toLowerCase() ===
-          newlyCreatedLocation.value.clientLocnName.toLowerCase();
       locationsState[locationCode] = createLocationState({
         name: location.clientLocnName,
-        startOpen: isNew,
       });
-      newlyCreatedLocation.value = undefined;
     }
   });
 });
@@ -308,7 +301,6 @@ const addLocation = () => {
 
 const handleLocationCanceled = (location: ClientLocation) => {
   if (location.clientLocnCode === NEW_IDENTIFIER) {
-    newlyCreatedLocation.value = newLocation.value;
     newLocation.value = undefined;
     delete locationsState[location.clientLocnCode];
   } else {
@@ -622,8 +614,8 @@ const saveLocation =
 
       locationsState[locationCode].isReloading = true;
 
-        fetchClientData().asyncResponse.then(() => {
-          locationsState[locationCode].isReloading = false;
+      fetchClientData().asyncResponse.then(() => {
+        locationsState[locationCode].isReloading = false;
 
         if (isNew) {
           // Reset the newLocation variable
