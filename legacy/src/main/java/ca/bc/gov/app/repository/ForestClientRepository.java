@@ -97,7 +97,9 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
                     client_number,
                     update_userid,
                     update_timestamp,
-                    row_number() over (partition by client_number order by update_timestamp desc) as rn
+                    row_number() over (
+                        partition by client_number order by update_timestamp desc
+                    ) as rn
                 from
                     the.for_cli_audit
                 where
