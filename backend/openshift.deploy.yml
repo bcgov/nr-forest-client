@@ -35,12 +35,8 @@ parameters:
     required: true
   - name: CPU_REQUEST
     value: 75m
-  - name: CPU_LIMIT
-    value: 200m
   - name: MEMORY_REQUEST
     value: 200Mi
-  - name: MEMORY_LIMIT
-    value: 256Mi
   - name: BCREGISTRY_URI
     description: Bc Registry API address
     required: true
@@ -191,9 +187,6 @@ objects:
                 - containerPort: 8080
                   protocol: TCP
               resources:
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
