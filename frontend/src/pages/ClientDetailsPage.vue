@@ -176,7 +176,7 @@ watch(sortedLocations, (value) => {
   if (value?.length) {
     value.forEach((location) => {
       const index = String(Number(location.clientLocnCode));
-      uniqueLocations.add("Names", index)(location.clientLocnName);
+      uniqueLocations.add("Names", index)(location.clientLocnName ?? "");
     });
   }
 });
