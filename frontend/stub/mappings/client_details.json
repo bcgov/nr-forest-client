@@ -48,7 +48,7 @@
     {
       "name": "Client Details General Partnership - Default - Added contact",
       "request": {
-        "urlPattern": "/api/clients/details/[gG]?(.*)+contact",
+        "urlPattern": "/api/clients/details/[gG]?(.*)\\+contact",
         "method": "GET"
       },
       "response": {
