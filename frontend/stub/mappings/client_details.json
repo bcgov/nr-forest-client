@@ -16,7 +16,7 @@
       }
     },
     {
-      "name": "Client Details General Partnership - Default",
+      "name": "Client Details General Partnership - Default - Additional location",
       "request": {
         "urlPattern": "/api/clients/details/[gG]?(.*)+location",
         "method": "GET"
@@ -24,6 +24,21 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-clients-details-G+location.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details General Partnership - Default - Removed contact",
+      "request": {
+        "urlPattern": "/api/clients/details/[gG]?(.*)-contact",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-G-contact.json",
         "transformers": [
           "response-template"
         ],

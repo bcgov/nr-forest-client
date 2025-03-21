@@ -20,6 +20,7 @@
         {"doingBusinessAsName": "Dunder Mifflin Paper Company"}
     ],
     "contacts": [{
+        "contactId": 0,
         "locationCode": ["00"],
         "contactName": "Cheryl Bibby",
         "contactTypeCode": "BL",

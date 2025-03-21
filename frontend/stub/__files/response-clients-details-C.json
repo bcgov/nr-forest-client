@@ -13,6 +13,7 @@
     "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}",
     "contacts": [
         {
+            "contactId": 0,
             "locationCode": ["00"],
             "contactName": "Cheryl Bibby",
             "contactTypeCode": "BL",
@@ -23,6 +24,7 @@
             "emailAddress": "cheryl@ktb.com"
         },
         {
+            "contactId": 1,
             "locationCode": ["01", "02"],
             "contactName": "Edward Burns",
             "contactTypeCode": "DI",

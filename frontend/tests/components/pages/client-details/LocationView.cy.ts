@@ -367,7 +367,7 @@ describe("<location-view />", () => {
           cy.get("@vueWrapper").should((vueWrapper) => {
             const saveData = vueWrapper.emitted("save")[0][0];
 
-            const { patch, updatedLocation } = saveData;
+            const { patch, updatedData } = saveData;
 
             if (createMode) {
               expect(patch).to.eq(null);
@@ -378,7 +378,7 @@ describe("<location-view />", () => {
             }
 
             // Contains the location data as edited/created by the user
-            expect(updatedLocation).to.deep.eq({
+            expect(updatedData).to.deep.eq({
               ...customProps.data,
               emailAddress: "",
             });

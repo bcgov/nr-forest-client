@@ -188,7 +188,7 @@ describe("<StaffLocationGroupComponent />", () => {
       .and("include.text", "Error");
   });
 
-  const tertiarySeletor0 = "#tertiaryPhoneNumber_0";
+  const tertiarySelector0 = "#tertiaryPhoneNumber_0";
 
   it("should render the component without a tertiaryPhoneNumber input field by default", () => {
     cy.get("@addressFixture").then((address: any) => {
@@ -206,7 +206,7 @@ describe("<StaffLocationGroupComponent />", () => {
 
     cy.wait("@getProvinces");
 
-    cy.get(tertiarySeletor0).should("not.exist");
+    cy.get(tertiarySelector0).should("not.exist");
   });
 
   it("should render the component with a tertiaryPhoneNumber input field", () => {
@@ -226,10 +226,10 @@ describe("<StaffLocationGroupComponent />", () => {
 
     cy.wait("@getProvinces");
 
-    cy.get(tertiarySeletor0).should("be.visible");
+    cy.get(tertiarySelector0).should("be.visible");
   });
 
-  const deleteSeletor1 = "#deleteAddress_1";
+  const deleteSelector1 = "#deleteAddress_1";
 
   it("should render the component with a Delete button by default when id > 0", () => {
     cy.get("@addressFixture").then((address: any) => {
@@ -247,7 +247,7 @@ describe("<StaffLocationGroupComponent />", () => {
 
     cy.wait("@getProvinces");
 
-    cy.get(deleteSeletor1).should("be.visible");
+    cy.get(deleteSelector1).should("be.visible");
   });
 
   it("should render the component without a Delete button", () => {
@@ -267,7 +267,7 @@ describe("<StaffLocationGroupComponent />", () => {
 
     cy.wait("@getProvinces");
 
-    cy.get(deleteSeletor1).should("not.exist");
+    cy.get(deleteSelector1).should("not.exist");
   });
 
   it("should render the component and show the address name regardless of id being 0", () => {

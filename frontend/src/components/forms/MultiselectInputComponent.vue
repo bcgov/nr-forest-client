@@ -225,7 +225,9 @@ watch(
             :key="option.code"
             :value="option.name"
             :data-id="option.code"
-            :data-value="option.name">
+            :data-value="option.name"
+            :selected="items.includes(option.name)"
+          >
             {{ option.name }}
           </cds-multi-select-item>
         </cds-multi-select>

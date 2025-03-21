@@ -21,8 +21,9 @@ export interface Address {
 
 export interface Contact {
   contactType: CodeDescrType;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
   phoneNumber: string;
   secondaryPhoneNumber?: string;
   faxNumber?: string;
