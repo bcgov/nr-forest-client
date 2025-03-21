@@ -882,7 +882,16 @@ describe("Client Details Page", () => {
                 },
                 (req) => {
                   getClientDetailsCounter.count++;
-                  req.continue();
+                  req.continue((res) => {
+                    if (getClientDetailsCounter.count > 1) {
+                      const jsonBody = JSON.parse(res.body);
+
+                      // contactName updated
+                      jsonBody.contacts[0].contactName = `${jsonBody.contacts[0].contactName} Married`;
+
+                      res.body = JSON.stringify(jsonBody);
+                    }
+                  });
                 },
               ).as("getClientDetails");
 
@@ -989,6 +998,13 @@ describe("Client Details Page", () => {
               // Called twice - one for the initial loading and one after saving.
               cy.wrap(getClientDetailsCounter).its("count").should("eq", 2);
             });
+
+            if (scenario.name === "edit") {
+              it("updates the title according to the response data", () => {
+                // Note: this could happen if the content was updated in the meantime by another user.
+                cy.get("#contact-10 [slot='title']").contains("Cheryl Bibby Married");
+              });
+            }
 
             if (scenario.name === "edit") {
               it("gets back into view mode", () => {
