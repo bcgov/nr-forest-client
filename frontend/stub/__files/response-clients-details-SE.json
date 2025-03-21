@@ -18,7 +18,7 @@
     },
     "doingBusinessAs": [],
     "contacts": [{
-        "locationCode": ["00"],
+        "locationCode": ["01"],
         "contactName": "Cheryl Bibby",
         "contactTypeCode": "BL",
         "contactTypeDesc": "Billing",

@@ -339,8 +339,8 @@ describe("Client Details Page", () => {
           cy.visit("/clients/details/se");
         });
         it("displays only the location code, without the dash", () => {
-          cy.get("#location-00 [slot='title']").contains("00");
-          cy.get("#location-00 [slot='title']").contains("-").should("not.exist");
+          cy.get("#location-01 [slot='title']").contains("01");
+          cy.get("#location-01 [slot='title']").contains("-").should("not.exist");
         });
       });
     });
@@ -829,7 +829,7 @@ describe("Client Details Page", () => {
         });
 
         it("displays the location code in the contact subtitle, without a dash", () => {
-          cy.get("#contact-0-title-locations").contains("00");
+          cy.get("#contact-0-title-locations").contains("01");
           cy.get("#contact-0-title-locations").contains("-").should("not.exist");
         });
 
@@ -841,7 +841,7 @@ describe("Client Details Page", () => {
           // expands the accordion
           cy.get("#contact-0 cds-accordion-item").click();
 
-          cy.get("#contact-0-associatedLocations").contains("00").should("be.visible");
+          cy.get("#contact-0-associatedLocations").contains("01").should("be.visible");
           cy.get("#contact-0-associatedLocations").contains("-").should("not.exist");
         });
       });
