@@ -161,10 +161,10 @@ watch(sortedLocations, () => {
   sortedLocations.value?.forEach((location) => {
     const locationCode = location.clientLocnCode;
     if (!locationsState[locationCode]) {
-      locationsState[locationCode] = createLocationState({
-        name: location.clientLocnName,
-      });
+      locationsState[locationCode] = createLocationState();
     }
+    // reset location name
+    locationsState[locationCode].name = location.clientLocnName;
   });
 });
 
@@ -220,10 +220,10 @@ watch(sortedContacts, (_value, oldValue) => {
   sortedContacts.value?.forEach((contact) => {
     const contactId = contact.contactId;
     if (!contactsState[contactId]) {
-      contactsState[contactId] = createContactState({
-        name: contact.contactName,
-      });
+      contactsState[contactId] = createContactState();
     }
+    // reset to the original value
+    contactsState[contactId].name = contact.contactName;
   });
 
   oldValue?.forEach((oldContact) => {
