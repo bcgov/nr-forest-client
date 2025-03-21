@@ -1086,6 +1086,88 @@ describe("Client Details Page", () => {
           });
         });
       });
+
+      describe("delete and create a new contact with the same name", () => {
+        const getClientDetailsCounter = {
+          count: 0,
+        };
+
+        let contactName: string;
+        beforeEach(function () {
+          init.call(this);
+
+          cy.intercept(
+            {
+              method: "GET",
+              pathname: "/api/clients/details/*",
+            },
+            (req) => {
+              getClientDetailsCounter.count++;
+              req.continue((res) => {
+                const jsonBody = JSON.parse(res.body);
+
+                contactName = jsonBody.contacts[0].contactName;
+
+                if (getClientDetailsCounter.count === 2) {
+                  // removes the first contact
+                  jsonBody.contacts.shift();
+
+                  res.body = JSON.stringify(jsonBody);
+                }
+              });
+            },
+          ).as("getClientDetails");
+
+          cy.visit("/clients/details/g");
+          cy.wait("@getClientDetails");
+
+          // Switch to the Contacts tab
+          cy.get("#tab-contacts").click();
+        });
+
+        it("should not complain about having the same name of a contact that has been just deleted", () => {
+          cy.wrap(contactName).should("eq", "Cheryl Bibby");
+
+          cy.get("#contact-10 [slot='title']").contains(contactName);
+
+          // Clicks to expand the accordion
+          cy.get("#contact-10 [slot='title']").click();
+
+          cy.get("#contact-10-EditBtn").click();
+
+          // Delete contact
+          cy.get("#contact-10-DeleteBtn").click();
+          cy.get("#modal-delete .cds--modal-submit-btn").first().click();
+
+          cy.wait("@getClientDetails");
+
+          cy.get("#addContactBtn").click();
+
+          cy.get("cds-accordion[id|='contact']").should("have.length", 3);
+
+          /*
+          Wait to have a focused element.
+          Prevents error with focus switching.
+          */
+          cy.focused().parent("[data-focus='contact-new-heading']");
+
+          // Use the same contact name
+          cy.fillFormEntry("#fullName_new", contactName);
+
+          // No error in the field
+          cy.get("#fullName_new").should("not.have.attr", "invalid");
+
+          cy.selectFormEntry("#role_new", "Billing");
+
+          cy.selectFormEntry("#addressname_new", "Warehouse");
+
+          cy.fillFormEntry("#emailAddress_new", "snew@corp.com");
+
+          cy.fillFormEntry("#businessPhoneNumber_new", "1234567890");
+
+          cy.get("#contact-new-SaveBtn").shadow().find("button").should("be.enabled");
+        });
+      });
     });
   });
 
