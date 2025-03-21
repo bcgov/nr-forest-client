@@ -863,110 +863,210 @@ describe("Client Details Page", () => {
         });
       });
 
-      describe("save", () => {
-        describe("on success", { testIsolation: false }, () => {
-          const getClientDetailsCounter = {
-            count: 0,
-          };
+      const scenarios = [{ name: "edit" }, { name: "create" }];
+      scenarios.forEach((scenario) => {
+        describe(`${scenario.name} - save`, () => {
+          describe("on success", { testIsolation: false }, () => {
+            const getClientDetailsCounter = {
+              count: 0,
+            };
 
-          let patchClientDetailsRequest;
-          before(function () {
-            init.call(this);
+            let patchClientDetailsRequest;
+            before(function () {
+              init.call(this);
 
-            cy.intercept(
-              {
-                method: "GET",
-                pathname: "/api/clients/details/*",
-              },
-              (req) => {
-                getClientDetailsCounter.count++;
-                req.continue();
-              },
-            ).as("getClientDetails");
+              cy.intercept(
+                {
+                  method: "GET",
+                  pathname: "/api/clients/details/*",
+                },
+                (req) => {
+                  getClientDetailsCounter.count++;
+                  req.continue();
+                },
+              ).as("getClientDetails");
 
-            cy.intercept(
-              {
-                method: "PATCH",
-                pathname: "/api/clients/details/*",
-              },
-              (req) => {
-                patchClientDetailsRequest = req;
-                req.continue();
-              },
-            ).as("patchClientDetails");
+              cy.intercept(
+                {
+                  method: "PATCH",
+                  pathname: "/api/clients/details/*",
+                },
+                (req) => {
+                  patchClientDetailsRequest = req;
+                  req.continue();
+                },
+              ).as("patchClientDetails");
 
-            cy.visit("/clients/details/g");
-            cy.wait("@getClientDetails");
+              cy.visit("/clients/details/g");
+              cy.wait("@getClientDetails");
 
-            // Switch to the Contacts tab
-            cy.get("#tab-contacts").click();
+              // Switch to the Contacts tab
+              cy.get("#tab-contacts").click();
 
-            // Clicks to expand the accordion
-            cy.get("#contact-10 [slot='title']").click();
+              if (scenario.name === "edit") {
+                // Clicks to expand the accordion
+                cy.get("#contact-10 [slot='title']").click();
 
-            cy.get("#contact-10-EditBtn").click();
-            cy.clearFormEntry("#emailAddress_10");
-            cy.fillFormEntry("#emailAddress_10", "something@else.com");
-            cy.get("#contact-10-SaveBtn").click();
-            cy.wait("@getClientDetails");
+                cy.get("#contact-10-EditBtn").click();
+
+                cy.clearFormEntry("#emailAddress_10");
+                cy.fillFormEntry("#emailAddress_10", "something@else.com");
+
+                cy.get("#contact-10-SaveBtn").click();
+                cy.wait("@getClientDetails");
+              }
+            });
+
+            if (scenario.name === "create") {
+              it("scrolls down to the new form", () => {
+                cy.get("#addContactBtn").click();
+
+                cy.get("[data-scroll='contact-new-heading']").then(($el) => {
+                  const element = $el[0];
+                  cy.spy(element, "scrollIntoView").as("scrollToNewContact");
+                });
+
+                cy.get("cds-accordion[id|='contact']").should("have.length", 4);
+
+                cy.get("@scrollToNewContact").should("be.called");
+
+                /*
+                Wait to have a focused element.
+                Prevents error with focus switching.
+                */
+                cy.focused().parent("[data-focus='contact-new-heading']");
+
+                cy.fillFormEntry("#fullName_new", "Steve New");
+
+                cy.selectFormEntry("#role_new", "Billing");
+
+                cy.selectFormEntry("#addressname_new", "Warehouse");
+
+                cy.fillFormEntry("#emailAddress_new", "snew@corp.com");
+
+                cy.fillFormEntry("#businessPhoneNumber_new", "1234567890");
+
+                cy.get("#contact-new-SaveBtn").click();
+                cy.wait("@getClientDetails");
+              });
+            }
+
+            it("prefixes the path with the corresponding location code", () => {
+              if (scenario.name === "edit") {
+                expect(patchClientDetailsRequest.body[0].path).to.eq("/contacts/10/emailAddress");
+              } else {
+                expect(patchClientDetailsRequest.body[0].path).to.eq("/contacts/null");
+              }
+            });
+
+            if (scenario.name === "edit") {
+              it("sends one or more 'replace' operations", () => {
+                expect(patchClientDetailsRequest.body[0].op).to.eq("replace");
+              });
+            } else {
+              it("sends an 'add' operation", () => {
+                expect(patchClientDetailsRequest.body[0].op).to.eq("add");
+              });
+            }
+
+            it("shows the success toast", () => {
+              if (scenario.name === "edit") {
+                cy.get("cds-toast-notification[kind='success']")
+                  .should("be.visible")
+                  .contains("Cheryl Bibby");
+
+                cy.get("cds-toast-notification[kind='success']").contains("updated");
+              } else {
+                cy.get("cds-toast-notification[kind='success']")
+                  .should("be.visible")
+                  .contains("Steve New");
+
+                cy.get("cds-toast-notification[kind='success']").contains("created");
+              }
+            });
+
+            it("reloads data", () => {
+              // Called twice - one for the initial loading and one after saving.
+              cy.wrap(getClientDetailsCounter).its("count").should("eq", 2);
+            });
+
+            if (scenario.name === "edit") {
+              it("gets back into view mode", () => {
+                // Fields that belong to the form (edit mode)
+                testHidden("#fullName_10");
+                testHidden("#role_10");
+                testHidden("#emailAddress_10");
+
+                cy.get("#contact-10-SaveBtn").should("not.exist");
+
+                testReadonly("#contact-10-contactType");
+                testReadonly("#contact-10-emailAddress");
+
+                cy.get("#contact-10-EditBtn").should("be.visible");
+              });
+            }
           });
 
-          it("prefixes the path with the corresponding location code", () => {
-            expect(patchClientDetailsRequest.body[0].path).to.eq("/contacts/10/emailAddress");
-          });
+          describe("on failure", { testIsolation: false }, () => {
+            before(function () {
+              init.call(this);
 
-          it("shows the success toast", () => {
-            cy.get("cds-toast-notification[kind='success']").should("be.visible");
-          });
+              cy.visit("/clients/details/g");
 
-          it("reloads data", () => {
-            // Called twice - one for the initial loading and one after saving.
-            cy.wrap(getClientDetailsCounter).its("count").should("eq", 2);
-          });
+              // Switch to the Contacts tab
+              cy.get("#tab-contacts").click();
 
-          it("gets back into view mode", () => {
-            // Fields that belong to the form (edit mode)
-            testHidden("#fullName_10");
-            testHidden("#role_10");
-            testHidden("#emailAddress_10");
+              if (scenario.name === "edit") {
+                // Clicks to expand the accordion
+                cy.get("#contact-10 [slot='title']").click();
 
-            cy.get("#contact-10-SaveBtn").should("not.exist");
+                cy.get("#contact-10-EditBtn").click();
+                cy.clearFormEntry("#emailAddress_10");
+                cy.fillFormEntry("#emailAddress_10", "error@error.com");
+                cy.get("#contact-10-SaveBtn").click();
+              } else {
+                cy.get("#addContactBtn").click();
 
-            testReadonly("#contact-10-contactType");
-            testReadonly("#contact-10-emailAddress");
+                cy.get("cds-accordion[id|='contact']").should("have.length", 4);
 
-            cy.get("#contact-10-EditBtn").should("be.visible");
-          });
-        });
+                /*
+                Wait to have a focused element.
+                Prevents error with focus switching.
+                */
+                cy.focused().parent("[data-focus='contact-new-heading']");
 
-        describe("on failure", { testIsolation: false }, () => {
-          before(function () {
-            init.call(this);
+                cy.fillFormEntry("#fullName_new", "Steve New");
 
-            cy.visit("/clients/details/g");
+                cy.selectFormEntry("#role_new", "Billing");
 
-            // Switch to the Contacts tab
-            cy.get("#tab-contacts").click();
+                cy.selectFormEntry("#addressname_new", "Warehouse");
 
-            // Clicks to expand the accordion
-            cy.get("#contact-10 [slot='title']").click();
+                cy.fillFormEntry("#emailAddress_new", "error@error.com");
 
-            cy.get("#contact-10-EditBtn").click();
-            cy.clearFormEntry("#emailAddress_10");
-            cy.fillFormEntry("#emailAddress_10", "error@error.com");
-            cy.get("#contact-10-SaveBtn").click();
-          });
+                cy.fillFormEntry("#businessPhoneNumber_new", "1234567890");
 
-          it("shows the error toast", () => {
-            cy.get("cds-toast-notification[kind='error']").should("be.visible");
-          });
+                cy.get("#contact-new-SaveBtn").click();
+              }
+            });
 
-          it("stays in edit mode", () => {
-            cy.get("#fullName_10").should("be.visible");
-            cy.get("#role_10").should("be.visible");
-            cy.get("#emailAddress_10").should("be.visible");
+            it("shows the error toast", () => {
+              cy.get("cds-toast-notification[kind='error']").should("be.visible");
 
-            cy.get("#contact-10-SaveBtn").should("be.visible");
+              if (scenario.name === "edit") {
+                cy.get("cds-toast-notification[kind='error']").contains("Failed to update");
+              } else {
+                cy.get("cds-toast-notification[kind='error']").contains("Failed to create");
+              }
+            });
+
+            it("stays in edit mode", () => {
+              const id = scenario.name === "edit" ? 10 : "new";
+              cy.get(`#fullName_${id}`).should("be.visible");
+              cy.get(`#role_${id}`).should("be.visible");
+              cy.get(`#emailAddress_${id}`).should("be.visible");
+
+              cy.get(`#contact-${id}-SaveBtn`).should("be.visible");
+            });
           });
         });
       });
