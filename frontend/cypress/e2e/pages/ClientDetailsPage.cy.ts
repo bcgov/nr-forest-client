@@ -429,7 +429,16 @@ describe("Client Details Page", () => {
                 },
                 (req) => {
                   getClientDetailsCounter.count++;
-                  req.continue();
+                  req.continue((res) => {
+                    if (getClientDetailsCounter.count > 1) {
+                      const jsonBody = JSON.parse(res.body);
+
+                      // location name updated
+                      jsonBody.addresses[0].clientLocnName = "Main address";
+
+                      res.body = JSON.stringify(jsonBody);
+                    }
+                  });
                 },
               ).as("getClientDetails");
 
@@ -525,6 +534,13 @@ describe("Client Details Page", () => {
               // Called twice - one for the initial loading and one after saving.
               cy.wrap(getClientDetailsCounter).its("count").should("eq", 2);
             });
+
+            if (scenario.name === "edit") {
+              it("updates the title according to the response data", () => {
+                // Note: this could happen if the value was updated in the meantime by another user.
+                cy.get("#contact-10 [slot='title']").contains("Main address");
+              });
+            }
 
             if (scenario.name === "edit") {
               it("gets back into view mode", () => {
@@ -1001,7 +1017,7 @@ describe("Client Details Page", () => {
 
             if (scenario.name === "edit") {
               it("updates the title according to the response data", () => {
-                // Note: this could happen if the content was updated in the meantime by another user.
+                // Note: this could happen if the value was updated in the meantime by another user.
                 cy.get("#contact-10 [slot='title']").contains("Cheryl Bibby Married");
               });
             }
@@ -1137,7 +1153,7 @@ describe("Client Details Page", () => {
 
           // Delete contact
           cy.get("#contact-10-DeleteBtn").click();
-          cy.get("#modal-delete .cds--modal-submit-btn").first().click();
+          cy.get("#modal-delete .cds--modal-submit-btn").filter(":visible").click();
 
           cy.wait("@getClientDetails");
 
