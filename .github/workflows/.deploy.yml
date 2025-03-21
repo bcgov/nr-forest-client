@@ -7,14 +7,21 @@ on:
       # Nothing! Only `secrets: inherit` is required
 
       ### Typical / recommended
+      configmap-backend:
+        description: Configuration map for application.yml
+        required: true
+        type: string
+      configmap-frontend:
+        description: Configuration map for params.js
+        required: true
+        type: string
       environment:
         description: GitHub/OpenShift environment; usually PR number, test or prod
-        default: 'dev'
-        required: false
+        default: ''
         type: string
       oracledb-port:
         description: Oracle database port
-        default: "1543"
+        default: '1543'
         type: string
       oracledb-servicename:
         description: Oracle service name
@@ -64,8 +71,8 @@ jobs:
           overwrite: true
           parameters:
             -p ZONE=${{ inputs.target }}
-            -p ORACLEDB_USER=${{ inputs.oracledb-username || secrets.ORACLEDB_USERNAME_W }}
-            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD_W }}
+            -p ORACLEDB_USER=${{ inputs.oracledb-username || secrets.ORACLEDB_USERNAME }}
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ inputs.oracledb-servicename || secrets.ORACLEDB_SERVICENAME }}
@@ -75,13 +82,13 @@ jobs:
             -p CHES_CLIENT_ID=${{ secrets.CHES_CLIENT_ID }}
             -p CHES_CLIENT_SECRET=${{ secrets.CHES_CLIENT_SECRET }}
             -p ADDRESS_COMPLETE_KEY=${{ secrets.ADDRESS_COMPLETE_KEY }}
-            -p COGNITO_ENVIRONMENT=${{ inputs.environment }}
+            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
+            -p COGNITO_ENVIRONMENT=${{ inputs.environment || 'dev' }}
+            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
             -p VITE_NODE_ENV=openshift-${{ inputs.target }}
             -p URL_FRONTEND=${{ inputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
-            -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
-            -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
             -p LANDING_URL=${{ inputs.url }}
             -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             -p SPRING_PROFILES_ACTIVE=${{ secrets.OC_NAMESPACE }}
@@ -104,53 +111,49 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        name: [database, database-bk, legacy, processor, backend, backend-cm, database-dev, frontend, frontend-cm]
+        name: [database, legacy, processor, backend, frontend]
         include:
           - name: database
-            file: database/openshift.deploy.yml
             overwrite: false
-            parameters: -p TAG=${{ needs.vars.outputs.tag }}
-          - name: database-bk
-            file: database/openshift.backup.yml
-            parameters: -p TAG=${{ needs.vars.outputs.tag }}
           - name: legacy
-            file: legacy/openshift.deploy.yml
             parameters:
-              -p TAG=${{ needs.vars.outputs.tag }}
               -p ORACLEDB_PORT=${{ inputs.oracledb-port }}
           - name: processor
-            file: processor/openshift.deploy.yml
-            parameters:
-              -p TAG=${{ needs.vars.outputs.tag }}
-              -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
           - name: backend
-            file: backend/openshift.deploy.yml
             parameters:
-              -p TAG=${{ needs.vars.outputs.tag }}
-              -p CHES_TOKEN_URL='https://loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
-              -p CHES_API_URL='https://ches.api.gov.bc.ca/api/v1'
-              -p BCREGISTRY_URI='https://bcregistry-prod.apigee.net'
               -p FRONTEND_URL=${{ inputs.url }}
-          - name: backend-cm
-            file: backend/openshift.configmap.${{ inputs.environment }}.yml
-          - name: database-dev
-            file: database/openshift.dev.yml
+              -p CONFIG_MAP='${{ inputs.configmap-backend }}'
+            verification_path: health
           - name: frontend
-            file: frontend/openshift.deploy.yml
             parameters:
-              -p TAG=${{ needs.vars.outputs.tag }}
               -p URL=${{ inputs.url }}
-          - name: frontend-cm
-            file: frontend/openshift.configmap.${{ inputs.environment }}.yml
+              -p CONFIG_MAP='${{ inputs.configmap-frontend }}'
     steps:
       - uses: bcgov/action-deployer-openshift@v4.0.0
         id: deploys
         with:
-          file: ${{ matrix.file }}
+          file: ${{ matrix.name }}/openshift.deploy.yml
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_server: ${{ secrets.oc_server }}
           oc_token: ${{ secrets.oc_token }}
           overwrite: ${{ matrix.overwrite }}
           parameters:
+            -p TAG=${{ needs.vars.outputs.tag }}
             -p ZONE=${{ inputs.target }}
             ${{ matrix.parameters }}
+
+  database-dev-job:
+    name: Database Dev Job
+    if: inputs.environment == ''
+    needs: [deploy]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Database Dev settings
+        uses: bcgov/action-deployer-openshift@v3.2.0
+        with:
+          file: database/openshift.dev.yml
+          oc_namespace: ${{ secrets.oc_namespace }}
+          oc_server: ${{ secrets.oc_server }}
+          oc_token: ${{ secrets.oc_token }}
+          overwrite: true
+          parameters: -p ZONE=${{ inputs.target }}

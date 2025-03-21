@@ -29,21 +29,16 @@ parameters:
     value: ghcr.io
   - name: CPU_REQUEST
     value: 75m
-  - name: CPU_LIMIT
-    value: 200m
   - name: MEMORY_REQUEST
     value: 300Mi
-  - name: MEMORY_LIMIT
-    value: 400Mi
   - name: BCREGISTRY_URI
     description: Bc Registry API address
-    required: true
+    value: https://api.connect.gov.bc.ca
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
     generate: expression
 objects:
-
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
@@ -125,9 +120,6 @@ objects:
                 - containerPort: 3000
                   protocol: TCP
               resources:
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
