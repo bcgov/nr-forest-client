@@ -42,7 +42,7 @@ jobs:
           app:
             component: backend
       configmap-frontend: |-
-        window.localStorage.setItem("VITE_FEATURE_FLAGS",'{\"STAFF_CLIENT_DETAIL\":true}');
+        window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{\"STAFF_CLIENT_DETAIL\":true}');
 
   deploy-prod:
     name: Deploy (PROD)
@@ -62,7 +62,7 @@ jobs:
           app:
             component: backend
       configmap-frontend: |-
-        window.localStorage.setItem("VITE_FEATURE_FLAGS",'{}');
+        window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{}');
 
   images-prod:
     name: Promote images to PROD
