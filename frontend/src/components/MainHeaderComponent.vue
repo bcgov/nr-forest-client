@@ -239,36 +239,38 @@ const handleLogoutClick = (event) => {
   <cds-side-nav 
     v-if="$route.meta.sideMenu" 
     v-shadow=1>
-    <cds-side-nav-items v-shadow=1>      
-      <cds-side-nav-link 
-        :active="$route.name == 'internal'" 
-        href="/submissions" 
-        large 
-        id="menu-list-table-list">
-        <span>Submissions</span>
-        <Result16 slot="title-icon" />
-      </cds-side-nav-link>
-
-      <cds-side-nav-link 
-        :active="$route.name == 'search'" 
-        href="/search" 
-        large 
-        id="menu-list-search">
+    <cds-side-nav-items v-shadow=1>
+      <cds-side-nav-link
+        :active="$route.name == 'search'"
+        href="/search"
+        large
+        id="menu-list-search"
+      >
         <span>Client search</span>
         <Search16 slot="title-icon" />
       </cds-side-nav-link>
 
-      <cds-side-nav-link 
-        :active="$route.name == 'staff-form'" 
-        href="/new-client-staff" 
-        large 
-        v-if="userHasAuthority" 
-        v-shadow=1 
-        id="menu-list-staff-form">
+      <cds-side-nav-link
+        :active="$route.name == 'staff-form'"
+        href="/new-client-staff"
+        large
+        v-if="userHasAuthority"
+        v-shadow=1
+        id="menu-list-staff-form"
+      >
         <span>Create client</span>
         <TaskAdd16 slot="title-icon" />
       </cds-side-nav-link>
 
+      <cds-side-nav-link
+        :active="$route.name == 'internal'"
+        href="/submissions"
+        large
+        id="menu-list-table-list"
+      >
+        <span>Submissions</span>
+        <Result16 slot="title-icon" />
+      </cds-side-nav-link>
     </cds-side-nav-items>
 
     <cds-side-nav-items v-shadow=1 class="lower-side-nav"> 
