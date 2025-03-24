@@ -32,26 +32,6 @@
   ],
   "addresses": [
     {
-      "clientLocnName": "",
-      "clientLocnCode": "00",
-      "addressOne": "{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
-      "addressTwo": "C/O Tony Pineda",
-      "addressThree": "Sample additional info",
-      "countryCode": "CA",
-      "countryDesc": "Canada",
-      "provinceCode": "SK",
-      "provinceDesc": "Saskatchewan",
-      "city": "Hampton",
-      "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
-      "emailAddress": "contact@mail.com",
-      "businessPhone": "2502863767",
-      "cellPhone": "2505553700",
-      "homePhone": "2505553101",
-      "faxNumber": "2502863768",
-      "cliLocnComment": "Sample location 00 comment",
-      "locnExpiredInd": "N"
-    },
-    {
       "clientLocnName": "Accountant address",
       "clientLocnCode": "01",
       "addressOne": "{{randomValue length=4 type='NUMERIC'}} Oak St",
