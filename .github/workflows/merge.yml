@@ -35,14 +35,14 @@ jobs:
       target: test
       url: forestclient-tst.nrs.gov.bc.ca
       configmap-backend: |-
-          features:
-            staff:
-              match: true
-          info:
-            app:
-              component: backend
+        features:
+          staff:
+            match: true
+        info:
+          app:
+            component: backend
       configmap-frontend: |-
-          window.localStorage.setItem("VITE_FEATURE_FLAGS",'{\"STAFF_CLIENT_DETAIL\":true}');
+        window.localStorage.setItem("VITE_FEATURE_FLAGS",'{\"STAFF_CLIENT_DETAIL\":true}');
 
   deploy-prod:
     name: Deploy (PROD)
@@ -55,14 +55,14 @@ jobs:
       target: prod
       url: forestclient.nrs.gov.bc.ca
       configmap-backend: |-
-          features:
-            staff:
-              match: false
-          info:
-            app:
-              component: backend
+        features:
+          staff:
+            match: false
+        info:
+          app:
+            component: backend
       configmap-frontend: |-
-          window.localStorage.setItem("VITE_FEATURE_FLAGS",'{}');
+        window.localStorage.setItem("VITE_FEATURE_FLAGS",'{}');
 
   images-prod:
     name: Promote images to PROD

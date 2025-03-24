@@ -49,20 +49,20 @@ jobs:
       oracledb-servicename: PR_${{ github.event.number }}
       oracledb-username: THE
       configmap-backend: |-
-          features:
-            staff:
-              match: true
-          info:
-            app:
-              component: backend
-          ca:
-            bc:
-              gov:
-                nrs:
-                  idirMaxSubmissions: 65535
-                  otherMaxSubmissions: 65535
+        features:
+          staff:
+            match: true
+        info:
+          app:
+            component: backend
+        ca:
+          bc:
+            gov:
+              nrs:
+                idirMaxSubmissions: 65535
+                otherMaxSubmissions: 65535
       configmap-frontend: |-
-          window.localStorage.setItem("VITE_FEATURE_FLAGS",'{\"STAFF_CLIENT_DETAIL\":true}');
+        window.localStorage.setItem("VITE_FEATURE_FLAGS",'{\"STAFF_CLIENT_DETAIL\":true}');
 
   tests:
     name: Tests
