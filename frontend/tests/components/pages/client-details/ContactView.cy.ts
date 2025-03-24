@@ -9,8 +9,8 @@ describe("<contact-view />", () => {
 
   const getDefaultProps = () => ({
     data: {
-      clientNumber: "00001086",
-      contactId: 2645,
+      contactId: 0,
+      locationCodes: ["01"],
       contactName: "Cheryl Bibby",
       contactTypeCode: "BL",
       contactTypeDesc: "Billing",
@@ -18,7 +18,6 @@ describe("<contact-view />", () => {
       secondaryPhone: "2505553700",
       faxNumber: "2502863768",
       emailAddress: "cheryl@ktb.com",
-      locationCodes: ["01"]
     } as ClientContact,
     index: 0,
     associatedLocationsString: "01 - Town office",
@@ -79,6 +78,22 @@ describe("<contact-view />", () => {
       testField("#contact-0-emailAddress", currentProps.data.emailAddress, emailPrefix);
     });
 
+    const phonePrefix = "tel:";
+/*
+    cy.get("#contact-0-phone-section").within(() => {
+      testField(
+        "#contact-0-primaryPhoneNumber",
+        formatPhoneNumber(currentProps.data.businessPhone),
+        phonePrefix,
+      );
+      testField(
+        "#contact-0-secondaryPhoneNumber",
+        formatPhoneNumber(currentProps.data.secondaryPhone),
+        phonePrefix,
+      );
+      testField("#contact-0-fax", formatPhoneNumber(currentProps.data.faxNumber), phonePrefix);
+    });
+    */
   });
 
   it("hides sections when they are empty", () => {
@@ -132,13 +147,11 @@ describe("<contact-view />", () => {
             data,
           });
         });
-        
         it(`displays the one phone with value: ${propName}`, () => {
           cy.get("#contact-0-phone-section").within(() => {
             testField(selector, formatPhoneNumber(currentProps.data[propName]));
           });
         });
-
         it("hides the other empty phones", () => {
           otherPhonesList.forEach((cur) => {
             const [, curSelector] = cur;
