@@ -263,7 +263,7 @@ const formatLocationsList = (
 const associatedLocationsRecord = computed(() => {
   const result: Record<string, string> = {};
   sortedContacts.value?.forEach((contact) => {
-    result[contact.contactId] = formatLocationsList(contact.locationCode);
+    result[contact.contactId] = formatLocationsList(contact.locationCodes);
   });
   return result;
 });

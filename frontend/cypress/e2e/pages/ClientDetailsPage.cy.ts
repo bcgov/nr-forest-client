@@ -819,8 +819,8 @@ describe("Client Details Page", () => {
         });
 
         it("displays the location code in the contact subtitle, without a dash", () => {
-          cy.get("#contact-0-title-locations").contains("01");
-          cy.get("#contact-0-title-locations").contains("-").should("not.exist");
+          cy.get("#contact-1-title-locations").contains("01");
+          cy.get("#contact-1-title-locations").contains("-").should("not.exist");
         });
 
         /*
@@ -829,10 +829,10 @@ describe("Client Details Page", () => {
         */
         it("displays the location code in the contact's Associated locations, without a dash", () => {
           // expands the accordion
-          cy.get("#contact-0 cds-accordion-item").click();
+          cy.get("#contact-1 cds-accordion-item").click();
 
-          cy.get("#contact-0-associatedLocations").contains("01").should("be.visible");
-          cy.get("#contact-0-associatedLocations").contains("-").should("not.exist");
+          cy.get("#contact-1-associatedLocations").contains("01").should("be.visible");
+          cy.get("#contact-1-associatedLocations").contains("-").should("not.exist");
         });
       });
     });

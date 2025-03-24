@@ -15,7 +15,7 @@ import lombok.With;
 public record ForestClientDetailsDto(
     ForestClientInformationDto client,
     List<ForestClientLocationDetailsDto> addresses,
-    List<ForestClientContactDto> contacts,
+    List<ForestClientContactDetailsDto> contacts,
     List<ForestClientDoingBusinessAsDto> doingBusinessAs
 ) {
 

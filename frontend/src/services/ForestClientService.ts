@@ -459,7 +459,7 @@ export const contactToCreateFormat = (
     email: clientContact.emailAddress,
     index: clientContact.contactId,
     locationNames: allLocations
-      .filter((location) => clientContact.locationCode.includes(location.clientLocnCode))
+      .filter((location) => clientContact.locationCodes.includes(location.clientLocnCode))
       .map((location) => ({
         value: location.clientLocnCode,
         text: location.clientLocnName,
@@ -486,7 +486,7 @@ export const contactToEditFormat = (
   const clientContact: ClientContact = {
     ...baseContact,
     contactId: contact.index,
-    locationCode: contact.locationNames.map((item) => item.value),
+    locationCodes: contact.locationNames.map((item) => item.value),
     contactName: contact.fullName,
     contactTypeCode: contact.contactType.value,
     contactTypeDesc: contact.contactType.text,

@@ -13,7 +13,6 @@ import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.EmailRequestDto;
 import ca.bc.gov.app.dto.client.LegalTypeEnum;
-import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.ClientAlreadyExistException;
@@ -30,19 +29,15 @@ import io.micrometer.observation.annotation.Observed;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -54,7 +49,6 @@ public class ClientService {
 
   private final ClientCountryProvinceService countryProvinceService;
   private final BcRegistryService bcRegistryService;
-  private final ClientCodeService codeService;
   private final ChesService chesService;
   private final ClientLegacyService legacyService;
   private final Predicate<BcRegistryAddressDto> isMultiAddressEnabled;
@@ -154,7 +148,6 @@ public class ClientService {
   public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(String clientNumber) {
     return legacyService
         .searchByClientNumber(clientNumber)
-        .flatMap(this::populateContactTypes)
         .flatMap(forestClientDetailsDto -> Mono
             .just(forestClientDetailsDto)
             .filter(dto ->
@@ -266,41 +259,6 @@ public class ClientService {
                 triggerEmailDuplicatedClient(emailRequestDto.email(), emailRequestDto.userName()))
             .then();
   }
-
-  private Mono<ForestClientDetailsDto> populateContactTypes(
-      ForestClientDetailsDto forestClientDetailsDto
-  ) {
-
-    if (CollectionUtils.isEmpty(forestClientDetailsDto.contacts())) {
-      return Mono.just(forestClientDetailsDto);
-    }
-
-    Set<String> contactCodes =
-        forestClientDetailsDto
-            .contacts()
-            .stream()
-            .filter(Objects::nonNull)
-            .map(ForestClientContactDto::contactCode)
-            .filter(StringUtils::isNotBlank)
-            .collect(Collectors.toSet());
-
-    return codeService
-        .fetchContactTypesFromList(contactCodes)
-        .map(map ->
-            forestClientDetailsDto
-                .withContacts(
-                    forestClientDetailsDto
-                        .contacts()
-                        .stream()
-                        .map(contact ->
-                            contact.withContactCodeDescription(
-                                map.getOrDefault(contact.contactCode(), StringUtils.EMPTY))
-                        )
-                        .toList()
-                )
-        );
-  }
-
 
   private ForestClientDetailsDto populateGoodStandingInd(
       ForestClientDetailsDto forestClientDetailsDto,
