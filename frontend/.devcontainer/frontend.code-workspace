@@ -33,6 +33,9 @@
     "[xml]": {
       "editor.defaultFormatter": "redhat.vscode-xml"
     },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
     "typescript.tsdk": "node_modules/typescript/lib",
     "typescript.preferences.importModuleSpecifier": "relative",
     "eslint.ignoreUntitled": true,
