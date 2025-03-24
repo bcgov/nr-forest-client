@@ -123,12 +123,12 @@ jobs:
           - name: backend
             parameters:
               -p FRONTEND_URL=${{ inputs.url }}
-              -p CONFIG_MAP=${{ inputs.configmap-backend }}
+              -p CONFIG_MAP="${{ inputs.configmap-backend }}"
             verification_path: health
           - name: frontend
             parameters:
               -p URL=${{ inputs.url }}
-              -p CONFIG_MAP=${{ inputs.configmap-frontend }}
+              -p CONFIG_MAP="${{ inputs.configmap-frontend }}"
     steps:
       - uses: bcgov/action-deployer-openshift@v4.0.0
         id: deploys
