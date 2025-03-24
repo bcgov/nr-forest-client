@@ -296,6 +296,12 @@ fieldValidations["location.contacts.*.lastName"] = [
   hasOnlyNamingCharacters("last name"),
 ];
 
+fieldValidations["location.contacts.*.fullName"] = [
+  isMinSize("Please enter the full name")(3),
+  isMaxSizeMsg("full name", 60),
+  hasOnlyNamingCharacters("full name"),
+];
+
 fieldValidations["location.contacts.*.emailAddress"] = [
   optional(isEmail("Please provide a valid email address")),
   optional(isMinSize("Please provide a valid email address")(6)),
