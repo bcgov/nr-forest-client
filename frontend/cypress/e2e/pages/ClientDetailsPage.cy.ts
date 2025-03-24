@@ -819,7 +819,7 @@ describe("Client Details Page", () => {
         });
 
         it("displays the location code in the contact subtitle, without a dash", () => {
-          cy.get("#contact-1-title-locations").contains("00");
+          cy.get("#contact-1-title-locations").contains("01");
           cy.get("#contact-1-title-locations").contains("-").should("not.exist");
         });
 
@@ -831,7 +831,7 @@ describe("Client Details Page", () => {
           // expands the accordion
           cy.get("#contact-1 cds-accordion-item").click();
 
-          cy.get("#contact-1-associatedLocations").contains("00").should("be.visible");
+          cy.get("#contact-1-associatedLocations").contains("01").should("be.visible");
           cy.get("#contact-1-associatedLocations").contains("-").should("not.exist");
         });
       });
