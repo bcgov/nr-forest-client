@@ -15,17 +15,6 @@
     },
     "contacts": [
         {
-            "contactId": 10,
-            "locationCode": ["00"],
-            "contactName": "Cheryl Bibby",
-            "contactTypeCode": "BL",
-            "contactTypeDesc": "Billing",
-            "businessPhone": "{{randomValue length=10 type='NUMERIC'}}",
-            "secondaryPhone": "{{randomValue length=10 type='NUMERIC'}}",
-            "faxNumber": "{{randomValue length=10 type='NUMERIC'}}",
-            "emailAddress": "cheryl@ktb.com"
-        },
-        {
             "contactId": 11,
             "locationCode": ["01", "02"],
             "contactName": "Edward Burns",
