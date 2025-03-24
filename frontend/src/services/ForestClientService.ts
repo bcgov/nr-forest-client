@@ -47,7 +47,7 @@ export const getAddressDescription = (
   address: Address,
   index: number | string,
   entityName = "Address",
-): string => (address.locationName.length !== 0 ? address.locationName : `${entityName} #` + index);
+): string => address.locationName || `${entityName} #` + index;
 
 export const getContactDescription = (contact: Contact, index: number): string =>
   !isNullOrUndefinedOrBlank(contact.firstName)

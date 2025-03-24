@@ -129,8 +129,13 @@ describe("ForestClientService.ts", () => {
       expect(result).toEqual("Nice Place");
     });
 
-    it("returns a string containing the address' index", () => {
+    it("returns a string containing the address' index when it's an empty string", () => {
       const result = getAddressDescription({ locationName: "" } as Address, 7);
+      expect(result).toEqual("Address #7");
+    });
+
+    it("returns a string containing the address' index when it's null", () => {
+      const result = getAddressDescription({ locationName: null } as Address, 7);
       expect(result).toEqual("Address #7");
     });
 
