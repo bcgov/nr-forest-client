@@ -34,6 +34,7 @@ describe("<contact-view />", () => {
     userRoles: ["CLIENT_EDITOR"],
     validations: [validationWrapper],
     isReloading: false,
+    createMode: false,
   });
 
   let currentProps: ReturnType<typeof getDefaultProps> = null;
@@ -194,7 +195,10 @@ describe("<contact-view />", () => {
     });
     beforeEach(() => {
       mount(customProps);
-      cy.get(`#contact-${customProps.data.contactId}-EditBtn`).click();
+
+      if (!customProps.createMode) {
+        cy.get(`#contact-${customProps.data.contactId}-EditBtn`).click();
+      }
     });
 
     it("enables the edition of some fields by displaying the staff-contact-group-component", () => {
@@ -251,26 +255,41 @@ describe("<contact-view />", () => {
       testTextInput("#emailAddress_0", currentProps.data.emailAddress);
     });
 
-    it("emits a save event when the Save button gets clicked", () => {
-      // Change some information
-      cy.clearFormEntry("#emailAddress_0");
-      cy.fillFormEntry("#emailAddress_0", "upd@ted.com");
+    const booleanValues = [false, true];
+    booleanValues.forEach((createMode) => {
+      describe(`createMode: ${createMode}`, () => {
+        before(() => {
+          customProps.createMode = createMode;
+        });
+        after(() => {
+          defaultInit();
+        });
+        it("emits a save event when the Save button gets clicked", () => {
+          // Change some information
+          cy.clearFormEntry("#emailAddress_0");
+          cy.fillFormEntry("#emailAddress_0", "upd@ted.com");
 
-      cy.get("#contact-0-SaveBtn").click();
+          cy.get("#contact-0-SaveBtn").click();
 
-      cy.get("@vueWrapper").should((vueWrapper) => {
-        const saveData = vueWrapper.emitted("save")[0][0];
+          cy.get("@vueWrapper").should((vueWrapper) => {
+            const saveData = vueWrapper.emitted("save")[0][0];
 
-        const { patch, updatedData } = saveData;
+            const { patch, updatedData } = saveData;
 
-        expect(patch).to.be.an("array");
-        expect(patch).to.have.lengthOf(1);
-        expect(patch[0].op).to.eq("replace");
+            if (createMode) {
+              expect(patch).to.eq(null);
+            } else {
+              expect(patch).to.be.an("array");
+              expect(patch).to.have.lengthOf(1);
+              expect(patch[0].op).to.eq("replace");
+            }
 
-        // Contains the contact data as edited/created by the user
-        expect(updatedData).to.deep.eq({
-          ...customProps.data,
-          emailAddress: "upd@ted.com",
+            // Contains the contact data as edited/created by the user
+            expect(updatedData).to.deep.eq({
+              ...customProps.data,
+              emailAddress: "upd@ted.com",
+            });
+          });
         });
       });
     });
