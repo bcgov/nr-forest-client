@@ -30,8 +30,8 @@ describe('App.vue', () => {
         }
       },
       {
-        path: '/internal',
-        name: 'internal',
+        path: '/submissions-list',
+        name: 'submissions-list',
         component: TestComponent,
         props: true,
         meta: {

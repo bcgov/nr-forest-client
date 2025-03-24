@@ -40,7 +40,7 @@ export const routes = [
       showLoggedIn: false,
       visibleTo: [],
       redirectTo: {
-        idir: "internal",
+        idir: "search",
         bceidbusiness: "form",
         bcsc: "bcsc-form",
       },
@@ -63,7 +63,7 @@ export const routes = [
       showLoggedIn: true,
       visibleTo: ["bceidbusiness"],
       redirectTo: {
-        idir: "internal",
+        idir: "search",
         bcsc: "bcsc-form",
       },
       style: "content",
@@ -85,7 +85,7 @@ export const routes = [
       showLoggedIn: true,
       visibleTo: ["bcsc"],
       redirectTo: {
-        idir: "internal",
+        idir: "search",
         bceidbusiness: "form",
       },
       style: "content",
@@ -106,7 +106,7 @@ export const routes = [
       showLoggedIn: true,
       visibleTo: ["bceidbusiness", "bcsc"],
       redirectTo: {
-        idir: "internal",
+        idir: "search",
       },
       style: "content",
       headersStyle: "headers",
@@ -164,7 +164,7 @@ export const routes = [
   },
   {
     path: "/submissions",
-    name: "internal",
+    name: "submissions-list",
     component: SubmissionList,
     props: true,
     meta: {
@@ -174,6 +174,7 @@ export const routes = [
       showLoggedIn: true,
       visibleTo: ["idir"],
       redirectTo: {
+        idir: "search",
         bceidbusiness: "form",
         bcsc: "form",
       },
@@ -217,7 +218,7 @@ export const routes = [
       redirectTo: {
         bceidbusiness: "form",
         bcsc: "form",
-        idir: "internal",
+        idir: "search",
       },
       style: "content-stretched",
       headersStyle: "headers-compact",
@@ -240,7 +241,7 @@ export const routes = [
       redirectTo: {
         bceidbusiness: "form",
         bcsc: "form",
-        idir: "internal",
+        idir: "search",
       },
       style: "content-stretched",
       headersStyle: "headers-compact",
@@ -281,7 +282,7 @@ export const routes = [
       showLoggedIn: false,
       visibleTo: ["idir", "bceidbusiness", "bcsc"],
       redirectTo: {
-        idir: "internal",
+        idir: "search",
         bceidbusiness: "form",
         bcsc: "bcsc-form",
       },

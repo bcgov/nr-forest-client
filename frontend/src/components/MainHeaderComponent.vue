@@ -263,7 +263,7 @@ const handleLogoutClick = (event) => {
       </cds-side-nav-link>
 
       <cds-side-nav-link
-        :active="$route.name == 'internal'"
+        :active="$route.name == 'submissions-list'"
         href="/submissions"
         large
         id="menu-list-table-list"
