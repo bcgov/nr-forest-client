@@ -2,6 +2,7 @@ import type { Contact } from "@/dto/ApplyClientNumberDto";
 import type { ClientContact, ClientLocation } from "@/dto/CommonTypesDto";
 import ContactView from "@/pages/client-details/ContactView.vue";
 import { contactToCreateFormat, formatPhoneNumber } from "@/services/ForestClientService";
+import type { VueWrapper } from "@vue/test-utils";
 
 describe("<contact-view />", () => {
   const validation = () => {};
