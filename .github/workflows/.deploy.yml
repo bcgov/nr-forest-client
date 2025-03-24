@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Deployment Init
-        uses: bcgov/action-deployer-openshift@v3.2.0
+        uses: bcgov/action-deployer-openshift@v4.0.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -129,7 +129,7 @@ jobs:
               -p URL=${{ inputs.url }}
               -p CONFIG_MAP='${{ inputs.configmap-frontend }}'
     steps:
-      - uses: bcgov/action-deployer-openshift@v3.2.0
+      - uses: bcgov/action-deployer-openshift@v4.0.0
         id: deploys
         with:
           file: ${{ matrix.name }}/openshift.deploy.yml
@@ -141,7 +141,6 @@ jobs:
             -p TAG=${{ needs.vars.outputs.tag }}
             -p ZONE=${{ inputs.target }}
             ${{ matrix.parameters }}
-          verification_path: ${{ matrix.verification_path || '/' }}
 
   database-dev-job:
     name: Database Dev Job
