@@ -48,8 +48,9 @@ import {
   type ModalNotification,
   type FieldReason,
   type UserRole,
-  type SaveLocationEvent,
+  type SaveEvent,
   createClientLocation,
+  type ClientContact,
 } from "@/dto/CommonTypesDto";
 
 // Page components
@@ -166,10 +167,6 @@ watch(sortedLocations, () => {
   });
 });
 
-const sortedContacts = computed(() =>
-  data.value?.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
-);
-
 const uniqueLocations = isUniqueDescriptive();
 
 watch(sortedLocations, (value) => {
@@ -179,6 +176,53 @@ watch(sortedLocations, (value) => {
       uniqueLocations.add("Names", index)(location.clientLocnName);
     });
   }
+});
+
+const sortedContacts = computed(() =>
+  data.value?.contacts?.toSorted((a, b) => compareString(a.contactName, b.contactName)),
+);
+
+const uniqueContacts = isUniqueDescriptive();
+
+watch(sortedContacts, (value) => {
+  if (value?.length) {
+    value.forEach((contact) => {
+      uniqueContacts.add("Name", contact.contactId.toString())(contact.contactName);
+    });
+  }
+});
+
+interface ContactState {
+  isReloading?: boolean;
+  name: string;
+}
+
+const createContactState = (contactState?: Partial<ContactState>): ContactState => ({
+  isReloading: false,
+  name: "",
+  ...contactState,
+});
+
+const contactsState = reactive<Record<string, LocationState>>({});
+
+watch(sortedContacts, (_value, oldValue) => {
+  sortedContacts.value?.forEach((contact) => {
+    const contactId = contact.contactId;
+    if (!contactsState[contactId]) {
+      contactsState[contactId] = createContactState({
+        name: contact.contactName,
+      });
+    }
+  });
+
+  oldValue?.forEach((oldContact) => {
+    const oldContactId = oldContact.contactId;
+    if (!sortedContacts.value?.find((contact) => contact.contactId === oldContactId)) {
+      // remove deleted contact's state
+      delete contactsState[oldContactId];
+      uniqueContacts.remove("Name", oldContactId.toString());
+    }
+  });
 });
 
 const formatLocation = (location: ClientLocation) => {
@@ -218,8 +262,8 @@ const formatLocationsList = (
 
 const associatedLocationsRecord = computed(() => {
   const result: Record<string, string> = {};
-  sortedContacts.value?.forEach((contact, index) => {
-    result[index] = formatLocationsList(contact.locationCode);
+  sortedContacts.value?.forEach((contact) => {
+    result[contact.contactId] = formatLocationsList(contact.locationCode);
   });
   return result;
 });
@@ -249,6 +293,15 @@ const handleLocationCanceled = (location: ClientLocation) => {
 
 const updateLocationName = (locationName: string, locationCode: string) => {
   locationsState[locationCode].name = locationName;
+};
+
+const handleContactCanceled = (contact: ClientContact) => {
+  // reset to the original value
+  contactsState[contact.contactId].name = contact.contactName;
+};
+
+const updateContactName = (contactName: string, contactId: number) => {
+  contactsState[contactId].name = contactName;
 };
 
 const openRelatedClientsLegacy = () => {
@@ -480,12 +533,20 @@ const createAddPatch = <T>(value: T, path: string) => {
   return [patch];
 };
 
+const createRemovePatch = (path: string) => {
+  const patch: jsonpatch.RemoveOperation = {
+    op: "remove",
+    path,
+  };
+  return [patch];
+};
+
 const saveLocation =
   (index: number) =>
-  (payload: SaveLocationEvent) => {
+  (payload: SaveEvent<ClientLocation>) => {
     const {
       patch: rawPatchData,
-      updatedLocation,
+      updatedData: updatedLocation,
       action,
     } = payload;
 
@@ -543,6 +604,93 @@ const saveLocation =
     };
 
     handlePatch(patchData, onSuccess, onFailure);
+  };
+
+const contactsRef = ref<InstanceType<typeof ContactView>[]>([]);
+
+const setContactRef = (index: number) => (el: InstanceType<typeof ContactView>) => {
+  contactsRef.value[index] = el;
+};
+
+interface OperationOptions {
+  preserveRawPatch?: boolean;
+}
+
+const operateContact =
+  (index: number) =>
+  (payload: SaveEvent<ClientContact>, rawOptions?: OperationOptions) => {
+    const {
+      patch: rawPatchData,
+      updatedData: updatedContact,
+      action,
+    } = payload;
+
+    const contactId = updatedContact.contactId;
+
+    const options: OperationOptions = rawOptions ?? {};
+    const { preserveRawPatch } = options;
+
+    const patchData = preserveRawPatch ? rawPatchData : rawPatchData.map((item) => ({
+      ...item,
+      path: `/contacts/${contactId}${item.path}`,
+    }));
+
+    const updatedTitle = updatedContact.contactName;
+
+    const onSuccess: OnSuccess = () => {
+      const toastNotification: ModalNotification = {
+        kind: "Success",
+        active: true,
+        handler: () => {},
+        message: `Contact <span class="weight-700">“${updatedTitle}”</span> was ${action.pastParticiple}`,
+        toastTitle: undefined,
+      };
+      toastBus.emit(toastNotification);
+
+      contactsRef.value[index].lockEditing();
+
+      if (!contactsState[contactId]) {
+        contactsState[contactId] = createContactState();
+      }
+
+      contactsState[contactId].isReloading = true;
+
+      fetchClientData().asyncResponse.then(() => {
+        // Checking for existence because it might have just been deleted.
+        if (contactsState[contactId]) {
+          contactsState[contactId].isReloading = false;
+        }
+      });
+    };
+
+    const onFailure: OnFailure = (error) => {
+      const toastNotification: ModalNotification = {
+        kind: "Error",
+        active: true,
+        handler: () => {},
+        message: `Failed to ${action.infinitive} contact`,
+        toastTitle: undefined,
+      };
+      toastBus.emit(toastNotification);
+      globalError.value = error;
+    };
+
+    handlePatch(patchData, onSuccess, onFailure);
+  };
+
+const deleteContact =
+  (index: number) =>
+  (contact: ClientContact) => {
+    const patch = createRemovePatch(`/contacts/${contact.contactId}`);
+    operateContact(index)({
+      action: {
+        infinitive: "delete",
+        pastParticiple: "deleted",
+      },
+      patch,
+      updatedData: contact,
+      operationType: "delete",
+    }, { preserveRawPatch: true });
   };
 
 const globalError = ref();
@@ -744,27 +892,41 @@ resetGlobalError();
           </div>
           <div class="tab-panel tab-panel--populated">
             <cds-accordion
-              v-for="(contact, index) in sortedContacts"
-              :key="contact.contactName"
-              :id="`contact-${index}`"
+              v-for="contact in sortedContacts"
+              :key="contact.contactId"
+              :id="`contact-${contact.contactId}`"
             >
-              <cds-accordion-item size="lg" class="grouping-13">
-                <div slot="title" class="flex-column-0_25rem">
+              <cds-accordion-item size="lg" class="grouping-13" v-shadow="1">
+                <div
+                  slot="title"
+                  class="flex-column-0_25rem"
+                  :class="{ invisible: contactsState[contact.contactId]?.isReloading }"
+                >
                   <span class="label-with-icon">
                     <User20 />
-                    {{ contact.contactName }}
+                    {{ contactsState[contact.contactId].name }}
                   </span>
                   <span
-                    :id="`contact-${index}-title-locations`"
+                    :id="`contact-${contact.contactId}-title-locations`"
                     class="hide-open body-compact-01 padding-left-1_625rem"
                   >
-                    {{ associatedLocationsRecord[index] }}
+                    {{ associatedLocationsRecord[contact.contactId] }}
                   </span>
                 </div>
                 <contact-view
+                  :ref="setContactRef(contact.contactId)"
                   :data="contact"
-                  :index="index"
-                  :associatedLocationsString="associatedLocationsRecord[index]"
+                  :index="contact.contactId"
+                  :associatedLocationsString="associatedLocationsRecord[contact.contactId]"
+                  :is-reloading="contactsState[contact.contactId]?.isReloading"
+                  :all-locations="sortedLocations"
+                  :user-roles="userRoles"
+                  :validations="[uniqueContacts.check]"
+                  keep-scroll-bottom-position
+                  @update-contact-name="updateContactName($event, contact.contactId)"
+                  @save="operateContact(contact.contactId)($event)"
+                  @delete="deleteContact(contact.contactId)($event)"
+                  @canceled="handleContactCanceled(contact)"
                 />
               </cds-accordion-item>
             </cds-accordion>
