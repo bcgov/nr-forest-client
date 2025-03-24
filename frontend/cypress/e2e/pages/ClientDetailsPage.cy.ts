@@ -476,7 +476,7 @@ describe("Client Details Page", () => {
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.focused().parent("[data-focus='location-3-heading']");
+                cy.get("[data-focus='location-3-heading']:focus");
 
                 cy.fillFormEntry("#name_new", "Beach office");
 
@@ -566,7 +566,7 @@ describe("Client Details Page", () => {
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.focused().parent("[data-focus='location-3-heading']");
+                cy.get("[data-focus='location-3-heading']:focus");
 
                 cy.fillFormEntry("#name_new", "Beach office");
 
