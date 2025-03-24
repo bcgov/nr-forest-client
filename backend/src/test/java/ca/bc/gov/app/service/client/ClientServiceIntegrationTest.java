@@ -1,6 +1,6 @@
 package ca.bc.gov.app.service.client;
 
-import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
+import ca.bc.gov.app.dto.legacy.ForestClientContactDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientInformationDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -412,20 +412,17 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
             )
         ),
         List.of(
-            new ForestClientContactDto(
+            new ForestClientContactDetailsDto(
                 clientNumber,
-                "00",
-                List.of("00"),
+                1L,
+                "John Doe",
                 "DI",
                 "Director",
-                "John Doe",
                 "1234567890",
                 "0987654321",
                 "1234567890",
                 "mail@nobody.ca",
-                "Admin",
-                "Admin",
-                70L
+                List.of("00")
             )
 
         ),

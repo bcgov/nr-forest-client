@@ -17,7 +17,7 @@ const faxNumber = computed(() => formatPhoneNumber(props.data.faxNumber));
 <template>
   <div :id="`contact-${index}-general-section`" class="flex-column-1_5rem margin-left-1_75rem">
     <read-only-component label="Contact type" :id="`contact-${index}-contactType`">
-      <span class="body-compact-01">{{ data.contactCodeDescription }}</span>
+      <span class="body-compact-01">{{ data.contactTypeDesc }}</span>
     </read-only-component>
     <read-only-component label="Associated locations" :id="`contact-${index}-associatedLocations`">
       <span class="body-compact-01">{{ associatedLocationsString }}</span>

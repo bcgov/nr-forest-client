@@ -5,14 +5,16 @@ import { formatPhoneNumber } from "@/services/ForestClientService";
 describe("<contact-view />", () => {
   const getDefaultProps = () => ({
     data: {
-      locationCode: ["01"],
+      clientNumber: "00001086",
+      contactId: 2645,
       contactName: "Cheryl Bibby",
       contactTypeCode: "BL",
-      contactCodeDescription: "Billing",
+      contactTypeDesc: "Billing",
       businessPhone: "2502863767",
       secondaryPhone: "2505553700",
       faxNumber: "2502863768",
       emailAddress: "cheryl@ktb.com",
+      locationCodes: ["01"]
     } as ClientContact,
     index: 0,
     associatedLocationsString: "01 - Town office",
