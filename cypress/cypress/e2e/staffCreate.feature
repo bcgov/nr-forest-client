@@ -33,7 +33,7 @@ Feature: Staff Screens
       | Secondary phone number          | 2501232567      | text          |
       | Fax                             | 2501444567      | text          |
       | Contact type                    | Billing         | select        |
-      | Location name                   | Office          | multiselect   |
+      | Associated locations            | Office          | multiselect   |
     Then I click on next
     Then I submit
     And I wait for the text "has been created!" to appear
@@ -63,14 +63,14 @@ Feature: Staff Screens
       | Email address                   | mail3@mail.ca   | text          |
       | Primary phone number            | 7780000003      | text          |      
       | Contact type                    | Billing         | select        |
-      | Location name                   | Home            | multiselect   |
-      | Location name                   | Mailing address | multiselect   |
+      | Associated locations            | Home            | multiselect   |
+      | Associated locations            | Mailing address | multiselect   |
     And I fill the "MARCEL ST. AMANT" information with the following
       | Field name                      | Value           | Type          |      
       | Email address                   | mail3@mail.ca   | text          |
       | Primary phone number            | 7780000004      | text          |
       | Contact type                    | Billing         | select        |
-      | Location name                   | Home            | multiselect   |
+      | Associated locations            | Home            | multiselect   |
       | Last name                       | ST AMANT        | textreplace   |
     And I click on next
     Then I submit
