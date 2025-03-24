@@ -339,8 +339,8 @@ describe("Client Details Page", () => {
           cy.visit("/clients/details/se");
         });
         it("displays only the location code, without the dash", () => {
-          cy.get("#location-00 [slot='title']").contains("00");
-          cy.get("#location-00 [slot='title']").contains("-").should("not.exist");
+          cy.get("#location-01 [slot='title']").contains("01");
+          cy.get("#location-01 [slot='title']").contains("-").should("not.exist");
         });
       });
     });
@@ -470,18 +470,13 @@ describe("Client Details Page", () => {
 
                 cy.get("cds-accordion[id|='location']").should("have.length", 4);
 
-                cy.get("[data-focus='location-3-heading']").then(($el) => {
-                  const element = $el[0];
-                  cy.spy(element, "focus").as("focusNewLocation");
-                });
-
                 cy.get("@scrollToNewLocation").should("be.called");
 
                 /*
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.get("@focusNewLocation").should("be.called");
+                cy.get("[data-focus='location-3-heading']:focus");
 
                 cy.fillFormEntry("#name_new", "Beach office");
 
@@ -567,16 +562,11 @@ describe("Client Details Page", () => {
 
                 cy.get("cds-accordion[id|='location']").should("have.length", 4);
 
-                cy.get("[data-focus='location-3-heading']").then(($el) => {
-                  const element = $el[0];
-                  cy.spy(element, "focus").as("focusNewLocation");
-                });
-
                 /*
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.get("@focusNewLocation").should("be.called");
+                cy.get("[data-focus='location-3-heading']:focus");
 
                 cy.fillFormEntry("#name_new", "Beach office");
 
@@ -718,15 +708,15 @@ describe("Client Details Page", () => {
       });
 
       it("displays the contacts names on the accordions' titles sorted by contact name", () => {
-        cy.get("#contact-0 [slot='title']").contains("Cheryl Bibby");
-        cy.get("#contact-1 [slot='title']").contains("Christoffer Stewart");
-        cy.get("#contact-2 [slot='title']").contains("Edward Burns");
+        cy.get("#panel-contacts cds-accordion-item").eq(0).contains("Cheryl Bibby");
+        cy.get("#panel-contacts cds-accordion-item").eq(1).contains("Christoffer Stewart");
+        cy.get("#panel-contacts cds-accordion-item").eq(2).contains("Edward Burns");
       });
 
       it("displays the associated locations on the accordion's title while it's collapsed", () => {
-        cy.get("#contact-0-title-locations").should("be.visible");
-        cy.get("#contact-1-title-locations").should("be.visible");
-        cy.get("#contact-2-title-locations").should("be.visible");
+        cy.get("#contact-10-title-locations").should("be.visible");
+        cy.get("#contact-11-title-locations").should("be.visible");
+        cy.get("#contact-12-title-locations").should("be.visible");
       });
     });
 
@@ -745,14 +735,14 @@ describe("Client Details Page", () => {
 
         it("hides the associated locations on the accordion's title when it's expanded", () => {
           // Clicks to expand the accordion
-          cy.get("#contact-0 [slot='title']").click();
-          cy.get("#contact-0-title-locations").should("not.be.visible");
+          cy.get("#contact-10 [slot='title']").click();
+          cy.get("#contact-10-title-locations").should("not.be.visible");
         });
 
         it("keeps accordions' states while tabs are switched", () => {
           // Expand first and third contacts, leave second one collapsed
-          cy.get("#contact-0 [slot='title']").click();
-          cy.get("#contact-2 [slot='title']").click();
+          cy.get("#panel-contacts cds-accordion-item [slot='title']").first().click();
+          cy.get("#panel-contacts cds-accordion-item [slot='title']").last().click();
 
           // Switch to another tab (Locations)
           cy.get("#tab-locations").click();
@@ -765,13 +755,13 @@ describe("Client Details Page", () => {
           cy.get("#tab-contacts").click();
 
           // First contact is still open
-          cy.get("#contact-0 cds-accordion-item").should("have.attr", "open");
+          cy.get("#panel-contacts cds-accordion-item").eq(0).should("have.attr", "open");
 
           // Second contact is still closed
-          cy.get("#contact-1 cds-accordion-item").should("not.have.attr", "open");
+          cy.get("#panel-contacts cds-accordion-item").eq(1).should("not.have.attr", "open");
 
           // Third contact is still open
-          cy.get("#contact-2 cds-accordion-item").should("have.attr", "open");
+          cy.get("#panel-contacts cds-accordion-item").eq(2).should("have.attr", "open");
         });
       });
       describe("no contacts", () => {
@@ -829,7 +819,7 @@ describe("Client Details Page", () => {
         });
 
         it("displays the location code in the contact subtitle, without a dash", () => {
-          cy.get("#contact-0-title-locations").contains("00");
+          cy.get("#contact-0-title-locations").contains("01");
           cy.get("#contact-0-title-locations").contains("-").should("not.exist");
         });
 
@@ -841,8 +831,143 @@ describe("Client Details Page", () => {
           // expands the accordion
           cy.get("#contact-0 cds-accordion-item").click();
 
-          cy.get("#contact-0-associatedLocations").contains("00").should("be.visible");
+          cy.get("#contact-0-associatedLocations").contains("01").should("be.visible");
           cy.get("#contact-0-associatedLocations").contains("-").should("not.exist");
+        });
+      });
+    });
+
+    describe("when role:CLIENT_EDITOR", () => {
+      describe("name duplication", () => {
+        beforeEach(() => {
+          cy.visit("/clients/details/g");
+
+          // Switch to the Contacts tab
+          cy.get("#tab-contacts").click();
+
+          // Clicks to expand the accordion
+          cy.get("#contact-10 [slot='title']").click();
+
+          cy.get("#contact-10-EditBtn").click();
+
+          cy.clearFormEntry("#fullName_10");
+
+          // This is the same name of another contact
+          cy.fillFormEntry("#fullName_10", "Christoffer Stewart");
+        });
+
+        it("shows the error on field Full name", () => {
+          cy.checkInputErrorMessage("#fullName_10", "This value is already in use");
+
+          cy.get("#contact-10-SaveBtn").shadow().find("button").should("be.disabled");
+        });
+      });
+
+      describe("save", () => {
+        describe("on success", { testIsolation: false }, () => {
+          const getClientDetailsCounter = {
+            count: 0,
+          };
+
+          let patchClientDetailsRequest;
+          before(function () {
+            init.call(this);
+
+            cy.intercept(
+              {
+                method: "GET",
+                pathname: "/api/clients/details/*",
+              },
+              (req) => {
+                getClientDetailsCounter.count++;
+                req.continue();
+              },
+            ).as("getClientDetails");
+
+            cy.intercept(
+              {
+                method: "PATCH",
+                pathname: "/api/clients/details/*",
+              },
+              (req) => {
+                patchClientDetailsRequest = req;
+                req.continue();
+              },
+            ).as("patchClientDetails");
+
+            cy.visit("/clients/details/g");
+            cy.wait("@getClientDetails");
+
+            // Switch to the Contacts tab
+            cy.get("#tab-contacts").click();
+
+            // Clicks to expand the accordion
+            cy.get("#contact-10 [slot='title']").click();
+
+            cy.get("#contact-10-EditBtn").click();
+            cy.clearFormEntry("#emailAddress_10");
+            cy.fillFormEntry("#emailAddress_10", "something@else.com");
+            cy.get("#contact-10-SaveBtn").click();
+            cy.wait("@getClientDetails");
+          });
+
+          it("prefixes the path with the corresponding location code", () => {
+            expect(patchClientDetailsRequest.body[0].path).to.eq("/contacts/10/emailAddress");
+          });
+
+          it("shows the success toast", () => {
+            cy.get("cds-toast-notification[kind='success']").should("be.visible");
+          });
+
+          it("reloads data", () => {
+            // Called twice - one for the initial loading and one after saving.
+            cy.wrap(getClientDetailsCounter).its("count").should("eq", 2);
+          });
+
+          it("gets back into view mode", () => {
+            // Fields that belong to the form (edit mode)
+            testHidden("#fullName_10");
+            testHidden("#role_10");
+            testHidden("#emailAddress_10");
+
+            cy.get("#contact-10-SaveBtn").should("not.exist");
+
+            testReadonly("#contact-10-contactType");
+            testReadonly("#contact-10-emailAddress");
+
+            cy.get("#contact-10-EditBtn").should("be.visible");
+          });
+        });
+
+        describe("on failure", { testIsolation: false }, () => {
+          before(function () {
+            init.call(this);
+
+            cy.visit("/clients/details/g");
+
+            // Switch to the Contacts tab
+            cy.get("#tab-contacts").click();
+
+            // Clicks to expand the accordion
+            cy.get("#contact-10 [slot='title']").click();
+
+            cy.get("#contact-10-EditBtn").click();
+            cy.clearFormEntry("#emailAddress_10");
+            cy.fillFormEntry("#emailAddress_10", "error@error.com");
+            cy.get("#contact-10-SaveBtn").click();
+          });
+
+          it("shows the error toast", () => {
+            cy.get("cds-toast-notification[kind='error']").should("be.visible");
+          });
+
+          it("stays in edit mode", () => {
+            cy.get("#fullName_10").should("be.visible");
+            cy.get("#role_10").should("be.visible");
+            cy.get("#emailAddress_10").should("be.visible");
+
+            cy.get("#contact-10-SaveBtn").should("be.visible");
+          });
         });
       });
     });

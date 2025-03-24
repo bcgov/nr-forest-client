@@ -1,5 +1,6 @@
 import type { Address, Contact } from "../dto/ApplyClientNumberDto";
 import type {
+  ClientContact,
   ClientDetails,
   ClientLocation,
   CodeDescrType,
@@ -46,7 +47,7 @@ export const getAddressDescription = (
   address: Address,
   index: number | string,
   entityName = "Address",
-): string => (address.locationName.length !== 0 ? address.locationName : `${entityName} #` + index);
+): string => address.locationName || `${entityName} #` + index;
 
 export const getContactDescription = (contact: Contact, index: number): string =>
   !isNullOrUndefinedOrBlank(contact.firstName)
@@ -432,6 +433,70 @@ export const locationToEditFormat = (
   };
 
   return location;
+};
+
+/**
+ * Converts contact data from ClientContact format to Contact format, as required by the
+ * StaffContactGroupComponent, first developed for the staff create form.
+ *
+ * @param clientContact - ClientContact formatted data
+ * @param associatedLocations - list of locations associated to this contact
+ * @returns Contact data
+ */
+export const contactToCreateFormat = (
+  clientContact: ClientContact,
+  allLocations: ClientLocation[],
+): Contact => {
+  const contact: Contact = {
+    contactType: {
+      value: clientContact.contactTypeCode,
+      text: clientContact.contactTypeDesc,
+    },
+    fullName: clientContact.contactName,
+    phoneNumber: formatPhoneNumber(clientContact.businessPhone),
+    secondaryPhoneNumber: formatPhoneNumber(clientContact.secondaryPhone),
+    faxNumber: formatPhoneNumber(clientContact.faxNumber),
+    email: clientContact.emailAddress,
+    index: clientContact.contactId,
+    locationNames: allLocations
+      .filter((location) => clientContact.locationCode.includes(location.clientLocnCode))
+      .map((location) => ({
+        value: location.clientLocnCode,
+        text: location.clientLocnName,
+      })),
+  };
+
+  return contact;
+};
+
+/**
+ * Converts contac data from Contact format to ClientContact format, as required by the Patch
+ * API.
+ * Note: data which don't exist in the Contact format can be provided in the baseContact
+ * parameter.
+ *
+ * @param contact - Contact formatted data
+ * @param baseContact - ClientContact data to fulfill data non-existent in the Contact format
+ * @returns ClientContact data
+ */
+export const contactToEditFormat = (
+  contact: Contact,
+  baseContact: ClientContact,
+): ClientContact => {
+  const clientContact: ClientContact = {
+    ...baseContact,
+    contactId: contact.index,
+    locationCode: contact.locationNames.map((item) => item.value),
+    contactName: contact.fullName,
+    contactTypeCode: contact.contactType.value,
+    contactTypeDesc: contact.contactType.text,
+    businessPhone: keepOnlyNumbersAndLetters(contact.phoneNumber),
+    secondaryPhone: keepOnlyNumbersAndLetters(contact.secondaryPhoneNumber),
+    faxNumber: keepOnlyNumbersAndLetters(contact.faxNumber),
+    emailAddress: contact.email,
+  };
+
+  return clientContact;
 };
 
 /**

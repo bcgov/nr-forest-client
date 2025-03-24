@@ -314,6 +314,7 @@ export const createClientLocation = (
 };
 
 export interface ClientContact {
+  contactId: number;
   clientNumber: string;
   clientLocnCode: string;
   locationCode: string[];
@@ -378,8 +379,11 @@ export interface ActionWords {
   pastParticiple: string;
 }
 
-export interface SaveLocationEvent {
+type OperationType = "update" | "insert" | "delete";
+
+export interface SaveEvent<T> {
   patch: jsonpatch.Operation[] | null;
-  updatedLocation: ClientLocation;
+  updatedData: T;
   action: ActionWords;
+  operationType: OperationType;
 }

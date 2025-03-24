@@ -21,9 +21,11 @@ import {
   locationToEditFormat,
   keepOnlyNumbersAndLetters,
   toSentenceCase,
+  contactToCreateFormat,
+  contactToEditFormat,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
-import type { UserRole, ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
+import type { UserRole, ClientDetails, ClientLocation, ClientContact } from "@/dto/CommonTypesDto";
 import type * as jsonpatch from "fast-json-patch";
 
 describe("ForestClientService.ts", () => {
@@ -127,8 +129,13 @@ describe("ForestClientService.ts", () => {
       expect(result).toEqual("Nice Place");
     });
 
-    it("returns a string containing the address' index", () => {
+    it("returns a string containing the address' index when it's an empty string", () => {
       const result = getAddressDescription({ locationName: "" } as Address, 7);
+      expect(result).toEqual("Address #7");
+    });
+
+    it("returns a string containing the address' index when it's null", () => {
+      const result = getAddressDescription({ locationName: null } as Address, 7);
       expect(result).toEqual("Address #7");
     });
 
@@ -442,6 +449,126 @@ describe("ForestClientService.ts", () => {
         While this one makes sure the remaining data is properly copied from the baseLocation.
         */
         expect(location[propName]).toEqual(baseLocation[propName]);
+      }
+    });
+  });
+
+  describe("contactToCreateFormat", () => {
+    const clientContact = {
+      contactId: 10,
+      locationCode: ["00"],
+      contactName: "Cheryl Bibby",
+      contactTypeCode: "BL",
+      contactTypeDesc: "Billing",
+      businessPhone: "2502863767",
+      secondaryPhone: "2505553700",
+      faxNumber: "2502863768",
+      emailAddress: "cheryl@ktb.com",
+    } as ClientContact;
+
+    const allLocations = [
+      {
+        clientLocnCode: "00",
+        clientLocnName: "Headquarters",
+      },
+      {
+        clientLocnCode: "01",
+        clientLocnName: "Town office",
+      },
+    ] as ClientLocation[];
+
+    it("converts from ClientContact format to Contact format properly", () => {
+      const contact = contactToCreateFormat(clientContact, allLocations);
+      expect(contact.index).toEqual(clientContact.contactId);
+      expect(contact.fullName).toEqual(clientContact.contactName);
+      expect(contact.locationNames).toStrictEqual([
+        {
+          value: "00",
+          text: "Headquarters",
+        },
+      ]);
+      expect(contact.contactType).toEqual({
+        value: clientContact.contactTypeCode,
+        text: clientContact.contactTypeDesc,
+      });
+      expect(contact.phoneNumber).toEqual(formatPhoneNumber(clientContact.businessPhone));
+      expect(contact.secondaryPhoneNumber).toEqual(formatPhoneNumber(clientContact.secondaryPhone));
+      expect(contact.faxNumber).toEqual(formatPhoneNumber(clientContact.faxNumber));
+      expect(contact.email).toEqual(clientContact.emailAddress);
+    });
+  });
+
+  describe("contactToEditFormat", () => {
+    const contact = {
+      contactType: {
+        value: "DI",
+        text: "Director",
+      },
+      fullName: "Julia Smith",
+      phoneNumber: "(121) 212-1212",
+      secondaryPhoneNumber: "(343) 434-3434",
+      faxNumber: "(787) 878-7878",
+      email: "julia@company.com",
+      index: 0,
+      locationNames: [
+        {
+          value: "00",
+          text: "Headquarters",
+        },
+        {
+          value: "01",
+          text: "Town office",
+        },
+      ],
+    } as Contact;
+
+    const baseContact: ClientContact = {
+      clientNumber: "121314",
+      contactId: 10,
+      locationCode: ["00"],
+      contactName: "Cheryl Bibby",
+      contactTypeCode: "BL",
+      contactTypeDesc: "Billing",
+      businessPhone: "2502863767",
+      secondaryPhone: "2505553700",
+      faxNumber: "2502863768",
+      emailAddress: "cheryl@ktb.com",
+      createdBy: "peter",
+      updatedBy: "mike",
+    };
+
+    it("converts from Contact format to ClientContact format properly", () => {
+      const clientContact = contactToEditFormat(contact, baseContact);
+
+      expect(clientContact.contactId).toEqual(contact.index);
+      expect(clientContact.locationCode).toEqual(["00", "01"]);
+      expect(clientContact.contactName).toEqual(contact.fullName);
+      expect(clientContact.contactTypeCode).toEqual(contact.contactType.value);
+      expect(clientContact.contactTypeDesc).toEqual(contact.contactType.text);
+      expect(clientContact.businessPhone).toEqual(keepOnlyNumbersAndLetters(contact.phoneNumber));
+      expect(clientContact.secondaryPhone).toEqual(
+        keepOnlyNumbersAndLetters(contact.secondaryPhoneNumber),
+      );
+      expect(clientContact.faxNumber).toEqual(keepOnlyNumbersAndLetters(contact.faxNumber));
+      expect(clientContact.emailAddress).toEqual(contact.email);
+
+      // Information that doesn't exist on the Contact format
+      const missingProperties: (keyof ClientContact)[] = ["clientNumber", "createdBy", "updatedBy"];
+
+      for (const key in clientContact) {
+        if (!missingProperties.includes(key as keyof ClientContact)) {
+          /*
+          This assertion makes sure data comes primarily from the input contact instead of the
+          baseContact.
+          */
+          expect(clientContact[key]).not.toEqual(baseContact[key]);
+        }
+      }
+      for (const propName of missingProperties) {
+        /*
+        While this one makes sure the remaining data is properly copied from the baseContact.
+        */
+        expect(clientContact[propName]).toEqual(baseContact[propName]);
       }
     });
   });
