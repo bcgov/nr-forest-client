@@ -12,3 +12,8 @@ Cypress.on('window:before:load', (win) => {
     });
   };
 });
+
+Cypress.on('uncaught:exception', (err, runnable) => {
+  console.log(err);
+  return false;
+})
