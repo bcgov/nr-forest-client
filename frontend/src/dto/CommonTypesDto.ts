@@ -314,7 +314,6 @@ export const createClientLocation = (
 };
 
 export interface ClientContact {
-  contactId: number;
   clientNumber: string;
   contactId: number;
   contactName: string;

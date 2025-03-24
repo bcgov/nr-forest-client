@@ -89,7 +89,7 @@
   "contacts": [
     {
       "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
-      "contactId": 1,
+      "contactId": 10,
       "contactName": "Cheryl Bibby",
       "contactTypeCode": "BL",
       "contactTypeDesc": "Billing",
@@ -101,7 +101,7 @@
     },
     {
       "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
-      "contactId": 2,
+      "contactId": 11,
       "contactName": "Edward Burns",
       "contactTypeCode": "DI",
       "contactTypeDesc": "Director",
@@ -113,7 +113,7 @@
     },
     {
       "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
-      "contactId": 3,
+      "contactId": 12,
       "contactName": "Christoffer Stewart",
       "contactTypeCode": "BL",
       "contactTypeDesc": "Billing",

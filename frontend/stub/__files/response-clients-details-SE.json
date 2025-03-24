@@ -19,7 +19,7 @@
   "doingBusinessAs": [],
   "contacts": [
     {
-      "contactId": "{{randomValue length=8 type='NUMERIC'}}",
+      "contactId": "1",
       "locationCodes": ["00"],
       "contactName": "Cheryl Bibby",
       "contactTypeCode": "BL",
