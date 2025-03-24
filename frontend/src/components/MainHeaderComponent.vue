@@ -276,10 +276,10 @@ const handleLogoutClick = (event) => {
         <span>Support</span>
       </cds-side-nav-link>
       <cds-side-nav-link 
-        href="#" 
+        target="_blank"
+        href="https://intranet.gov.bc.ca/intranet/content?id=C7F590C387614C4D835E447A21D854BA" 
         large 
-        class="unbolded" 
-        @click.prevent="helpModalActive = true"
+        class="unbolded"
       >
         <span class="body-compact-02">Need help?</span>
         <Help16 slot="title-icon" />
@@ -287,28 +287,6 @@ const handleLogoutClick = (event) => {
     </cds-side-nav-items>
   
   </cds-side-nav>
-
-  <cds-modal
-    id="help-modal"
-    aria-labelledby="help-modal-heading"
-    aria-describedby="help-modal-body"
-    size="sm"
-    :open="helpModalActive"
-    @cds-modal-closed="helpModalActive = false"
-  >
-    <cds-modal-header>
-      <cds-modal-close-button></cds-modal-close-button>
-      <cds-modal-heading id="help-modal-heading">
-        Need help?
-      </cds-modal-heading>
-    </cds-modal-header>
-    <cds-modal-body id="help-modal-body">
-      <p>
-        Email your issue to <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> 
-        and we'll get back to you.
-      </p>
-    </cds-modal-body>
-  </cds-modal>
 
   <cds-modal
     id="logout-modal"
