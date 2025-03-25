@@ -16,7 +16,7 @@ import { getContactDescription } from "@/services/ForestClientService";
 
 //Define the input properties for this component
 const props = defineProps<{
-  id: number | string;
+  id: number;
   modelValue: Contact;
   enabled?: boolean;
   roleList: Array<CodeNameType>;
@@ -33,7 +33,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "valid", value: boolean): void;
   (e: "update:model-value", value: Contact | undefined): void;
-  (e: "remove", id: number | string): void;
+  (e: "remove", id: number): void;
 }>();
 
 const { safeSetFocusedComponent } = useFocus();
@@ -296,7 +296,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
       />
     </div>
 
-    <div class="grouping-06" v-if="!hideDeleteButton && Number(id) > 0">
+    <div class="grouping-06" v-if="!hideDeleteButton && id > 0">
       <cds-button
         :id="'deleteContact_' + id"
         :danger-descriptor="`Delete contact &quot;${getContactDescription(

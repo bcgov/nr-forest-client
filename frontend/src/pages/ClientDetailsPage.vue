@@ -196,7 +196,7 @@ const uniqueContacts = isUniqueDescriptive();
 watch(sortedContacts, (value) => {
   if (value?.length) {
     value.forEach((contact) => {
-      uniqueContacts.add("Name", contact.contactId.toString())(contact.contactName);
+      uniqueContacts.add("Name", String(contact.contactId))(contact.contactName);
     });
   }
 });
@@ -231,7 +231,7 @@ watch(sortedContacts, (_value, oldValue) => {
     if (!sortedContacts.value?.find((contact) => contact.contactId === oldContactId)) {
       // remove deleted contact's state
       delete contactsState[oldContactId];
-      uniqueContacts.remove("Name", oldContactId.toString());
+      uniqueContacts.remove("Name", String(oldContactId));
     }
   });
 });
@@ -280,7 +280,7 @@ const associatedLocationsRecord = computed(() => {
 });
 
 const formatContact = (contact: ClientContact) => {
-  if (contact.contactId === NEW_IDENTIFIER && !contactsState[contact.contactId].name) {
+  if (contact.contactId === null && !contactsState[contact.contactId].name) {
     return "New contact";
   }
   return contactsState[contact.contactId].name;
@@ -314,7 +314,7 @@ const updateLocationName = (locationName: string, locationCode: string) => {
 };
 
 const addContact = () => {
-  const contactId = NEW_IDENTIFIER;
+  const contactId = null;
   newContact.value = createClientContact(contactId, clientNumber);
   contactsState[contactId] = createContactState({ startOpen: true });
   
@@ -324,7 +324,7 @@ const addContact = () => {
 };
 
 const handleContactCanceled = (contact: ClientContact) => {
-  if (contact.contactId === NEW_IDENTIFIER) {
+  if (contact.contactId === null) {
     newContact.value = undefined;
     delete contactsState[contact.contactId];
   } else {
@@ -333,7 +333,7 @@ const handleContactCanceled = (contact: ClientContact) => {
   }
 };
 
-const updateContactName = (contactName: string, contactId: number | string) => {
+const updateContactName = (contactName: string, contactId: number) => {
   contactsState[contactId].name = contactName;
 };
 
@@ -664,7 +664,7 @@ const operateContact =
     const options: OperationOptions = rawOptions ?? {};
     const { preserveRawPatch } = options;
 
-    const isNew = contactId === NEW_IDENTIFIER;
+    const isNew = contactId === null;
 
     let patchData: jsonpatch.Operation[];
 
@@ -986,7 +986,7 @@ resetGlobalError();
                   :user-roles="userRoles"
                   :validations="[uniqueContacts.check]"
                   keep-scroll-bottom-position
-                  :createMode="contact.contactId === NEW_IDENTIFIER"
+                  :createMode="contact.contactId === null"
                   @update-contact-name="updateContactName($event, contact.contactId)"
                   @save="operateContact(index)($event)"
                   @delete="deleteContact(index)($event)"

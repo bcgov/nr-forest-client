@@ -946,7 +946,7 @@ describe("Client Details Page", () => {
               it("scrolls down to the new form", () => {
                 cy.get("#addContactBtn").click();
 
-                cy.get("[data-scroll='contact-new-heading']").then(($el) => {
+                cy.get("[data-scroll='contact-null-heading']").then(($el) => {
                   const element = $el[0];
                   cy.spy(element, "scrollIntoView").as("scrollToNewContact");
                 });
@@ -959,19 +959,19 @@ describe("Client Details Page", () => {
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.get("[data-focus='contact-new-heading']:focus");
+                cy.get("[data-focus='contact-null-heading']:focus");
 
-                cy.fillFormEntry("#fullName_new", "Steve New");
+                cy.fillFormEntry("#fullName_null", "Steve New");
 
-                cy.selectFormEntry("#role_new", "Billing");
+                cy.selectFormEntry("#role_null", "Billing");
 
-                cy.selectFormEntry("#addressname_new", "Warehouse");
+                cy.selectFormEntry("#addressname_null", "Warehouse");
 
-                cy.fillFormEntry("#emailAddress_new", "snew@corp.com");
+                cy.fillFormEntry("#emailAddress_null", "snew@corp.com");
 
-                cy.fillFormEntry("#businessPhoneNumber_new", "1234567890");
+                cy.fillFormEntry("#businessPhoneNumber_null", "1234567890");
 
-                cy.get("#contact-new-SaveBtn").click();
+                cy.get("#contact-null-SaveBtn").click();
                 cy.wait("@getClientDetails");
               });
             }
@@ -1065,19 +1065,19 @@ describe("Client Details Page", () => {
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.get("[data-focus='contact-new-heading']:focus");
+                cy.get("[data-focus='contact-null-heading']:focus");
 
-                cy.fillFormEntry("#fullName_new", "Steve New");
+                cy.fillFormEntry("#fullName_null", "Steve New");
 
-                cy.selectFormEntry("#role_new", "Billing");
+                cy.selectFormEntry("#role_null", "Billing");
 
-                cy.selectFormEntry("#addressname_new", "Warehouse");
+                cy.selectFormEntry("#addressname_null", "Warehouse");
 
-                cy.fillFormEntry("#emailAddress_new", "error@error.com");
+                cy.fillFormEntry("#emailAddress_null", "error@error.com");
 
-                cy.fillFormEntry("#businessPhoneNumber_new", "1234567890");
+                cy.fillFormEntry("#businessPhoneNumber_null", "1234567890");
 
-                cy.get("#contact-new-SaveBtn").click();
+                cy.get("#contact-null-SaveBtn").click();
               }
             });
 
@@ -1092,7 +1092,7 @@ describe("Client Details Page", () => {
             });
 
             it("stays in edit mode", () => {
-              const id = scenario.name === "edit" ? 10 : "new";
+              const id = scenario.name === "edit" ? 10 : null;
               cy.get(`#fullName_${id}`).should("be.visible");
               cy.get(`#role_${id}`).should("be.visible");
               cy.get(`#emailAddress_${id}`).should("be.visible");
@@ -1165,23 +1165,23 @@ describe("Client Details Page", () => {
           Wait to have a focused element.
           Prevents error with focus switching.
           */
-          cy.get("[data-focus='contact-new-heading']:focus");
+          cy.get("[data-focus='contact-null-heading']:focus");
 
           // Use the same contact name
-          cy.fillFormEntry("#fullName_new", contactName);
+          cy.fillFormEntry("#fullName_null", contactName);
 
           // No error in the field
-          cy.get("#fullName_new").should("not.have.attr", "invalid");
+          cy.get("#fullName_null").should("not.have.attr", "invalid");
 
-          cy.selectFormEntry("#role_new", "Billing");
+          cy.selectFormEntry("#role_null", "Billing");
 
-          cy.selectFormEntry("#addressname_new", "Warehouse");
+          cy.selectFormEntry("#addressname_null", "Warehouse");
 
-          cy.fillFormEntry("#emailAddress_new", "snew@corp.com");
+          cy.fillFormEntry("#emailAddress_null", "snew@corp.com");
 
-          cy.fillFormEntry("#businessPhoneNumber_new", "1234567890");
+          cy.fillFormEntry("#businessPhoneNumber_null", "1234567890");
 
-          cy.get("#contact-new-SaveBtn").shadow().find("button").should("be.enabled");
+          cy.get("#contact-null-SaveBtn").shadow().find("button").should("be.enabled");
         });
       });
     });

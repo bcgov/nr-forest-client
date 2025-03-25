@@ -315,7 +315,7 @@ export const createClientLocation = (
 
 export interface ClientContact {
   clientNumber: string;
-  contactId: number | string;
+  contactId: number;
   contactName: string;
   contactTypeCode: string;
   contactTypeDesc: string;
@@ -326,10 +326,7 @@ export interface ClientContact {
   locationCodes: string[];
 }
 
-export const createClientContact = (
-  contactId: number | string,
-  clientNumber: string,
-): ClientContact => {
+export const createClientContact = (contactId: number, clientNumber: string): ClientContact => {
   const contact = {
     contactId,
     clientNumber,

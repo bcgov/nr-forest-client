@@ -26,7 +26,7 @@ import { useFetchTo } from "@/composables/useFetch";
 
 const props = defineProps<{
   data: ClientContact;
-  index: number | string;
+  index: number;
   associatedLocationsString: string;
   allLocations: ClientLocation[];
   userRoles: UserRole[];
