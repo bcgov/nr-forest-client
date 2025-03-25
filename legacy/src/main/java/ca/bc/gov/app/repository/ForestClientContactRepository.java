@@ -1,5 +1,6 @@
 package ca.bc.gov.app.repository;
 
+import ca.bc.gov.app.dto.ForestClientContactDetailsDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
@@ -80,5 +81,24 @@ public interface ForestClientContactRepository
    * @return a Flux containing the matching ForestClientContactEntity objects
    */
   Flux<ForestClientContactEntity> findAllByClientNumber(String clientNumber);
+
+  @Query("""
+      SELECT
+          MAX(C.CLIENT_NUMBER) AS CLIENT_NUMBER,
+          MAX(C.CLIENT_CONTACT_ID) AS CONTACT_ID,
+          LISTAGG(C.CLIENT_LOCN_CODE, ',') WITHIN GROUP (ORDER BY C.CLIENT_LOCN_CODE) AS LOCATION_CODES_CSV,
+          C.CONTACT_NAME,
+          MAX(C.BUS_CONTACT_CODE) AS CONTACT_TYPE_CODE,
+          MAX(B.DESCRIPTION) AS CONTACT_TYPE_DESC,
+          MAX(C.BUSINESS_PHONE) AS BUSINESS_PHONE,
+          MAX(C.CELL_PHONE) AS SECONDARY_PHONE,
+          MAX(C.FAX_NUMBER) AS FAX_NUMBER,
+          MAX(C.EMAIL_ADDRESS) AS EMAIL_ADDRESS
+      FROM THE.CLIENT_CONTACT C
+          INNER JOIN THE.BUSINESS_CONTACT_CODE B
+          ON C.BUS_CONTACT_CODE = B.BUSINESS_CONTACT_CODE
+      WHERE CLIENT_NUMBER = :clientNumber
+      GROUP BY CONTACT_NAME""")
+  Flux<ForestClientContactDetailsDto> findContactsByClientNumber(String clientNumber);
 
 }

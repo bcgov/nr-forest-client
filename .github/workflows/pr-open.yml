@@ -48,7 +48,7 @@ jobs:
       oracledb-port: 1521
       oracledb-servicename: PR_${{ github.event.number }}
       oracledb-username: THE
-      configmap-backend: |
+      configmap-backend: |-
         features:
           staff:
             match: true
@@ -61,8 +61,8 @@ jobs:
               nrs:
                 idirMaxSubmissions: 65535
                 otherMaxSubmissions: 65535
-      configmap-frontend: |
-        window.localStorage.setItem('VITE_FEATURE_FLAGS','{"STAFF_CLIENT_DETAIL":true}');
+      configmap-frontend: |-
+        window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{\"STAFF_CLIENT_DETAIL\":true}');
 
   tests:
     name: Tests

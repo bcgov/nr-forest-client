@@ -2,6 +2,7 @@ import type { Contact } from "@/dto/ApplyClientNumberDto";
 import type { ClientContact, ClientLocation } from "@/dto/CommonTypesDto";
 import ContactView from "@/pages/client-details/ContactView.vue";
 import { contactToCreateFormat, formatPhoneNumber } from "@/services/ForestClientService";
+import type { VueWrapper } from "@vue/test-utils";
 
 describe("<contact-view />", () => {
   const validation = () => {};
@@ -10,7 +11,7 @@ describe("<contact-view />", () => {
   const getDefaultProps = () => ({
     data: {
       contactId: 0,
-      locationCode: ["01"],
+      locationCodes: ["01"],
       contactName: "Cheryl Bibby",
       contactTypeCode: "BL",
       contactTypeDesc: "Billing",

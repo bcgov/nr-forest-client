@@ -46,7 +46,7 @@
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.5.5.Fina</mapstruct.version>
     <netty.version>4.1.119.Final</netty.version>
-    <logback.version>1.5.17</logback.version>
+    <logback.version>1.5.18</logback.version>
     <flyway.version>10.13.0</flyway.version>
     <oracle-driver.version>21.17.0.0</oracle-driver.version>
   </properties>

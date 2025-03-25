@@ -16,7 +16,7 @@
     "contacts": [
         {
             "contactId": 11,
-            "locationCode": ["01", "02"],
+            "locationCodes": ["01", "02"],
             "contactName": "Edward Burns",
             "contactTypeCode": "DI",
             "contactTypeDesc": "Director",
@@ -27,7 +27,7 @@
         },
         {
             "contactId": 12,
-            "locationCode": ["02"],
+            "locationCodes": ["02"],
             "contactName": "Christoffer Stewart",
             "contactTypeCode": "BL",
             "contactTypeDesc": "Billing",
