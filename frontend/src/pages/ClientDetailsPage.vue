@@ -173,7 +173,7 @@ const uniqueLocations = isUniqueDescriptive();
 watch(sortedLocations, (value) => {
   if (value?.length) {
     value.forEach((location) => {
-      const index = String(Number(location.clientLocnCode));
+      const index = location.clientLocnCode;
       uniqueLocations.add("Names", index)(location.clientLocnName ?? "");
     });
   }
@@ -237,10 +237,10 @@ watch(sortedContacts, (_value, oldValue) => {
 });
 
 const formatLocation = (location: ClientLocation) => {
-  if (location.clientLocnCode === NEW_IDENTIFIER && !locationsState[location.clientLocnCode].name) {
+  if (location.clientLocnCode === null && !locationsState[location.clientLocnCode].name) {
     return "New location";
   }
-  const parts = location.clientLocnCode === NEW_IDENTIFIER ? [] : [location.clientLocnCode];
+  const parts = location.clientLocnCode === null ? [] : [location.clientLocnCode];
   const locationName = locationsState[location.clientLocnCode].name;
   if (locationName) {
     parts.push(locationName);
@@ -286,10 +286,8 @@ const formatContact = (contact: ClientContact) => {
   return contactsState[contact.contactId].name;
 };
 
-const NEW_IDENTIFIER = "new";
-
 const addLocation = () => {
-  const codeString = NEW_IDENTIFIER;
+  const codeString = null;
   newLocation.value = createClientLocation(clientNumber, codeString);
   locationsState[codeString] = createLocationState({ startOpen: true });
 
@@ -300,7 +298,7 @@ const addLocation = () => {
 };
 
 const handleLocationCanceled = (location: ClientLocation) => {
-  if (location.clientLocnCode === NEW_IDENTIFIER) {
+  if (location.clientLocnCode === null) {
     newLocation.value = undefined;
     delete locationsState[location.clientLocnCode];
   } else {
@@ -585,7 +583,7 @@ const saveLocation =
 
     const locationCode = updatedLocation.clientLocnCode;
 
-    const isNew = updatedLocation.clientLocnCode === NEW_IDENTIFIER;
+    const isNew = updatedLocation.clientLocnCode === null;
 
     // Removes the location code from the new data as it's just a pseudo id.
     const { clientLocnCode, ...newLocationData } = updatedLocation;
@@ -918,7 +916,7 @@ resetGlobalError();
                 :user-roles="userRoles"
                 :validations="[uniqueLocations.check]"
                 keep-scroll-bottom-position
-                :createMode="location.clientLocnCode === NEW_IDENTIFIER"
+                :createMode="location.clientLocnCode === null"
                 @update-location-name="updateLocationName($event, location.clientLocnCode)"
                 @save="saveLocation(index)($event)"
                 @canceled="handleLocationCanceled(location)"

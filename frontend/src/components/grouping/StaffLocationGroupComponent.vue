@@ -18,7 +18,7 @@ import { getAddressDescription } from "@/services/ForestClientService";
 
 // Define the input properties for this component
 const props = defineProps<{
-  id: number | string;
+  id: number;
   modelValue: Address;
   countryList: Array<CodeNameType>;
   validations: Array<Function>;
@@ -31,8 +31,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "valid", value: boolean): void;
   (e: "update:model-value", value: Address | undefined): void;
-  (e: "remove", id: number | string): void;
-  (e: "removeAdditionalDelivery", id: number | string): void;
+  (e: "remove", id: number): void;
+  (e: "removeAdditionalDelivery", id: number): void;
   (e: "updateLocationName", value: string): void;
 }>();
 
@@ -233,7 +233,7 @@ watch([detailsData], () => {
 
 const updateLocationName = (event: FocusEvent) => emit("updateLocationName", event.target.value);
 
-const getLocationDescription = (address: Address, index: number | string): string =>
+const getLocationDescription = (address: Address, index: number): string =>
   getAddressDescription(address, index, "Location");
 </script>
 

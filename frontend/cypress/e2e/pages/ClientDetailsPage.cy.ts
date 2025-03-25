@@ -487,11 +487,11 @@ describe("Client Details Page", () => {
                 */
                 cy.get("[data-focus='location-3-heading']:focus");
 
-                cy.fillFormEntry("#name_new", "Beach office");
+                cy.fillFormEntry("#name_null", "Beach office");
 
-                cy.selectAutocompleteEntry("#addr_new", "123", "V8V8V8");
+                cy.selectAutocompleteEntry("#addr_null", "123", "V8V8V8");
 
-                cy.get("#location-new-SaveBtn").click();
+                cy.get("#location-null-SaveBtn").click();
                 cy.wait("@getClientDetails");
               });
             }
@@ -584,17 +584,17 @@ describe("Client Details Page", () => {
                 */
                 cy.get("[data-focus='location-3-heading']:focus");
 
-                cy.fillFormEntry("#name_new", "Beach office");
+                cy.fillFormEntry("#name_null", "Beach office");
 
-                cy.selectAutocompleteEntry("#addr_new", "123", "V8V8V8");
+                cy.selectAutocompleteEntry("#addr_null", "123", "V8V8V8");
 
-                cy.fillFormEntry("[data-id='input-notes_new']", "error", { area: true });
+                cy.fillFormEntry("[data-id='input-notes_null']", "error", { area: true });
               }
 
               if (scenario.name === "edit") {
                 cy.get("#location-00-SaveBtn").click();
               } else {
-                cy.get("#location-new-SaveBtn").click();
+                cy.get("#location-null-SaveBtn").click();
               }
             });
 
@@ -609,7 +609,7 @@ describe("Client Details Page", () => {
             });
 
             it("stays in edit mode", () => {
-              const id = scenario.name === "edit" ? 0 : "new";
+              const id = scenario.name === "edit" ? 0 : null;
               cy.get(`#city_${id}`).should("be.visible");
               cy.get(`#emailAddress_${id}`).should("be.visible");
               cy.get(`[data-id='input-notes_${id}'`).should("be.visible");
@@ -617,7 +617,7 @@ describe("Client Details Page", () => {
               if (scenario.name === "edit") {
                 cy.get("#location-00-SaveBtn").should("be.visible");
               } else {
-                cy.get("#location-new-SaveBtn").should("be.visible");
+                cy.get("#location-null-SaveBtn").should("be.visible");
               }
             });
           });
