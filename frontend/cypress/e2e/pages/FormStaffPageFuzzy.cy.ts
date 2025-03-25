@@ -10,15 +10,6 @@ describe("Staff Form Fuzzy Matches", () => {
   beforeEach(function () {
     cy.viewport(1920, 1080);
 
-    cy.intercept("GET", `${API_BASE}/clients/submissions?page=0&size=10`, {
-      fixture: "submissions.json",
-      headers: {
-        "x-total-count": "1",
-        "content-type": "application/json;charset=UTF-8",
-        "Access-Control-Expose-Headers": "x-total-count",
-      },
-    }).as("getSubmissions");
-
     cy.intercept("GET", `${API_BASE}/codes/identification-types`, {
       fixture: "identificationTypes.json",
       headers: {
@@ -132,8 +123,6 @@ describe("Staff Form Fuzzy Matches", () => {
       family_name: "Baxter",
       "cognito:groups": ["CLIENT_ADMIN"],
     });
-
-    cy.wait("@getSubmissions");
 
     // Check if the Create client button is visible
     cy.get("#menu-list-staff-form").should("be.visible").click();
