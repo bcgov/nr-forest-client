@@ -45,7 +45,7 @@
     <junit-platform.version>1.9.1</junit-platform.version>
     <assertj.version>3.24.2</assertj.version>
     <netty.version>4.1.119.Final</netty.version>
-    <logback.version>1.5.17</logback.version>
+    <logback.version>1.5.18</logback.version>
     <oci.revision>${project.version}</oci.revision>
     <flyway.version>11.4.0</flyway.version>
   </properties>
