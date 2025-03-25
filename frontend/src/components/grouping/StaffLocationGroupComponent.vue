@@ -46,7 +46,7 @@ const nameError = ref<string | undefined>("");
 const showDetailsLoading = ref<boolean>(false);
 
 const uniquenessValidation = () => {
-  nameError.value = validateAddressNameData(selectedValue.locationName);
+  nameError.value = validateAddressNameData(selectedValue.locationName ?? "");
 };
 
 const additionalDeliveryVisible = computed(() => selectedValue.complementaryAddressTwo !== null);

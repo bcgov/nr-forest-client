@@ -129,8 +129,13 @@ describe("ForestClientService.ts", () => {
       expect(result).toEqual("Nice Place");
     });
 
-    it("returns a string containing the address' index", () => {
+    it("returns a string containing the address' index when it's an empty string", () => {
       const result = getAddressDescription({ locationName: "" } as Address, 7);
+      expect(result).toEqual("Address #7");
+    });
+
+    it("returns a string containing the address' index when it's null", () => {
+      const result = getAddressDescription({ locationName: null } as Address, 7);
       expect(result).toEqual("Address #7");
     });
 
@@ -451,7 +456,7 @@ describe("ForestClientService.ts", () => {
   describe("contactToCreateFormat", () => {
     const clientContact = {
       contactId: 10,
-      locationCode: ["00"],
+      locationCodes: ["00"],
       contactName: "Cheryl Bibby",
       contactTypeCode: "BL",
       contactTypeDesc: "Billing",
@@ -520,7 +525,7 @@ describe("ForestClientService.ts", () => {
     const baseContact: ClientContact = {
       clientNumber: "121314",
       contactId: 10,
-      locationCode: ["00"],
+      locationCodes: ["00"],
       contactName: "Cheryl Bibby",
       contactTypeCode: "BL",
       contactTypeDesc: "Billing",
@@ -536,7 +541,7 @@ describe("ForestClientService.ts", () => {
       const clientContact = contactToEditFormat(contact, baseContact);
 
       expect(clientContact.contactId).toEqual(contact.index);
-      expect(clientContact.locationCode).toEqual(["00", "01"]);
+      expect(clientContact.locationCodes).toEqual(["00", "01"]);
       expect(clientContact.contactName).toEqual(contact.fullName);
       expect(clientContact.contactTypeCode).toEqual(contact.contactType.value);
       expect(clientContact.contactTypeDesc).toEqual(contact.contactType.text);

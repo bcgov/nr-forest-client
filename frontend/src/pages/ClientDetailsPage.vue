@@ -174,7 +174,7 @@ watch(sortedLocations, (value) => {
   if (value?.length) {
     value.forEach((location) => {
       const index = String(Number(location.clientLocnCode));
-      uniqueLocations.add("Names", index)(location.clientLocnName);
+      uniqueLocations.add("Names", index)(location.clientLocnName ?? "");
     });
   }
 });
@@ -274,7 +274,7 @@ const formatLocationsList = (
 const associatedLocationsRecord = computed(() => {
   const result: Record<string, string> = {};
   sortedContacts.value?.forEach((contact) => {
-    result[contact.contactId] = formatLocationsList(contact.locationCode);
+    result[contact.contactId] = formatLocationsList(contact.locationCodes);
   });
   return result;
 });
