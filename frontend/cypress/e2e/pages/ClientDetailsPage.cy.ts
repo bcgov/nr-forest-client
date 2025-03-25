@@ -959,7 +959,7 @@ describe("Client Details Page", () => {
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.focused().parent("[data-focus='contact-new-heading']");
+                cy.get("[data-focus='contact-new-heading']:focus");
 
                 cy.fillFormEntry("#fullName_new", "Steve New");
 
@@ -1065,7 +1065,7 @@ describe("Client Details Page", () => {
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.focused().parent("[data-focus='contact-new-heading']");
+                cy.get("[data-focus='contact-new-heading']:focus");
 
                 cy.fillFormEntry("#fullName_new", "Steve New");
 
@@ -1165,7 +1165,7 @@ describe("Client Details Page", () => {
           Wait to have a focused element.
           Prevents error with focus switching.
           */
-          cy.focused().parent("[data-focus='contact-new-heading']");
+          cy.get("[data-focus='contact-new-heading']:focus");
 
           // Use the same contact name
           cy.fillFormEntry("#fullName_new", contactName);
