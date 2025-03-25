@@ -122,7 +122,30 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           CL.CITY AS CITY,
           CTC.DESCRIPTION AS CLIENT_TYPE,
           CSC.DESCRIPTION AS CLIENT_STATUS,
-          100 AS SCORE
+          (
+              CASE
+                  WHEN UPPER(C.CLIENT_NUMBER) LIKE UPPER('%' || :value || '%') THEN 100
+                  WHEN UPPER(C.CLIENT_ACRONYM) LIKE UPPER('%' || :value || '%') THEN 100
+                  WHEN UPPER(C.CLIENT_NAME) LIKE UPPER('%' || :value || '%') THEN 100
+                  WHEN UPPER(C.LEGAL_FIRST_NAME) LIKE UPPER('%' || :value || '%') THEN 90
+                  WHEN UPPER(C.LEGAL_MIDDLE_NAME) LIKE UPPER('%' || :value || '%') THEN 50
+                  WHEN UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE UPPER('%' || :value || '%') THEN 75
+                  WHEN UPPER(C.CLIENT_IDENTIFICATION) LIKE UPPER('%' || :value || '%') THEN 70
+                  WHEN TRIM(
+                      COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+                      COALESCE(C.LEGAL_MIDDLE_NAME, '') ||
+                      COALESCE(C.CLIENT_NAME, '')
+                  ) LIKE UPPER('%' || :value || '%') THEN 90
+                  WHEN TRIM(
+                      COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
+                      COALESCE(C.CORP_REGN_NMBR, '')
+                  ) LIKE UPPER('%' || :value || '%') THEN 70
+                  WHEN UPPER(CL.ADDRESS_1) LIKE UPPER('%' || :value || '%') THEN 50
+                  WHEN UPPER(CL.POSTAL_CODE) LIKE UPPER('%' || :value || '%') THEN 45
+                  WHEN UPPER(CL.EMAIL_ADDRESS) LIKE UPPER('%' || :value || '%') THEN 40
+                  ELSE 0
+              END
+          ) AS SCORE
       FROM THE.FOREST_CLIENT C
       LEFT JOIN THE.CLIENT_DOING_BUSINESS_AS DBA ON C.CLIENT_NUMBER = DBA.CLIENT_NUMBER
       LEFT JOIN THE.CLIENT_TYPE_CODE CTC ON C.CLIENT_TYPE_CODE = CTC.CLIENT_TYPE_CODE
@@ -137,8 +160,21 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
               OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE UPPER('%' || :value || '%')
               OR UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE UPPER('%' || :value || '%')
               OR UPPER(C.CLIENT_IDENTIFICATION) LIKE UPPER('%' || :value || '%')
+              OR TRIM(
+                  COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+                  COALESCE(C.LEGAL_MIDDLE_NAME, '') ||
+                  COALESCE(C.CLIENT_NAME, '')
+              ) LIKE UPPER('%' || :value || '%')
+              OR TRIM(
+                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
+                  COALESCE(C.CORP_REGN_NMBR, '')
+              ) LIKE UPPER('%' || :value || '%')
+              OR UPPER(CL.ADDRESS_1) LIKE UPPER('%' || :value || '%')
+              OR UPPER(CL.POSTAL_CODE) LIKE UPPER('%' || :value || '%')
+              OR UPPER(CL.EMAIL_ADDRESS) LIKE UPPER('%' || :value || '%')
           )
           AND CL.CLIENT_LOCN_CODE = '00'
+      ORDER BY SCORE DESC
       OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
   Flux<PredictiveSearchResultDto> findByPredictiveSearch(String value, int limit, long offset);
 
@@ -151,15 +187,27 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       LEFT JOIN THE.CLIENT_LOCATION CL ON C.CLIENT_NUMBER = CL.CLIENT_NUMBER
       LEFT JOIN THE.CLIENT_STATUS_CODE CSC ON C.CLIENT_STATUS_CODE = CSC.CLIENT_STATUS_CODE
       WHERE
-      (
-          UPPER(C.CLIENT_NUMBER) LIKE UPPER('%' || :value || '%')
-          OR UPPER(C.CLIENT_ACRONYM) LIKE UPPER('%' || :value || '%')
-          OR UPPER(C.CLIENT_NAME) LIKE UPPER('%' || :value || '%')
-          OR UPPER(C.LEGAL_FIRST_NAME) LIKE UPPER('%' || :value || '%')
-          OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE UPPER('%' || :value || '%')
-          OR UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE UPPER('%' || :value || '%')
-          OR UPPER(C.CLIENT_IDENTIFICATION) LIKE UPPER('%' || :value || '%')
-      )
+          (
+              UPPER(C.CLIENT_NUMBER) LIKE UPPER('%' || :value || '%')
+              OR UPPER(C.CLIENT_ACRONYM) LIKE UPPER('%' || :value || '%')
+              OR UPPER(C.CLIENT_NAME) LIKE UPPER('%' || :value || '%')
+              OR UPPER(C.LEGAL_FIRST_NAME) LIKE UPPER('%' || :value || '%')
+              OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE UPPER('%' || :value || '%')
+              OR UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE UPPER('%' || :value || '%')
+              OR UPPER(C.CLIENT_IDENTIFICATION) LIKE UPPER('%' || :value || '%')
+              OR TRIM(
+                  COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+                  COALESCE(C.LEGAL_MIDDLE_NAME, '') ||
+                  COALESCE(C.CLIENT_NAME, '')
+              ) LIKE UPPER('%' || :value || '%')
+              OR TRIM(
+                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
+                  COALESCE(C.CORP_REGN_NMBR, '')
+              ) LIKE UPPER('%' || :value || '%')
+              OR UPPER(CL.ADDRESS_1) LIKE UPPER('%' || :value || '%')
+              OR UPPER(CL.POSTAL_CODE) LIKE UPPER('%' || :value || '%')
+              OR UPPER(CL.EMAIL_ADDRESS) LIKE UPPER('%' || :value || '%')
+          )
       AND CL.CLIENT_LOCN_CODE = '00'""")
   Mono<Long> countByPredictiveSearch(String value);
 
