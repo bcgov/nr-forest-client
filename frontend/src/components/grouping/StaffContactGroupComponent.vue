@@ -33,7 +33,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "valid", value: boolean): void;
   (e: "update:model-value", value: Contact | undefined): void;
-  (e: "remove", value: number): void;
+  (e: "remove", id: number): void;
 }>();
 
 const { safeSetFocusedComponent } = useFocus();
