@@ -24,7 +24,7 @@ describe("Submission Review Page", () => {
         fixture: fixtureName,
       }).as("loadSubmission");
   
-      cy.visit("/");
+      cy.visit("/submissions");
         
       cy.get("#landing-title").should("contain", "Forests Client Management System");
   
