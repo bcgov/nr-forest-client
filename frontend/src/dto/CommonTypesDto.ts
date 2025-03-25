@@ -333,7 +333,7 @@ export const createClientContact = (
   const contact = {
     contactId,
     clientNumber,
-    locationCode: [],
+    locationCodes: [],
     contactName: "",
     contactTypeCode: "",
     contactTypeDesc: "",
