@@ -45,7 +45,7 @@ export const addNewContact = (contacts: Contact[]): number => {
 
 export const getAddressDescription = (
   address: Address,
-  index: number | string,
+  index: number,
   entityName = "Address",
 ): string => address.locationName || `${entityName} #` + index;
 
@@ -362,13 +362,7 @@ export const updateSelectedReason = (
  * @returns Address data
  */
 export const locationToCreateFormat = (location: ClientLocation): Address => {
-  const indexNumber = Number(location.clientLocnCode);
-
-  /* 
-  If possible, converts the code into a number.
-  Otherwise uses the code as it is.
-  */
-  const index = isNaN(indexNumber) ? location.clientLocnCode : indexNumber;
+  const index = location.clientLocnCode !== null ? Number(location.clientLocnCode) : null;
 
   const address: Address = {
     streetAddress: location.addressOne,
@@ -413,8 +407,7 @@ export const locationToEditFormat = (
   const location: ClientLocation = {
     ...baseLocation,
     clientLocnName: address.locationName,
-    clientLocnCode:
-      typeof address.index === "string" ? address.index : String(address.index).padStart(2, "0"),
+    clientLocnCode: address.index !== null ? String(address.index).padStart(2, "0") : null,
     addressOne: address.streetAddress,
     addressTwo: address.complementaryAddressOne,
     addressThree: address.complementaryAddressTwo,

@@ -326,6 +326,24 @@ export interface ClientContact {
   locationCodes: string[];
 }
 
+export const createClientContact = (contactId: number, clientNumber: string): ClientContact => {
+  const contact = {
+    contactId,
+    clientNumber,
+    locationCodes: [],
+    contactName: "",
+    contactTypeCode: "",
+    contactTypeDesc: "",
+    businessPhone: "",
+    secondaryPhone: "",
+    faxNumber: "",
+    emailAddress: "",
+    createdBy: undefined,
+    updatedBy: undefined,
+  };
+  return contact;
+};
+
 export interface FieldReason {
   field: string;
   reason: string;
