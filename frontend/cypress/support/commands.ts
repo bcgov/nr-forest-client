@@ -188,7 +188,13 @@ const fillFormEntry: FillFormEntry = (
     .type(value, { delay: delayMS })
     .then((subject) => {
       if (!skipBlur) {
-        cy.wrap(subject).blur();
+        /*
+        This condition hopefully fixes the issue:
+        CypressError: `cy.blur()` can only be called on the focused element.
+        */
+        if (subject.is(":focus")) {
+          cy.wrap(subject).blur();
+        }
       }
     });
 };
