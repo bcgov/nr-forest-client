@@ -518,26 +518,57 @@ public class ClientSearchService {
 
 
   /**
-   * Performs a complex search for clients based on a predictive search value. Logs the search
-   * process and results. If the search value is blank, returns a
-   * MissingRequiredParameterException.
+   * Performs a complex search for clients based on a predictive search value, using either
+   * a "like" or "similarity" search approach. Logs the search process and results. If the
+   * search value is blank, it returns a {@link MissingRequiredParameterException}.<p>
+   * The method performs the following steps:
+   * <ul>
+   *   <li>If the search value is blank or null, it returns an error with
+   *   {@link MissingRequiredParameterException}.</li>
+   *   <li>Performs a predictive search using a "like" query to count and retrieve matching clients.
+   *   If matches are found, it logs the results and returns a {@link Flux} containing pairs of
+   *   {@link PredictiveSearchResultDto} and the total count.</li>
+   *   <li>If no matches are found using "like", it performs a similarity-based search to count and
+   *   retrieve matching clients. Similarity-based results are logged and returned in the same
+   *   format.</li>
+   * </ul>
    *
-   * @param value the predictive search value
-   * @param page  the pagination information
-   * @return a Flux containing pairs of PredictiveSearchResultDto objects and the total count of
-   *         matching clients
+   * @param value the predictive search value to be matched, case-insensitive
+   * @param page  the pagination information, specifying page size and offset
+   * @return a {@link Flux} containing pairs of {@link PredictiveSearchResultDto} and
+   *         the total count of matching clients
    */
   public Flux<Pair<PredictiveSearchResultDto, Long>> complexSearch(String value, Pageable page) {
     // This condition is for predictive search, and we will stop here if no query param is provided
     if (StringUtils.isBlank(value)) {
-      return Flux.error(new MissingRequiredParameterException("value"));
+        return Flux.error(new MissingRequiredParameterException("value"));
     }
-    return forestClientRepository.countByPredictiveSearch(value.toUpperCase()).flatMapMany(
-        count -> forestClientRepository.findByPredictiveSearch(value.toUpperCase(),
-                page.getPageSize(), page.getOffset()).doOnNext(
-                dto -> log.info("Found complex search for value {} as {} {} with score {}", value,
-                    dto.clientNumber(), dto.clientFullName(), dto.score()))
-            .map(dto -> Pair.of(dto, count)));
+
+    return forestClientRepository.countByPredictiveSearchWithLike(value.toUpperCase())
+        .flatMapMany(count -> {
+            if (count > 0) {
+                return forestClientRepository
+                    .findByPredictiveSearchWithLike(
+                        value.toUpperCase(), page.getPageSize(), page.getOffset()
+                    )
+                    .doOnNext(dto -> log.info(
+                        "Found complex search with like for value {} as {} {} with score {}", 
+                        value, dto.clientNumber(), dto.clientFullName(), dto.score())
+                    )
+                    .map(dto -> Pair.of(dto, count));
+            } else {
+                return forestClientRepository
+                    .countByPredictiveSearchWithSimilarity(value.toUpperCase())
+                    .flatMapMany(similarityCount -> forestClientRepository
+                        .findByPredictiveSearchWithSimilarity(
+                            value.toUpperCase(), page.getPageSize(), page.getOffset()
+                        )
+                        .doOnNext(dto -> log.info(
+                            "Found complex search with similarity for value {} as {} {} with score {}",
+                            value, dto.clientNumber(), dto.clientFullName(), dto.score()))
+                        .map(dto -> Pair.of(dto, similarityCount)));
+            }
+        });
   }
 
   /**
