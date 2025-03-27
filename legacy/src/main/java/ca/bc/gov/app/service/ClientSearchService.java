@@ -520,8 +520,7 @@ public class ClientSearchService {
   /**
    * Performs a complex search for clients based on a predictive search value, using either
    * a "like" or "similarity" search approach. Logs the search process and results. If the
-   * search value is blank, it returns a {@link MissingRequiredParameterException}.
-   * <p>
+   * search value is blank, it returns a {@link MissingRequiredParameterException}.<p>
    * The method performs the following steps:
    * <ul>
    *   <li>If the search value is blank or null, it returns an error with

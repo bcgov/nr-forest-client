@@ -210,7 +210,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           AND CL.CLIENT_LOCN_CODE = '00'
       ORDER BY SCORE DESC
       OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
-  Flux<PredictiveSearchResultDto> findByPredictiveSearchWithLike(String value, int limit, long offset);
+  Flux<PredictiveSearchResultDto> findByPredictiveSearchWithLike(
+      String value, int limit, long offset);
 
   @Query("""
       SELECT
@@ -335,7 +336,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
           AND cl.CLIENT_LOCN_CODE = '00'
       ORDER BY score DESC
       OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY""")
-  Flux<PredictiveSearchResultDto> findByPredictiveSearchWithSimilarity(String value, int limit, long offset);
+  Flux<PredictiveSearchResultDto> findByPredictiveSearchWithSimilarity(
+      String value, int limit, long offset);
 
   @Query("""
       SELECT
