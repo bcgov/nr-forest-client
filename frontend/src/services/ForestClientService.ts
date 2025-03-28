@@ -511,3 +511,21 @@ export const keepScrollBottomPosition = (uiUpdatePromise: Promise<void>): void =
     window.scrollTo({ top: app.scrollHeight - lastHeightFromBottom });
   });
 };
+
+export const formatLocation = (code: string, name: string): string => {
+  if (code === null && !name) {
+    return "New location";
+  }
+  const parts = [];
+
+  if (code) {
+    parts.push(code);
+  }
+  if (name) {
+    parts.push(name);
+  }
+
+  const title = parts.join(" - ");
+
+  return title;
+};
