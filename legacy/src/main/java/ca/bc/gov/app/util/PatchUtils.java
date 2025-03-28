@@ -1,6 +1,7 @@
 package ca.bc.gov.app.util;
 
 import ca.bc.gov.app.exception.CannotApplyPatchException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -388,6 +389,28 @@ public class PatchUtils {
             .stream(patch.spliterator(), false)
             .filter(node -> PatchUtils.loadId(node).equals(locationNumber))
             .reduce(mapper.createArrayNode(), PatchUtils.mergeNodes());
+  }
+
+  /**
+   * Loads the value from a JSON Patch "add" operation and converts it to the specified entity class.
+   *
+   * @param <T> the type of the entity class
+   * @param patch the JSON Patch containing the "add" operation
+   * @param entityClass the class of the entity to convert the value to
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return the value from the "add" operation converted to the specified entity class
+   * @throws RuntimeException if an error occurs while processing the JSON
+   */
+  public static <T> T loadAddValue(
+      JsonNode patch,
+      Class<T> entityClass,
+      ObjectMapper mapper
+  ) {
+    try {
+      return mapper.readValue(patch.get("value").toPrettyString(), entityClass);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }
