@@ -44,11 +44,11 @@
     <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
     <junit-platform.version>1.9.1</junit-platform.version>
     <oci.revision>${project.version}</oci.revision>
-    <mapstruct.version>1.5.5.Fina</mapstruct.version>
+    <mapstruct.version>1.5.5.Final</mapstruct.version>
     <netty.version>4.1.119.Final</netty.version>
     <logback.version>1.5.18</logback.version>
     <flyway.version>10.13.0</flyway.version>
-    <oracle-driver.version>21.17.0.0</oracle-driver.version>
+    <oracle-driver.version>23.7.0.25.01</oracle-driver.version>
   </properties>
 
   <dependencies>
@@ -118,19 +118,18 @@
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
-      <version>${mapstruct.version}l</version>
+      <version>${mapstruct.version}</version>
     </dependency>
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct-processor</artifactId>
-      <version>${mapstruct.version}l</version>
+      <version>${mapstruct.version}</version>
     </dependency>
     <dependency>
       <groupId>com.flipkart.zjsonpatch</groupId>
       <artifactId>zjsonpatch</artifactId>
       <version>0.4.16</version>
     </dependency>
-
 
     <dependency>
       <groupId>org.springframework.boot</groupId>

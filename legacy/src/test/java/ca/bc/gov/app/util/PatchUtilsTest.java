@@ -8,7 +8,6 @@ import ca.bc.gov.app.exception.CannotApplyPatchException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.zjsonpatch.JsonPatch;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
