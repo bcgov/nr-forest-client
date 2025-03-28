@@ -23,6 +23,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@DisplayName("Unit Test | Patch Utils")
 class PatchUtilsTest {
 
   private final ObjectMapper mapper = new ObjectMapper();

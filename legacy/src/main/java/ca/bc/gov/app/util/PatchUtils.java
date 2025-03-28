@@ -2,6 +2,7 @@ package ca.bc.gov.app.util;
 
 
 import ca.bc.gov.app.exception.CannotApplyPatchException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -250,4 +251,123 @@ public class PatchUtils {
     }
     return StringUtils.EMPTY;
   }
+
+  /**
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and restricted paths.
+   *
+   * @param patch the JSON Patch to filter
+   * @param operationName the name of the operation to filter by (e.g., "add", "remove", "replace")
+   * @param prefix the prefix to filter the operations by
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations
+   */
+  public static JsonNode filterOperationsByOp(
+      Object patch,
+      String operationName,
+      String prefix,
+      ObjectMapper mapper
+  ) {
+    return filterOperationsByOp(
+        mapper.convertValue(patch, JsonNode.class),
+        operationName,
+        prefix,
+        List.of(),
+        mapper);
+  }
+
+  /**
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and restricted paths.
+   *
+   * @param patch the JSON Patch to filter
+   * @param operationName the name of the operation to filter by (e.g., "add", "remove", "replace")
+   * @param prefix the prefix to filter the operations by
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations
+   */
+  public static JsonNode filterOperationsByOp(
+      JsonNode patch,
+      String operationName,
+      String prefix,
+      ObjectMapper mapper
+  ) {
+    return filterOperationsByOp(
+        patch,
+        operationName,
+        prefix,
+        List.of(),
+        mapper);
+  }
+
+  /**
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and restricted paths.
+   *
+   * @param patch the JSON Patch to filter
+   * @param operationName the name of the operation to filter by (e.g., "add", "remove", "replace")
+   * @param prefix the prefix to filter the operations by
+   * @param restrictedPaths the list of restricted paths to filter the operations by
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations
+   */
+  public static JsonNode filterOperationsByOp(
+      JsonNode patch,
+      String operationName,
+      String prefix,
+      List<String> restrictedPaths,
+      ObjectMapper mapper
+  ) {
+
+    // A new ArrayNode to store the filtered operations
+    ArrayNode filteredNode = mapper.createArrayNode();
+
+    // First, jackson's ObjectMapper is used to convert the JsonPatch to a JsonNode
+    patch
+        // Then for each operation in the JsonNode we do
+        .forEach(operation -> {
+          // Get the path of the operation
+          String path = operation.get("path").asText();
+          // If the path starts with the prefixed path
+          if (
+              StringUtils.isNotBlank(prefix)
+              && path.startsWith(String.format("/%s", prefix))
+              && operation.get("op").asText().equals(operationName)
+          ) {
+            // We generate a new operation path without the prefix
+            String newPath = removePrefix(path, prefix);
+
+            if (restrictedPaths.isEmpty() || restrictedPaths.stream().anyMatch(newPath::endsWith)) {
+              // We create a deep copy of the operation
+              ObjectNode updatedOperation = operation.deepCopy();
+              // Then we update the path of the operation
+              updatedOperation.put("path", newPath);
+              // Finally we add the updated operation to the filteredNode
+              filteredNode.add(updatedOperation);
+            }
+          }
+        });
+
+    return filteredNode;
+  }
+
+  /**
+   * Loads the value from a JSON Patch "add" operation and converts it to the specified entity class.
+   *
+   * @param <T> the type of the entity class
+   * @param patch the JSON Patch containing the "add" operation
+   * @param entityClass the class of the entity to convert the value to
+   * @param mapper the ObjectMapper to use for JSON processing
+   * @return the value from the "add" operation converted to the specified entity class
+   * @throws RuntimeException if an error occurs while processing the JSON
+   */
+  public static <T> T loadAddValue(
+      JsonNode patch,
+      Class<T> entityClass,
+      ObjectMapper mapper
+  ) {
+    try {
+      return mapper.readValue(patch.get("value").toPrettyString(), entityClass);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 }
