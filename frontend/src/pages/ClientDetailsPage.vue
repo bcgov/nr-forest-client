@@ -39,6 +39,7 @@ import {
   toTitleCase,
   getActionLabel,
   updateSelectedReason,
+  formatLocation,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -236,19 +237,8 @@ watch(sortedContacts, (_value, oldValue) => {
   });
 });
 
-const formatLocation = (location: ClientLocation) => {
-  if (location.clientLocnCode === null && !locationsState[location.clientLocnCode].name) {
-    return "New location";
-  }
-  const parts = location.clientLocnCode === null ? [] : [location.clientLocnCode];
-  const locationName = locationsState[location.clientLocnCode].name;
-  if (locationName) {
-    parts.push(locationName);
-  }
-
-  const title = parts.join(" - ");
-
-  return title;
+const getUpdatedLocationTitle = (location: ClientLocation) => {
+  return formatLocation(location.clientLocnCode, locationsState[location.clientLocnCode].name);
 };
 
 const formatLocationsList = (
@@ -263,7 +253,7 @@ const formatLocationsList = (
       );
 
       if (location) {
-        const title = formatLocation(location);
+        const title = getUpdatedLocationTitle(location);
         list.push(title);
       }
     }
@@ -592,7 +582,7 @@ const saveLocation =
       ? createAddPatch(newLocationData, "/addresses/null")
       : adjustPatchPath(rawPatchData, `/addresses/${locationCode}`);
 
-    const updatedTitle = formatLocation(updatedLocation);
+    const updatedTitle = getUpdatedLocationTitle(updatedLocation);
 
     const onSuccess: OnSuccess = () => {
       const toastNotification: ModalNotification = {
@@ -892,7 +882,7 @@ resetGlobalError();
                 <span class="label-with-icon">
                   <LocationStar20 v-if="index === 0" />
                   <Location20 v-else />
-                  {{ formatLocation(location) }}
+                  {{ getUpdatedLocationTitle(location) }}
                   <cds-tag
                     :id="`location-${location.clientLocnCode}-deactivated`"
                     v-if="location.locnExpiredInd === 'Y'"

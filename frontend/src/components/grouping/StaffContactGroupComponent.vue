@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, ref, onMounted, getCurrentInstance } from "vue";
+import { reactive, watch, ref, computed } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 // Importing composables
@@ -12,7 +12,7 @@ import { getValidations } from "@/helpers/validators/StaffFormValidations";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // @ts-ignore
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
-import { getContactDescription } from "@/services/ForestClientService";
+import { formatLocation, getContactDescription } from "@/services/ForestClientService";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -27,6 +27,7 @@ const props = defineProps<{
   singleInputForName?: boolean;
   requiredLabel?: boolean;
   hideDeleteButton?: boolean;
+  showLocationCode?: boolean;
 }>();
 
 //Events we emit during component lifecycle
@@ -91,10 +92,16 @@ emit("valid", false);
 
 //Data conversion
 
-const nameTypeToCodeDescr = (
-  value: CodeNameType | undefined
-): CodeDescrType => {
-  if (value) return { value: value.code, text: value.name };
+const nameTypeToCodeDescr = (value: CodeNameType | undefined): CodeDescrType => {
+  if (value) {
+    const address = props.showLocationCode
+      ? props.addressList.find((address) => address.code === value.code)
+      : value;
+    return {
+      value: address.code,
+      text: address.name,
+    };
+  }
   return { value: "", text: "" };
 };
 
@@ -109,6 +116,24 @@ const updateContactType = (value: CodeNameType | undefined) => {
   if (value) {
     selectedValue.contactType = { value: value.code, text: value.name };
   }
+};
+
+// If props.showLocationCode, location descriptions will include the code (code - name).
+const addressTitleList = computed<CodeNameType[]>(() =>
+  props.addressList?.map((address) => ({
+    code: address.code,
+    name: props.showLocationCode ? formatLocation(address.code, address.name) : address.name,
+  })),
+);
+
+const localFormatLocation = (location: CodeDescrType) => {
+  if (!location) {
+    return undefined;
+  }
+  if (props.showLocationCode) {
+    return formatLocation(location.value, location.text);
+  }
+  return location.text;
 };
 </script>
 
@@ -209,10 +234,8 @@ const updateContactType = (value: CodeNameType | undefined) => {
       label="Associated locations"
       tip="A contact can have more than one location"
       :initial-value="selectedValue.locationNames.join(',')"
-      :model-value="addressList"
-      :selectedValues="
-        selectedValue.locationNames?.map((location: CodeDescrType) => location?.text)
-      "
+      :model-value="addressTitleList"
+      :selectedValues="selectedValue.locationNames?.map(localFormatLocation)"
       :validations="[
         ...getValidations('location.contacts.*.locationNames'),
         submissionValidation(`location.contacts[${id}].locationNames`)

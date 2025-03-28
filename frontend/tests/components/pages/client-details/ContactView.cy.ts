@@ -81,7 +81,6 @@ describe("<contact-view />", () => {
     });
 
     const phonePrefix = "tel:";
-/*
     cy.get("#contact-0-phone-section").within(() => {
       testField(
         "#contact-0-primaryPhoneNumber",
@@ -95,7 +94,6 @@ describe("<contact-view />", () => {
       );
       testField("#contact-0-fax", formatPhoneNumber(currentProps.data.faxNumber), phonePrefix);
     });
-    */
   });
 
   it("hides sections when they are empty", () => {
@@ -302,6 +300,16 @@ describe("<contact-view />", () => {
         });
 
         expect(staffCreateComponent.props("validations")[0]).to.eq(validationWrapper);
+      });
+    });
+
+    it("mounts the staff-location-group-component with showLocationCode: true ", () => {
+      cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
+        const staffCreateComponent = vueWrapper.getComponent({
+          name: "staff-contact-group-component",
+        });
+
+        expect(staffCreateComponent.props("showLocationCode")).to.eq(true);
       });
     });
 

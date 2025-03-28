@@ -968,7 +968,7 @@ describe("Client Details Page", () => {
 
                 cy.selectFormEntry("#role_null", "Billing");
 
-                cy.selectFormEntry("#addressname_null", "Warehouse");
+                cy.selectFormEntry("#addressname_null", "02 - Warehouse");
 
                 cy.fillFormEntry("#emailAddress_null", "snew@corp.com");
 
@@ -1075,7 +1075,7 @@ describe("Client Details Page", () => {
 
                 cy.selectFormEntry("#role_null", "Billing");
 
-                cy.selectFormEntry("#addressname_null", "Warehouse");
+                cy.selectFormEntry("#addressname_null", "02 - Warehouse");
 
                 cy.fillFormEntry("#emailAddress_null", "error@error.com");
 
@@ -1180,7 +1180,7 @@ describe("Client Details Page", () => {
 
           cy.selectFormEntry("#role_null", "Billing");
 
-          cy.selectFormEntry("#addressname_null", "Warehouse");
+          cy.selectFormEntry("#addressname_null", "02 - Warehouse");
 
           cy.fillFormEntry("#emailAddress_null", "snew@corp.com");
 
