@@ -113,6 +113,15 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.addresses[0].cellPhone",
             null,
             "4008000001"
+        ),
+        argumentSet(
+            "Add a new location",
+            "00000137",
+            "[{\"op\":\"add\",\"path\":\"/addresses/null\",\"value\":{\"clientNumber\":\"00000137\",\"clientLocnName\":\"Headquarters\",\"addressOne\":\"2975 Jutland Rd\",\"addressTwo\":\"\",\"addressThree\":null,\"city\":\"Victoria\",\"provinceCode\":\"BC\",\"provinceDesc\":\"British Columbia\",\"postalCode\":\"V8T5J9\",\"countryCode\":\"CA\",\"countryDesc\":\"Canada\",\"businessPhone\":\"\",\"homePhone\":\"\",\"cellPhone\":\"\",\"faxNumber\":\"\",\"emailAddress\":\"\",\"locnExpiredInd\":\"N\",\"cliLocnComment\":\"\"}}]",
+            "$.addresses[1].clientLocnName",
+            null,
+            "HEADQUARTERS"
+
         )
     );
   }
