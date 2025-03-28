@@ -120,7 +120,7 @@ const updateContactType = (value: CodeNameType | undefined) => {
 
 // If props.showLocationCode, location descriptions will include the code (code - name).
 const addressTitleList = computed<CodeNameType[]>(() =>
-  props.addressList.map((address) => ({
+  props.addressList?.map((address) => ({
     code: address.code,
     name: props.showLocationCode ? formatLocation(address.code, address.name) : address.name,
   })),
