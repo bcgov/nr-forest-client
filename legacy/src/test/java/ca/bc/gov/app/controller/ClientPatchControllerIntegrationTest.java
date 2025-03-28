@@ -89,6 +89,30 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.wcbFirmNumber",
             null,
             "142536"
+        ),
+        argumentSet(
+            "Replace the notes value from a location",
+            "00000157",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/cliLocnComment\",\"value\": \"This is a homeland note\"}]",
+            "$.addresses[0].cliLocnComment",
+            null,
+            "This is a homeland note"
+        ),
+        argumentSet(
+            "Replace the location name from a location",
+            "00000157",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/clientLocnName\",\"value\": \"HOMELAND\"}]",
+            "$.addresses[0].clientLocnName",
+            null,
+            "HOMELAND"
+        ),
+        argumentSet(
+            "Replace the location phone from a location",
+            "00000157",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/cellPhone\",\"value\": \"4008000001\"}]",
+            "$.addresses[0].cellPhone",
+            null,
+            "4008000001"
         )
     );
   }
