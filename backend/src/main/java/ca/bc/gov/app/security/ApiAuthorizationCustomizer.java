@@ -157,13 +157,17 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
     authorize
         .pathMatchers(HttpMethod.PATCH, "/api/clients/details/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_EDITOR);
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN
+        );
 
     // Only Editors are allowed to OPTIONS to the clients details endpoint
     authorize
         .pathMatchers(HttpMethod.OPTIONS, "/api/clients/details/**")
         .hasAnyRole(
-            ApplicationConstant.ROLE_EDITOR);
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN
+        );
 
     // BCeIDBusiness, BCSC, viewer, editor and admin users can GET from the clients endpoint
     authorize
