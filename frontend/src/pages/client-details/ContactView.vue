@@ -248,6 +248,7 @@ const valid = ref(false);
         :revalidate="revalidate"
         single-input-for-name
         hideDeleteButton
+        show-location-code
         @valid="valid = $event"
         @update:model-value="revalidate = !revalidate"
       />

@@ -22,6 +22,7 @@ import {
   contactToCreateFormat,
   contactToEditFormat,
   indexToLocationCode,
+  formatLocation,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type { UserRole, ClientDetails, ClientLocation, ClientContact } from "@/dto/CommonTypesDto";
@@ -773,6 +774,21 @@ describe("Reason Fields Handling", () => {
     });
     it("returns null when parameter is null", () => {
       expect(indexToLocationCode(null)).toEqual(null);
+    });
+  });
+
+
+  describe("formatLocation", () => {
+    it("returns code and name separated by a dash", () => {
+      expect(formatLocation("00", "Name")).toEqual("00 - Name");
+    });
+
+    it("returns only the code when the name is empty", () => {
+      expect(formatLocation("00", "")).toEqual("00");
+    });
+
+    it("returns only the name when the code is empty", () => {
+      expect(formatLocation("", "Name")).toEqual("Name");
     });
   });
 });
