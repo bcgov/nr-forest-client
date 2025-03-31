@@ -50,8 +50,8 @@ public class ClientPatchController {
       @RequestBody JsonNode forestClient,
       @RequestHeader(MDC_USERID) String userId
   ) {
-    log.info("Received a partial update request for client {} from {}", clientNumber, userName);
-    return clientPatchService.patchClient(clientNumber, forestClient, userName);
+    log.info("Received a partial update request for client {} from {}", clientNumber, userId);
+    return clientPatchService.patchClient(clientNumber, forestClient, userId);
   }
 
 }

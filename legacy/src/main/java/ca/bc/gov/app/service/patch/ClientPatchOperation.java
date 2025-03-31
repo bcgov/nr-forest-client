@@ -52,6 +52,6 @@ public interface ClientPatchOperation {
    * @param userId The username of the user who triggered the request.
    * @return A {@link Mono} that completes when the patch has been applied.
    */
-  Mono<Void> applyPatch(String clientNumber, Object patch, ObjectMapper mapper, String userId);
+  Mono<Void> applyPatch(String clientNumber, JsonNode patch, ObjectMapper mapper, String userId);
 }
 

@@ -58,7 +58,7 @@ public class PatchOperationStatusService implements ClientPatchOperation {
   @Override
   public Mono<Void> applyPatch(
       String clientNumber,
-      Object patch,
+      JsonNode patch,
       ObjectMapper mapper,
       String userName
   ) {

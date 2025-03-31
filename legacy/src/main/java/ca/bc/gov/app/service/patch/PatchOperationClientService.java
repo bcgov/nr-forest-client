@@ -111,7 +111,7 @@ public class PatchOperationClientService implements ClientPatchOperation {
                       .map(client ->
                           client
                               .withUpdatedAt(LocalDateTime.now())
-                              .withUpdatedBy(userName) // Is still missing the user org unit
+                              .withUpdatedBy(userId) // Is still missing the user org unit
                               .withRevision(client.getRevision() + 1)
                       )
                       .doOnNext(client -> log.info("Applying Forest Client changes {}", client))
