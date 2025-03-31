@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.patch;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import reactor.core.publisher.Mono;
@@ -50,6 +51,6 @@ public interface ClientPatchOperation {
    * @param mapper The {@link ObjectMapper} used to deserialize and apply the patch.
    * @return A {@link Mono} that completes when the patch has been applied.
    */
-  Mono<Void> applyPatch(String clientNumber, Object patch, ObjectMapper mapper);
+  Mono<Void> applyPatch(String clientNumber, JsonNode patch, ObjectMapper mapper);
 }
 
