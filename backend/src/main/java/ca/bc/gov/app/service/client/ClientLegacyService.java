@@ -7,6 +7,7 @@ import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.List;
@@ -485,7 +486,7 @@ public class ClientLegacyService {
    * @param forestClient the JSON Patch document describing the modifications
    * @return a {@link Mono} that completes when the patch is applied successfully
    */
-  public Mono<Void> patchClient(String clientNumber, Object forestClient) {
+  public Mono<Void> patchClient(String clientNumber, JsonNode forestClient) {
     log.info("Sending request to the legacy system to patch client {}", clientNumber);
     return legacyApi
         .patch()

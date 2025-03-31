@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class ClientPatchService {
    * @param forestClient The JSON Patch document describing the modifications.
    * @return A {@link Mono} that completes when the patch is applied successfully.
    */
-  public Mono<Void> patchClient(String clientNumber, Object forestClient) {
+  public Mono<Void> patchClient(String clientNumber, JsonNode forestClient) {
     log.info("Sending request to the legacy system to patch client {}", clientNumber);
     return legacyService.patchClient(clientNumber, forestClient);
   }
