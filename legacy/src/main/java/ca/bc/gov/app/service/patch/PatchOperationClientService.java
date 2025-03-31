@@ -1,16 +1,21 @@
 package ca.bc.gov.app.service.patch;
 
+import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.entity.ForestClientEntity;
-import ca.bc.gov.app.repository.ForestClientRepository;
 import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
+import org.springframework.data.relational.core.query.Criteria;
+import org.springframework.data.relational.core.query.Query;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -27,9 +32,9 @@ import reactor.core.publisher.Mono;
 @Observed
 @RequiredArgsConstructor
 @Order(1)
-public class PatchOperationClientService implements ClientPatchOperation {
+public class PatchOperationClientService implements ClientPatchUpdateOperation<ForestClientEntity> {
 
-  private final ForestClientRepository clientRepository;
+  private final R2dbcEntityOperations entityTemplate;
 
   /**
    * Returns the prefix associated with this patch operation.
@@ -59,6 +64,46 @@ public class PatchOperationClientService implements ClientPatchOperation {
     return List.of("/wcbFirmNumber", "/clientComment");
   }
 
+  @Override
+  public Map<String, String> getFieldToDataField() {
+    return Map.of(
+        "/wcbFirmNumber", "wcb_firm_number",
+        "/clientComment", "client_comment"
+    );
+  }
+
+  @Override
+  public Function<ForestClientEntity, Map<String, Object>> getExtraFields(String userId) {
+    return entity -> Map.of(
+        "update_timestamp", LocalDateTime.now(),
+        "update_userid", userId,
+        "update_org_unit", 70L,
+        "revision_count", entity.getRevision() + 1
+    );
+  }
+
+  @Override
+  public Mono<ForestClientEntity> findEntity(String clientNumber, String entityId) {
+    return entityTemplate
+        .selectOne(
+            getEntityIdentification(clientNumber, entityId),
+            getEntityClass()
+        );
+  }
+
+  @Override
+  public Query getEntityIdentification(String clientNumber, String entityId) {
+    return Query
+        .query(
+            Criteria
+                .where(ApplicationConstants.CLIENT_NUMBER).is(clientNumber)
+        );
+  }
+
+  @Override
+  public Class<ForestClientEntity> getEntityClass() {
+    return ForestClientEntity.class;
+  }
 
   /**
    * Applies a JSON Patch to a ForestClientEntity identified by the given client number. This is
@@ -69,7 +114,7 @@ public class PatchOperationClientService implements ClientPatchOperation {
    * @param clientNumber the client number identifying the ForestClientEntity
    * @param patch        the JSON Patch to apply
    * @param mapper       the ObjectMapper used for JSON processing
-   * @param userId The username that requested the patch.
+   * @param userId       The username that requested the patch.
    * @return a Mono that completes when the patch has been applied
    */
   @Override
@@ -88,31 +133,9 @@ public class PatchOperationClientService implements ClientPatchOperation {
           mapper
       );
 
-      return
-          clientRepository
-              .findByClientNumber(clientNumber)
-              .flatMap(entity ->
-                  Mono
-                      .just(
-                          PatchUtils.patchClient(
-                              filteredNode,
-                              entity,
-                              ForestClientEntity.class,
-                              mapper
-                          )
-                      )
-                      .map(client -> client
-                          .withUpdatedBy(userId)
-                          .withUpdatedAt(LocalDateTime.now())
-                          .withRevision(client.getRevision() + 1)
-                      )
-                      .filter(client -> !entity.equals(client))
-                      .doOnNext(client -> log.info("Applying Forest Client changes {}", client))
-              )
-              .flatMap(clientRepository::save)
-              .then();
+      return applyReplacePatch(clientNumber, filteredNode, mapper, userId, entityTemplate);
     }
-
     return Mono.empty();
   }
+
 }
