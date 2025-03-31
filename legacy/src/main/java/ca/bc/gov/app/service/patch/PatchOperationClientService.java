@@ -101,9 +101,11 @@ public class PatchOperationClientService implements ClientPatchOperation {
                               mapper
                           )
                       )
-                      .map(client -> client.withUpdatedBy(userId))
-                      .map(client -> client.withUpdatedAt(LocalDateTime.now()))
-                      .map(client -> client.withRevision(client.getRevision()+1))
+                      .map(client -> client
+                          .withUpdatedBy(userId)
+                          .withUpdatedAt(LocalDateTime.now())
+                          .withRevision(client.getRevision() + 1)
+                      )
                       .filter(client -> !entity.equals(client))
                       .doOnNext(client -> log.info("Applying Forest Client changes {}", client))
               )
