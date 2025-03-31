@@ -72,16 +72,17 @@ public class PatchOperationLocationService implements ClientPatchOperation {
    * @param clientNumber The unique identifier of the client to be patched.
    * @param patch        The JSON Patch document describing the changes.
    * @param mapper       The {@link ObjectMapper} used to deserialize and apply the patch.
+   * @param userId The username that requested the patch.
    * @return A {@link Mono} that completes when the patch is applied.
    */
   @Override
-  public Mono<Void> applyPatch(String clientNumber, JsonNode patch, ObjectMapper mapper) {
+  public Mono<Void> applyPatch(String clientNumber, JsonNode patch, ObjectMapper mapper, String userId) {
     // If there's a patch operation targeting client location data we move ahead
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
       return
           Flux.concat(
-                  applyReplacePatch(clientNumber, patch, mapper),
-                  applyAddPatch(clientNumber, patch, mapper)
+                  applyReplacePatch(clientNumber, patch, mapper, userId),
+                  applyAddPatch(clientNumber, patch, mapper, userId)
               )
               .then();
     }
@@ -89,7 +90,7 @@ public class PatchOperationLocationService implements ClientPatchOperation {
     return Mono.empty();
   }
 
-  private Mono<Void> applyAddPatch(String clientNumber, JsonNode patch, ObjectMapper mapper) {
+  private Mono<Void> applyAddPatch(String clientNumber, JsonNode patch, ObjectMapper mapper, String userId) {
     //We load just the add operations
     JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
         patch,
@@ -130,8 +131,8 @@ public class PatchOperationLocationService implements ClientPatchOperation {
                     .trustLocationInd("N")
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
-                    .createdBy("PATCH")
-                    .updatedBy("PATCH")
+                    .createdBy(userId)
+                    .updatedBy(userId)
                     .createdByUnit(70L)
                     .updatedByUnit(70L)
                     .revision(1L)
@@ -155,7 +156,7 @@ public class PatchOperationLocationService implements ClientPatchOperation {
    * @param mapper       The {@link ObjectMapper} used to deserialize and apply the patch.
    * @return A {@link Mono} that completes when the patch is applied.
    */
-  private Mono<Void> applyReplacePatch(String clientNumber, JsonNode patch, ObjectMapper mapper) {
+  private Mono<Void> applyReplacePatch(String clientNumber, JsonNode patch, ObjectMapper mapper, String userId) {
     //We load just the replace operations
     JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
         patch,
@@ -199,6 +200,13 @@ public class PatchOperationLocationService implements ClientPatchOperation {
                                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue))
                         )
                         .filter(updateMapper -> !updateMapper.isEmpty())
+                        .map(updateMapper ->{
+                          updateMapper.put(SqlIdentifier.unquoted("update_timestamp"), LocalDateTime.now());
+                          updateMapper.put(SqlIdentifier.unquoted("update_userid"), userId);
+                          updateMapper.put(SqlIdentifier.unquoted("update_org_unit"), 70L);
+                          updateMapper.put(SqlIdentifier.unquoted("revision_count"), entity.getRevision() + 1);
+                          return updateMapper;
+                        })
                         .map(Update::from)
                         //We apply the patch to the entity and save it
                         .flatMap(update -> entityTemplate
