@@ -1,5 +1,7 @@
 package ca.bc.gov.app.service.client;
 
+import static ca.bc.gov.app.ApplicationConstant.MDC_USERID;
+
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
@@ -484,14 +486,16 @@ public class ClientLegacyService {
    *
    * @param clientNumber the client number to update
    * @param forestClient the JSON Patch document describing the modifications
+   * @param userName The username that requested the patch.
    * @return a {@link Mono} that completes when the patch is applied successfully
    */
-  public Mono<Void> patchClient(String clientNumber, JsonNode forestClient) {
+  public Mono<Void> patchClient(String clientNumber, JsonNode forestClient, String userName) {
     log.info("Sending request to the legacy system to patch client {}", clientNumber);
     return legacyApi
         .patch()
         .uri("/api/clients/partial/{clientNumber}", clientNumber)
         .contentType(MediaType.asMediaType(new MimeType("application", "json-patch+json")))
+        .header(MDC_USERID, userName)
         .body(BodyInserters.fromValue(forestClient))
         .exchangeToMono(response -> {
           //if 201 is good, else already exist, so move forward
