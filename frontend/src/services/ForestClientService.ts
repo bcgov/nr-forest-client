@@ -520,14 +520,9 @@ export const formatLocation = (code: string, name: string): string => {
   if (!code && !name) {
     return "New location";
   }
-  const parts = [];
 
-  if (code) {
-    parts.push(code);
-  }
-  if (name) {
-    parts.push(name);
-  }
+  // keep only non-empty parts
+  const parts = [code, name].filter(Boolean);
 
   const title = parts.join(" - ");
 
