@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller;
 
+import static ca.bc.gov.app.ApplicationConstants.MDC_USERID;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
@@ -44,6 +45,7 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         .patch()
         .uri("/api/clients/partial/{clientNumber}", clientNumber)
         .header("Content-Type", "application/json-patch+json")
+        .header(MDC_USERID,"test-user")
         .bodyValue(partialBody)
         .exchange()
         .expectStatus().isAccepted()

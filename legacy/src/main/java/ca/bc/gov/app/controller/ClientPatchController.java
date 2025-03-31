@@ -1,6 +1,9 @@
 package ca.bc.gov.app.controller;
 
+import static ca.bc.gov.app.ApplicationConstants.MDC_USERID;
+
 import ca.bc.gov.app.service.patch.ClientPatchService;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,10 +47,11 @@ public class ClientPatchController {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Mono<Void> patchForestClient(
       @PathVariable String clientNumber,
-      @RequestBody Object forestClient
+      @RequestBody JsonNode forestClient,
+      @RequestHeader(MDC_USERID) String userId
   ) {
-    log.info("Received a partial update request for client {}", clientNumber);
-    return clientPatchService.patchClient(clientNumber, forestClient);
+    log.info("Received a partial update request from {} for client {}", userId, clientNumber);
+    return clientPatchService.patchClient(clientNumber, forestClient, userId);
   }
 
 }
