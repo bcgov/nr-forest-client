@@ -3,6 +3,7 @@ package ca.bc.gov.app.controller;
 import static ca.bc.gov.app.ApplicationConstants.MDC_USERID;
 
 import ca.bc.gov.app.service.patch.ClientPatchService;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,8 +47,8 @@ public class ClientPatchController {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Mono<Void> patchForestClient(
       @PathVariable String clientNumber,
-      @RequestBody Object forestClient,
-      @RequestHeader(MDC_USERID) String userName
+      @RequestBody JsonNode forestClient,
+      @RequestHeader(MDC_USERID) String userId
   ) {
     log.info("Received a partial update request for client {} from {}", clientNumber, userName);
     return clientPatchService.patchClient(clientNumber, forestClient, userName);

@@ -177,7 +177,7 @@ const submit = (approved: boolean) => {
 
   watch(response, (response) => {
     if (response.status) {
-      router.push({ name: "internal" });
+      router.push({ name: "submissions-list" });
       const toastNotification: ModalNotification = {
         kind: "Success",
         active: true,

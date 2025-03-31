@@ -18,8 +18,8 @@ import reactor.core.publisher.Mono;
  * Service responsible for applying JSON Patch operations to a {@link ForestClientEntity}.
  * <p>
  * This service handles patch operations targeting client-related data. It ensures that restricted
- * fields (such as {@code /wcbFirmNumber} and {@code /clientComment}) cannot be modified. The patch
- * is applied only if it matches the expected prefix.
+ * fields (such as {@code /wcbFirmNumber} and {@code /clientComment}) are the only ones being
+ * modified. The patch is applied only if it matches the expected prefix.
  * </p>
  */
 @Service
@@ -69,14 +69,15 @@ public class PatchOperationClientService implements ClientPatchOperation {
    * @param clientNumber the client number identifying the ForestClientEntity
    * @param patch        the JSON Patch to apply
    * @param mapper       the ObjectMapper used for JSON processing
+   * @param userId The username that requested the patch.
    * @return a Mono that completes when the patch has been applied
    */
   @Override
   public Mono<Void> applyPatch(
       String clientNumber,
-      Object patch,
+      JsonNode patch,
       ObjectMapper mapper,
-      String userName
+      String userId
   ) {
 
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
@@ -99,6 +100,11 @@ public class PatchOperationClientService implements ClientPatchOperation {
                               ForestClientEntity.class,
                               mapper
                           )
+                      )
+                      .map(client -> client
+                          .withUpdatedBy(userId)
+                          .withUpdatedAt(LocalDateTime.now())
+                          .withRevision(client.getRevision() + 1)
                       )
                       .filter(client -> !entity.equals(client))
                       //Can only happen if there's a change

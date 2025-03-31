@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.patch;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
@@ -35,25 +36,19 @@ public class ClientPatchService {
    *
    * @param clientNumber The unique identifier of the forest client being updated.
    * @param forestClient The JSON Patch document describing the modifications.
-   * @param userName     The user that requested the patch update
+   * @param userId       The user that requested the patch update
    * @return A {@link Mono} that completes when all patches have been applied.
    */
   public Mono<Void> patchClient(
       String clientNumber,
-      Object forestClient,
-      String userName
+      JsonNode forestClient,
+      String userId
   ) {
     log.info("Patching client with client number {} if any changes are detected", clientNumber);
 
     return partialServices
         .stream()
-        .map(service -> service.applyPatch(
-                clientNumber,
-                forestClient,
-                mapper,
-                userName
-            )
-        )
+        .map(service -> service.applyPatch(clientNumber, forestClient, mapper, userId))
         .reduce(Mono.empty(), Mono::then);
   }
 }

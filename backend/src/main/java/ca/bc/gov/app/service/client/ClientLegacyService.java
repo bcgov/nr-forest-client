@@ -9,6 +9,7 @@ import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.List;
@@ -490,7 +491,7 @@ public class ClientLegacyService {
    */
   public Mono<Void> patchClient(
       String clientNumber,
-      Object forestClient,
+      JsonNode forestClient,
       String userName
   ) {
     log.info("Sending request to the legacy system to patch client {}", clientNumber);
@@ -498,7 +499,7 @@ public class ClientLegacyService {
         .patch()
         .uri("/api/clients/partial/{clientNumber}", clientNumber)
         .contentType(MediaType.asMediaType(new MimeType("application", "json-patch+json")))
-        .header(MDC_USERID,userName)
+        .header(MDC_USERID, userName)
         .body(BodyInserters.fromValue(forestClient))
         .exchangeToMono(response -> {
           //if 201 is good, else already exist, so move forward

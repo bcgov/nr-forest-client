@@ -46,17 +46,17 @@ const doLogin = (kind: string, afterLoginLocation: string, extraLandingParam: st
 }
 
 Before({ tags: '@loginAsEditor' }, () => {  
-  doLogin('editor','/submissions');
+  doLogin('editor','/search');
   cy.waitForPageLoad('cds-header');
 });
 
 Before({ tags: '@loginAsAdmin' }, () => {  
-  doLogin('admin','/submissions');
+  doLogin('admin','/search');
   cy.waitForPageLoad('cds-header');
 });
 
 Before({ tags: '@loginAsViewer' }, () => {  
-  doLogin('viewer','/submissions');
+  doLogin('viewer','/search');
   cy.waitForPageLoad('cds-header');
 });
 

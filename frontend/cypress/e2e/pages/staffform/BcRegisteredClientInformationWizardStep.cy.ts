@@ -9,15 +9,6 @@ describe("BC Registered Staff Wizard Step", () => {
       fixture: "identificationTypes.json",
     }).as("getIdentificationTypes");
 
-    cy.intercept("GET", "/api/clients/submissions?page=0&size=10", {
-      fixture: "submissions.json",
-      headers: {
-        "x-total-count": "1",
-        "content-type": "application/json;charset=UTF-8",
-        "Access-Control-Expose-Headers": "x-total-count",
-      },
-    }).as("getSubmissions");
-
     cy.intercept("GET", "/api/clients/name/exi", {
       fixture: "clients/bcreg_ac_list1.json",
     });
@@ -797,8 +788,6 @@ describe("BC Registered Staff Wizard Step", () => {
       family_name: "Baxter",
       "cognito:groups": ["CLIENT_ADMIN"],
     });
-
-    cy.wait("@getSubmissions");
 
     // Check if the Create client button is visible
     cy.get("#menu-list-staff-form").should("be.visible").click();

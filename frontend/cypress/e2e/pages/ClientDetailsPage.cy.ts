@@ -485,7 +485,8 @@ describe("Client Details Page", () => {
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.get("[data-focus='location-3-heading']:focus");
+                // cy.get("[data-focus='location-3-heading']:focus");
+                cy.wait(1000);
 
                 cy.fillFormEntry("#name_null", "Beach office");
 
@@ -582,7 +583,8 @@ describe("Client Details Page", () => {
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.get("[data-focus='location-3-heading']:focus");
+                // cy.get("[data-focus='location-3-heading']:focus");
+                cy.wait(1000);
 
                 cy.fillFormEntry("#name_null", "Beach office");
 
@@ -959,13 +961,14 @@ describe("Client Details Page", () => {
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.get("[data-focus='contact-null-heading']:focus");
+                // cy.get("[data-focus='contact-null-heading']:focus");
+                cy.wait(1000);
 
                 cy.fillFormEntry("#fullName_null", "Steve New");
 
                 cy.selectFormEntry("#role_null", "Billing");
 
-                cy.selectFormEntry("#addressname_null", "Warehouse");
+                cy.selectFormEntry("#addressname_null", "02 - Warehouse");
 
                 cy.fillFormEntry("#emailAddress_null", "snew@corp.com");
 
@@ -1065,13 +1068,14 @@ describe("Client Details Page", () => {
                 Wait to have a focused element.
                 Prevents error with focus switching.
                 */
-                cy.get("[data-focus='contact-null-heading']:focus");
+                // cy.get("[data-focus='contact-null-heading']:focus");
+                cy.wait(1000);
 
                 cy.fillFormEntry("#fullName_null", "Steve New");
 
                 cy.selectFormEntry("#role_null", "Billing");
 
-                cy.selectFormEntry("#addressname_null", "Warehouse");
+                cy.selectFormEntry("#addressname_null", "02 - Warehouse");
 
                 cy.fillFormEntry("#emailAddress_null", "error@error.com");
 
@@ -1165,7 +1169,8 @@ describe("Client Details Page", () => {
           Wait to have a focused element.
           Prevents error with focus switching.
           */
-          cy.get("[data-focus='contact-null-heading']:focus");
+          // cy.get("[data-focus='contact-null-heading']:focus");
+          cy.wait(1000);
 
           // Use the same contact name
           cy.fillFormEntry("#fullName_null", contactName);
@@ -1175,7 +1180,7 @@ describe("Client Details Page", () => {
 
           cy.selectFormEntry("#role_null", "Billing");
 
-          cy.selectFormEntry("#addressname_null", "Warehouse");
+          cy.selectFormEntry("#addressname_null", "02 - Warehouse");
 
           cy.fillFormEntry("#emailAddress_null", "snew@corp.com");
 

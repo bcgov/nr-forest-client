@@ -8,7 +8,6 @@ import ca.bc.gov.app.exception.CannotApplyPatchException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.zjsonpatch.JsonPatch;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -114,6 +113,41 @@ class PatchUtilsTest {
         "{\"op\":\"replace\",\"path\":\"/entries/0/personalId\",\"value\":\"1234\"}",
         JsonNode.class);
     assertEquals("0", PatchUtils.loadId(patch));
+  }
+
+  @Test
+  @DisplayName("Merge two nodes")
+  void shouldMergeNodes() throws JsonProcessingException {
+    JsonNode expectation = mapper.readValue("[{\"value\":\"1234\"},{\"value\":\"5678\"}]",
+        JsonNode.class);
+    JsonNode node1 = mapper.createObjectNode().put("value", "1234");
+    JsonNode node2 = mapper.createObjectNode().put("value", "5678");
+    JsonNode result = PatchUtils.mergeNodes().apply(node1, node2);
+    assertEquals(expectation, result);
+  }
+
+  @Test
+  @DisplayName("Merge node to array")
+  void shouldMergeNodesIfArray() throws JsonProcessingException {
+    JsonNode expectation = mapper.readValue("[{\"value\":\"5678\"}]", JsonNode.class);
+    JsonNode node1 = mapper.createArrayNode();
+    JsonNode node2 = mapper.createObjectNode().put("value", "5678");
+    JsonNode result = PatchUtils.mergeNodes().apply(node1, node2);
+    assertEquals(expectation, result);
+  }
+
+  @Test
+  @DisplayName("Filter by ID")
+  void shouldFilterById() throws JsonProcessingException {
+    JsonNode expectation = mapper.readValue(
+        "[{\"op\":\"replace\",\"path\":\"/entries/0/personalId\",\"value\":\"1234\"}]",
+        JsonNode.class);
+    assertEquals(expectation,
+        PatchUtils.filterById(
+            mapper.readValue(CONTENT, JsonNode.class)
+            , mapper
+        ).apply("0")
+    );
   }
 
   private static Stream<Arguments> filterOps() {

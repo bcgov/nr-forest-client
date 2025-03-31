@@ -123,7 +123,13 @@ const summitSvg = useSvg(summit);
       <div>
         <div class="form-header-title mg-sd-25">
           <h1>Submissions</h1>
-          <p class="body-compact-01">Check and manage client submissions</p>
+          <p class="body-compact-01">
+            Check and manage client submissions. Please note: Let applicants know they can apply for
+            a number online at
+            <a target="_blank" href="https://www.gov.bc.ca/ClientNumber">
+              www.gov.bc.ca/ClientNumber
+            </a>
+          </p>
         </div>        
       </div>
     </div>

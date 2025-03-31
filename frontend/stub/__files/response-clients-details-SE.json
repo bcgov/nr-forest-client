@@ -70,6 +70,26 @@
       "faxNumber": "2502864768",
       "cliLocnComment": "Sample location 01 comment",
       "locnExpiredInd": "N"
+    },
+    {
+      "clientLocnName": null,
+      "clientLocnCode": "02",
+      "addressOne": "{{randomValue length=4 type='NUMERIC'}} Oak St",
+      "addressTwo": "C/O Mike Oliveira",
+      "addressThree": "",
+      "countryCode": "CA",
+      "countryDesc": "Canada",
+      "provinceCode": "BC",
+      "provinceDesc": "British Columbia",
+      "city": "Deer Lake",
+      "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+      "emailAddress": "account@mail.com",
+      "businessPhone": "2502864767",
+      "cellPhone": "2505554700",
+      "homePhone": "2505554101",
+      "faxNumber": "2502864768",
+      "cliLocnComment": "Sample location 01 comment",
+      "locnExpiredInd": "N"
     }
   ]
 }

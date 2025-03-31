@@ -54,6 +54,7 @@ import ca.bc.gov.app.dto.opendata.Geometry;
 import ca.bc.gov.app.dto.opendata.OpenData;
 import ca.bc.gov.app.health.HealthExchangeFilterFunction;
 import ca.bc.gov.app.health.ManualHealthIndicator;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -136,7 +137,8 @@ import org.springframework.web.reactive.function.client.WebClient;
     BcRegistryFacetPartyDto.class,
     BcRegistryFacetRequestBodyDto.class,
     BcRegistryFacetRequestQueryDto.class,
-    JsonPatch.class
+    JsonPatch.class,
+    JsonNode.class
 })
 public class GlobalServiceConfiguration {
 

@@ -1,6 +1,5 @@
 package ca.bc.gov.app.util;
 
-
 import ca.bc.gov.app.exception.CannotApplyPatchException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,9 +11,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -253,12 +255,13 @@ public class PatchUtils {
   }
 
   /**
-   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and restricted paths.
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and
+   * restricted paths.
    *
-   * @param patch the JSON Patch to filter
+   * @param patch         the JSON Patch to filter
    * @param operationName the name of the operation to filter by (e.g., "add", "remove", "replace")
-   * @param prefix the prefix to filter the operations by
-   * @param mapper the ObjectMapper to use for JSON processing
+   * @param prefix        the prefix to filter the operations by
+   * @param mapper        the ObjectMapper to use for JSON processing
    * @return a JsonNode containing the filtered operations
    */
   public static JsonNode filterOperationsByOp(
@@ -276,12 +279,13 @@ public class PatchUtils {
   }
 
   /**
-   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and restricted paths.
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and
+   * restricted paths.
    *
-   * @param patch the JSON Patch to filter
+   * @param patch         the JSON Patch to filter
    * @param operationName the name of the operation to filter by (e.g., "add", "remove", "replace")
-   * @param prefix the prefix to filter the operations by
-   * @param mapper the ObjectMapper to use for JSON processing
+   * @param prefix        the prefix to filter the operations by
+   * @param mapper        the ObjectMapper to use for JSON processing
    * @return a JsonNode containing the filtered operations
    */
   public static JsonNode filterOperationsByOp(
@@ -299,13 +303,15 @@ public class PatchUtils {
   }
 
   /**
-   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and restricted paths.
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and
+   * restricted paths.
    *
-   * @param patch the JSON Patch to filter
-   * @param operationName the name of the operation to filter by (e.g., "add", "remove", "replace")
-   * @param prefix the prefix to filter the operations by
+   * @param patch           the JSON Patch to filter
+   * @param operationName   the name of the operation to filter by (e.g., "add", "remove",
+   *                        "replace")
+   * @param prefix          the prefix to filter the operations by
    * @param restrictedPaths the list of restricted paths to filter the operations by
-   * @param mapper the ObjectMapper to use for JSON processing
+   * @param mapper          the ObjectMapper to use for JSON processing
    * @return a JsonNode containing the filtered operations
    */
   public static JsonNode filterOperationsByOp(
@@ -346,6 +352,43 @@ public class PatchUtils {
         });
 
     return filteredNode;
+  }
+
+  /**
+   * Merges two JSON nodes into a single array node.
+   *
+   * @return a BinaryOperator that merges two JSON nodes into a single array node
+   */
+  public static BinaryOperator<JsonNode> mergeNodes() {
+    return (node1, node2) -> {
+      ArrayNode arrayNode = new ObjectMapper().createArrayNode();
+      if (node1 instanceof ArrayNode){
+        arrayNode = node1.deepCopy();
+      } else {
+        arrayNode.add(node1);
+      }
+      arrayNode.add(node2);
+      return arrayNode;
+    };
+  }
+
+  /**
+   * Filters the operations in a JSON Patch based on a specified operation name and restricted
+   * paths.
+   *
+   * @param patch   the JSON Patch to filter
+   * @param mapper  the ObjectMapper to use for JSON processing
+   * @return a Function that filters the operations in a JSON Patch based on a specified operation
+   */
+  public static Function<String, JsonNode> filterById(
+      JsonNode patch,
+      ObjectMapper mapper
+  ) {
+    return locationNumber ->
+        StreamSupport
+            .stream(patch.spliterator(), false)
+            .filter(node -> PatchUtils.loadId(node).equals(locationNumber))
+            .reduce(mapper.createArrayNode(), PatchUtils.mergeNodes());
   }
 
   /**

@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class ClientPatchService {
    */
   public Mono<Void> patchClient(
       String clientNumber,
-      Object forestClient,
+      JsonNode forestClient,
       String userName
   ) {
     log.info("{} requested to patch client {}", userName, clientNumber);
