@@ -390,6 +390,10 @@ export const locationToCreateFormat = (location: ClientLocation): Address => {
   return address;
 };
 
+export const indexToLocationCode = (index: number): string => {
+  return index !== null ? String(index).padStart(2, "0") : null;
+};
+
 /**
  * Converts location data from Address format to ClientLocation format, as required by the Patch
  * API.
@@ -407,7 +411,7 @@ export const locationToEditFormat = (
   const location: ClientLocation = {
     ...baseLocation,
     clientLocnName: address.locationName,
-    clientLocnCode: address.index !== null ? String(address.index).padStart(2, "0") : null,
+    clientLocnCode: indexToLocationCode(address.index),
     addressOne: address.streetAddress,
     addressTwo: address.complementaryAddressOne,
     addressThree: address.complementaryAddressTwo,
