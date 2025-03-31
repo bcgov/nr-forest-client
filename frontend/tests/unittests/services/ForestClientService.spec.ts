@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { ref } from 'vue';
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
   addNewAddress,
   addNewContact,
@@ -14,7 +13,6 @@ import {
   extractReasonFields,
   getAction,
   getActionLabel,
-  getOldValue,
   getEnumKeyByEnumValue,
   getFormattedHtml,
   locationToCreateFormat,
@@ -23,6 +21,7 @@ import {
   toSentenceCase,
   contactToCreateFormat,
   contactToEditFormat,
+  indexToLocationCode,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type { UserRole, ClientDetails, ClientLocation, ClientContact } from "@/dto/CommonTypesDto";
@@ -765,6 +764,15 @@ describe("Reason Fields Handling", () => {
 
     it("returns 'Unknown' for an unrecognized action", () => {
       expect(getActionLabel("UNKNOWN_ACTION")).toEqual("Unknown");
+    });
+  });
+
+  describe("indexToLocationCode", () => {
+    it("pads with zeros to the left", () => {
+      expect(indexToLocationCode(1)).toEqual("01");
+    });
+    it("returns null when parameter is null", () => {
+      expect(indexToLocationCode(null)).toEqual(null);
     });
   });
 });
