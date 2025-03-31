@@ -37,8 +37,13 @@ public class PatchOperationContactService implements
 
   @Override
   public List<String> getRestrictedPaths() {
-    return List.of("/contactName", "/contactTypeCode", "/businessPhone", "/secondaryPhone",
-        "/faxNumber", "/emailAddress");
+    return List.of(
+        "/contactName", 
+        "/contactTypeCode", 
+        "/businessPhone", 
+        "/secondaryPhone",
+        "/faxNumber", 
+        "/emailAddress");
   }
 
   @Override
