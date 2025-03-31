@@ -14,7 +14,7 @@ import { submissionValidation } from "@/helpers/validators/SubmissionValidators"
 import Delete16 from "@carbon/icons-vue/es/trash-can/16";
 import Add16 from "@carbon/icons-vue/es/add/16";
 import Information16 from "@carbon/icons-vue/es/information/16";
-import { getAddressDescription } from "@/services/ForestClientService";
+import { getAddressDescription, indexToLocationCode } from "@/services/ForestClientService";
 
 // Define the input properties for this component
 const props = defineProps<{
@@ -41,7 +41,7 @@ const noValidation = (value: string) => "";
 // We set it as a separated ref due to props not being updatable
 const selectedValue = reactive<Address>(props.modelValue);
 const validateAddressNameData =
-  props.validations.length === 0 ? noValidation : props.validations[0]("Names", props.id + "");
+  props.validations.length === 0 ? noValidation : props.validations[0]("Names", indexToLocationCode(props.modelValue.index));
 const nameError = ref<string | undefined>("");
 const showDetailsLoading = ref<boolean>(false);
 
