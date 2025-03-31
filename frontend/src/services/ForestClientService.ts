@@ -513,7 +513,7 @@ export const keepScrollBottomPosition = (uiUpdatePromise: Promise<void>): void =
 };
 
 export const formatLocation = (code: string, name: string): string => {
-  if (code === null && !name) {
+  if (!code && !name) {
     return "New location";
   }
   const parts = [];
