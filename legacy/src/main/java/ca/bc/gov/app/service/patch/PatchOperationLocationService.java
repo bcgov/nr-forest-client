@@ -200,7 +200,7 @@ public class PatchOperationLocationService implements ClientPatchOperation {
                                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue))
                         )
                         .filter(updateMapper -> !updateMapper.isEmpty())
-                        .map(updateMapper ->{
+                        .map(updateMapper -> {
                           updateMapper.put(SqlIdentifier.unquoted("update_timestamp"), LocalDateTime.now());
                           updateMapper.put(SqlIdentifier.unquoted("update_userid"), userId);
                           updateMapper.put(SqlIdentifier.unquoted("update_org_unit"), 70L);
