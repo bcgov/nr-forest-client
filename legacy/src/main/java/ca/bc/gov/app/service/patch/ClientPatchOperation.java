@@ -49,8 +49,9 @@ public interface ClientPatchOperation {
    * @param clientNumber The unique identifier of the client to be patched.
    * @param patch The JSON Patch document describing the changes.
    * @param mapper The {@link ObjectMapper} used to deserialize and apply the patch.
+   * @param userId The username that requested the patch.
    * @return A {@link Mono} that completes when the patch has been applied.
    */
-  Mono<Void> applyPatch(String clientNumber, JsonNode patch, ObjectMapper mapper);
+  Mono<Void> applyPatch(String clientNumber, JsonNode patch, ObjectMapper mapper, String userId);
 }
 
