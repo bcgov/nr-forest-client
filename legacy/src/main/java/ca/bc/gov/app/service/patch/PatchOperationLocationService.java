@@ -114,6 +114,9 @@ public class PatchOperationLocationService implements
       String userId) {
     // If there's a patch operation targeting client location data we move ahead
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
+
+      log.info("Applying patch to client location for client {}", clientNumber);
+
       return
           Flux.concat(
                   applyReplacePatch(clientNumber, patch, mapper, userId, entityTemplate),
@@ -143,7 +146,6 @@ public class PatchOperationLocationService implements
             .map(entry -> PatchUtils.loadAddValue(entry, ForestClientLocationDetailsDto.class,
                 mapper))
             .flatMap(dto -> getNextLocationCode(clientNumber).map(dto::withClientLocnCode))
-            .doOnNext(System.out::println)
             .map(dto ->
                 ForestClientLocationEntity
                     .builder()
