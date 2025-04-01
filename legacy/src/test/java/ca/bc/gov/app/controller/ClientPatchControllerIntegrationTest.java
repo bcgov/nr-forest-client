@@ -107,6 +107,8 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.clientStatusCode",
             "DAC",
             "ACT"
+        ),
+        argumentSet(
             "Replace the notes value from a location",
             "00000157",
             "[{\"op\":\"replace\",\"path\":\"/addresses/00/cliLocnComment\",\"value\": \"This is a homeland note\"}]",
