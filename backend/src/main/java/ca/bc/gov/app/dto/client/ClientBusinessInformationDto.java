@@ -27,7 +27,8 @@ public record ClientBusinessInformationDto(
     ClientValueTextDto identificationType,
     String clientIdentification,
     String identificationCountry,
-    String identificationProvince) {
+    String identificationProvince,
+    String notifyClientInd) {
 
   /**
    * Returns a map containing the description of the client's business information.

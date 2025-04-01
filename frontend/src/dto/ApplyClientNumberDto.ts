@@ -53,6 +53,7 @@ export interface FormDataDto {
     clientIdentification?: string;
     identificationCountry?: string;
     identificationProvince?: string;
+    notifyClientInd?: string;
   };
   location: {
     addresses: Address[];

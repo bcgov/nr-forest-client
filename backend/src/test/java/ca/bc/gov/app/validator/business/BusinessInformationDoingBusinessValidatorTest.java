@@ -51,6 +51,7 @@ class BusinessInformationDoingBusinessValidatorTest {
                     null,
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
+                    StringUtils.EMPTY,
                     StringUtils.EMPTY
                 ), 0
             )

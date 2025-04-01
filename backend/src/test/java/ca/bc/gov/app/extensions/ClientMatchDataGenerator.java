@@ -332,7 +332,8 @@ public class ClientMatchDataGenerator {
             new ClientValueTextDto(idType,idType),
             idValue,
             null,
-            idProvince
+            idProvince,
+            null
         ),
         getLocationDto(addressDto, contactDto),
         null

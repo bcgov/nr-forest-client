@@ -80,6 +80,7 @@ class BusinessInformationClientTypeValidatorTest {
                     null,
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
+                    StringUtils.EMPTY,
                     StringUtils.EMPTY
                 ), 0
             )

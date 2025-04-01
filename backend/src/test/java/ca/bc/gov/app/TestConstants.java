@@ -531,7 +531,8 @@ public class TestConstants {
               null,
               null,
               null,
-              null
+              null,
+              "Y"
           ),
           new ClientLocationDto(
               List.of(
@@ -594,7 +595,8 @@ public class TestConstants {
               null,
               null,
               null,
-              null
+              null,
+              "Y"
           ),
           new ClientLocationDto(
               List.of(
@@ -657,7 +659,8 @@ public class TestConstants {
               null,
               null,
               null,
-              null
+              null,
+              "Y"
           ),
           new ClientLocationDto(
               List.of(
@@ -736,7 +739,8 @@ public class TestConstants {
               null,
               null,
               null,
-              null
+              null,
+              "Y"
           ),
           new ClientLocationDto(
               List.of(
