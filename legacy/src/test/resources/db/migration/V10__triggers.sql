@@ -227,5 +227,3 @@ BEGIN
             , :OLD.add_org_unit);
   END IF;
 END client_cli_contact_ar_iud_trg;
-
-
