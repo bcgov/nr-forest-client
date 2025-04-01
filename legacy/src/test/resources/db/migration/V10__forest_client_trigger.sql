@@ -127,4 +127,4 @@ BEGIN
 	  END IF;
   END IF;
 
-END client_for_client_ar_iud_trg;
+END CLIENT_FOR_CLIENT_AR_IUD_TRG;
