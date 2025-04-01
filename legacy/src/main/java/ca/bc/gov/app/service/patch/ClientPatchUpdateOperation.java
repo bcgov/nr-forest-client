@@ -39,7 +39,7 @@ public interface ClientPatchUpdateOperation<T> extends ClientPatchOperation {
     );
 
     return Flux
-        .fromIterable(PatchUtils.loadIds(patch))
+        .fromIterable(PatchUtils.loadIds(filteredNodeOps))
         .flatMap(entityId ->
             findEntity(clientNumber, entityId)
                 .flatMap(entity ->
