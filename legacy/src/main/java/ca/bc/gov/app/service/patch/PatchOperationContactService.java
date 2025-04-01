@@ -1,7 +1,10 @@
 package ca.bc.gov.app.service.patch;
 
 import ca.bc.gov.app.ApplicationConstants;
+import ca.bc.gov.app.dto.ForestClientContactDetailsDto;
+import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
+import ca.bc.gov.app.service.ClientContactService;
 import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -28,7 +32,18 @@ import reactor.core.publisher.Mono;
 public class PatchOperationContactService implements
     ClientPatchUpdateOperation<ForestClientContactEntity> {
 
+  public static final String LOAD_CONTACT_QUERY = """
+      SELECT
+        CLIENT_CONTACT_ID
+      FROM THE.CLIENT_CONTACT
+      WHERE
+        CLIENT_NUMBER = :client_number
+        AND
+        CONTACT_NAME = (
+          SELECT CONTACT_NAME FROM CLIENT_CONTACT WHERE CLIENT_CONTACT_ID = :contact_id
+        )""";
   private final R2dbcEntityOperations entityTemplate;
+  private final ClientContactService contactService;
 
   @Override
   public String getPrefix() {
@@ -73,7 +88,7 @@ public class PatchOperationContactService implements
     return entityTemplate
         .selectOne(
             getEntityIdentification(clientNumber, entityId),
-           getEntityClass()
+            getEntityClass()
         );
   }
 
@@ -98,12 +113,12 @@ public class PatchOperationContactService implements
     // If there's a patch operation targeting client location data we move ahead
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
 
-      log.info("Contact change, way to go buddy {}", patch);
+      log.info("Applying patch to client contact for client {}", clientNumber);
 
       return
           Flux.concat(
                   applyRemovePatch(clientNumber, patch, mapper, userId),
-                  applyReplacePatch(clientNumber, patch, mapper, userId, entityTemplate),
+                  applyReplacePatch(clientNumber, patch, mapper, userId),
                   applyAddPatch(clientNumber, patch, mapper, userId)
               )
               .then();
@@ -112,13 +127,105 @@ public class PatchOperationContactService implements
     return Mono.empty();
   }
 
+  private Mono<Void> applyReplacePatch(
+      String clientNumber,
+      JsonNode patch,
+      ObjectMapper mapper,
+      String userId
+  ) {
+
+    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
+        patch,
+        "replace",
+        getPrefix(),
+        false,
+        getRestrictedPaths(),
+        mapper
+    );
+
+    Function<Long, Flux<Long>> loadContacts = entityId -> entityTemplate
+        .getDatabaseClient()
+        .sql(LOAD_CONTACT_QUERY)
+        .bind("client_number", clientNumber)
+        .bind("contact_id", entityId)
+        .fetch()
+        .all()
+        .map(mapping -> mapping.get("CLIENT_CONTACT_ID"))
+        .map(clientContactId -> Long.parseLong(clientContactId.toString()));
+
+    return
+        Flux
+            .fromStream(
+                StreamSupport.stream(
+                    filteredNodeOps.spliterator(),
+                    false
+                )
+            )
+            .flatMap(node ->
+                Mono
+                    .just(PatchUtils.loadId(node))
+                    .map(Long::parseLong)
+                    .flatMapMany(loadContacts)
+                    .map(entityId -> PatchUtils.duplicateNodeWithId(node, entityId.toString()))
+            )
+            .reduce(PatchUtils.mergeNodes())
+            .flatMap(readyNode -> applyReplacePatch(
+                clientNumber,
+                readyNode,
+                mapper,
+                userId,
+                entityTemplate
+            ));
+
+  }
+
   private Mono<Void> applyAddPatch(
       String clientNumber,
       JsonNode patch,
       ObjectMapper mapper,
       String userId
   ) {
-    return Mono.empty();
+    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
+        patch,
+        "add",
+        getPrefix(),
+        mapper
+    );
+
+    return
+        Flux
+            .fromStream(
+                StreamSupport
+                    .stream(filteredNodeOps.spliterator(), false)
+            )
+            .map(entry ->
+                PatchUtils.loadAddValue(entry, ForestClientContactDetailsDto.class, mapper)
+            )
+            .map(dto ->
+                dto
+                    .locationCodes()
+                    .stream()
+                    .map(locationCode ->
+                        new ForestClientContactDto(
+                            dto.clientNumber(),
+                            locationCode,
+                            List.of(),
+                            dto.contactTypeCode(),
+                            dto.contactName().toUpperCase(),
+                            dto.businessPhone(),
+                            dto.secondaryPhone(),
+                            dto.faxNumber(),
+                            dto.emailAddress().toUpperCase(),
+                            userId,
+                            userId,
+                            70L
+                        )
+                    )
+                    .toList()
+            )
+            .flatMapIterable(Function.identity())
+            .flatMap(contactService::saveAndGetIndex)
+            .then();
   }
 
   private Mono<Void> applyRemovePatch(
@@ -128,6 +235,16 @@ public class PatchOperationContactService implements
       String userId
   ) {
     return Mono.empty();
+  }
+
+  private Mono<Long> getNextContactId() {
+    return entityTemplate
+        .getDatabaseClient()
+        .sql("SELECT THE.client_contact_seq.NEXTVAL FROM dual")
+        .fetch()
+        .first()
+        .map(row -> row.get("NEXTVAL"))
+        .map(value -> Long.valueOf(value.toString()));
   }
 
 }
