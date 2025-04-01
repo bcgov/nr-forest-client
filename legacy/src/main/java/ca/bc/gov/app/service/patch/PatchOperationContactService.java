@@ -32,16 +32,6 @@ import reactor.core.publisher.Mono;
 public class PatchOperationContactService implements
     ClientPatchUpdateOperation<ForestClientContactEntity> {
 
-  public static final String LOAD_CONTACT_QUERY = """
-      SELECT
-        CLIENT_CONTACT_ID
-      FROM THE.CLIENT_CONTACT
-      WHERE
-        CLIENT_NUMBER = :client_number
-        AND
-        CONTACT_NAME = (
-          SELECT CONTACT_NAME FROM CLIENT_CONTACT WHERE CLIENT_CONTACT_ID = :contact_id
-        )""";
   private final R2dbcEntityOperations entityTemplate;
   private final ClientContactService contactService;
 
@@ -143,32 +133,8 @@ public class PatchOperationContactService implements
         mapper
     );
 
-    Function<Long, Flux<Long>> loadContacts = entityId -> entityTemplate
-        .getDatabaseClient()
-        .sql(LOAD_CONTACT_QUERY)
-        .bind("client_number", clientNumber)
-        .bind("contact_id", entityId)
-        .fetch()
-        .all()
-        .map(mapping -> mapping.get("CLIENT_CONTACT_ID"))
-        .map(clientContactId -> Long.parseLong(clientContactId.toString()));
-
     return
-        Flux
-            .fromStream(
-                StreamSupport.stream(
-                    filteredNodeOps.spliterator(),
-                    false
-                )
-            )
-            .flatMap(node ->
-                Mono
-                    .just(PatchUtils.loadId(node))
-                    .map(Long::parseLong)
-                    .flatMapMany(loadContacts)
-                    .map(entityId -> PatchUtils.duplicateNodeWithId(node, entityId.toString()))
-            )
-            .reduce(PatchUtils.mergeNodes())
+        duplicateNodesForContact(filteredNodeOps, loadRelatedContacts(clientNumber))
             .flatMap(readyNode -> applyReplacePatch(
                 clientNumber,
                 readyNode,
@@ -234,17 +200,66 @@ public class PatchOperationContactService implements
       ObjectMapper mapper,
       String userId
   ) {
-    return Mono.empty();
+
+    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
+        patch,
+        "remove",
+        getPrefix(),
+        false,
+        List.of(),
+        mapper
+    );
+
+    return duplicateNodesForContact(filteredNodeOps, loadRelatedContacts(clientNumber))
+        .map(PatchUtils::loadId)
+        .flatMap(contactId ->
+            entityTemplate
+                .delete(
+                    getEntityIdentification(clientNumber, contactId),
+                    getEntityClass()
+                )
+                .then(entityTemplate
+                    .getDatabaseClient()
+                    .sql(ApplicationConstants.UPDATE_CONTACT_AUDIT_QUERY)
+                    .bind("userid", userId)
+                    .bind("client_number", clientNumber)
+                    .bind("contact_id", Long.parseLong(contactId))
+                    .then()
+                )
+        )
+
+        .then();
   }
 
-  private Mono<Long> getNextContactId() {
-    return entityTemplate
+  private static Mono<JsonNode> duplicateNodesForContact(JsonNode filteredNodeOps,
+      Function<Long, Flux<Long>> loadContacts) {
+    return Flux
+        .fromStream(
+            StreamSupport.stream(
+                filteredNodeOps.spliterator(),
+                false
+            )
+        )
+        .flatMap(node ->
+            Mono
+                .just(PatchUtils.loadId(node))
+                .map(Long::parseLong)
+                .flatMapMany(loadContacts)
+                .map(entityId -> PatchUtils.duplicateNodeWithId(node, entityId.toString()))
+        )
+        .reduce(PatchUtils.mergeNodes());
+  }
+
+  private Function<Long, Flux<Long>> loadRelatedContacts(String clientNumber) {
+    return entityId -> entityTemplate
         .getDatabaseClient()
-        .sql("SELECT THE.client_contact_seq.NEXTVAL FROM dual")
+        .sql(ApplicationConstants.LOAD_CONTACT_QUERY)
+        .bind("client_number", clientNumber)
+        .bind("contact_id", entityId)
         .fetch()
-        .first()
-        .map(row -> row.get("NEXTVAL"))
-        .map(value -> Long.valueOf(value.toString()));
+        .all()
+        .map(mapping -> mapping.get("CLIENT_CONTACT_ID"))
+        .map(clientContactId -> Long.parseLong(clientContactId.toString()));
   }
 
 }

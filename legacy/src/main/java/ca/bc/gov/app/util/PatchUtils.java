@@ -197,13 +197,19 @@ public class PatchUtils {
     //List entries starts with a number,
     // so we take that into consideration as well when checking the restricted paths
     // by using a regex to check if it matches the format /\d+/.*
-    Pattern pattern = Pattern.compile("/(\\d+)/(.*)");
+    Pattern pattern = Pattern.compile("/(\\d+)(?:/.*)?");
     Matcher matcher = pattern.matcher(path);
 
     // When it matches, it means that this entry is a list entry
     if (matcher.find()) {
-      // So we extract the field name and the id
-      return Pair.of(matcher.group(1), String.format("/%s", matcher.group(2)));
+      // If we have a group count greater than 1, we are on replace
+      if(matcher.groupCount() > 1) {
+        // So we extract the field name and the id
+        return Pair.of(matcher.group(1), String.format("/%s", matcher.group(2)));
+      }
+      // Otherwise, is probably a remove
+      return Pair.of(matcher.group(1), null);
+
     } else {
       // Otherwise we just return the path as is
       return Pair.of(null, path);
