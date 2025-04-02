@@ -1508,13 +1508,18 @@ cds-side-nav-items.lower-side-nav {
 .table-list,
 .submission-content,
 .client-details-screen,
-.client-details-content {
+.client-details-content,
+.no-menu-content {
   padding: 2.5rem 0rem 2.5rem 16rem;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   flex: 1 0 0%;
   width: calc(100vw - 18.5rem);
+}
+
+.no-menu-content {
+  padding: 1rem 0;
 }
 
 cds-side-nav::part(
