@@ -49,7 +49,7 @@ public class ChesController {
       @RequestBody EmailRequestDto emailRequestDto,
       JwtAuthenticationToken principal
   ) {
-    log.info("Sending email to {} from the client service.", emailRequestDto.email());
+    log.info("Sending email to {} from the client service.", emailRequestDto.emailsCsv());
     return clientService
         .triggerEmailDuplicatedClient(
             emailRequestDto,

@@ -228,7 +228,7 @@ public class ClientService {
   public Mono<String> sendEmail(EmailRequestDto emailRequestDto) {
     return chesService.sendEmail(
         emailRequestDto.templateName(),
-        emailRequestDto.email(),
+        emailRequestDto.emailsCsv(),
         emailRequestDto.subject(),
         emailRequestDto.variables(),
         null);
@@ -256,7 +256,7 @@ public class ClientService {
             )
             .next()
             .flatMap(
-                triggerEmailDuplicatedClient(emailRequestDto.email(), emailRequestDto.userName()))
+                triggerEmailDuplicatedClient(emailRequestDto.emailsCsv(), emailRequestDto.userName()))
             .then();
   }
 

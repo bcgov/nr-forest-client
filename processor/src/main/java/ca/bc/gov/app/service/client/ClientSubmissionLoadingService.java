@@ -63,74 +63,66 @@ public class ClientSubmissionLoadingService {
   }
 
   public Mono<EmailRequestDto> buildMailMessage(MessagingWrapper<Integer> message) {
-    if (message
-            .parameters()
-            .get(ApplicationConstant.SUBMISSION_STATUS) == null
-    ) {
+    if (message.parameters().get(ApplicationConstant.SUBMISSION_STATUS) == null) {
       return Mono.empty();
     }
 
     return submissionDetailRepository
         .findBySubmissionId(message.payload())
         .doOnNext(
-            submission -> log.info("Submission details loaded for mail purpose {}", submission.getSubmissionId())
+            details -> 
+              log.info("Submission details loaded for mail purpose {} - Notify client? {}",
+                     details.getSubmissionId(), 
+                     details.getNotifyClientInd())
         )
-        .flatMap(details ->
-            contactRepository
+        .flatMap(
+            details ->
+              contactRepository
                 .findFirstBySubmissionId(message.payload())
-                .doOnNext(
-                    submissionContact -> log.info("Submission contact loaded for mail purpose {} [{} {}]",
-                        submissionContact.getSubmissionId(),
-                        submissionContact.getFirstName(),
-                        submissionContact.getLastName()
-                    )
-                )
-                .flatMap(
-                    submissionContact ->
-                        getDistrictEmailsAndDescription(details.getDistrictCode())
-                            .doOnNext(
-                                districtInfo -> log.info("District email and description loaded for mail purpose {} {} [{}]",
-                                    message.payload(),
-                                    districtInfo.getLeft(),
-                                    districtInfo.getRight()
-                                )
-                            )
-                            .switchIfEmpty(
-                                Mono.just(Pair.of(StringUtils.EMPTY, StringUtils.EMPTY))
-                                    .doOnNext(
-                                        districtInfo -> log.info("No district email and description found for mail purpose {} [{}]",
-                                            message.payload(),
-                                            details.getDistrictCode()
-                                        )
-                                    )
-                            )
-                        .map(districtInfo ->
-                            new EmailRequestDto(
+                .doOnNext(submissionContact -> 
+                    log.info("Submission contact loaded for mail purpose {} [{} {}]",
+                             submissionContact.getSubmissionId(), 
+                             submissionContact.getFirstName(),
+                             submissionContact.getLastName()))
+                .flatMap(submissionContact ->
+                    getDistrictEmailsAndDescription(details.getDistrictCode())
+                        .doOnNext(districtInfo -> 
+                            log.info("District email and description loaded for mail purpose {} {} [{}]",
+                                     message.payload(), 
+                                     districtInfo.getLeft(), 
+                                     districtInfo.getRight()))
+                        .switchIfEmpty(Mono.just(Pair.of(StringUtils.EMPTY, StringUtils.EMPTY))
+                            .doOnNext(districtInfo -> 
+                                log.info("No district email and description found for mail purpose {} [{}]",
+                                message.payload(), 
+                                details.getDistrictCode())))
+                        .map(districtInfo -> {
+                            // Exclude client email if notifyClientInd is "N"
+                            String clientEmail = details.getNotifyClientInd().equalsIgnoreCase("N")
+                                ? null
+                                : submissionContact.getEmailAddress();
+
+                            String rawEmails = getEmails(message, districtInfo.getLeft(), clientEmail);
+
+                            log.info("Email recipient list: {}", rawEmails);
+
+                            return new EmailRequestDto(
                                 details.getRegistrationNumber(),
                                 details.getOrganizationName(),
                                 submissionContact.getUserId(),
                                 submissionContact.getFirstName(),
-                                getEmails(
-                                    message,
-                                    districtInfo.getLeft(),
-                                    submissionContact.getEmailAddress()
-                                ),
+                                rawEmails,
                                 getTemplate(message),
                                 getSubject(message, details.getOrganizationName()),
-                                getParameter(
-                                    message,
-                                    submissionContact.getFirstName() + " "
-                                    + submissionContact.getLastName(),
-                                    details.getOrganizationName(),
+                                getParameter(message,
+                                    submissionContact.getFirstName() + " " + submissionContact.getLastName(),
+                                    details.getOrganizationName(), 
                                     districtInfo.getRight(),
                                     districtInfo.getLeft(),
                                     Objects.toString(details.getClientNumber(), ""),
-                                    String.valueOf(message.parameters()
-                                        .get(ApplicationConstant.MATCHING_REASON)),
-                                    message.payload()
-                                )
-                            )
-                        )
+                                    String.valueOf(message.parameters().get(ApplicationConstant.MATCHING_REASON)),
+                                    message.payload()));
+                        })
                 )
         );
   }
