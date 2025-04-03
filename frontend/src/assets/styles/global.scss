@@ -1509,6 +1509,7 @@ cds-side-nav-items.lower-side-nav {
 .submission-content,
 .client-details-screen,
 .client-details-content,
+.idir-content,
 .no-menu-content {
   padding: 2.5rem 0rem 2.5rem 16rem;
   display: flex;
@@ -2313,7 +2314,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
     padding: 2.5rem 0rem;
   }
 
-  .submission-content, .client-details-screen, .client-details-content {
+  .submission-content, .client-details-screen, .client-details-content, .idir-content {
     padding: 2.5rem 2rem;
   }
 
@@ -2392,7 +2393,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   div#screen div#title {
     margin-bottom: 2rem;
   }
-  .submission-content, .client-details-screen, .client-details-content {
+  .submission-content, .client-details-screen, .client-details-content, .idir-content {
     --padding-right: 2rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);
@@ -2482,7 +2483,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
     margin-bottom: 2rem;
   }
 
-  .submission-content, .client-details-screen, .client-details-content {
+  .submission-content, .client-details-screen, .client-details-content, .idir-content {
     --padding-right: 2rem;
     --padding-left: 18.5rem;
     padding: 2.5rem var(--padding-right) 2.5rem var(--padding-left);

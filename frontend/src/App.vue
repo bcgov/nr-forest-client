@@ -9,6 +9,7 @@ import { useEventBus } from '@vueuse/core'
 import type { ModalNotification } from '@/dto/CommonTypesDto'
 // @ts-ignore
 import Delete16 from '@carbon/icons-vue/es/trash-can/16'
+import UnauthorizedErrorPage from '@/pages/UnauthorizedErrorPage.vue';
 
 const modalBus = useEventBus<ModalNotification>('modal-notification')
 const toastBus = useEventBus<ModalNotification>('toast-notification')
@@ -80,7 +81,8 @@ overlayBus.on(openOverlay)
   </div>
   <div :class="$route.meta.format">
     <div :class="$route.meta.style" aria-live="polite">
-      <router-view></router-view>
+      <UnauthorizedErrorPage v-if="$route.meta.showUnauthorized" />
+      <router-view v-else></router-view>
     </div>
   </div>
 

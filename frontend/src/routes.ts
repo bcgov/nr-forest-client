@@ -29,7 +29,7 @@ const targetPathStorage = useLocalStorage("targetPath", "");
 const userProviderInfo = useLocalStorage("userProviderInfo", "");
 
 export const routes = [
-  {
+    {
     path: "/landing",
     name: "home",
     component: LandingPage,
@@ -399,8 +399,16 @@ export const router = createRouter({
 // If the route requires the idir provider, it automatically requires one of the following roles by default.
 const clientRoles = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"];
 
+const isStaffRoute = (meta: RouteMeta) => {
+  return !Array.isArray(meta.visibleTo) || meta.visibleTo.includes("idir");
+};
+
+const isClientUser = (authorities: string[]) => {
+  return clientRoles.some((role) => authorities.includes(role));
+};
+
 const isUserRoleAllowed = (authorities: string[], meta: RouteMeta) => {
-  if (Array.isArray(meta.visibleTo) && !meta.visibleTo.includes("idir")) {
+  if (!isStaffRoute(meta)) {
     // Route is not allowed for any kind of idir users.
     return false;
   }
@@ -441,9 +449,14 @@ router.beforeEach(async (to, from, next) => {
         userProviderInfo.value = user.provider;
 
         let isVisibleToUser = false;
+        let isClientUserWithInsufficientRole = false;
 
-        if (user.provider === "idir") {
+        if (user.provider === "idir" && isStaffRoute(to.meta)) {
           isVisibleToUser = isUserRoleAllowed(authorities, to.meta);
+
+          if (!isVisibleToUser && isClientUser(authorities)) {
+            isClientUserWithInsufficientRole = true;
+          }
         }
 
         if (user.provider !== "idir" && Array.isArray(to.meta.visibleTo)) {
@@ -452,7 +465,11 @@ router.beforeEach(async (to, from, next) => {
 
         // If user can see this page, continue, otherwise go to specific page or error
         // We also check if the page requires a feature flag to be visible
-        if (isVisibleToUser) {
+        // If user is not allowed but has any other client role, continue to the same route.
+        if (isVisibleToUser || isClientUserWithInsufficientRole) {
+          // set flag to replace the content defined in the route with the unauthorized view
+          to.meta.showUnauthorized = !isVisibleToUser;
+
           // If there is a target path, redirect to it and clear the storage
           if (targetPathStorage.value) {
             next({ path: targetPathStorage.value });
@@ -462,10 +479,14 @@ router.beforeEach(async (to, from, next) => {
             next();
           }
         } else {
-          const defaultRedirectTo = user.provider === "idir" ? "unauthorized-idir-role" : "error";
+          /*
+          If user provider is idir and user has no client role, redirects to the unauthorized route.
+          Otherwise redirects to "error".
+          */
+          const defaultErrorPage = user.provider === "idir" ? "unauthorized-idir-role" : "error";
 
           // If user is not allowed to see this page, redirect to specific page or error
-          next({ name: to.meta.redirectTo?.[user.provider] || defaultRedirectTo });
+          next({ name: to.meta.redirectTo?.[user.provider] || defaultErrorPage });
         }
       } else {
         // User is not logged in, redirect to home for login
@@ -512,5 +533,6 @@ declare module "vue-router" {
     sideMenu: boolean; // Show/Hide the side menu
     profile: boolean; // Show/Hide the profile menu
     featureFlagged?: string; // Name of the feature flag (if any) that controls access to this page
+    showUnauthorized?: boolean; // Output value that tells wether the route content should be replaced with the unauthorized view
   }
 }
