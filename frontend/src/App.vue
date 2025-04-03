@@ -81,7 +81,7 @@ overlayBus.on(openOverlay)
   </div>
   <div :class="$route.meta.format">
     <div :class="$route.meta.style" aria-live="polite">
-      <UnauthorizedErrorPage v-if="$route.meta.showUnauthorized" />
+      <unauthorized-error-page v-if="$route.meta.showUnauthorized" />
       <router-view v-else></router-view>
     </div>
   </div>
