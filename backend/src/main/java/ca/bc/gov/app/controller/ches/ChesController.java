@@ -42,7 +42,17 @@ public class ChesController {
     return clientService.sendEmail(emailRequestDto);
   }
 
-
+  /**
+   * Handles HTTP POST requests to send an email notification about a duplicated client.
+   *
+   * <p>This endpoint accepts an {@link EmailRequestDto} in the request body and sends an email
+   * to the specified recipients. The request is authenticated using a 
+   * {@link JwtAuthenticationToken}, from which the user ID and business ID are extracted.
+   *
+   * @param emailRequestDto the email request data, including recipient information
+   * @param principal the authentication token containing user and business details
+   * @return a {@link Mono} that completes when the email trigger process is initiated
+   */
   @PostMapping("/duplicate")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public Mono<Void> sendEmail(

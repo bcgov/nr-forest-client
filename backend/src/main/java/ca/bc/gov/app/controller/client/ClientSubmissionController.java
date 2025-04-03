@@ -65,9 +65,11 @@ public class ClientSubmissionController {
       String[] submittedAt,
       ServerHttpResponse serverResponse
   ) {
-    log.info(
-        "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, name={}, submittedAt={}",
-        page, size, requestStatus, clientType, district, name, submittedAt);
+	log.info(
+		"Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, "
+			+ "name={}, submittedAt={}",
+		page, size, requestStatus, clientType, district, name,
+		submittedAt);
 
     return clientService
         .listSubmissions(
