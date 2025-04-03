@@ -91,6 +91,39 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.wcbFirmNumber",
             null,
             "142536"
+        ),
+        argumentSet(
+            "Replace the notes value from a location",
+            "00000157",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/cliLocnComment\",\"value\": \"This is a homeland note\"}]",
+            "$.addresses[0].cliLocnComment",
+            null,
+            "This is a homeland note"
+        ),
+        argumentSet(
+            "Replace the location name from a location",
+            "00000157",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/clientLocnName\",\"value\": \"HOMELAND\"}]",
+            "$.addresses[0].clientLocnName",
+            null,
+            "HOMELAND"
+        ),
+        argumentSet(
+            "Replace the location phone from a location",
+            "00000157",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/cellPhone\",\"value\": \"4008000001\"}]",
+            "$.addresses[0].cellPhone",
+            null,
+            "4008000001"
+        ),
+        argumentSet(
+            "Add a new location",
+            "00000137",
+            "[{\"op\":\"add\",\"path\":\"/addresses/null\",\"value\":{\"clientNumber\":\"00000137\",\"clientLocnName\":\"Headquarters\",\"addressOne\":\"2975 Jutland Rd\",\"addressTwo\":\"\",\"addressThree\":null,\"city\":\"Victoria\",\"provinceCode\":\"BC\",\"provinceDesc\":\"British Columbia\",\"postalCode\":\"V8T5J9\",\"countryCode\":\"CA\",\"countryDesc\":\"Canada\",\"businessPhone\":\"\",\"homePhone\":\"\",\"cellPhone\":\"\",\"faxNumber\":\"\",\"emailAddress\":\"\",\"locnExpiredInd\":\"N\",\"cliLocnComment\":\"\"}}]",
+            "$.addresses[1].clientLocnName",
+            null,
+            "HEADQUARTERS"
+
         )
     );
   }
