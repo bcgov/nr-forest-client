@@ -151,8 +151,8 @@ public class ClientService {
         .flatMap(forestClientDetailsDto -> Mono
             .just(forestClientDetailsDto)
             .filter(dto ->
-                StringUtils.isNotBlank(dto.client().registryCompanyTypeCode()) &&
-                StringUtils.isNotBlank(dto.client().corpRegnNmbr())
+                StringUtils.isNotBlank(dto.client().registryCompanyTypeCode()) 
+                && StringUtils.isNotBlank(dto.client().corpRegnNmbr())
             )            
             .flatMap(dto ->
                 bcRegistryService
