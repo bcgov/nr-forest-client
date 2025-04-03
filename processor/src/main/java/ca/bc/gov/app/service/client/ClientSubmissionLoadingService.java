@@ -96,7 +96,7 @@ public class ClientSubmissionLoadingService {
                                 log.info("No district email and description found for mail purpose {} [{}]",
                                 message.payload(), 
                                 details.getDistrictCode())))
-                        .map(districtInfo -> {
+                        .flatMap(districtInfo -> {
                             // Exclude client email if notifyClientInd is "N"
                             String clientEmail = details.getNotifyClientInd().equalsIgnoreCase("N")
                                 ? null
@@ -104,9 +104,13 @@ public class ClientSubmissionLoadingService {
 
                             String rawEmails = getEmails(message, districtInfo.getLeft(), clientEmail);
 
-                            log.info("Email recipient list: {}", rawEmails);
+                            // Avoid sending an email if no recipient emails exist
+                            if (StringUtils.isBlank(rawEmails)) {
+                                log.info("No recipients for email. Skipping email creation.");
+                                return Mono.empty();
+                            }
 
-                            return new EmailRequestDto(
+                            return Mono.just(new EmailRequestDto(
                                 details.getRegistrationNumber(),
                                 details.getOrganizationName(),
                                 submissionContact.getUserId(),
@@ -116,12 +120,13 @@ public class ClientSubmissionLoadingService {
                                 getSubject(message, details.getOrganizationName()),
                                 getParameter(message,
                                     submissionContact.getFirstName() + " " + submissionContact.getLastName(),
-                                    details.getOrganizationName(), 
+                                    details.getOrganizationName(),
                                     districtInfo.getRight(),
                                     districtInfo.getLeft(),
                                     Objects.toString(details.getClientNumber(), ""),
                                     String.valueOf(message.parameters().get(ApplicationConstant.MATCHING_REASON)),
-                                    message.payload()));
+                                    message.payload()))
+                            );
                         })
                 )
         );
