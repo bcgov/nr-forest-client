@@ -57,7 +57,6 @@ class BusinessInformationBirthdayValidatorTest {
                     null,
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
-                    StringUtils.EMPTY,
                     StringUtils.EMPTY
                 ), 0
             )
@@ -97,7 +96,6 @@ class BusinessInformationBirthdayValidatorTest {
                 StringUtils.EMPTY,
                 StringUtils.EMPTY,
                 null,
-                StringUtils.EMPTY,
                 StringUtils.EMPTY,
                 StringUtils.EMPTY,
                 StringUtils.EMPTY

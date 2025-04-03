@@ -60,8 +60,7 @@ class BusinessInformationIdentificationDocumentValidatorTest {
                     new ClientValueTextDto(documentType, StringUtils.EMPTY),
                     documentNumber,
                     documentCountry,
-                    documentProvince,
-                    StringUtils.EMPTY
+                    documentProvince
                 ),
                 0
             )
@@ -100,7 +99,6 @@ class BusinessInformationIdentificationDocumentValidatorTest {
                 StringUtils.EMPTY,
                 StringUtils.EMPTY,
                 null,
-                StringUtils.EMPTY,
                 StringUtils.EMPTY,
                 StringUtils.EMPTY,
                 StringUtils.EMPTY

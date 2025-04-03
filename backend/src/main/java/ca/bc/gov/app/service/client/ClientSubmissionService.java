@@ -443,6 +443,7 @@ public class ClientSubmissionService {
                     .submissionDate(LocalDateTime.now())
                     .createdBy(JwtPrincipalUtil.getUserId(principal))
                     .updatedBy(JwtPrincipalUtil.getUserId(principal))
+                    .notifyClientInd(clientSubmissionDto.notifyClientInd())
                     .build()
             )
             //Save submission to begin with

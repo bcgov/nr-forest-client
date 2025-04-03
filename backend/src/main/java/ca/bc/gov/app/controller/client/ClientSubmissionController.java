@@ -107,7 +107,8 @@ public class ClientSubmissionController {
             new ClientSubmissionDto(
                 request.businessInformation(),
                 request.location(),
-                JwtPrincipalUtil.getUserId(principal)
+                JwtPrincipalUtil.getUserId(principal),
+                request.notifyClientInd()
             )
         )
         .switchIfEmpty(
@@ -163,7 +164,8 @@ public class ClientSubmissionController {
         .map(req -> new ClientSubmissionDto(
                           req.businessInformation(), 
                           req.location(), 
-                          JwtPrincipalUtil.getUserId(principal)))
+                          JwtPrincipalUtil.getUserId(principal),
+                          req.notifyClientInd()))
         .flatMap(sub -> validator.validate(sub, ValidationSourceEnum.STAFF))
         .doOnNext(sub -> log.info("Staff submission is valid: {}", 
                                   sub.businessInformation().businessName()))

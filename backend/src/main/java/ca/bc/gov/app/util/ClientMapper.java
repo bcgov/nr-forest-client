@@ -73,8 +73,7 @@ public class ClientMapper {
             StringUtils.isNotBlank(clientBusinessInformationDto.identificationCountry())
                 ? clientBusinessInformationDto.identificationCountry()
                 : null
-        )
-        .withNotifyClientInd(clientBusinessInformationDto.notifyClientInd());
+        );
   }
 
   /**

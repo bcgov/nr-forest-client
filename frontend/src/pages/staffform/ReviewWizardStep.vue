@@ -98,13 +98,13 @@ watch([validation], () => {
 
 const computedNotifyClientInd = computed({
   get: () => {
-    if (!formData.value.businessInformation.notifyClientInd) {
-      formData.value.businessInformation.notifyClientInd = "Y";
+    if (!formData.value.notifyClientInd) {
+      formData.value.notifyClientInd = "Y";
     }
-    return formData.value.businessInformation.notifyClientInd === "Y";
+    return formData.value.notifyClientInd === "Y";
   },
   set: (newValue: boolean) => {
-    formData.value.businessInformation.notifyClientInd = newValue ? "Y" : "N";
+    formData.value.notifyClientInd = newValue ? "Y" : "N";
   },
 });
 

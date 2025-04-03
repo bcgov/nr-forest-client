@@ -106,8 +106,4 @@ public class SubmissionDetailEntity {
   @Size(max = 4)
   private String provinceCode;
   
-  @Column("notify_client_ind")
-  @Size(max = 4)
-  private String notifyClientInd;
-  
 }

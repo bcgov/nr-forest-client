@@ -531,8 +531,7 @@ public class TestConstants {
               null,
               null,
               null,
-              null,
-              "Y"
+              null
           ),
           new ClientLocationDto(
               List.of(
@@ -571,7 +570,8 @@ public class TestConstants {
                   )
               )
           ),
-          "IDIR\\ABC123"
+          "IDIR\\ABC123",
+          "Y"
       );
 
   public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_DTO =
@@ -595,8 +595,7 @@ public class TestConstants {
               null,
               null,
               null,
-              null,
-              "Y"
+              null
           ),
           new ClientLocationDto(
               List.of(
@@ -635,7 +634,8 @@ public class TestConstants {
                   )
               )
           ),
-          "IDIR\\ABC123"
+          "IDIR\\ABC123",
+          "Y"
       );
 
   public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_MULTI_DTO =
@@ -659,8 +659,7 @@ public class TestConstants {
               null,
               null,
               null,
-              null,
-              "Y"
+              null
           ),
           new ClientLocationDto(
               List.of(
@@ -715,7 +714,8 @@ public class TestConstants {
                   )
               )
           ),
-          "IDIR\\ABC123"
+          "IDIR\\ABC123",
+          "Y"
       );
 
   public static final ClientSubmissionDto UNREGISTERED_BUSINESS_SUBMISSION_BROKEN_DTO =
@@ -739,8 +739,7 @@ public class TestConstants {
               null,
               null,
               null,
-              null,
-              "Y"
+              null
           ),
           new ClientLocationDto(
               List.of(
@@ -779,7 +778,8 @@ public class TestConstants {
                   )
               )
           ),
-          "IDIR\\ABC123"
+          "IDIR\\ABC123",
+          "Y"
       );
 
   public static final EmailRequestDto EMAIL_REQUEST =

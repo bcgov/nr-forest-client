@@ -59,7 +59,6 @@ class BusinessInformationIndividualNameValidatorTest {
                     null,
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
-                    StringUtils.EMPTY,
                     StringUtils.EMPTY
                 ), 0
             )
@@ -99,7 +98,6 @@ class BusinessInformationIndividualNameValidatorTest {
                 StringUtils.EMPTY,
                 StringUtils.EMPTY,
                 null,
-                StringUtils.EMPTY,
                 StringUtils.EMPTY,
                 StringUtils.EMPTY,
                 StringUtils.EMPTY

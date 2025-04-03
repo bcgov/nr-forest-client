@@ -22,6 +22,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     return new ClientSubmissionDto(
         createBusinessInformation(accessor),
         createLocation(accessor),
+        null,
         null
     );
   }
@@ -56,7 +57,6 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     String clientIdentification = accessor.getString(40);
     String identificationCountry = accessor.getString(41);
     String identificationProvince = accessor.getString(42);
-    String notifyClientInd = accessor.getString(43);
 
     return new ClientBusinessInformationDto(
                 registrationNumber, 
@@ -77,8 +77,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
                 new ClientValueTextDto(identificationType,identificationType),
                 clientIdentification,
                 identificationCountry,
-                identificationProvince,
-                notifyClientInd);
+                identificationProvince);
   }
 
   private static ClientLocationDto createLocation(ArgumentsAccessor accessor) {

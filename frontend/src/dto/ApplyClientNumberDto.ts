@@ -53,12 +53,12 @@ export interface FormDataDto {
     clientIdentification?: string;
     identificationCountry?: string;
     identificationProvince?: string;
-    notifyClientInd?: string;
   };
   location: {
     addresses: Address[];
     contacts: Contact[];
   };
+  notifyClientInd?: string;
 }
 
 export interface ForestClientDetailsDto {

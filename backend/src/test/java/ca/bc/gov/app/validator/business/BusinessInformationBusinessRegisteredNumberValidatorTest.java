@@ -80,7 +80,6 @@ class BusinessInformationBusinessRegisteredNumberValidatorTest {
                     null,
                     StringUtils.EMPTY,
                     StringUtils.EMPTY,
-                    StringUtils.EMPTY,
                     StringUtils.EMPTY
                 ), 0
             )
