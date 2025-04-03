@@ -67,9 +67,8 @@ public class ClientSubmissionController {
   ) {
 	log.info(
 		"Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, "
-			+ "name={}, submittedAt={}",
-		page, size, requestStatus, clientType, district, name,
-		submittedAt);
+		+ "name={}, submittedAt={}",
+		page, size, requestStatus, clientType, district, name, submittedAt);
 
     return clientService
         .listSubmissions(

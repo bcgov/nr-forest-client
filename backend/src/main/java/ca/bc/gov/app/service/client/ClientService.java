@@ -256,7 +256,10 @@ public class ClientService {
             )
             .next()
             .flatMap(
-                triggerEmailDuplicatedClient(emailRequestDto.emailsCsv(), emailRequestDto.userName()))
+                triggerEmailDuplicatedClient(
+                	emailRequestDto.emailsCsv(), 
+                	emailRequestDto.userName())
+                )
             .then();
   }
 
