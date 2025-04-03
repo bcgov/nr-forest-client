@@ -69,15 +69,15 @@ public class ClientSubmissionController {
                 serverResponse
                     .getHeaders()
                     .putIfAbsent(
-                    		ApplicationConstant.X_TOTAL_COUNT, 
-                    		List.of(dto.count().toString())))
+                        ApplicationConstant.X_TOTAL_COUNT,
+                        List.of(dto.count().toString())))
         .doFinally(
             signalType ->
                 serverResponse
                     .getHeaders()
                     .putIfAbsent(
-                    		ApplicationConstant.X_TOTAL_COUNT, 
-                    		List.of("0")));
+                        ApplicationConstant.X_TOTAL_COUNT,
+                        List.of("0")));
   }
 
   @PostMapping
