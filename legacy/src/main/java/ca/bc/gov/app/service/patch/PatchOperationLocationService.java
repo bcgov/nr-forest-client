@@ -3,7 +3,6 @@ package ca.bc.gov.app.service.patch;
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ForestClientLocationDetailsDto;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
-import ca.bc.gov.app.service.ClientLocationService;
 import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,18 +10,15 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
-import org.springframework.data.relational.core.query.Update;
-import org.springframework.data.relational.core.sql.SqlIdentifier;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -41,19 +37,10 @@ import reactor.core.publisher.Mono;
 @Observed
 @RequiredArgsConstructor
 @Order(3)
-public class PatchOperationLocationService implements ClientPatchOperation {
+public class PatchOperationLocationService implements
+    ClientPatchUpdateOperation<ForestClientLocationEntity> {
 
   private final R2dbcEntityOperations entityTemplate;
-  private final ClientLocationService clientLocationService;
-  private final Map<String, String> fieldToDataField = Map.of(
-      "/clientLocnName", "client_locn_name",
-      "/emailAddress", "email_address",
-      "/faxNumber", "fax_number",
-      "/cellPhone", "cell_phone",
-      "/homePhone", "home_phone",
-      "/businessPhone", "business_phone",
-      "/cliLocnComment", "cli_locn_comment"
-  );
 
   @Override
   public String getPrefix() {
@@ -66,22 +53,73 @@ public class PatchOperationLocationService implements ClientPatchOperation {
         "/businessPhone", "/clientLocnName");
   }
 
+  @Override
+  public Map<String, String> getFieldToDataField() {
+    return Map.of(
+        "/clientLocnName", "client_locn_name",
+        "/emailAddress", "email_address",
+        "/faxNumber", "fax_number",
+        "/cellPhone", "cell_phone",
+        "/homePhone", "home_phone",
+        "/businessPhone", "business_phone",
+        "/cliLocnComment", "cli_locn_comment"
+    );
+  }
+
+  @Override
+  public Function<ForestClientLocationEntity, Map<String, Object>> getExtraFields(String userId) {
+    return entity -> Map.of(
+        "update_timestamp", LocalDateTime.now(),
+        "update_userid", userId,
+        "update_org_unit", 70L,
+        "revision_count", entity.getRevision() + 1
+    );
+  }
+
+  @Override
+  public Mono<ForestClientLocationEntity> findEntity(String clientNumber, String entityId) {
+    return entityTemplate
+        .selectOne(
+            getEntityIdentification(clientNumber, entityId),
+            getEntityClass()
+        );
+  }
+
+  @Override
+  public Query getEntityIdentification(String clientNumber, String entityId) {
+    return Query
+        .query(
+            Criteria
+                .where("CLIENT_LOCN_CODE").is(entityId)
+                .and(ApplicationConstants.CLIENT_NUMBER).is(clientNumber)
+        );
+  }
+
+  @Override
+  public Class<ForestClientLocationEntity> getEntityClass() {
+    return ForestClientLocationEntity.class;
+  }
+
   /**
    * Applies a JSON Patch document to a client location entity.
    *
    * @param clientNumber The unique identifier of the client to be patched.
    * @param patch        The JSON Patch document describing the changes.
    * @param mapper       The {@link ObjectMapper} used to deserialize and apply the patch.
-   * @param userId The username that requested the patch.
+   * @param userId       The username that requested the patch.
    * @return A {@link Mono} that completes when the patch is applied.
    */
   @Override
-  public Mono<Void> applyPatch(String clientNumber, JsonNode patch, ObjectMapper mapper, String userId) {
+  public Mono<Void> applyPatch(String clientNumber, JsonNode patch, ObjectMapper mapper,
+      String userId) {
     // If there's a patch operation targeting client location data we move ahead
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
+
+      log.info("Applying patch to client location for client {}", clientNumber);
+
       return
           Flux.concat(
-                  applyReplacePatch(clientNumber, patch, mapper, userId),
+                  applyReplacePatch(clientNumber, patch, mapper, userId, entityTemplate),
                   applyAddPatch(clientNumber, patch, mapper, userId)
               )
               .then();
@@ -90,7 +128,8 @@ public class PatchOperationLocationService implements ClientPatchOperation {
     return Mono.empty();
   }
 
-  private Mono<Void> applyAddPatch(String clientNumber, JsonNode patch, ObjectMapper mapper, String userId) {
+  private Mono<Void> applyAddPatch(String clientNumber, JsonNode patch, ObjectMapper mapper,
+      String userId) {
     //We load just the add operations
     JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
         patch,
@@ -104,9 +143,9 @@ public class PatchOperationLocationService implements ClientPatchOperation {
                 StreamSupport
                     .stream(filteredNodeOps.spliterator(), false)
             )
-            .map(entry -> PatchUtils.loadAddValue(entry, ForestClientLocationDetailsDto.class, mapper))
+            .map(entry -> PatchUtils.loadAddValue(entry, ForestClientLocationDetailsDto.class,
+                mapper))
             .flatMap(dto -> getNextLocationCode(clientNumber).map(dto::withClientLocnCode))
-            .doOnNext(System.out::println)
             .map(dto ->
                 ForestClientLocationEntity
                     .builder()
@@ -147,100 +186,6 @@ public class PatchOperationLocationService implements ClientPatchOperation {
             .then();
   }
 
-  /**
-   * Applies a replace patch operation to the client location data. This is only for data that don't
-   * require a reason code.
-   *
-   * @param clientNumber The client number
-   * @param patch        The patch operation json node
-   * @param mapper       The {@link ObjectMapper} used to deserialize and apply the patch.
-   * @return A {@link Mono} that completes when the patch is applied.
-   */
-  private Mono<Void> applyReplacePatch(String clientNumber, JsonNode patch, ObjectMapper mapper, String userId) {
-    //We load just the replace operations
-    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
-        patch,
-        "replace",
-        getPrefix(),
-        getRestrictedPaths(),
-        mapper
-    );
-
-    return Flux
-        //We will loop through it using a flux from the ids
-        .fromIterable(PatchUtils.loadIds(patch))
-        //For each location that was changed
-        .flatMap(locationNumber ->
-            //We look it up in the database
-            findClientLocation(clientNumber, locationNumber)
-                .flatMap(entity ->
-                    Mono
-                        //We load the patch operations for the current location
-                        .just(
-                            PatchUtils.filterById(filteredNodeOps, mapper).apply(locationNumber)
-                        )
-                        //We use filterPatchOperation to remove the location number prefix
-                        .map(node -> PatchUtils.filterPatchOperations(
-                                node,
-                                locationNumber,
-                                getRestrictedPaths(),
-                                mapper
-                            )
-                        )
-                        //We convert the patch operations to a map to be used in an update op
-                        .map(node ->
-                            StreamSupport
-                                .stream(node.spliterator(), false)
-                                .filter(entry -> fieldToDataField.containsKey(
-                                    entry.get("path").asText()))
-                                .map(entry -> Pair.of(SqlIdentifier.unquoted(
-                                        fieldToDataField.get(entry.get("path").asText())),
-                                    (Object) entry.get("value").asText())
-                                )
-                                .collect(Collectors.toMap(Pair::getKey, Pair::getValue))
-                        )
-                        .filter(updateMapper -> !updateMapper.isEmpty())
-                        .map(updateMapper -> {
-                          updateMapper.put(SqlIdentifier.unquoted("update_timestamp"), LocalDateTime.now());
-                          updateMapper.put(SqlIdentifier.unquoted("update_userid"), userId);
-                          updateMapper.put(SqlIdentifier.unquoted("update_org_unit"), 70L);
-                          updateMapper.put(SqlIdentifier.unquoted("revision_count"), entity.getRevision() + 1);
-                          return updateMapper;
-                        })
-                        .map(Update::from)
-                        //We apply the patch to the entity and save it
-                        .flatMap(update -> entityTemplate
-                            .update(
-                                getLocationIdentification(clientNumber, locationNumber),
-                                update,
-                                ForestClientLocationEntity.class
-                            )
-                        )
-                        .doOnNext(clientChangesApplied -> log.info(
-                            "Applying Client Location changes on {} client", clientChangesApplied))
-                )
-        )
-        .then();
-  }
-
-  private Mono<ForestClientLocationEntity> findClientLocation(String clientNumber,
-      String locationNumber) {
-    return entityTemplate
-        .selectOne(
-            getLocationIdentification(clientNumber, locationNumber),
-            ForestClientLocationEntity.class
-        );
-  }
-
-  private Query getLocationIdentification(String clientNumber, String locationNumber) {
-    return Query
-        .query(
-            Criteria
-                .where("CLIENT_LOCN_CODE").is(locationNumber)
-                .and(ApplicationConstants.CLIENT_NUMBER).is(clientNumber)
-        );
-  }
-
   private Mono<String> getNextLocationCode(String clientNumber) {
     return entityTemplate
         .getDatabaseClient()
@@ -256,4 +201,5 @@ public class PatchOperationLocationService implements ClientPatchOperation {
   private String uppercaseIt(String str) {
     return StringUtils.isNotBlank(str) ? str.toUpperCase() : str;
   }
+
 }

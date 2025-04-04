@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.flipkart.zjsonpatch.JsonPatch;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BinaryOperator;
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.data.relational.core.sql.SqlIdentifier;
 
 /**
  * Utility class for applying JSON Patches to objects.
@@ -195,13 +197,19 @@ public class PatchUtils {
     //List entries starts with a number,
     // so we take that into consideration as well when checking the restricted paths
     // by using a regex to check if it matches the format /\d+/.*
-    Pattern pattern = Pattern.compile("/(\\d+)/(.*)");
+    Pattern pattern = Pattern.compile("/(\\d+)(?:/.*)?");
     Matcher matcher = pattern.matcher(path);
 
     // When it matches, it means that this entry is a list entry
     if (matcher.find()) {
-      // So we extract the field name and the id
-      return Pair.of(matcher.group(1), String.format("/%s", matcher.group(2)));
+      // If we have a group count greater than 1, we are on replace
+      if(matcher.groupCount() > 1) {
+        // So we extract the field name and the id
+        return Pair.of(matcher.group(1), String.format("/%s", matcher.group(2)));
+      }
+      // Otherwise, is probably a remove
+      return Pair.of(matcher.group(1), null);
+
     } else {
       // Otherwise we just return the path as is
       return Pair.of(null, path);
@@ -321,6 +329,30 @@ public class PatchUtils {
       List<String> restrictedPaths,
       ObjectMapper mapper
   ) {
+    return filterOperationsByOp(patch, operationName, prefix, true, restrictedPaths, mapper);
+  }
+
+  /**
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and
+   * restricted paths.
+   *
+   * @param patch              the JSON Patch to filter
+   * @param operationName      the name of the operation to filter by (e.g., "add", "remove",
+   *                           "replace")
+   * @param prefix             the prefix to filter the operations by
+   * @param shouldRemovePrefix Flag that identify if a prefix should be removed or not
+   * @param restrictedPaths    the list of restricted paths to filter the operations by
+   * @param mapper             the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations
+   */
+  public static JsonNode filterOperationsByOp(
+      JsonNode patch,
+      String operationName,
+      String prefix,
+      boolean shouldRemovePrefix,
+      List<String> restrictedPaths,
+      ObjectMapper mapper
+  ) {
 
     // A new ArrayNode to store the filtered operations
     ArrayNode filteredNode = mapper.createArrayNode();
@@ -343,8 +375,12 @@ public class PatchUtils {
             if (restrictedPaths.isEmpty() || restrictedPaths.stream().anyMatch(newPath::endsWith)) {
               // We create a deep copy of the operation
               ObjectNode updatedOperation = operation.deepCopy();
-              // Then we update the path of the operation
-              updatedOperation.put("path", newPath);
+
+              if (shouldRemovePrefix) {
+                // Then we update the path of the operation
+                updatedOperation.put("path", newPath);
+              }
+
               // Finally we add the updated operation to the filteredNode
               filteredNode.add(updatedOperation);
             }
@@ -362,7 +398,7 @@ public class PatchUtils {
   public static BinaryOperator<JsonNode> mergeNodes() {
     return (node1, node2) -> {
       ArrayNode arrayNode = new ObjectMapper().createArrayNode();
-      if (node1 instanceof ArrayNode){
+      if (node1 instanceof ArrayNode) {
         arrayNode = node1.deepCopy();
       } else {
         arrayNode.add(node1);
@@ -376,8 +412,8 @@ public class PatchUtils {
    * Filters the operations in a JSON Patch based on a specified operation name and restricted
    * paths.
    *
-   * @param patch   the JSON Patch to filter
-   * @param mapper  the ObjectMapper to use for JSON processing
+   * @param patch  the JSON Patch to filter
+   * @param mapper the ObjectMapper to use for JSON processing
    * @return a Function that filters the operations in a JSON Patch based on a specified operation
    */
   public static Function<String, JsonNode> filterById(
@@ -392,12 +428,13 @@ public class PatchUtils {
   }
 
   /**
-   * Loads the value from a JSON Patch "add" operation and converts it to the specified entity class.
+   * Loads the value from a JSON Patch "add" operation and converts it to the specified entity
+   * class.
    *
-   * @param <T> the type of the entity class
-   * @param patch the JSON Patch containing the "add" operation
+   * @param <T>         the type of the entity class
+   * @param patch       the JSON Patch containing the "add" operation
    * @param entityClass the class of the entity to convert the value to
-   * @param mapper the ObjectMapper to use for JSON processing
+   * @param mapper      the ObjectMapper to use for JSON processing
    * @return the value from the "add" operation converted to the specified entity class
    * @throws RuntimeException if an error occurs while processing the JSON
    */
@@ -411,6 +448,82 @@ public class PatchUtils {
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * Builds an update map from a JSON Patch, a field map, and extra fields.
+   *
+   * @param patch       The JSON Patch to build the update map from
+   * @param fieldMap    The field map to use for mapping the patch paths to the database columns
+   * @param extraFields Extra fields to include in the update map
+   * @return a Map containing the update values
+   */
+  public static Map<SqlIdentifier, Object> buildUpdate(
+      JsonNode patch,
+      Map<String, String> fieldMap,
+      Map<String, Object> extraFields
+  ) {
+
+    // Function that generates the update map value, based on the type of the value
+    Function<JsonNode, Object> valueExtractor = node -> {
+      if (node.get("value").isTextual()) {
+        return node.get("value").asText().toUpperCase();
+      } else if (node.get("value").isBoolean()) {
+        return node.get("value").asBoolean();
+      } else if (node.get("value").isNumber()) {
+        return node.get("value").numberValue();
+      } else if (node.get("value").isArray()) {
+        return StreamSupport
+            .stream(node.get("value").spliterator(), false)
+            .map(JsonNode::asText)
+            .collect(Collectors.toList());
+      } else {
+        return node.get("value").asText();
+      }
+    };
+
+    // Function that generates the update map key
+    Function<JsonNode, SqlIdentifier> keyExtractor = node -> SqlIdentifier.unquoted(
+        fieldMap.get(node.get("path").asText()));
+
+    // Filter the patch operations that are in the field map,
+    // to prevent fields that are not supposed to be here
+    Map<SqlIdentifier, Object> updateMap = StreamSupport
+        .stream(patch.spliterator(), false)
+        .filter(entry -> fieldMap.containsKey(entry.get("path").asText()))
+        .collect(
+            Collectors.toMap(
+                keyExtractor,
+                valueExtractor
+            )
+        );
+
+    // If we have extra fields, such as updated user, we add them here
+    if (extraFields != null) {
+      updateMap.putAll(
+          extraFields
+              .entrySet().stream()
+              .collect(
+                  Collectors.toMap(
+                      entry -> SqlIdentifier.unquoted(entry.getKey()),
+                      Map.Entry::getValue
+                  )
+              )
+      );
+    }
+
+    return updateMap;
+  }
+
+  public static JsonNode duplicateNodeWithId(
+      JsonNode node,
+      String id
+  ) {
+    String path = node.get("path").asText();
+    String newPath = path.replaceFirst("/\\d+", "/" + id);
+    ObjectNode updatedOperation = node.deepCopy();
+    updatedOperation.put("path", newPath);
+    return updatedOperation;
   }
 
 }
