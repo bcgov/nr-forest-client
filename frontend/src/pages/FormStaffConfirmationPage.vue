@@ -3,7 +3,7 @@
 import useSvg from "@/composables/useSvg";
 // @ts-ignore
 import badgePictogram from "@carbon/pictograms/es/badge";
-import { greenDomain } from "@/CoreConstants";
+import { greenDomain, featureFlags } from "@/CoreConstants";
 
 defineProps<{
   clientNumber: string;
@@ -13,8 +13,15 @@ const SVG = useSvg(badgePictogram);
 
 const openClientDetails = (clientNumber: string) => {
   if (clientNumber) {
-    const url = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`;
-    window.open(url, "_blank", "noopener");
+    const url = featureFlags.STAFF_CLIENT_DETAIL
+      ? `/clients/details/${clientNumber}`
+      : `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`;
+
+    if (featureFlags.STAFF_CLIENT_DETAIL) {
+      window.open(url, "_self");
+    } else {
+      window.open(url, "_blank", "noopener");
+    }
   }
 };
 </script>
