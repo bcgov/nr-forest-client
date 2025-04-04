@@ -130,6 +130,19 @@ public class ClientSubmissionController {
         .then();
   }
 
+  /**
+   * Handles staff submissions for client requests.
+   *
+   * <p>This method receives a staff-submitted client request, validates it, and processes the
+   * submission. If the request body is missing, an {@link InvalidRequestObjectException} is thrown.
+   * Upon successful submission, the response headers include the client ID and resource location.
+   *
+   * @param request        The client submission request body containing business and 
+   *                       location details.
+   * @param serverResponse The HTTP response used to set headers with client details upon success.
+   * @param principal      The authentication token containing staff user details.
+   * @return A {@link Mono} that completes when the submission is successfully processed.
+   */
   @PostMapping("/staff")
   @ResponseStatus(HttpStatus.CREATED)
   public Mono<Void> submitStaff(

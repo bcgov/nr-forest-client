@@ -142,7 +142,8 @@ public class ClientSubmissionService {
                 .flatMapSequential(submissionPair ->
                     loadSubmissionDetail(clientType, name, submissionPair.getRight())
                         .flatMap(submissionDetail ->
-                            districtService.getDistrictFullDescByCode(submissionDetail.getDistrictCode())
+                            districtService
+                                .getDistrictFullDescByCode(submissionDetail.getDistrictCode())
                                 .map(districtFullDesc ->
                                     new ClientListSubmissionDto(
                                         submissionPair.getRight().getSubmissionId(),
@@ -189,7 +190,7 @@ public class ClientSubmissionService {
    * @param principal           The security principal representing the authenticated user making
    *                            the submission.
    * @return A {@link Mono} emitting the client number as a {@link String} once the submission is
-   * successfully processed. If the submission cannot be completed, it emits an error.
+   *         successfully processed. If the submission cannot be completed, it emits an error.
    */
   public Mono<String> staffSubmit(
       ClientSubmissionDto clientSubmissionDto,
