@@ -22,6 +22,7 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
     return new ClientSubmissionDto(
         createBusinessInformation(accessor),
         createLocation(accessor),
+        null,
         null
     );
   }
@@ -45,17 +46,17 @@ public class ClientSubmissionAggregator implements ArgumentsAggregator {
             ? LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(birthdateAsString))
             : null;
     String district = accessor.getString(9);
-    String workSafeBcNumber = accessor.getString(33);
-    String doingBusinessAs = accessor.getString(34);
-    String clientAcronym = accessor.getString(35);
-    String firstName = accessor.getString(36);
-    String middleName = accessor.getString(37);
-    String lastName = accessor.getString(38);
-    String submissionNotes = accessor.getString(39);
-    String identificationType = accessor.getString(40);
-    String clientIdentification = accessor.getString(41);
-    String identificationCountry = accessor.getString(42);
-    String identificationProvince = accessor.getString(43);
+    String workSafeBcNumber = accessor.getString(32);
+    String doingBusinessAs = accessor.getString(33);
+    String clientAcronym = accessor.getString(34);
+    String firstName = accessor.getString(35);
+    String middleName = accessor.getString(36);
+    String lastName = accessor.getString(37);
+    String submissionNotes = accessor.getString(38);
+    String identificationType = accessor.getString(39);
+    String clientIdentification = accessor.getString(40);
+    String identificationCountry = accessor.getString(41);
+    String identificationProvince = accessor.getString(42);
 
     return new ClientBusinessInformationDto(
                 registrationNumber, 

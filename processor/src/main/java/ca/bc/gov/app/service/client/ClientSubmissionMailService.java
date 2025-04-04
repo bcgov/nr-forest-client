@@ -20,7 +20,7 @@ public class ClientSubmissionMailService {
   public Mono<String> sendMail(EmailRequestDto mailMessage) {
 
     log.info("Sending email to {} {} -> {}",
-        mailMessage.email(),
+        mailMessage.emailsCsv(),
         mailMessage.subject(),
         mailMessage.variables()
     );
@@ -36,9 +36,9 @@ public class ClientSubmissionMailService {
                     .body(Mono.just(mailMessage), EmailRequestDto.class)
                     .exchangeToMono(clientResponse -> clientResponse.bodyToMono(String.class))
                     .doOnNext(
-                        source -> log.info("Email sent to {} {}", mailMessage.email(), source))
+                        source -> log.info("Email sent to {} {}", mailMessage.emailsCsv(), source))
                     .doOnError(
-                        throwable -> log.error("Error sending email to {}", mailMessage.email(),
+                        throwable -> log.error("Error sending email to {}", mailMessage.emailsCsv(),
                             throwable))
             );
   }

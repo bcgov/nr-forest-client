@@ -428,6 +428,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                     new ClientSubmissionDto(
                         null,
                         null,
+                        null,
                         null
                     )
                 ),

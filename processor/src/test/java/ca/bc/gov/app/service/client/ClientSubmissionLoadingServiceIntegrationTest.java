@@ -2,30 +2,24 @@ package ca.bc.gov.app.service.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.jsonResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ca.bc.gov.app.ApplicationConstant;
-import ca.bc.gov.app.dto.DistrictDto;
 import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.entity.SubmissionStatusEnum;
 import ca.bc.gov.app.extensions.AbstractTestContainer;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
 
 @DisplayName("Integrated Test | Client Service")
@@ -84,7 +78,7 @@ class ClientSubmissionLoadingServiceIntegrationTest extends AbstractTestContaine
         .assertNext(emailRequestDto ->
             assertThat(emailRequestDto)
                 .isNotNull()
-                .hasFieldOrPropertyWithValue("email", emailAddresses)
+                .hasFieldOrPropertyWithValue("emailsCsv", emailAddresses)
         )
         .verifyComplete();
 

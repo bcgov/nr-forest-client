@@ -58,6 +58,7 @@ export interface FormDataDto {
     addresses: Address[];
     contacts: Contact[];
   };
+  notifyClientInd?: string;
 }
 
 export interface ForestClientDetailsDto {

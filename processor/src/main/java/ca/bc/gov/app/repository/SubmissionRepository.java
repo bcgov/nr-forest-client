@@ -6,6 +6,7 @@ import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface SubmissionRepository extends ReactiveCrudRepository<SubmissionEntity, Integer> {
@@ -48,4 +49,6 @@ public interface SubmissionRepository extends ReactiveCrudRepository<SubmissionE
       nrfc.submission_matching_detail.submission_matching_processed_time < now() - interval '2 minutes')"""
   )
   Flux<Integer> loadStaffSubmissions();
+
+  Mono<SubmissionEntity> findBySubmissionId(Integer submissionId);
 }

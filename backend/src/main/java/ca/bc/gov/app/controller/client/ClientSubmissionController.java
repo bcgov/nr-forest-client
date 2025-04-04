@@ -44,55 +44,40 @@ public class ClientSubmissionController {
 
   private final ClientSubmissionService clientService;
   private final SubmissionValidatorService validator;
-
-
+  
+  
   @GetMapping
   public Flux<ClientListSubmissionDto> listSubmissions(
-
-      @RequestParam(required = false, defaultValue = "0")
-      int page,
-      @RequestParam(required = false, defaultValue = "10")
-      int size,
-      @RequestParam(required = false)
-      SubmissionStatusEnum[] requestStatus,
-      @RequestParam(required = false)
-      String[] clientType,
-      @RequestParam(required = false)
-      String[] district,
-      @RequestParam(required = false)
-      String[] name,
-      @RequestParam(required = false)
-      String[] submittedAt,
-      ServerHttpResponse serverResponse
-  ) {
+      @RequestParam(required = false, defaultValue = "0") int page,
+      @RequestParam(required = false, defaultValue = "10") int size,
+      @RequestParam(required = false) SubmissionStatusEnum[] requestStatus,
+      @RequestParam(required = false) String[] clientType,
+      @RequestParam(required = false) String[] district,
+      @RequestParam(required = false) String[] name,
+      @RequestParam(required = false) String[] submittedAt,
+      ServerHttpResponse serverResponse) {
+    
     log.info(
-        "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, name={}, submittedAt={}",
+        "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, "
+            + "name={}, submittedAt={}",
         page, size, requestStatus, clientType, district, name, submittedAt);
 
     return clientService
-        .listSubmissions(
-            page,
-            size,
-            requestStatus,
-            clientType,
-            district,
-            name,
-            submittedAt
-        )
-        .doOnNext(dto -> serverResponse
-            .getHeaders()
-            .putIfAbsent(
-                ApplicationConstant.X_TOTAL_COUNT,
-                List.of(dto.count().toString())
-            )
-        )
-        .doFinally(signalType -> serverResponse
-            .getHeaders()
-            .putIfAbsent(
-                ApplicationConstant.X_TOTAL_COUNT,
-                List.of("0")
-            )
-        );
+        .listSubmissions(page, size, requestStatus, clientType, district, name, submittedAt)
+        .doOnNext(
+            dto ->
+                serverResponse
+                    .getHeaders()
+                    .putIfAbsent(
+                        ApplicationConstant.X_TOTAL_COUNT,
+                        List.of(dto.count().toString())))
+        .doFinally(
+            signalType ->
+                serverResponse
+                    .getHeaders()
+                    .putIfAbsent(
+                        ApplicationConstant.X_TOTAL_COUNT,
+                        List.of("0")));
   }
 
   @PostMapping
@@ -107,7 +92,8 @@ public class ClientSubmissionController {
             new ClientSubmissionDto(
                 request.businessInformation(),
                 request.location(),
-                JwtPrincipalUtil.getUserId(principal)
+                JwtPrincipalUtil.getUserId(principal),
+                request.notifyClientInd()
             )
         )
         .switchIfEmpty(
@@ -144,6 +130,19 @@ public class ClientSubmissionController {
         .then();
   }
 
+  /**
+   * Handles staff submissions for client requests.
+   *
+   * <p>This method receives a staff-submitted client request, validates it, and processes the
+   * submission. If the request body is missing, an {@link InvalidRequestObjectException} is thrown.
+   * Upon successful submission, the response headers include the client ID and resource location.
+   *
+   * @param request        The client submission request body containing business and 
+   *                       location details.
+   * @param serverResponse The HTTP response used to set headers with client details upon success.
+   * @param principal      The authentication token containing staff user details.
+   * @return A {@link Mono} that completes when the submission is successfully processed.
+   */
   @PostMapping("/staff")
   @ResponseStatus(HttpStatus.CREATED)
   public Mono<Void> submitStaff(
@@ -163,7 +162,8 @@ public class ClientSubmissionController {
         .map(req -> new ClientSubmissionDto(
                           req.businessInformation(), 
                           req.location(), 
-                          JwtPrincipalUtil.getUserId(principal)))
+                          JwtPrincipalUtil.getUserId(principal),
+                          req.notifyClientInd()))
         .flatMap(sub -> validator.validate(sub, ValidationSourceEnum.STAFF))
         .doOnNext(sub -> log.info("Staff submission is valid: {}", 
                                   sub.businessInformation().businessName()))

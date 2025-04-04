@@ -95,6 +95,19 @@ const checkValid = () =>
 watch([validation], () => {
   emit("valid", checkValid());
 });
+
+const computedNotifyClientInd = computed({
+  get: () => {
+    if (!formData.value.notifyClientInd) {
+      formData.value.notifyClientInd = "Y";
+    }
+    return formData.value.notifyClientInd === "Y";
+  },
+  set: (newValue: boolean) => {
+    formData.value.notifyClientInd = newValue ? "Y" : "N";
+  },
+});
+
 </script>
 
 <template>
@@ -308,4 +321,12 @@ watch([validation], () => {
       </div>
     </textarea-input-component>
   </div>
+
+  <cds-checkbox
+    id="notifyClientIndId"
+    v-shadow="1"
+    checked="computedNotifyClientInd"
+    @cds-checkbox-changed="computedNotifyClientInd = $event.detail.checked"
+    >Send client number to {{ formData.location.contacts[0].email }}.
+  </cds-checkbox>
 </template>

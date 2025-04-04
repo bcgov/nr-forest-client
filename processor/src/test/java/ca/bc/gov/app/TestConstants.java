@@ -55,7 +55,7 @@ public class TestConstants {
         "name": "Test Corp",
         "userId": "testuserid",
         "userName": "Test User",
-        "email": "testuser@mail.tst",
+        "emailsCsv": "testuser@mail.tst",
         "templateName": "test",
         "subject": "Processor Tests",
         "variables": {
