@@ -78,7 +78,7 @@ class ClientSubmissionLoadingServiceIntegrationTest extends AbstractTestContaine
         .assertNext(emailRequestDto ->
             assertThat(emailRequestDto)
                 .isNotNull()
-                .hasFieldOrPropertyWithValue("email", emailAddresses)
+                .hasFieldOrPropertyWithValue("emailsCsv", emailAddresses)
         )
         .verifyComplete();
 
