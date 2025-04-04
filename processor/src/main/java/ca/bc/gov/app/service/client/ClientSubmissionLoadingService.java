@@ -30,11 +30,20 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class ClientSubmissionLoadingService {
 
+  private static final String KEY_USER_NAME = "userName";
+  private static final String KEY_SUBMISSION = "submission";
+  private static final String KEY_BUSINESS = "business";
+  private static final String KEY_NAME = "name";
+  private static final String KEY_DISTRICT_NAME = "districtName";
+  private static final String KEY_CLIENT_NUMBER = "clientNumber";
+  private static final String KEY_DISTRICT_EMAIL = "districtEmail";
+  private static final String KEY_REASON = "reason";
+  
   private final SubmissionRepository submissionRepository;
   private final SubmissionDetailRepository submissionDetailRepository;
   private final SubmissionContactRepository contactRepository;
   private final WebClient forestClientApi;
-
+  
   /**
    * Load the submission details to be processed later on
    */
@@ -224,11 +233,11 @@ public class ClientSubmissionLoadingService {
       String districtName
   ) {
     return Map.of(
-        "userName", username,
-        "submission", submissionId,
-        "business", Map.of(
-            "name", businessName,
-            "districtName", districtName
+        KEY_USER_NAME, username,
+        KEY_SUBMISSION, submissionId,
+        KEY_BUSINESS, Map.of(
+            KEY_NAME, businessName,
+            KEY_DISTRICT_NAME, districtName
         )
     );
   }
@@ -241,12 +250,12 @@ public class ClientSubmissionLoadingService {
       String districtEmail
   ) {
     return Map.of(
-        "userName", username,
-        "business", Map.of(
-            "name", businessName,
-            "clientNumber", clientNumber,
-            "districtName", districtName,
-            "districtEmail", districtEmail
+        KEY_USER_NAME, username,
+        KEY_BUSINESS, Map.of(
+            KEY_NAME, businessName,
+            KEY_CLIENT_NUMBER, clientNumber,
+            KEY_DISTRICT_NAME, districtName,
+            KEY_DISTRICT_EMAIL, districtEmail
         )
     );
   }
@@ -260,13 +269,13 @@ public class ClientSubmissionLoadingService {
       String districtEmail
   ) {
     return Map.of(
-        "userName", username,
-        "reason", reason,
-        "business", Map.of(
-            "name", businessName,
-            "clientNumber", clientNumber,
-            "districtName", districtName,
-            "districtEmail", districtEmail
+        KEY_USER_NAME, username,
+        KEY_REASON, reason,
+        KEY_BUSINESS, Map.of(
+            KEY_NAME, businessName,
+            KEY_CLIENT_NUMBER, clientNumber,
+            KEY_DISTRICT_NAME, districtName,
+            KEY_DISTRICT_EMAIL, districtEmail
         )
     );
   }
