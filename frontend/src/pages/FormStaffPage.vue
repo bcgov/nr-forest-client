@@ -390,7 +390,6 @@ const submitBtnDisabled = ref(false);
 let nextBtnDisabled = ref(false);
 
 const submit = () => {
-  alert(formData.notifyClientInd);
   revalidateBus.emit();
   errorBus.emit([]);
   notificationBus.emit(undefined);
@@ -444,6 +443,7 @@ const submit = () => {
         },
         state: {
           clientEmail: formData.location.contacts[0].email,
+          notifyClientInd: formData.notifyClientInd
         },
       });
     } else {
