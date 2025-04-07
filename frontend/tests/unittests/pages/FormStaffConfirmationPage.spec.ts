@@ -22,7 +22,8 @@ describe("FormStaffConfirmationPage.vue", () => {
   it("displays client number and email", () => {
     const clientNumber = "123";
     const clientEmail = "test@example.com";
-    const wrapper = createComponent({ clientNumber, clientEmail });
+    const notifyClientInd = "Y";
+    const wrapper = createComponent({ clientNumber, clientEmail, notifyClientInd });
 
     expect(wrapper.text()).toContain(`New client ${clientNumber} has been created!`);
     expect(wrapper.text()).toContain(

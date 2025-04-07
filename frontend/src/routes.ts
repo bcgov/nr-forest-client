@@ -144,7 +144,8 @@ export const routes = [
     component: FormStaffConfirmationPage,
     props: route => ({ 
       clientNumber: history.state.clientNumber, 
-      clientEmail: history.state.clientEmail 
+      clientEmail: history.state.clientEmail,
+      notifyClientInd: history.state.notifyClientInd,
     }),
     meta: {
       format: "full-centered",
@@ -169,6 +170,7 @@ export const routes = [
     props: (route) => ({
       submissionId: route.params.submissionId,
       clientEmail: history.state.clientEmail,
+      notifyClientInd: history.state.notifyClientInd,
     }),
     meta: {
       format: "full-centered",

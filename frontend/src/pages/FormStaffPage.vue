@@ -334,6 +334,7 @@ const updateClientType = (value: CodeNameType | undefined) => {
 
     // reset formData
     Object.assign(formData, newFormDataDto());
+    formData.notifyClientInd = "Y";
 
     const commonBusinessInfo = {
       businessType: getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.U),
@@ -411,6 +412,7 @@ const submit = () => {
         state: {
           clientNumber: response.value.headers["x-client-id"],
           clientEmail: formData.location.contacts[0].email,
+          notifyClientInd: formData.notifyClientInd
         },
       });
     }
@@ -441,6 +443,7 @@ const submit = () => {
         },
         state: {
           clientEmail: formData.location.contacts[0].email,
+          notifyClientInd: formData.notifyClientInd
         },
       });
     } else {

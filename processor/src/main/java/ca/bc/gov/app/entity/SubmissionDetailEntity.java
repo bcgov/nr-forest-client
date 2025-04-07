@@ -106,8 +106,7 @@ public class SubmissionDetailEntity {
   @Column("identification_province_code")
   @Size(max = 4)
   private String provinceCode;
-
-
+  
   public String getIdentificationCode() {
 
     if (!StringUtils.isAllBlank(identificationTypeCode, clientIdentification)) {

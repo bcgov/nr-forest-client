@@ -7,6 +7,7 @@ import badgePictogram from "@carbon/pictograms/es/time";
 defineProps<{  
   submissionId: number;
   clientEmail: string;
+  notifyClientInd: string;
 }>();
 const SVG = useSvg(badgePictogram);
 
@@ -17,7 +18,7 @@ const SVG = useSvg(badgePictogram);
     <SVG alt="Badge pictogram" class="submission-badge" role="presentation"></SVG>
     <div class="form-header form-header-application-submitted">
       <h1 class="fluid-heading-04">This submission is being processed</h1>
-      <p class="fluid-paragraph-01">
+      <p class="fluid-paragraph-01" v-if="notifyClientInd === 'Y'">
         We’ll send the client number and submission details to <strong>{{ clientEmail }}</strong> when the process is complete.
       </p>
       <div class="form-group-buttons">

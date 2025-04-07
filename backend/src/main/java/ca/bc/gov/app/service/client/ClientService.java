@@ -151,8 +151,8 @@ public class ClientService {
         .flatMap(forestClientDetailsDto -> Mono
             .just(forestClientDetailsDto)
             .filter(dto ->
-                StringUtils.isNotBlank(dto.client().registryCompanyTypeCode()) &&
-                StringUtils.isNotBlank(dto.client().corpRegnNmbr())
+                StringUtils.isNotBlank(dto.client().registryCompanyTypeCode()) 
+                && StringUtils.isNotBlank(dto.client().corpRegnNmbr())
             )            
             .flatMap(dto ->
                 bcRegistryService
@@ -228,7 +228,7 @@ public class ClientService {
   public Mono<String> sendEmail(EmailRequestDto emailRequestDto) {
     return chesService.sendEmail(
         emailRequestDto.templateName(),
-        emailRequestDto.email(),
+        emailRequestDto.emailsCsv(),
         emailRequestDto.subject(),
         emailRequestDto.variables(),
         null);
@@ -256,7 +256,10 @@ public class ClientService {
             )
             .next()
             .flatMap(
-                triggerEmailDuplicatedClient(emailRequestDto.email(), emailRequestDto.userName()))
+                triggerEmailDuplicatedClient(
+                    emailRequestDto.emailsCsv(), 
+                    emailRequestDto.userName())
+                )
             .then();
   }
 
