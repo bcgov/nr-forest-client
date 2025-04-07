@@ -107,7 +107,7 @@ const logoutBtnKind = computed(() =>
   isSmallScreen.value || isMediumScreen.value ? "ghost" : "tertiary"
 );
 
-const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_ADMIN"].some((authority) =>
+const userHasAuthority = ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"].some((authority) =>
   ForestClientUserSession.authorities.includes(authority)
 );
 
