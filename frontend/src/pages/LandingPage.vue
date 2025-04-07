@@ -28,15 +28,15 @@ if (query.ref && query.ref === "individual") {
   hideIdirBtnInd = true;
 }
 
-const roles = ["None", "CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"];
-const rolesCodeName = roles.map((item) => ({
+const stubRoles = ["None", "CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"];
+const stubRolesCodeName = stubRoles.map((item) => ({
   code: item,
   name: item,
 }));
 
-const selectedRole = ref("CLIENT_EDITOR");
+const selectedStubRole = ref("CLIENT_EDITOR");
 
-const stubRole = (role: string) => {
+const logInStubRole = (role: string) => {
   document.cookie = `stubrole=${role}`;
   ForestClientUserSession.logIn("idir");
 };
@@ -90,17 +90,17 @@ const stubRole = (role: string) => {
         <dropdown-input-component
           id="role"
           label="Role"
-          :initial-value="selectedRole"
+          :initial-value="selectedStubRole"
           required
           required-label
-          :model-value="rolesCodeName"
+          :model-value="stubRolesCodeName"
           :enabled="true"
           tip=""
           :validations="[]"
           style="width: 18rem; margin-right: 0.5rem"
           @update:selected-value="
             (selectedValue) => {
-              selectedRole = selectedValue.code;
+              selectedStubRole = selectedValue.code;
             }
           "
         />
@@ -108,7 +108,7 @@ const stubRole = (role: string) => {
           kind="primary"
           iconLayout=""
           class="landing-button"
-          @click.prevent="stubRole(selectedRole)"
+          @click.prevent="logInStubRole(selectedStubRole)"
         >
           <span>Log in as Selected Role</span>
           <login16 slot="icon" />
