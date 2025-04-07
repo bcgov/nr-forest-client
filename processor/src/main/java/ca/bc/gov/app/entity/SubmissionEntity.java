@@ -39,4 +39,8 @@ public class SubmissionEntity extends BaseEntity {
   @Column("submission_date")
   private LocalDateTime submissionDate;
   
+  @Column("notify_client_ind")
+  @Size(max = 1)
+  private String notifyClientInd;
+  
 }

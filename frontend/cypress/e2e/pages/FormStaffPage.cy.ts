@@ -781,6 +781,11 @@ describe("Staff Form", () => {
       .should("contain", "4000/4000");
     });
 
+    it("should have the notify indicator checked", () => {
+      cy.get("#notifyClientIndId")
+        .should('have.attr', 'checked');
+    });
+
   });
 
 });
