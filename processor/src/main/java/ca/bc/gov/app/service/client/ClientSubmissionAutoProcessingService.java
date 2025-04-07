@@ -1,7 +1,5 @@
 package ca.bc.gov.app.service.client;
 
-import static java.util.function.Predicate.not;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.MessagingWrapper;

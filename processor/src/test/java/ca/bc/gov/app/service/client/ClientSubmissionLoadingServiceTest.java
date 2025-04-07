@@ -9,10 +9,9 @@ import static org.mockito.Mockito.when;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.repository.SubmissionContactRepository;
 import ca.bc.gov.app.repository.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.SubmissionLocationRepository;
-
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
@@ -31,12 +30,16 @@ class ClientSubmissionLoadingServiceTest {
       .options(wireMockConfig().port(10011))
       .configureStaticDsl(true)
       .build();
+  private final SubmissionRepository submissionRepository =
+      mock(SubmissionRepository.class);
   private final SubmissionDetailRepository submissionDetailRepository =
       mock(SubmissionDetailRepository.class);
   private final SubmissionContactRepository contactRepository =
       mock(SubmissionContactRepository.class);
   private final ClientSubmissionLoadingService service = new ClientSubmissionLoadingService(
-      submissionDetailRepository, contactRepository,
+      submissionRepository,
+      submissionDetailRepository, 
+      contactRepository,
       WebClient.builder().baseUrl("http://127.0.0.1:10011").build()
   );
 

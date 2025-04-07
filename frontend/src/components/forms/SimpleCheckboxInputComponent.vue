@@ -3,7 +3,7 @@
 import "@carbon/web-components/es/components/checkbox/index";
 
 const props = defineProps<{
-  groupId: string;
+  groupId?: string;
   checkboxId?: string;
   label: string;
   checkboxLabel: string;

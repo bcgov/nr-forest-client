@@ -11,7 +11,8 @@ import java.util.Map;
  * @param userId The unique identifier of the user initiating the email.
  * @param userName The name of the user initiating the email (not to be confused with the client's
  *        name or username).
- * @param email The email address to which the email will be sent.
+ * @param emailsCsv A CSV (comma-separated values) of email addresses to which the email 
+ *        will be sent.
  * @param templateName The name of the email template to be used for formatting the email content.
  * @param subject The subject of the email.
  * @param variables A map of variables to be used in the email template, allowing dynamic content.
@@ -21,7 +22,7 @@ public record EmailRequestDto(
     String name,
     String userId,
     String userName,
-    String email,
+    String emailsCsv,
     String templateName,
     String subject,
     Map<String, Object> variables
