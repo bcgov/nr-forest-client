@@ -55,5 +55,5 @@ jobs:
       - name: Remove completed pods and jobs (cronjobs)
         run: |
           oc delete po --field-selector=status.phase==Succeeded
-          oc get jobs --field-selector status.successful=1
+          oc delete jobs --field-selector status.successful=1
     
