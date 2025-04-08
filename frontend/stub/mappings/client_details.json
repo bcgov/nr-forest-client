@@ -3,7 +3,7 @@
     {
       "name": "Client Details General Partnership - Default",
       "request": {
-        "urlPattern": "/api/clients/details/[gG]?(.*)",
+        "urlPattern": "/api/clients/details/g?(.*)",
         "method": "GET"
       },
       "response": {
@@ -18,7 +18,7 @@
     {
       "name": "Client Details General Partnership - Default - Additional location",
       "request": {
-        "urlPattern": "/api/clients/details/[gG]?(.*)+location",
+        "urlPattern": "/api/clients/details/g?(.*)+location",
         "method": "GET"
       },
       "response": {
@@ -33,7 +33,7 @@
     {
       "name": "Client Details General Partnership - Default - Removed contact",
       "request": {
-        "urlPattern": "/api/clients/details/[gG]?(.*)-contact",
+        "urlPattern": "/api/clients/details/g?(.*)-contact",
         "method": "GET"
       },
       "response": {
@@ -48,7 +48,7 @@
     {
       "name": "Client Details General Partnership - Default - Added contact",
       "request": {
-        "urlPattern": "/api/clients/details/[gG]?(.*)\\+contact",
+        "urlPattern": "/api/clients/details/g?(.*)\\+contact",
         "method": "GET"
       },
       "response": {
@@ -63,7 +63,7 @@
     {
       "name": "Client Details Corporation",
       "request": {
-        "urlPattern": "/api/clients/details/[cC](.*)",
+        "urlPattern": "/api/clients/details/c(.*)",
         "method": "GET"
       },
       "response": {
@@ -78,7 +78,7 @@
     {
       "name": "Client Details General Partnership - Doing business as",
       "request": {
-        "urlPattern": "/api/clients/details/[gG][dD](.*)",
+        "urlPattern": "/api/clients/details/gd(.*)",
         "method": "GET"
       },
       "response": {
@@ -93,7 +93,7 @@
     {
       "name": "Client Details General Partnership - Deactivated",
       "request": {
-        "urlPattern": "/api/clients/details/[gG][dD][aA][cC](.*)",
+        "urlPattern": "/api/clients/details/gdac(.*)",
         "method": "GET"
       },
       "response": {
@@ -106,9 +106,24 @@
       }
     },
     {
+      "name": "Client Details General Partnership - Suspended",
+      "request": {
+        "urlPattern": "/api/clients/details/gspn(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-GSPN.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Client Details Sole Proprietorship",
       "request": {
-        "urlPattern": "/api/clients/details/[sS](.*)",
+        "urlPattern": "/api/clients/details/s(.*)",
         "method": "GET"
       },
       "response": {
@@ -123,7 +138,7 @@
     {
       "name": "Client Details Sole Proprietorship - Some empty fields",
       "request": {
-        "urlPattern": "/api/clients/details/[sS][eE](.*)",
+        "urlPattern": "/api/clients/details/se(.*)",
         "method": "GET"
       },
       "response": {
@@ -138,7 +153,7 @@
     {
       "name": "Client Details Individual",
       "request": {
-        "urlPattern": "/api/clients/details/[iI](.*)",
+        "urlPattern": "/api/clients/details/i(.*)",
         "method": "GET"
       },
       "response": {
@@ -153,7 +168,7 @@
     {
       "name": "Client Details Individual - Viewer role",
       "request": {
-        "urlPattern": "/api/clients/details/[iI][vV](.*)",
+        "urlPattern": "/api/clients/details/iv(.*)",
         "method": "GET"
       },
       "response": {
@@ -183,7 +198,7 @@
     {
       "name": "Client Details Individual - no locations",
       "request": {
-        "urlPattern": "/api/clients/details/[nN][lL](.*)",
+        "urlPattern": "/api/clients/details/nl(.*)",
         "method": "GET"
       },
       "response": {

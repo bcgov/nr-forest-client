@@ -123,7 +123,7 @@ const canEditClientStatus = () => {
   if (props.userRoles.includes("CLIENT_ADMIN")) {
     return true;
   }
-  if (["SPN", "REC"].includes(clientStatusCode)) {
+  if (["SPN"].includes(clientStatusCode)) {
     return props.userRoles.includes("CLIENT_SUSPEND");
   }
   if (["ACT"].includes(clientStatusCode)) {

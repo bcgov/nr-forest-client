@@ -10,6 +10,7 @@ import landingImagePath from "@/assets/images/pexels-james-wheeler-1544935.jpg";
 import logo from "@/assets/images/bc-gov-logo.png";
 // @ts-ignore
 import login16 from "@carbon/icons-vue/es/login/16";
+import { ref } from "vue";
 
 // extract the querystring parameters from the URL
 const router = useRouter();
@@ -26,6 +27,19 @@ if (query.ref && query.ref === "individual") {
   ForestClientUserSession.logIn('bcsc');
   hideIdirBtnInd = true;
 }
+
+const stubRoles = ["None", "CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"];
+const stubRolesCodeName = stubRoles.map((item) => ({
+  code: item,
+  name: item,
+}));
+
+const selectedStubRole = ref("CLIENT_EDITOR");
+
+const logInStubRole = (role: string) => {
+  document.cookie = `stubrole=${role}`;
+  ForestClientUserSession.logIn("idir");
+};
 </script>
 
 <template>
@@ -72,6 +86,34 @@ if (query.ref && query.ref === "individual") {
         <span>Log in with BCeID</span>
         <login16 slot="icon" />
       </cds-button>
+      <div v-if="$features.ROLE_LOGIN" style="width: 100%; display: flex; gap: 1rem">
+        <dropdown-input-component
+          id="role"
+          label="Role"
+          :initial-value="selectedStubRole"
+          required
+          required-label
+          :model-value="stubRolesCodeName"
+          :enabled="true"
+          tip=""
+          :validations="[]"
+          style="width: 18rem; margin-right: 0.5rem"
+          @update:selected-value="
+            (selectedValue) => {
+              selectedStubRole = selectedValue.code;
+            }
+          "
+        />
+        <cds-button
+          kind="primary"
+          iconLayout=""
+          class="landing-button"
+          @click.prevent="logInStubRole(selectedStubRole)"
+        >
+          <span>Log in as Selected Role</span>
+          <login16 slot="icon" />
+        </cds-button>
+      </div>
     </div>
     <div v-else>Redirecting...</div>
   </div>
