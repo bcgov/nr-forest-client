@@ -266,7 +266,7 @@ export const routes = [
       requireAuth: true,
       showLoggedIn: true,
       visibleTo: {
-        idirRoles: ["CLIENT_EDITOR", "CLIENT_ADMIN"],
+        idirRoles: ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"],
       },
       redirectTo: {
         bceidbusiness: "form",
