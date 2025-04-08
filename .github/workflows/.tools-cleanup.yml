@@ -56,3 +56,9 @@ jobs:
             if [ -z "$POD_NAME" ]; then
               echo "Failed to find the pod after 5 attempts."
             fi
+
+      - name: Remove completed pods and jobs (cronjobs)
+        run: |
+          oc delete po --field-selector=status.phase==Succeeded
+          oc get jobs --field-selector status.successful=1
+    
