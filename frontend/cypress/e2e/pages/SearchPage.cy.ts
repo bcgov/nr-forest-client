@@ -54,7 +54,7 @@ describe("Search Page", () => {
       const words = suffix.split(" ");
       const value = !!words.find((cur) => ["on", "true"].includes(cur));
 
-      cy.addToLocalStorage("VITE_FEATURE_FLAGS", JSON.stringify({ [ffName]: value }));
+      cy.addToLocalStorage("VITE_FEATURE_FLAGS", { [ffName]: value });
 
       // No need to continue looking up in the titlePath
       break;

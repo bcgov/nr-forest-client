@@ -54,19 +54,19 @@ describe("Client Details Page", () => {
 
   const nameScenarios = [
     {
-      id: "G",
+      id: "g",
       type: "corporation",
       expected: "Kovacek, Thompson And Boyer",
       expectedDescription: "Client name",
     },
     {
-      id: "I",
+      id: "i",
       type: "individual without middle name",
       expected: "John Silver",
       expectedDescription: "First name + Last name",
     },
     {
-      id: "S",
+      id: "s",
       type: "individual with middle name",
       expected: "Michael Gary Scott",
       expectedDescription: "First name + Middle name + Last name",
