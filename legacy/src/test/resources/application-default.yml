@@ -26,7 +26,7 @@ logging:
       springframework.test: OFF
       testcontainers: OFF
     com.github.dockerjava: OFF
-    org.springframework.r2dbc: DEBUG
-    io.r2dbc: DEBUG
-    io.r2dbc.oracle: DEBUG
-    io.r2dbc.oracle.PARAM: DEBUG
+    #org.springframework.r2dbc: DEBUG
+    #io.r2dbc: DEBUG
+    #io.r2dbc.oracle: DEBUG
+    #io.r2dbc.oracle.PARAM: DEBUG
