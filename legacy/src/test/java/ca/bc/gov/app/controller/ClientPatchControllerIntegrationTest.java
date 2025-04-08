@@ -145,7 +145,7 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "00000114",
             "[{\"op\":\"remove\",\"path\":\"/contacts/17\"}]",
             "$.contacts[0].contactName",
-            "ANGELO GLANDER",
+            "ANGELO GIANDER",
             null
         )
     );
