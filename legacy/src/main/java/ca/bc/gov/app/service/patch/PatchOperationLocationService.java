@@ -3,7 +3,6 @@ package ca.bc.gov.app.service.patch;
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ForestClientLocationDetailsDto;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
-import ca.bc.gov.app.service.ClientLocationService;
 import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +43,6 @@ import reactor.core.publisher.Mono;
 public class PatchOperationLocationService implements ClientPatchOperation {
 
   private final R2dbcEntityOperations entityTemplate;
-  private final ClientLocationService clientLocationService;
   private final Map<String, String> fieldToDataField = Map.of(
       "/clientLocnName", "client_locn_name",
       "/emailAddress", "email_address",
@@ -106,7 +104,6 @@ public class PatchOperationLocationService implements ClientPatchOperation {
             )
             .map(entry -> PatchUtils.loadAddValue(entry, ForestClientLocationDetailsDto.class, mapper))
             .flatMap(dto -> getNextLocationCode(clientNumber).map(dto::withClientLocnCode))
-            .doOnNext(System.out::println)
             .map(dto ->
                 ForestClientLocationEntity
                     .builder()
