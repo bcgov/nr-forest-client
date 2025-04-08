@@ -123,7 +123,22 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.addresses[1].clientLocnName",
             null,
             "HEADQUARTERS"
-
+        ),
+        argumentSet(
+            "Update contact phone",
+            "00000158",
+            "[{\"op\":\"replace\",\"path\":\"/contacts/25/businessPhone\",\"value\":\"1234567894\"}]",
+            "$.contacts[0].businessPhone",
+            "7574522379",
+            "1234567894"
+        ),
+        argumentSet(
+            "Update contact name",
+            "00000158",
+            "[{\"op\":\"replace\",\"path\":\"/contacts/25/contactName\",\"value\":\"ELLISSA MCAVOY\"}]",
+            "$.contacts[0].contactName",
+            "ELLISSA MCILVORAY",
+            "ELLISSA MCAVOY"
         )
     );
   }
