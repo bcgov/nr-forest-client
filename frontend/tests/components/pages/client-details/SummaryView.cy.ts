@@ -342,4 +342,47 @@ describe("<summary-view />", () => {
       });
     });
   });
+
+  describe("when role contains CLIENT_SUSPEND", () => {
+    const props = getDefaultProps();
+    props.userRoles = ["CLIENT_SUSPEND"];
+
+    ["REC", "DAC", "DEC"].forEach((clientStatus) => {
+      const props = getDefaultProps();
+      props.userRoles = ["CLIENT_SUSPEND"];
+      props.data.client.clientStatusCode = clientStatus;
+      props.data.client.clientStatusDesc = clientStatus;
+      describe(`when current client status is: ${clientStatus}`, () => {
+        beforeEach(() => {
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+        });
+
+        it("locks the Client status field", () => {
+          // Check we are in edit mode
+          cy.get("#summarySaveBtn").should("be.visible");
+
+          testHidden("#input-clientStatus");
+          testReadonly("#clientStatus");
+        });
+      });
+    });
+
+    ["ACT", "SPN"].forEach((clientStatus) => {
+      const props = getDefaultProps();
+      props.userRoles = ["CLIENT_SUSPEND"];
+      props.data.client.clientStatusCode = clientStatus;
+      props.data.client.clientStatusDesc = clientStatus;
+      describe(`when current client status is: ${clientStatus}`, () => {
+        beforeEach(() => {
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+        });
+
+        it("allows to update the Client status field", () => {
+          testDropdown("#input-clientStatus");
+        });
+      });
+    });
+  });
 });
