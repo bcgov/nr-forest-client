@@ -25,7 +25,9 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
   private static final String REMOVE_ALL_CONTACTS = """
       DELETE FROM THE.CLIENT_CONTACT 
       WHERE CLIENT_NUMBER = :client_number
-      AND CONTACT_NAME = (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id)""";
+      AND CONTACT_NAME = (
+          SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      )""";
 
   private final R2dbcEntityOperations entityTemplate;
 
