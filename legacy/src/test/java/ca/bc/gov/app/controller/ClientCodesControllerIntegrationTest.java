@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @Slf4j
-@DisplayName("Integrated Test | Client Location Controller")
+@DisplayName("Integrated Test | Client Codes Controller")
 class ClientCodesControllerIntegrationTest extends
     AbstractTestContainerIntegrationTest {
 
