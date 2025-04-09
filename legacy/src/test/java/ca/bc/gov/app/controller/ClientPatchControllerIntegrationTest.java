@@ -139,6 +139,38 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.addresses[1].clientLocnName",
             null,
             "HEADQUARTERS"
+        ),
+        argumentSet(
+            "Update contact phone",
+            "00000158",
+            "[{\"op\":\"replace\",\"path\":\"/contacts/25/businessPhone\",\"value\":\"1234567894\"}]",
+            "$.contacts[0].businessPhone",
+            "7574522379",
+            "1234567894"
+        ),
+        argumentSet(
+            "Update contact name",
+            "00000114",
+            "[{\"op\":\"replace\",\"path\":\"/contacts/17/contactTypeCode\",\"value\":\"BL\"},{\"op\":\"replace\",\"path\":\"/contacts/17/contactName\",\"value\":\"ANGELO GIANDER\"}]",
+            "$.contacts[0].contactName",
+            "ANGELO GLANDER",
+            "ANGELO GIANDER"
+        ),
+        argumentSet(
+            "Remove contact",
+            "00000157",
+            "[{\"op\":\"remove\",\"path\":\"/contacts/24\"}]",
+            "$.contacts[0].contactName",
+            "JACK BEANSTALK",
+            null
+        ),
+        argumentSet(
+            "Add a new contact",
+            "00000158",
+            "[{\"op\":\"add\",\"path\":\"/contacts/null\",\"value\":{\"clientNumber\":\"00000158\",\"locationCodes\":[\"00\"],\"contactName\":\"JAMES Lee-Roy\",\"contactTypeCode\":\"DI\",\"contactTypeDesc\":\"Director\",\"businessPhone\":\"2504447788\",\"secondaryPhone\":\"\",\"faxNumber\":\"\",\"emailAddress\":\"leeroy@oakheritagegroup.ca\"}}]",
+            "$.contacts[1].contactName",
+            null,
+            "JAMES LEE-ROY"
         )
     );
   }

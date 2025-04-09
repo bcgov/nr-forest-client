@@ -1,7 +1,7 @@
 /**
  * Router configuration for the application.
  */
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, type RouteMeta } from "vue-router";
 import { useLocalStorage } from "@vueuse/core";
 import { Hub } from "aws-amplify/utils";
 
@@ -19,6 +19,7 @@ import NotFoundPage from "@/pages/NotFoundPage.vue";
 import LogoutPage from "@/pages/LogoutPage.vue";
 import SearchPage from "@/pages/SearchPage.vue";
 import ClientDetailsPage from "@/pages/ClientDetailsPage.vue";
+import UnauthorizedErrorPage from "@/pages/UnauthorizedErrorPage.vue";
 
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -28,7 +29,7 @@ const targetPathStorage = useLocalStorage("targetPath", "");
 const userProviderInfo = useLocalStorage("userProviderInfo", "");
 
 export const routes = [
-  {
+    {
     path: "/landing",
     name: "home",
     component: LandingPage,
@@ -115,12 +116,36 @@ export const routes = [
     },
   },
   {
+    path: "/unauthorized",
+    name: "unauthorized-idir-role",
+    component: UnauthorizedErrorPage,
+    props: true,
+    meta: {
+      format: "full",
+      hideHeader: false,
+      requireAuth: true,
+      showLoggedIn: true,
+      visibleTo: {
+        idirRoles: true, // any idir user, even if they have no client-related role.
+      },
+      redirectTo: {
+        bceidbusiness: "form",
+        bcsc: "form",
+      },
+      style: "content-stretched",
+      headersStyle: "headers-compact",
+      sideMenu: false,
+      profile: true,
+    },
+  },
+  {
     path: "/client-created",
     name: "staff-confirmation",
     component: FormStaffConfirmationPage,
     props: route => ({ 
       clientNumber: history.state.clientNumber, 
-      clientEmail: history.state.clientEmail 
+      clientEmail: history.state.clientEmail,
+      notifyClientInd: history.state.notifyClientInd,
     }),
     meta: {
       format: "full-centered",
@@ -145,6 +170,7 @@ export const routes = [
     props: (route) => ({
       submissionId: route.params.submissionId,
       clientEmail: history.state.clientEmail,
+      notifyClientInd: history.state.notifyClientInd,
     }),
     meta: {
       format: "full-centered",
@@ -214,7 +240,9 @@ export const routes = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"],
+      visibleTo: {
+        idirRoles: ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"],
+      },
       redirectTo: {
         bceidbusiness: "form",
         bcsc: "form",
@@ -237,7 +265,9 @@ export const routes = [
       hideHeader: false,
       requireAuth: true,
       showLoggedIn: true,
-      visibleTo: ["CLIENT_EDITOR","CLIENT_ADMIN"],
+      visibleTo: {
+        idirRoles: ["CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"],
+      },
       redirectTo: {
         bceidbusiness: "form",
         bcsc: "form",
@@ -368,6 +398,34 @@ export const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 });
 
+// If the route requires the idir provider, it automatically requires one of the following roles by default.
+const clientRoles = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"];
+
+const isStaffRoute = (meta: RouteMeta) => {
+  return !Array.isArray(meta.visibleTo) || meta.visibleTo.includes("idir");
+};
+
+const isClientUser = (authorities: string[]) => {
+  return clientRoles.some((role) => authorities.includes(role));
+};
+
+const isUserRoleAllowed = (authorities: string[], meta: RouteMeta) => {
+  if (!isStaffRoute(meta)) {
+    // Route is not allowed for any kind of idir users.
+    return false;
+  }
+
+  let allowedRoles = clientRoles;
+  if (!Array.isArray(meta.visibleTo)) {
+    if (typeof meta.visibleTo.idirRoles === "boolean") {
+      return meta.visibleTo.idirRoles;
+    }
+    allowedRoles = meta.visibleTo.idirRoles;
+  }
+
+  return allowedRoles.some((role) => authorities.includes(role));
+};
+
 router.beforeEach(async (to, from, next) => {
   if (to.name === "not-found") {
     next({ name: "notfoundstatus" });
@@ -392,9 +450,28 @@ router.beforeEach(async (to, from, next) => {
         // Save user provider info for logout
         userProviderInfo.value = user.provider;
 
+        let isVisibleToUser = false;
+        let isClientUserWithInsufficientRole = false;
+
+        if (user.provider === "idir" && isStaffRoute(to.meta)) {
+          isVisibleToUser = isUserRoleAllowed(authorities, to.meta);
+
+          if (!isVisibleToUser && isClientUser(authorities)) {
+            isClientUserWithInsufficientRole = true;
+          }
+        }
+
+        if (user.provider !== "idir" && Array.isArray(to.meta.visibleTo)) {
+          isVisibleToUser = to.meta.visibleTo.includes(user.provider);
+        }
+
         // If user can see this page, continue, otherwise go to specific page or error
         // We also check if the page requires a feature flag to be visible
-        if (to.meta.visibleTo.includes(user.provider) || to.meta.visibleTo.some(visible => authorities.includes(visible))) {
+        // If user is not allowed but has any other client role, continue to the same route.
+        if (isVisibleToUser || isClientUserWithInsufficientRole) {
+          // set flag to replace the content defined in the route with the unauthorized view
+          to.meta.showUnauthorized = !isVisibleToUser;
+
           // If there is a target path, redirect to it and clear the storage
           if (targetPathStorage.value) {
             next({ path: targetPathStorage.value });
@@ -404,8 +481,14 @@ router.beforeEach(async (to, from, next) => {
             next();
           }
         } else {
+          /*
+          If user provider is idir and user has no client role, redirects to the unauthorized route.
+          Otherwise redirects to "error".
+          */
+          const defaultErrorPage = user.provider === "idir" ? "unauthorized-idir-role" : "error";
+
           // If user is not allowed to see this page, redirect to specific page or error
-          next({ name: to.meta.redirectTo?.[user.provider] || "error" });
+          next({ name: to.meta.redirectTo?.[user.provider] || defaultErrorPage });
         }
       } else {
         // User is not logged in, redirect to home for login
@@ -435,18 +518,23 @@ Hub.listen("auth", async ({ payload }) => {
 });
 
 declare module "vue-router" {
+  interface IdirRoles {
+    idirRoles: Array<string> | boolean;
+  }
+
   // eslint-disable-next-line no-unused-vars
   interface RouteMeta {
     format: string; // Main body style class
     hideHeader: boolean; // Show/Hide the header
     requireAuth: boolean; // Force user to be logged in to see this page
     showLoggedIn: boolean; // Show/Hide the page for a logged user
-    visibleTo: Array<string>; // Which user types/providers can see this page
+    visibleTo: Array<string> | IdirRoles; // Which user types/providers can see this page
     redirectTo?: Record<string, string>; // Where to redirect the user if they are not allowed to see this page
     style: string; // Main body style class
     headersStyle: string; // Header style class
     sideMenu: boolean; // Show/Hide the side menu
     profile: boolean; // Show/Hide the profile menu
     featureFlagged?: string; // Name of the feature flag (if any) that controls access to this page
+    showUnauthorized?: boolean; // Output value that tells wether the route content should be replaced with the unauthorized view
   }
 }

@@ -166,35 +166,7 @@ describe("Staff Form", () => {
     cy.viewport(1920, 1080);
   });
 
-  describe('User access', () => {    
-    
-    it("CLIENT_EDITOR should be able to see the button", () => {
-      cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
-        given_name: "James",
-        family_name: "Baxter",
-        "cognito:groups": ["CLIENT_EDITOR"],
-      });
-
-      // Check if the Create client button is visible
-      cy.get("#menu-list-staff-form")
-        .should("be.visible")
-        .find("span")
-        .should("contain", "Create client");
-    });
-
-    it("CLIENT_ADMIN should be able to see the button", () => {
-        cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
-          given_name: "James",
-          family_name: "Baxter",
-          "cognito:groups": ["CLIENT_ADMIN"],
-        });
-    
-        // Check if the Create client button is visible
-        cy.get("#menu-list-staff-form")
-          .should("be.visible")
-          .find("span")
-          .should("contain", "Create client");
-    });
+  describe('User access', () => {
 
     it("CLIENT_VIEWER should not be able to see the button", () => {
       cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
@@ -207,7 +179,7 @@ describe("Staff Form", () => {
       cy.get("#menu-list-staff-form").should("not.exist");
     });
 
-    it("CLIENT_EDITOR should be able to click the button", () => {
+    it("CLIENT_EDITOR should be able to see and click the button", () => {
       cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
         given_name: "James",
         family_name: "Baxter",
@@ -220,7 +192,20 @@ describe("Staff Form", () => {
       cy.get("h1").should("be.visible").should("contain", " Create client ");
     });
 
-    it("CLIENT_ADMIN should be able to click the button", () => {
+    it("CLIENT_SUSPEND should be able to see and click the button", () => {
+      cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
+        given_name: "James",
+        family_name: "Baxter",
+        "cognito:groups": ["CLIENT_SUSPEND"],
+      });
+
+      // Check if the Create client button is visible
+      cy.get("#menu-list-staff-form").should("be.visible").click();
+
+      cy.get("h1").should("be.visible").should("contain", " Create client ");
+    });
+
+    it("CLIENT_ADMIN should be able to see and click the button", () => {
       cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
         given_name: "James",
         family_name: "Baxter",
@@ -779,6 +764,11 @@ describe("Staff Form", () => {
       .shadow()
       .find(".cds--text-area__label-wrapper")
       .should("contain", "4000/4000");
+    });
+
+    it("should have the notify indicator checked", () => {
+      cy.get("#notifyClientIndId")
+        .should('have.attr', 'checked');
     });
 
   });

@@ -44,4 +44,8 @@ public class SubmissionEntity extends BaseEntity {
   @Column("update_timestamp")
   private LocalDateTime updateTimestamp;
   
+  @Column("notify_client_ind")
+  @Size(max = 1)
+  private String notifyClientInd;
+  
 }

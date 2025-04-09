@@ -207,7 +207,7 @@
     {
       "name": "Get client status codes by client type",
       "request": {
-        "urlPattern": "/api/codes/client-statuses/(G|X)",
+        "urlPattern": "/api/codes/client-statuses/(P|X)",
         "method": "GET"
       },
       "response": {

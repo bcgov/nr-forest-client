@@ -47,7 +47,7 @@
     <netty.version>4.1.119.Final</netty.version>
     <logback.version>1.5.18</logback.version>
     <oci.revision>${project.version}</oci.revision>
-    <flyway.version>11.4.1</flyway.version>
+    <flyway.version>11.5.0</flyway.version>
   </properties>
 
   <dependencies>
@@ -247,7 +247,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.5.2</version>
+        <version>3.5.3</version>
         <executions>
           <execution>
             <id>integration-tests</id>
@@ -269,7 +269,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.2</version>
+        <version>3.5.3</version>
         <configuration>
           <argLine>@{argLine}</argLine>
           <skipTests>${skip.unit.tests}</skipTests>
@@ -286,7 +286,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.12</version>
+        <version>0.8.13</version>
         <configuration>
           <skip>${jacoco.skip}</skip>
           <excludes>

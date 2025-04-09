@@ -36,9 +36,10 @@ BEGIN
   END IF;
 
   IF INSERTING OR UPDATING THEN
+
+  	v_client_update_action_code := NULL;
+
     IF UPDATING THEN
-      --Address Change
-      v_client_update_action_code := NULL;
 
       IF NVL(:OLD.address_1,CHR(255))
            ||NVL(:OLD.address_2,CHR(255))
@@ -93,7 +94,7 @@ BEGIN
           , add_timestamp
           , add_userid
           , add_org_unit)
-    SELECT client_location_audit_seq.nextval
+          VALUES (client_location_audit_seq.nextval
           , v_client_audit_code
           , :NEW.client_number
           , :NEW.client_locn_code
@@ -117,15 +118,13 @@ BEGIN
           , :NEW.cli_locn_comment
           , v_client_update_action_code
           , v_client_update_reason_code
-          , client_type_code
+          , (SELECT CLIENT_TYPE_CODE FROM FOREST_CLIENT WHERE CLIENT_NUMBER = :NEW.client_number)
           , :NEW.update_timestamp
           , :NEW.update_userid
           , :NEW.update_org_unit
           , :NEW.add_timestamp
           , :NEW.add_userid
-          , :NEW.add_org_unit
-    FROM forest_client
-    WHERE client_number = :NEW.client_number;
+          , :NEW.add_org_unit);
 
   ELSE
      INSERT INTO cli_locn_audit

@@ -58,6 +58,7 @@ export interface FormDataDto {
     addresses: Address[];
     contacts: Contact[];
   };
+  notifyClientInd?: string;
 }
 
 export interface ForestClientDetailsDto {
@@ -154,6 +155,7 @@ export const formDataDto: FormDataDto = {
     addresses: [emptyAddress()],
     contacts: [],
   },
+  notifyClientInd: ""
 };
 
 export const newFormDataDto = (): FormDataDto => JSON.parse(JSON.stringify(formDataDto));
