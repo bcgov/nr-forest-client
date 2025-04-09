@@ -9,6 +9,8 @@ import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.legacy.HistoryLogDto;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
@@ -553,6 +555,27 @@ public class ClientLegacyService {
                     "Found active registry types in legacy"
                 )
             );
+  }
+
+  public Flux<HistoryLogDto> retrieveHistoryLog(String clientNumber) {
+	  log.info("Retrieving history log for client number {} in legacy", clientNumber);
+
+	  return
+	    legacyApi
+	        .get()
+	        .uri(builder ->
+	            builder
+	                .path("/api/search/historyLog")
+	                .queryParam("clientNumber", clientNumber)
+                    .build(Map.of()
+                )
+	        )
+	        .exchangeToFlux(response -> response.bodyToFlux(HistoryLogDto.class))
+	        .doOnNext(
+	            dto -> log.info(
+	                "Found Legacy data for in legacy with client number {}", clientNumber
+	            )
+	        );
   }
 
 }

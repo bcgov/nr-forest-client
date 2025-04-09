@@ -4,6 +4,7 @@ import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.HistoryLogDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
 import io.micrometer.observation.annotation.Observed;
@@ -270,6 +271,15 @@ public class ClientSearchController {
           )
           .map(Pair::getKey);
     }
+  }
+  
+  @GetMapping("/historyLog")
+  public Flux<HistoryLogDto> findHistoryLogsByClientNumber(
+      @RequestParam String clientNumber
+  ) {
+    log.info("Receiving request to search client history by client number {}", 
+             clientNumber);
+    return service.findHistoryLogsByClientNumber(clientNumber);
   }
 
 }

@@ -9,6 +9,7 @@ import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.HistoryLogDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
@@ -611,6 +612,29 @@ public class ClientSearchService {
     return template.select(searchQuery.with(PageRequest.of(0, 1000))
             .sort(Sort.by(Sort.Order.asc(ApplicationConstants.CLIENT_NUMBER_LITERAL))), entityClass)
         .doOnNext(client -> log.info("Found client for query {}", queryCriteria));
+  }
+
+  public Flux<HistoryLogDto> findHistoryLogsByClientNumber(String clientNumber) {
+    log.info("Searching for client history with number {}", clientNumber);
+
+    if (StringUtils.isBlank(clientNumber)) {
+      return Flux.error(new MissingRequiredParameterException("clientNumber"));
+    }
+
+    return Flux
+        .merge(
+            forestClientRepository.findClientInformationHistoryLogsByClientNumber(clientNumber)
+            //forestClientRepository.findLocationHistoryLogsByClientNumber(clientNumber),
+            //forestClientRepository.findContactHistoryLogsByClientNumber(clientNumber),
+            //forestClientRepository.findDoingBusinessAsHistoryLogsByClientNumber(clientNumber)
+        )
+        .sort(Comparator
+            .comparing(HistoryLogDto::updateTimestamp, Comparator.nullsLast(Comparator.naturalOrder())).reversed()
+            .thenComparing(Comparator.comparing(HistoryLogDto::tableName, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+            .thenComparing(Comparator.comparing(HistoryLogDto::idx, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+         )
+        .switchIfEmpty(Flux.empty())
+        .doOnNext(dto -> log.info("Found client history with client number {}", clientNumber));
   }
 
 }
