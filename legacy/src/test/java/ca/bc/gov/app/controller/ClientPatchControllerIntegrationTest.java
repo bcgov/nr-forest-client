@@ -155,6 +155,22 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.contacts[1].contactName",
             null,
             "JAMES LEE-ROY"
+        ),
+        argumentSet(
+            "Associate contact Albus to location Yard 01",
+            "00000159",
+            "[{\"op\":\"add\",\"path\":\"/contacts/26/locationCodes/1\",\"value\":\"01\"}]",
+            "$.contacts[0].locationCodes[1]",
+            null,
+            "01"
+        ),
+        argumentSet(
+            "Remove association to the first location code",
+            "00000159",
+            "[{\"op\":\"remove\",\"path\":\"/contacts/26/locationCodes/0\"}]",
+            "$.contacts[0].locationCodes[0]",
+            "00",
+            "01"
         )
     );
   }
