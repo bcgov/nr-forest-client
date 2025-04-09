@@ -3,6 +3,7 @@ package ca.bc.gov.app.dto;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.With;
+import org.apache.commons.lang3.StringUtils;
 
 @With
 public record ForestClientContactDetailsDto(
@@ -20,8 +21,8 @@ public record ForestClientContactDetailsDto(
     List<String> locationCodes
 ) {
   public ForestClientContactDetailsDto {
-    locationCodes = locationCodesCsv != null && !locationCodesCsv.isBlank()
+    locationCodes = StringUtils.isNotBlank(locationCodesCsv)
         ? List.of(locationCodesCsv.split(","))
-        : List.of();
+        : locationCodes;
   }
 }
