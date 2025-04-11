@@ -24,6 +24,57 @@ export const cognitoEnvironment: string = checkEnv(
   "VITE_AWS_COGNITO_ENVIRONMENT"
 );
 
+const zone = cognitoEnvironment.toLowerCase();
+
+const getReturlHost = (): string => {
+  let host = "";
+  if (zone !== "prod") {
+    host = `${zone}.`;
+  }
+  host += "loginproxy.gov.bc.ca";
+  return host;
+};
+
+const returlHost = getReturlHost();
+
+const getSignOutHost = (): string => {
+  const hostname = zone === "prod" ? "logon7" : "logontest7";
+  return `https://${hostname}.gov.bc.ca`;
+};
+
+const signOutHost = getSignOutHost();
+
+const getProviderRedirectUri = (provider: string) => {
+  let uri = `${frontendUrl}/landing`;
+  if (["bceidbusiness", "bcsc"].includes(provider)) {
+    uri += "?ref=";
+    uri += provider === "bceidbusiness" ? "external" : "individual";
+  }
+  return uri;
+};
+
+export const getRedirectSignOutMap = (): Record<string, string> => {
+  const map = {};
+  const providers = ["bceidbusiness", "bcsc", "idir"];
+
+  // adds one signOut url for each provider
+  providers.forEach((provider) => {
+    const providerRedirectUri = getProviderRedirectUri(provider);
+    const returl = [
+      `https://${returlHost}/auth/realms/standard/protocol/openid-connect/logout`,
+      `?client_id=${cognitoClientId}`,
+      `&post_logout_redirect_uri=${providerRedirectUri}`,
+    ].join("");
+
+    const signOutUrl = `${signOutHost}/clp-cgi/logoff.cgi?retnow=1&returl=${returl}`;
+    map[provider] = signOutUrl;
+  });
+
+  return map;
+};
+
+export const redirectSignOutMap = getRedirectSignOutMap();
+
 export const awsconfig = {
   Auth: {
     Cognito: {
@@ -37,7 +88,7 @@ export const awsconfig = {
               : `${cognitoDomain}.auth.${cognitoRegion}.amazoncognito.com`,
           scopes: ["openid", "profile", "email"],
           redirectSignIn: [`${frontendUrl}/dashboard`],
-          redirectSignOut: [`${frontendUrl}/logout`],
+          redirectSignOut: Object.values(redirectSignOutMap),
           responseType: "code",
         },
         username: "true",

@@ -5,7 +5,7 @@ import {
   signInWithRedirect,
   signOut,
 } from "aws-amplify/auth";
-import { cognitoEnvironment, nodeEnv, cognitoClientId } from "@/CoreConstants";
+import { cognitoEnvironment, nodeEnv, cognitoClientId, redirectSignOutMap } from "@/CoreConstants";
 
 class ForestClientUserSession implements SessionProperties {
   public user: Submitter | undefined;
@@ -20,6 +20,9 @@ class ForestClientUserSession implements SessionProperties {
   };
 
   logOut = (): void => {
+    // pick the redirectSignOut uri corresponding to the user's provider
+    const redirectSignOut = redirectSignOutMap[this.user.provider];
+
     this.user = undefined;
     this.token = undefined;
     this.authorities = [];
@@ -27,7 +30,12 @@ class ForestClientUserSession implements SessionProperties {
     if (this.sessionRefreshIntervalId)
       clearInterval(this.sessionRefreshIntervalId);
 
-    signOut();
+    signOut({
+      global: false,
+      oauth: {
+        redirectUrl: redirectSignOut,
+      },
+    });
 
     if (nodeEnv === "test") {
       window.location.href = "/";
