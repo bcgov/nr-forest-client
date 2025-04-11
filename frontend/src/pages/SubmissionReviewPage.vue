@@ -300,10 +300,17 @@ const renderListItem = (label, clientNumbers) => {
   );
 };
 
-const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
-const isNotEditor = !ForestClientUserSession.authorities.includes('CLIENT_EDITOR') && !ForestClientUserSession.authorities.includes('CLIENT_ADMIN');
+const userhasAuthority = [
+  "CLIENT_VIEWER",
+  "CLIENT_EDITOR",
+  "CLIENT_ADMIN",
+  "CLIENT_SUSPEND",
+].some((authority) => ForestClientUserSession.authorities.includes(authority));
+const canSubmit = !ForestClientUserSession.authorities.includes('CLIENT_EDITOR') 
+                    && !ForestClientUserSession.authorities.includes('CLIENT_SUSPEND') 
+                    && !ForestClientUserSession.authorities.includes('CLIENT_ADMIN');
 
-if (isNotEditor) {
+if (canSubmit) {
   submitDisabled.value = true;
 }
 
@@ -503,7 +510,7 @@ const isProcessing = computed(() => {
         </cds-actionable-notification>
 
         <cds-actionable-notification
-        v-if="isNotEditor && userhasAuthority"
+        v-if="canSubmit && userhasAuthority"
         v-shadow="true"
         low-contrast="true"
         hide-close-button="true"

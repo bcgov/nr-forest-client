@@ -147,6 +147,14 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.contacts[0].contactName",
             "JACK BEANSTALK",
             null
+        ),
+        argumentSet(
+            "Add a new contact",
+            "00000158",
+            "[{\"op\":\"add\",\"path\":\"/contacts/null\",\"value\":{\"clientNumber\":\"00000158\",\"locationCodes\":[\"00\"],\"contactName\":\"JAMES Lee-Roy\",\"contactTypeCode\":\"DI\",\"contactTypeDesc\":\"Director\",\"businessPhone\":\"2504447788\",\"secondaryPhone\":\"\",\"faxNumber\":\"\",\"emailAddress\":\"leeroy@oakheritagegroup.ca\"}}]",
+            "$.contacts[1].contactName",
+            null,
+            "JAMES LEE-ROY"
         )
     );
   }

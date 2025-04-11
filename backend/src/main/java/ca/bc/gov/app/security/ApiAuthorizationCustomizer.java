@@ -34,6 +34,7 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         .hasAnyRole(
             ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND,
             ApplicationConstant.USERTYPE_SERVICE_USER);
     
     authorize
@@ -41,6 +42,7 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
         .hasAnyRole(
             ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND,
             ApplicationConstant.USERTYPE_SERVICE_USER);
 
     // Only service users can POST to the email endpoint
@@ -67,14 +69,15 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
             ApplicationConstant.USERTYPE_BCSC_USER);
 
-    // Only BCeIDBusiness and BCSC users can GET from the addresses endpoint
+    // Only BCeIDBusiness, BCSC, admin, editor and suspend users can GET from the addresses endpoint
     authorize
         .pathMatchers(HttpMethod.GET, "/api/addresses/**")
         .hasAnyRole(
             ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
             ApplicationConstant.USERTYPE_BCSC_USER,
             ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN);
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
 
     // Added a separate rule for the districts endpoint due to the processor service
     authorize
@@ -83,18 +86,20 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.ROLE_VIEWER,
             ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND,
             ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
             ApplicationConstant.USERTYPE_BCSC_USER,
             ApplicationConstant.USERTYPE_SERVICE_USER
         );
 
-    // Viewer, editor, admin, BCeIDBusiness and BCSC users can GET from the codes endpoint
+    // Viewer, editor, admin, suspend, BCeIDBusiness and BCSC users can GET from the codes endpoint
     authorize
         .pathMatchers(HttpMethod.GET, "/api/codes/**")
         .hasAnyRole(
             ApplicationConstant.ROLE_VIEWER,
             ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND,
             ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
             ApplicationConstant.USERTYPE_BCSC_USER);
 
@@ -105,45 +110,51 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN);
     
-    // Viewer, editor, admin, BCeIDBusiness and BCSC users can GET from the submission limit endpoint
+    // Viewer, editor, admin, suspend, BCeIDBusiness and BCSC users 
+    // can GET from the submission limit endpoint
     authorize
       .pathMatchers(HttpMethod.GET, "/api/submission-limit")
       .hasAnyRole(
           ApplicationConstant.ROLE_VIEWER,
           ApplicationConstant.ROLE_EDITOR,
           ApplicationConstant.ROLE_ADMIN,
+          ApplicationConstant.ROLE_SUSPEND,
           ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
           ApplicationConstant.USERTYPE_BCSC_USER);
 
-    // Only editor and admin can POST to the clients submissions endpoint with a specific id
+    // Only editor, suspend and admin can POST to the clients submissions endpoint with a specific id
     authorize
         .pathMatchers(HttpMethod.POST, "/api/clients/submissions/{id:[0-9]+}")
         .hasAnyRole(
             ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN);
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
 
-    // Viewer, editor and admin can GET from the clients submissions endpoint with a specific id
+    // Viewer, editor, suspend and admin can GET from the clients submissions endpoint with a specific id
     authorize
         .pathMatchers(HttpMethod.GET, "/api/clients/submissions/{id:[0-9]+}")
         .hasAnyRole(
             ApplicationConstant.ROLE_VIEWER,
             ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN);
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
 
-    // Only editor and admin users can POST to the staff submissions endpoint
+    // Only editor, suspend and admin users can POST to the staff submissions endpoint
     authorize
         .pathMatchers(HttpMethod.POST, "/api/clients/submissions/staff")
         .hasAnyRole(
             ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND
         );
 
-    // Only editor and admin users can OPTIONS to the staff submissions endpoint
+    // Only editor, suspend and admin users can OPTIONS to the staff submissions endpoint
     authorize
         .pathMatchers(HttpMethod.OPTIONS, "/api/clients/submissions/staff")
         .hasAnyRole(
             ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND
         );
 
     // Only BCeIDBusiness and BCSC users can POST to the clients submissions endpoint
@@ -153,23 +164,26 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
             ApplicationConstant.USERTYPE_BCSC_USER);
 
-    // Only Editors are allowed to PATCH to the clients details endpoint
+    // Only editor, admin and suspend are allowed to PATCH to the clients details endpoint
     authorize
         .pathMatchers(HttpMethod.PATCH, "/api/clients/details/**")
         .hasAnyRole(
             ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND
         );
 
-    // Only Editors are allowed to OPTIONS to the clients details endpoint
+    // Only editor, admin and suspend are allowed to OPTIONS to the clients details endpoint
     authorize
         .pathMatchers(HttpMethod.OPTIONS, "/api/clients/details/**")
         .hasAnyRole(
             ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND
         );
 
-    // BCeIDBusiness, BCSC, viewer, editor and admin users can GET from the clients endpoint
+    // BCeIDBusiness, BCSC, viewer, editor, suspend and admin users 
+    // can GET from the clients endpoint
     authorize
         .pathMatchers(HttpMethod.GET, "/api/clients/**")
         .hasAnyRole(
@@ -180,13 +194,14 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.ROLE_ADMIN,
             ApplicationConstant.ROLE_SUSPEND);
     
-    // Viewer, editor and admin can GET from the clients submissions endpoint
+    // Viewer, editor, suspend and admin can GET from the clients submissions endpoint
     authorize
         .pathMatchers(HttpMethod.GET, "/api/clients/submissions/**")
         .hasAnyRole(
             ApplicationConstant.ROLE_VIEWER,
             ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN);
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
     
     // Viewer, editor, suspend and admin users can GET from the clients search endpoint
     authorize
