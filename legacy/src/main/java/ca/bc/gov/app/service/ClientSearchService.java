@@ -9,7 +9,9 @@ import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.dto.HistoryLogDetailsDto;
 import ca.bc.gov.app.dto.HistoryLogDto;
+import ca.bc.gov.app.dto.HistoryLogReasonsDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
@@ -25,8 +27,10 @@ import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -618,39 +622,73 @@ public class ClientSearchService {
     log.info("Searching for client history with number {}", clientNumber);
 
     if (StringUtils.isBlank(clientNumber)) {
-      return Flux.error(new MissingRequiredParameterException("clientNumber"));
+        return Flux.error(new MissingRequiredParameterException("clientNumber"));
     }
 
     return Flux
         .merge(
-            forestClientRepository.findClientInformationHistoryLogsByClientNumber(clientNumber)
-            //forestClientRepository.findLocationHistoryLogsByClientNumber(clientNumber),
-            //forestClientRepository.findContactHistoryLogsByClientNumber(clientNumber),
-            //forestClientRepository.findDoingBusinessAsHistoryLogsByClientNumber(clientNumber)
+            forestClientRepository.findClientInformationHistoryLogsByClientNumber(clientNumber)/*,
+            forestClientRepository.findLocationHistoryLogsByClientNumber(clientNumber),
+            forestClientRepository.findContactHistoryLogsByClientNumber(clientNumber),
+            forestClientRepository.findDoingBusinessAsHistoryLogsByClientNumber(clientNumber)*/
         )
-        .sort(Comparator
-            .comparing(HistoryLogDto::updateTimestamp, Comparator.nullsLast(Comparator.naturalOrder())).reversed()
-            .thenComparing(Comparator.comparing(HistoryLogDto::tableName, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
-            .thenComparing(Comparator.comparing(HistoryLogDto::idx, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
-         )
+        .groupBy(dto -> dto.tableName() + dto.idx())
+        .flatMap(groupedFlux -> 
+            groupedFlux.collectList()
+                .flatMap(group -> {
+                    List<HistoryLogDetailsDto> details = new ArrayList<>();
+                    List<HistoryLogReasonsDto> reasons = new ArrayList<>();
+
+                    group.forEach(dto -> {
+                        if (!details.stream()
+                            .anyMatch(d -> Objects.equals(d.columnName(), dto.columnName()) &&
+                                          Objects.equals(d.oldValue(), dto.oldValue()) &&
+                                          Objects.equals(d.newValue(), dto.newValue()))) {
+                            details.add(new HistoryLogDetailsDto(dto.columnName(), dto.oldValue(), dto.newValue()));
+                        }
+
+                        // Add reasons
+                        if (!reasons.stream()
+                            .anyMatch(r -> Objects.equals(r.actionCode(), dto.actionCode()) && 
+                                          Objects.equals(r.reason(), dto.reason()))) {
+                            reasons.add(new HistoryLogReasonsDto(dto.actionCode(), dto.reason()));
+                        }
+                    });
+
+                    HistoryLogDto baseDto = group.get(0);
+                    
+                    HistoryLogDto combinedDto = new HistoryLogDto(
+                        baseDto.tableName(),
+                        baseDto.idx(),
+                        baseDto.identifierLabel(),
+                        null,
+                        null,
+                        null,
+                        baseDto.updateTimestamp(),
+                        baseDto.updateUserid(),
+                        baseDto.changeType(),
+                        null,
+                        null,
+                        details,
+                        reasons
+                    );
+
+                    log.info("Found grouped client history log entry: {}", combinedDto);
+                    return Mono.just(Pair.of(combinedDto, group.size()));
+                })
+        )
         .collectList()
         .flatMapMany(list -> {
-          int count = list.size();
+            int count = list.size();
 
-          if (count == 0) {
-            log.info("No history logs found for client {}", clientNumber);
-            return Flux.empty();
-          }
+            if (count == 0) {
+                log.info("No history logs found for client {}", clientNumber);
+                return Flux.empty();
+            }
 
-          log.info("Total history logs found for client {}: {}", clientNumber, count);
-
-          return Flux.fromIterable(list)
-              .map(dto -> {
-                log.info("Found client history log entry: {}", dto);
-                return Pair.of(dto, count);
-              });
+            log.info("Total history logs found for client {}: {}", clientNumber, count);
+            return Flux.fromIterable(list);
         });
   }
-
 
 }
