@@ -275,11 +275,19 @@ public class ClientSearchController {
   
   @GetMapping("/historyLog")
   public Flux<HistoryLogDto> findHistoryLogsByClientNumber(
-      @RequestParam String clientNumber
+      @RequestParam String clientNumber,
+      @RequestParam(required = false, defaultValue = "0") Integer page,
+      @RequestParam(required = false, defaultValue = "5") Integer size,
+      ServerHttpResponse serverResponse
   ) {
     log.info("Receiving request to search client history by client number {}", 
              clientNumber);
-    return service.findHistoryLogsByClientNumber(clientNumber);
+    return service
+        .findHistoryLogsByClientNumber(clientNumber, PageRequest.of(page, size))
+        .doOnNext(pair -> serverResponse.getHeaders()
+            .putIfAbsent("X-Total-Count", List.of(pair.getValue().toString()))
+        )
+        .map(Pair::getKey);
   }
 
 }

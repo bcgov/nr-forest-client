@@ -614,7 +614,7 @@ public class ClientSearchService {
         .doOnNext(client -> log.info("Found client for query {}", queryCriteria));
   }
 
-  public Flux<HistoryLogDto> findHistoryLogsByClientNumber(String clientNumber) {
+  public Flux<Pair<HistoryLogDto, Integer>> findHistoryLogsByClientNumber(String clientNumber, Pageable page) {
     log.info("Searching for client history with number {}", clientNumber);
 
     if (StringUtils.isBlank(clientNumber)) {
@@ -633,8 +633,24 @@ public class ClientSearchService {
             .thenComparing(Comparator.comparing(HistoryLogDto::tableName, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
             .thenComparing(Comparator.comparing(HistoryLogDto::idx, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
          )
-        .switchIfEmpty(Flux.empty())
-        .doOnNext(dto -> log.info("Found client history with client number {}", clientNumber));
+        .collectList()
+        .flatMapMany(list -> {
+          int count = list.size();
+
+          if (count == 0) {
+            log.info("No history logs found for client {}", clientNumber);
+            return Flux.empty();
+          }
+
+          log.info("Total history logs found for client {}: {}", clientNumber, count);
+
+          return Flux.fromIterable(list)
+              .map(dto -> {
+                log.info("Found client history log entry: {}", dto);
+                return Pair.of(dto, count);
+              });
+        });
   }
+
 
 }
