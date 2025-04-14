@@ -113,7 +113,12 @@ onMounted(() => {
   watch(skeletonReference, disableSkelleton);
 });
 
-const userhasAuthority = ["CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_ADMIN"].some(authority => ForestClientUserSession.authorities.includes(authority));
+const userhasAuthority = [
+  "CLIENT_VIEWER",
+  "CLIENT_EDITOR",
+  "CLIENT_ADMIN",
+  "CLIENT_SUSPEND",
+].some((authority) => ForestClientUserSession.authorities.includes(authority));
 const summitSvg = useSvg(summit);
 </script>
 
