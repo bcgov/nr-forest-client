@@ -331,7 +331,10 @@ public final class ForestClientQueries {
       SELECT
       A.TABLE_NAME,
       A.IDX,
-      '' AS IDENTIFIER_LABEL,
+      CASE
+          WHEN A.CHANGE_TYPE = 'INS' THEN 'Client created'
+          WHEN A.CHANGE_TYPE = 'UPD' THEN 'Client summary updated'
+      END AS IDENTIFIER_LABEL,
       A.COLUMN_NAME,
       A.OLD_VALUE,
       A.NEW_VALUE,

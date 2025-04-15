@@ -190,8 +190,7 @@ public class ClientService {
                       new ArrayList<>(details),
                       new ArrayList<>(reasons)
                   );
-
-                  log.info("Found grouped client history log entry: {}", combinedDto);
+                  
                   return Mono.just(Pair.of(combinedDto, group.size()));
                 })
         )
