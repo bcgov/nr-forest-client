@@ -30,9 +30,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -620,105 +621,96 @@ public class ClientSearchService {
         .doOnNext(client -> log.info("Found client for query {}", queryCriteria));
   }
 
-  @SuppressWarnings("unused")
   public Flux<Pair<HistoryLogDto, Integer>> findHistoryLogsByClientNumber(
       String clientNumber, 
       Pageable page,
       List<String> sources) {
+
     log.info("Searching for client history with number {} and sources {}", clientNumber, sources);
 
     if (StringUtils.isBlank(clientNumber)) {
-        return Flux.error(new MissingRequiredParameterException("clientNumber"));
+      return Flux.error(new MissingRequiredParameterException("clientNumber"));
     }
-    
-    List<HistorySourceEnum> selectedSources = new ArrayList<>();
-    
+
+    List<HistorySourceEnum> selectedSources;
+
     if (CollectionUtils.isEmpty(sources)) {
       selectedSources = List.of(HistorySourceEnum.values());
     } 
     else {
       try {
-          selectedSources = sources.stream()
-              .map(HistorySourceEnum::fromValue)
-              .collect(Collectors.toList());
+        selectedSources = sources.stream()
+            .map(HistorySourceEnum::fromValue)
+            .collect(Collectors.toList());
       } catch (IllegalArgumentException e) {
-          return Flux.error(new MissingRequiredParameterException(e.getMessage()));
+        return Flux.error(new MissingRequiredParameterException(e.getMessage()));
       }
     }
-    
+
     List<Flux<HistoryLogDto>> selectedAuditTables = new ArrayList<>();
-    
+
     for (HistorySourceEnum source : selectedSources) {
       switch (source) {
-          case CLIENT_INFORMATION -> selectedAuditTables.add(
-              forestClientRepository.findClientInformationHistoryLogsByClientNumber(clientNumber));
-          /*case LOCATION -> selectedAuditTables.add(
-              forestClientRepository.findLocationHistoryLogsByClientNumber(clientNumber));
-          case CONTACT -> selectedAuditTables.add(
-              forestClientRepository.findContactHistoryLogsByClientNumber(clientNumber));
-          case DBA -> selectedAuditTables.add(
-              forestClientRepository.findDoingBusinessAsHistoryLogsByClientNumber(clientNumber));*/
+        case CLIENT_INFORMATION -> selectedAuditTables.add(
+            forestClientRepository.findClientInformationHistoryLogsByClientNumber(clientNumber));
+        /*case LOCATION -> selectedAuditTables.add(
+            forestClientRepository.findLocationHistoryLogsByClientNumber(clientNumber));
+        case CONTACT -> selectedAuditTables.add(
+            forestClientRepository.findContactHistoryLogsByClientNumber(clientNumber));
+        case DBA -> selectedAuditTables.add(
+            forestClientRepository.findDoingBusinessAsHistoryLogsByClientNumber(clientNumber));*/
       }
-  }
+    }
 
     return Flux
         .merge(selectedAuditTables)
         .groupBy(dto -> dto.tableName() + dto.idx())
-        .flatMap(groupedFlux -> 
+        .flatMap(groupedFlux ->
             groupedFlux.collectList()
                 .flatMap(group -> {
-                    List<HistoryLogDetailsDto> details = new ArrayList<>();
-                    List<HistoryLogReasonsDto> reasons = new ArrayList<>();
+                  if (group.isEmpty()) return Mono.empty();
 
-                    group.forEach(dto -> {
-                        if (!details.stream()
-                            .anyMatch(d -> Objects.equals(d.columnName(), dto.columnName()) &&
-                                          Objects.equals(d.oldValue(), dto.oldValue()) &&
-                                          Objects.equals(d.newValue(), dto.newValue()))) {
-                            details.add(new HistoryLogDetailsDto(dto.columnName(), dto.oldValue(), dto.newValue()));
-                        }
+                  Set<HistoryLogDetailsDto> details = new HashSet<>();
+                  Set<HistoryLogReasonsDto> reasons = new HashSet<>();
 
-                        // Add reasons
-                        if (!reasons.stream()
-                            .anyMatch(r -> Objects.equals(r.actionCode(), dto.actionCode()) && 
-                                          Objects.equals(r.reason(), dto.reason()))) {
-                            reasons.add(new HistoryLogReasonsDto(dto.actionCode(), dto.reason()));
-                        }
-                    });
+                  group.forEach(dto -> {
+                    details.add(new HistoryLogDetailsDto(dto.columnName(), dto.oldValue(), dto.newValue()));
+                    reasons.add(new HistoryLogReasonsDto(dto.actionCode(), dto.reason()));
+                  });
 
-                    HistoryLogDto baseDto = group.get(0);
-                    
-                    HistoryLogDto combinedDto = new HistoryLogDto(
-                        baseDto.tableName(),
-                        baseDto.idx(),
-                        baseDto.identifierLabel(),
-                        null,
-                        null,
-                        null,
-                        baseDto.updateTimestamp(),
-                        baseDto.updateUserid(),
-                        baseDto.changeType(),
-                        null,
-                        null,
-                        details,
-                        reasons
-                    );
+                  HistoryLogDto baseDto = group.get(0);
 
-                    log.info("Found grouped client history log entry: {}", combinedDto);
-                    return Mono.just(Pair.of(combinedDto, group.size()));
+                  HistoryLogDto combinedDto = new HistoryLogDto(
+                      baseDto.tableName(),
+                      baseDto.idx(),
+                      baseDto.identifierLabel(),
+                      null,
+                      null,
+                      null,
+                      baseDto.updateTimestamp(),
+                      baseDto.updateUserid(),
+                      baseDto.changeType(),
+                      null,
+                      null,
+                      new ArrayList<>(details),
+                      new ArrayList<>(reasons)
+                  );
+
+                  log.info("Found grouped client history log entry: {}", combinedDto);
+                  return Mono.just(Pair.of(combinedDto, group.size()));
                 })
         )
         .collectList()
         .flatMapMany(list -> {
-            int count = list.size();
+          int count = list.size();
 
-            if (count == 0) {
-                log.info("No history logs found for client {}", clientNumber);
-                return Flux.empty();
-            }
+          if (count == 0) {
+            log.info("No history logs found for client {}", clientNumber);
+            return Flux.empty();
+          }
 
-            log.info("Total history logs found for client {}: {}", clientNumber, count);
-            return Flux.fromIterable(list);
+          log.info("Total history logs found for client {}: {}", clientNumber, count);
+          return Flux.fromIterable(list);
         });
   }
 
