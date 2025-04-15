@@ -557,23 +557,29 @@ public class ClientLegacyService {
             );
   }
 
-  public Flux<HistoryLogDto> retrieveHistoryLog(String clientNumber) {
-	  log.info("Retrieving history log for client number {} in legacy", clientNumber);
+  public Flux<HistoryLogDto> retrieveHistoryLog(
+	      String clientNumber, int page, int size, List<String> sources) {
+	  log.info("Retrieving history log for client {} with page {} and size {} and sources {}", 
+			   clientNumber,
+			   page,
+			   size,
+			   sources);
 
 	  return
 	    legacyApi
 	        .get()
 	        .uri(builder ->
 	            builder
-	                .path("/api/search/historyLog")
-	                .queryParam("clientNumber", clientNumber)
-                    .build(Map.of()
-                )
+	                .path("/api/clients/history-log/" + clientNumber)
+	                .queryParam("page", page)
+	                .queryParam("size", size)
+	                .queryParam("sources", sources)
+                    .build()
 	        )
 	        .exchangeToFlux(response -> response.bodyToFlux(HistoryLogDto.class))
 	        .doOnNext(
 	            dto -> log.info(
-	                "Found Legacy data for in legacy with client number {}", clientNumber
+	                "Found audit data for in legacy with client number {}", clientNumber
 	            )
 	        );
   }
