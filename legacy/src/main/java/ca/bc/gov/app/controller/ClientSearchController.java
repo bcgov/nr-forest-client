@@ -278,12 +278,13 @@ public class ClientSearchController {
       @RequestParam String clientNumber,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "5") Integer size,
+      @RequestParam(required = false) List<String> sources,
       ServerHttpResponse serverResponse
   ) {
     log.info("Receiving request to search client history by client number {}", 
              clientNumber);
     return service
-        .findHistoryLogsByClientNumber(clientNumber, PageRequest.of(page, size))
+        .findHistoryLogsByClientNumber(clientNumber, PageRequest.of(page, size), sources)
         .doOnNext(pair -> serverResponse.getHeaders()
             .putIfAbsent("X-Total-Count", List.of(pair.getValue().toString()))
         )
