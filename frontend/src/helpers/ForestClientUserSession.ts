@@ -91,7 +91,7 @@ class ForestClientUserSession implements SessionProperties {
         ...this.processName(parsedUser, parsedUser["custom:idp_name"]),
       };
       // add the user type to the authorities
-      this.authorities.push(`${provider}_USER`.toUpperCase());
+      this.authorities = [`${provider}_USER`.toUpperCase()];
 
       // add the groups to the authorities
       if (parsedUser["cognito:groups"]) {
@@ -104,7 +104,7 @@ class ForestClientUserSession implements SessionProperties {
       // get the token expiration time, minus 10% to refresh the token before it expires
       const timeDifference = (idToken.payload.exp * 1000 - Date.now()) * 0.9;
       // if the refresh interval is not set, set it
-      if (!this.sessionRefreshIntervalId) {
+      if (!this.sessionRefreshIntervalId && timeDifference) {
         this.sessionRefreshIntervalId = setInterval(
           () => this.loadUser(),
           timeDifference
