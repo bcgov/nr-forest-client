@@ -43,7 +43,7 @@ public class HistoryLogController {
   ) {
     log.info("Getting history logs by client number {}, page {}, size {}, sources {}", 
              clientNumber, page, size, sources);
-    return clientLegacyService.retrieveHistoryLog(
+    return clientLegacyService.retrieveHistoryLogs(
              clientNumber, page, size, sources);
   }
 

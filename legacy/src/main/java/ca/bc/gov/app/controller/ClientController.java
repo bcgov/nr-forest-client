@@ -40,7 +40,7 @@ public class ClientController {
     return service.saveAndGetIndex(dto);
   }
 
-  @GetMapping("/history-log/{clientNumber}")
+  @GetMapping("/history-logs/{clientNumber}")
   public Flux<HistoryLogDto> findHistoryLogsByClientNumber(
       @PathVariable String clientNumber,
       @RequestParam(required = false, defaultValue = "0") Integer page,

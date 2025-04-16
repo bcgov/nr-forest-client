@@ -556,7 +556,7 @@ public class ClientLegacyService {
             );
   }
 
-  public Flux<HistoryLogDto> retrieveHistoryLog(
+  public Flux<HistoryLogDto> retrieveHistoryLogs(
     String clientNumber, int page, int size, List<String> sources) {
 	
     log.info("Retrieving history log for client {} with page {} and size {} and sources {}",
@@ -567,7 +567,7 @@ public class ClientLegacyService {
 	        .get()
 	        .uri(builder ->
 	            builder
-	                .path("/api/clients/history-log/" + clientNumber)
+	                .path("/api/clients/history-logs/" + clientNumber)
 	                .queryParam("page", page)
 	                .queryParam("size", size)
 	                .queryParam("sources", sources)
