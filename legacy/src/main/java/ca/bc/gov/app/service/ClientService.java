@@ -208,7 +208,10 @@ public class ClientService {
           return Flux.fromIterable(list);
         })
         .switchIfEmpty(
-            Mono.error(new NoValueFoundException("Client with number: " + clientNumber))
+          Mono.error(new NoValueFoundException("Client with number: " + clientNumber))
+        )
+        .doOnNext(dto -> 
+          log.info("Found history logs with client number {}", clientNumber)
         );
   }
 

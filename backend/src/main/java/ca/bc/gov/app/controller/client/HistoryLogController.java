@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 @RestController
-@RequestMapping(value = "/api/clients/history-log", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/clients/history-logs", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @Observed
 @RequiredArgsConstructor
