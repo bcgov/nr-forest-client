@@ -8,7 +8,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
@@ -569,6 +571,42 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
               assertEquals(expecteDto.code(), dto.code());
               assertEquals(expecteDto.name(), dto.name());
           })
+          .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Should retrieve history logs from legacy API by client number")
+  void shouldRetrieveHistoryLogsFromLegacyApi() {
+      String clientNumber = "00000138";
+      int page = 0;
+      int size = 5;
+      List<String> sources = List.of("CLI");
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/clients/history-logs/" + clientNumber))
+              .withQueryParam("page", equalTo(String.valueOf(page)))
+              .withQueryParam("size", equalTo(String.valueOf(size)))
+              .withQueryParam("sources", equalTo("CLI"))
+              .willReturn(okJson("[{" 
+                  + "\"tableName\":\"ClientInformation\","
+                  + "\"idx\":\"123\","
+                  + "\"identifierLabel\":\"Client summary updated\","
+                  + "\"updateTimestamp\":\"2007-09-14T10:15:41\","
+                  + "\"updateUserid\":\"test_user\","
+                  + "\"changeType\":\"UPD\","
+                  + "\"details\":"
+                  + "[{\"columnName\":\"clientName\",\"oldValue\":\"Jhon Doe\",\"newValue\":\"John Doe\"}],"
+                  + "\"reasons\":[{\"actionCode\":\"NAME\",\"reason\":\"Correction\"}]"
+                  + "}]"))
+      );
+
+      service
+          .retrieveHistoryLogs(clientNumber, page, size, sources)
+          .as(StepVerifier::create)
+          .expectNextMatches(dto ->
+              dto.tableName().equals("ClientInformation") &&
+              dto.details().get(0).columnName().equals("clientName")
+          )
           .verifyComplete();
   }
   
