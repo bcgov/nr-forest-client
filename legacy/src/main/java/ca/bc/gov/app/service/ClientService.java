@@ -7,6 +7,7 @@ import ca.bc.gov.app.dto.HistoryLogReasonsDto;
 import ca.bc.gov.app.dto.HistorySourceEnum;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
+import ca.bc.gov.app.exception.NoValueFoundException;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
@@ -205,7 +206,10 @@ public class ClientService {
 
           log.info("Total history logs found for client {}: {}", clientNumber, count);
           return Flux.fromIterable(list);
-        });
+        })
+        .switchIfEmpty(
+            Mono.error(new NoValueFoundException("Client with number: " + clientNumber))
+        );
   }
 
 }
