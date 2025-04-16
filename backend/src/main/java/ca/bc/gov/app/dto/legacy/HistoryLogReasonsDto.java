@@ -1,6 +1,6 @@
 package ca.bc.gov.app.dto.legacy;
 
-public record HistoryLogReasonsDto (
+public record HistoryLogReasonsDto(
     String actionCode,
     String reason
 ) {

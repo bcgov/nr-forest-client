@@ -10,7 +10,6 @@ import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.dto.legacy.HistoryLogDto;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
@@ -558,14 +557,12 @@ public class ClientLegacyService {
   }
 
   public Flux<HistoryLogDto> retrieveHistoryLog(
-	      String clientNumber, int page, int size, List<String> sources) {
-	  log.info("Retrieving history log for client {} with page {} and size {} and sources {}", 
-			   clientNumber,
-			   page,
-			   size,
-			   sources);
+    String clientNumber, int page, int size, List<String> sources) {
+	
+    log.info("Retrieving history log for client {} with page {} and size {} and sources {}",
+             clientNumber, page, size, sources);
 
-	  return
+	return
 	    legacyApi
 	        .get()
 	        .uri(builder ->

@@ -2,7 +2,6 @@ package ca.bc.gov.app.dto.legacy;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import lombok.With;
 
 @With
