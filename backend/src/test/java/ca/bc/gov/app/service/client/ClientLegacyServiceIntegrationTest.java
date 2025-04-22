@@ -607,8 +607,10 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .as(StepVerifier::create)
           .expectNextMatches(pair -> {
               HistoryLogDto dto = pair.getFirst();
-              return dto.tableName().equals("ClientInformation") &&
-                     dto.details().get(0).columnName().equals("clientName");
+              Long count = pair.getSecond();
+              return dto.tableName().equals("ClientInformation")
+                  && dto.details().get(0).columnName().equals("clientName")
+                  && count == 1;
           })
           .verifyComplete();
   }
