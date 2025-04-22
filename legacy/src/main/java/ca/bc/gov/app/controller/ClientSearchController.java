@@ -257,6 +257,11 @@ public class ClientSearchController {
       log.info("Receiving request to do a complex search by {}", value);
       return service
           .complexSearch(value, PageRequest.of(page, size))
+          .switchIfEmpty(Mono.fromRunnable(() ->
+              serverResponse.getHeaders()
+              .set("X-Total-Count", "0"))
+              .thenMany(Flux.empty())
+          )
           .doOnNext(pair -> serverResponse.getHeaders()
               .putIfAbsent("X-Total-Count", List.of(pair.getValue().toString()))
           )
@@ -265,6 +270,11 @@ public class ClientSearchController {
       log.info("Receiving request to search the latest entries");
       return service
           .latestEntries(PageRequest.of(page, size))
+          .switchIfEmpty(Mono.fromRunnable(() ->
+              serverResponse.getHeaders()
+              .set("X-Total-Count", "0"))
+              .thenMany(Flux.empty())
+          )
           .doOnNext(pair -> serverResponse.getHeaders()
               .putIfAbsent("X-Total-Count", List.of(pair.getValue().toString()))
           )
