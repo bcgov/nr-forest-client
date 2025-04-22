@@ -343,7 +343,7 @@ class ClientSearchControllerIntegrationTest extends
         .expectStatus().isOk()
         .expectHeader().valueEquals("X-Total-Count", "0")
         .expectBody()
-        .jsonPath("$.length()").isEqualTo(10)
+        .jsonPath("$.length()").isEqualTo(0)
         .consumeWith(System.out::println);
   }
 
