@@ -18,6 +18,7 @@ import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientInformationDto;
+import ca.bc.gov.app.dto.legacy.HistoryLogDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ch.qos.logback.classic.Logger;
@@ -38,6 +39,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import reactor.test.StepVerifier;
 
 @DisplayName("Integration Test | Client Legacy Service Test")
@@ -603,10 +605,11 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       service
           .retrieveHistoryLogs(clientNumber, page, size, sources)
           .as(StepVerifier::create)
-          .expectNextMatches(dto ->
-              dto.tableName().equals("ClientInformation") &&
-              dto.details().get(0).columnName().equals("clientName")
-          )
+          .expectNextMatches(pair -> {
+              HistoryLogDto dto = pair.getFirst();
+              return dto.tableName().equals("ClientInformation") &&
+                     dto.details().get(0).columnName().equals("clientName");
+          })
           .verifyComplete();
   }
   
