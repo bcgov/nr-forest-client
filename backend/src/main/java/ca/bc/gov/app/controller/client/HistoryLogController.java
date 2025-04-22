@@ -7,7 +7,6 @@ import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -45,11 +44,11 @@ public class HistoryLogController {
   ) {
     log.info("Getting history logs by client number {}, page {}, size {}, sources {}", 
              clientNumber, page, size, sources);
-    return clientLegacyService
-    		.retrieveHistoryLogs(clientNumber, page, size, sources)
-    		.doOnNext(pair -> {
+	return clientLegacyService
+            .retrieveHistoryLogs(clientNumber, page, size, sources)
+            .doOnNext(pair -> {
     	          Long count = pair.getSecond();
-
+    	          
     	          serverResponse
     	              .getHeaders()
     	              .putIfAbsent(

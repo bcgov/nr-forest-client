@@ -113,16 +113,16 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
     // Viewer, editor, admin, suspend, BCeIDBusiness and BCSC users 
     // can GET from the submission limit endpoint
     authorize
-      .pathMatchers(HttpMethod.GET, "/api/submission-limit")
-      .hasAnyRole(
-          ApplicationConstant.ROLE_VIEWER,
-          ApplicationConstant.ROLE_EDITOR,
-          ApplicationConstant.ROLE_ADMIN,
-          ApplicationConstant.ROLE_SUSPEND,
-          ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
-          ApplicationConstant.USERTYPE_BCSC_USER);
+        .pathMatchers(HttpMethod.GET, "/api/submission-limit")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND,
+            ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
+            ApplicationConstant.USERTYPE_BCSC_USER);
 
-    // Only editor, suspend and admin can POST to the clients submissions endpoint with a specific id
+    // Only editor, suspend and admin can POST to the clients submissions with a specific id
     authorize
         .pathMatchers(HttpMethod.POST, "/api/clients/submissions/{id:[0-9]+}")
         .hasAnyRole(
@@ -130,7 +130,8 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.ROLE_ADMIN,
             ApplicationConstant.ROLE_SUSPEND);
 
-    // Viewer, editor, suspend and admin can GET from the clients submissions endpoint with a specific id
+    // Viewer, editor, suspend and admin can GET from the clients submissions endpoint 
+    // with a specific id
     authorize
         .pathMatchers(HttpMethod.GET, "/api/clients/submissions/{id:[0-9]+}")
         .hasAnyRole(
