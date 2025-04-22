@@ -9,7 +9,8 @@ public enum HistorySourceEnum {
   CLIENT_INFORMATION("cli"), 
   LOCATION("loc"), 
   CONTACT("ctc"), 
-  DBA("dba");
+  DBA("dba"),
+  RELATED_CLIENT("rct");
 
   @Getter
   private final String value;
