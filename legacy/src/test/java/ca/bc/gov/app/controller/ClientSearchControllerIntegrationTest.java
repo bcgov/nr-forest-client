@@ -341,8 +341,7 @@ class ClientSearchControllerIntegrationTest extends
 
     response
         .expectStatus().isOk()
-        .expectHeader()
-        .exists("X-Total-Count")
+        .expectHeader().valueEquals("X-Total-Count", "0")
         .expectBody()
         .jsonPath("$[0].clientNumber").isNotEmpty()
         .jsonPath("$[0].clientName").isNotEmpty()
