@@ -610,7 +610,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
               Long count = pair.getSecond();
               return dto.tableName().equals("ClientInformation")
                   && dto.details().get(0).columnName().equals("clientName")
-                  && count == 1;
+                  && count == 1L;
           })
           .verifyComplete();
   }
