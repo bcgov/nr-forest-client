@@ -149,9 +149,9 @@ public class ClientService {
       switch (source) {
         case CLIENT_INFORMATION -> selectedAuditTables.add(
             forestClientRepository.findClientInformationHistoryLogsByClientNumber(clientNumber));
-        /*case LOCATION -> selectedAuditTables.add(
+        case LOCATION -> selectedAuditTables.add(
             forestClientRepository.findLocationHistoryLogsByClientNumber(clientNumber));
-        case CONTACT -> selectedAuditTables.add(
+        /*case CONTACT -> selectedAuditTables.add(
             forestClientRepository.findContactHistoryLogsByClientNumber(clientNumber));
         case DBA -> selectedAuditTables.add(
             forestClientRepository.findDoingBusinessAsHistoryLogsByClientNumber(clientNumber));*/
