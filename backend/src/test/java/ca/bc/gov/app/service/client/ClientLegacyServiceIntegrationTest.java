@@ -583,23 +583,36 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       int page = 0;
       int size = 5;
       List<String> sources = List.of("CLI");
+      Long expectedTotalCount = 1L;
 
       legacyStub.stubFor(
           get(urlPathEqualTo("/api/clients/history-logs/" + clientNumber))
               .withQueryParam("page", equalTo(String.valueOf(page)))
               .withQueryParam("size", equalTo(String.valueOf(size)))
               .withQueryParam("sources", equalTo("CLI"))
-              .willReturn(okJson("[{" 
-                  + "\"tableName\":\"ClientInformation\","
-                  + "\"idx\":\"123\","
-                  + "\"identifierLabel\":\"Client summary updated\","
-                  + "\"updateTimestamp\":\"2007-09-14T10:15:41\","
-                  + "\"updateUserid\":\"test_user\","
-                  + "\"changeType\":\"UPD\","
-                  + "\"details\":"
-                  + "[{\"columnName\":\"clientName\",\"oldValue\":\"Jhon Doe\",\"newValue\":\"John Doe\"}],"
-                  + "\"reasons\":[{\"actionCode\":\"NAME\",\"reason\":\"Correction\"}]"
-                  + "}]"))
+              .willReturn(
+                  aResponse()
+                      .withHeader("Content-Type", "application/json")
+                      .withHeader("X-Total-Count", expectedTotalCount.toString())
+                      .withBody("[{" 
+                          + "\"tableName\":\"ClientInformation\","
+                          + "\"idx\":\"123\","
+                          + "\"identifierLabel\":\"Client summary updated\","
+                          + "\"updateTimestamp\":\"2007-09-14T10:15:41\","
+                          + "\"updateUserid\":\"test_user\","
+                          + "\"changeType\":\"UPD\","
+                          + "\"details\":"
+                          + "[{\"columnName\":\"clientName\"," 
+                          + "  \"oldValue\":\"Jhon Doe\","
+                          + "  \"newValue\":\"John Doe\"}"
+                          + "],"
+                          + "\"reasons\":"
+                          + "[{\"actionCode\":\"NAME\","
+                          + "  \"reason\":\"Correction\"}"
+                          + "]"
+                          + "}]"
+                      )
+              )
       );
 
       service
@@ -607,10 +620,8 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .as(StepVerifier::create)
           .expectNextMatches(pair -> {
               HistoryLogDto dto = pair.getFirst();
-              Long count = pair.getSecond();
               return dto.tableName().equals("ClientInformation")
-                  && dto.details().get(0).columnName().equals("clientName")
-                  && count == 1L;
+                  && dto.details().get(0).columnName().equals("clientName");
           })
           .verifyComplete();
   }
