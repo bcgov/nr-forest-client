@@ -10,6 +10,7 @@ import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/tabs/index";
 import "@carbon/web-components/es/components/tag/index";
 import "@carbon/web-components/es/components/accordion/index";
+import "@carbon/web-components/es/components/skeleton-text/index";
 import summit from "@carbon/pictograms/es/summit";
 import tools from "@carbon/pictograms/es/tools";
 
@@ -745,11 +746,12 @@ resetGlobalError();
           </cds-breadcrumb-item>
         </cds-breadcrumb>
 
-        <h1 class="resource-details--title">
+        <h1 v-if="clientFullName" class="resource-details--title">
           <span>
             {{ toTitleCase(clientFullName) }}
           </span>
         </h1>
+        <cds-skeleton-text v-else v-shadow="1" class="heading-03-skeleton" />
         <div>
           <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle">
             Check and manage this client's data
@@ -795,25 +797,29 @@ resetGlobalError();
         </cds-actionable-notification>
       </div>
 
-      <div class="grouping-14" v-if="data">
+      <div class="grouping-14">
         <div class="grouping-05-short">
           <div>
             <h2 class="mg-tl-2 heading-05">Client summary</h2>
-
             <div class="grouping-10">
               <summary-view
                 ref="summaryRef"
+                v-if="data"
                 :data="data"
                 :userRoles="userRoles"
                 @save="saveSummary"
               />
+              <div v-else v-for="i in Array(4)" :key="i" class="grouping-11" >
+                <cds-skeleton-text v-shadow="1" class="lable-skeleton" />
+                <cds-skeleton-text v-shadow="1" class="value-skeleton" />
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div class="invisible"></div>
     </div>
-    <div class="client-details-content tabs-container opaque-background" v-if="data">
+    <div class="client-details-content tabs-container opaque-background">
       <cds-tabs value="locations" type="contained">
         <cds-tab id="tab-locations" target="panel-locations" value="locations">
           <div>
@@ -841,24 +847,27 @@ resetGlobalError();
         </cds-tab>
       </cds-tabs>
     </div>
-    <div class="tab-panels-container" v-if="data">
+    <div class="tab-panels-container">
       <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
         <div class="tab-header space-between">
-          <h3 class="padding-left-1rem">
-            {{ formatCount(data.addresses?.length) }}
-            {{ pluralize("location", data.addresses?.length) }}
-          </h3>
-          <cds-button
-            v-if="userHasAuthority"
-            id="addLocationBtn"
-            kind="primary"
-            size="md"
-            @click="addLocation"
-            :disabled="newLocation"
-          >
-            <span class="width-unset">Add location</span>
-            <Add16 slot="icon" />
-          </cds-button>
+          <template v-if="data">
+            <h3 class="padding-left-1rem">
+              {{ formatCount(data.addresses?.length) }}
+              {{ pluralize("location", data.addresses?.length) }}
+            </h3>
+            <cds-button
+              v-if="userHasAuthority"
+              id="addLocationBtn"
+              kind="primary"
+              size="md"
+              @click="addLocation"
+              :disabled="newLocation"
+            >
+              <span class="width-unset">Add location</span>
+              <Add16 slot="icon" />
+            </cds-button>
+          </template>
+          <cds-skeleton-text v-else v-shadow="1" class="heading-05-skeleton" />
         </div>
         <div class="tab-panel tab-panel--populated">
           <cds-accordion
@@ -916,23 +925,26 @@ resetGlobalError();
         </div>
       </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
-        <template v-if="data.contacts?.length">
+        <template v-if="!data || data.contacts?.length">
           <div class="tab-header space-between">
-            <h3 class="padding-left-1rem">
-              {{ formatCount(data.contacts?.length) }}
-              {{ pluralize("contact", data.contacts?.length) }}
-            </h3>
-            <cds-button
-              v-if="userHasAuthority"
-              id="addContactBtn"
-              kind="primary"
-              size="md"
-              @click="addContact"
-              :disabled="newContact"
-            >
-              <span class="width-unset">Add contact</span>
-              <Add16 slot="icon" />
-            </cds-button>
+            <template v-if="data">
+              <h3 class="padding-left-1rem">
+                {{ formatCount(data.contacts?.length) }}
+                {{ pluralize("contact", data.contacts?.length) }}
+              </h3>
+              <cds-button
+                v-if="userHasAuthority"
+                id="addContactBtn"
+                kind="primary"
+                size="md"
+                @click="addContact"
+                :disabled="newContact"
+              >
+                <span class="width-unset">Add contact</span>
+                <Add16 slot="icon" />
+              </cds-button>
+            </template>
+            <cds-skeleton-text v-else v-shadow="1" class="heading-05-skeleton" />
           </div>
           <div class="tab-panel tab-panel--populated">
             <cds-accordion
