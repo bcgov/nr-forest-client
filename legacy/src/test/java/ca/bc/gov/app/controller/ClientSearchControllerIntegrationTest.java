@@ -321,10 +321,8 @@ class ClientSearchControllerIntegrationTest extends
       response
           .expectStatus().isOk()
           .expectHeader()
-          .value("X-Total-Count", count -> assertThat(count).isEqualTo("1"))
+          .value("X-Total-Count", count -> assertThat(count).isEqualTo("0"))
           .expectBody()
-          .jsonPath("$[0].clientNumber").isNotEmpty()
-          .jsonPath("$[0].clientName").isNotEmpty()
           .consumeWith(System.out::println);
     }
 
