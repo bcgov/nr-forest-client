@@ -810,7 +810,7 @@ resetGlobalError();
                 @save="saveSummary"
               />
               <div v-else v-for="i in Array(4)" :key="i" class="grouping-11" >
-                <cds-skeleton-text v-shadow="1" class="lable-skeleton" />
+                <cds-skeleton-text v-shadow="1" class="label-skeleton" />
                 <cds-skeleton-text v-shadow="1" class="value-skeleton" />
               </div>
             </div>
