@@ -1,5 +1,7 @@
 package ca.bc.gov.app.controller;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
@@ -17,6 +19,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -307,7 +310,7 @@ class ClientSearchControllerIntegrationTest extends
       response
           .expectStatus().isOk()
           .expectHeader()
-          .exists("X-Total-Count")
+          .value("X-Total-Count", count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
           .expectBody()
           .jsonPath("$[0].clientNumber").isNotEmpty()
           .jsonPath("$[0].clientNumber").isEqualTo(expectedClientNumber)
@@ -315,9 +318,12 @@ class ClientSearchControllerIntegrationTest extends
           .jsonPath("$[0].clientFullName").isEqualTo(expectedClientName)
           .consumeWith(System.out::println);
     } else {
-      response.expectStatus().isOk()
+      response
+          .expectStatus().isOk()
+          .expectHeader()
+          .value("X-Total-Count", count -> assertThat(count).isEqualTo("0"))
           .expectBody()
-          .consumeWith(System.out::println).json("[]");
+          .consumeWith(System.out::println);
     }
 
   }
@@ -332,6 +338,7 @@ class ClientSearchControllerIntegrationTest extends
             .uri(uriBuilder ->
                 uriBuilder
                     .path("/api/search")
+                    .queryParam("value", " ")
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .build(new HashMap<>())
@@ -339,12 +346,21 @@ class ClientSearchControllerIntegrationTest extends
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange();
 
-    response
-        .expectStatus().isOk()
-        .expectHeader().valueEquals("X-Total-Count", "0")
-        .expectBody()
-        .jsonPath("$.length()").isEqualTo(0)
-        .consumeWith(System.out::println);
+    EntityExchangeResult<byte[]> result =
+        response
+          .expectStatus().isOk()
+          .expectBody()
+          .consumeWith(System.out::println)
+          .returnResult();
+
+    assertThat(
+        result
+        .getResponseHeaders()
+        .getFirst("X-Total-Count")
+    ).isEqualTo("0");
+
+    String body = new String(result.getResponseBody());
+    assertThat(body).isEqualTo("[]");
   }
 
   private static Stream<Arguments> byEmail() {
