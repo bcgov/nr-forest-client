@@ -318,9 +318,14 @@ class ClientSearchControllerIntegrationTest extends
           .jsonPath("$[0].clientFullName").isEqualTo(expectedClientName)
           .consumeWith(System.out::println);
     } else {
-      response.expectStatus().isOk()
+      response
+          .expectStatus().isOk()
+          .expectHeader()
+          .value("X-Total-Count", count -> assertThat(count).isEqualTo("1"))
           .expectBody()
-          .consumeWith(System.out::println).json("[]");
+          .jsonPath("$[0].clientNumber").isNotEmpty()
+          .jsonPath("$[0].clientName").isNotEmpty()
+          .consumeWith(System.out::println);
     }
 
   }
@@ -585,7 +590,8 @@ class ClientSearchControllerIntegrationTest extends
             Arguments.of("pietro", null, null, StringUtils.EMPTY, StringUtils.EMPTY),
             Arguments.of("pietro", 0, 5, StringUtils.EMPTY, StringUtils.EMPTY),
             Arguments.of("pietro", 4, 10, StringUtils.EMPTY, StringUtils.EMPTY),
-            Arguments.of("matelda", null, null, "00000137", "MATELDA LINDHE (JABBERTYPE)")
+            Arguments.of("matelda", null, null, "00000137", "MATELDA LINDHE (JABBERTYPE)"),
+            Arguments.of("", 0, 1, "00000333", "TEST")
         );
   }
 
