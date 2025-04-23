@@ -332,6 +332,7 @@ class ClientSearchControllerIntegrationTest extends
             .uri(uriBuilder ->
                 uriBuilder
                     .path("/api/search")
+                    .queryParam("value", " ")
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .build(new HashMap<>())
