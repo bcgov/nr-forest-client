@@ -364,8 +364,11 @@ class ClientSearchControllerIntegrationTest extends
   }
   
   @Test
-  @DisplayName("Search - Should fetch latest entries when no value is provided")
-  void shouldFetchLatestEntriesWhenNoValueIsProvided() {
+  @DisplayName("Search - Should fetch latest entries and return count header and expected client")
+  void shouldFetchLatestEntriesAndExposeTotalCount() {
+    String expectedClientNumber = "00000114";
+    String expectedClientName = "POLLICH-ABERNATHY";
+
     ResponseSpec response =
         client
             .get()
@@ -383,17 +386,12 @@ class ClientSearchControllerIntegrationTest extends
         .expectStatus().isOk()
         .expectHeader()
         .value("X-Total-Count", count -> {
-          int totalCount = Integer.parseInt(count);
-          assertThat(totalCount).isGreaterThanOrEqualTo(0);
+          System.out.println("X-Total-Count: " + count);
+          assertThat(Integer.parseInt(count)).isGreaterThan(0);
         })
         .expectBody()
-        .consumeWith(result -> {
-          String body = new String(result.getResponseBody());
-          if (!body.equals("[]")) {
-            assertThat(body).contains("clientNumber");
-            assertThat(body).contains("clientName");
-          }
-        });
+        .jsonPath("$[0].clientNumber").isEqualTo(expectedClientNumber)
+        .jsonPath("$[0].clientName").isEqualTo(expectedClientName);
   }
 
   private static Stream<Arguments> byEmail() {
