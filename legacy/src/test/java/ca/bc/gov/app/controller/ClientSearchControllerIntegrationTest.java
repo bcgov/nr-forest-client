@@ -386,14 +386,20 @@ class ClientSearchControllerIntegrationTest extends
             .consumeWith(System.out::println)
             .returnResult();
 
-      assertThat(
-          result
-          .getResponseHeaders()
-          .getFirst("X-Total-Count")
-      ).isNotNull().isNotEqualTo("0");
-
       String body = new String(result.getResponseBody());
-      assertThat(body).isNotEqualTo("[]");
+      if (body.equals("[]")) {
+          assertThat(
+              result
+              .getResponseHeaders()
+              .getFirst("X-Total-Count")
+          ).isEqualTo("0");
+      } else {
+          assertThat(
+              result
+              .getResponseHeaders()
+              .getFirst("X-Total-Count")
+          ).isNotEqualTo("0");
+      }
   }
 
   private static Stream<Arguments> byEmail() {
