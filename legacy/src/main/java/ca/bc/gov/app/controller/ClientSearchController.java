@@ -6,8 +6,8 @@ import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
-import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import io.micrometer.observation.annotation.Observed;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -252,44 +253,22 @@ public class ClientSearchController {
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "5") Integer size,
       ServerHttpResponse serverResponse) {
-
-    PageRequest pageRequest = PageRequest.of(page, size);
-
     if (StringUtils.isNotBlank(value)) {
       log.info("Receiving request to do a complex search by {}", value);
       return service
-          .complexSearch(value, pageRequest)
-          .collectList()
-          .flatMapMany(list -> {
-            if (list.isEmpty()) {
-              serverResponse.getHeaders().set("X-Total-Count", "0");
-              return Flux.empty();
-            }
-            serverResponse
-                .getHeaders()
-                .set("X-Total-Count", list.get(0).getValue().toString());
-            return Flux.fromIterable(list).map(Pair::getKey);
-          });
-
+          .complexSearch(value, PageRequest.of(page, size))
+          .doOnNext(pair -> serverResponse.getHeaders()
+              .putIfAbsent("X-Total-Count", List.of(pair.getValue().toString()))
+          )
+          .map(Pair::getKey);
     } else {
       log.info("Receiving request to search the latest entries");
       return service
-          .latestEntries(pageRequest)
-          .collectList()
-          .flatMapMany(list -> {
-            if (list.isEmpty()) {
-              serverResponse
-                .getHeaders()
-                .set("X-Total-Count", "0");
-              return Flux.empty();
-            }
-            serverResponse
-                .getHeaders()
-                .set("X-Total-Count", list.get(0).getValue().toString());
-            return Flux
-                .fromIterable(list)
-                .map(Pair::getKey);
-          });
+          .latestEntries(PageRequest.of(page, size))
+          .doOnNext(pair -> serverResponse.getHeaders()
+              .putIfAbsent("X-Total-Count", List.of(pair.getValue().toString()))
+          )
+          .map(Pair::getKey);
     }
   }
 
