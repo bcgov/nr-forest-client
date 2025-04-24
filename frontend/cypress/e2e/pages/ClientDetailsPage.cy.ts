@@ -169,6 +169,9 @@ describe("Client Details Page", () => {
         if (detail) {
           cy.get(`#${elId}`).contains(detail);
         }
+
+        // There should be no skeletons on screen after the error
+        cy.get("cds-skeleton-text").should("not.exist");
       });
     });
   });

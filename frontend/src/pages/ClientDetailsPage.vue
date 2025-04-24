@@ -746,12 +746,14 @@ resetGlobalError();
           </cds-breadcrumb-item>
         </cds-breadcrumb>
 
-        <h1 v-if="clientFullName" class="resource-details--title">
-          <span>
-            {{ toTitleCase(clientFullName) }}
-          </span>
-        </h1>
-        <cds-skeleton-text v-else v-shadow="1" class="heading-03-skeleton" />
+        <template v-if="!fetchError.code">
+          <h1 v-if="clientFullName" class="resource-details--title">
+            <span>
+              {{ toTitleCase(clientFullName) }}
+            </span>
+          </h1>
+          <cds-skeleton-text v-else v-shadow="1" class="heading-03-skeleton" />
+        </template>
         <div>
           <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle">
             Check and manage this client's data
@@ -797,7 +799,7 @@ resetGlobalError();
         </cds-actionable-notification>
       </div>
 
-      <div class="grouping-14">
+      <div v-if="!fetchError.code" class="grouping-14">
         <div class="grouping-05-short">
           <div>
             <h2 class="mg-tl-2 heading-05">Client summary</h2>
@@ -819,7 +821,7 @@ resetGlobalError();
       </div>
       <div class="invisible"></div>
     </div>
-    <div class="client-details-content tabs-container opaque-background">
+    <div v-if="!fetchError.code" class="client-details-content tabs-container opaque-background">
       <cds-tabs value="locations" type="contained">
         <cds-tab id="tab-locations" target="panel-locations" value="locations">
           <div>
@@ -847,7 +849,7 @@ resetGlobalError();
         </cds-tab>
       </cds-tabs>
     </div>
-    <div class="tab-panels-container">
+    <div v-if="!fetchError.code" class="tab-panels-container">
       <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
         <div class="tab-header space-between">
           <template v-if="data">
