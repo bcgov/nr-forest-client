@@ -40,31 +40,26 @@ public class HistoryLogController {
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "5") Integer size,
       @RequestParam(required = false, defaultValue = "") List<String> sources,
-      ServerHttpResponse serverResponse
-  ) {
-    log.info("Getting history logs by client number {}, page {}, size {}, sources {}", 
-             clientNumber, page, size, sources);
-    return clientLegacyService
-            .retrieveHistoryLogs(clientNumber, page, size, sources)
-            .doOnNext(pair -> {
-                Long count = pair.getSecond();
-    	          
-    	        serverResponse
-    	            .getHeaders()
-    	            .putIfAbsent(
-    	                ApplicationConstant.X_TOTAL_COUNT,
-    	                List.of(count.toString())
-    	            );
-    	        })
-    	        .map(Pair::getFirst)
-    	        .doFinally(signalType ->
-    	            serverResponse
-    	                .getHeaders()
-    	                .putIfAbsent(
-    	                    ApplicationConstant.X_TOTAL_COUNT,
-    	                    List.of("0")
-    	                )
-    	        );
-  }
+      ServerHttpResponse serverResponse) {
 
+    log.info(
+        "Getting history logs by client number {}, page {}, size {}, sources {}",
+        clientNumber, page, size, sources);
+
+    return clientLegacyService
+        .retrieveHistoryLogs(clientNumber, page, size, sources)
+        .doOnNext(
+            pair -> {
+              Long count = pair.getSecond();
+              serverResponse
+                  .getHeaders()
+                  .putIfAbsent(ApplicationConstant.X_TOTAL_COUNT, List.of(count.toString()));
+            })
+        .map(Pair::getFirst)
+        .doFinally(
+            signalType ->
+                serverResponse
+                    .getHeaders()
+                    .putIfAbsent(ApplicationConstant.X_TOTAL_COUNT, List.of("0")));
+  }
 }
