@@ -928,7 +928,7 @@ resetGlobalError();
         </div>
       </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
-        <template v-if="!data || data.contacts?.length">
+        <template v-if="!data || sortedContacts?.length">
           <div class="tab-header space-between">
             <template v-if="data">
               <h3 class="padding-left-1rem">
@@ -1002,14 +1002,27 @@ resetGlobalError();
         <div class="tab-panel tab-panel--empty" v-else>
           <div class="empty-table-list">
             <summit-svg alt="Summit pictogram" class="standard-svg" />
-            <div class="inner-description">
-              <p class="heading-02">Nothing to show yet!</p>
-              <p class="body-compact-01" v-if="userHasAuthority">
-                Click “Add contact” button to start
-              </p>
-              <p class="body-compact-01" v-else>
-                No contacts have been added to this client account
-              </p>
+            <div class="description">
+              <div class="inner-description">
+                <p class="heading-02">Nothing to show yet!</p>
+                <p class="body-compact-01" v-if="userHasAuthority">
+                  Click “Add contact” button to start
+                </p>
+                <p class="body-compact-01" v-else>
+                  No contacts have been added to this client account
+                </p>
+              </div>
+              <cds-button
+                v-if="userHasAuthority"
+                id="addContactBtn"
+                kind="primary"
+                size="md"
+                @click="addContact"
+                :disabled="newContact"
+              >
+                <span class="width-unset">Add contact</span>
+                <Add16 slot="icon" />
+              </cds-button>
             </div>
           </div>
         </div>
