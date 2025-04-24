@@ -1078,6 +1078,39 @@ cds-actionable-notification * {
   gap: 0.25rem;
 }
 
+.label-skeleton::part(p) {
+  width: 2.5rem;
+  height: 0.5rem;
+  margin-block-end: 0.25rem;
+}
+
+.value-skeleton::part(p) {
+  width: 18rem;
+  height: 2rem;
+}
+
+.heading-03-skeleton {
+  display: flex;
+  height: 2.5rem;
+  width: 14.375rem;
+  align-items: center;
+
+  &::part(p) {
+    height: 0.5rem;
+    margin-block-end: 0;
+  }
+}
+
+.heading-05-skeleton {
+  padding: 16px 16px 16px 0px;
+
+  &::part(p) {
+    width: 24rem;
+    height: 0.625rem;
+    margin-block-end: 0;
+  }
+}
+
 .grouping-12 {
   display: flex;
   flex-direction: column;

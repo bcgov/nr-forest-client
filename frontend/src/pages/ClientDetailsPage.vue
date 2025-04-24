@@ -10,6 +10,7 @@ import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/tabs/index";
 import "@carbon/web-components/es/components/tag/index";
 import "@carbon/web-components/es/components/accordion/index";
+import "@carbon/web-components/es/components/skeleton-text/index";
 import summit from "@carbon/pictograms/es/summit";
 import tools from "@carbon/pictograms/es/tools";
 
@@ -29,6 +30,7 @@ import Location20 from "@carbon/icons-vue/es/location/20";
 import User20 from "@carbon/icons-vue/es/user/20";
 import Launch16 from "@carbon/icons-vue/es/launch/16";
 import Add16 from "@carbon/icons-vue/es/add/16";
+import Save16 from "@carbon/icons-vue/es/save/16";
 
 import { greenDomain } from "@/CoreConstants";
 import {
@@ -745,11 +747,14 @@ resetGlobalError();
           </cds-breadcrumb-item>
         </cds-breadcrumb>
 
-        <h1 class="resource-details--title">
-          <span>
-            {{ toTitleCase(clientFullName) }}
-          </span>
-        </h1>
+        <template v-if="!fetchError.code">
+          <h1 v-if="clientFullName" class="resource-details--title">
+            <span>
+              {{ toTitleCase(clientFullName) }}
+            </span>
+          </h1>
+          <cds-skeleton-text v-else v-shadow="1" class="heading-03-skeleton" />
+        </template>
         <div>
           <p class="body-02 light-theme-text-text-secondary" data-testid="subtitle">
             Check and manage this client's data
@@ -795,25 +800,29 @@ resetGlobalError();
         </cds-actionable-notification>
       </div>
 
-      <div class="grouping-14" v-if="data">
+      <div v-if="!fetchError.code" class="grouping-14">
         <div class="grouping-05-short">
           <div>
             <h2 class="mg-tl-2 heading-05">Client summary</h2>
-
             <div class="grouping-10">
               <summary-view
                 ref="summaryRef"
+                v-if="data"
                 :data="data"
                 :userRoles="userRoles"
                 @save="saveSummary"
               />
+              <div v-else v-for="i in Array(4)" :key="i" class="grouping-11" >
+                <cds-skeleton-text v-shadow="1" class="label-skeleton" />
+                <cds-skeleton-text v-shadow="1" class="value-skeleton" />
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div class="invisible"></div>
     </div>
-    <div class="client-details-content tabs-container opaque-background" v-if="data">
+    <div v-if="!fetchError.code" class="client-details-content tabs-container opaque-background">
       <cds-tabs value="locations" type="contained">
         <cds-tab id="tab-locations" target="panel-locations" value="locations">
           <div>
@@ -841,24 +850,27 @@ resetGlobalError();
         </cds-tab>
       </cds-tabs>
     </div>
-    <div class="tab-panels-container" v-if="data">
+    <div v-if="!fetchError.code" class="tab-panels-container">
       <div id="panel-locations" role="tabpanel" aria-labelledby="tab-locations" hidden>
         <div class="tab-header space-between">
-          <h3 class="padding-left-1rem">
-            {{ formatCount(data.addresses?.length) }}
-            {{ pluralize("location", data.addresses?.length) }}
-          </h3>
-          <cds-button
-            v-if="userHasAuthority"
-            id="addLocationBtn"
-            kind="primary"
-            size="md"
-            @click="addLocation"
-            :disabled="newLocation"
-          >
-            <span class="width-unset">Add location</span>
-            <Add16 slot="icon" />
-          </cds-button>
+          <template v-if="data">
+            <h3 class="padding-left-1rem">
+              {{ formatCount(data.addresses?.length) }}
+              {{ pluralize("location", data.addresses?.length) }}
+            </h3>
+            <cds-button
+              v-if="userHasAuthority"
+              id="addLocationBtn"
+              kind="primary"
+              size="md"
+              @click="addLocation"
+              :disabled="newLocation"
+            >
+              <span class="width-unset">Add location</span>
+              <Add16 slot="icon" />
+            </cds-button>
+          </template>
+          <cds-skeleton-text v-else v-shadow="1" class="heading-05-skeleton" />
         </div>
         <div class="tab-panel tab-panel--populated">
           <cds-accordion
@@ -916,23 +928,26 @@ resetGlobalError();
         </div>
       </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
-        <template v-if="data.contacts?.length">
+        <template v-if="!data || data.contacts?.length">
           <div class="tab-header space-between">
-            <h3 class="padding-left-1rem">
-              {{ formatCount(data.contacts?.length) }}
-              {{ pluralize("contact", data.contacts?.length) }}
-            </h3>
-            <cds-button
-              v-if="userHasAuthority"
-              id="addContactBtn"
-              kind="primary"
-              size="md"
-              @click="addContact"
-              :disabled="newContact"
-            >
-              <span class="width-unset">Add contact</span>
-              <Add16 slot="icon" />
-            </cds-button>
+            <template v-if="data">
+              <h3 class="padding-left-1rem">
+                {{ formatCount(data.contacts?.length) }}
+                {{ pluralize("contact", data.contacts?.length) }}
+              </h3>
+              <cds-button
+                v-if="userHasAuthority"
+                id="addContactBtn"
+                kind="primary"
+                size="md"
+                @click="addContact"
+                :disabled="newContact"
+              >
+                <span class="width-unset">Add contact</span>
+                <Add16 slot="icon" />
+              </cds-button>
+            </template>
+            <cds-skeleton-text v-else v-shadow="1" class="heading-05-skeleton" />
           </div>
           <div class="tab-panel tab-panel--populated">
             <cds-accordion
@@ -1126,7 +1141,7 @@ resetGlobalError();
         v-on:click="confirmReasons()"
         :disabled="saveDisabled">
         Save changes
-        <Logout16 slot="icon" />
+        <Save16 slot="icon" />
       </cds-modal-footer-button> 
     </cds-modal-footer>
   </cds-modal>
