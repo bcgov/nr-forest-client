@@ -373,7 +373,7 @@ class ClientSearchControllerIntegrationTest extends
                 uriBuilder
                     .path("/api/search")
                     .queryParam("page", 0)
-                    .queryParam("size", 2)
+                    .queryParam("size", 5)
                     .build(new HashMap<>())
             )
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -382,7 +382,10 @@ class ClientSearchControllerIntegrationTest extends
     response
         .expectStatus().isOk()
         .expectHeader()
-        .value("X-Total-Count", count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
+        .value("X-Total-Count", count -> {
+          int totalCount = Integer.parseInt(count);
+          assertThat(totalCount).isGreaterThan(0);
+        })
         .expectBody()
         .jsonPath("$[0].clientNumber").isNotEmpty()
         .jsonPath("$[0].clientName").isNotEmpty();
