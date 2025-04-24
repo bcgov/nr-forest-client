@@ -928,31 +928,27 @@ resetGlobalError();
         </div>
       </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
-        <div class="tab-header space-between">
-          <template v-if="data">
-            <!--
-              Just make the heading invisible instead of removing it so the space-between still
-              pushes the button to the right.
-            -->
-            <h3 class="padding-left-1rem" :class="{invisible: !data.contacts?.length}">
-              {{ formatCount(data.contacts?.length) }}
-              {{ pluralize("contact", data.contacts?.length) }}
-            </h3>
-            <cds-button
-              v-if="userHasAuthority"
-              id="addContactBtn"
-              kind="primary"
-              size="md"
-              @click="addContact"
-              :disabled="newContact"
-            >
-              <span class="width-unset">Add contact</span>
-              <Add16 slot="icon" />
-            </cds-button>
-          </template>
-          <cds-skeleton-text v-else v-shadow="1" class="heading-05-skeleton" />
-        </div>
-        <template v-if="!data || sortedContacts?.length">
+        <template v-if="!data || data.contacts?.length">
+          <div class="tab-header space-between">
+            <template v-if="data">
+              <h3 class="padding-left-1rem">
+                {{ formatCount(data.contacts?.length) }}
+                {{ pluralize("contact", data.contacts?.length) }}
+              </h3>
+              <cds-button
+                v-if="userHasAuthority"
+                id="addContactBtn"
+                kind="primary"
+                size="md"
+                @click="addContact"
+                :disabled="newContact"
+              >
+                <span class="width-unset">Add contact</span>
+                <Add16 slot="icon" />
+              </cds-button>
+            </template>
+            <cds-skeleton-text v-else v-shadow="1" class="heading-05-skeleton" />
+          </div>
           <div class="tab-panel tab-panel--populated">
             <cds-accordion
               v-for="(contact, index) in sortedContacts"

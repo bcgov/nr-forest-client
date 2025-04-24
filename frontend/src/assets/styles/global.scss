@@ -2006,10 +2006,6 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
     padding: 5rem;
     justify-content: center;
 
-    &:is(:not(:first-child)) {
-      padding-top: 0;
-    }
-
     .empty-table-list {
       height: 100%;
       gap: 1rem;
