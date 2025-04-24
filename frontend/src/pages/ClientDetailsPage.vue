@@ -30,6 +30,7 @@ import Location20 from "@carbon/icons-vue/es/location/20";
 import User20 from "@carbon/icons-vue/es/user/20";
 import Launch16 from "@carbon/icons-vue/es/launch/16";
 import Add16 from "@carbon/icons-vue/es/add/16";
+import Save16 from "@carbon/icons-vue/es/save/16";
 
 import { greenDomain } from "@/CoreConstants";
 import {
@@ -1140,7 +1141,7 @@ resetGlobalError();
         v-on:click="confirmReasons()"
         :disabled="saveDisabled">
         Save changes
-        <Logout16 slot="icon" />
+        <Save16 slot="icon" />
       </cds-modal-footer-button> 
     </cds-modal-footer>
   </cds-modal>
