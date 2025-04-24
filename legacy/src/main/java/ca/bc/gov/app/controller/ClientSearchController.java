@@ -6,6 +6,7 @@ import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
+import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import io.micrometer.observation.annotation.Observed;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
