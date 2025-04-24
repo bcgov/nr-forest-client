@@ -7,7 +7,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -81,6 +83,7 @@ class HistoryLogControllerTest extends AbstractTestContainerIntegrationTest {
     client
         .mutateWith(mockJwt())
         .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_EDITOR))
         .get()
         .uri(uriBuilder -> uriBuilder
             .path("/api/clients/history-logs/{clientNumber}")
