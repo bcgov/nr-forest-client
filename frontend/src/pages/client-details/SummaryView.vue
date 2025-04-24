@@ -9,7 +9,6 @@ import {
   includesAnyOf,
 } from "@/services/ForestClientService";
 
-import "@carbon/web-components/es/components/skeleton-text/index";
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
 import Warning20 from "@carbon/icons-vue/es/warning--filled/20";
 import Information16 from "@carbon/icons-vue/es/information/16";
@@ -190,11 +189,6 @@ const client = computed(() => props.data.client);
 
 <template>
   <div class="grouping-10 no-padding">
-    <!-- <div class="grouping-11" v-for="i in Array(4)" :key="i">
-      <cds-skeleton-text v-shadow="1" class="lable-skeleton" />
-      <cds-skeleton-text v-shadow="1" class="value-skeleton" />
-    </div> -->
-
     <read-only-component label="Client number" id="clientNumber">
       <span class="body-compact-01">{{ client.clientNumber }}</span>
     </read-only-component>
