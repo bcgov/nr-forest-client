@@ -44,17 +44,17 @@ public class HistoryLogController {
   ) {
     log.info("Getting history logs by client number {}, page {}, size {}, sources {}", 
              clientNumber, page, size, sources);
-	return clientLegacyService
+    return clientLegacyService
             .retrieveHistoryLogs(clientNumber, page, size, sources)
             .doOnNext(pair -> {
-    	          Long count = pair.getSecond();
+                Long count = pair.getSecond();
     	          
-    	          serverResponse
-    	              .getHeaders()
-    	              .putIfAbsent(
-    	                  ApplicationConstant.X_TOTAL_COUNT,
-    	                  List.of(count.toString())
-    	              );
+    	        serverResponse
+    	            .getHeaders()
+    	            .putIfAbsent(
+    	                ApplicationConstant.X_TOTAL_COUNT,
+    	                List.of(count.toString())
+    	            );
     	        })
     	        .map(Pair::getFirst)
     	        .doFinally(signalType ->
