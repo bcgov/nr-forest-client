@@ -1,0 +1,68 @@
+*****************************************************************************
+* CLIENT -                                                                  *
+* Modify stored procedures around audit tables, by reducing the reliance    *
+* on package calls, by introducing default values to some package calls.    *
+* DATE CREATED : 2025-04-17                                                 *
+* AUTHOR : Paulo Cruz                                                       *
+* System : CLIENT                                                           *
+*                                                                           *
+*****************************************************************************
+ 
+INSTRUCTIONS:
+ 
+Environments include:  DBQ01, DBP01
+ 
+ 
+1) Log in to database as THE, via SQL*Plus.
+ 
+Execute the SET statements before running the scripts
+ 
+$ sqlplus username/password@Environment
+ 
+SET DEFINE ON;
+SET SQLBL ON;
+ 
+2) From the SQL Prompt, run the scripts
+ 
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V2.0.4__update_reason_code.sql
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V1.3.17__package_client_client_doing_bus_as_updated.sql
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V1.3.18__package_client_client_contact_updated.sql
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V1.3.19__package_client_client_location_update.sql
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V1.3.20__package_client_forest_client_update.sql
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V3.0.4__trigger_CLIENT_CLI_CONTACT_AR_IUD_TRG_update.sql
+
+ 
+ 
+4) Exit SQL*Plus
+ 
+EXIT
+ 
+ 
+*****************************************************************************
+****  ROLLBACK -                                                         ****
+**** these scripts will rever the packages and                           ****
+**** triggers to the original version                                    ****
+*****************************************************************************
+ 
+1) Log in to database as THE, via SQL*Plus.
+ 
+Execute the SET statements before running the scripts
+ 
+$ sqlplus username/password@Environment
+ 
+SET DEFINE ON;
+SET SQLBL ON;
+ 
+2) From the SQL Prompt, run the scripts
+ 
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V1.3.14__package_client_client_doing_bus_as_body.sql
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V1.3.6__package_client_client_contact_body.sql
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V1.3.12__package_client_client_location_body.sql
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V1.3.16__package_client_forest_client_body.sql
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V3.0.1__trigger_CLIENT_CLI_CONTACT_AR_IUD_TRG.sql
+
+ 
+ 
+4) Exit SQL*Plus
+ 
+EXIT
