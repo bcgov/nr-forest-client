@@ -362,6 +362,31 @@ class ClientSearchControllerIntegrationTest extends
     String body = new String(result.getResponseBody());
     assertThat(body).isEqualTo("[]");
   }
+  
+  @Test
+  @DisplayName("Search - Should fetch latest entries when no value is provided")
+  void shouldFetchLatestEntriesWhenNoValueIsProvided() {
+    ResponseSpec response =
+        client
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/search")
+                    .queryParam("page", 0)
+                    .queryParam("size", 2)
+                    .build(new HashMap<>())
+            )
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .exchange();
+
+    response
+        .expectStatus().isOk()
+        .expectHeader()
+        .value("X-Total-Count", count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
+        .expectBody()
+        .jsonPath("$[0].clientNumber").isNotEmpty()
+        .jsonPath("$[0].clientName").isNotEmpty();
+  }
 
   private static Stream<Arguments> byEmail() {
     return
