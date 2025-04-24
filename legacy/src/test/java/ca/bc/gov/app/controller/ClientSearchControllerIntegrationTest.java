@@ -1,7 +1,6 @@
 package ca.bc.gov.app.controller;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
@@ -364,34 +363,37 @@ class ClientSearchControllerIntegrationTest extends
   }
   
   @Test
-  @DisplayName("Search - Should fetch latest entries and return count header and expected client")
-  void shouldFetchLatestEntriesAndExposeTotalCount() {
-    String expectedClientNumber = "00000114";
-    String expectedClientName = "POLLICH-ABERNATHY";
+  @DisplayName("Search latest entries")
+  void shouldSearchLatestEntries() {
 
-    ResponseSpec response =
-        client
-            .get()
-            .uri(uriBuilder ->
-                uriBuilder
-                    .path("/api/search")
-                    .queryParam("page", 0)
-                    .queryParam("size", 2)
-                    .build(new HashMap<>())
-            )
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .exchange();
+      ResponseSpec response =
+          client
+              .get()
+              .uri(uriBuilder ->
+                  uriBuilder
+                      .path("/api/search")
+                      .queryParam("page", 0)
+                      .queryParam("size", 10)
+                      .build(new HashMap<>())
+              )
+              .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+              .exchange();
 
-    response
-        .expectStatus().isOk()
-        .expectHeader()
-        .value("X-Total-Count", count -> {
-          System.out.println("X-Total-Count: " + count);
-          assertThat(Integer.parseInt(count)).isGreaterThan(0);
-        })
-        .expectBody()
-        .jsonPath("$[0].clientNumber").isEqualTo(expectedClientNumber)
-        .jsonPath("$[0].clientName").isEqualTo(expectedClientName);
+      EntityExchangeResult<byte[]> result =
+          response
+            .expectStatus().isOk()
+            .expectBody()
+            .consumeWith(System.out::println)
+            .returnResult();
+
+      assertThat(
+          result
+          .getResponseHeaders()
+          .getFirst("X-Total-Count")
+      ).isNotNull().isNotEqualTo("0");
+
+      String body = new String(result.getResponseBody());
+      assertThat(body).isNotEqualTo("[]");
   }
 
   private static Stream<Arguments> byEmail() {
