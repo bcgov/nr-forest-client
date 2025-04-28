@@ -7,8 +7,10 @@ on:
 jobs:
   create-feature:
     if: contains(github.event.issue.labels.*.name, 'gherkin')
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-24.04
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
