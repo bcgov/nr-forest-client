@@ -7,8 +7,6 @@ on:
         required: true
         type: string
 
-permissions: {}
-
 jobs:
   cypress-run:
     name: "User flow test"
