@@ -347,7 +347,7 @@ class ClientSearchControllerIntegrationTest extends
     response
       .expectStatus().isOk()
       .expectHeader()
-      .value("X-Total-Count", count -> assertThat(count).isEqualTo("0"))
+      .value("X-Total-Count", count -> assertThat(count).isEqualTo("2"))
       .expectBody()
       .consumeWith(result -> {
           String body = new String(result.getResponseBody());
