@@ -9,7 +9,7 @@ public final class ForestClientQueries {
   public static final String CLIENT_INFORMATION_HISTORY = """
       WITH BASE_DATA AS (
         SELECT
-            AL.FOREST_CLIENT_AUDIT_ID,
+            AL.FOREST_CLIENT_AUDIT_ID AS IDX,
             AL.CLIENT_NUMBER,
             AL.CLIENT_NAME,
             AL.CLIENT_ACRONYM,
@@ -48,7 +48,7 @@ public final class ForestClientQueries {
       AUDIT_DATA AS (
         SELECT
             'ClientInformation' AS TABLE_NAME,
-            B.FOREST_CLIENT_AUDIT_ID AS IDX,
+            B.IDX,
             CASE
                 WHEN B.CHANGE_TYPE = 'INS' THEN 'Client created'
                 WHEN B.CHANGE_TYPE = 'UPD' THEN 'Client summary updated'
@@ -87,7 +87,7 @@ public final class ForestClientQueries {
                 END
             ) OVER (
                 PARTITION BY B.CLIENT_NUMBER, COL.COLUMN_NAME
-                ORDER BY B.FOREST_CLIENT_AUDIT_ID
+                ORDER BY B.IDX
             ) AS OLD_VALUE,
             B.UPDATE_TIMESTAMP,
             B.UPDATE_USERID,
