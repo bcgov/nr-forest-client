@@ -349,10 +349,8 @@ class ClientSearchControllerIntegrationTest extends
       .expectHeader()
       .value("X-Total-Count", count -> assertThat(count).isEqualTo("2"))
       .expectBody()
-      .consumeWith(result -> {
-          String body = new String(result.getResponseBody());
-          assertThat(body).isEqualTo("[]");
-      });
+      .jsonPath("$[0].clientNumber").isNotEmpty()
+      .jsonPath("$[0].clientNumber").isEqualTo("00000158");
   }
   
   private static Stream<Arguments> byEmail() {
