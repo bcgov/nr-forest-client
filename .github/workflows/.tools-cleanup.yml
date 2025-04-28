@@ -3,6 +3,8 @@ name: Tools environment cleanup
 on:
   workflow_call:
 
+permissions: {}
+
 jobs:
   tools-cleanup:
     name: Cleanup tools environment
