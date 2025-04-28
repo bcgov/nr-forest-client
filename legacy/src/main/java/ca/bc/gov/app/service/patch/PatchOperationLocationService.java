@@ -48,7 +48,8 @@ public class PatchOperationLocationService implements ClientPatchOperation {
       "/cellPhone", "cell_phone",
       "/homePhone", "home_phone",
       "/businessPhone", "business_phone",
-      "/cliLocnComment", "cli_locn_comment"
+      "/cliLocnComment", "cli_locn_comment",
+      "/locnExpiredInd", "locn_expired_ind"
   );
 
   @Override
