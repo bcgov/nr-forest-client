@@ -316,4 +316,95 @@ public final class ForestClientQueries {
       )
       ORDER BY A.IDX DESC, A.FIELD_ORDER ASC    
       """;
+  
+  public static final String CONTACT_HISTORY = """
+      WITH BASE_DATA AS (
+          SELECT
+              AL.CLIENT_CONTACT_AUDIT_ID,
+              AL.CLIENT_CONTACT_ID,
+              AL.CLIENT_AUDIT_CODE,
+              AL.CONTACT_NAME,
+              AL.BUSINESS_PHONE,
+              AL.CELL_PHONE,
+              AL.FAX_NUMBER,
+              AL.EMAIL_ADDRESS,
+              AL.UPDATE_TIMESTAMP,
+              AL.UPDATE_USERID,
+              BC.DESCRIPTION AS CONTACT_TYPE_DESC
+          FROM THE.CLI_CON_AUDIT AL
+          LEFT OUTER JOIN THE.BUSINESS_CONTACT_CODE BC
+              ON AL.BUS_CONTACT_CODE = BC.BUSINESS_CONTACT_CODE
+          WHERE AL.CLIENT_NUMBER = :clientNumber
+      ),
+      AUDIT_DATA AS (
+          SELECT
+              'ClientContact' AS TABLE_NAME,
+              B.CLIENT_CONTACT_AUDIT_ID || '-' || B.CLIENT_CONTACT_ID AS IDX,
+              CASE
+                  WHEN B.CLIENT_AUDIT_CODE = 'INS' THEN 'Contact "' || B.CONTACT_NAME || '" added'
+                  WHEN B.CLIENT_AUDIT_CODE = 'UPD' THEN 'Contact "' || B.CONTACT_NAME || '" updated'
+                  WHEN B.CLIENT_AUDIT_CODE = 'DEL' THEN 'Contact "' || B.CONTACT_NAME || '" deleted'
+              END AS IDENTIFIER_LABEL,
+              COL.COLUMN_NAME,
+              CASE COL.COLUMN_NAME
+                  WHEN 'contactTypeDesc' THEN B.CONTACT_TYPE_DESC
+                  WHEN 'contactName' THEN B.CONTACT_NAME
+                  WHEN 'businessPhone' THEN B.BUSINESS_PHONE
+                  WHEN 'secondaryPhone' THEN B.CELL_PHONE
+                  WHEN 'faxNumber' THEN B.FAX_NUMBER
+                  WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
+              END AS NEW_VALUE,
+              LAG(
+                  CASE COL.COLUMN_NAME
+                      WHEN 'contactTypeDesc' THEN B.CONTACT_TYPE_DESC
+                      WHEN 'contactName' THEN B.CONTACT_NAME
+                      WHEN 'businessPhone' THEN B.BUSINESS_PHONE
+                      WHEN 'secondaryPhone' THEN B.CELL_PHONE
+                      WHEN 'faxNumber' THEN B.FAX_NUMBER
+                      WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
+                  END
+              ) OVER (
+                  PARTITION BY B.CLIENT_CONTACT_ID, COL.COLUMN_NAME
+                  ORDER BY B.CLIENT_CONTACT_AUDIT_ID
+              ) AS OLD_VALUE,
+              B.UPDATE_TIMESTAMP,
+              B.UPDATE_USERID,
+              B.CLIENT_AUDIT_CODE AS CHANGE_TYPE,
+              COL.FIELD_ORDER
+          FROM BASE_DATA B
+          CROSS JOIN (
+              SELECT 'contactTypeDesc' AS COLUMN_NAME, 1 AS FIELD_ORDER FROM DUAL
+              UNION ALL
+              SELECT 'contactName' AS COLUMN_NAME, 2 FROM DUAL
+              UNION ALL
+              SELECT 'businessPhone' AS COLUMN_NAME, 3 FROM DUAL
+              UNION ALL
+              SELECT 'secondaryPhone' AS COLUMN_NAME, 4 FROM DUAL
+              UNION ALL
+              SELECT 'faxNumber' AS COLUMN_NAME, 5 FROM DUAL
+              UNION ALL
+              SELECT 'emailAddress' AS COLUMN_NAME, 5 FROM DUAL
+          ) COL
+      )
+      SELECT
+          A.TABLE_NAME,
+          A.IDX,
+          A.IDENTIFIER_LABEL,
+          A.COLUMN_NAME,
+          A.OLD_VALUE,
+          A.NEW_VALUE,
+          A.UPDATE_TIMESTAMP,
+          A.UPDATE_USERID,
+          A.CHANGE_TYPE,
+          '' AS ACTION_CODE,
+          '' AS REASON
+      FROM AUDIT_DATA A
+      WHERE (
+          (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL) OR
+          (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL) OR
+          (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
+      )
+      ORDER BY A.IDX DESC, A.FIELD_ORDER ASC
+      """;
+  
 }
