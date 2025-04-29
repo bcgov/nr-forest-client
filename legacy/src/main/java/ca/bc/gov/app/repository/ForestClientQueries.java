@@ -407,4 +407,67 @@ public final class ForestClientQueries {
       ORDER BY A.IDX DESC, A.FIELD_ORDER ASC
       """;
   
+  public static final String DOING_BUSINESS_AS_HISTORY = """
+      WITH BASE_DATA AS (
+          SELECT
+              AL.CLIENT_DBA_ID AS IDX,
+              AL.CLIENT_NUMBER,
+              AL.DOING_BUSINESS_AS_NAME,
+              AL.UPDATE_TIMESTAMP,
+              AL.UPDATE_USERID,
+              AL.CLIENT_AUDIT_CODE
+          FROM THE.CLIENT_DOING_BUSINESS_AS_AUDIT AL
+          WHERE AL.CLIENT_NUMBER = :clientNumber
+      ),
+      AUDIT_DATA AS (
+          SELECT
+              'ClientDoingBusinessAs' AS TABLE_NAME,
+              B.IDX,
+              CASE
+                  WHEN B.CLIENT_AUDIT_CODE = 'INS' THEN 'Doing business as "' || B.DOING_BUSINESS_AS_NAME || '" added'
+                  WHEN B.CLIENT_AUDIT_CODE = 'UPD' THEN 'Doing business as "' || B.DOING_BUSINESS_AS_NAME || '" updated'
+                  WHEN B.CLIENT_AUDIT_CODE = 'DEL' THEN 'Doing business as "' || B.DOING_BUSINESS_AS_NAME || '" deleted'
+              END AS IDENTIFIER_LABEL,
+              COL.COLUMN_NAME,
+              CASE COL.COLUMN_NAME
+                  WHEN 'doingBusinessAs' THEN B.DOING_BUSINESS_AS_NAME
+              END AS NEW_VALUE,
+              LAG(
+                  CASE COL.COLUMN_NAME
+                      WHEN 'doingBusinessAs' THEN B.DOING_BUSINESS_AS_NAME
+                  END
+              ) OVER (
+                  PARTITION BY B.CLIENT_NUMBER, COL.COLUMN_NAME
+                  ORDER BY B.IDX
+              ) AS OLD_VALUE,
+              B.UPDATE_TIMESTAMP,
+              B.UPDATE_USERID,
+              B.CLIENT_AUDIT_CODE AS CHANGE_TYPE,
+              COL.FIELD_ORDER
+          FROM BASE_DATA B
+          CROSS JOIN (
+              SELECT 'doingBusinessAs' AS COLUMN_NAME, 1 AS FIELD_ORDER FROM DUAL
+          ) COL
+      )
+      SELECT
+          A.TABLE_NAME,
+          A.IDX,
+          A.IDENTIFIER_LABEL,
+          A.COLUMN_NAME,
+          A.OLD_VALUE,
+          A.NEW_VALUE,
+          A.UPDATE_TIMESTAMP,
+          A.UPDATE_USERID,
+          A.CHANGE_TYPE,
+          '' AS ACTION_CODE,
+          '' AS REASON
+      FROM AUDIT_DATA A
+      WHERE (
+          (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL) OR
+          (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL) OR
+          (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
+      )
+      ORDER BY A.IDX DESC, A.FIELD_ORDER ASC    
+      """;
+  
 }
