@@ -27,5 +27,12 @@ public interface ClientDoingBusinessAsRepository extends
 
   Flux<ClientDoingBusinessAsEntity> findByClientNumber(String clientNumber);
 
-  
+  @Query("""
+      SELECT DOING_BUSINESS_AS_NAME
+      FROM THE.CLIENT_DOING_BUSINESS_AS
+      WHERE CLIENT_NUMBER = :clientNumber
+      AND ROWNUM = 1
+      ORDER BY UPDATE_TIMESTAMP DESC""")
+  Mono<String> findLatestByClientNumber(String clientNumber);
+
 }

@@ -16,7 +16,7 @@ public record ForestClientDetailsDto(
     ForestClientInformationDto client,
     List<ForestClientLocationDetailsDto> addresses,
     List<ForestClientContactDetailsDto> contacts,
-    List<ForestClientDoingBusinessAsDto> doingBusinessAs
+    String doingBusinessAs
 ) {
 
 }
