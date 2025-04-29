@@ -5,7 +5,6 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.AddressSearchDto;
-import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
@@ -482,21 +481,12 @@ public class ClientSearchService {
             informationDto,
             List.of(),
             List.of(),
-            List.of())
+            null)
         )
         .flatMap(dto ->
             doingBusinessAsRepository
-                .findByClientNumber(dto.client().clientNumber())
-                .sort(Comparator.comparing(ClientDoingBusinessAsEntity::getCreatedAt))
-                .map(dba -> new ClientDoingBusinessAsDto(
-                    dba.getClientNumber(),
-                    dba.getDoingBusinessAsName(),
-                    dba.getCreatedBy(),
-                    dba.getUpdatedBy(),
-                    dba.getCreatedByUnit()
-                ))
-                .collectList()
-                .map(dto::withDoingBusinessAs)
+                .findLatestByClientNumber(dto.client().clientNumber())
+                .map(name -> dto.withDoingBusinessAs(name))
                 .defaultIfEmpty(dto)
         )
         .flatMap(dto -> locationRepository

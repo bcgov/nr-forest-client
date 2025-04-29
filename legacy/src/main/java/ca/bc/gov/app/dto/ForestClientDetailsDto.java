@@ -9,14 +9,14 @@ import lombok.With;
  * @param client          The client details.
  * @param addresses       The list of addresses associated with the client.
  * @param contacts        The list of contacts associated with the client.
- * @param doingBusinessAs The list of "doing business as" names associated with the client.
+ * @param doingBusinessAs The latest "doing business as" name associated with the client.
  */
 @With
 public record ForestClientDetailsDto(
     ForestClientInformationDto client,
     List<ForestClientLocationDetailsDto> addresses,
     List<ForestClientContactDetailsDto> contacts,
-    List<ClientDoingBusinessAsDto> doingBusinessAs
+    String doingBusinessAs
 ) {
 
 }
