@@ -10,4 +10,5 @@ public class ApplicationConstants {
   public static final String CLIENT_NUMBER = "CLIENT_NUMBER";
   public static final String CLIENT_NUMBER_LITERAL = "clientNumber";
   public static final String MDC_USERID = "X-USER";
+
 }
