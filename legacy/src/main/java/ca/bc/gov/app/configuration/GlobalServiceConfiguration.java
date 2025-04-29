@@ -6,6 +6,7 @@ import ca.bc.gov.app.dto.ClientNameCodeDto;
 import ca.bc.gov.app.dto.CodeNameDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.FieldReasonDto;
+import ca.bc.gov.app.dto.ForestClientContactDetailsDto;
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
@@ -37,7 +38,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
     ForestClientLocationDto.class,
     PredictiveSearchResultDto.class,
     JsonPatch.class,
-    JsonNode.class
+    JsonNode.class,
+    ForestClientContactDetailsDto.class
 })
 public class GlobalServiceConfiguration {
 
