@@ -36,10 +36,14 @@ public class ClientPatchService {
    *
    * @param clientNumber The unique identifier of the forest client being updated.
    * @param forestClient The JSON Patch document describing the modifications.
-   * @param userId The username that requested the patch.
+   * @param userId       The user that requested the patch update
    * @return A {@link Mono} that completes when all patches have been applied.
    */
-  public Mono<Void> patchClient(String clientNumber, JsonNode forestClient, String userId) {
+  public Mono<Void> patchClient(
+      String clientNumber,
+      JsonNode forestClient,
+      String userId
+  ) {
     log.info("Patching client with client number {} if any changes are detected", clientNumber);
 
     return partialServices
