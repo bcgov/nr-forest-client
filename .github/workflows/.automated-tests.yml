@@ -10,6 +10,8 @@ on:
 jobs:
   cypress-run:
     name: "User flow test"
+    permissions:
+      pull-requests: write
     runs-on: ubuntu-24.04
     environment: tools
     steps:

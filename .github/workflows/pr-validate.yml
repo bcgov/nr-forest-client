@@ -22,6 +22,8 @@ jobs:
   validate:
     name: Validate PR
     needs: [vars]
+    permissions:
+      pull-requests: write
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.9.0
     with:
       markdown_links: |
