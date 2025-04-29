@@ -67,7 +67,12 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
 
   public static final String REPLACE_CONTACT_ASSOCIATION = """
       UPDATE THE.CLIENT_CONTACT
-      SET CLIENT_LOCN_CODE = :new_location_code
+      SET
+        CLIENT_LOCN_CODE = :new_location_code,
+        update_timestamp = SYSDATE,
+        revision_count = revision_count + 1,
+        update_userid = :user_id,
+        update_org_unit = 70
       WHERE CLIENT_NUMBER = :client_number
       AND CONTACT_NAME = (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id)
       AND CLIENT_LOCN_CODE = :old_location_code""";
@@ -128,7 +133,8 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
                                         entry.entityId(),
                                         entry.oldLocationCode(),
                                         entry.newLocationCode(),
-                                        clientNumber
+                                        clientNumber,
+                                        userId
                                     )
                                 )
                                 .then()
@@ -226,7 +232,8 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
       Long entityId,
       String oldLocationCode,
       String newLocationCode,
-      String clientNumber
+      String clientNumber,
+      String userId
   ) {
     return
         entityTemplate
@@ -236,6 +243,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
             .bind("entity_id", entityId)
             .bind("old_location_code", oldLocationCode)
             .bind("new_location_code", newLocationCode)
+            .bind("user_id", "system")
             .fetch()
             .one()
             .then();
