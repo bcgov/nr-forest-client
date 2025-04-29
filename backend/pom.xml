@@ -43,11 +43,11 @@
         <testcontainers.version>1.20.6</testcontainers.version>
         <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
         <junit-platform.version>1.9.1</junit-platform.version>
-        <netty.version>4.1.119.Final</netty.version>
+        <netty.version>4.2.0.Final</netty.version>
         <logback.version>1.5.18</logback.version>
         <oci.revision>${project.version}</oci.revision>
-        <nimbus-jose-jwt.version>10.1</nimbus-jose-jwt.version>
-        <spring-security-core.version>6.4.4</spring-security-core.version>
+        <nimbus-jose-jwt.version>10.2</nimbus-jose-jwt.version>
+        <spring-security-core.version>6.4.5</spring-security-core.version>
     </properties>
 
     <dependencies>
@@ -145,7 +145,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.13.0</version>
+            <version>1.13.1</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
