@@ -383,7 +383,7 @@ public final class ForestClientQueries {
               UNION ALL
               SELECT 'faxNumber' AS COLUMN_NAME, 5 FROM DUAL
               UNION ALL
-              SELECT 'emailAddress' AS COLUMN_NAME, 5 FROM DUAL
+              SELECT 'emailAddress' AS COLUMN_NAME, 6 FROM DUAL
           ) COL
       )
       SELECT
