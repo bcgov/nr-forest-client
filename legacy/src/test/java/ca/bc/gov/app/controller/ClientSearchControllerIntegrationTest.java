@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
@@ -307,7 +308,7 @@ class ClientSearchControllerIntegrationTest extends
       response
           .expectStatus().isOk()
           .expectHeader()
-          .exists("X-Total-Count")
+          .value("X-Total-Count", count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
           .expectBody()
           .jsonPath("$[0].clientNumber").isNotEmpty()
           .jsonPath("$[0].clientNumber").isEqualTo(expectedClientNumber)
@@ -315,9 +316,12 @@ class ClientSearchControllerIntegrationTest extends
           .jsonPath("$[0].clientFullName").isEqualTo(expectedClientName)
           .consumeWith(System.out::println);
     } else {
-      response.expectStatus().isOk()
+      response
+          .expectStatus().isOk()
+          .expectHeader()
+          .value("X-Total-Count", count -> assertThat(count).isEqualTo("0"))
           .expectBody()
-          .consumeWith(System.out::println).json("[]");
+          .consumeWith(System.out::println);
     }
 
   }
@@ -332,6 +336,7 @@ class ClientSearchControllerIntegrationTest extends
             .uri(uriBuilder ->
                 uriBuilder
                     .path("/api/search")
+                    .queryParam("value", " ")
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .build(new HashMap<>())
@@ -340,17 +345,14 @@ class ClientSearchControllerIntegrationTest extends
             .exchange();
 
     response
-        .expectStatus().isOk()
-        .expectHeader()
-        .exists("X-Total-Count")
-        .expectBody()
-        .jsonPath("$[0].clientNumber").isNotEmpty()
-        .jsonPath("$[0].clientName").isNotEmpty()
-        .jsonPath("$.length()").isEqualTo(10)
-        .consumeWith(System.out::println);
-
+      .expectStatus().isOk()
+      .expectHeader()
+      .value("X-Total-Count", count -> assertThat(count).isEqualTo("2"))
+      .expectBody()
+      .jsonPath("$[0].clientNumber").isNotEmpty()
+      .jsonPath("$[0].clientNumber").isEqualTo("00000158");
   }
-
+  
   private static Stream<Arguments> byEmail() {
     return
         Stream.concat(

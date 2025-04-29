@@ -45,7 +45,7 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         .patch()
         .uri("/api/clients/partial/{clientNumber}", clientNumber)
         .header("Content-Type", "application/json-patch+json")
-        .header(MDC_USERID,"test-user")
+        .header(MDC_USERID, "test-user")
         .bodyValue(partialBody)
         .exchange()
         .expectStatus().isAccepted()
@@ -91,6 +91,22 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.wcbFirmNumber",
             null,
             "142536"
+        ),
+        argumentSet(
+            "Deactivate client due to bankruptcy",
+            "00000103",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientStatusCode\",\"value\":\"DAC\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"clientStatusCode\",\"reason\":\"BKR\"}}]",
+            "$.client.clientStatusCode",
+            "ACT",
+            "DAC"
+        ),
+        argumentSet(
+            "Activate client due to correction",
+            "00000158",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientStatusCode\",\"value\":\"ACT\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"clientStatusCode\",\"reason\":\"CORR\"}}]",
+            "$.client.clientStatusCode",
+            "DAC",
+            "ACT"
         ),
         argumentSet(
             "Replace the notes value from a location",

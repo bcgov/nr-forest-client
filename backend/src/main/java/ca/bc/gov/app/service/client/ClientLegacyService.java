@@ -486,10 +486,14 @@ public class ClientLegacyService {
    *
    * @param clientNumber the client number to update
    * @param forestClient the JSON Patch document describing the modifications
-   * @param userName The username that requested the patch.
+   * @param userName the user that triggered the request
    * @return a {@link Mono} that completes when the patch is applied successfully
    */
-  public Mono<Void> patchClient(String clientNumber, JsonNode forestClient, String userName) {
+  public Mono<Void> patchClient(
+      String clientNumber,
+      JsonNode forestClient,
+      String userName
+  ) {
     log.info("Sending request to the legacy system to patch client {}", clientNumber);
     return legacyApi
         .patch()

@@ -13,10 +13,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   tests-java:
     name: Backend Tests
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    permissions:
+      pull-requests: write
     secrets: inherit
     uses: ./.github/workflows/reusable-tests-be.yml
 
@@ -29,6 +33,8 @@ jobs:
   trivy:
     name: Repository Report
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    permissions:
+      security-events: write
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4

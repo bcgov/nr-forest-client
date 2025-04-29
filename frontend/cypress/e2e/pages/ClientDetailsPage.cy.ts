@@ -41,7 +41,60 @@ describe("Client Details Page", () => {
 
   beforeEach(init);
 
-  it("renders the page skeleton", () => {
+  it("shows text skeletons only while data is not available", () => {
+    let resolveGetClientDetails: () => void;
+
+    const promiseGetClientDetails = new Promise<void>((resolve) => {
+      resolveGetClientDetails = resolve;
+    });
+
+    cy.intercept(
+      {
+        method: "GET",
+        pathname: "/api/clients/details/*",
+      },
+      (req) => {
+        req.continue(() => promiseGetClientDetails);
+      },
+    ).as("getClientDetails");
+
+    cy.visit("/clients/details/0");
+
+    cy.get(".heading-03-skeleton").should("be.visible");
+    cy.get("h1.resource-details--title").should("not.exist");
+
+    cy.get(".label-skeleton").should("be.visible");
+    cy.get(".value-skeleton").should("be.visible");
+    cy.get("#clientNumber").should("not.exist");
+
+    cy.get("#panel-locations .heading-05-skeleton").should("be.visible");
+    cy.get("#panel-locations h3").should("not.exist");
+
+    cy.get("#panel-contacts .heading-05-skeleton").should("exist"); // exists but it's not visible - second tab
+    cy.get("#panel-contacts h3").should("not.exist");
+
+    resolveGetClientDetails();
+    cy.wait("@getClientDetails");
+
+    // Now data is already available, so text skeletons should not exist anymore
+    cy.get("cds-skeleton-text").should("not.exist");
+
+    cy.get(".heading-03-skeleton").should("not.exist");
+    cy.get("h1.resource-details--title").should("be.visible");
+
+    cy.get(".label-skeleton").should("not.exist");
+    cy.get(".value-skeleton").should("not.exist");
+    cy.get("#clientNumber").should("be.visible");
+
+    cy.get("#panel-locations").scrollIntoView();
+    cy.get("#panel-locations .heading-05-skeleton").should("not.exist");
+    cy.get("#panel-locations h3").should("be.visible");
+
+    cy.get("#panel-contacts .heading-05-skeleton").should("not.exist");
+    cy.get("#panel-contacts h3").should("exist"); // exists but it's not visible - second tab
+  });
+
+  it("renders the page structure", () => {
     cy.visit("/clients/details/0");
 
     cy.get("cds-breadcrumb").should("contain", "Client search");
@@ -116,6 +169,9 @@ describe("Client Details Page", () => {
         if (detail) {
           cy.get(`#${elId}`).contains(detail);
         }
+
+        // There should be no skeletons on screen after the error
+        cy.get("cds-skeleton-text").should("not.exist");
       });
     });
   });

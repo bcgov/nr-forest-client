@@ -3,6 +3,8 @@ name: Tools environment cleanup
 on:
   workflow_call:
 
+permissions: {}
+
 jobs:
   tools-cleanup:
     name: Cleanup tools environment
@@ -11,7 +13,7 @@ jobs:
     steps:
       - name: Scale down legacy
         continue-on-error: true
-        uses: bcgov/action-oc-runner@v1.0.0
+        uses: bcgov/action-oc-runner@v1.1.0
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}

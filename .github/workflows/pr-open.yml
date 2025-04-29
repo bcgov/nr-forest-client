@@ -8,6 +8,8 @@ concurrency:
   group: pr-${{ github.event.number }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   vars:
     name: Variables
@@ -68,6 +70,8 @@ jobs:
     name: Tests
     needs: [deploy, vars]
     uses: ./.github/workflows/.automated-tests.yml
+    permissions:
+      pull-requests: write
     secrets: inherit
     with:
       url: ${{ needs.vars.outputs.url }}
