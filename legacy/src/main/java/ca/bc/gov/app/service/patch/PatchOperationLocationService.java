@@ -11,6 +11,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +49,8 @@ public class PatchOperationLocationService implements ClientPatchOperation {
       "/cellPhone", "cell_phone",
       "/homePhone", "home_phone",
       "/businessPhone", "business_phone",
-      "/cliLocnComment", "cli_locn_comment"
+      "/cliLocnComment", "cli_locn_comment",
+      "/locnExpiredInd", "locn_expired_ind"
   );
 
   @Override
@@ -59,7 +61,7 @@ public class PatchOperationLocationService implements ClientPatchOperation {
   @Override
   public List<String> getRestrictedPaths() {
     return List.of("/cliLocnComment", "/emailAddress", "/faxNumber", "/cellPhone", "/homePhone",
-        "/businessPhone", "/clientLocnName");
+        "/businessPhone", "/clientLocnName","/locnExpiredInd");
   }
 
   /**
@@ -208,6 +210,10 @@ public class PatchOperationLocationService implements ClientPatchOperation {
         .then();
   }
 
+  private static <T> Consumer<T> DEBUG(String msg) {
+    return x -> log.info("Processing location {} {}", msg, x);
+  }
+
   private Map<String, Object> getExtraFields(String userId, long revision) {
     return Map.of(
         "update_timestamp", LocalDateTime.now(),
@@ -250,4 +256,6 @@ public class PatchOperationLocationService implements ClientPatchOperation {
   private String uppercaseIt(String str) {
     return StringUtils.isNotBlank(str) ? str.toUpperCase() : str;
   }
+
+
 }

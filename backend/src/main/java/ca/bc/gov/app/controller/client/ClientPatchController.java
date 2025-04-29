@@ -49,7 +49,10 @@ public class ClientPatchController {
       @RequestBody JsonNode forestClient,
       JwtAuthenticationToken principal
   ) {
-    log.info("Received a partial update request for client {}", clientNumber);
+    log.info("Received a partial update request for client {} from {}",
+        clientNumber,
+        JwtPrincipalUtil.getUserId(principal)
+    );
     return service.patchClient(clientNumber, forestClient, JwtPrincipalUtil.getUserId(principal));
   }
 
