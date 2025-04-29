@@ -38,7 +38,10 @@ public class ClientHistoryControllerIntegrationTest extends
     ResponseSpec response =
         client
             .get()
-            .uri("/api/clients/history-logs/{clientNumber}", clientNumber)
+            .uri(uriBuilder -> uriBuilder
+                .path("/api/clients/history-logs/{clientNumber}")
+                .queryParam("sources", "cli")
+                .build(clientNumber))
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange();
 
