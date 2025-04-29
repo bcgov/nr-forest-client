@@ -5,7 +5,6 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.AddressSearchDto;
-import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.dto.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.ForestClientDto;
@@ -316,7 +315,7 @@ public class ClientSearchService {
 
     Flux<ForestClientDto> locations = searchClientByQuery(
         queryCriteria.or("homePhone").is(phoneNumber), ForestClientLocationEntity.class).flatMap(
-        entity -> searchClientByQuery(
+          entity -> searchClientByQuery(
             where(ApplicationConstants.CLIENT_NUMBER_LITERAL).is(entity.getClientNumber()),
             ForestClientEntity.class)).map(forestClientMapper::toDto);
 
@@ -366,8 +365,8 @@ public class ClientSearchService {
    * @param contact The {@link ContactSearchDto} containing search criteria such as name, email, and
    *                phone number.
    * @return A {@link Flux} of {@link ForestClientDto} stream of client DTOs that match the search
-   * criteria. If the contact parameter is null or not valid, a
-   * {@link MissingRequiredParameterException} is emitted.
+   *         criteria. If the contact parameter is null or not valid, a
+   *         {@link MissingRequiredParameterException} is emitted.
    */
   public Flux<ForestClientDto> findByContact(ContactSearchDto contact) {
 
@@ -482,21 +481,12 @@ public class ClientSearchService {
             informationDto,
             List.of(),
             List.of(),
-            List.of())
+            null)
         )
         .flatMap(dto ->
             doingBusinessAsRepository
-                .findByClientNumber(dto.client().clientNumber())
-                .sort(Comparator.comparing(ClientDoingBusinessAsEntity::getCreatedAt))
-                .map(dba -> new ClientDoingBusinessAsDto(
-                    dba.getClientNumber(),
-                    dba.getDoingBusinessAsName(),
-                    dba.getCreatedBy(),
-                    dba.getUpdatedBy(),
-                    dba.getCreatedByUnit()
-                ))
-                .collectList()
-                .map(dto::withDoingBusinessAs)
+                .findLatestByClientNumber(dto.client().clientNumber())
+                .map(name -> dto.withDoingBusinessAs(name))
                 .defaultIfEmpty(dto)
         )
         .flatMap(dto -> locationRepository
@@ -518,55 +508,51 @@ public class ClientSearchService {
 
 
   /**
-   * Performs a complex search for clients based on a predictive search value, using either
-   * a "like" or "similarity" search approach. Logs the search process and results. If the
-   * search value is blank, it returns a {@link MissingRequiredParameterException}.<p>
-   * The method performs the following steps:
+   * Performs a predictive search for clients using a "like" or similarity-based strategy.
+   * If the search value is blank or null, a {@link MissingRequiredParameterException} is returned.
+   *
+   * <p>The method follows these steps:
    * <ul>
-   *   <li>If the search value is blank or null, it returns an error with
-   *   {@link MissingRequiredParameterException}.</li>
-   *   <li>Performs a predictive search using a "like" query to count and retrieve matching clients.
-   *   If matches are found, it logs the results and returns a {@link Flux} containing pairs of
-   *   {@link PredictiveSearchResultDto} and the total count.</li>
-   *   <li>If no matches are found using "like", it performs a similarity-based search to count and
-   *   retrieve matching clients. Similarity-based results are logged and returned in the same
-   *   format.</li>
+   *   <li>If the search value is blank, it returns a {@link MissingRequiredParameterException}.</li>
+   *   <li>Attempts a "like"-based search to find matching clients and their count.</li>
+   *   <li>If no matches are found, falls back to a similarity-based search.</li>
+   *   <li>Logs the process and returns a {@link Flux} of pairs containing
+   *       {@link PredictiveSearchResultDto} and the total match count.</li>
    * </ul>
    *
-   * @param value the predictive search value to be matched, case-insensitive
-   * @param page  the pagination information, specifying page size and offset
-   * @return a {@link Flux} containing pairs of {@link PredictiveSearchResultDto} and
-   *         the total count of matching clients
+   * @param value the predictive search value (case-insensitive)
+   * @param page  pagination parameters including page size and offset
+   * @return a {@link Flux} of pairs with {@link PredictiveSearchResultDto} and match count
    */
   public Flux<Pair<PredictiveSearchResultDto, Long>> complexSearch(String value, Pageable page) {
     // This condition is for predictive search, and we will stop here if no query param is provided
     if (StringUtils.isBlank(value)) {
-        return Flux.error(new MissingRequiredParameterException("value"));
+      return Flux.error(new MissingRequiredParameterException("value"));
     }
 
     return forestClientRepository.countByPredictiveSearchWithLike(value.toUpperCase())
         .flatMapMany(count -> {
             if (count > 0) {
-                return forestClientRepository
-                    .findByPredictiveSearchWithLike(
-                        value.toUpperCase(), page.getPageSize(), page.getOffset()
-                    )
-                    .doOnNext(dto -> log.info(
-                        "Found complex search with like for value {} as {} {} with score {}", 
-                        value, dto.clientNumber(), dto.clientFullName(), dto.score())
-                    )
-                    .map(dto -> Pair.of(dto, count));
+              return forestClientRepository
+                  .findByPredictiveSearchWithLike(
+                      value.toUpperCase(), page.getPageSize(), page.getOffset()
+                  )
+                  .doOnNext(dto -> log.info(
+                      "Performed search with like for value {} as {} {} with score {}", 
+                      value, dto.clientNumber(), dto.clientFullName(), dto.score())
+                  )
+                  .map(dto -> Pair.of(dto, count));
             } else {
-                return forestClientRepository
-                    .countByPredictiveSearchWithSimilarity(value.toUpperCase())
-                    .flatMapMany(similarityCount -> forestClientRepository
-                        .findByPredictiveSearchWithSimilarity(
-                            value.toUpperCase(), page.getPageSize(), page.getOffset()
-                        )
-                        .doOnNext(dto -> log.info(
-                            "Found complex search with similarity for value {} as {} {} with score {}",
-                            value, dto.clientNumber(), dto.clientFullName(), dto.score()))
-                        .map(dto -> Pair.of(dto, similarityCount)));
+              return forestClientRepository
+                  .countByPredictiveSearchWithSimilarity(value.toUpperCase())
+                  .flatMapMany(similarityCount -> forestClientRepository
+                      .findByPredictiveSearchWithSimilarity(
+                          value.toUpperCase(), page.getPageSize(), page.getOffset()
+                      )
+                      .doOnNext(dto -> log.info(
+                          "Performed search with similarity for value {} as {} {} with score {}",
+                          value, dto.clientNumber(), dto.clientFullName(), dto.score()))
+                      .map(dto -> Pair.of(dto, similarityCount)));
             }
         });
   }
@@ -577,7 +563,7 @@ public class ClientSearchService {
    *
    * @param page the pagination information
    * @return a Flux containing pairs of PredictiveSearchResultDto objects and the total count of
-   * matching clients
+   *         matching clients
    */
   public Flux<Pair<PredictiveSearchResultDto, Long>> latestEntries(Pageable page) {
     return forestClientRepository.countByEmptyFullSearch(
