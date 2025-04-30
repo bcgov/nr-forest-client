@@ -18,25 +18,5 @@
     },
     "doingBusinessAs": null,
     "contacts": [],
-    "addresses": [{
-        "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
-        "clientLocnCode": "00",
-        "clientLocnName": "Mailing address",
-        "addressOne": "{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
-        "addressTwo": "C/O Tony Pineda",
-        "addressThree": "Sample additional info",
-        "city": "Hampton",
-        "provinceCode": "SK",
-        "provinceDesc": "Saskatchewan",
-        "countryCode": "CA",
-        "countryDesc": "Canada",
-        "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
-        "businessPhone": "2502863767",
-        "homePhone": "2505553101",
-        "cellPhone": "2505553700",
-        "faxNumber": "2502863768",
-        "emailAddress": "contact@mail.com",
-        "locnExpiredInd": "N",
-        "cliLocnComment": "Sample location 00 comment"
-      }]
+    "addresses": []
 }
