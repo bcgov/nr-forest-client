@@ -394,7 +394,10 @@ public final class ForestClientQueries {
           A.IDX,
           A.IDENTIFIER_LABEL,
           A.COLUMN_NAME,
-          A.OLD_VALUE,
+          CASE 
+              WHEN A.CHANGE_TYPE <> 'DEL' THEN A.OLD_VALUE 
+              ELSE null
+          END AS OLD_VALUE,
           A.NEW_VALUE,
           A.UPDATE_TIMESTAMP,
           A.UPDATE_USERID,
@@ -414,7 +417,7 @@ public final class ForestClientQueries {
   public static final String DOING_BUSINESS_AS_HISTORY = """
       WITH BASE_DATA AS (
           SELECT
-              AL.CLIENT_DBA_ID AS IDX,
+              AL.CLIENT_DBA_AUDIT_ID AS IDX,
               AL.CLIENT_NUMBER,
               AL.DOING_BUSINESS_AS_NAME,
               AL.UPDATE_TIMESTAMP,
@@ -458,7 +461,10 @@ public final class ForestClientQueries {
           A.IDX,
           A.IDENTIFIER_LABEL,
           A.COLUMN_NAME,
-          A.OLD_VALUE,
+          CASE 
+              WHEN A.CHANGE_TYPE <> 'DEL' THEN A.OLD_VALUE 
+              ELSE null
+          END AS OLD_VALUE,
           A.NEW_VALUE,
           A.UPDATE_TIMESTAMP,
           A.UPDATE_USERID,
@@ -471,11 +477,124 @@ public final class ForestClientQueries {
           (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL) OR
           (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
       )
-      ORDER BY A.IDX DESC, A.FIELD_ORDER ASC    
+      ORDER BY A.IDX DESC, A.FIELD_ORDER ASC   
       """;
   
   public static final String RELATED_CLIENT_HISTORY = """
-          
+      WITH BASE_DATA AS (
+          SELECT
+              AL.RELATED_CLIENT_AUDIT_ID AS IDX,
+              AL.CLIENT_NUMBER,
+              AL.RELATED_CLNT_NMBR,
+              AL.CLIENT_NUMBER || ', ' || PFC.CLIENT_NAME AS PRIMARY_CLIENT,
+              AL.RELATED_CLNT_NMBR || ', ' || RFC.CLIENT_NAME AS RELATED_CLIENT,
+              AL.CLIENT_LOCN_CODE || ' - ' || PCL.CLIENT_LOCN_NAME AS PRIMARY_CLIENT_LOCATION,
+              AL.RELATED_CLNT_LOCN || ' - ' || RCL.CLIENT_LOCN_NAME AS RELATED_CLIENT_LOCATION,
+              AL.RELATIONSHIP_CODE || ' - ' || RC.DESCRIPTION AS RELATIONSHIP_TYPE,
+              CASE
+                  WHEN AL.SIGNING_AUTH_IND = 'Y' THEN 'Yes'
+                  WHEN AL.SIGNING_AUTH_IND = 'N' THEN 'No'
+              END AS SIGNING_AUTH_IND,
+              CASE 
+                WHEN AL.PERCENT_OWNERSHIP IS NOT NULL 
+                THEN TO_CHAR(AL.PERCENT_OWNERSHIP, 'FM999.00') || '%' 
+                ELSE NULL 
+              END AS PERCENT_OWNERSHIP,
+              AL.UPDATE_TIMESTAMP,
+              AL.UPDATE_USERID,
+              AL.CLIENT_AUDIT_CODE
+          FROM THE.REL_CLI_AUDIT AL
+          LEFT JOIN THE.FOREST_CLIENT PFC
+              ON AL.CLIENT_NUMBER = PFC.CLIENT_NUMBER 
+          LEFT JOIN THE.FOREST_CLIENT RFC
+              ON AL.RELATED_CLNT_NMBR = RFC.CLIENT_NUMBER 
+          LEFT JOIN THE.CLIENT_LOCATION PCL
+              ON AL.CLIENT_NUMBER = PCL.CLIENT_NUMBER 
+              AND AL.CLIENT_LOCN_CODE = PCL.CLIENT_LOCN_CODE
+          LEFT JOIN THE.CLIENT_LOCATION RCL
+              ON AL.RELATED_CLNT_NMBR = RCL.CLIENT_NUMBER 
+              AND AL.RELATED_CLNT_LOCN = RCL.CLIENT_LOCN_CODE
+          LEFT JOIN THE.CLIENT_RELATIONSHIP_CODE RC
+              ON AL.RELATIONSHIP_CODE = RC.CLIENT_RELATIONSHIP_CODE
+          WHERE AL.CLIENT_NUMBER = :clientNumber
+      ),
+      AUDIT_DATA AS (
+          SELECT
+              'RelatedClient' AS TABLE_NAME,
+              B.IDX,
+              CASE
+                  WHEN B.CLIENT_AUDIT_CODE = 'INS' THEN 'Relationship with "' || B.RELATED_CLIENT || '" added'
+                  WHEN B.CLIENT_AUDIT_CODE = 'UPD' THEN 'Relationship with "' || B.RELATED_CLIENT || '" updated'
+                  WHEN B.CLIENT_AUDIT_CODE = 'DEL' THEN 'Relationship deleted'
+              END AS IDENTIFIER_LABEL,
+              COL.COLUMN_NAME,
+              CASE COL.COLUMN_NAME
+                  WHEN 'primaryClient' THEN B.PRIMARY_CLIENT
+                  WHEN 'primaryClientLocation' THEN B.PRIMARY_CLIENT_LOCATION
+                  WHEN 'relationshipType' THEN B.RELATIONSHIP_TYPE
+                  WHEN 'relatedClient' THEN B.RELATED_CLIENT
+                  WHEN 'relatedClientLocation' THEN B.RELATED_CLIENT_LOCATION
+                  WHEN 'signingAuthInd' THEN B.SIGNING_AUTH_IND
+                  WHEN 'percentOwnership' THEN B.PERCENT_OWNERSHIP
+              END AS NEW_VALUE,
+              LAG(
+                  CASE COL.COLUMN_NAME
+                      WHEN 'primaryClient' THEN B.PRIMARY_CLIENT
+                      WHEN 'primaryClientLocation' THEN B.PRIMARY_CLIENT_LOCATION
+                      WHEN 'relationshipType' THEN B.RELATIONSHIP_TYPE
+                      WHEN 'relatedClient' THEN B.RELATED_CLIENT
+                      WHEN 'relatedClientLocation' THEN B.RELATED_CLIENT_LOCATION
+                      WHEN 'signingAuthInd' THEN B.SIGNING_AUTH_IND
+                      WHEN 'percentOwnership' THEN B.PERCENT_OWNERSHIP
+                  END
+              ) OVER (
+                  PARTITION BY B.CLIENT_NUMBER, B.PRIMARY_CLIENT_LOCATION, COL.COLUMN_NAME
+                  ORDER BY B.IDX
+              ) AS OLD_VALUE,
+              B.UPDATE_TIMESTAMP,
+              B.UPDATE_USERID,
+              B.CLIENT_AUDIT_CODE AS CHANGE_TYPE,
+              COL.FIELD_ORDER
+          FROM BASE_DATA B
+          CROSS JOIN (
+              SELECT 'primaryClient' AS COLUMN_NAME, 1 AS FIELD_ORDER FROM DUAL
+              UNION ALL
+              SELECT 'primaryClientLocation' AS COLUMN_NAME, 2 AS FIELD_ORDER FROM DUAL
+              UNION ALL
+              SELECT 'relationshipType' AS COLUMN_NAME, 3 AS FIELD_ORDER FROM DUAL
+              UNION ALL
+              SELECT 'relatedClient' AS COLUMN_NAME, 4 AS FIELD_ORDER FROM DUAL
+              UNION ALL
+              SELECT 'relatedClientLocation' AS COLUMN_NAME, 5 AS FIELD_ORDER FROM DUAL
+              UNION ALL
+              SELECT 'signingAuthInd' AS COLUMN_NAME, 6 AS FIELD_ORDER FROM DUAL
+              UNION ALL
+              SELECT 'percentOwnership' AS COLUMN_NAME, 7 AS FIELD_ORDER FROM DUAL
+          ) COL
+      )
+      SELECT
+          A.TABLE_NAME,
+          A.IDX,
+          A.IDENTIFIER_LABEL,
+          A.COLUMN_NAME,
+          CASE 
+              WHEN A.CHANGE_TYPE <> 'DEL' THEN A.OLD_VALUE 
+              ELSE null
+          END AS OLD_VALUE,
+          A.NEW_VALUE,
+          A.UPDATE_TIMESTAMP,
+          A.UPDATE_USERID,
+          A.CHANGE_TYPE,
+          '' AS ACTION_CODE,
+          '' AS REASON
+      FROM AUDIT_DATA A
+      WHERE (
+          A.CHANGE_TYPE = 'DEL' OR
+          (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL) OR
+          (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL) OR
+          (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
+      )
+      ORDER BY A.IDX DESC, A.FIELD_ORDER ASC
       """;
   
 }
