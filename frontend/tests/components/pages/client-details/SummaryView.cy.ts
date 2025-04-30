@@ -28,7 +28,7 @@ describe("<summary-view />", () => {
         clientIdTypeDesc: "British Columbia Driver's Licence",
         clientIdentification: "64242646",
       },
-      doingBusinessAs: [{ doingBusinessAsName: "Dunder Mifflin Paper Company" }],
+      doingBusinessAs: "Dunder Mifflin Paper Company",
     } as ClientDetails,
     userRoles: ["CLIENT_VIEWER"],
   });
@@ -86,7 +86,7 @@ describe("<summary-view />", () => {
 
     testReadonly("#clientNumber", currentProps.data.client.clientNumber);
     testReadonly("#acronym", currentProps.data.client.clientAcronym);
-    testReadonly("#doingBusinessAs", currentProps.data.doingBusinessAs[0].doingBusinessAsName);
+    testReadonly("#doingBusinessAs", currentProps.data.doingBusinessAs);
     testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
 
     // registryCompanyTypeCode + corpRegnNmbr
@@ -124,7 +124,7 @@ describe("<summary-view />", () => {
         clientIdTypeDesc: "",
         clientIdentification: "",
       },
-      doingBusinessAs: [],
+      doingBusinessAs: null,
     };
     mount(props);
 
@@ -135,19 +135,6 @@ describe("<summary-view />", () => {
     testHidden("#doingBusinessAs");
     testHidden("#dataOfBirth");
     testHidden("#notes");
-  });
-
-  it("displays as many names the client has as Doing business as", () => {
-    const props = getDefaultProps();
-    const { data } = props;
-    data.doingBusinessAs[1] = { doingBusinessAsName: "Name #2" };
-    data.doingBusinessAs[2] = { doingBusinessAsName: "Name #3" };
-
-    mount(props);
-
-    testReadonly("#doingBusinessAs", data.doingBusinessAs[0].doingBusinessAsName);
-    testReadonly("#doingBusinessAs", data.doingBusinessAs[1].doingBusinessAsName);
-    testReadonly("#doingBusinessAs", data.doingBusinessAs[2].doingBusinessAsName);
   });
 
   it("sets the birthdate label to 'Date of birth' when date is complete", () => {
@@ -234,7 +221,7 @@ describe("<summary-view />", () => {
       it("keeps displaying the other fields in view mode", () => {
         testReadonly("#clientNumber", currentProps.data.client.clientNumber);
         testReadonly("#acronym", currentProps.data.client.clientAcronym);
-        testReadonly("#doingBusinessAs", currentProps.data.doingBusinessAs[0].doingBusinessAsName);
+        testReadonly("#doingBusinessAs", currentProps.data.doingBusinessAs);
         testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
 
         // registryCompanyTypeCode + corpRegnNmbr
