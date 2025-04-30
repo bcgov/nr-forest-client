@@ -187,6 +187,14 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.contacts[0].locationCodes[0]",
             "00",
             "01"
+        ),
+        argumentSet(
+            "Update address information",
+            "00000002",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/city\",\"value\":\"HAMILTON\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/addresses/00\",\"reason\":\"CORR\"}}]",
+            "$.addresses[0].city",
+            "VICTORIA",
+            "HAMILTON"
         )
     );
   }
