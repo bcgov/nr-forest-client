@@ -444,6 +444,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
   @Query(ForestClientQueries.DOING_BUSINESS_AS_HISTORY)
   Flux<HistoryLogDto> findDoingBusinessAsHistoryLogsByClientNumber(String clientNumber);
   
+  @Query(ForestClientQueries.RELATED_CLIENT_HISTORY)
   Flux<HistoryLogDto> findRelatedClientAsHistoryLogsByClientNumber(String clientNumber);
   
 }

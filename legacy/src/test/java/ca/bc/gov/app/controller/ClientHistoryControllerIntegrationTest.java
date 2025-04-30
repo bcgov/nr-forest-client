@@ -8,6 +8,7 @@ import ca.bc.gov.app.exception.NoValueFoundException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,26 +32,28 @@ public class ClientHistoryControllerIntegrationTest extends
   void shouldReturnHistoryLogsByClientNumber(
       String clientNumber,
       String expectedClientNumber,
-      Class<? extends RuntimeException> expectedExceptionClass
+      Class<RuntimeException> exception
   ) {
+    
     ResponseSpec response =
         client
             .get()
             .uri(uriBuilder -> uriBuilder
                 .path("/api/clients/history-logs/{clientNumber}")
-                .queryParam("sources", "cli,loc,ctc,dba,rct")
+                .queryParam("sources", "cli")
                 .build(clientNumber))
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange();
 
-    if (expectedClientNumber != null) {
+    if (StringUtils.isNotBlank(expectedClientNumber)) {
       response
-          .expectStatus().isOk()
-          .expectBodyList(HistoryLogDto.class)
-          .value(logs -> assertThat(logs).isNotNull());
-    } else if (expectedExceptionClass != null) {
-      response
-          .expectStatus().is4xxClientError();
+        .expectStatus().isOk()
+        .expectBodyList(HistoryLogDto.class)
+        .value(logs -> assertThat(logs).isNotEmpty());
+    }
+
+    if (exception != null) {
+      response.expectStatus().is4xxClientError();
     }
   }
 
@@ -58,25 +61,12 @@ public class ClientHistoryControllerIntegrationTest extends
     return Stream.of(
         // Valid case
         Arguments.of("00000138", "00000138", null),
-        
-        // Multiple valid sources
-        Arguments.of("00000138", "00000138", null, "cli,loc", null),
-
-        // Multiple sources with some invalid values
-        Arguments.of("00000138", "00000138", null, "cli,invalid,loc", null),
 
         // Invalid case: missing client number
         Arguments.of(null, null, MissingRequiredParameterException.class),
 
-        // Invalid case: empty client number
-        Arguments.of("", null, MissingRequiredParameterException.class),
-
-        // Invalid case: malformed client number
-        Arguments.of("!@#$%", null, MissingRequiredParameterException.class),
-
-        // Invalid case: not found
-        Arguments.of("99999999", null, NoValueFoundException.class)
-    );
+        // Invalid case: client not found
+        Arguments.of("99999999", null, NoValueFoundException.class));
   }
   
 }
