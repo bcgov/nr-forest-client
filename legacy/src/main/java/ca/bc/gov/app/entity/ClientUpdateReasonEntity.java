@@ -45,19 +45,20 @@ public class ClientUpdateReasonEntity {
   @Column("FOREST_CLIENT_AUDIT_ID")
   private Long forestClientAuditId;
 
-  @Column("add_timestamp")
+  @Column("ADD_TIMESTAMP")
+  @NotNull
   private LocalDateTime createdAt;
 
-  @Column("add_userid")
+  @Column("ADD_USERID")
   @NotNull
   @Size(min = 1, max = 30)
   private String createdBy;
 
-  @Column("update_timestamp")
+  @Column("UPDATE_TIMESTAMP")
   @NotNull
   private LocalDateTime updatedAt;
 
-  @Column("update_userid")
+  @Column("UPDATE_USERID")
   @NotNull
   @Size(min = 1, max = 30)
   private String updatedBy;
