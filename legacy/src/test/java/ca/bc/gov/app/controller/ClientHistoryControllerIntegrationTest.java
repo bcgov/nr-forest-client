@@ -58,6 +58,12 @@ public class ClientHistoryControllerIntegrationTest extends
     return Stream.of(
         // Valid case
         Arguments.of("00000138", "00000138", null),
+        
+        // Multiple valid sources
+        Arguments.of("00000138", "00000138", null, "cli,loc", null),
+
+        // Multiple sources with some invalid values
+        Arguments.of("00000138", "00000138", null, "cli,invalid,loc", null),
 
         // Invalid case: missing client number
         Arguments.of(null, null, MissingRequiredParameterException.class),

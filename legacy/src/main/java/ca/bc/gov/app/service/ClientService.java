@@ -13,6 +13,7 @@ import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -136,6 +137,8 @@ public class ClientService {
     else {
       try {
         selectedSources = sources.stream()
+            .flatMap((String s) -> Arrays.stream(s.split(",")))
+            .map(String::trim)
             .map(HistorySourceEnum::fromValue)
             .collect(Collectors.toList());
       } catch (IllegalArgumentException e) {
