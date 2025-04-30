@@ -199,12 +199,12 @@ describe("<summary-view />", () => {
       });
 
       it("enables the edition of some fields only", () => {
+        testTextInput("#input-acronym", props.data.client.clientAcronym);
         testTextInput("#input-workSafeBCNumber", props.data.client.wcbFirmNumber);
         testDropdown("#input-clientStatus", props.data.client.clientStatusDesc);
         testTextarea("[data-id='input-input-notes']", props.data.client.clientComment);
 
         testHidden("#input-clientName");
-        testHidden("#input-acronym");
         testHidden("#input-doingBusinessAs");
         testHidden("#input-clientType");
         testHidden("#input-registrationNumber");
@@ -220,7 +220,6 @@ describe("<summary-view />", () => {
 
       it("keeps displaying the other fields in view mode", () => {
         testReadonly("#clientNumber", currentProps.data.client.clientNumber);
-        testReadonly("#acronym", currentProps.data.client.clientAcronym);
         testReadonly("#doingBusinessAs", currentProps.data.doingBusinessAs);
         testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
 
@@ -235,6 +234,7 @@ describe("<summary-view />", () => {
         testReadonly("#dateOfBirth", currentProps.data.client.birthdate);
 
         // Make sure the fields enabled for edition are not also displayed in read-only mode.
+        testHidden("#acronym");
         testHidden("#workSafeBCNumber");
         testHidden("#clientStatus");
         testHidden("#notes");
