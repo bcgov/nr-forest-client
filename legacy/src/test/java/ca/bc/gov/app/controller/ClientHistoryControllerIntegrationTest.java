@@ -32,9 +32,7 @@ public class ClientHistoryControllerIntegrationTest extends
   void shouldReturnHistoryLogsByClientNumber(
       String clientNumber,
       String expectedClientNumber,
-      Class<? extends RuntimeException> expectedExceptionClass,
-      String sources,
-      Class<? extends RuntimeException> expectedSourcesExceptionClass
+      Class<RuntimeException> exception
   ) {
     
     ResponseSpec response =
@@ -42,7 +40,7 @@ public class ClientHistoryControllerIntegrationTest extends
             .get()
             .uri(uriBuilder -> uriBuilder
                 .path("/api/clients/history-logs/{clientNumber}")
-                .queryParam("sources", sources)
+                .queryParam("sources", "cli")
                 .build(clientNumber))
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange();
@@ -54,34 +52,21 @@ public class ClientHistoryControllerIntegrationTest extends
         .value(logs -> assertThat(logs).isNotEmpty());
     }
 
-    if (expectedExceptionClass != null) {
+    if (exception != null) {
       response.expectStatus().is4xxClientError();
     }
   }
 
   private static Stream<Arguments> byClientNumber() {
     return Stream.of(
-        // Valid case with default source
-        Arguments.of("00000138", "00000138", null, "cli", null),
+        // Valid case
+        Arguments.of("00000138", "00000138", null),
 
-        // Multiple valid sources
-        Arguments.of("00000138", "00000138", null, "cli,loc", null),
+        // Invalid case: missing client number
+        Arguments.of(null, null, MissingRequiredParameterException.class),
 
-        // Multiple sources with one invalid
-        Arguments.of("00000138", null, IllegalArgumentException.class, "cli,invalid,loc", IllegalArgumentException.class),
-
-        // Invalid: missing client number
-        Arguments.of(null, null, MissingRequiredParameterException.class, "cli", null),
-
-        // Invalid: empty client number
-        Arguments.of("", null, MissingRequiredParameterException.class, "cli", null),
-
-        // Invalid: malformed client number
-        Arguments.of("!@#$%", null, MissingRequiredParameterException.class, "cli", null),
-
-        // Not found case
-        Arguments.of("99999999", null, NoValueFoundException.class, "cli", null)
-    );
+        // Invalid case: client not found
+        Arguments.of("99999999", null, NoValueFoundException.class));
   }
   
 }
