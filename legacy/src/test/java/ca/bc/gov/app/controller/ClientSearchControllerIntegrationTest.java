@@ -347,10 +347,10 @@ class ClientSearchControllerIntegrationTest extends
     response
       .expectStatus().isOk()
       .expectHeader()
-      .value("X-Total-Count", count -> assertThat(count).isEqualTo("2"))
+      .value("X-Total-Count", count -> assertThat(count).isEqualTo("3"))
       .expectBody()
       .jsonPath("$[0].clientNumber").isNotEmpty()
-      .jsonPath("$[0].clientNumber").isEqualTo("00000158");
+      .jsonPath("$[0].clientNumber").isEqualTo("00000159");
   }
   
   private static Stream<Arguments> byEmail() {

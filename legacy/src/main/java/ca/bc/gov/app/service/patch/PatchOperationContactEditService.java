@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.data.relational.core.query.Criteria;
@@ -80,7 +81,8 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
     return
         // Load ids
         Flux
-            .fromIterable(PatchUtils.loadIds(patch))
+            .fromIterable(PatchUtils.loadIds(filteredNodeOps))
+            .filter(StringUtils::isNumeric)
             .flatMap(entityId ->
                 Mono.just(entityId)
                     // Get changes for just that ID
