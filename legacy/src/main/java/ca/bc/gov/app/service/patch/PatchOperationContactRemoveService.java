@@ -64,6 +64,7 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
                     false
                 )
             )
+            .filter(node -> !node.get("path").asText().contains("locationCodes"))
             .map(node -> node.get("path").asText().replace("/", StringUtils.EMPTY))
             .map(Long::parseLong)
             .flatMap(entityId -> removeAllByEntityId(clientNumber, entityId))
