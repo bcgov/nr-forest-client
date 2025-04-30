@@ -251,10 +251,6 @@ export interface SubmissionDetailsMatchers {
   location: string
 }
 
-export interface ClientDoingBusinessAs {
-  doingBusinessAsName: string;
-}
-
 export interface ClientLocation {
   clientNumber: string;
   clientLocnCode: string;
@@ -380,7 +376,7 @@ export interface ClientInformation {
 
 export interface ClientDetails {
   client: ClientInformation;
-  doingBusinessAs: ClientDoingBusinessAs[];
+  doingBusinessAs: string;
   addresses: ClientLocation[];
   contacts: ClientContact[];
   reasons: FieldReason[];
