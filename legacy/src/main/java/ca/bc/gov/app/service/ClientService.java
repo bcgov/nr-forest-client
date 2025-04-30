@@ -155,8 +155,8 @@ public class ClientService {
             forestClientRepository.findContactHistoryLogsByClientNumber(clientNumber));
         case DBA -> selectedAuditTables.add(
             forestClientRepository.findDoingBusinessAsHistoryLogsByClientNumber(clientNumber));
-        /*case RELATED_CLIENT -> selectedAuditTables.add(
-            forestClientRepository.findRelatedClientAsHistoryLogsByClientNumber(clientNumber));*/
+        case RELATED_CLIENT -> selectedAuditTables.add(
+            forestClientRepository.findRelatedClientAsHistoryLogsByClientNumber(clientNumber));
       }
     }
 

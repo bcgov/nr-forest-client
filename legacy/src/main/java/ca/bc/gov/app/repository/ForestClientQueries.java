@@ -153,7 +153,7 @@ public final class ForestClientQueries {
             AL.CLIENT_LOCN_CODE,
             CASE
                 WHEN AL.LOCN_EXPIRED_IND = 'Y' THEN 'Active'
-                ELSE 'Deactivated'
+                WHEN AL.LOCN_EXPIRED_IND = 'N' THEN 'Deactivated'
             END AS LOCN_EXPIRED_IND,
             AL.CLIENT_LOCN_NAME,
             AL.ADDRESS_2,
@@ -174,7 +174,10 @@ public final class ForestClientQueries {
             AL.CLI_LOCN_COMMENT,
             AL.HDBS_COMPANY_CODE,
             TO_CHAR(AL.RETURNED_MAIL_DATE, 'YYYY-MM-DD') AS RETURNED_MAIL_DATE,
-            AL.TRUST_LOCATION_IND,
+            CASE
+                WHEN AL.TRUST_LOCATION_IND = 'Y' THEN 'Yes'
+                WHEN AL.TRUST_LOCATION_IND = 'N' THEN 'No'
+            END AS TRUST_LOCATION_IND,
             AL.UPDATE_TIMESTAMP,
             AL.UPDATE_USERID,
             AL.CLIENT_AUDIT_CODE AS CHANGE_TYPE,
@@ -400,6 +403,7 @@ public final class ForestClientQueries {
           '' AS REASON
       FROM AUDIT_DATA A
       WHERE (
+          A.CHANGE_TYPE = 'DEL' OR
           (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL) OR
           (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL) OR
           (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
@@ -468,6 +472,10 @@ public final class ForestClientQueries {
           (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
       )
       ORDER BY A.IDX DESC, A.FIELD_ORDER ASC    
+      """;
+  
+  public static final String RELATED_CLIENT_HISTORY = """
+          
       """;
   
 }
