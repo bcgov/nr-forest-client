@@ -62,6 +62,9 @@ public class PatchOperationStatusService implements ClientPatchOperation {
       ObjectMapper mapper,
       String userName
   ) {
+    if (!PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
+      return Mono.empty();
+    }
     return
         patchClient(clientNumber, patch, mapper, userName)
             .then(patchReason(clientNumber, patch, mapper, userName));
