@@ -38,7 +38,7 @@ public class ClientHistoryControllerIntegrationTest extends
             .get()
             .uri(uriBuilder -> uriBuilder
                 .path("/api/clients/history-logs/{clientNumber}")
-                .queryParam("sources", "cli")
+                .queryParam("sources", "cli,loc,ctc,dba,rct")
                 .build(clientNumber))
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange();
