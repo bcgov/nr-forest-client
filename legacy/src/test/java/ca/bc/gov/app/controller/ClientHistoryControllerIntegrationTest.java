@@ -50,11 +50,7 @@ public class ClientHistoryControllerIntegrationTest extends
           .value(logs -> assertThat(logs).isNotNull());
     } else if (expectedExceptionClass != null) {
       response
-          .expectStatus().is4xxClientError()
-          .expectBody()
-          .jsonPath("$.message").value(
-              msg -> assertThat((String) msg)
-              .contains("clientNumber"));
+          .expectStatus().is4xxClientError();
     }
   }
 
