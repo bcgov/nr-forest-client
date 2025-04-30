@@ -29,88 +29,88 @@ public class LocationUpdateReasonEntity {
   @Column("CLIENT_AUDIT_CODE")
   private String auditCode;
 
-  @Column("client_number")
+  @Column("CLIENT_NUMBER")
   @Size(min = 1, max = 8)
   private String clientNumber;
 
-  @Column("client_locn_code")
+  @Column("CLIENT_LOCN_CODE")
   @NotNull
   @Size(min = 1, max = 2)
   private String clientLocnCode;
 
-  @Column("client_locn_name")
+  @Column("CLIENT_LOCN_NAME")
   @Size(min = 1, max = 40)
   private String clientLocnName;
 
-  @Column("hdbs_company_code")
+  @Column("HDBS_COMPANY_CODE")
   @Size(min = 1, max = 5)
   private String hdbsCompanyCode;
 
-  @Column("address_1")
+  @Column("ADDRESS_1")
   @NotNull
   @Size(min = 1, max = 40)
   private String addressOne;
 
-  @Column("address_2")
+  @Column("ADDRESS_2")
   @Size(min = 1, max = 40)
   private String addressTwo;
 
-  @Column("address_3")
+  @Column("ADDRESS_3")
   @Size(min = 1, max = 40)
   private String addressThree;
 
-  @Column("city")
+  @Column("CITY")
   @NotNull
   @Size(min = 1, max = 30)
   private String city;
 
-  @Column("province")
+  @Column("PROVINCE")
   @Size(min = 1, max = 50)
   private String province;
 
-  @Column("postal_code")
+  @Column("POSTAL_CODE")
   @Size(min = 1, max = 10)
   private String postalCode;
 
-  @Column("country")
+  @Column("COUNTRY")
   @NotNull
   @Size(min = 1, max = 50)
   private String country;
 
-  @Column("business_phone")
+  @Column("BUSINESS_PHONE")
   @Size(min = 1, max = 10)
   private String businessPhone;
 
-  @Column("home_phone")
+  @Column("HOME_PHONE")
   @Size(min = 1, max = 10)
   private String homePhone;
 
-  @Column("cell_phone")
+  @Column("CELL_PHONE")
   @Size(min = 1, max = 10)
   private String cellPhone;
 
-  @Column("fax_number")
+  @Column("FAX_NUMBER")
   @Size(min = 1, max = 10)
   private String faxNumber;
 
-  @Column("email_address")
+  @Column("EMAIL_ADDRESS")
   @Size(min = 1, max = 128)
   private String emailAddress;
 
-  @Column("locn_expired_ind")
+  @Column("LOCN_EXPIRED_IND")
   @NotNull
   @Size(min = 1, max = 1)
   private String locnExpiredInd;
 
-  @Column("returned_mail_date")
+  @Column("RETURNED_MAIL_DATE")
   private LocalDateTime returnedMailDate;
 
-  @Column("trust_location_ind")
+  @Column("TRUST_LOCATION_IND")
   @NotNull
   @Size(min = 1, max = 1)
   private String trustLocationInd;
 
-  @Column("cli_locn_comment")
+  @Column("CLI_LOCN_COMMENT")
   @Size(min = 1, max = 4000)
   private String cliLocnComment;
 
@@ -122,34 +122,34 @@ public class LocationUpdateReasonEntity {
   @Size(min = 1, max = 4)
   private String updateReasonCode;
 
-  @Column("add_timestamp")
+  @Column("ADD_TIMESTAMP")
   @NotNull
   private LocalDateTime createdAt;
 
-  @Column("add_userid")
+  @Column("ADD_USERID")
   @NotNull
   @Size(min = 1, max = 30)
   private String createdBy;
 
-  @Column("update_timestamp")
+  @Column("UPDATE_TIMESTAMP")
   @NotNull
   private LocalDateTime updatedAt;
 
-  @Column("update_userid")
+  @Column("UPDATE_USERID")
   @NotNull
   @Size(min = 1, max = 30)
   private String updatedBy;
 
-  @Column("update_org_unit")
+  @Column("UPDATE_ORG_UNIT")
   @NotNull
   private Long updatedByUnit;
 
-  @Column("add_org_unit")
+  @Column("ADD_ORG_UNIT")
   @NotNull
   private Long createdByUnit;
 
-  @Column("revision_count")
+  @Column("REVISION_COUNT")
   @NotNull
   private Long revision;
-
+  
 }
