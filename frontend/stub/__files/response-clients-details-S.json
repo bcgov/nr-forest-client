@@ -16,11 +16,7 @@
     "clientComment": "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton",
     "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}"
   },
-  "doingBusinessAs": [
-    {
-      "doingBusinessAsName": "Dunder Mifflin Paper Company"
-    }
-  ],
+  "doingBusinessAs": "Dunder Mifflin Paper Company",
   "contacts": [
     {
       "contactId": "{{randomValue length=8 type='NUMERIC'}}",
