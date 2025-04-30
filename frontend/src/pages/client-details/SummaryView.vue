@@ -106,7 +106,7 @@ const checkValid = () =>
 const editRoles: Record<FieldId, UserRole[]> = {
   // TODO: add the following values back when working on FSADT1-1611 or FSADT1-1640
   // clientName: ["CLIENT_ADMIN"],
-  // acronym: ["CLIENT_ADMIN"],
+  acronym: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   // doingBusinessAs: ["CLIENT_ADMIN"],
   // registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
@@ -289,7 +289,7 @@ const client = computed(() => props.data.client);
       <text-input-component
         id="input-acronym"
         v-if="displayEditable('acronym')"
-        class="grouping-02--width-8rem"
+        :class="{ 'grouping-02--width-8rem': displayEditable('clientName') }"
         label="Acronym"
         placeholder=""
         autocomplete="off"
