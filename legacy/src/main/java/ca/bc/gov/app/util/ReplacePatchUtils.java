@@ -8,6 +8,7 @@ import java.util.stream.StreamSupport;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -41,7 +42,8 @@ public class ReplacePatchUtils {
             .map(JsonNode::asText)
             .collect(Collectors.toList());
       } else {
-        return node.get("value").asText();
+        String value = node.get("value").asText();
+        return value != null && !value.equals("null") ? value : StringUtils.EMPTY;
       }
     };
 

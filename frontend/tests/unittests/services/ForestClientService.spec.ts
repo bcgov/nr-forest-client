@@ -303,9 +303,9 @@ describe("ForestClientService.ts", () => {
     const location = {
       clientLocnName: "Mailing address",
       clientLocnCode: "00",
-      addressOne: "123 Richmond Ave",
-      addressTwo: "C/O Tony Pineda",
-      addressThree: "Sample additional info",
+      addressOne: "C/O Tony Pineda",
+      addressTwo: "Sample additional info",
+      addressThree: "123 Richmond Ave",
       countryCode: "CA",
       countryDesc: "Canada",
       provinceCode: "SK",
@@ -323,9 +323,9 @@ describe("ForestClientService.ts", () => {
 
     it("converts from ClientLocation format to Address format properly", () => {
       const address = locationToCreateFormat(location);
-      expect(address.streetAddress).toEqual(location.addressOne);
-      expect(address.complementaryAddressOne).toEqual(location.addressTwo);
-      expect(address.complementaryAddressTwo).toEqual(location.addressThree);
+      expect(address.streetAddress).toEqual(location.addressThree);
+      expect(address.complementaryAddressOne).toEqual(location.addressOne);
+      expect(address.complementaryAddressTwo).toEqual(location.addressTwo);
       expect(address.country).toStrictEqual({
         value: location.countryCode,
         text: location.countryDesc,
