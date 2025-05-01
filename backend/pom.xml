@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.4</version>
+        <version>3.4.5</version>
         <relativePath />
     </parent>
 
@@ -298,7 +298,8 @@
                     <mainClass>ca.bc.gov.app.BootApplication</mainClass>
                     <buildArgs>
                         <buildArg>-H:+ReportExceptionStackTraces</buildArg>
-                        <buildArg>--initialize-at-build-time=org.apache.commons.logging.LogFactoryService</buildArg>
+                        <buildArg>
+                            --initialize-at-build-time=org.apache.commons.logging.LogFactoryService</buildArg>
                     </buildArgs>
                 </configuration>
             </plugin>
