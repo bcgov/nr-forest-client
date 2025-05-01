@@ -239,9 +239,9 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
         .expectStatus().isOk()
         .expectBody()
         .jsonPath("$[0].code").isNotEmpty()
-        .jsonPath("$[0].code").isEqualTo("C")
+        .jsonPath("$[0].code").isEqualTo("A")
         .jsonPath("$[0].name").isNotEmpty()
-        .jsonPath("$[0].name").isEqualTo("Corporation");
+        .jsonPath("$[0].name").isEqualTo("Extraprovincial Company");
   }
   
   @Test
@@ -255,9 +255,9 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
         .expectStatus().isOk()
         .expectBody()
         .jsonPath("$[0].code").isNotEmpty()
-        .jsonPath("$[0].code").isEqualTo("BC")
+        .jsonPath("$[0].code").isEqualTo("A")
         .jsonPath("$[0].name").isNotEmpty()
-        .jsonPath("$[0].name").isEqualTo("British Columbia Company");
+        .jsonPath("$[0].name").isEqualTo("Association");
   }
   
 }
