@@ -353,7 +353,7 @@ export const updateSelectedReason = (
   }
 };
 
-const removeNullText = (text: string | null): string | null => {
+export const removeNullText = (text: string | null): string | null => {
   if (!text || text === 'null') {
     return null;
   }

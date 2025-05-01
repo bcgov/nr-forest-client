@@ -16,6 +16,7 @@ import {
   keepScrollBottomPosition as keepScrollBottomPositionFn,
   locationToCreateFormat,
   locationToEditFormat,
+  removeNullText,
 } from "@/services/ForestClientService";
 
 import Edit16 from "@carbon/icons-vue/es/edit/16";
@@ -234,13 +235,6 @@ const handleRemoveAdditionalDelivery = () => {
     handler: removeAdditionalDelivery,
     active: true,
   });
-};
-
-const removeNullText = (text: string | null): string | null => {
-  if (!text || text === 'null') {
-    return null;
-  }
-  return text;
 };
 </script>
 
