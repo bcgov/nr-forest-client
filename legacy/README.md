@@ -3,7 +3,6 @@ oracle communication.
 
 ## Setup local development
 
-
     For a better developer experience, use IntelliJ IDEA and configure google style as the default style.
 
 In order to run the application, you will need an instance of postgres running, it can be local, 

@@ -353,6 +353,37 @@ export const updateSelectedReason = (
   }
 };
 
+export const removeNullText = (text: string | null): string | null => {
+  if (!text || text === 'null') {
+    return null;
+  }
+  return text;
+};
+
+const extractAddressParts = (
+  location: ClientLocation,
+): {
+  streetAddress: string
+  complementaryAddressOne: string | null
+  complementaryAddressTwo: string | null
+} => {
+  const { addressOne, addressTwo, addressThree } = location
+
+  if (removeNullText(addressTwo)) {
+    return {
+      streetAddress: removeNullText(addressThree) ?? addressTwo,
+      complementaryAddressOne: addressOne,
+      complementaryAddressTwo: removeNullText(addressThree) ? addressTwo : null,
+    }
+  }
+  return {
+    streetAddress: addressOne,
+    complementaryAddressOne: addressTwo,
+    complementaryAddressTwo: addressThree,
+  }
+};
+
+
 /**
  * Converts location data from ClientLocation format to Address format, as required by the
  * StaffLocationGroupComponent, first developed for the staff create form.
@@ -362,11 +393,13 @@ export const updateSelectedReason = (
  */
 export const locationToCreateFormat = (location: ClientLocation): Address => {
   const index = location.clientLocnCode !== null ? Number(location.clientLocnCode) : null;
+  const { streetAddress, complementaryAddressOne, complementaryAddressTwo } =
+    extractAddressParts(location)
 
   const address: Address = {
-    streetAddress: location.addressOne,
-    complementaryAddressOne: location.addressTwo,
-    complementaryAddressTwo: location.addressThree,
+    streetAddress,
+    complementaryAddressOne,
+    complementaryAddressTwo,
     country: {
       value: location.countryCode,
       text: location.countryDesc,
