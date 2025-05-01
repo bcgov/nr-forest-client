@@ -236,7 +236,7 @@ const handleRemoveAdditionalDelivery = () => {
   });
 };
 
-const removeNullText = (text: string | null): string => {
+const removeNullText = (text: string | null): string | null => {
   if (!text || text === 'null') {
     return null;
   }
