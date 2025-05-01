@@ -113,6 +113,28 @@ defineExpose({
   lockEditing,
 });
 
+const reorderAddresses = (location: ClientLocation): ClientLocation => {
+  const { addressOne, addressTwo, addressThree, ...rest } = location
+
+  let newAddressOne = addressOne
+  let newAddressTwo: string | null = null
+  let newAddressThree: string | null = null
+
+  if (addressTwo) {
+    // Move addressTwo to position 1
+    newAddressOne = addressTwo
+    newAddressTwo = addressThree ?? addressOne
+    newAddressThree = addressThree ? addressOne : null
+  }
+
+  return {
+    addressOne: newAddressOne,
+    addressTwo: newAddressTwo,
+    addressThree: newAddressThree,
+    ...rest
+  }
+}
+
 const save = (
   updatedLocation: ClientLocation,
   action: ActionWords = {
@@ -120,7 +142,7 @@ const save = (
     pastParticiple: "updated",
   },
 ) => {
-  const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedLocation);
+  const patch = props.createMode ? null : jsonpatch.compare(originalData, reorderAddresses(updatedLocation));
 
   const operationType = props.createMode ? "insert" : "update";
 
@@ -213,6 +235,13 @@ const handleRemoveAdditionalDelivery = () => {
     active: true,
   });
 };
+
+const removeNullText = (text: string | null): string => {
+  if (!text || text === 'null') {
+    return null;
+  }
+  return text;
+};
 </script>
 
 <template>
@@ -224,19 +253,23 @@ const handleRemoveAdditionalDelivery = () => {
             <span
               :id="`location-${indexString}-addressTwo`"
               class="body-compact-01"
-              v-if="data.addressTwo"
+              v-if="removeNullText(data.addressTwo)"
             >
-              {{ data.addressTwo }}
+              {{ data.addressOne }}
             </span>
             <span
               :id="`location-${indexString}-addressThree`"
               class="body-compact-01"
-              v-if="data.addressThree"
+              v-if="removeNullText(data.addressThree)"
             >
-              {{ data.addressThree }}
+            {{ data.addressTwo }}
             </span>
             <span :id="`location-${indexString}-streetAddress`" class="body-compact-01">
-              {{ data.addressOne }}
+              {{
+                removeNullText(data.addressThree) ??
+                removeNullText(data.addressTwo) ??
+                data.addressOne
+              }}
             </span>
             <span :id="`location-${indexString}-city-province`" class="body-compact-01">
               {{ data.city }}, {{ data.provinceDesc }}
