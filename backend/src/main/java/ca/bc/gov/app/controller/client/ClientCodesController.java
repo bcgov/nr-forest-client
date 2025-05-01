@@ -149,12 +149,24 @@ public class ClientCodesController {
         actionCode);
   }
   
+  /**
+   * Retrieves a list of all active client status codes from the legacy client service.
+   *
+   * @return a {@link Flux} stream of {@link CodeNameDto} representing active client statuses
+   */
   @GetMapping("/client-statuses")
   public Flux<CodeNameDto> findActiveClientStatusCodes() {
     log.info("Requesting a list of active client status codes from the client service.");
     return legacyService.findActiveClientStatusCodes();
   }
   
+  /**
+   * Retrieves a list of active client status codes based on client type and user role groups.
+   *
+   * @param clientTypeCode the client type code used to filter the statuses
+   * @param principal      the authenticated user used to determine role-based access
+   * @return a {@link Flux} stream of {@link CodeNameDto} filtered by client type and roles
+   */
   @GetMapping("/client-statuses/{clientTypeCode}")
   public Flux<CodeNameDto> findActiveClientStatusCodes(
       @PathVariable String clientTypeCode,
@@ -167,12 +179,23 @@ public class ClientCodesController {
     );
   }
   
+  /**
+   * Retrieves a list of all active registry type codes from the legacy client service.
+   *
+   * @return a {@link Flux} stream of {@link CodeNameDto} representing active registry types
+   */
   @GetMapping("/registry-types")
   public Flux<CodeNameDto> findActiveRegistryTypeCodes() {
     log.info("Requesting a list of active registry type codes from the client service.");
     return legacyService.findActiveRegistryTypeCodes();
   }
   
+  /**
+   * Retrieves a list of active registry type codes for the specified client type.
+   *
+   * @param clientTypeCode the client type code used to filter the registry types
+   * @return a {@link Flux} stream of {@link CodeNameDto} filtered by client type
+   */
   @GetMapping("/registry-types/{clientTypeCode}")
   public Flux<CodeNameDto> findActiveRegistryTypeCodesByClientTypeCode(
       @PathVariable String clientTypeCode) {
@@ -180,6 +203,11 @@ public class ClientCodesController {
     return legacyService.findActiveRegistryTypeCodesByClientTypeCode(clientTypeCode);
   }
   
+  /**
+   * Retrieves a list of all active client type codes from the legacy system as of today.
+   *
+   * @return a {@link Flux} stream of {@link CodeNameDto} representing active client types
+   */
   @GetMapping("/client-types/legacy")
   public Flux<CodeNameDto> findActiveClientTypeCodesInLegacy() {
     log.info("Requesting a list of active client type codes from legacy.");
@@ -187,6 +215,11 @@ public class ClientCodesController {
         .findActiveClientTypeCodes(LocalDate.now());
   }
   
+  /**
+   * Retrieves a list of all active identification type codes from the legacy system.
+   *
+   * @return a {@link Flux} stream of {@link CodeNameDto} representing active ID types
+   */
   @GetMapping("/identification-types/legacy")
   public Flux<CodeNameDto> findActiveIdentificationTypeCodes() {
     log.info("Requesting a list of active ID type codes from legacy.");

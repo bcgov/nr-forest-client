@@ -227,5 +227,37 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
         .isEqualTo(new DistrictDto("DMH", "100 Mile House Natural Resource District","mail@mail.ca"));
 
   }
+
+  @Test
+  @DisplayName("List registry types by client type")
+  void shouldListRegistryTypesByClientType() {
+
+    client
+        .get()
+        .uri("/api/codes/registry-types/{clientTypeCode}", Map.of("clientTypeCode", "C"))
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$[0].code").isNotEmpty()
+        .jsonPath("$[0].code").isEqualTo("C")
+        .jsonPath("$[0].name").isNotEmpty()
+        .jsonPath("$[0].name").isEqualTo("Corporation");
+  }
+  
+  @Test
+  @DisplayName("List client types in legacy")
+  void shouldListClientTypesInLegacy() {
+
+    client
+        .get()
+        .uri("/api/codes/client-types/legacy")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$[0].code").isNotEmpty()
+        .jsonPath("$[0].code").isEqualTo("BC")
+        .jsonPath("$[0].name").isNotEmpty()
+        .jsonPath("$[0].name").isEqualTo("British Columbia Company");
+  }
   
 }
