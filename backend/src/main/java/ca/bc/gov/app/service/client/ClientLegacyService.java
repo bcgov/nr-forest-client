@@ -592,4 +592,53 @@ public class ClientLegacyService {
 	        );
   }
 
+  public Flux<CodeNameDto> findActiveRegistryTypeCodesByClientTypeCode(String clientTypeCode) {
+    log.info("Searching for active registry types in legacy by client type {}", clientTypeCode);
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/registry-types/{clientTypeCode}", clientTypeCode)
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                    "Found active registry types in legacy with client type {}",
+                    clientTypeCode
+                )
+            );
+  }
+
+  public Flux<CodeNameDto> findActiveClientTypeCodes(LocalDate now) {
+    log.info("Searching for active client types in legacy {}");
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/client-types")
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                    "Found active client types in legacy"
+                )
+            );
+  }
+
+  public Flux<CodeNameDto> findActiveIdentificationTypeCodes() {
+    log.info("Searching for active client ID types in legacy {}");
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/client-id-types")
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                    "Found active client ID types in legacy"
+                )
+            );
+  }
+
 }

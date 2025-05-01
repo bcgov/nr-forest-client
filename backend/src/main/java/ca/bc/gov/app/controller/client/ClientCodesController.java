@@ -173,4 +173,24 @@ public class ClientCodesController {
     return legacyService.findActiveRegistryTypeCodes();
   }
   
+  @GetMapping("/registry-types/{clientTypeCode}")
+  public Flux<CodeNameDto> findActiveRegistryTypeCodesByClientTypeCode(
+      @PathVariable String clientTypeCode) {
+    log.info("Requesting a list of active registry type codes by client type from legacy.");
+    return legacyService.findActiveRegistryTypeCodesByClientTypeCode(clientTypeCode);
+  }
+  
+  @GetMapping("/client-types/legacy")
+  public Flux<CodeNameDto> findActiveClientTypeCodesInLegacy() {
+    log.info("Requesting a list of active client type codes from legacy.");
+    return legacyService
+        .findActiveClientTypeCodes(LocalDate.now());
+  }
+  
+  @GetMapping("/identification-types/legacy")
+  public Flux<CodeNameDto> findActiveIdentificationTypeCodes() {
+    log.info("Requesting a list of active ID type codes from legacy.");
+    return legacyService.findActiveIdentificationTypeCodes();
+  }
+  
 }

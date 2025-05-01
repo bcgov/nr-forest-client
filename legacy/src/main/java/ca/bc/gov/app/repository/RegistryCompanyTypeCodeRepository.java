@@ -21,4 +21,18 @@ public interface RegistryCompanyTypeCodeRepository
   Flux<CodeNameDto> findActiveRegistryTypeCodes(
       LocalDate activeDate);
 
+  @Query("""
+      SELECT RCTC.REGISTRY_COMPANY_TYPE_CODE, RCTC.DESCRIPTION AS NAME
+      FROM THE.REGISTRY_COMPANY_TYPE_CODE RCTC
+      INNER JOIN THE.CLIENT_TYPE_COMPANY_XREF CTRX
+          ON RCTC.REGISTRY_COMPANY_TYPE_CODE = CTRX.REGISTRY_COMPANY_TYPE_CODE
+      WHERE 
+          (RCTC.EXPIRY_DATE IS NULL OR RCTC.EXPIRY_DATE > :activeDate)
+          AND RCTC.EFFECTIVE_DATE <= :activeDate
+          AND CTRX.CLIENT_TYPE_CODE = :clientTypeCode
+      """)
+  Flux<CodeNameDto> findActiveRegistryTypeCodesByClientTypeCode(
+      String clientTypeCode,
+      LocalDate now);
+  
 }
