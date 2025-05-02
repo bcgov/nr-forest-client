@@ -646,10 +646,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       service
           .findActiveRegistryTypeCodesByClientTypeCode(clientTypeCode)
           .as(StepVerifier::create)
-          .assertNext(dto -> {
-              assertEquals(expectedDto.code(), dto.code());
-              assertEquals(expectedDto.name(), dto.name());
-          })
+          .expectNext(expectedDto)
           .verifyComplete();
   }
   
@@ -667,16 +664,16 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       
       legacyStub.stubFor(
           get(urlPathEqualTo("/api/codes/client-types/legacy"))
-              .willReturn(okJson("[{\"code\":\"C\",\"name\":\"Corporation\"}]"))
+              .willReturn(aResponse()
+                  .withStatus(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody("[{\"code\":\"C\",\"name\":\"Corporation\"}]"))
       );
 
       service
           .findActiveClientTypeCodes()
           .as(StepVerifier::create)
-          .assertNext(dto -> {
-              assertEquals(expectedDto.code(), dto.code());
-              assertEquals(expectedDto.name(), dto.name());
-          })
+          .expectNext(expectedDto)
           .verifyComplete();
   }
   
@@ -700,10 +697,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       service
           .findActiveIdentificationTypeCodes()
           .as(StepVerifier::create)
-          .assertNext(dto -> {
-              assertEquals(expectedDto.code(), dto.code());
-              assertEquals(expectedDto.name(), dto.name());
-          })
+          .expectNext(expectedDto)
           .verifyComplete();
   }
   
