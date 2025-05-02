@@ -1,11 +1,15 @@
 package ca.bc.gov.app.controller.client;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.DistrictDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
@@ -18,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriBuilder;
@@ -42,6 +47,12 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
   @DisplayName("Codes are in expected order")
   void shouldListCodesAsExpected() {
 
+    Logger logger = (Logger) LoggerFactory.getLogger(ClientCodesController.class);
+    
+    ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    listAppender.start();
+    logger.addAppender(listAppender);
+    
     client
         .get()
         .uri("/api/codes/client-types")
@@ -53,7 +64,14 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
 
         .jsonPath("$[1].code").isNotEmpty()
         .jsonPath("$[1].code").isEqualTo("C");
-
+    
+    boolean logMessageFound = 
+        listAppender.list.stream()
+          .anyMatch(event -> event
+              .getFormattedMessage()
+              .contains("Requesting a list of active client type codes"));
+    
+    assertTrue(logMessageFound, "Expected log message for should list codes.");
   }
 
   @ParameterizedTest(name = "{2} - {3} is the first on page {0} with size {1}")

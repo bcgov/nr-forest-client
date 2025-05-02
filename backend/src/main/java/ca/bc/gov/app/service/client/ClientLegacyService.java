@@ -562,11 +562,11 @@ public class ClientLegacyService {
 
   public Flux<Pair<HistoryLogDto, Long>> retrieveHistoryLogs(
       String clientNumber, int page, int size, List<String> sources) {
-	
-    log.info("Retrieving history log for client {} with page {} and size {} and sources {}",
-             clientNumber, page, size, sources);
 
-	return
+    log.info("Retrieving history log for client {} with page {} and size {} and sources {}",
+        clientNumber, page, size, sources);
+
+    return
 	    legacyApi
 	        .get()
 	        .uri(builder ->
