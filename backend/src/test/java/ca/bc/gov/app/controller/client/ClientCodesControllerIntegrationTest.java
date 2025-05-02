@@ -73,6 +73,37 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
     
     assertTrue(logMessageFound, "Expected log message for should list codes.");
   }
+  
+  @Test
+  @DisplayName("Should retrieve client type by code and log request")
+  void shouldGetClientTypeByCode() {
+    
+    Logger logger = (Logger) LoggerFactory.getLogger(ClientCodesController.class);
+    ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    listAppender.start();
+    logger.addAppender(listAppender);
+
+    String code = "A";
+    
+    client
+        .get()
+        .uri("/api/codes/client-types/{code}", code)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$.code").isEqualTo(code)
+        .jsonPath("$.name").isNotEmpty();
+    
+    boolean logMessageFound =
+        listAppender.list.stream()
+            .anyMatch(
+                event ->
+                    event
+                        .getFormattedMessage()
+                        .contains("Requesting a client type by code " + code));
+
+    assertTrue(logMessageFound, "Expected log message for get client type by code.");
+  }
 
   @ParameterizedTest(name = "{2} - {3} is the first on page {0} with size {1}")
   @MethodSource("contactTypeCodes")
