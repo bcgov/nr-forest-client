@@ -561,7 +561,7 @@ public class ClientLegacyService {
   }
 
   public Flux<Pair<HistoryLogDto, Long>> retrieveHistoryLogs(
-    String clientNumber, int page, int size, List<String> sources) {
+      String clientNumber, int page, int size, List<String> sources) {
 	
     log.info("Retrieving history log for client {} with page {} and size {} and sources {}",
              clientNumber, page, size, sources);
@@ -579,7 +579,8 @@ public class ClientLegacyService {
 	        )
 	        .exchangeToFlux(response -> {
 	            List<String> totalCountHeader = response.headers().header("X-Total-Count");
-	            Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
+	            Long count = totalCountHeader.isEmpty() ? 
+	                0L : Long.valueOf(totalCountHeader.get(0));
 
 	            return response
 	                .bodyToFlux(HistoryLogDto.class)
@@ -609,7 +610,7 @@ public class ClientLegacyService {
             );
   }
 
-  public Flux<CodeNameDto> findActiveClientTypeCodes(LocalDate now) {
+  public Flux<CodeNameDto> findActiveClientTypeCodes() {
     log.info("Searching for active client types in legacy {}");
 
     return

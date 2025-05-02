@@ -113,7 +113,9 @@ public class ClientCodesController {
     log.info("Requesting a province by country and province code {} {} from the client service.",
              countryCode, 
              provinceCode);
-    return clientCountryProvinceService.getProvinceByCountryAndProvinceCode(countryCode, provinceCode);
+    return clientCountryProvinceService.getProvinceByCountryAndProvinceCode(
+        countryCode, 
+        provinceCode);
   }
   
   @GetMapping("/identification-types")
@@ -131,8 +133,9 @@ public class ClientCodesController {
   }
 
   /**
-   * Handles HTTP GET requests to retrieve a list of active update reason codes for a specific client
-   * type and action code. This endpoint interacts with the client service to fetch the relevant data.
+   * Handles HTTP GET requests to retrieve a list of active update reason codes for a specific 
+   * client type and action code. 
+   * This endpoint interacts with the client service to fetch the relevant data.
    *
    * @param clientTypeCode the code representing the type of client (e.g., individual, corporation)
    * @param actionCode the code representing the action being performed (e.g., name change, address
@@ -212,7 +215,7 @@ public class ClientCodesController {
   public Flux<CodeNameDto> findActiveClientTypeCodesInLegacy() {
     log.info("Requesting a list of active client type codes from legacy.");
     return legacyService
-        .findActiveClientTypeCodes(LocalDate.now());
+        .findActiveClientTypeCodes();
   }
   
   /**
