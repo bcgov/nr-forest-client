@@ -22,6 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * REST controller for retrieving various client-related code data, such as districts, provinces,
+ * and other code-based information. All endpoints under this controller produce JSON responses and
+ * are prefixed with {@code /api/codes}.
+ */
 @RestController
 @RequestMapping(value = "/api/codes", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
