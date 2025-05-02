@@ -626,4 +626,33 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .verifyComplete();
   }
   
+  
+  @Test
+  @DisplayName("Retrieve active registry types by client type")
+  void testFindActiveRegistryTypesByClientType() {
+      String clientTypeCode = "C";
+
+      CodeNameDto expectedDto = new CodeNameDto("BC", "British Columbia Company");
+
+      Logger logger = (Logger) LoggerFactory.getLogger(ClientLegacyService.class);
+
+      ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+      listAppender.start();
+      logger.addAppender(listAppender);
+      
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/registry-types/" + clientTypeCode))
+              .willReturn(okJson("[{\"code\":\"BC\",\"name\":\"British Columbia Company\"}]"))
+      );
+
+      service
+          .findActiveRegistryTypeCodesByClientTypeCode(clientTypeCode)
+          .as(StepVerifier::create)
+          .assertNext(dto -> {
+              assertEquals(expectedDto.code(), dto.code());
+              assertEquals(expectedDto.name(), dto.name());
+          })
+          .verifyComplete();
+  }
+  
 }

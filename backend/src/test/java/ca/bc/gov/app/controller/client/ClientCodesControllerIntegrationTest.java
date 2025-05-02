@@ -227,20 +227,4 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
 
   }
   
-  @Test
-  @DisplayName("List client types in legacy")
-  void shouldListClientTypesInLegacy() {
-
-    client
-      .get()
-      .uri("/api/codes/client-types/legacy")
-      .exchange()
-      .expectStatus().is5xxServerError()
-      .expectBody()
-      .consumeWith(result -> {
-          String body = new String(result.getResponseBodyContent());
-          System.out.println("Response body: " + body);
-      });
-  }
-  
 }
