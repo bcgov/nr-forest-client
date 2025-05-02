@@ -657,7 +657,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
   @DisplayName("Retrieve active client types")
   void testFindActiveClientTypes() {
 
-      CodeNameDto expectedDto = new CodeNameDto("C", "Company");
+      CodeNameDto expectedDto = new CodeNameDto("C", "Corporation");
 
       Logger logger = (Logger) LoggerFactory.getLogger(ClientLegacyService.class);
 
