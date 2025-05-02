@@ -663,7 +663,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       logger.addAppender(listAppender);
       
       legacyStub.stubFor(
-          get(urlPathEqualTo("/api/codes/client-types/legacy"))
+          get(urlPathEqualTo("/api/codes/client-types"))
               .willReturn(aResponse()
                   .withStatus(200)
                   .withHeader("Content-Type", "application/json")
