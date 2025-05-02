@@ -80,7 +80,9 @@ class ClientCodesControllerIntegrationTest extends
   
   @Test
   @DisplayName("Retrieve active registry types by client type")
-  void shouldGetRegistryTypes(String clientTypeCode) {
+  void shouldGetRegistryTypesByClientType() {
+    String clientTypeCode = "C";
+    
     client
         .get()
         .uri(uriBuilder ->
