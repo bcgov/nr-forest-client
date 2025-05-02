@@ -33,7 +33,12 @@ public class ClientCodesController {
   private final ClientCountryProvinceService clientCountryProvinceService;
   private final ClientCodeService clientCodeService;
   private final ClientLegacyService legacyService;
-
+  
+  /**
+   * Retrieves a list of active client type codes.
+   *
+   * @return a {@link Flux} containing {@link CodeNameDto} for active client types
+   */
   @GetMapping("/client-types")
   public Flux<CodeNameDto> findActiveClientTypeCodes() {
     log.info("Requesting a list of active client type codes from the client service.");
@@ -41,6 +46,12 @@ public class ClientCodesController {
         .findActiveClientTypeCodes(LocalDate.now());
   }
 
+  /**
+   * Retrieves a specific client type by its code.
+   *
+   * @param code the client type code
+   * @return a {@link Mono} containing the {@link CodeNameDto} of the specified client type
+   */
   @GetMapping("/client-types/{code}")
   public Mono<CodeNameDto> getClientTypeByCode(
       @PathVariable String code) {
@@ -48,6 +59,13 @@ public class ClientCodesController {
     return clientCodeService.getClientTypeByCode(code);
   }
 
+  /**
+   * Retrieves a paginated list of active client contact type codes.
+   *
+   * @param page the page number (default is 0)
+   * @param size the page size (default is 10)
+   * @return a {@link Flux} containing {@link CodeNameDto} for contact types
+   */
   @GetMapping("/contact-types")
   public Flux<CodeNameDto> listClientContactTypeCodes(
       @RequestParam(value = "page", required = false, defaultValue = "0")
@@ -60,6 +78,13 @@ public class ClientCodesController {
         .listClientContactTypeCodes(LocalDate.now(), page, size);
   }
   
+  /**
+   * Retrieves a paginated list of active district codes.
+   *
+   * @param page the page number (default is 0)
+   * @param size the page size (default is 10)
+   * @return a {@link Flux} containing {@link CodeNameDto} for districts
+   */
   @GetMapping("/districts")
   public Flux<CodeNameDto> getActiveDistrictCodes(
       @RequestParam(value = "page", required = false, defaultValue = "0")
@@ -70,12 +95,25 @@ public class ClientCodesController {
     return clientDistrictService.getActiveDistrictCodes(page, size, LocalDate.now());
   }
 
+  /**
+   * Retrieves a district by its code.
+   *
+   * @param districtCode the code of the district
+   * @return a {@link Mono} containing the {@link DistrictDto} for the given code
+   */
   @GetMapping("/districts/{districtCode}")
   public Mono<DistrictDto> getDistrictByCode(@PathVariable String districtCode) {
     log.info("Requesting a district by code {} from the client service.", districtCode);
     return clientDistrictService.getDistrictByCode(districtCode);
   }
   
+  /**
+   * Retrieves a paginated list of countries.
+   *
+   * @param page the page number (default is 0)
+   * @param size the page size (default is 10)
+   * @return a {@link Flux} containing {@link CodeNameDto} for countries
+   */
   @GetMapping("/countries")
   public Flux<CodeNameDto> countries(
       @RequestParam(value = "page", required = false, defaultValue = "0")
@@ -86,6 +124,12 @@ public class ClientCodesController {
     return clientCountryProvinceService.listCountries(page, size, LocalDate.now());
   }
 
+  /**
+   * Retrieves a country by its code.
+   *
+   * @param countryCode the code of the country
+   * @return a {@link Mono} containing the {@link CodeNameDto} for the given country code
+   */
   @GetMapping("/countries/{countryCode}")
   public Mono<CodeNameDto> getCountryByCode(
       @PathVariable String countryCode) {
@@ -93,6 +137,14 @@ public class ClientCodesController {
     return clientCountryProvinceService.getCountryByCode(countryCode);
   }
 
+  /**
+   * Retrieves a paginated list of provinces for a given country.
+   *
+   * @param countryCode the code of the country
+   * @param page the page number (default is 0)
+   * @param size the page size (default is 10)
+   * @return a {@link Flux} containing {@link CodeNameDto} for provinces
+   */
   @GetMapping("/countries/{countryCode}/provinces")
   public Flux<CodeNameDto> listProvinces(
       @PathVariable String countryCode,
@@ -106,6 +158,13 @@ public class ClientCodesController {
         .listProvinces(countryCode, page, size);
   }
   
+  /**
+   * Retrieves a province by its country and province codes.
+   *
+   * @param countryCode the code of the country
+   * @param provinceCode the code of the province
+   * @return a {@link Mono} containing the {@link CodeNameDto} for the specified province
+   */
   @GetMapping("/countries/{countryCode}/{provinceCode}")
   public Mono<CodeNameDto> getProvinceByCountryAndProvinceCode(
       @PathVariable String countryCode,
@@ -118,6 +177,11 @@ public class ClientCodesController {
         provinceCode);
   }
   
+  /**
+   * Retrieves a list of all active identification type codes.
+   *
+   * @return a {@link Flux} containing {@link IdentificationTypeDto} for identification types
+   */
   @GetMapping("/identification-types")
   public Flux<IdentificationTypeDto> identificationTypes() {
     log.info("Requesting a list of identification type codes.");
