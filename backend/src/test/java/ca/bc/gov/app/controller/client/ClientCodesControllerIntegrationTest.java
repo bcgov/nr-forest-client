@@ -247,6 +247,39 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
   }
   
   @Test
+  @DisplayName("Should retrieve province by country and province code and log request")
+  void shouldGetProvinceByCountryAndProvinceCode() {
+    
+    Logger logger = (Logger) LoggerFactory.getLogger(ClientCodesController.class);
+    ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    listAppender.start();
+    logger.addAppender(listAppender);
+
+    String countryCode = "CA";
+    String provinceCode = "BC";
+    
+    client
+        .get()
+        .uri("/api/codes/countries/{countryCode}/{provinceCode}", countryCode, provinceCode)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$.code").isEqualTo(provinceCode)
+        .jsonPath("$.name").isNotEmpty();
+    
+    boolean logMessageFound =
+        listAppender.list.stream()
+            .anyMatch(event ->
+                event.getFormattedMessage().contains(
+                    "Requesting a province by country and province code " 
+                    + countryCode + " " + provinceCode
+                )
+            );
+
+    assertTrue(logMessageFound, "Expected log message for province lookup by codes.");
+  }
+  
+  @Test
   @DisplayName("List districts")
   void shouldListDistricts() {
 
