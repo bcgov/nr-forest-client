@@ -36,9 +36,9 @@ describe("<location-view />", () => {
     data: {
       clientLocnName: "Mailing address",
       clientLocnCode: "00",
-      addressOne: "886 Richmond Ave",
-      addressTwo: "C/O Tony Pineda",
-      addressThree: "Sample additional info",
+      addressOne: "Sample additional info",
+      addressTwo: "886 Richmond Ave",
+      addressThree: "C/O Tony Pineda",
       country: "Canada", // TODO: remove this when response interface is updated
       countryCode: "CA",
       countryDesc: "Canada",
