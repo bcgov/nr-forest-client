@@ -56,7 +56,7 @@ public class PatchOperationClientService implements ClientPatchOperation {
    */
   @Override
   public List<String> getRestrictedPaths() {
-    return List.of("/wcbFirmNumber", "/clientComment");
+    return List.of("/wcbFirmNumber", "/clientComment","/clientAcronym");
   }
 
 
