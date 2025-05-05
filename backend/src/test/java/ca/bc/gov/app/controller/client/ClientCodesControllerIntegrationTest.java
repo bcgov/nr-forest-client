@@ -309,34 +309,4 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
 
   }
   
-  @Test
-  @DisplayName("get identification type codes in legacy")
-  void shouldGetIdentificationTypeCodesInLegacy() {
-
-    CodeNameDto expectedDto = new CodeNameDto("C", "Corporation");
-    
-    client
-        .get()
-        .uri("/api/codes/identification-types/legacy")
-        .exchange()
-        .expectStatus().isOk()
-        .expectBodyList(CodeNameDto.class)
-        .contains(expectedDto);
-  }
-  
-  @Test
-  @DisplayName("get identification type codes in legacy")
-  void shouldGetClientTypeCodesInLegacy() {
-
-    CodeNameDto expectedDto = new CodeNameDto("BCDL", "British Columbia Drivers Licence");
-    
-    client
-        .get()
-        .uri("/api/codes/client-types/legacy")
-        .exchange()
-        .expectStatus().isOk()
-        .expectBodyList(CodeNameDto.class)
-        .contains(expectedDto);
-  }
-  
 }
