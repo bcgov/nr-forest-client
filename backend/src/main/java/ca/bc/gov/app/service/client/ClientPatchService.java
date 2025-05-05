@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +24,7 @@ public class ClientPatchService {
 
   private final ClientLegacyService legacyService;
   private final List<PatchValidator> validators;
+  private final ObjectMapper mapper;
 
   /**
    * Sends a patch request to the legacy system to update a client.
@@ -51,15 +50,15 @@ public class ClientPatchService {
                     .filter(validator.shouldValidate())
                     .flatMap(validator.validate())
             )
-            .reduce(new ObjectMapper().createArrayNode(),mergeNodes())
+            .reduce(mapper.createArrayNode(), mergeNodes())
             .flatMap(node ->
                 legacyService.patchClient(clientNumber, node, userName)
             );
   }
 
-  public static BinaryOperator<JsonNode> mergeNodes() {
+  public BinaryOperator<JsonNode> mergeNodes() {
     return (node1, node2) -> {
-      ArrayNode arrayNode = new ObjectMapper().createArrayNode();
+      ArrayNode arrayNode = mapper.createArrayNode();
       if (node1 instanceof ArrayNode) {
         arrayNode = node1.deepCopy();
       } else {
