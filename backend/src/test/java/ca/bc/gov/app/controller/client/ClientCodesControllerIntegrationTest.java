@@ -309,4 +309,20 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
 
   }
   
+  @Test
+  @DisplayName("List identification types")
+  void shouldListIdentificationTypes() {
+
+    client
+        .get()
+        .uri("/api/codes/identification-types")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$[0].code").isNotEmpty()
+        .jsonPath("$[0].code").isEqualTo("ABDL")
+        .jsonPath("$[0].name").isNotEmpty()
+        .jsonPath("$[0].name").isEqualTo("Alberta Drivers Licence");
+  }
+  
 }
