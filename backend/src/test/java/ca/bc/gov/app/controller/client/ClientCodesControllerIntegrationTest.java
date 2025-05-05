@@ -320,9 +320,9 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
         .expectStatus().isOk()
         .expectBody()
         .jsonPath("$[0].code").isNotEmpty()
-        .jsonPath("$[0].code").isEqualTo("ABDL")
+        .jsonPath("$[0].code").isEqualTo("BRTH")
         .jsonPath("$[0].name").isNotEmpty()
-        .jsonPath("$[0].name").isEqualTo("Alberta Drivers Licence");
+        .jsonPath("$[0].name").isEqualTo("Canadian birth certificate");
   }
   
 }

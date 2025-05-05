@@ -303,9 +303,9 @@ describe("ForestClientService.ts", () => {
     const location = {
       clientLocnName: "Mailing address",
       clientLocnCode: "00",
-      addressOne: "C/O Tony Pineda",
-      addressTwo: "Sample additional info",
-      addressThree: "123 Richmond Ave",
+      addressOne: "Sample additional info",
+      addressTwo: "886 Richmond Ave",
+      addressThree: "C/O Tony Pineda",
       countryCode: "CA",
       countryDesc: "Canada",
       provinceCode: "SK",
