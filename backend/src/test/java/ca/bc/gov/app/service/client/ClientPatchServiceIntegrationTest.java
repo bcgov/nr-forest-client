@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
@@ -73,6 +75,7 @@ class ClientPatchServiceIntegrationTest extends AbstractTestContainerIntegration
         );
   }
 
+  @Test
   void shouldSendPatchRequest() {
 
     service.patchClient("00000000", node, "testUser")
@@ -81,7 +84,7 @@ class ClientPatchServiceIntegrationTest extends AbstractTestContainerIntegration
         .verify();
 
     legacyStub.verify(1, patchRequestedFor(urlPathEqualTo("/api/clients/partial/00000000")));
-    legacyStub.verify(1, patchRequestedFor(urlPathEqualTo("/api/search/acronym"))
+    legacyStub.verify(1, getRequestedFor(urlPathEqualTo("/api/search/acronym"))
         .withQueryParam("acronym", equalTo("ABC")));
 
   }
