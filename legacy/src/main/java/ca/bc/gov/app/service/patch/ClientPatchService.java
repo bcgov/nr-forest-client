@@ -44,7 +44,7 @@ public class ClientPatchService {
       JsonNode forestClient,
       String userId
   ) {
-    log.info("Patching client with client number {} if any changes are detected", clientNumber);
+    log.info("Patching client with client number {} if any changes are detected {}", clientNumber,forestClient);
 
     return partialServices
         .stream()
