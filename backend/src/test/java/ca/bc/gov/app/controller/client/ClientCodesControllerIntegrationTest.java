@@ -325,4 +325,17 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
         .jsonPath("$[0].name").isEqualTo("Canadian birth certificate");
   }
   
+  @Test
+  @DisplayName("get id type by code")
+  void shouldGetIdentificationTypeByCode() {
+
+    client
+        .get()
+        .uri("/api/codes/{idCode}", Map.of("idCode", "FNID"))
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody(CodeNameDto.class)
+        .isEqualTo(new CodeNameDto("FNID", "First Nation status card"));
+  }
+  
 }
