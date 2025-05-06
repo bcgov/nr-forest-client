@@ -56,7 +56,7 @@ public class ClientPatchService {
             );
   }
 
-  public BinaryOperator<JsonNode> mergeNodes() {
+  private BinaryOperator<JsonNode> mergeNodes() {
     return (node1, node2) -> {
       ArrayNode arrayNode = mapper.createArrayNode();
       if (node1 instanceof ArrayNode) {
