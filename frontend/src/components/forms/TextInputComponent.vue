@@ -49,19 +49,22 @@ const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const warning = ref(false);
 
+const errorData = ref<ValidationMessageType>();
+
 /**
  * Sets the error and emits an error event.
  * @param errorObject - the error object or string
  */
 const setError = (errorObject: string | ValidationMessageType | undefined) => {
-  const errorMessage =
-    typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
+  const errorMessage = typeof errorObject === "object" ? errorObject.errorMsg : errorObject;
   error.value = errorMessage || "";
 
   warning.value = false;
   if (typeof errorObject === "object") {
     warning.value = errorObject.warning;
   }
+
+  errorData.value = typeof errorObject === "object" && errorObject;
 
   /*
   The error should be emitted whenever it is found, instead of watching and emitting only when it
@@ -237,7 +240,13 @@ watch(
         :data-scroll="id"
         :data-id="'input-' + id"
         v-shadow="4"
-      />
+      >
+        <div :slot="warning ? 'warn-text' : 'invalid-text'" v-if="error" class="display-contents">
+          <slot name="error" :data="errorData">
+            {{ error }}
+          </slot>
+        </div>
+      </cds-text-input>
     </div>
   </div>
 

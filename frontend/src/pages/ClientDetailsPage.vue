@@ -55,6 +55,8 @@ import {
   createClientLocation,
   type ClientContact,
   createClientContact,
+  type FuzzyMatchResult,
+  type ValidationMessageType,
 } from "@/dto/CommonTypesDto";
 
 // Page components
@@ -68,7 +70,16 @@ const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id as string;
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
+
 const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
+
+/**
+ * Event bus for submission error notifications.
+ */
+ const errorBus = useEventBus<ValidationMessageType[]>(
+  "submission-error-notification"
+);
+
 const { setFocusedComponent, setScrollPoint } = useFocus();
 
 const data = ref<ClientDetails>(undefined);
@@ -529,6 +540,19 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
     };
     toastBus.emit(toastNotification);
     globalError.value = error;
+    if (error.status === 409 && Array.isArray(error.response.data)) {
+      const validationMessages: ValidationMessageType[] = (error.response.data as FuzzyMatchResult[]).map((error) => ({
+        fieldId: error.field,
+        fieldName: "",
+        errorMsg: "custom", // we need a non-empty value here to activate the error state
+        custom: {
+          match: error.match,
+        }
+      }))
+      errorBus.emit(validationMessages, {
+        skipNotification: true,
+      });
+    }
   };
   handlePatch(patchData, onSuccess, onFailure);
 };

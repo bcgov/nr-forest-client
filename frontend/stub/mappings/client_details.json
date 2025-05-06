@@ -257,7 +257,7 @@
       }
     },
     {
-      "name": "PATCH - Client Details - Error",
+      "name": "PATCH - Client Details - Generic Error",
       "request": {
         "urlPattern": "/api/clients/details/(.*)",
         "method": "PATCH",
@@ -273,6 +273,39 @@
       "response": {
         "status": 400,
         "body": "Sample error message",
+        "fixedDelayMilliseconds": 200
+      }
+    },
+    {
+      "name": "PATCH - Client Details - Duplicate Acronym Error",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)",
+        "method": "PATCH",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$[0].path",
+              "equalTo": "/client/clientAcronym"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$[0].value",
+              "contains": "ERR"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 409,
+        "jsonBody": [
+          {
+            "field":"client.clientAcronym", 
+            "match":"00000001", 
+            "fuzzy":false,
+            "partialMatch":false
+          }
+        ],
         "fixedDelayMilliseconds": 200
       }
     }

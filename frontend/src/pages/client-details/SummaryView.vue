@@ -8,6 +8,7 @@ import {
   goodStanding,
   includesAnyOf,
 } from "@/services/ForestClientService";
+import { greenDomain } from "@/CoreConstants";
 
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
 import Warning20 from "@carbon/icons-vue/es/warning--filled/20";
@@ -18,7 +19,10 @@ import Close16 from "@carbon/icons-vue/es/close/16";
 
 // Importing validators
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
-import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
+import {
+  resetSubmissionValidators,
+  submissionValidation,
+} from "@/helpers/validators/SubmissionValidators";
 
 const props = defineProps<{
   data: ClientDetails;
@@ -176,6 +180,16 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
   }
 };
 
+watch(
+  formData,
+  () => {
+    resetSubmissionValidators();
+  },
+  {
+    deep: true,
+  },
+);
+
 const client = computed(() => props.data.client);
 </script>
 
@@ -296,12 +310,26 @@ const client = computed(() => props.data.client);
         v-model="formData.client.clientAcronym"
         :validations="[
           ...getValidations('businessInformation.clientAcronym'),
-          submissionValidation(`businessInformation.clientAcronym`),
+          submissionValidation(`client.clientAcronym`),
         ]"
         enabled
         @empty="validation.acronym = true"
         @error="validation.acronym = !$event"
-      />
+      >
+        <template #error="{ data }">
+          <template v-if="data?.custom?.match">
+            Looks like this acronym belongs to client
+            <span data-v-b63a897d=""
+              ><a
+                :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${data.custom.match}`"
+                target="_blank"
+                rel="noopener"
+                >{{ data.custom.match }}</a
+              ></span
+            >. Try another acronym
+          </template>
+        </template>
+      </text-input-component>
     </div>
     <text-input-component
       id="input-doingBusinessAs"
