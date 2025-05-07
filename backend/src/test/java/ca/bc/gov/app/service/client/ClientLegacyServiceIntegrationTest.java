@@ -8,7 +8,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
@@ -16,6 +17,7 @@ import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientInformationDto;
+import ca.bc.gov.app.dto.legacy.HistoryLogDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ch.qos.logback.classic.Logger;
@@ -58,7 +60,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
   private ClientLegacyService service;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     legacyStub.resetAll();
   }
 
@@ -569,6 +571,133 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
               assertEquals(expecteDto.code(), dto.code());
               assertEquals(expecteDto.name(), dto.name());
           })
+          .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Should retrieve history logs from legacy API by client number")
+  void shouldRetrieveHistoryLogsFromLegacyApi() {
+      String clientNumber = "00000138";
+      int page = 0;
+      int size = 5;
+      List<String> sources = List.of("CLI");
+      Long expectedTotalCount = 1L;
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/clients/history-logs/" + clientNumber))
+              .withQueryParam("page", equalTo(String.valueOf(page)))
+              .withQueryParam("size", equalTo(String.valueOf(size)))
+              .withQueryParam("sources", equalTo("CLI"))
+              .willReturn(
+                  aResponse()
+                      .withHeader("Content-Type", "application/json")
+                      .withHeader("X-Total-Count", expectedTotalCount.toString())
+                      .withBody("[{" 
+                          + "\"tableName\":\"ClientInformation\","
+                          + "\"idx\":\"123\","
+                          + "\"identifierLabel\":\"Client summary updated\","
+                          + "\"updateTimestamp\":\"2007-09-14T10:15:41\","
+                          + "\"updateUserid\":\"test_user\","
+                          + "\"changeType\":\"UPD\","
+                          + "\"details\":"
+                          + "[{\"columnName\":\"clientName\"," 
+                          + "  \"oldValue\":\"Jhon Doe\","
+                          + "  \"newValue\":\"John Doe\"}"
+                          + "],"
+                          + "\"reasons\":"
+                          + "[{\"actionCode\":\"NAME\","
+                          + "  \"reason\":\"Correction\"}"
+                          + "]"
+                          + "}]"
+                      )
+              )
+      );
+
+      service
+          .retrieveHistoryLogs(clientNumber, page, size, sources)
+          .as(StepVerifier::create)
+          .expectNextMatches(pair -> {
+              HistoryLogDto dto = pair.getFirst();
+              return dto.tableName().equals("ClientInformation")
+                  && dto.details().get(0).columnName().equals("clientName");
+          })
+          .verifyComplete();
+  }
+  
+  
+  @Test
+  @DisplayName("Retrieve active registry types by client type")
+  void testFindActiveRegistryTypesByClientType() {
+      String clientTypeCode = "C";
+
+      CodeNameDto expectedDto = new CodeNameDto("BC", "British Columbia Company");
+
+      Logger logger = (Logger) LoggerFactory.getLogger(ClientLegacyService.class);
+
+      ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+      listAppender.start();
+      logger.addAppender(listAppender);
+      
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/registry-types/" + clientTypeCode))
+              .willReturn(okJson("[{\"code\":\"BC\",\"name\":\"British Columbia Company\"}]"))
+      );
+
+      service
+          .findActiveRegistryTypeCodesByClientTypeCode(clientTypeCode)
+          .as(StepVerifier::create)
+          .expectNext(expectedDto)
+          .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Retrieve active client types")
+  void testFindActiveClientTypes() {
+
+      CodeNameDto expectedDto = new CodeNameDto("C", "Corporation");
+
+      Logger logger = (Logger) LoggerFactory.getLogger(ClientLegacyService.class);
+
+      ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+      listAppender.start();
+      logger.addAppender(listAppender);
+      
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-types"))
+              .willReturn(aResponse()
+                  .withStatus(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody("[{\"code\":\"C\",\"name\":\"Corporation\"}]"))
+      );
+
+      service
+          .findActiveClientTypeCodes()
+          .as(StepVerifier::create)
+          .expectNext(expectedDto)
+          .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Retrieve active client ID types")
+  void testFindActiveClientIdTypes() {
+
+      CodeNameDto expectedDto = new CodeNameDto("BCDL", "British Columbia Drivers Licence");
+
+      Logger logger = (Logger) LoggerFactory.getLogger(ClientLegacyService.class);
+
+      ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+      listAppender.start();
+      logger.addAppender(listAppender);
+      
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-id-types"))
+              .willReturn(okJson("[{\"code\":\"BCDL\",\"name\":\"British Columbia Drivers Licence\"}]"))
+      );
+
+      service
+          .findActiveIdentificationTypeCodes()
+          .as(StepVerifier::create)
+          .expectNext(expectedDto)
           .verifyComplete();
   }
   

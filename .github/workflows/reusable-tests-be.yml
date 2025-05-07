@@ -13,7 +13,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-24.04
     steps:
-      - uses: bcgov/action-test-and-analyse-java@v1.0.2
+      - uses: bcgov/action-test-and-analyse-java@v1.1.0
         name: Backend Coverage
         with:
           commands: |
@@ -31,7 +31,7 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN_BACKEND }}
           triggers: ('backend/')
 
-      - uses: bcgov/action-test-and-analyse-java@v1.0.2
+      - uses: bcgov/action-test-and-analyse-java@v1.1.0
         name: Legacy Coverage
         with:
           commands: |
@@ -49,7 +49,7 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
           triggers: ('legacy/')
 
-      - uses: bcgov/action-test-and-analyse-java@v1.0.2
+      - uses: bcgov/action-test-and-analyse-java@v1.1.0
         name: Processor Coverage
         with:
           commands: |

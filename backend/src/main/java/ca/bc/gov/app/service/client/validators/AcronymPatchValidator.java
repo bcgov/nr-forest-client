@@ -1,0 +1,62 @@
+package ca.bc.gov.app.service.client.validators;
+
+import ca.bc.gov.app.dto.ValidationError;
+import ca.bc.gov.app.exception.ValidationException;
+import ca.bc.gov.app.service.client.ClientLegacyService;
+import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+
+@Component
+@RequiredArgsConstructor
+public class AcronymPatchValidator implements PatchValidator {
+
+  private final ClientLegacyService legacyService;
+
+  @Override
+  public Predicate<JsonNode> shouldValidate() {
+    return node ->
+        node.get("path").asText().endsWith("/clientAcronym")
+        && node.get("op").asText().equals("replace");
+  }
+
+  @Override
+  public Function<JsonNode, Mono<JsonNode>> validate() {
+    return node ->
+        validateSize(node)
+            .flatMap(this::validateUniqueness);
+  }
+
+  private static ValidationException getError(String message) {
+    return new ValidationException(
+        List.of(new ValidationError("/client/clientAcronym", message))
+    );
+  }
+
+  private Mono<JsonNode> validateSize(JsonNode node) {
+    String clientAcronym = node.get("value").asText();
+    if (clientAcronym.length() > 8 || clientAcronym.length() < 3) {
+      return Mono.error(getError("Client acronym must be between 3 and 8 characters"));
+    }
+    return Mono.just(node);
+  }
+
+  private Mono<JsonNode> validateUniqueness(JsonNode node) {
+    return legacyService
+        .searchGeneric(
+            "acronym",
+            Map.of("acronym", List.of(node.get("value").asText()))
+        )
+        .next()
+        .flatMap(value -> Mono.error(getError("Client acronym already exists")))
+        .cast(JsonNode.class)
+        .defaultIfEmpty(node);
+  }
+
+
+}

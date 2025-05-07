@@ -1,12 +1,15 @@
 package ca.bc.gov.app.controller.client;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.DistrictDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
@@ -19,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriBuilder;
@@ -43,6 +47,12 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
   @DisplayName("Codes are in expected order")
   void shouldListCodesAsExpected() {
 
+    Logger logger = (Logger) LoggerFactory.getLogger(ClientCodesController.class);
+    
+    ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    listAppender.start();
+    logger.addAppender(listAppender);
+    
     client
         .get()
         .uri("/api/codes/client-types")
@@ -54,7 +64,45 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
 
         .jsonPath("$[1].code").isNotEmpty()
         .jsonPath("$[1].code").isEqualTo("C");
+    
+    boolean logMessageFound = 
+        listAppender.list.stream()
+          .anyMatch(event -> event
+              .getFormattedMessage()
+              .contains("Requesting a list of active client type codes"));
+    
+    assertTrue(logMessageFound, "Expected log message for should list codes.");
+  }
+  
+  @Test
+  @DisplayName("Should retrieve client type by code and log request")
+  void shouldGetClientTypeByCode() {
+    
+    Logger logger = (Logger) LoggerFactory.getLogger(ClientCodesController.class);
+    ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    listAppender.start();
+    logger.addAppender(listAppender);
 
+    String code = "A";
+    
+    client
+        .get()
+        .uri("/api/codes/client-types/{code}", code)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$.code").isEqualTo(code)
+        .jsonPath("$.name").isNotEmpty();
+    
+    boolean logMessageFound =
+        listAppender.list.stream()
+            .anyMatch(
+                event ->
+                    event
+                        .getFormattedMessage()
+                        .contains("Requesting a client type by code " + code));
+
+    assertTrue(logMessageFound, "Expected log message for get client type by code.");
   }
 
   @ParameterizedTest(name = "{2} - {3} is the first on page {0} with size {1}")
@@ -199,6 +247,39 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
   }
   
   @Test
+  @DisplayName("Should retrieve province by country and province code and log request")
+  void shouldGetProvinceByCountryAndProvinceCode() {
+    
+    Logger logger = (Logger) LoggerFactory.getLogger(ClientCodesController.class);
+    ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    listAppender.start();
+    logger.addAppender(listAppender);
+
+    String countryCode = "CA";
+    String provinceCode = "BC";
+    
+    client
+        .get()
+        .uri("/api/codes/countries/{countryCode}/{provinceCode}", countryCode, provinceCode)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$.code").isEqualTo(provinceCode)
+        .jsonPath("$.name").isNotEmpty();
+    
+    boolean logMessageFound =
+        listAppender.list.stream()
+            .anyMatch(event ->
+                event.getFormattedMessage().contains(
+                    "Requesting a province by country and province code " 
+                    + countryCode + " " + provinceCode
+                )
+            );
+
+    assertTrue(logMessageFound, "Expected log message for province lookup by codes.");
+  }
+  
+  @Test
   @DisplayName("List districts")
   void shouldListDistricts() {
 
@@ -226,6 +307,35 @@ class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrat
         .expectBody(DistrictDto.class)
         .isEqualTo(new DistrictDto("DMH", "100 Mile House Natural Resource District","mail@mail.ca"));
 
+  }
+  
+  @Test
+  @DisplayName("List identification types")
+  void shouldListIdentificationTypes() {
+
+    client
+        .get()
+        .uri("/api/codes/identification-types")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$[0].code").isNotEmpty()
+        .jsonPath("$[0].code").isEqualTo("BRTH")
+        .jsonPath("$[0].name").isNotEmpty()
+        .jsonPath("$[0].name").isEqualTo("Canadian birth certificate");
+  }
+  
+  @Test
+  @DisplayName("get id type by code")
+  void shouldGetIdentificationTypeByCode() {
+
+    client
+        .get()
+        .uri("/api/codes/{idCode}", Map.of("idCode", "FNID"))
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody(CodeNameDto.class)
+        .isEqualTo(new CodeNameDto("FNID", "First Nation status card"));
   }
   
 }

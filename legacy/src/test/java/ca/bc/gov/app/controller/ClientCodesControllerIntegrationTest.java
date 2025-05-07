@@ -77,4 +77,55 @@ class ClientCodesControllerIntegrationTest extends
         .expectStatus().isOk()
         .expectBodyList(CodeNameDto.class);
   }
+  
+  @Test
+  @DisplayName("Retrieve active registry types by client type")
+  void shouldGetRegistryTypesByClientType() {
+    String clientTypeCode = "C";
+    
+    client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/codes/registry-types/{clientTypeCode}")
+                .build(clientTypeCode)
+        )
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(CodeNameDto.class);
+  }
+  
+  @Test
+  @DisplayName("Retrieve active client types")
+  void shouldGetClientTypes() {
+    client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/codes/client-types")
+                .build()
+        )
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(CodeNameDto.class);
+  }
+  
+  @Test
+  @DisplayName("Retrieve active client ID types")
+  void shouldGetClientIdTypes() {
+    client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/codes/client-id-types")
+                .build()
+        )
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(CodeNameDto.class);
+  }
+  
 }

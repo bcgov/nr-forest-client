@@ -80,7 +80,7 @@ public interface ForestClientLocationRepository
   Flux<ForestClientLocationEntity> findAllByClientNumber(String clientNumber);
 
   @Query("""
-      select 
+      select
         l.client_number,
         l.client_locn_code,
         l.client_locn_name,

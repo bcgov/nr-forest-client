@@ -303,7 +303,7 @@ describe("ForestClientService.ts", () => {
     const location = {
       clientLocnName: "Mailing address",
       clientLocnCode: "00",
-      addressOne: "123 Richmond Ave",
+      addressOne: "886 Richmond Ave",
       addressTwo: "C/O Tony Pineda",
       addressThree: "Sample additional info",
       countryCode: "CA",
@@ -323,9 +323,9 @@ describe("ForestClientService.ts", () => {
 
     it("converts from ClientLocation format to Address format properly", () => {
       const address = locationToCreateFormat(location);
-      expect(address.streetAddress).toEqual(location.addressOne);
-      expect(address.complementaryAddressOne).toEqual(location.addressTwo);
-      expect(address.complementaryAddressTwo).toEqual(location.addressThree);
+      expect(address.streetAddress).toEqual(location.addressThree);
+      expect(address.complementaryAddressOne).toEqual(location.addressOne);
+      expect(address.complementaryAddressTwo).toEqual(location.addressTwo);
       expect(address.country).toStrictEqual({
         value: location.countryCode,
         text: location.countryDesc,
@@ -404,10 +404,9 @@ describe("ForestClientService.ts", () => {
     it("converts from Address format to ClientLocation format properly", () => {
       const location = locationToEditFormat(address, baseLocation);
 
-      expect(location.addressOne).toEqual(address.streetAddress);
-      expect(location.addressOne).toEqual(address.streetAddress);
-      expect(location.addressTwo).toEqual(address.complementaryAddressOne);
-      expect(location.addressThree).toEqual(address.complementaryAddressTwo);
+      expect(location.addressOne).toEqual(address.complementaryAddressOne);
+      expect(location.addressTwo).toEqual(address.complementaryAddressTwo);
+      expect(location.addressThree).toEqual(address.streetAddress);
       expect(location.countryCode).toEqual(address.country.value);
       expect(location.countryDesc).toEqual(address.country.text);
       expect(location.provinceCode).toEqual(address.province.value);

@@ -1,11 +1,13 @@
 package ca.bc.gov.app.service;
 
-import java.time.LocalDate;
 import ca.bc.gov.app.dto.CodeNameDto;
+import ca.bc.gov.app.repository.ClientIdTypeCodeRepository;
 import ca.bc.gov.app.repository.ClientStatusCodeRepository;
+import ca.bc.gov.app.repository.ClientTypeCodeRepository;
 import ca.bc.gov.app.repository.ClientUpdateReasonCodeRepository;
 import ca.bc.gov.app.repository.RegistryCompanyTypeCodeRepository;
 import io.micrometer.observation.annotation.Observed;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ public class ClientCodeService {
   private final ClientUpdateReasonCodeRepository clientUpdateReasonCodeRepository;
   private final ClientStatusCodeRepository clientStatusCodeRepository;
   private final RegistryCompanyTypeCodeRepository registryCompanyTypeCodeRepository;
+  private final ClientTypeCodeRepository clientTypeCodeRepository;
+  private final ClientIdTypeCodeRepository clientIdTypeCodeRepository;
   
   public Flux<CodeNameDto> findActiveByClientTypeAndActionCode(
       String clientTypeCode,
@@ -49,6 +53,34 @@ public class ClientCodeService {
     
     return registryCompanyTypeCodeRepository
         .findActiveRegistryTypeCodes(
+            LocalDate.now()
+        );
+  }
+
+  public Flux<CodeNameDto> findActiveRegistryTypeCodesByClientTypeCode(String clientTypeCode) {
+    log.info("Loading active registry type codes");
+    
+    return registryCompanyTypeCodeRepository
+        .findActiveRegistryTypeCodesByClientTypeCode(
+            clientTypeCode,
+            LocalDate.now()
+        );
+  }
+
+  public Flux<CodeNameDto> findActiveClientTypeCodes() {
+    log.info("Loading active client type codes");
+    
+    return clientTypeCodeRepository
+        .findActiveClientTypeCodes(
+            LocalDate.now()
+        );
+  }
+
+  public Flux<CodeNameDto> findActiveClientIdTypeCodes() {
+    log.info("Loading active client ID type codes");
+    
+    return clientIdTypeCodeRepository
+        .findActiveClientIdTypeCodes(
             LocalDate.now()
         );
   }

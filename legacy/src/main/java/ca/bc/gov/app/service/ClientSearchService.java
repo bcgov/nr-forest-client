@@ -486,7 +486,7 @@ public class ClientSearchService {
         .flatMap(dto ->
             doingBusinessAsRepository
                 .findLatestByClientNumber(dto.client().clientNumber())
-                .map(name -> dto.withDoingBusinessAs(name))
+                .map(dto::withDoingBusinessAs)
                 .defaultIfEmpty(dto)
         )
         .flatMap(dto -> locationRepository
@@ -502,8 +502,7 @@ public class ClientSearchService {
             .defaultIfEmpty(dto)
         )
         .switchIfEmpty(Mono.error(new NoValueFoundException("Client with number: " + clientNumber)))
-        .doOnNext(dto -> log.info("Found client with client number {}", clientNumber,
-            dto.client().clientNumber()));
+        .doOnNext(dto -> log.info("Found client with client number {}", clientNumber));
   }
 
 

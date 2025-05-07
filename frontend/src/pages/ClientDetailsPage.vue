@@ -42,6 +42,7 @@ import {
   getActionLabel,
   updateSelectedReason,
   formatLocation,
+  extractAddressParts,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -122,8 +123,11 @@ const formatCount = (count = 0) => {
 };
 
 const formatAddress = (location: ClientLocation) => {
-  const { addressOne, city, provinceCode, countryDesc, postalCode } = location;
-  const list = [addressOne, city, provinceCode, countryDesc, postalCode];
+  const { city, provinceCode, countryDesc, postalCode } = location;
+
+  const { streetAddress } = extractAddressParts(location);
+
+  const list = [streetAddress, city, provinceCode, countryDesc, postalCode];
   return list.join(", ");
 };
 
