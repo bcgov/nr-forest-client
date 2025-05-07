@@ -148,7 +148,7 @@ describe("Search Page", () => {
         cy.fillFormEntry("#search-box", "d", { skipBlur: true });
       });
 
-      it("makes another the API call with the updated keywords", () => {
+      it("makes another API call with the updated keywords", () => {
         cy.wait("@predictiveSearch").then((interception) => {
           expect(interception.request.query.keyword).to.eq("card");
         });
