@@ -1,5 +1,5 @@
 {
-  "mappings": [    
+  "mappings": [
     {
       "name": "Country Codes",
       "request": {
@@ -34,6 +34,18 @@
       }
     },
     {
+      "name": "Get Identification Types List in Legacy",
+      "request": {
+        "urlPattern": "/api/codes/client-types/legacy",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "bodyFileName": "response-client-types-legacy.json"
+      }
+    },
+    {
       "name": "Province Codes",
       "request": {
         "urlPattern": "/api/codes/countries/([A-Z]+)/provinces\\?page=0&size=250",
@@ -41,9 +53,7 @@
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "bodyFileName": "response-provinces-{{request.path.[3]}}.json"
       }
     },
@@ -66,9 +76,7 @@
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "bodyFileName": "response-getCountryByCode-{{request.path.[2]}}.json"
       }
     },
@@ -80,9 +88,7 @@
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "bodyFileName": "response-province-{{request.path.[3]}}-{{request.path.[4]}}.json"
       }
     },
@@ -94,9 +100,7 @@
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "transformerParameters": {
           "clientTypeMapping": {
             "A": "Association",
@@ -122,17 +126,27 @@
       }
     },
     {
-      "name": "Get ClientTypes List",
+      "name": "Get Client Types List",
       "request": {
         "urlPattern": "/api/codes/client-types",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "bodyFileName": "response-client-types.json"
+      }
+    },
+    {
+      "name": "Get Identification Types List in Legacy",
+      "request": {
+        "urlPattern": "/api/codes/identification-types/legacy",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "bodyFileName": "response-identification-types-legacy.json"
       }
     },
     {
@@ -143,12 +157,11 @@
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "bodyFileName": "response-update-reasons-{{request.path.[3]}}-{{request.path.[4]}}.json"
       }
-    },{
+    },
+    {
       "name": "Get update reason codes by client type and action - default Dummy list",
       "request": {
         "urlPattern": "/api/codes/update-reasons/P/[A-Z]+",
@@ -156,9 +169,7 @@
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "bodyFileName": "response-reason-codes-dummy.json"
       }
     },
@@ -170,10 +181,20 @@
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "bodyFileName": "response-registry-types.json"
+      }
+    },
+    {
+      "name": "Get registry type codes by client type",
+      "request": {
+        "urlPattern": "/api/codes/registry-types/([A-Z]+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "bodyFileName": "response-registry-types-{{request.path.[3]}}.json"
       }
     },
     {
@@ -184,9 +205,7 @@
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "bodyFileName": "response-client-statuses.json"
       }
     },
@@ -198,9 +217,7 @@
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "bodyFileName": "response-client-statuses-default.json"
       }
     },
@@ -212,9 +229,7 @@
       },
       "response": {
         "status": 200,
-        "transformers": [
-          "response-template"
-        ],
+        "transformers": ["response-template"],
         "bodyFileName": "response-client-statuses-{{request.path.[3]}}.json"
       }
     }

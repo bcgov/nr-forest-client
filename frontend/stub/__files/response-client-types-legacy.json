@@ -1,0 +1,14 @@
+[
+  { "code": "A", "name": "Association" },
+  { "code": "B", "name": "First Nation Band" },
+  { "code": "C", "name": "Corporation" },
+  { "code": "F", "name": "Ministry of Forests and Range" },
+  { "code": "G", "name": "Government" },
+  { "code": "I", "name": "Individual" },
+  { "code": "L", "name": "Limited Partnership" },
+  { "code": "P", "name": "General Partnership" },
+  { "code": "R", "name": "First Nation Group" },
+  { "code": "S", "name": "Society" },
+  { "code": "T", "name": "First Nation Tribal Council" },
+  { "code": "U", "name": "Unregistered Company" }
+]
