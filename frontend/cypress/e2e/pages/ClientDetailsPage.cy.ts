@@ -373,6 +373,18 @@ describe("Client Details Page", () => {
           cy.get("#location-01-title-address").should("be.visible");
           cy.get("#location-02-title-address").should("be.visible");
         });
+
+        it("includes the street address on the accordion's title while it's collapsed", () => {
+          cy.get("#location-00-title-address").contains("Richmond Ave");
+          cy.get("#location-01-title-address").contains("Oak St");
+          cy.get("#location-02-title-address").contains("Joy St");
+        });
+
+        it("doesn't include the delivery information on the accordion's title", () => {
+          cy.get("#location-00-title-address").contains("C/O").should("not.exist");
+          cy.get("#location-01-title-address").contains("C/O").should("not.exist");
+          cy.get("#location-02-title-address").contains("C/O").should("not.exist");
+        });
       });
 
       describe("2 locations - 1 active and 1 deactivated", () => {

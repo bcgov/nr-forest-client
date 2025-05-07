@@ -24,9 +24,9 @@
         {
             "clientLocnName": "Mailing address",
             "clientLocnCode": "00",
-            "addressOne":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
-            "addressTwo":"C/O Tony Pineda",
-            "addressThree":"Sample additional info",
+            "addressOne":"C/O Tony Pineda",
+            "addressTwo":"Sample additional info",
+            "addressThree":"{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
             "countryCode":"CA",
             "countryDesc":"Canada",
             "provinceCode":"SK",

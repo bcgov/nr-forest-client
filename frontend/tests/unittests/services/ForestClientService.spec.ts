@@ -404,10 +404,9 @@ describe("ForestClientService.ts", () => {
     it("converts from Address format to ClientLocation format properly", () => {
       const location = locationToEditFormat(address, baseLocation);
 
-      expect(location.addressOne).toEqual(address.streetAddress);
-      expect(location.addressOne).toEqual(address.streetAddress);
-      expect(location.addressTwo).toEqual(address.complementaryAddressOne);
-      expect(location.addressThree).toEqual(address.complementaryAddressTwo);
+      expect(location.addressOne).toEqual(address.complementaryAddressOne);
+      expect(location.addressTwo).toEqual(address.complementaryAddressTwo);
+      expect(location.addressThree).toEqual(address.streetAddress);
       expect(location.countryCode).toEqual(address.country.value);
       expect(location.countryDesc).toEqual(address.country.text);
       expect(location.provinceCode).toEqual(address.province.value);
