@@ -360,7 +360,7 @@ export const removeNullText = (text: string | null): string | null => {
   return text;
 };
 
-const extractAddressParts = (
+export const extractAddressParts = (
   location: ClientLocation,
 ): {
   streetAddress: string
