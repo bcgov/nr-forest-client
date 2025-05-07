@@ -3,7 +3,6 @@ oracle communication.
 
 ## Setup local development
 
-
     For a better developer experience, use IntelliJ IDEA and configure google style as the default style.
 
 In order to run the application, you will need an instance of postgres running, it can be local, 
@@ -26,7 +25,7 @@ When creating your own configuration file, you can overwrite any of the entries 
 [configuration file](src/main/resources/application.yml) as you wish, but the most optimal way of using it is by 
 setting just the parameters inside the `ca.bc.gov.nrs` context, as the rest of the parameters are already defined.
 
-Below is an example of the database configuration:
+Below is an example of the database as a YML and Properties configuration:
 
 ```yml
 ca:

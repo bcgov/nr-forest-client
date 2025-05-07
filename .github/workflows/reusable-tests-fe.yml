@@ -3,6 +3,8 @@ name: Reusable Unit Tests and Analysis
 on:
   workflow_call:
 
+permissions: {}
+
 jobs:
   tests-frontend:
     name: Frontend Unit Tests

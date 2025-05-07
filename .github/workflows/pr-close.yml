@@ -9,10 +9,14 @@ concurrency:
   group: pr-${{ github.event.number }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   cleanup:
     name: Cleanup and Images
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.10.0
+    permissions:
+      packages: write
     secrets:
       oc_namespace: ${{ secrets.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
@@ -27,6 +31,8 @@ jobs:
 
   promote-tools:
     name: Promote tools
+    permissions:
+      packages: write
     runs-on: ubuntu-24.04
     steps:
       - uses: shrink/actions-docker-registry-tag@v4

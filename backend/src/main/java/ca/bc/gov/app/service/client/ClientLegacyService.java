@@ -9,6 +9,7 @@ import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
+import ca.bc.gov.app.dto.legacy.HistoryLogDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
@@ -486,10 +487,14 @@ public class ClientLegacyService {
    *
    * @param clientNumber the client number to update
    * @param forestClient the JSON Patch document describing the modifications
-   * @param userName The username that requested the patch.
+   * @param userName the user that triggered the request
    * @return a {@link Mono} that completes when the patch is applied successfully
    */
-  public Mono<Void> patchClient(String clientNumber, JsonNode forestClient, String userName) {
+  public Mono<Void> patchClient(
+      String clientNumber,
+      JsonNode forestClient,
+      String userName
+  ) {
     log.info("Sending request to the legacy system to patch client {}", clientNumber);
     return legacyApi
         .patch()
@@ -553,6 +558,38 @@ public class ClientLegacyService {
                     "Found active registry types in legacy"
                 )
             );
+  }
+
+  public Flux<Pair<HistoryLogDto, Long>> retrieveHistoryLogs(
+    String clientNumber, int page, int size, List<String> sources) {
+	
+    log.info("Retrieving history log for client {} with page {} and size {} and sources {}",
+             clientNumber, page, size, sources);
+
+	return
+	    legacyApi
+	        .get()
+	        .uri(builder ->
+	            builder
+	                .path("/api/clients/history-logs/" + clientNumber)
+	                .queryParam("page", page)
+	                .queryParam("size", size)
+	                .queryParam("sources", sources)
+                    .build()
+	        )
+	        .exchangeToFlux(response -> {
+	            List<String> totalCountHeader = response.headers().header("X-Total-Count");
+	            Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
+
+	            return response
+	                .bodyToFlux(HistoryLogDto.class)
+	                .map(dto -> Pair.of(dto, count));
+	         })
+	        .doOnNext(
+	            dto -> log.info(
+	                "Found audit data in legacy system for client number {}", clientNumber
+	            )
+	        );
   }
 
 }

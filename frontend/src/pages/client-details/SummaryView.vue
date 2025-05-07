@@ -149,14 +149,6 @@ const clientRegistrationNumber = computed(() => {
   return `${registryCompanyTypeCode}${corpRegnNmbr}`;
 });
 
-const doingBusinessAs = computed(() => {
-  const { doingBusinessAs } = props.data;
-  if (doingBusinessAs && doingBusinessAs.length) {
-    return doingBusinessAs.map((value) => value.doingBusinessAsName).join("\n");
-  }
-  return undefined;
-});
-
 const dateOfBirth = computed(() => {
   const { birthdate } = props.data.client;
   if (birthdate) {
@@ -202,9 +194,9 @@ const client = computed(() => props.data.client);
     <read-only-component
       label="Doing business as"
       id="doingBusinessAs"
-      v-if="displayReadonly('doingBusinessAs') && doingBusinessAs"
+      v-if="displayReadonly('doingBusinessAs') && props.data.doingBusinessAs"
     >
-      <span class="body-compact-01" v-dompurify-html="getFormattedHtml(doingBusinessAs)"></span>
+      <span class="body-compact-01">{{ props.data.doingBusinessAs }}</span>
     </read-only-component>
     <read-only-component label="Client type" id="clientType">
       <span class="body-compact-01">{{ client.clientTypeDesc }}</span>
@@ -317,7 +309,7 @@ const client = computed(() => props.data.client);
       label="Doing business as"
       placeholder=""
       autocomplete="off"
-      v-model="doingBusinessAs"
+      v-model="formData.doingBusinessAs"
       :validations="[
         ...getValidations('businessInformation.doingBusinessAs'),
         submissionValidation(`businessInformation.doingBusinessAs`),

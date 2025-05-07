@@ -45,7 +45,7 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         .patch()
         .uri("/api/clients/partial/{clientNumber}", clientNumber)
         .header("Content-Type", "application/json-patch+json")
-        .header(MDC_USERID,"test-user")
+        .header(MDC_USERID, "test-user")
         .bodyValue(partialBody)
         .exchange()
         .expectStatus().isAccepted()
@@ -91,6 +91,22 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.wcbFirmNumber",
             null,
             "142536"
+        ),
+        argumentSet(
+            "Deactivate client due to bankruptcy",
+            "00000103",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientStatusCode\",\"value\":\"DAC\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"clientStatusCode\",\"reason\":\"BKR\"}}]",
+            "$.client.clientStatusCode",
+            "ACT",
+            "DAC"
+        ),
+        argumentSet(
+            "Activate client due to correction",
+            "00000158",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientStatusCode\",\"value\":\"ACT\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"clientStatusCode\",\"reason\":\"CORR\"}}]",
+            "$.client.clientStatusCode",
+            "DAC",
+            "ACT"
         ),
         argumentSet(
             "Replace the notes value from a location",
@@ -155,6 +171,30 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.contacts[1].contactName",
             null,
             "JAMES LEE-ROY"
+        ),
+        argumentSet(
+            "Associate contact Albus to location Yard 01",
+            "00000159",
+            "[{\"op\":\"add\",\"path\":\"/contacts/26/locationCodes/1\",\"value\":\"01\"}]",
+            "$.contacts[0].locationCodes[1]",
+            null,
+            "01"
+        ),
+        argumentSet(
+            "Remove association to the first location code",
+            "00000159",
+            "[{\"op\":\"remove\",\"path\":\"/contacts/26/locationCodes/0\"}]",
+            "$.contacts[0].locationCodes[0]",
+            "00",
+            "01"
+        ),
+        argumentSet(
+            "Update address information",
+            "00000002",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/city\",\"value\":\"HAMILTON\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/addresses/00\",\"reason\":\"CORR\"}}]",
+            "$.addresses[0].city",
+            "VICTORIA",
+            "HAMILTON"
         )
     );
   }

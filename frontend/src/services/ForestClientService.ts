@@ -353,6 +353,37 @@ export const updateSelectedReason = (
   }
 };
 
+export const removeNullText = (text: string | null): string | null => {
+  if (!text || text === 'null') {
+    return null;
+  }
+  return text;
+};
+
+export const extractAddressParts = (
+  location: ClientLocation,
+): {
+  streetAddress: string
+  complementaryAddressOne: string | null
+  complementaryAddressTwo: string | null
+} => {
+  const { addressOne, addressTwo, addressThree } = location
+
+  if (removeNullText(addressTwo)) {
+    return {
+      streetAddress: removeNullText(addressThree) ?? addressTwo,
+      complementaryAddressOne: addressOne,
+      complementaryAddressTwo: removeNullText(addressThree) ? addressTwo : null,
+    }
+  }
+  return {
+    streetAddress: addressOne,
+    complementaryAddressOne: addressTwo,
+    complementaryAddressTwo: addressThree,
+  }
+};
+
+
 /**
  * Converts location data from ClientLocation format to Address format, as required by the
  * StaffLocationGroupComponent, first developed for the staff create form.
@@ -362,11 +393,13 @@ export const updateSelectedReason = (
  */
 export const locationToCreateFormat = (location: ClientLocation): Address => {
   const index = location.clientLocnCode !== null ? Number(location.clientLocnCode) : null;
+  const { streetAddress, complementaryAddressOne, complementaryAddressTwo } =
+    extractAddressParts(location)
 
   const address: Address = {
-    streetAddress: location.addressOne,
-    complementaryAddressOne: location.addressTwo,
-    complementaryAddressTwo: location.addressThree,
+    streetAddress,
+    complementaryAddressOne,
+    complementaryAddressTwo,
     country: {
       value: location.countryCode,
       text: location.countryDesc,
@@ -393,6 +426,28 @@ export const indexToLocationCode = (index: number): string => {
   return index !== null ? String(index).padStart(2, "0") : null;
 };
 
+const reorderAddresses = (location: ClientLocation): ClientLocation => {
+  const { addressOne, addressTwo, addressThree, ...rest } = location;
+
+  let newAddressOne = addressOne;
+  let newAddressTwo: string | null = null;
+  let newAddressThree: string | null = null;
+
+  if (addressTwo) {
+    // Move addressTwo to position 1
+    newAddressOne = addressTwo;
+    newAddressTwo = addressThree ?? addressOne;
+    newAddressThree = addressThree ? addressOne : null;
+  }
+
+  return {
+    addressOne: newAddressOne,
+    addressTwo: newAddressTwo,
+    addressThree: newAddressThree,
+    ...rest,
+  };
+};
+
 /**
  * Converts location data from Address format to ClientLocation format, as required by the Patch
  * API.
@@ -407,7 +462,7 @@ export const locationToEditFormat = (
   address: Address,
   baseLocation: ClientLocation,
 ): ClientLocation => {
-  const location: ClientLocation = {
+  let location: ClientLocation = {
     ...baseLocation,
     clientLocnName: address.locationName,
     clientLocnCode: indexToLocationCode(address.index),
@@ -427,6 +482,8 @@ export const locationToEditFormat = (
     emailAddress: address.emailAddress,
     cliLocnComment: address.notes,
   };
+
+  location = reorderAddresses(location);
 
   return location;
 };

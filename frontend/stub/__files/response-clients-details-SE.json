@@ -16,7 +16,7 @@
     "clientComment": "",
     "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}"
   },
-  "doingBusinessAs": [],
+  "doingBusinessAs": null,
   "contacts": [
     {
       "contactId": "1",

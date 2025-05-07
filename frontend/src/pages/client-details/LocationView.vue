@@ -16,6 +16,7 @@ import {
   keepScrollBottomPosition as keepScrollBottomPositionFn,
   locationToCreateFormat,
   locationToEditFormat,
+  removeNullText,
 } from "@/services/ForestClientService";
 
 import Edit16 from "@carbon/icons-vue/es/edit/16";
@@ -222,21 +223,25 @@ const handleRemoveAdditionalDelivery = () => {
         <read-only-component label="Address" :id="`location-${indexString}-address`">
           <div class="grouping-23 no-margin">
             <span
+              :id="`location-${indexString}-addressOne`"
+              class="body-compact-01"
+              v-if="removeNullText(data.addressOne)"
+            >
+              {{ data.addressOne }}
+            </span>
+            <span
               :id="`location-${indexString}-addressTwo`"
               class="body-compact-01"
-              v-if="data.addressTwo"
+              v-if="removeNullText(data.addressTwo)"
             >
               {{ data.addressTwo }}
             </span>
             <span
               :id="`location-${indexString}-addressThree`"
               class="body-compact-01"
-              v-if="data.addressThree"
+              v-if="removeNullText(data.addressThree)"
             >
               {{ data.addressThree }}
-            </span>
-            <span :id="`location-${indexString}-streetAddress`" class="body-compact-01">
-              {{ data.addressOne }}
             </span>
             <span :id="`location-${indexString}-city-province`" class="body-compact-01">
               {{ data.city }}, {{ data.provinceDesc }}

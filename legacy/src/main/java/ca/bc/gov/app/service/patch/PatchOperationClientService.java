@@ -56,7 +56,7 @@ public class PatchOperationClientService implements ClientPatchOperation {
    */
   @Override
   public List<String> getRestrictedPaths() {
-    return List.of("/wcbFirmNumber", "/clientComment");
+    return List.of("/wcbFirmNumber", "/clientComment","/clientAcronym");
   }
 
 
@@ -107,6 +107,13 @@ public class PatchOperationClientService implements ClientPatchOperation {
                           .withRevision(client.getRevision() + 1)
                       )
                       .filter(client -> !entity.equals(client))
+                      //Can only happen if there's a change
+                      .map(client ->
+                          client
+                              .withUpdatedAt(LocalDateTime.now())
+                              .withUpdatedBy(userId) // Is still missing the user org unit
+                              .withRevision(client.getRevision() + 1)
+                      )
                       .doOnNext(client -> log.info("Applying Forest Client changes {}", client))
               )
               .flatMap(clientRepository::save)

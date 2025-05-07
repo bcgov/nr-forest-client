@@ -11,6 +11,8 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,15 +43,37 @@ import reactor.core.publisher.Mono;
 public class PatchOperationLocationService implements ClientPatchOperation {
 
   private final R2dbcEntityOperations entityTemplate;
-  private final Map<String, String> fieldToDataField = Map.of(
-      "/clientLocnName", "client_locn_name",
-      "/emailAddress", "email_address",
-      "/faxNumber", "fax_number",
-      "/cellPhone", "cell_phone",
-      "/homePhone", "home_phone",
-      "/businessPhone", "business_phone",
-      "/cliLocnComment", "cli_locn_comment"
-  );
+  private final Map<String, String> fieldToDataField = Stream.concat(
+          Map.of(
+                  "/clientLocnName", "client_locn_name",
+                  "/emailAddress", "email_address",
+                  "/faxNumber", "fax_number",
+                  "/cellPhone", "cell_phone",
+                  "/homePhone", "home_phone",
+                  "/businessPhone", "business_phone",
+                  "/cliLocnComment", "cli_locn_comment",
+                  "/locnExpiredInd", "locn_expired_ind"
+              )
+              .entrySet()
+              .stream(),
+          Map.of(
+                  "/addressOne", "address_1",
+                  "/addressTwo", "address_2",
+                  "/addressThree", "address_3",
+                  "/city", "city",
+                  "/provinceCode", "province",
+                  "/countryCode", "country",
+                  "/postalCode", "postal_code"
+              )
+              .entrySet()
+              .stream()
+      )
+      .collect(
+          Collectors.toMap(
+              Map.Entry::getKey,
+              Map.Entry::getValue
+          )
+      );
 
   @Override
   public String getPrefix() {
@@ -59,7 +83,8 @@ public class PatchOperationLocationService implements ClientPatchOperation {
   @Override
   public List<String> getRestrictedPaths() {
     return List.of("/cliLocnComment", "/emailAddress", "/faxNumber", "/cellPhone", "/homePhone",
-        "/businessPhone", "/clientLocnName");
+        "/businessPhone", "/clientLocnName", "/locnExpiredInd", "/addressOne", "/addressTwo",
+        "/addressThree", "/city", "/provinceCode", "/countryCode", "/postalCode");
   }
 
   /**
@@ -250,4 +275,6 @@ public class PatchOperationLocationService implements ClientPatchOperation {
   private String uppercaseIt(String str) {
     return StringUtils.isNotBlank(str) ? str.toUpperCase() : str;
   }
+
+
 }

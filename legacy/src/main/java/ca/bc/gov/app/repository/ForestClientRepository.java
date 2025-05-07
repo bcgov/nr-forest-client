@@ -1,6 +1,7 @@
 package ca.bc.gov.app.repository;
 
 import ca.bc.gov.app.dto.ForestClientInformationDto;
+import ca.bc.gov.app.dto.HistoryLogDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import java.time.LocalDateTime;
@@ -430,5 +431,20 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
         cl.CLIENT_LOCN_CODE = '00'
         AND (c.update_timestamp >= :date OR c.add_timestamp >= :date)""")
   Mono<Long> countByEmptyFullSearch(LocalDateTime date);
+  
+  @Query(ForestClientQueries.CLIENT_INFORMATION_HISTORY)
+  Flux<HistoryLogDto> findClientInformationHistoryLogsByClientNumber(String clientNumber);
+  
+  @Query(ForestClientQueries.LOCATION_HISTORY)
+  Flux<HistoryLogDto> findLocationHistoryLogsByClientNumber(String clientNumber);
+  
+  @Query(ForestClientQueries.CONTACT_HISTORY)
+  Flux<HistoryLogDto> findContactHistoryLogsByClientNumber(String clientNumber);
+  
+  @Query(ForestClientQueries.DOING_BUSINESS_AS_HISTORY)
+  Flux<HistoryLogDto> findDoingBusinessAsHistoryLogsByClientNumber(String clientNumber);
+  
+  @Query(ForestClientQueries.RELATED_CLIENT_HISTORY)
+  Flux<HistoryLogDto> findRelatedClientAsHistoryLogsByClientNumber(String clientNumber);
   
 }

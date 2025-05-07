@@ -16,11 +16,7 @@
     "clientComment": "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton",
     "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}"
   },
-  "doingBusinessAs": [
-    {
-      "doingBusinessAsName": "Dunder Mifflin Paper Company"
-    }
-  ],
+  "doingBusinessAs": "Dunder Mifflin Paper Company",
   "contacts": [
     {
       "contactId": "{{randomValue length=8 type='NUMERIC'}}",
@@ -38,9 +34,9 @@
     {
       "clientLocnName": "Mailing address",
       "clientLocnCode": "00",
-      "addressOne": "{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
-      "addressTwo": "C/O Tony Pineda",
-      "addressThree": "Sample additional info",
+      "addressOne": "C/O Tony Pineda",
+      "addressTwo": "Sample additional info",
+      "addressThree": "{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
       "countryCode": "CA",
       "countryDesc": "Canada",
       "provinceCode": "SK",
@@ -58,8 +54,8 @@
     {
       "clientLocnName": "Accountant address",
       "clientLocnCode": "01",
-      "addressOne": "{{randomValue length=4 type='NUMERIC'}} Oak St",
-      "addressTwo": "C/O Mike Oliveira",
+      "addressOne": "C/O Mike Oliveira",
+      "addressTwo": "{{randomValue length=4 type='NUMERIC'}} Oak St",
       "addressThree": "",
       "countryCode": "CA",
       "countryDesc": "Canada",

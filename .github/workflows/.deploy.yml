@@ -97,7 +97,7 @@ jobs:
       - name: Backup database before update
         continue-on-error: true
         if: github.event_name != 'pull_request'
-        uses: bcgov/action-oc-runner@v1.0.0
+        uses: bcgov/action-oc-runner@v1.2.0
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
