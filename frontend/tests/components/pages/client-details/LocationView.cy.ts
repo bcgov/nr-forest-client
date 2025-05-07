@@ -36,9 +36,9 @@ describe("<location-view />", () => {
     data: {
       clientLocnName: "Mailing address",
       clientLocnCode: "00",
-      addressOne: "886 Richmond Ave",
-      addressTwo: "C/O Tony Pineda",
-      addressThree: "Sample additional info",
+      addressOne: "C/O Tony Pineda",
+      addressTwo: "Sample additional info",
+      addressThree: "886 Richmond Ave",
       country: "Canada", // TODO: remove this when response interface is updated
       countryCode: "CA",
       countryDesc: "Canada",
@@ -101,9 +101,9 @@ describe("<location-view />", () => {
     mount();
 
     cy.get("#location-00-address-section").within(() => {
+      testField("#location-00-addressOne", currentProps.data.addressOne);
       testField("#location-00-addressTwo", currentProps.data.addressTwo);
       testField("#location-00-addressThree", currentProps.data.addressThree);
-      testField("#location-00-streetAddress", currentProps.data.addressOne);
 
       // City, Province
       testField(
