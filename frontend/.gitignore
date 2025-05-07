@@ -188,3 +188,6 @@ cypress/videos/*
 reports/
 sonar-report.xml
 reports-merge/
+
+# wiremock stubs transformed for tests
+stub-tests/
