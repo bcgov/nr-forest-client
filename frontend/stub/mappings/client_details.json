@@ -297,10 +297,10 @@
         ]
       },
       "response": {
-        "status": 409,
+        "status": 400,
         "jsonBody": [
           {
-            "field":"client.clientAcronym", 
+            "fieldId":"/client/clientAcronym", 
             "match":"00000001", 
             "fuzzy":false,
             "partialMatch":false

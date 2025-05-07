@@ -540,13 +540,13 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
     };
     toastBus.emit(toastNotification);
     globalError.value = error;
-    if (error.status === 409 && Array.isArray(error.response.data)) {
-      const validationMessages: ValidationMessageType[] = (error.response.data as FuzzyMatchResult[]).map((error) => ({
-        fieldId: error.field,
+    if (error.code === AxiosError.ERR_BAD_REQUEST && Array.isArray(error.response.data)) {
+      const validationMessages: ValidationMessageType[] = (error.response.data as any[]).map((error) => ({
+        fieldId: error?.fieldId,
         fieldName: "",
-        errorMsg: "custom", // we need a non-empty value here to activate the error state
+        errorMsg: error?.errorMsg || "custom", // we need a non-empty value here to activate the error state
         custom: {
-          match: error.match,
+          ...error,
         }
       }))
       errorBus.emit(validationMessages, {

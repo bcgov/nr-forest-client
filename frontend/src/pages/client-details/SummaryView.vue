@@ -306,11 +306,12 @@ const client = computed(() => props.data.client);
         :class="{ 'grouping-02--width-8rem': displayEditable('clientName') }"
         label="Acronym"
         placeholder=""
+        mask="NNNNNNNN"
         autocomplete="off"
         v-model="formData.client.clientAcronym"
         :validations="[
           ...getValidations('businessInformation.clientAcronym'),
-          submissionValidation(`client.clientAcronym`),
+          submissionValidation('/client/clientAcronym'),
         ]"
         enabled
         @empty="validation.acronym = true"
@@ -319,7 +320,7 @@ const client = computed(() => props.data.client);
         <template #error="{ data }">
           <template v-if="data?.custom?.match">
             Looks like this acronym belongs to client
-            <span data-v-b63a897d=""
+            <span
               ><a
                 :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${data.custom.match}`"
                 target="_blank"
