@@ -300,10 +300,9 @@
         "status": 400,
         "jsonBody": [
           {
-            "fieldId":"/client/clientAcronym", 
-            "match":"00000001", 
-            "fuzzy":false,
-            "partialMatch":false
+            "fieldId": "/client/clientAcronym",
+            "errorMsg": "Client acronym already exists",
+            "match": "00000001"
           }
         ],
         "fixedDelayMilliseconds": 200
