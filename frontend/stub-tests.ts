@@ -31,7 +31,7 @@ fs.readdirSync(mappingsFolderPath)
     const rawData = fs.readFileSync(fileName, "utf8");
     const data = JSON.parse(rawData);
     data.mappings.forEach((mapping) => {
-      if (mapping.response.fixedDelayMilliseconds) {
+      if (mapping.response.fixedDelayMilliseconds > defaultDelay) {
         mapping.response.fixedDelayMilliseconds = defaultDelay;
       }
     });
