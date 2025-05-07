@@ -426,6 +426,28 @@ export const indexToLocationCode = (index: number): string => {
   return index !== null ? String(index).padStart(2, "0") : null;
 };
 
+const reorderAddresses = (location: ClientLocation): ClientLocation => {
+  const { addressOne, addressTwo, addressThree, ...rest } = location;
+
+  let newAddressOne = addressOne;
+  let newAddressTwo: string | null = null;
+  let newAddressThree: string | null = null;
+
+  if (addressTwo) {
+    // Move addressTwo to position 1
+    newAddressOne = addressTwo;
+    newAddressTwo = addressThree ?? addressOne;
+    newAddressThree = addressThree ? addressOne : null;
+  }
+
+  return {
+    addressOne: newAddressOne,
+    addressTwo: newAddressTwo,
+    addressThree: newAddressThree,
+    ...rest,
+  };
+};
+
 /**
  * Converts location data from Address format to ClientLocation format, as required by the Patch
  * API.
@@ -440,7 +462,7 @@ export const locationToEditFormat = (
   address: Address,
   baseLocation: ClientLocation,
 ): ClientLocation => {
-  const location: ClientLocation = {
+  let location: ClientLocation = {
     ...baseLocation,
     clientLocnName: address.locationName,
     clientLocnCode: indexToLocationCode(address.index),
@@ -460,6 +482,8 @@ export const locationToEditFormat = (
     emailAddress: address.emailAddress,
     cliLocnComment: address.notes,
   };
+
+  location = reorderAddresses(location);
 
   return location;
 };
