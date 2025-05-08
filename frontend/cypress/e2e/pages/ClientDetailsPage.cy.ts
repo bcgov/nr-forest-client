@@ -240,7 +240,7 @@ describe("Client Details Page", () => {
         });
       });
 
-      describe("on failure", { testIsolation: false }, () => {
+      describe("on generic failure", { testIsolation: false }, () => {
         before(function () {
           init.call(this);
 
@@ -260,6 +260,31 @@ describe("Client Details Page", () => {
           cy.get("[data-id='input-input-notes']").should("be.visible");
 
           cy.get("#summarySaveBtn").should("be.visible");
+        });
+      });
+
+      describe("on duplicated acronym failure ", { testIsolation: false }, () => {
+        before(function () {
+          init.call(this);
+
+          cy.visit("/clients/details/g");
+          cy.get("#summaryEditBtn").click();
+          cy.fillFormEntry("#input-acronym", "ERR");
+          cy.get("#summarySaveBtn").click();
+        });
+
+        it("shows the error toast", () => {
+          cy.get("cds-toast-notification[kind='error']").should("be.visible");
+        });
+
+        it("shows a custom error message on the Acronym input field", () => {
+          cy.get("#input-acronym")
+            .find("[slot='invalid-text']")
+            .contains("Looks like this acronym belongs to client 00000001. Try another acronym");
+
+          cy.get("#input-acronym").find("[slot='invalid-text'] a").should("have.attr", "href");
+
+          cy.get("#input-acronym").find("[slot='invalid-text'] a").should("have.text", "00000001");
         });
       });
     });
