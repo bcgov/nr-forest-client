@@ -56,7 +56,6 @@ import {
   createClientLocation,
   type ClientContact,
   createClientContact,
-  type FuzzyMatchResult,
   type ValidationMessageType,
 } from "@/dto/CommonTypesDto";
 
@@ -77,9 +76,7 @@ const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 /**
  * Event bus for submission error notifications.
  */
- const errorBus = useEventBus<ValidationMessageType[]>(
-  "submission-error-notification"
-);
+ const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
 
 const { setFocusedComponent, setScrollPoint } = useFocus();
 
@@ -300,7 +297,7 @@ const addLocation = () => {
 
   const index = sortedLocations.value.length - 1;
   setScrollPoint(`location-${index}-heading`, undefined, () => {
-    setFocusedComponent(`location-${index}-heading`)
+    setFocusedComponent(`location-${index}-heading`);
   });
 };
 
@@ -324,7 +321,7 @@ const addContact = () => {
   contactsState[contactId] = createContactState({ startOpen: true });
   
   setScrollPoint(`contact-${contactId}-heading`, undefined, () => {
-    setFocusedComponent(`contact-${contactId}-heading`)
+    setFocusedComponent(`contact-${contactId}-heading`);
   });
 };
 
@@ -545,14 +542,16 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
     toastBus.emit(toastNotification);
     globalError.value = error;
     if (error.code === AxiosError.ERR_BAD_REQUEST && Array.isArray(error.response.data)) {
-      const validationMessages: ValidationMessageType[] = (error.response.data as any[]).map((error) => ({
-        fieldId: error?.fieldId,
-        fieldName: "",
-        errorMsg: error?.errorMsg || "custom", // we need a non-empty value here to activate the error state
-        custom: {
-          ...error,
-        }
-      }))
+      const validationMessages: ValidationMessageType[] = (error.response.data as any[]).map(
+        (error) => ({
+          fieldId: error?.fieldId,
+          fieldName: "",
+          errorMsg: error?.errorMsg || "custom", // we need a non-empty value here to activate the error state
+          custom: {
+            ...error,
+          },
+        }),
+      );
       errorBus.emit(validationMessages, {
         skipNotification: true,
       });
