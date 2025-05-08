@@ -2040,6 +2040,10 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   }
 }
 
+.display-contents {
+  display: contents;
+}
+
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
   :root {
