@@ -407,20 +407,17 @@ describe("<summary-view />", () => {
             testTextInput("#input-workSafeBCNumber", props.data.client.wcbFirmNumber);
             testDropdown("#input-clientStatus", props.data.client.clientStatusDesc);
             testTextarea("[data-id='input-input-notes']", props.data.client.clientComment);
-
-            testHidden("#input-doingBusinessAs");
-            testHidden("#input-clientType");
-            testHidden("#input-registrationNumber");
-            testHidden("#input-identification");
-            testHidden("#input-dateOfBirth");
           });
 
-          it("also enables the edition of the client name", () => {
+          it("also enables the edition of the Client name", () => {
             testTextInput("#input-clientName", props.data.client.clientName);
           });
 
+          it("also enables the edition of the Doing business as", () => {
+            testTextInput("#input-doingBusinessAs", props.data.doingBusinessAs);
+          });
+
           it("disables the edition of everything else", () => {
-            testHidden("#input-doingBusinessAs");
             testHidden("#input-clientType");
             testHidden("#input-registrationNumber");
             testHidden("#input-identification");
@@ -429,7 +426,6 @@ describe("<summary-view />", () => {
 
           it("keeps displaying the other fields in view mode", () => {
             testReadonly("#clientNumber", currentProps.data.client.clientNumber);
-            testReadonly("#doingBusinessAs", currentProps.data.doingBusinessAs);
             testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
 
             // registryCompanyTypeCode + corpRegnNmbr
@@ -444,6 +440,7 @@ describe("<summary-view />", () => {
 
             // Make sure the fields enabled for edition are not also displayed in read-only mode.
             testHidden("#acronym");
+            testHidden("#doingBusinessAs");
             testHidden("#workSafeBCNumber");
             testHidden("#clientStatus");
             testHidden("#notes");

@@ -111,7 +111,7 @@ const editRoles: Record<FieldId, UserRole[]> = {
   // TODO: add the following values back when working on FSADT1-1611 or FSADT1-1640
   clientName: ["CLIENT_ADMIN"],
   acronym: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
-  // doingBusinessAs: ["CLIENT_ADMIN"],
+  doingBusinessAs: ["CLIENT_ADMIN"],
   // registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   clientStatus: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
@@ -136,12 +136,15 @@ const canEditClientStatus = () => {
   return false;
 };
 
+/**
+ * Tells whether the field is editable at all, according to the client's type.
+ * Note: it doesn't mean the current user should be allowed to do it.
+ */
 const isFieldEditable: Record<FieldId, () => boolean> = {
   clientName: () => props.data.client.clientTypeCode !== "I",
   acronym: () => true,
-  doingBusinessAs: () => ["I", ...companyLikeTypes].includes(props.data.client.clientTypeCode),
-  registrationNumber: () =>
-    ["R", "T", ...companyLikeTypes].includes(props.data.client.clientTypeCode),
+  doingBusinessAs: () => true,
+  registrationNumber: () => companyLikeTypes.includes(props.data.client.clientTypeCode),
   workSafeBCNumber: () => true,
   clientStatus: canEditClientStatus,
   notes: () => true,
