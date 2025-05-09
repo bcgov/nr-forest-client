@@ -211,6 +211,21 @@
       }
     },
     {
+      "name": "Client Details - Parameterized Type",
+      "request": {
+        "urlPattern": "/api/clients/details/type:(.)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-Type.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Client Details - Error 400",
       "request": {
         "urlPattern": "/api/clients/details/(.*)e4..",
