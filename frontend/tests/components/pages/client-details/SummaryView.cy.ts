@@ -9,7 +9,7 @@ describe("<summary-view />", () => {
   const getDefaultProps = () => ({
     data: {
       client: {
-        registryCompanyTypeCode: "SP",
+        registryCompanyTypeCode: "FM",
         corpRegnNmbr: "88888888",
         clientNumber: "4444",
         clientName: "Scott",
@@ -17,7 +17,7 @@ describe("<summary-view />", () => {
         legalMiddleName: "Gary",
         birthdate: "1962-08-17",
         clientAcronym: "DMPC",
-        clientTypeCode: "RSP",
+        clientTypeCode: "I",
         clientTypeDesc: "Registered sole proprietorship",
         goodStandingInd: "Y",
         clientStatusCode: "ACT",
@@ -361,6 +361,100 @@ describe("<summary-view />", () => {
       props.data.client.clientStatusCode = clientStatus;
       props.data.client.clientStatusDesc = clientStatus;
       describe(`when current client status is: ${clientStatus}`, () => {
+        beforeEach(() => {
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+        });
+
+        it("allows to update the Client status field", () => {
+          testDropdown("#input-clientStatus");
+        });
+      });
+    });
+  });
+
+  describe("when role contains CLIENT_ADMIN", () => {
+    const props = getDefaultProps();
+    props.userRoles = ["CLIENT_ADMIN"];
+
+    const clientTypes1 = [
+      {
+        code: "B",
+        desc: "First Nation Band",
+      },
+      {
+        code: "F",
+        desc: "Ministry of Forests and Range",
+      },
+      {
+        code: "G",
+        desc: "Government",
+      },
+    ];
+    clientTypes1.forEach((clientType) => {
+      describe(`when client type is ${clientType.code} - ${clientType.desc}`, () => {
+        props.data.client.clientTypeCode = clientType.code;
+        props.data.client.clientTypeDesc = clientType.desc;
+        describe("when the edit button in clicked", () => {
+          beforeEach(() => {
+            mount(props);
+            cy.get("#summaryEditBtn").click();
+            cy.wait("@getClientStatuses");
+          });
+
+          it('enables the edition of the "basic" fields', () => {
+            testTextInput("#input-acronym", props.data.client.clientAcronym);
+            testTextInput("#input-workSafeBCNumber", props.data.client.wcbFirmNumber);
+            testDropdown("#input-clientStatus", props.data.client.clientStatusDesc);
+            testTextarea("[data-id='input-input-notes']", props.data.client.clientComment);
+          });
+
+          it("also enables the edition of the Client name", () => {
+            testTextInput("#input-clientName", props.data.client.clientName);
+          });
+
+          it("also enables the edition of the Doing business as", () => {
+            testTextInput("#input-doingBusinessAs", props.data.doingBusinessAs);
+          });
+
+          it("disables the edition of everything else", () => {
+            testHidden("#input-clientType");
+            testHidden("#input-registrationNumber");
+            testHidden("#input-identification");
+            testHidden("#input-dateOfBirth");
+          });
+
+          it("keeps displaying the other fields in view mode", () => {
+            testReadonly("#clientNumber", currentProps.data.client.clientNumber);
+            testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
+
+            // registryCompanyTypeCode + corpRegnNmbr
+            testReadonly(
+              "#registrationNumber",
+              `${currentProps.data.client.registryCompanyTypeCode}${currentProps.data.client.corpRegnNmbr}`,
+            );
+
+            testReadonly("#goodStanding", "Good standing");
+            testReadonly("#identification", currentProps.data.client.clientIdentification);
+            testReadonly("#dateOfBirth", currentProps.data.client.birthdate);
+
+            // Make sure the fields enabled for edition are not also displayed in read-only mode.
+            testHidden("#acronym");
+            testHidden("#doingBusinessAs");
+            testHidden("#workSafeBCNumber");
+            testHidden("#clientStatus");
+            testHidden("#notes");
+          });
+        });
+      });
+    });
+
+    ["ACT", "SPN", "REC", "DAC", "DEC"].forEach((clientStatus) => {
+      const props = getDefaultProps();
+      props.userRoles = ["CLIENT_ADMIN"];
+      props.data.client.clientStatusCode = clientStatus;
+      props.data.client.clientStatusDesc = clientStatus;
+      describe(`regardless of the current Client status: ${clientStatus}`, () => {
         beforeEach(() => {
           mount(props);
           cy.get("#summaryEditBtn").click();

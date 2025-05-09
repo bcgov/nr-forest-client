@@ -109,18 +109,16 @@ const checkValid = () =>
 
 const editRoles: Record<FieldId, UserRole[]> = {
   // TODO: add the following values back when working on FSADT1-1611 or FSADT1-1640
-  // clientName: ["CLIENT_ADMIN"],
+  clientName: ["CLIENT_ADMIN"],
   acronym: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
-  // doingBusinessAs: ["CLIENT_ADMIN"],
+  doingBusinessAs: ["CLIENT_ADMIN"],
   // registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   clientStatus: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   notes: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
 };
 
-const canEdit = computed(() =>
-  includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
-);
+const companyLikeTypes = ["A", "C", "L", "P", "S", "R", "T", "U"];
 
 const canEditClientStatus = () => {
   const { clientStatusCode } = props.data.client;
@@ -138,10 +136,28 @@ const canEditClientStatus = () => {
   return false;
 };
 
+/**
+ * Tells whether the field is editable at all, according to the client's type.
+ * Note: it doesn't mean the current user should be allowed to do it.
+ */
+const isFieldEditable: Record<FieldId, () => boolean> = {
+  clientName: () => props.data.client.clientTypeCode !== "I",
+  acronym: () => true,
+  doingBusinessAs: () => true,
+  registrationNumber: () => companyLikeTypes.includes(props.data.client.clientTypeCode),
+  workSafeBCNumber: () => true,
+  clientStatus: canEditClientStatus,
+  notes: () => true,
+};
+
+const canEdit = computed(() =>
+  includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
+);
+
 const displayEditable = (fieldId: FieldId) =>
   isEditing.value &&
   includesAnyOf(props.userRoles, editRoles[fieldId]) &&
-  (fieldId !== "clientStatus" || canEditClientStatus());
+  isFieldEditable[fieldId]();
 
 const displayReadonly = (fieldId: FieldId) => !isEditing.value || !displayEditable(fieldId);
 
