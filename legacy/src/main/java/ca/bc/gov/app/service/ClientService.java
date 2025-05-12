@@ -14,6 +14,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -250,6 +251,13 @@ public class ClientService {
                 return Flux.error(
                     new NoValueFoundException("Client with number: " + clientNumber));
               }
+              
+              list
+                .sort(
+                  Comparator.comparing((Pair<HistoryLogDto, Integer> pair) ->
+                    pair.getLeft().updateTimestamp()
+                )
+                .reversed());
 
               log.info("Total history logs found for client {}: {}", clientNumber, list.size());
               return Flux.fromIterable(list);
