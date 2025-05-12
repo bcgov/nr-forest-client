@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
 import { AxiosError } from "axios";
 import * as jsonpatch from "fast-json-patch";
 
@@ -62,6 +62,7 @@ import {
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
+import HistoryView from "@/pages/client-details/HistoryView.vue";
 import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 
 // Route related
@@ -739,6 +740,24 @@ const resetGlobalError = () => {
 };
 
 resetGlobalError();
+
+const isHistoryPanelVisible = ref(false);
+
+onMounted(async () => {
+  await nextTick();
+
+  const tabs = document.querySelector('cds-tabs');
+  if (tabs) {
+    tabs.addEventListener('cds-tabs-selected', () => {
+      setTimeout(() => {
+        const panel = document.getElementById('panel-history');
+        if (panel) {
+          isHistoryPanelVisible.value = !panel.hasAttribute('hidden');
+        }
+      }, 0);
+    });
+  }
+});
 </script>
 
 <template>
@@ -828,7 +847,8 @@ resetGlobalError();
     </div>
     <div v-if="!fetchError.code" class="client-details-content tabs-container opaque-background">
       <cds-tabs value="locations" type="contained">
-        <cds-tab id="tab-locations" target="panel-locations" value="locations">
+        <cds-tab 
+          id="tab-locations" target="panel-locations" value="locations">
           <div>
             Client locations
             <Location16 />
@@ -846,9 +866,9 @@ resetGlobalError();
             <NetworkEnterprise16 />
           </div>
         </cds-tab>
-        <cds-tab id="tab-activity" target="panel-activity" value="activity">
+        <cds-tab id="tab-history" target="panel-history" value="history">
           <div>
-            Activity log
+            History
             <RecentlyViewed16 />
           </div>
         </cds-tab>
@@ -1055,28 +1075,12 @@ resetGlobalError();
           </div>
         </div>
       </div>
-      <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden>
-        <div class="tab-panel tab-panel--empty">
-          <div class="empty-table-list">
-            <tools-svg alt="Tools pictogram" class="standard-svg" />
-            <div class="description">
-              <div class="inner-description">
-                <p class="heading-02">Under construction</p>
-                <p class="body-compact-01">
-                  Check this content in the legacy system. It opens in a new tab.
-                </p>
-              </div>
-              <cds-button
-                id="open-maintenance-btn"
-                kind="tertiary"
-                size="md"
-                @click.prevent="openMaintenanceLegacy"
-              >
-                <span>Open in legacy system</span>
-                <Launch16 slot="icon" />
-              </cds-button>
-            </div>
-          </div>
+
+      <div id="panel-history" role="tabpanel" aria-labelledby="tab-history" hidden>
+        <div class="tab-panel tab-panel--populated" style="padding-top: 2.7rem;">
+          <template v-if="data && isHistoryPanelVisible">
+            <history-view />
+          </template>
         </div>
       </div>
     </div>

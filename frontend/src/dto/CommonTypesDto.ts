@@ -398,3 +398,25 @@ export interface SaveEvent<T> {
   action: ActionWords;
   operationType: OperationType;
 }
+
+export interface HistoryLogDetail {
+  columnName: string;
+  oldValue: string;
+  newValue: string;
+}
+
+export interface HistoryLogReason {
+  actionCode: string;
+  reason: string;
+}
+
+export interface HistoryLogResult {
+  tableName: string;
+  idx: string;
+  identifierLabel: string;
+  updateTimestamp: Date;
+  updateUserid: string;
+  changeType: string;
+  details: HistoryLogDetail[];
+  reasons: HistoryLogReason[];
+}

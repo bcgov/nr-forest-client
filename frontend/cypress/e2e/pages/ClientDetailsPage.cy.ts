@@ -102,7 +102,7 @@ describe("Client Details Page", () => {
     cy.contains("cds-tab", "Client locations");
     cy.contains("cds-tab", "Client contacts");
     cy.contains("cds-tab", "Related clients");
-    cy.contains("cds-tab", "Activity log");
+    cy.contains("cds-tab", "History");
   });
 
   const nameScenarios = [
@@ -1292,7 +1292,7 @@ describe("Client Details Page", () => {
     });
   });
 
-  describe("activity log tab", () => {
+  describe("History tab", () => {
     const clientNumber = "12321";
     beforeEach(() => {
       cy.visit(`/clients/details/${clientNumber}`);
@@ -1301,26 +1301,14 @@ describe("Client Details Page", () => {
         cy.stub(win, "open").as("windowOpen");
       });
 
-      // Switch to the Activity log tab
-      cy.get("#tab-activity").click();
+      // Switch to the History tab
+      cy.get("#tab-history").click();
 
       // Make sure the current tab panel was effectively switched
       cy.get("#panel-locations").should("have.attr", "hidden");
-      cy.get("#panel-activity").should("not.have.attr", "hidden");
+      cy.get("#panel-history").should("not.have.attr", "hidden");
     });
 
-    it("should display the Under construction message", () => {
-      cy.get("#panel-activity").contains("Under construction").should("be.visible");
-    });
-
-    it("should open the Maintenance page in the legacy application", () => {
-      cy.get("#open-maintenance-btn").click();
-      cy.get("@windowOpen").should(
-        "be.calledWith",
-        `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
-        "_blank",
-        "noopener",
-      );
-    });
+    
   });
 });

@@ -205,6 +205,15 @@ cds-button span {
   color: var(--light-theme-text-text-primary, #131315);
 }
 
+.hide-show-button cds-button[kind="ghost"]::part(button) {
+  width: 5rem;
+
+  // dark theme
+  --cds-focus: var(--dark-theme-focus-focus);
+  --cds-background-hover: var(--dark-theme-background-background-hover);
+  --cds-background-active: var(--dark-theme-background-background-active);
+}
+
 .step-active {
   --cds-border-subtle: var(--light-theme-miscellaneous-interactive);
 }
@@ -892,6 +901,17 @@ cds-actionable-notification * {
   border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
   background: #fff;
   max-width: 50.4375rem;
+  box-sizing: border-box;
+}
+
+.card-02 {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
+  background: #fff;
   box-sizing: border-box;
 }
 
