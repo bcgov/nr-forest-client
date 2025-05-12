@@ -41,7 +41,7 @@ public class AcronymPatchValidator implements PatchValidator {
   private Mono<JsonNode> validateSize(JsonNode node) {
     String clientAcronym = node.get("value").asText();
     if (clientAcronym.length() > 8 || clientAcronym.length() < 3) {
-      return Mono.error(getError("Client acronym must be between 3 and 8 characters",null));
+      return Mono.error(getError("Client acronym must be between 3 and 8 characters", null));
     }
     return Mono.just(node);
   }
@@ -53,7 +53,7 @@ public class AcronymPatchValidator implements PatchValidator {
             Map.of("acronym", List.of(node.get("value").asText()))
         )
         .next()
-        .flatMap(value -> Mono.error(getError("Client acronym already exists",value.clientNumber())))
+        .flatMap(value -> Mono.error(getError("Client acronym already exists", value.clientNumber())))
         .cast(JsonNode.class)
         .defaultIfEmpty(node);
   }
