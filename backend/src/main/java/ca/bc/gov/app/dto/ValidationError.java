@@ -16,6 +16,10 @@ import org.apache.commons.lang3.StringUtils;
  * Represents a validation error for a specific field in a data structure. This class is used to
  * capture validation failures, providing information about the field that failed validation and the
  * corresponding error message.
+ * This class is immutable and thread-safe. It uses Lombok annotations to reduce boilerplate code.
+ * The field match is used to store the expected matches found in the validation process for the
+ * specified field. It can be a single value or a comma-separated list of values. The value as well
+ * is context dependent, as it can be a client number, a name, or a date for example.
  */
 @AllArgsConstructor
 @Getter
