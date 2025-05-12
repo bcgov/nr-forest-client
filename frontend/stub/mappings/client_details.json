@@ -3,12 +3,12 @@
     {
       "name": "Client Details General Partnership - Default",
       "request": {
-        "urlPattern": "/api/clients/details/g?(.*)",
+        "urlPattern": "/api/clients/details/p?(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-G.json",
+        "bodyFileName": "response-clients-details-P.json",
         "transformers": [
           "response-template"
         ],
@@ -18,12 +18,12 @@
     {
       "name": "Client Details General Partnership - Default - Additional location",
       "request": {
-        "urlPattern": "/api/clients/details/g?(.*)+location",
+        "urlPattern": "/api/clients/details/p?(.*)+location",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-G+location.json",
+        "bodyFileName": "response-clients-details-P+location.json",
         "transformers": [
           "response-template"
         ],
@@ -33,12 +33,12 @@
     {
       "name": "Client Details General Partnership - Default - Removed contact",
       "request": {
-        "urlPattern": "/api/clients/details/g?(.*)-contact",
+        "urlPattern": "/api/clients/details/p?(.*)-contact",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-G-contact.json",
+        "bodyFileName": "response-clients-details-P-contact.json",
         "transformers": [
           "response-template"
         ],
@@ -48,12 +48,12 @@
     {
       "name": "Client Details General Partnership - Default - Added contact",
       "request": {
-        "urlPattern": "/api/clients/details/g?(.*)\\+contact",
+        "urlPattern": "/api/clients/details/p?(.*)\\+contact",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-G+contact.json",
+        "bodyFileName": "response-clients-details-P+contact.json",
         "transformers": [
           "response-template"
         ],
@@ -78,12 +78,12 @@
     {
       "name": "Client Details General Partnership - Doing business as",
       "request": {
-        "urlPattern": "/api/clients/details/gd(.*)",
+        "urlPattern": "/api/clients/details/pd(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-GD.json",
+        "bodyFileName": "response-clients-details-PD.json",
         "transformers": [
           "response-template"
         ],
@@ -93,12 +93,12 @@
     {
       "name": "Client Details General Partnership - Deactivated",
       "request": {
-        "urlPattern": "/api/clients/details/gdac(.*)",
+        "urlPattern": "/api/clients/details/pdac(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-GDAC.json",
+        "bodyFileName": "response-clients-details-PDAC.json",
         "transformers": [
           "response-template"
         ],
@@ -108,12 +108,12 @@
     {
       "name": "Client Details General Partnership - Suspended",
       "request": {
-        "urlPattern": "/api/clients/details/gspn(.*)",
+        "urlPattern": "/api/clients/details/pspn(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-GSPN.json",
+        "bodyFileName": "response-clients-details-PSPN.json",
         "transformers": [
           "response-template"
         ],
@@ -204,6 +204,21 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-clients-details-NL.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details - Parameterized Type",
+      "request": {
+        "urlPattern": "/api/clients/details/type:(.)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-Type.json",
         "transformers": [
           "response-template"
         ],

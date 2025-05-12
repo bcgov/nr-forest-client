@@ -11,6 +11,7 @@ import logo from "@/assets/images/bc-gov-logo.png";
 // @ts-ignore
 import login16 from "@carbon/icons-vue/es/login/16";
 import { ref } from "vue";
+import { backendUrl, nodeEnv } from "@/CoreConstants";
 
 // extract the querystring parameters from the URL
 const router = useRouter();
@@ -28,7 +29,14 @@ if (query.ref && query.ref === "individual") {
   hideIdirBtnInd = true;
 }
 
-const stubRoles = ["None", "CLIENT_VIEWER", "CLIENT_EDITOR", "CLIENT_SUSPEND", "CLIENT_ADMIN"];
+const stubRoles = [
+  "None",
+  "CLIENT_VIEWER",
+  "CLIENT_EDITOR",
+  "CLIENT_SUSPEND",
+  "CLIENT_ADMIN",
+  "Multiple",
+];
 const stubRolesCodeName = stubRoles.map((item) => ({
   code: item,
   name: item,
@@ -37,9 +45,15 @@ const stubRolesCodeName = stubRoles.map((item) => ({
 const selectedStubRole = ref("CLIENT_EDITOR");
 
 const logInStubRole = (role: string) => {
-  document.cookie = `stubrole=${role}`;
-  ForestClientUserSession.logIn("idir");
+  if (nodeEnv === "test") {
+    window.location.href = `${backendUrl}/login?stubrole=${role}`;
+  }
 };
+
+if (query.stubrole) {
+  document.cookie = `stubrole=${query.stubrole}`;
+  ForestClientUserSession.logIn("idir");
+}
 </script>
 
 <template>

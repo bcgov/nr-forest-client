@@ -1,36 +1,10 @@
 {
-  "mappings": [   
+  "mappings": [
     {
-      "name": "OAuth2 Authorize for IDIR",
+      "name": "OAuth2 Authorize for IDIR - Selected Role - Redirect",
       "request": {
-        "urlPath": "/oauth2/authorize",
-        "method": "GET",
-        "queryParameters": {
-          "redirect_uri": {
-            "equalTo": "http://localhost:3000/dashboard"
-          },
-          "response_type": {
-            "equalTo": "code"
-          },
-          "client_id": {
-            "matches": "(.*)"
-          },
-          "identity_provider": {
-            "equalTo": "DEV-IDIR"
-          },
-          "scope": {
-            "equalTo": "openid profile email"
-          },
-          "state": {
-            "matches": "(.*)"
-          },
-          "code_challenge": {
-            "matches": "(.*)"
-          },
-          "code_challenge_method": {
-            "equalTo": "S256"
-          }
-        }
+        "urlPath": "/login",
+        "method": "GET"
       },
       "response": {
         "status": 302,
@@ -38,11 +12,7 @@
           "response-template"
         ],
         "headers": {
-          "Location": "http://{{request.host}}:3000/dashboard",
-          "Set-Cookie": [
-            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.LastAuthUser=abc123; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}",            
-            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.abc123.idToken=eyJhbGciOiJIUzI1NiJ9.eyJjb2duaXRvOmdyb3VwcyI6WyJDTElFTlRfVklFV0VSIiwiQ0xJRU5UX0VESVRPUiIsIkNMSUVOVF9BRE1JTiJdLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJiNWVjZGIwOTRkZmI0MTQ5YTZhODQ0NWEwMWE5NmJmMEBpZGlyIiwiY3VzdG9tOmlkcF91c2VyX2lkIjoiQjVFQ0RCMDk0REZCNDE0OUE2QTg0NDVBMDFBOTZCRjAiLCJjdXN0b206aWRwX3VzZXJuYW1lIjoiSlJZQU4iLCJjdXN0b206aWRwX2Rpc3BsYXlfbmFtZSI6IlJ5YW4sIEphY2sgQ0lBOklOIiwiZW1haWwiOiJqYWNrLnJ5YW5AZ292LmJjLmNhIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjdXN0b206aWRwX25hbWUiOiJpZGlyIiwiZ2l2ZW5fbmFtZSI6IkphY2siLCJuYW1lIjoiSmFjayBSeWFuIiwiZmFtaWx5X25hbWUiOiJSeWFuIn0.b9EAJNDPl9ycrMjCE_g34F-tjvsLpdm4Ui_4Jr1TPao; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
-          ]
+          "Location": "http://{{request.host}}:3000/landing?stubrole={{request.query.stubrole}}"
         }
       }
     },
@@ -51,11 +21,6 @@
       "request": {
         "urlPath": "/oauth2/authorize",
         "method": "GET",
-        "cookies": {
-            "stubrole": {
-                "matches": ".+"
-            }
-        },
         "queryParameters": {
           "redirect_uri": {
             "equalTo": "http://localhost:3000/dashboard"
@@ -94,14 +59,15 @@
             "CLIENT_VIEWER": "eyJhbGciOiJIUzI1NiJ9.eyJjb2duaXRvOmdyb3VwcyI6WyJDTElFTlRfVklFV0VSIl0sInByZWZlcnJlZF91c2VybmFtZSI6ImI1ZWNkYjA5NGRmYjQxNDlhNmE4NDQ1YTAxYTk2YmYwQGlkaXIiLCJjdXN0b206aWRwX3VzZXJfaWQiOiJCNUVDREIwOTRERkI0MTQ5QTZBODQ0NUEwMUE5NkJGMCIsImN1c3RvbTppZHBfdXNlcm5hbWUiOiJKUllBTiIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiUnlhbiwgSmFjayBWaWV3ZXIgQ0lBOklOIiwiZW1haWwiOiJqYWNrLnJ5YW5AZ292LmJjLmNhIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjdXN0b206aWRwX25hbWUiOiJpZGlyIiwiZ2l2ZW5fbmFtZSI6IkphY2siLCJuYW1lIjoiSmFjayBSeWFuIiwiZmFtaWx5X25hbWUiOiJSeWFuIn0.OsztJMATVC6Oqzvx4hvQ6qwPee-HZYvCaz1NWxL2erE",
             "CLIENT_EDITOR": "eyJhbGciOiJIUzI1NiJ9.eyJjb2duaXRvOmdyb3VwcyI6WyJDTElFTlRfRURJVE9SIl0sInByZWZlcnJlZF91c2VybmFtZSI6ImI1ZWNkYjA5NGRmYjQxNDlhNmE4NDQ1YTAxYTk2YmYwQGlkaXIiLCJjdXN0b206aWRwX3VzZXJfaWQiOiJCNUVDREIwOTRERkI0MTQ5QTZBODQ0NUEwMUE5NkJGMCIsImN1c3RvbTppZHBfdXNlcm5hbWUiOiJKUllBTiIsImN1c3RvbTppZHBfZGlzcGxheV9uYW1lIjoiUnlhbiwgSmFjayBFZGl0b3IgQ0lBOklOIiwiZW1haWwiOiJqYWNrLnJ5YW5AZ292LmJjLmNhIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjdXN0b206aWRwX25hbWUiOiJpZGlyIiwiZ2l2ZW5fbmFtZSI6IkphY2siLCJuYW1lIjoiSmFjayBSeWFuIiwiZmFtaWx5X25hbWUiOiJSeWFuIn0.oF_6mX7sB401RrSQk-ReFCJ-xLl76Ke7xcdx6NtWLc4",
             "CLIENT_SUSPEND": "eyJhbGciOiJIUzI1NiJ9.eyJjb2duaXRvOmdyb3VwcyI6WyJDTElFTlRfU1VTUEVORCJdLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJiNWVjZGIwOTRkZmI0MTQ5YTZhODQ0NWEwMWE5NmJmMEBpZGlyIiwiY3VzdG9tOmlkcF91c2VyX2lkIjoiQjVFQ0RCMDk0REZCNDE0OUE2QTg0NDVBMDFBOTZCRjAiLCJjdXN0b206aWRwX3VzZXJuYW1lIjoiSlJZQU4iLCJjdXN0b206aWRwX2Rpc3BsYXlfbmFtZSI6IlJ5YW4sIEphY2sgU3VzcGVuZCBDSUE6SU4iLCJlbWFpbCI6ImphY2sucnlhbkBnb3YuYmMuY2EiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImN1c3RvbTppZHBfbmFtZSI6ImlkaXIiLCJnaXZlbl9uYW1lIjoiSmFjayIsIm5hbWUiOiJKYWNrIFJ5YW4iLCJmYW1pbHlfbmFtZSI6IlJ5YW4ifQ.jHhcichS3wLtXYa5qKeGLBLGbcnUv1Nr0gdfC3nY_Ic",
-            "CLIENT_ADMIN": "eyJhbGciOiJIUzI1NiJ9.eyJjb2duaXRvOmdyb3VwcyI6WyJDTElFTlRfQURNSU4iXSwicHJlZmVycmVkX3VzZXJuYW1lIjoiYjVlY2RiMDk0ZGZiNDE0OWE2YTg0NDVhMDFhOTZiZjBAaWRpciIsImN1c3RvbTppZHBfdXNlcl9pZCI6IkI1RUNEQjA5NERGQjQxNDlBNkE4NDQ1QTAxQTk2QkYwIiwiY3VzdG9tOmlkcF91c2VybmFtZSI6IkpSWUFOIiwiY3VzdG9tOmlkcF9kaXNwbGF5X25hbWUiOiJSeWFuLCBKYWNrIEFkbWluIENJQTpJTiIsImVtYWlsIjoiamFjay5yeWFuQGdvdi5iYy5jYSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY3VzdG9tOmlkcF9uYW1lIjoiaWRpciIsImdpdmVuX25hbWUiOiJKYWNrIiwibmFtZSI6IkphY2sgUnlhbiIsImZhbWlseV9uYW1lIjoiUnlhbiJ9.xqbjBTKcq7XGjMnIcGpDtxaviqKStKE4wsjc6t1kOUM"
+            "CLIENT_ADMIN": "eyJhbGciOiJIUzI1NiJ9.eyJjb2duaXRvOmdyb3VwcyI6WyJDTElFTlRfQURNSU4iXSwicHJlZmVycmVkX3VzZXJuYW1lIjoiYjVlY2RiMDk0ZGZiNDE0OWE2YTg0NDVhMDFhOTZiZjBAaWRpciIsImN1c3RvbTppZHBfdXNlcl9pZCI6IkI1RUNEQjA5NERGQjQxNDlBNkE4NDQ1QTAxQTk2QkYwIiwiY3VzdG9tOmlkcF91c2VybmFtZSI6IkpSWUFOIiwiY3VzdG9tOmlkcF9kaXNwbGF5X25hbWUiOiJSeWFuLCBKYWNrIEFkbWluIENJQTpJTiIsImVtYWlsIjoiamFjay5yeWFuQGdvdi5iYy5jYSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY3VzdG9tOmlkcF9uYW1lIjoiaWRpciIsImdpdmVuX25hbWUiOiJKYWNrIiwibmFtZSI6IkphY2sgUnlhbiIsImZhbWlseV9uYW1lIjoiUnlhbiJ9.xqbjBTKcq7XGjMnIcGpDtxaviqKStKE4wsjc6t1kOUM",
+            "Multiple": "eyJhbGciOiJIUzI1NiJ9.eyJjb2duaXRvOmdyb3VwcyI6WyJDTElFTlRfVklFV0VSIiwiQ0xJRU5UX0VESVRPUiIsIkNMSUVOVF9BRE1JTiJdLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJiNWVjZGIwOTRkZmI0MTQ5YTZhODQ0NWEwMWE5NmJmMEBpZGlyIiwiY3VzdG9tOmlkcF91c2VyX2lkIjoiQjVFQ0RCMDk0REZCNDE0OUE2QTg0NDVBMDFBOTZCRjAiLCJjdXN0b206aWRwX3VzZXJuYW1lIjoiSlJZQU4iLCJjdXN0b206aWRwX2Rpc3BsYXlfbmFtZSI6IlJ5YW4sIEphY2sgTXVsdGlwbGUgQ0lBOklOIiwiZW1haWwiOiJqYWNrLnJ5YW5AZ292LmJjLmNhIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjdXN0b206aWRwX25hbWUiOiJpZGlyIiwiZ2l2ZW5fbmFtZSI6IkphY2siLCJuYW1lIjoiSmFjayBSeWFuIiwiZmFtaWx5X25hbWUiOiJSeWFuIn0.ohydI5k2Keki8eORKRG1k0GGKS4gF1B4ots22URvHQU"
           }
         },
         "headers": {
           "Location": "http://{{request.host}}:3000/dashboard",
           "Set-Cookie": [
             "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.LastAuthUser=abc123; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}",            
-            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.abc123.idToken={{lookup parameters.idTokenMap request.cookies.stubrole}}; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
+            "CognitoIdentityServiceProvider.69u4hdmcoiuuhpmi59qmndhikk.abc123.idToken={{lookup parameters.idTokenMap (defaultIfEmpty request.cookies.stubrole 'CLIENT_EDITOR')}}; sameSite=Lax; path=/; Expires={{now offset='10 years' format='EEE, d MMM yyyy HH:mm:ss'}} GMT; domain={{request.host}}"
           ]
         }
       }
