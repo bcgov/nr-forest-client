@@ -46,8 +46,7 @@ const selectedStubRole = ref("CLIENT_EDITOR");
 
 const logInStubRole = (role: string) => {
   if (nodeEnv === "test") {
-    const host = backendUrl.replace("http://", "https://").replace(":8080", ":8081");
-    window.location.href = `${host}/login?stubrole=${role}`;
+    window.location.href = `${backendUrl}/login?stubrole=${role}`;
   }
 };
 
