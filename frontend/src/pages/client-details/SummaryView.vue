@@ -8,6 +8,7 @@ import {
   goodStanding,
   includesAnyOf,
 } from "@/services/ForestClientService";
+import { greenDomain } from "@/CoreConstants";
 
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
 import Warning20 from "@carbon/icons-vue/es/warning--filled/20";
@@ -18,7 +19,10 @@ import Close16 from "@carbon/icons-vue/es/close/16";
 
 // Importing validators
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
-import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
+import {
+  resetSubmissionValidators,
+  submissionValidation,
+} from "@/helpers/validators/SubmissionValidators";
 
 const props = defineProps<{
   data: ClientDetails;
@@ -105,18 +109,16 @@ const checkValid = () =>
 
 const editRoles: Record<FieldId, UserRole[]> = {
   // TODO: add the following values back when working on FSADT1-1611 or FSADT1-1640
-  // clientName: ["CLIENT_ADMIN"],
-  // acronym: ["CLIENT_ADMIN"],
-  // doingBusinessAs: ["CLIENT_ADMIN"],
+  clientName: ["CLIENT_ADMIN"],
+  acronym: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
+  doingBusinessAs: ["CLIENT_ADMIN"],
   // registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   clientStatus: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   notes: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
 };
 
-const canEdit = computed(() =>
-  includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
-);
+const companyLikeTypes = ["A", "C", "L", "P", "S", "R", "T", "U"];
 
 const canEditClientStatus = () => {
   const { clientStatusCode } = props.data.client;
@@ -134,10 +136,28 @@ const canEditClientStatus = () => {
   return false;
 };
 
+/**
+ * Tells whether the field is editable at all, according to the client's type.
+ * Note: it doesn't mean the current user should be allowed to do it.
+ */
+const isFieldEditable: Record<FieldId, () => boolean> = {
+  clientName: () => props.data.client.clientTypeCode !== "I",
+  acronym: () => true,
+  doingBusinessAs: () => true,
+  registrationNumber: () => companyLikeTypes.includes(props.data.client.clientTypeCode),
+  workSafeBCNumber: () => true,
+  clientStatus: canEditClientStatus,
+  notes: () => true,
+};
+
+const canEdit = computed(() =>
+  includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
+);
+
 const displayEditable = (fieldId: FieldId) =>
   isEditing.value &&
   includesAnyOf(props.userRoles, editRoles[fieldId]) &&
-  (fieldId !== "clientStatus" || canEditClientStatus());
+  isFieldEditable[fieldId]();
 
 const displayReadonly = (fieldId: FieldId) => !isEditing.value || !displayEditable(fieldId);
 
@@ -175,6 +195,16 @@ const updateClientStatus = (value: CodeNameType | undefined) => {
     formData.value.client.clientStatusCode = value.code;
   }
 };
+
+watch(
+  formData,
+  () => {
+    resetSubmissionValidators();
+  },
+  {
+    deep: true,
+  },
+);
 
 const client = computed(() => props.data.client);
 </script>
@@ -289,19 +319,34 @@ const client = computed(() => props.data.client);
       <text-input-component
         id="input-acronym"
         v-if="displayEditable('acronym')"
-        class="grouping-02--width-8rem"
+        :class="{ 'grouping-02--width-8rem': displayEditable('clientName') }"
         label="Acronym"
         placeholder=""
+        mask="NNNNNNNN"
         autocomplete="off"
         v-model="formData.client.clientAcronym"
         :validations="[
           ...getValidations('businessInformation.clientAcronym'),
-          submissionValidation(`businessInformation.clientAcronym`),
+          submissionValidation('/client/clientAcronym'),
         ]"
         enabled
         @empty="validation.acronym = true"
         @error="validation.acronym = !$event"
-      />
+      >
+        <template #error="{ data }">
+          <template v-if="data?.custom?.match">
+            Looks like this acronym belongs to client
+            <span
+              ><a
+                :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${data.custom.match}`"
+                target="_blank"
+                rel="noopener"
+                >{{ data.custom.match }}</a
+              ></span
+            >. Try another acronym
+          </template>
+        </template>
+      </text-input-component>
     </div>
     <text-input-component
       id="input-doingBusinessAs"

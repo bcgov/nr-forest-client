@@ -29,6 +29,7 @@ export interface ValidationMessageType {
   errorMsg: string;
   originalValue?: string;
   warning?: boolean;
+  custom?: Record<string, any>;
 }
 
 export interface FuzzyMatchResult {

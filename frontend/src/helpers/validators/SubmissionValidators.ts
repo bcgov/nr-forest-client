@@ -93,7 +93,7 @@ export const submissionValidation = (
     if (foundError) {
       if (foundError && (foundError.originalValue === value || foundError.originalValue === "")) {
         updateValidators(fieldName, value, foundError.warning);
-        if (foundError.warning) {
+        if (foundError.warning || foundError.custom) {
           return foundError;
         }
         return foundError.errorMsg;

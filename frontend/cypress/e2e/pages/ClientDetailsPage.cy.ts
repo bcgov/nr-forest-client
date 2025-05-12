@@ -210,7 +210,7 @@ describe("Client Details Page", () => {
             },
           ).as("getClientDetails");
 
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
           cy.get("#summaryEditBtn").click();
           cy.clearFormEntry("#input-workSafeBCNumber");
           cy.get("#summarySaveBtn").click();
@@ -240,11 +240,11 @@ describe("Client Details Page", () => {
         });
       });
 
-      describe("on failure", { testIsolation: false }, () => {
+      describe("on generic failure", { testIsolation: false }, () => {
         before(function () {
           init.call(this);
 
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
           cy.get("#summaryEditBtn").click();
           cy.fillFormEntry("[data-id='input-input-notes']", "error", { area: true });
           cy.get("#summarySaveBtn").click();
@@ -262,6 +262,31 @@ describe("Client Details Page", () => {
           cy.get("#summarySaveBtn").should("be.visible");
         });
       });
+
+      describe("on duplicated acronym failure ", { testIsolation: false }, () => {
+        before(function () {
+          init.call(this);
+
+          cy.visit("/clients/details/p");
+          cy.get("#summaryEditBtn").click();
+          cy.fillFormEntry("#input-acronym", "ERR");
+          cy.get("#summarySaveBtn").click();
+        });
+
+        it("shows the error toast", () => {
+          cy.get("cds-toast-notification[kind='error']").should("be.visible");
+        });
+
+        it("shows a custom error message on the Acronym input field", () => {
+          cy.get("#input-acronym")
+            .find("[slot='invalid-text']")
+            .contains("Looks like this acronym belongs to client 00000001. Try another acronym");
+
+          cy.get("#input-acronym").find("[slot='invalid-text'] a").should("have.attr", "href");
+
+          cy.get("#input-acronym").find("[slot='invalid-text'] a").should("have.text", "00000001");
+        });
+      });
     });
   });
 
@@ -277,7 +302,7 @@ describe("Client Details Page", () => {
           cy.intercept("GET", "/api/codes/update-reasons/*/*")
             .as("getReasonsList");
   
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
 
           cy.get("#summaryEditBtn")
             .click();
@@ -343,7 +368,7 @@ describe("Client Details Page", () => {
       describe("3 active locations", () => {
         before(function () {
           init.call(this);
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
         });
 
         it("displays the number of locations", () => {
@@ -390,7 +415,7 @@ describe("Client Details Page", () => {
       describe("2 locations - 1 active and 1 deactivated", () => {
         before(function () {
           init.call(this);
-          cy.visit("/clients/details/gd");
+          cy.visit("/clients/details/pd");
         });
         it("doesn't display the tag Deactivated when location is not expired", () => {
           cy.get("cds-tag#location-00-deactivated").should("not.exist");
@@ -415,11 +440,11 @@ describe("Client Details Page", () => {
 
     describe("regular, isolated tests", () => {
       beforeEach(() => {
-        cy.visit("/clients/details/g");
+        cy.visit("/clients/details/p");
       });
 
       it("hides the address on the accordion's title when it's expanded", () => {
-        cy.visit("/clients/details/g");
+        cy.visit("/clients/details/p");
 
         // Clicks to expand the accordion
         cy.get("#location-00 [slot='title']").click();
@@ -428,7 +453,7 @@ describe("Client Details Page", () => {
       });
 
       it("keeps accordions' states while tabs are switched", () => {
-        cy.visit("/clients/details/g");
+        cy.visit("/clients/details/p");
 
         // Expand first and third locations, leave second one collapsed
         cy.get("#location-00 [slot='title']").click();
@@ -458,7 +483,7 @@ describe("Client Details Page", () => {
     describe("when role:CLIENT_EDITOR", () => {
       describe("name duplication", () => {
         beforeEach(() => {
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
 
           // Clicks to expand the accordion
           cy.get("#location-00 [slot='title']").click();
@@ -521,7 +546,7 @@ describe("Client Details Page", () => {
                 },
               ).as("patchClientDetails");
 
-              cy.visit("/clients/details/g");
+              cy.visit("/clients/details/p");
               cy.wait("@getClientDetails");
 
               if (scenario.name === "edit") {
@@ -633,7 +658,7 @@ describe("Client Details Page", () => {
             before(function () {
               init.call(this);
 
-              cy.visit("/clients/details/g");
+              cy.visit("/clients/details/p");
 
               if (scenario.name === "edit") {
                 // Clicks to expand the accordion
@@ -701,7 +726,7 @@ describe("Client Details Page", () => {
 
                 cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
 
-                cy.visit("/clients/details/g");
+                cy.visit("/clients/details/p");
 
                 // Clicks to expand the accordion
                 cy.get("#location-00 [slot='title']").click();
@@ -767,7 +792,7 @@ describe("Client Details Page", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
       before(function () {
         init.call(this);
-        cy.visit("/clients/details/g");
+        cy.visit("/clients/details/p");
 
         // Switch to the Contacts tab
         cy.get("#tab-contacts").click();
@@ -809,7 +834,7 @@ describe("Client Details Page", () => {
     describe("regular, isolated tests", () => {
       describe("3 contacts", () => {
         beforeEach(() => {
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
 
           // Switch to the Contacts tab
           cy.get("#tab-contacts").click();
@@ -852,7 +877,7 @@ describe("Client Details Page", () => {
       });
       describe("no contacts", () => {
         beforeEach(() => {
-          cy.visit("/clients/details/gd");
+          cy.visit("/clients/details/pd");
 
           // Switch to the Contacts tab
           cy.get("#tab-contacts").click();
@@ -926,7 +951,7 @@ describe("Client Details Page", () => {
     describe("when role:CLIENT_EDITOR", () => {
       describe("name duplication", () => {
         beforeEach(() => {
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
 
           // Switch to the Contacts tab
           cy.get("#tab-contacts").click();
@@ -992,7 +1017,7 @@ describe("Client Details Page", () => {
                 },
               ).as("patchClientDetails");
 
-              cy.visit("/clients/details/g");
+              cy.visit("/clients/details/p");
               cy.wait("@getClientDetails");
 
               // Switch to the Contacts tab
@@ -1114,7 +1139,7 @@ describe("Client Details Page", () => {
             before(function () {
               init.call(this);
 
-              cy.visit("/clients/details/g");
+              cy.visit("/clients/details/p");
 
               // Switch to the Contacts tab
               cy.get("#tab-contacts").click();
@@ -1206,7 +1231,7 @@ describe("Client Details Page", () => {
             },
           ).as("getClientDetails");
 
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
           cy.wait("@getClientDetails");
 
           // Switch to the Contacts tab
