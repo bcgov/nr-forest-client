@@ -3,6 +3,7 @@ import type { HistoryLogResult } from '@/dto/CommonTypesDto';
 import { useFetchTo } from '@/composables/useFetch';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { getLabelByColumnName } from "@/services/ForestClientService";
 import Avatar16 from "@carbon/icons-vue/es/user--avatar/16";
 import Location16 from "@carbon/icons-vue/es/location/16";
 import Document16 from "@carbon/icons-vue/es/document/16";
@@ -104,7 +105,7 @@ watch(
             <td class="grouping-05">
               <div v-for="(historyDtlsLog, index) in historyLog.details">
                 <p class="label-02">
-                  {{ historyDtlsLog.columnName }}
+                  {{ getLabelByColumnName(historyDtlsLog.columnName) }}
                 </p>
               </div>
             </td>

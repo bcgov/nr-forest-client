@@ -586,12 +586,12 @@ export const formatLocation = (code: string, name: string): string => {
 };
 
 const columnNameToLabelMap: Record<string, string> = {
-  clientName: "Client name",
+  fullName: "Full name",
   clientAcronym: "Acronym",
   email: "Email Address",
   // add more mappings as needed
 };
 
-function getLabelByColumnName(columnName: string): string {
-  return columnNameToLabelMap[columnName] ?? "Unknown";
+export function getLabelByColumnName(columnName: string): string {
+  return columnNameToLabelMap[columnName] ?? columnName;
 }
