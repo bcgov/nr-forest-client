@@ -47,7 +47,7 @@
     <netty.version>4.1.119.Final</netty.version>
     <logback.version>1.5.18</logback.version>
     <oci.revision>${project.version}</oci.revision>
-    <flyway.version>11.8.0</flyway.version>
+    <flyway.version>11.8.1</flyway.version>
   </properties>
 
   <dependencies>
