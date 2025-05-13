@@ -252,12 +252,18 @@ public class ClientService {
                     new NoValueFoundException("Client with number: " + clientNumber));
               }
               
-              list
-                .sort(
-                  Comparator.comparing((Pair<HistoryLogDto, Integer> pair) ->
-                    pair.getLeft().updateTimestamp()
-                )
-                .reversed());
+              list.sort(
+                  Comparator
+                      .comparing(
+                          (Pair<HistoryLogDto, Integer> pair) ->
+                              "Client created".equals(pair.getLeft().identifierLabel()) ? 1 : 0
+                      )
+                      .thenComparing(
+                          (Pair<HistoryLogDto, Integer> pair) ->
+                              pair.getLeft().updateTimestamp(),
+                          Comparator.reverseOrder()
+                      )
+              );
 
               log.info("Total history logs found for client {}: {}", clientNumber, list.size());
               return Flux.fromIterable(list);
