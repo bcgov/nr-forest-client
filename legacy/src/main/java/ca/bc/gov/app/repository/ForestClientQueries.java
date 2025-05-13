@@ -11,16 +11,22 @@ public final class ForestClientQueries {
         SELECT
             AL.FOREST_CLIENT_AUDIT_ID AS IDX,
             AL.CLIENT_NUMBER,
-            AL.CLIENT_NAME,
+            CASE 
+                WHEN AL.LEGAL_FIRST_NAME IS NOT NULL AND AL.LEGAL_MIDDLE_NAME IS NOT NULL THEN
+                    AL.LEGAL_FIRST_NAME || ' ' || AL.LEGAL_MIDDLE_NAME || ' ' || AL.CLIENT_NAME
+                WHEN AL.LEGAL_FIRST_NAME IS NOT NULL THEN
+                    AL.LEGAL_FIRST_NAME || ' ' || AL.CLIENT_NAME
+                ELSE
+                    NVL(AL.LEGAL_FIRST_NAME, '') || NVL(AL.LEGAL_MIDDLE_NAME, '') || AL.CLIENT_NAME
+            END AS FULL_NAME,
             AL.CLIENT_ACRONYM,
-            AL.LEGAL_FIRST_NAME,
             AL.LEGAL_MIDDLE_NAME,
             AL.CLIENT_TYPE_CODE,
             TO_CHAR(AL.BIRTHDATE, 'YYYY-MM-DD') AS BIRTHDATE,
             AL.CLIENT_ID_TYPE_CODE,
             AL.CLIENT_IDENTIFICATION,
             AL.REGISTRY_COMPANY_TYPE_CODE || AL.CORP_REGN_NMBR AS CORP_REGN_NMBR,
-            AL.WCB_FIRM_NUMBER,
+            TRIM(AL.WCB_FIRM_NUMBER) AS WCB_FIRM_NUMBER,
             AL.OCG_SUPPLIER_NMBR,
             AL.CLIENT_STATUS_CODE,
             AL.CLIENT_COMMENT,
@@ -55,10 +61,8 @@ public final class ForestClientQueries {
             END AS IDENTIFIER_LABEL,
             COL.COLUMN_NAME,
             CASE COL.COLUMN_NAME
-                WHEN 'clientName' THEN B.CLIENT_NAME
                 WHEN 'clientAcronym' THEN B.CLIENT_ACRONYM
-                WHEN 'legalFirstName' THEN B.LEGAL_FIRST_NAME
-                WHEN 'legalMiddleName' THEN B.LEGAL_MIDDLE_NAME
+                WHEN 'fullName' THEN B.FULL_NAME
                 WHEN 'clientTypeDesc' THEN B.CLIENT_TYPE_DESC
                 WHEN 'birthdate' THEN B.BIRTHDATE
                 WHEN 'clientIdTypeDesc' THEN B.CLIENT_ID_TYPE_DESC
@@ -71,10 +75,8 @@ public final class ForestClientQueries {
             END AS NEW_VALUE,
             LAG(
                 CASE COL.COLUMN_NAME
-                    WHEN 'clientName' THEN B.CLIENT_NAME
                     WHEN 'clientAcronym' THEN B.CLIENT_ACRONYM
-                    WHEN 'legalFirstName' THEN B.LEGAL_FIRST_NAME
-                    WHEN 'legalMiddleName' THEN B.LEGAL_MIDDLE_NAME
+                    WHEN 'fullName' THEN B.FULL_NAME
                     WHEN 'clientTypeDesc' THEN B.CLIENT_TYPE_DESC
                     WHEN 'birthdate' THEN B.BIRTHDATE
                     WHEN 'clientIdTypeDesc' THEN B.CLIENT_ID_TYPE_DESC
@@ -97,31 +99,27 @@ public final class ForestClientQueries {
             COL.FIELD_ORDER
         FROM BASE_DATA B
         CROSS JOIN (
-            SELECT 'clientName' AS COLUMN_NAME, 1 AS FIELD_ORDER FROM DUAL
+            SELECT 'fullName' AS COLUMN_NAME, 1 AS FIELD_ORDER FROM DUAL
             UNION ALL
             SELECT 'clientAcronym' AS COLUMN_NAME, 2 FROM DUAL
             UNION ALL
-            SELECT 'legalFirstName' AS COLUMN_NAME, 3 FROM DUAL
+            SELECT 'clientTypeDesc' AS COLUMN_NAME, 3 FROM DUAL
             UNION ALL
-            SELECT 'legalMiddleName' AS COLUMN_NAME, 4 FROM DUAL
+            SELECT 'birthdate' AS COLUMN_NAME, 4 FROM DUAL
             UNION ALL
-            SELECT 'clientTypeDesc' AS COLUMN_NAME, 5 FROM DUAL
+            SELECT 'clientIdTypeDesc' AS COLUMN_NAME, 5 FROM DUAL
             UNION ALL
-            SELECT 'birthdate' AS COLUMN_NAME, 6 FROM DUAL
+            SELECT 'clientIdentification' AS COLUMN_NAME, 6 FROM DUAL
             UNION ALL
-            SELECT 'clientIdTypeDesc' AS COLUMN_NAME, 7 FROM DUAL
+            SELECT 'corpRegnNmbr' AS COLUMN_NAME, 7 FROM DUAL
             UNION ALL
-            SELECT 'clientIdentification' AS COLUMN_NAME, 8 FROM DUAL
+            SELECT 'wcbFirmNumber' AS COLUMN_NAME, 8 FROM DUAL
             UNION ALL
-            SELECT 'corpRegnNmbr' AS COLUMN_NAME, 9 FROM DUAL
+            SELECT 'ocgSupplierNmbr' AS COLUMN_NAME, 9 FROM DUAL
             UNION ALL
-            SELECT 'wcbFirmNumber' AS COLUMN_NAME, 10 FROM DUAL
+            SELECT 'clientStatusDesc' AS COLUMN_NAME, 10 FROM DUAL
             UNION ALL
-            SELECT 'ocgSupplierNmbr' AS COLUMN_NAME, 11 FROM DUAL
-            UNION ALL
-            SELECT 'clientStatusDesc' AS COLUMN_NAME, 12 FROM DUAL
-            UNION ALL
-            SELECT 'clientComment' AS COLUMN_NAME, 13 FROM DUAL
+            SELECT 'clientComment' AS COLUMN_NAME, 11 FROM DUAL
         ) COL
       )
       SELECT
@@ -159,11 +157,11 @@ public final class ForestClientQueries {
             AL.ADDRESS_2,
             AL.ADDRESS_3,
             AL.ADDRESS_1,
-            AL.CITY,
-            CASE
-                WHEN PC.PROVINCE_STATE_NAME IS NULL THEN AL.PROVINCE
-                ELSE PC.PROVINCE_STATE_NAME
-            END AS PROVINCE_DESC,
+            AL.CITY || ', ' || 
+                CASE
+                    WHEN PC.PROVINCE_STATE_NAME IS NULL THEN AL.PROVINCE
+                    ELSE PC.PROVINCE_STATE_NAME
+                END AS CITY_PROVINCE_DESC,
             AL.COUNTRY AS COUNTRY_DESC,
             AL.POSTAL_CODE,
             AL.EMAIL_ADDRESS,
@@ -215,8 +213,7 @@ public final class ForestClientQueries {
                   WHEN 'addressTwo' THEN B.ADDRESS_2
                   WHEN 'addressThree' THEN B.ADDRESS_3
                   WHEN 'addressOne' THEN B.ADDRESS_1
-                  WHEN 'city' THEN B.CITY
-                  WHEN 'provinceDesc' THEN B.PROVINCE_DESC
+                  WHEN 'cityProvinceDesc' THEN B.CITY_PROVINCE_DESC
                   WHEN 'countryDesc' THEN B.COUNTRY_DESC
                   WHEN 'postalCode' THEN B.POSTAL_CODE
                   WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
@@ -236,8 +233,7 @@ public final class ForestClientQueries {
                       WHEN 'addressTwo' THEN B.ADDRESS_2
                       WHEN 'addressThree' THEN B.ADDRESS_3
                       WHEN 'addressOne' THEN B.ADDRESS_1
-                      WHEN 'city' THEN B.CITY
-                      WHEN 'provinceDesc' THEN B.PROVINCE_DESC
+                      WHEN 'cityProvinceDesc' THEN B.CITY_PROVINCE_DESC
                       WHEN 'countryDesc' THEN B.COUNTRY_DESC
                       WHEN 'postalCode' THEN B.POSTAL_CODE
                       WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
@@ -272,31 +268,29 @@ public final class ForestClientQueries {
               UNION ALL
               SELECT 'addressOne' AS COLUMN_NAME, 5 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'city' AS COLUMN_NAME, 6 AS FIELD_ORDER FROM DUAL    
+              SELECT 'cityProvinceDesc' AS COLUMN_NAME, 6 AS FIELD_ORDER FROM DUAL    
               UNION ALL
-              SELECT 'provinceDesc' AS COLUMN_NAME, 7 AS FIELD_ORDER FROM DUAL    
+              SELECT 'countryDesc' AS COLUMN_NAME, 7 AS FIELD_ORDER FROM DUAL 
               UNION ALL
-              SELECT 'countryDesc' AS COLUMN_NAME, 8 AS FIELD_ORDER FROM DUAL 
+              SELECT 'postalCode' AS COLUMN_NAME, 8 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'postalCode' AS COLUMN_NAME, 9 AS FIELD_ORDER FROM DUAL  
+              SELECT 'emailAddress' AS COLUMN_NAME, 9 AS FIELD_ORDER FROM DUAL    
               UNION ALL
-              SELECT 'emailAddress' AS COLUMN_NAME, 10 AS FIELD_ORDER FROM DUAL   
+              SELECT 'businessPhone' AS COLUMN_NAME, 10 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'businessPhone' AS COLUMN_NAME, 11 AS FIELD_ORDER FROM DUAL  
+              SELECT 'cellPhone' AS COLUMN_NAME, 11 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'cellPhone' AS COLUMN_NAME, 12 AS FIELD_ORDER FROM DUAL  
+              SELECT 'homePhone' AS COLUMN_NAME, 12 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'homePhone' AS COLUMN_NAME, 13 AS FIELD_ORDER FROM DUAL  
+              SELECT 'faxNumber' AS COLUMN_NAME, 13 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'faxNumber' AS COLUMN_NAME, 14 AS FIELD_ORDER FROM DUAL
+              SELECT 'cliLocnComment' AS COLUMN_NAME, 14 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'cliLocnComment' AS COLUMN_NAME, 15 AS FIELD_ORDER FROM DUAL
+              SELECT 'hdbsCompanyCode' AS COLUMN_NAME, 15 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'hdbsCompanyCode' AS COLUMN_NAME, 16 AS FIELD_ORDER FROM DUAL
+              SELECT 'returnedMailDate' AS COLUMN_NAME, 16 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'returnedMailDate' AS COLUMN_NAME, 17 AS FIELD_ORDER FROM DUAL
-              UNION ALL
-              SELECT 'trustLocationInd' AS COLUMN_NAME, 18 AS FIELD_ORDER FROM DUAL
+              SELECT 'trustLocationInd' AS COLUMN_NAME, 17 AS FIELD_ORDER FROM DUAL
           ) COL
       )
       SELECT
