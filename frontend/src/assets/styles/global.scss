@@ -899,6 +899,20 @@ cds-actionable-notification * {
   margin: 1.5rem 0 1.5rem 0;
 }
 
+.combined-inputs {
+  cds-combo-box::part(helper-text), cds-text-input [slot] {
+    display: none;
+  }
+}
+
+.field-error {
+  display: block;
+  overflow: visible;
+  max-height: 12.5rem;
+  font-weight: 400;
+  color: var(--cds-text-error, #da1e28);
+}
+
 .grouping-01 {
   align-self: stretch;
   display: flex;
@@ -920,6 +934,10 @@ cds-actionable-notification * {
       width: 32rem;
     }
     
+    &--width-9rem {
+      width: 9rem;
+    }
+
     &--width-8rem {
       width: 8rem;
     }
@@ -933,6 +951,12 @@ cds-actionable-notification * {
   gap: 0.25rem;
   background: var(--others-transparent-transparent, #fff);
   background-blend-mode: multiply;
+
+  &.grouping-03 {
+    &--width-20_5rem {
+      width: 20.5rem;;
+    }
+  }
 }
 
 .form-steps-staff .frame-01 {
