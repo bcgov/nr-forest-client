@@ -15,7 +15,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -209,8 +209,8 @@ public class ClientService {
                     .filter(group -> !group.isEmpty())
                     .map(
                         group -> {
-                          final Set<HistoryLogDetailsDto> details = new HashSet<>();
-                          final Set<HistoryLogReasonsDto> reasons = new HashSet<>();
+                          final Set<HistoryLogDetailsDto> details = new LinkedHashSet<>();
+                          final Set<HistoryLogReasonsDto> reasons = new LinkedHashSet<>();
 
                           for (HistoryLogDto dto : group) {
                             details.add(
