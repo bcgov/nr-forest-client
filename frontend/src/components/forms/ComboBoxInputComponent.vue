@@ -230,10 +230,11 @@ const safeHelperText = computed(() => props.tip || " ");
 </script>
 
 <template>
-  <div class="grouping-03">
+  <div class="grouping-03" :class="$attrs.class">
     <div class="input-group">
       <cds-combo-box
         v-for="time in comboBoxMountTime"
+        v-bind="$attrs"
         ref="cdsComboBoxArrayRef"
         :key="time"
         :id="id"
