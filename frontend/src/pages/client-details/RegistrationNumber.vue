@@ -122,14 +122,13 @@ emit("valid", true);
 <template>
   <div class="label-with-icon line-height-0 parent-label">
     <div class="cds-text-input-label">
-      <span class="cds-text-input-required-label">* </span>
       <span>Registration number</span>
     </div>
   </div>
   <div class="horizontal-input-grouping combined-inputs">
     <combo-box-input-component
       id="input-registryType"
-      class="grouping-03--width-20_5rem"
+      class="grouping-03--width-32rem"
       label="Type"
       :initial-value="
         formattedRegistryTypesList?.find(
@@ -151,7 +150,7 @@ emit("valid", true);
     />
     <text-input-component
       id="input-registryNumber"
-      class="grouping-02--width-9rem"
+      class="grouping-02--width-8rem"
       label="Number"
       mask="#########"
       placeholder=""
