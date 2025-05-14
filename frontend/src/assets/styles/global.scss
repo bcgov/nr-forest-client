@@ -915,6 +915,33 @@ cds-actionable-notification * {
   box-sizing: border-box;
 }
 
+.card-03 {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  gap: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
+  background: #fff;
+  max-width: 50.4375rem;
+}
+
+/*.grouped-logs {
+  display: block;
+  margin-bottom: 0;
+}
+
+.non-grouped-log {
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.grouped-logs p {
+  margin-bottom: 0; 
+  gap: 0;
+}*/
+
 .divider {
   margin: 1.5rem 0 1.5rem 0;
 }

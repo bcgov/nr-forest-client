@@ -587,9 +587,55 @@ export const formatLocation = (code: string, name: string): string => {
 
 const columnNameToLabelMap: Record<string, string> = {
   fullName: "Full name",
+  clientTypeDesc: "Client type",
   clientAcronym: "Acronym",
-  email: "Email Address",
-  // add more mappings as needed
+  birthdate: "Date of birth",
+  clientIdTypeDesc: "ID type",
+  clientIdentification: "ID number",
+  clientStatusDesc: "Client status",
+  corpRegnNmbr: "Registration number",
+  wcbFirmNumber: "WorkSafeBC number",
+  doingBusinessAs: "Doing business as",
+  locnExpiredInd: "Location status",
+
+  locationName: "Location name",
+  
+  /*addressOne: "Address",
+  addressTwo: "Address",
+  addressThree: "Address",
+  cityProvinceDesc: "Address",
+  city: "Address",
+  provinceDesc: "Address",
+  countryDesc: "Address",
+  postalCode: "Address",*/
+
+  addressOne: "Street address or PO box",
+  addressTwo: "Delivery information",
+  addressThree: "Additional delivery information",
+  cityProvinceDesc: "City and province, state or territory",
+  city: "City",
+  provinceDesc: "Province or territory",
+  countryDesc: "Country",
+  postalCode: "Postal code",
+
+  trustLocationInd: "Trust location",
+  contactTypeDesc: "Contact type",
+  contactName: "Full name",
+  emailAddress: "Email address",
+  businessPhone: "Primary phone number",
+  secondaryPhone: "Secondary phone number",
+  homePhone: "Tertiary phone number",
+  cellPhone: "Secondary phone number",
+  cliLocnComment: "Notes",
+  faxNumber: "Fax",
+  returnedMailDate: "Returned mail date",
+  primaryClient: "Primary client",
+  primaryClientLocation: "Primary client location",
+  relationshipType: "Relationship type",
+  relatedClient: "Related client",
+  relatedClientLocation: "Related client location",
+  signingAuthInd: "Signing auth",
+  percentOwnership: "Percent ownership"
 };
 
 export function getLabelByColumnName(columnName: string): string {

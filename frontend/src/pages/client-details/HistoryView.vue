@@ -3,7 +3,7 @@ import type { HistoryLogResult } from '@/dto/CommonTypesDto';
 import { useFetchTo } from '@/composables/useFetch';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { getLabelByColumnName } from "@/services/ForestClientService";
+import { getLabelByColumnName, getTagColorByClientStatus } from "@/services/ForestClientService";
 import Avatar16 from "@carbon/icons-vue/es/user--avatar/16";
 import Location16 from "@carbon/icons-vue/es/location/16";
 import Document16 from "@carbon/icons-vue/es/document/16";
@@ -46,19 +46,48 @@ watch(
   },
   { immediate: true }
 );
+
+const getSplitDetails = (details) => {
+  const addressGroup = [];
+  const nonGrouped = [];
+
+  for (const item of details) {
+    const label = getLabelByColumnName(item.columnName);
+    if (label === 'Address') {
+      addressGroup.push(item);
+    } else {
+      nonGrouped.push({ ...item, label });
+    }
+  }
+
+  return { addressGroup, nonGrouped };
+};
+
+const shouldPrintAddressLabel = (log, allLogs, idx) => {
+  const isAddress = getLabelByColumnName(log.columnName) === 'Address';
+  if (!isAddress) return false;
+
+  for (let i = 0; i < idx; i++) {
+    if (getLabelByColumnName(allLogs[i].columnName) === 'Address') {
+      return false;
+    }
+  }
+  return true;
+}
 </script>
 
 <template>
-  <!-- TODO: Remove this when implementing the skeleton -->
-  <cds-inline-loading 
-    v-if="loading" />
   <div class="card-02">
+    <!-- TODO: Remove this when implementing the skeleton -->
+    <cds-inline-loading v-if="loading" />
+
     <div
       v-if="!loading"
       v-for="(historyLog, index) in historyLogs"
       style="border-left: 0.1rem solid #dfdfe1; padding-left: 1rem; padding-bottom: 2rem;"
     >
-      <table style="width: 100%; table-layout: fixed;">
+      <table style="width: 100%; table-layout: fixed;"
+        v-if="!loading">
         <colgroup>
           <col style="width: 1.5rem;" />
           <col />
@@ -100,16 +129,66 @@ watch(
             </td> 
             <td></td>
           </tr>
+
           <tr v-if="showDetails[index]" :id="'logDetails' + index">
             <td></td>
-            <td class="grouping-05">
+            <td class="card-03">
               <div v-for="(historyDtlsLog, index) in historyLog.details">
-                <p class="label-02">
+                <p class="label-02" v-if="getLabelByColumnName(historyDtlsLog.columnName)">
                   {{ getLabelByColumnName(historyDtlsLog.columnName) }}
+                </p>
+                <p>
+                  <span v-if="historyDtlsLog.oldValue"><del>{{ historyDtlsLog.oldValue }}</del>&nbsp;</span>
+
+                  <span v-if="historyDtlsLog.columnName === 'clientStatusDesc' ||
+                              historyDtlsLog.columnName === 'locnExpiredInd'">
+                    <cds-tag :type="getTagColorByClientStatus(historyDtlsLog.newValue)">
+                      <span>{{ historyDtlsLog.newValue }}</span>
+                    </cds-tag>
+                  </span>
+
+                  <span v-if="historyDtlsLog.columnName !== 'clientStatusDesc' &&
+                              historyDtlsLog.columnName !== 'locnExpiredInd'">
+                      {{ historyDtlsLog.newValue }}
+                  </span>
                 </p>
               </div>
             </td>
           </tr>
+
+<!--           <tr v-if="showDetails[index]" :id="'logDetails' + index">
+            <td></td>
+            <td>
+              <div class="card-03">
+                <div v-for="(log, idx) in historyLog.details" 
+                    :key="idx"
+                    :class="getLabelByColumnName(log.columnName) === 'Address' ? 'grouped-logs' : 'non-grouped-log'">
+                  <p
+                    class="label-02"
+                    v-if="shouldPrintAddressLabel(log, historyLog.details, idx)">
+                    Address
+                  </p>
+                  <p
+                    class="label-02"
+                    v-else-if="getLabelByColumnName(log.columnName) !== 'Address'">
+                    {{ getLabelByColumnName(log.columnName) }}
+                  </p>
+                  <p>
+                    <span v-if="log.oldValue"><del>{{ log.oldValue }}</del>&nbsp;</span>
+                    <span
+                      v-if="log.columnName === 'clientStatusDesc' ||
+                              log.columnName === 'locnExpiredInd'">
+                      <cds-tag :type="getTagColorByClientStatus(log.newValue)">
+                        <span>{{ log.newValue }}</span>
+                      </cds-tag>
+                    </span>
+                    <span v-else>{{ log.newValue }}</span>
+                  </p>
+                </div>
+              </div>
+            </td>
+          </tr> -->
+
         </tbody>
       </table>
     </div>
