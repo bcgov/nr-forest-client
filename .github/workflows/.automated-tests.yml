@@ -16,9 +16,9 @@ jobs:
     environment: tools
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         name: Start node
         with:
           node-version: 18
@@ -42,7 +42,7 @@ jobs:
           CYPRESS_bcsc_username: ${{ secrets.UAT_BCSC_USERNAME }}
 
       - name: Publish Cypress Results
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@cf701569b05ccdd861a76b8607a66d76f6fd4857 # v5
         continue-on-error: true
         if: always()
         with:
@@ -73,7 +73,7 @@ jobs:
           fi
         id: check_artifacts
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         name: Upload Cypress Screenshots
         if: always()
         with:
@@ -81,7 +81,7 @@ jobs:
           path: cypress/cypress/screenshots
           retention-days: 7
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         name: Upload Cypress Videos
         if: always()
         with:
