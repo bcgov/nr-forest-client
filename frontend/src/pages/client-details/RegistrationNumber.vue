@@ -68,13 +68,11 @@ const validateRegistrationNumberJoinedFields = () => {
   }
 
   if (modelValue.client.registryCompanyTypeCode && !modelValue.client.corpRegnNmbr) {
-    registryJoinedFieldsError.value =
-      "When Type is non-empty you must also provide the Number part for the registration number";
+    registryJoinedFieldsError.value = "You must provide a number if a type is selected";
   }
 
   if (!modelValue.client.registryCompanyTypeCode && modelValue.client.corpRegnNmbr) {
-    registryJoinedFieldsError.value =
-      "When the Number part is non-empty you must also provide the Type for the registration number";
+    registryJoinedFieldsError.value = "You must provide a type if the number is filled in";
   }
 };
 
