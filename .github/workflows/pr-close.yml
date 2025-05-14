@@ -14,7 +14,7 @@ permissions: {}
 jobs:
   cleanup:
     name: Cleanup and Images
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@v0.9.0
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@0b8121a528aaa05ef8def2f79be9081691dfe98a # v0.9.0
     permissions:
       packages: write
     secrets:
@@ -35,7 +35,7 @@ jobs:
       packages: write
     runs-on: ubuntu-24.04
     steps:
-      - uses: shrink/actions-docker-registry-tag@v4
+      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa # v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/legacydb
