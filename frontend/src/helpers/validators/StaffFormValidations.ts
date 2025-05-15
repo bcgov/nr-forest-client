@@ -320,6 +320,13 @@ fieldValidations["businessInformation.notes"] = [
   isAsciiLineBreak("notes"),
 ];
 
+fieldValidations["client.registryCompanyTypeCode"] = [];
+
+fieldValidations["client.corpRegnNmbr"] = [
+  optional(isOnlyNumbers("The Number part in the registration number should contain only numbers")),
+  optional(isMaxSizeMsg("Number", 9)),
+];
+
 // General information
 
 export const addValidation = (key: string, validation: (value: string) => string): void => {

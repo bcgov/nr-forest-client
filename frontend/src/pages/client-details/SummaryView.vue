@@ -2,6 +2,7 @@
 import { computed, reactive, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import type { ClientDetails, CodeNameType, UserRole } from "@/dto/CommonTypesDto";
+import RegistrationNumber from "@/pages/client-details/RegistrationNumber.vue";
 import {
   getFormattedHtml,
   getTagColorByClientStatus,
@@ -112,7 +113,7 @@ const editRoles: Record<FieldId, UserRole[]> = {
   clientName: ["CLIENT_ADMIN"],
   acronym: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   doingBusinessAs: ["CLIENT_ADMIN"],
-  // registrationNumber: ["CLIENT_ADMIN"],
+  registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   clientStatus: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   notes: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
@@ -161,7 +162,15 @@ const displayEditable = (fieldId: FieldId) =>
 
 const displayReadonly = (fieldId: FieldId) => !isEditing.value || !displayEditable(fieldId);
 
-const clientRegistrationNumber = computed(() => {
+const rawClientRegistrationNumber = computed(() => {
+  const { registryCompanyTypeCode, corpRegnNmbr } = props.data.client;
+  return `${registryCompanyTypeCode || ""}${corpRegnNmbr || ""}`;
+});
+
+/**
+ * This value will only be available if both Type and Number are present
+ * */
+const safeClientRegistrationNumber = computed(() => {
   const { registryCompanyTypeCode, corpRegnNmbr } = props.data.client;
   if (!registryCompanyTypeCode || !corpRegnNmbr) {
     return undefined;
@@ -234,9 +243,9 @@ const client = computed(() => props.data.client);
     <read-only-component
       label="Registration number"
       id="registrationNumber"
-      v-if="displayReadonly('registrationNumber') && clientRegistrationNumber"
+      v-if="displayReadonly('registrationNumber') && rawClientRegistrationNumber"
     >
-      <span class="body-compact-01">{{ clientRegistrationNumber }}</span>
+      <span class="body-compact-01">{{ rawClientRegistrationNumber }}</span>
     </read-only-component>
     <read-only-component
       label="WorkSafeBC number"
@@ -248,7 +257,7 @@ const client = computed(() => props.data.client);
     <read-only-component
       label="BC Registries standing"
       id="goodStanding"
-      v-if="clientRegistrationNumber"
+      v-if="safeClientRegistrationNumber"
     >
       <div class="internal-grouping-01">
         <span class="body-compact-01 default-typography">{{
@@ -363,19 +372,13 @@ const client = computed(() => props.data.client);
       @empty="validation.doingBusinessAs = true"
       @error="validation.doingBusinessAs = !$event"
     />
-    <text-input-component
-      id="input-registrationNumber"
-      v-if="displayEditable('registrationNumber')"
-      label="Registration number"
-      mask="NNNNNNNNNNN"
-      placeholder=""
-      autocomplete="off"
-      v-model="clientRegistrationNumber"
-      :validations="[]"
-      enabled
-      @empty="validation.workSafeBCNumber = true"
-      @error="validation.workSafeBCNumber = !$event"
-    />
+    <div v-if="displayEditable('registrationNumber')">
+      <registration-number
+        :model-value="formData"
+        :original-value="props.data"
+        @valid="validation.registrationNumber = $event"
+      />
+    </div>
     <text-input-component
       id="input-workSafeBCNumber"
       v-if="displayEditable('workSafeBCNumber')"
