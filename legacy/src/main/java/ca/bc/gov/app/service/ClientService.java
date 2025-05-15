@@ -14,7 +14,8 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -208,8 +209,8 @@ public class ClientService {
                     .filter(group -> !group.isEmpty())
                     .map(
                         group -> {
-                          final Set<HistoryLogDetailsDto> details = new HashSet<>();
-                          final Set<HistoryLogReasonsDto> reasons = new HashSet<>();
+                          final Set<HistoryLogDetailsDto> details = new LinkedHashSet<>();
+                          final Set<HistoryLogReasonsDto> reasons = new LinkedHashSet<>();
 
                           for (HistoryLogDto dto : group) {
                             details.add(
@@ -250,6 +251,19 @@ public class ClientService {
                 return Flux.error(
                     new NoValueFoundException("Client with number: " + clientNumber));
               }
+              
+              list.sort(
+                  Comparator
+                      .comparing(
+                          (Pair<HistoryLogDto, Integer> pair) ->
+                              "Client created".equals(pair.getLeft().identifierLabel()) ? 1 : 0
+                      )
+                      .thenComparing(
+                          (Pair<HistoryLogDto, Integer> pair) ->
+                              pair.getLeft().updateTimestamp(),
+                          Comparator.reverseOrder()
+                      )
+              );
 
               log.info("Total history logs found for client {}: {}", clientNumber, list.size());
               return Flux.fromIterable(list);

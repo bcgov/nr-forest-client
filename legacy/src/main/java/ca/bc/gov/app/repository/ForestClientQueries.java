@@ -11,16 +11,22 @@ public final class ForestClientQueries {
         SELECT
             AL.FOREST_CLIENT_AUDIT_ID AS IDX,
             AL.CLIENT_NUMBER,
-            AL.CLIENT_NAME,
+            CASE 
+                WHEN AL.LEGAL_FIRST_NAME IS NOT NULL AND AL.LEGAL_MIDDLE_NAME IS NOT NULL THEN
+                    AL.LEGAL_FIRST_NAME || ' ' || AL.LEGAL_MIDDLE_NAME || ' ' || AL.CLIENT_NAME
+                WHEN AL.LEGAL_FIRST_NAME IS NOT NULL THEN
+                    AL.LEGAL_FIRST_NAME || ' ' || AL.CLIENT_NAME
+                ELSE
+                    NVL(AL.LEGAL_FIRST_NAME, '') || NVL(AL.LEGAL_MIDDLE_NAME, '') || AL.CLIENT_NAME
+            END AS FULL_NAME,
             AL.CLIENT_ACRONYM,
-            AL.LEGAL_FIRST_NAME,
             AL.LEGAL_MIDDLE_NAME,
             AL.CLIENT_TYPE_CODE,
             TO_CHAR(AL.BIRTHDATE, 'YYYY-MM-DD') AS BIRTHDATE,
             AL.CLIENT_ID_TYPE_CODE,
             AL.CLIENT_IDENTIFICATION,
             AL.REGISTRY_COMPANY_TYPE_CODE || AL.CORP_REGN_NMBR AS CORP_REGN_NMBR,
-            AL.WCB_FIRM_NUMBER,
+            TRIM(AL.WCB_FIRM_NUMBER) AS WCB_FIRM_NUMBER,
             AL.OCG_SUPPLIER_NMBR,
             AL.CLIENT_STATUS_CODE,
             AL.CLIENT_COMMENT,
@@ -55,10 +61,8 @@ public final class ForestClientQueries {
             END AS IDENTIFIER_LABEL,
             COL.COLUMN_NAME,
             CASE COL.COLUMN_NAME
-                WHEN 'clientName' THEN B.CLIENT_NAME
                 WHEN 'clientAcronym' THEN B.CLIENT_ACRONYM
-                WHEN 'legalFirstName' THEN B.LEGAL_FIRST_NAME
-                WHEN 'legalMiddleName' THEN B.LEGAL_MIDDLE_NAME
+                WHEN 'fullName' THEN B.FULL_NAME
                 WHEN 'clientTypeDesc' THEN B.CLIENT_TYPE_DESC
                 WHEN 'birthdate' THEN B.BIRTHDATE
                 WHEN 'clientIdTypeDesc' THEN B.CLIENT_ID_TYPE_DESC
@@ -71,10 +75,8 @@ public final class ForestClientQueries {
             END AS NEW_VALUE,
             LAG(
                 CASE COL.COLUMN_NAME
-                    WHEN 'clientName' THEN B.CLIENT_NAME
                     WHEN 'clientAcronym' THEN B.CLIENT_ACRONYM
-                    WHEN 'legalFirstName' THEN B.LEGAL_FIRST_NAME
-                    WHEN 'legalMiddleName' THEN B.LEGAL_MIDDLE_NAME
+                    WHEN 'fullName' THEN B.FULL_NAME
                     WHEN 'clientTypeDesc' THEN B.CLIENT_TYPE_DESC
                     WHEN 'birthdate' THEN B.BIRTHDATE
                     WHEN 'clientIdTypeDesc' THEN B.CLIENT_ID_TYPE_DESC
@@ -97,31 +99,27 @@ public final class ForestClientQueries {
             COL.FIELD_ORDER
         FROM BASE_DATA B
         CROSS JOIN (
-            SELECT 'clientName' AS COLUMN_NAME, 1 AS FIELD_ORDER FROM DUAL
+            SELECT 'fullName' AS COLUMN_NAME, 1 AS FIELD_ORDER FROM DUAL
             UNION ALL
             SELECT 'clientAcronym' AS COLUMN_NAME, 2 FROM DUAL
             UNION ALL
-            SELECT 'legalFirstName' AS COLUMN_NAME, 3 FROM DUAL
+            SELECT 'clientTypeDesc' AS COLUMN_NAME, 3 FROM DUAL
             UNION ALL
-            SELECT 'legalMiddleName' AS COLUMN_NAME, 4 FROM DUAL
+            SELECT 'birthdate' AS COLUMN_NAME, 4 FROM DUAL
             UNION ALL
-            SELECT 'clientTypeDesc' AS COLUMN_NAME, 5 FROM DUAL
+            SELECT 'clientIdTypeDesc' AS COLUMN_NAME, 5 FROM DUAL
             UNION ALL
-            SELECT 'birthdate' AS COLUMN_NAME, 6 FROM DUAL
+            SELECT 'clientIdentification' AS COLUMN_NAME, 6 FROM DUAL
             UNION ALL
-            SELECT 'clientIdTypeDesc' AS COLUMN_NAME, 7 FROM DUAL
+            SELECT 'corpRegnNmbr' AS COLUMN_NAME, 7 FROM DUAL
             UNION ALL
-            SELECT 'clientIdentification' AS COLUMN_NAME, 8 FROM DUAL
+            SELECT 'wcbFirmNumber' AS COLUMN_NAME, 8 FROM DUAL
             UNION ALL
-            SELECT 'corpRegnNmbr' AS COLUMN_NAME, 9 FROM DUAL
+            SELECT 'ocgSupplierNmbr' AS COLUMN_NAME, 9 FROM DUAL
             UNION ALL
-            SELECT 'wcbFirmNumber' AS COLUMN_NAME, 10 FROM DUAL
+            SELECT 'clientStatusDesc' AS COLUMN_NAME, 10 FROM DUAL
             UNION ALL
-            SELECT 'ocgSupplierNmbr' AS COLUMN_NAME, 11 FROM DUAL
-            UNION ALL
-            SELECT 'clientStatusDesc' AS COLUMN_NAME, 12 FROM DUAL
-            UNION ALL
-            SELECT 'clientComment' AS COLUMN_NAME, 13 FROM DUAL
+            SELECT 'clientComment' AS COLUMN_NAME, 11 FROM DUAL
         ) COL
       )
       SELECT
@@ -167,10 +165,34 @@ public final class ForestClientQueries {
             AL.COUNTRY AS COUNTRY_DESC,
             AL.POSTAL_CODE,
             AL.EMAIL_ADDRESS,
-            AL.BUSINESS_PHONE,
-            AL.CELL_PHONE,
-            AL.HOME_PHONE,
-            AL.FAX_NUMBER,
+            CASE 
+              WHEN LENGTH(AL.BUSINESS_PHONE) = 10 AND REGEXP_LIKE(AL.BUSINESS_PHONE, '^\\d{10}$') THEN
+                '(' || SUBSTR(AL.BUSINESS_PHONE, 1, 3) || ') ' ||
+                SUBSTR(AL.BUSINESS_PHONE, 4, 3) || '-' ||
+                SUBSTR(AL.BUSINESS_PHONE, 7, 4)
+              ELSE AL.BUSINESS_PHONE
+            END AS BUSINESS_PHONE,
+            CASE 
+                WHEN LENGTH(AL.CELL_PHONE) = 10 AND REGEXP_LIKE(AL.CELL_PHONE, '^\\d{10}$') THEN
+                  '(' || SUBSTR(AL.CELL_PHONE, 1, 3) || ') ' ||
+                  SUBSTR(AL.CELL_PHONE, 4, 3) || '-' ||
+                  SUBSTR(AL.CELL_PHONE, 7, 4)
+                ELSE AL.CELL_PHONE
+            END AS CELL_PHONE,
+            CASE 
+                WHEN LENGTH(AL.HOME_PHONE) = 10 AND REGEXP_LIKE(AL.HOME_PHONE, '^\\d{10}$') THEN
+                  '(' || SUBSTR(AL.HOME_PHONE, 1, 3) || ') ' ||
+                  SUBSTR(AL.HOME_PHONE, 4, 3) || '-' ||
+                  SUBSTR(AL.HOME_PHONE, 7, 4)
+                ELSE AL.HOME_PHONE
+            END AS HOME_PHONE,
+            CASE 
+                WHEN LENGTH(AL.FAX_NUMBER) = 10 AND REGEXP_LIKE(AL.FAX_NUMBER, '^\\d{10}$') THEN
+                  '(' || SUBSTR(AL.FAX_NUMBER, 1, 3) || ') ' ||
+                  SUBSTR(AL.FAX_NUMBER, 4, 3) || '-' ||
+                  SUBSTR(AL.FAX_NUMBER, 7, 4)
+                ELSE AL.FAX_NUMBER
+            END AS FAX_NUMBER,
             AL.CLI_LOCN_COMMENT,
             AL.HDBS_COMPANY_CODE,
             TO_CHAR(AL.RETURNED_MAIL_DATE, 'YYYY-MM-DD') AS RETURNED_MAIL_DATE,
@@ -274,13 +296,13 @@ public final class ForestClientQueries {
               UNION ALL
               SELECT 'city' AS COLUMN_NAME, 6 AS FIELD_ORDER FROM DUAL    
               UNION ALL
-              SELECT 'provinceDesc' AS COLUMN_NAME, 7 AS FIELD_ORDER FROM DUAL    
+              SELECT 'provinceDesc' AS COLUMN_NAME, 7 AS FIELD_ORDER FROM DUAL 
               UNION ALL
               SELECT 'countryDesc' AS COLUMN_NAME, 8 AS FIELD_ORDER FROM DUAL 
               UNION ALL
               SELECT 'postalCode' AS COLUMN_NAME, 9 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'emailAddress' AS COLUMN_NAME, 10 AS FIELD_ORDER FROM DUAL   
+              SELECT 'emailAddress' AS COLUMN_NAME, 10 AS FIELD_ORDER FROM DUAL    
               UNION ALL
               SELECT 'businessPhone' AS COLUMN_NAME, 11 AS FIELD_ORDER FROM DUAL  
               UNION ALL
@@ -327,9 +349,27 @@ public final class ForestClientQueries {
               AL.CLIENT_CONTACT_ID,
               AL.CLIENT_AUDIT_CODE,
               AL.CONTACT_NAME,
-              AL.BUSINESS_PHONE,
-              AL.CELL_PHONE,
-              AL.FAX_NUMBER,
+              CASE 
+                WHEN LENGTH(AL.BUSINESS_PHONE) = 10 AND REGEXP_LIKE(AL.BUSINESS_PHONE, '^\\d{10}$') THEN
+                  '(' || SUBSTR(AL.BUSINESS_PHONE, 1, 3) || ') ' ||
+                  SUBSTR(AL.BUSINESS_PHONE, 4, 3) || '-' ||
+                  SUBSTR(AL.BUSINESS_PHONE, 7, 4)
+                ELSE AL.BUSINESS_PHONE
+              END AS BUSINESS_PHONE,
+              CASE 
+                WHEN LENGTH(AL.CELL_PHONE) = 10 AND REGEXP_LIKE(AL.CELL_PHONE, '^\\d{10}$') THEN
+                  '(' || SUBSTR(AL.CELL_PHONE, 1, 3) || ') ' ||
+                  SUBSTR(AL.CELL_PHONE, 4, 3) || '-' ||
+                  SUBSTR(AL.CELL_PHONE, 7, 4)
+                ELSE AL.CELL_PHONE
+              END AS CELL_PHONE,
+              CASE 
+                WHEN LENGTH(AL.FAX_NUMBER) = 10 AND REGEXP_LIKE(AL.FAX_NUMBER, '^\\d{10}$') THEN
+                  '(' || SUBSTR(AL.FAX_NUMBER, 1, 3) || ') ' ||
+                  SUBSTR(AL.FAX_NUMBER, 4, 3) || '-' ||
+                  SUBSTR(AL.FAX_NUMBER, 7, 4)
+                ELSE AL.FAX_NUMBER
+              END AS FAX_NUMBER,
               AL.EMAIL_ADDRESS,
               AL.UPDATE_TIMESTAMP,
               AL.UPDATE_USERID,
@@ -406,7 +446,7 @@ public final class ForestClientQueries {
           '' AS REASON
       FROM AUDIT_DATA A
       WHERE (
-          A.CHANGE_TYPE = 'DEL' OR
+          (A.CHANGE_TYPE = 'DEL' AND OLD_VALUE IS NOT NULL AND NEW_VALUE IS NOT NULL) OR
           (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL) OR
           (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL) OR
           (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
