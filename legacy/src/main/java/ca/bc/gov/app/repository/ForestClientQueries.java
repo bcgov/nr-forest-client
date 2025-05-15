@@ -1,4 +1,5 @@
-package ca.bc.gov.app.repository;
+
+   package ca.bc.gov.app.repository;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -150,8 +151,8 @@ public final class ForestClientQueries {
             AL.CLIENT_LOCATION_AUDIT_ID,
             AL.CLIENT_LOCN_CODE,
             CASE
-                WHEN AL.LOCN_EXPIRED_IND = 'Y' THEN 'Active'
-                WHEN AL.LOCN_EXPIRED_IND = 'N' THEN 'Deactivated'
+                WHEN AL.LOCN_EXPIRED_IND = 'Y' THEN 'Deactivated'
+                WHEN AL.LOCN_EXPIRED_IND = 'N' THEN 'Active'
             END AS LOCN_EXPIRED_IND,
             AL.CLIENT_LOCN_NAME,
             AL.ADDRESS_2,
@@ -288,11 +289,11 @@ public final class ForestClientQueries {
               UNION ALL
               SELECT 'locationName' AS COLUMN_NAME, 2 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'addressTwo' AS COLUMN_NAME, 3 AS FIELD_ORDER FROM DUAL
+              SELECT 'addressOne' AS COLUMN_NAME, 3 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'addressThree' AS COLUMN_NAME, 4 AS FIELD_ORDER FROM DUAL
+              SELECT 'addressTwo' AS COLUMN_NAME, 4 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'addressOne' AS COLUMN_NAME, 5 AS FIELD_ORDER FROM DUAL
+              SELECT 'addressThree' AS COLUMN_NAME, 5 AS FIELD_ORDER FROM DUAL
               UNION ALL
               SELECT 'city' AS COLUMN_NAME, 6 AS FIELD_ORDER FROM DUAL    
               UNION ALL
@@ -528,17 +529,23 @@ public final class ForestClientQueries {
               AL.RELATED_CLNT_NMBR,
               AL.CLIENT_NUMBER || ', ' || PFC.CLIENT_NAME AS PRIMARY_CLIENT,
               AL.RELATED_CLNT_NMBR || ', ' || RFC.CLIENT_NAME AS RELATED_CLIENT,
-              AL.CLIENT_LOCN_CODE || ' - ' || PCL.CLIENT_LOCN_NAME AS PRIMARY_CLIENT_LOCATION,
-              AL.RELATED_CLNT_LOCN || ' - ' || RCL.CLIENT_LOCN_NAME AS RELATED_CLIENT_LOCATION,
+              CASE 
+                  WHEN PCL.CLIENT_LOCN_NAME IS NOT NULL THEN AL.CLIENT_LOCN_CODE || ' - ' || PCL.CLIENT_LOCN_NAME 
+                  ELSE AL.CLIENT_LOCN_CODE
+              END AS PRIMARY_CLIENT_LOCATION,
+              CASE 
+                  WHEN RCL.CLIENT_LOCN_NAME IS NOT NULL THEN AL.RELATED_CLNT_LOCN || ' - ' || RCL.CLIENT_LOCN_NAME 
+                  ELSE AL.RELATED_CLNT_LOCN
+              END AS RELATED_CLIENT_LOCATION,
               AL.RELATIONSHIP_CODE || ' - ' || RC.DESCRIPTION AS RELATIONSHIP_TYPE,
               CASE
                   WHEN AL.SIGNING_AUTH_IND = 'Y' THEN 'Yes'
                   WHEN AL.SIGNING_AUTH_IND = 'N' THEN 'No'
               END AS SIGNING_AUTH_IND,
               CASE 
-                WHEN AL.PERCENT_OWNERSHIP IS NOT NULL 
-                THEN TO_CHAR(AL.PERCENT_OWNERSHIP, 'FM999.00') || '%' 
-                ELSE NULL 
+                  WHEN AL.PERCENT_OWNERSHIP = 0 THEN TO_CHAR(AL.PERCENT_OWNERSHIP, 'FM999') || '%' 
+                  WHEN AL.PERCENT_OWNERSHIP IS NOT NULL THEN TO_CHAR(AL.PERCENT_OWNERSHIP, 'FM999.00') || '%' 
+                  ELSE NULL
               END AS PERCENT_OWNERSHIP,
               AL.UPDATE_TIMESTAMP,
               AL.UPDATE_USERID,
@@ -629,7 +636,7 @@ public final class ForestClientQueries {
           '' AS REASON
       FROM AUDIT_DATA A
       WHERE (
-          A.CHANGE_TYPE = 'DEL' OR
+          (A.CHANGE_TYPE = 'DEL' AND OLD_VALUE IS NOT NULL AND NEW_VALUE IS NOT NULL) OR
           (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL) OR
           (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL) OR
           (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
