@@ -9,7 +9,7 @@ describe("<summary-view />", () => {
   const getDefaultProps = () => ({
     data: {
       client: {
-        registryCompanyTypeCode: "FM",
+        registryCompanyTypeCode: "BRT",
         corpRegnNmbr: "88888888",
         clientNumber: "4444",
         clientName: "Scott",
@@ -71,6 +71,9 @@ describe("<summary-view />", () => {
   const testDropdown = (rawSelector: string, value?: string) =>
     testInputTag("cds-dropdown", rawSelector, value);
 
+  const testComboBox = (rawSelector: string, value?: string) =>
+    testInputTag("cds-combo-box", rawSelector, value);
+
   const testTextarea = (rawSelector: string, value?: string) =>
     testInputTag("cds-textarea", rawSelector, value);
 
@@ -79,6 +82,9 @@ describe("<summary-view />", () => {
     cy.intercept("GET", `${getClientStatusesBaseUrl}/*`, {
       fixture: "clientStatuses.json",
     }).as("getClientStatuses");
+    cy.intercept("GET", "/api/codes/registry-types/*", {
+      fixture: "registryTypes.json",
+    }).as("getRegistryTypes");
   });
 
   it("renders the SummaryView component", () => {
@@ -393,10 +399,10 @@ describe("<summary-view />", () => {
     ];
     clientTypes1.forEach((clientType) => {
       describe(`when client type is ${clientType.code} - ${clientType.desc}`, () => {
-        props.data.client.clientTypeCode = clientType.code;
-        props.data.client.clientTypeDesc = clientType.desc;
         describe("when the edit button in clicked", () => {
           beforeEach(() => {
+            props.data.client.clientTypeCode = clientType.code;
+            props.data.client.clientTypeDesc = clientType.desc;
             mount(props);
             cy.get("#summaryEditBtn").click();
             cy.wait("@getClientStatuses");
@@ -444,6 +450,76 @@ describe("<summary-view />", () => {
             testHidden("#workSafeBCNumber");
             testHidden("#clientStatus");
             testHidden("#notes");
+          });
+        });
+      });
+    });
+
+    const clientTypes2 = [
+      { code: "A", desc: "Association" },
+      { code: "C", desc: "Corporation" },
+      { code: "L", desc: "Limited Partnership" },
+      { code: "P", desc: "General Partnership" },
+      { code: "S", desc: "Society" },
+      { code: "R", desc: "First Nation Group" },
+      { code: "T", desc: "First Nation Tribal Council" },
+      { code: "U", desc: "Unregistered Company" },
+    ];
+    describe("Company-like types", () => {
+      clientTypes2.forEach((clientType) => {
+        describe(`when client type is ${clientType.code} - ${clientType.desc}`, () => {
+          describe("when the edit button in clicked", () => {
+            beforeEach(() => {
+              props.data.client.clientTypeCode = clientType.code;
+              props.data.client.clientTypeDesc = clientType.desc;
+              mount(props);
+              cy.get("#summaryEditBtn").click();
+              cy.wait("@getClientStatuses");
+            });
+
+            it('enables the edition of the "basic" fields', () => {
+              testTextInput("#input-acronym", props.data.client.clientAcronym);
+              testTextInput("#input-workSafeBCNumber", props.data.client.wcbFirmNumber);
+              testDropdown("#input-clientStatus", props.data.client.clientStatusDesc);
+              testTextarea("[data-id='input-input-notes']", props.data.client.clientComment);
+            });
+
+            it("also enables the edition of the Client name", () => {
+              testTextInput("#input-clientName", props.data.client.clientName);
+            });
+
+            it("also enables the edition of the Doing business as", () => {
+              testTextInput("#input-doingBusinessAs", props.data.doingBusinessAs);
+            });
+
+            it("also enables the edition of the Registration number (Type and Number)", () => {
+              const registryTypeDesc = "Bogus Registry Type";
+              const formattedTypeName = `${currentProps.data.client.registryCompanyTypeCode} - ${registryTypeDesc}`;
+              testComboBox("#input-registryType", formattedTypeName);
+              testTextInput("#input-registryNumber", props.data.client.corpRegnNmbr);
+            });
+
+            it("disables the edition of everything else", () => {
+              testHidden("#input-clientType");
+              testHidden("#input-identification");
+              testHidden("#input-dateOfBirth");
+            });
+
+            it("keeps displaying the other fields in view mode", () => {
+              testReadonly("#clientNumber", currentProps.data.client.clientNumber);
+              testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
+              testReadonly("#goodStanding", "Good standing");
+              testReadonly("#identification", currentProps.data.client.clientIdentification);
+              testReadonly("#dateOfBirth", currentProps.data.client.birthdate);
+
+              // Make sure the fields enabled for edition are not also displayed in read-only mode.
+              testHidden("#acronym");
+              testHidden("#doingBusinessAs");
+              testHidden("#registrationNumber");
+              testHidden("#workSafeBCNumber");
+              testHidden("#clientStatus");
+              testHidden("#notes");
+            });
           });
         });
       });
