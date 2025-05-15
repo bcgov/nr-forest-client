@@ -38,81 +38,96 @@ const formattedRegistryTypesList = computed(() =>
 
 const updateRegistryType = (value: CodeNameType) => {
   modelValue.client.registryCompanyTypeCode = value.code;
+  runLocalValidations();
 };
 
-/**
- * This is the condensed error message that will be displayed.
- */
-const registrationNumberError = ref<string>();
-
-const registryJoinedFieldsError = ref<string>();
+const displayedError = ref<string>();
 
 const updateRegistrationNumberFirstError = (firstError: string) => {
-  registrationNumberError.value =
+  displayedError.value =
     firstError ||
     registryTypeError.value ||
+    localTypeError.value ||
     registryNumberError.value ||
-    registryJoinedFieldsError.value;
+    localNumberError.value;
 };
 
-const validateRegistrationNumberJoinedFields = () => {
-  registryJoinedFieldsError.value = undefined;
+const localTypeError = ref("");
 
+const localNumberError = ref("");
+
+const hasChanged = () => {
   const typeChanged =
     modelValue.client.registryCompanyTypeCode !== originalValue.client.registryCompanyTypeCode;
 
   const numberChanged = modelValue.client.corpRegnNmbr !== originalValue.client.corpRegnNmbr;
 
-  if (!typeChanged && !numberChanged) {
-    return;
-  }
+  return typeChanged || numberChanged;
+};
 
-  if (modelValue.client.registryCompanyTypeCode && !modelValue.client.corpRegnNmbr) {
-    registryJoinedFieldsError.value = "You must provide a number if a type is selected";
+const validateType = (): string => {
+  if (!hasChanged()) {
+    return "";
   }
 
   if (!modelValue.client.registryCompanyTypeCode && modelValue.client.corpRegnNmbr) {
-    registryJoinedFieldsError.value = "You must provide a type if the number is filled in";
+    return "You must provide a type if the number is filled in";
   }
+
+  return "";
 };
 
-const registryTypeError = ref<string>();
+const validateNumber = (): string => {
+  if (!hasChanged()) {
+    return "";
+  }
+
+  if (modelValue.client.registryCompanyTypeCode && !modelValue.client.corpRegnNmbr) {
+    return "You must provide a number if a type is selected";
+  }
+
+  return "";
+};
+
+const runLocalValidations = () => {
+  localTypeError.value = validateType();
+  localNumberError.value = validateNumber();
+};
+
+const registryTypeError = ref("");
 
 const registryTypeValidation = ref(true);
 
 const setRegistryTypeError = (error: string) => {
   registryTypeError.value = error;
+  runLocalValidations();
   updateRegistrationNumberFirstError(error);
-  registryTypeValidation.value = !error;
+  registryTypeValidation.value = !error && !localTypeError.value;
 };
 
 const setRegistryTypeEmpty = (_empty: boolean) => {
   registryTypeValidation.value = true;
-  validateRegistrationNumberJoinedFields();
 };
 
-const registryNumberError = ref<string>();
+const registryNumberError = ref("");
 
 const registryNumberValidation = ref(true);
 
 const setRegistryNumberError = (error: string) => {
   registryNumberError.value = error;
+  runLocalValidations();
   updateRegistrationNumberFirstError(error);
-  registryNumberValidation.value = !error;
+  registryNumberValidation.value = !error && !localNumberError.value;
 };
 
 const setRegistryNumberEmpty = (_empty: boolean) => {
-  registryNumberValidation.value = true;
-  validateRegistrationNumberJoinedFields();
+  runLocalValidations();
+  registryNumberValidation.value = !registryNumberError.value && !localNumberError.value;
 };
 
-watch([registryTypeValidation, registryNumberValidation, registryJoinedFieldsError], () => {
-  const valid =
-    registryTypeValidation.value &&
-    registryNumberValidation.value &&
-    !registryJoinedFieldsError.value;
+watch([registryTypeValidation, registryNumberValidation], () => {
+  const valid = registryTypeValidation.value && registryNumberValidation.value;
   emit("valid", valid);
-  console.log({ valid });
 });
 
 emit("valid", true);
@@ -141,7 +156,7 @@ emit("valid", true);
         ...getValidations('client.registryCompanyTypeCode'),
         submissionValidation('client.registryCompanyTypeCode'),
       ]"
-      :error-message="registryJoinedFieldsError"
+      :error-message="localTypeError"
       @update:selected-value="updateRegistryType($event)"
       @error="setRegistryTypeError($event)"
       @empty="setRegistryTypeEmpty($event)"
@@ -159,10 +174,10 @@ emit("valid", true);
         submissionValidation('client.corpRegnNmbr'),
       ]"
       enabled
-      :error-message="registryJoinedFieldsError"
+      :error-message="localNumberError"
       @empty="setRegistryNumberEmpty($event)"
       @error="setRegistryNumberError($event)"
     />
   </div>
-  <div class="cds--form-requirement field-error">{{ registrationNumberError }}</div>
+  <div class="cds--form-requirement field-error">{{ displayedError }}</div>
 </template>
