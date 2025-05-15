@@ -13,14 +13,14 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           persist-credentials: false
           fetch-depth: 0
 
       - name: Extract feature content
         id: feature
-        uses: bcgov/action-gherkin-issue-processor@v1.1.0
+        uses: bcgov/action-gherkin-issue-processor@958fb6f424782279a6502606393a04a26e66d9e9 # v1.1.0
         with:
           issue: ${{ github.event.issue.number }}
           default_title: "[Test Case]: REPLACE WITH YOUR TEST CASE TITLE"
@@ -30,7 +30,7 @@ jobs:
         run: echo "${{ steps.feature.outputs.feature }}" > cypress/cypress/e2e/upt_${{ github.event.issue.number }}.feature
 
       - name: Commit & Push changes
-        uses: Andro999b/push@v1.3
+        uses: Andro999b/push@c77535fe7a94645f7ceca83e48e6cc977620710e # v1.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: test/upt_${{ github.event.issue.number }}
@@ -41,7 +41,7 @@ jobs:
             Closes #${{ github.event.issue.number }}
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
         with:
           branch: test/upt_${{ github.event.issue.number }}
           title: "test(upt #${{ github.event.issue.number }}): ${{ steps.feature.outputs.title }}"
