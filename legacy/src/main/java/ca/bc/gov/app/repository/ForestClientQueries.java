@@ -1,5 +1,4 @@
-
-   package ca.bc.gov.app.repository;
+package ca.bc.gov.app.repository;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
