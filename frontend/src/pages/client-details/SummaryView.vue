@@ -228,6 +228,12 @@ const birthdateLabel = computed(() =>
   dateOfBirth.value.length > 4 ? "Date of birth" : "Year of birth",
 );
 
+const updateClientIdType = (value: CodeNameType | undefined) => {
+  if (value) {
+    formData.value.client.clientIdTypeCode = value.code;
+  }
+};
+
 const updateClientStatus = (value: CodeNameType | undefined) => {
   if (value) {
     formData.value.client.clientStatusCode = value.code;
@@ -491,6 +497,56 @@ const client = computed(() => props.data.client);
         @error="validation.birthdate = !$event"
         @possibly-valid="validation.birthdate = $event"
         required
+      />
+    </div>
+    <div class="horizontal-input-grouping">
+      <data-fetcher
+        v-if="displayEditable('clientStatus')"
+        url="/api/codes/identification-types/legacy"
+        :min-length="0"
+        :init-value="[]"
+        :init-fetch="true"
+        :params="{ method: 'GET' }"
+        #="{ content }"
+      >
+        <combo-box-input-component
+          id="input-clientIdType"
+          v-if="displayEditable('clientIdType')"
+          class="grouping-03--width-32rem"
+          label="ID Type"
+          :initial-value="
+            content?.find((item) => item.code === formData.client.clientIdTypeCode)?.name
+          "
+          required
+          required-label
+          :model-value="content"
+          :enabled="true"
+          tip=""
+          :validations="[
+            ...getValidations('client.clientIdTypeCode'),
+            submissionValidation('client.clientIdTypeCode'),
+          ]"
+          @update:selected-value="updateClientIdType($event)"
+          @empty="validation.clientIdType = !$event"
+        />
+      </data-fetcher>
+      <text-input-component
+        id="input-clientIdentification"
+        v-if="displayEditable('clientIdentification')"
+        class="grouping-02--width-8rem"
+        label="ID number"
+        placeholder=""
+        autocomplete="off"
+        v-model="formData.client.clientIdentification"
+        :validations="[
+          ...getValidations('client.clientIdentification'),
+          submissionValidation('client.clientIdentification'),
+        ]"
+        enabled
+        required
+        required-label
+        @empty="validation.clientIdentification = !$event"
+        @error="validation.clientIdentification = !$event"
       />
     </div>
     <text-input-component

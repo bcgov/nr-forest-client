@@ -26,7 +26,7 @@ const props = withDefaults(
     autocomplete?: string;
   }>(),
   {
-    autocomplete: "false",
+    autocomplete: "off",
   },
 );
 
