@@ -23,8 +23,11 @@ const props = withDefaults(
     rows?: number;
     enableCounter?: boolean;
     maxCount?: number;
+    autocomplete?: string;
   }>(),
-  {}
+  {
+    autocomplete: "false",
+  },
 );
 
 //Events we emit during component lifecycle
@@ -140,6 +143,7 @@ const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
         v-bind="$attrs"
         v-if="enabled"
         :id="id"
+        :autocomplete="autocomplete"
         :rows="rows"
         :class="warning ? 'warning' : ''"
         :enable-counter="enableCounter"
