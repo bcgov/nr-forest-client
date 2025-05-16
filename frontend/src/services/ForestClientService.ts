@@ -189,6 +189,7 @@ export const includesAnyOf = (haystack: any[], needles: any[]): boolean =>
 //Fields that require a reason when changing
 export const reasonRequiredFields = new Set<string>([
   'clientStatusCode',
+  'clientIdTypeCode',
   'clientIdentification',
   'clientName',
   'legalFirstName',
@@ -204,6 +205,7 @@ export const reasonRequiredFields = new Set<string>([
 
 // Map for general field actions
 const fieldActionMap = new Map<string, string>([
+  ['clientIdTypeCode', 'ID'],
   ['clientIdentification', 'ID'],
   ['clientName', 'NAME'],
   ['legalFirstName', 'NAME'],
@@ -264,7 +266,7 @@ export const extractActionField = (
   action: string,
   clientData: ClientDetails,
 ): string => {
-  if (action === "NAME" && clientData.client.clientTypeCode === "I") {
+  if (action === "ID" || (action === "NAME" && clientData.client.clientTypeCode === "I")) {
     // a generic path because this action is associated to a group of fields
     return "/";
   }
