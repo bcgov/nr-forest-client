@@ -561,7 +561,7 @@ export const contactToEditFormat = (
  * to what the overflow-anchor CSS property is able to do while the content grows, so as to avoid
  * scroll jumping in unexpected ways.
  *
- * @param uiUpdatePromise - The promise whose resolution should triggers the scroll fix.
+ * @param uiUpdatePromise - The promise whose resolution should trigger the scroll fix.
  */
 export const keepScrollBottomPosition = (uiUpdatePromise: Promise<void>): void => {
   const app = document.getElementById("app");
