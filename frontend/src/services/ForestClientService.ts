@@ -259,7 +259,16 @@ export const extractFieldName = (path: string): string => {
  * @param path
  * @returns string
  */
-export const extractActionField = (path: string): string => {
+export const extractActionField = (
+  path: string,
+  action: string,
+  clientData: ClientDetails,
+): string => {
+  if (action === "NAME" && clientData.client.clientTypeCode === "I") {
+    // a generic path because this action is associated to a group of fields
+    return "/";
+  }
+
   const fieldName = extractFieldName(path);
 
   if (path.startsWith("/addresses")) {
@@ -282,13 +291,6 @@ export const extractReasonFields = (
       (patch) => patch.op === "replace" && reasonRequiredFields.has(extractFieldName(patch.path)),
     )
     .forEach((patch) => {
-      const actionField = extractActionField(patch.path);
-
-      if (reasonActions[actionField]) {
-        // If the field corresponds to a "group change", like an address, we only need it once.
-        return;
-      }
-
       const fieldName = extractFieldName(patch.path);
 
       let action = '';
@@ -302,8 +304,14 @@ export const extractReasonFields = (
         action = fieldActionMap.get(fieldName) || '';
       }
 
+      if (reasonActions[action]) {
+        // If the field corresponds to a "group change", like an address, we only need it once.
+        return;
+      }
+
       if (action) {
-        reasonActions[actionField] = { field: actionField, action };
+        const actionField = extractActionField(patch.path, action, originalData);
+        reasonActions[action] = { field: actionField, action };
       }
     });
 
