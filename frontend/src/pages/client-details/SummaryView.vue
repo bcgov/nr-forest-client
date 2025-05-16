@@ -82,10 +82,15 @@ const save = () => {
 
 const fieldIdList = [
   "clientName",
+  "legalFirstName",
+  "legalMiddleName",
   "acronym",
   "doingBusinessAs",
   "registrationNumber",
   "workSafeBCNumber",
+  "birthdate",
+  "clientIdType",
+  "clientIdentification",
   "clientStatus",
   "notes",
 ] as const;
@@ -94,10 +99,15 @@ type FieldId = (typeof fieldIdList)[number];
 
 const validation = reactive<Record<FieldId, boolean>>({
   clientName: true,
+  legalFirstName: true,
+  legalMiddleName: true,
   acronym: true,
   doingBusinessAs: true,
   registrationNumber: true,
   workSafeBCNumber: true,
+  birthdate: true,
+  clientIdType: true,
+  clientIdentification: true,
   clientStatus: true,
   notes: true,
 });
@@ -109,12 +119,16 @@ const checkValid = () =>
   );
 
 const editRoles: Record<FieldId, UserRole[]> = {
-  // TODO: add the following values back when working on FSADT1-1611 or FSADT1-1640
   clientName: ["CLIENT_ADMIN"],
+  legalFirstName: ["CLIENT_ADMIN"],
+  legalMiddleName: ["CLIENT_ADMIN"],
   acronym: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   doingBusinessAs: ["CLIENT_ADMIN"],
   registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
+  birthdate: ["CLIENT_ADMIN"],
+  clientIdType: ["CLIENT_ADMIN"],
+  clientIdentification: ["CLIENT_ADMIN"],
   clientStatus: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   notes: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
 };
@@ -142,11 +156,16 @@ const canEditClientStatus = () => {
  * Note: it doesn't mean the current user should be allowed to do it.
  */
 const isFieldEditable: Record<FieldId, () => boolean> = {
-  clientName: () => props.data.client.clientTypeCode !== "I",
+  clientName: () => true,
+  legalFirstName: () => props.data.client.clientTypeCode === "I",
+  legalMiddleName: () => props.data.client.clientTypeCode === "I",
   acronym: () => true,
   doingBusinessAs: () => true,
   registrationNumber: () => companyLikeTypes.includes(props.data.client.clientTypeCode),
   workSafeBCNumber: () => true,
+  birthdate: () => props.data.client.clientTypeCode === "I",
+  clientIdType: () => props.data.client.clientTypeCode === "I",
+  clientIdentification: () => props.data.client.clientTypeCode === "I",
   clientStatus: canEditClientStatus,
   notes: () => true,
 };
@@ -306,7 +325,10 @@ const client = computed(() => props.data.client);
   <div class="form-edit no-padding" v-if="isEditing">
     <div
       class="horizontal-input-grouping"
-      v-if="displayEditable('clientName') || displayEditable('acronym')"
+      v-if="
+        props.data.client.clientTypeCode !== 'I' &&
+        (displayEditable('clientName') || displayEditable('acronym'))
+      "
     >
       <text-input-component
         id="input-clientName"
@@ -357,6 +379,59 @@ const client = computed(() => props.data.client);
         </template>
       </text-input-component>
     </div>
+    <template v-if="props.data.client.clientTypeCode === 'I'">
+      <text-input-component
+        id="input-legalFirstName"
+        v-if="displayEditable('legalFirstName')"
+        label="First name"
+        placeholder=""
+        autocomplete="off"
+        v-model="formData.client.legalFirstName"
+        :validations="[
+          ...getValidations('businessInformation.firstName'),
+          submissionValidation(`businessInformation.firstName`),
+        ]"
+        enabled
+        required
+        required-label
+        @empty="validation.legalFirstName = !$event"
+        @error="validation.legalFirstName = !$event"
+      />
+
+      <text-input-component
+        id="input-legalMiddleName"
+        v-if="displayEditable('legalMiddleName')"
+        label="Middle name"
+        placeholder=""
+        autocomplete="off"
+        v-model="formData.client.legalMiddleName"
+        :validations="[
+          ...getValidations('businessInformation.middleName'),
+          submissionValidation(`businessInformation.middleName`),
+        ]"
+        enabled
+        @empty="validation.legalMiddleName = true"
+        @error="validation.legalMiddleName = !$event"
+      />
+
+      <text-input-component
+        id="input-clientName"
+        v-if="displayEditable('clientName')"
+        label="Last name"
+        placeholder=""
+        autocomplete="off"
+        v-model="formData.client.clientName"
+        :validations="[
+          ...getValidations('businessInformation.lastName'),
+          submissionValidation(`businessInformation.lastName`),
+        ]"
+        enabled
+        required
+        required-label
+        @empty="validation.clientName = !$event"
+        @error="validation.clientName = !$event"
+      />
+    </template>
     <text-input-component
       id="input-doingBusinessAs"
       v-if="displayEditable('doingBusinessAs')"
