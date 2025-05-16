@@ -3,7 +3,7 @@ import type { HistoryLogResult } from '@/dto/CommonTypesDto';
 import { useFetchTo } from '@/composables/useFetch';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { getLabelByColumnName, getTagColorByClientStatus } from "@/services/ForestClientService";
+import { getLabelByColumnName, getTagColorByClientStatus, fieldActionMap } from "@/services/ForestClientService";
 import Avatar16 from "@carbon/icons-vue/es/user--avatar/16";
 import Location16 from "@carbon/icons-vue/es/location/16";
 import Document16 from "@carbon/icons-vue/es/document/16";
@@ -47,33 +47,12 @@ watch(
   { immediate: true }
 );
 
-const getSplitDetails = (details) => {
-  const addressGroup = [];
-  const nonGrouped = [];
-
-  for (const item of details) {
-    const label = getLabelByColumnName(item.columnName);
-    if (label === 'Address') {
-      addressGroup.push(item);
-    } else {
-      nonGrouped.push({ ...item, label });
-    }
-  }
-
-  return { addressGroup, nonGrouped };
+const getReasonForColumn = (historyLog: any, columnName: string): string | null => {
+  const actionCode = fieldActionMap.get(columnName);
+  if (!actionCode || !historyLog.reasons) return null;
+  const reasonObj = historyLog.reasons.find((r: any) => r.actionCode === actionCode);
+  return reasonObj?.reason || null;
 };
-
-const shouldPrintAddressLabel = (log, allLogs, idx) => {
-  const isAddress = getLabelByColumnName(log.columnName) === 'Address';
-  if (!isAddress) return false;
-
-  for (let i = 0; i < idx; i++) {
-    if (getLabelByColumnName(allLogs[i].columnName) === 'Address') {
-      return false;
-    }
-  }
-  return true;
-}
 </script>
 
 <template>
@@ -119,7 +98,7 @@ const shouldPrintAddressLabel = (log, allLogs, idx) => {
                 <cds-button 
                   kind="ghost" 
                   @click="toggleDetails(index)">
-                  <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0 0.5rem;">
+                  <span class="history-collapsible-button">
                     {{ showDetails[index] ? 'Hide' : 'Show more' }}
                     <ChevronUp16 v-if="showDetails[index]" />
                     <ChevronDown16 v-if="!showDetails[index]" />
@@ -138,7 +117,9 @@ const shouldPrintAddressLabel = (log, allLogs, idx) => {
                   {{ getLabelByColumnName(historyDtlsLog.columnName) }}
                 </p>
                 <p>
-                  <span v-if="historyDtlsLog.oldValue"><del>{{ historyDtlsLog.oldValue }}</del>&nbsp;</span>
+                  <span v-if="historyDtlsLog.oldValue">
+                    <del class="helper-text">{{ historyDtlsLog.oldValue }}</del>&nbsp;
+                  </span>
 
                   <span v-if="historyDtlsLog.columnName === 'clientStatusDesc' ||
                               historyDtlsLog.columnName === 'locnExpiredInd'">
@@ -152,42 +133,20 @@ const shouldPrintAddressLabel = (log, allLogs, idx) => {
                       {{ historyDtlsLog.newValue }}
                   </span>
                 </p>
+
+                <div v-if="getReasonForColumn(historyLog, historyDtlsLog.columnName)"
+                    class="reason-block">
+                  <p class="label-02">
+                    Reason for change
+                  </p>
+                  <p>
+                    {{ getReasonForColumn(historyLog, historyDtlsLog.columnName) }}
+                  </p>
+                </div>
+
               </div>
             </td>
           </tr>
-
-<!--           <tr v-if="showDetails[index]" :id="'logDetails' + index">
-            <td></td>
-            <td>
-              <div class="card-03">
-                <div v-for="(log, idx) in historyLog.details" 
-                    :key="idx"
-                    :class="getLabelByColumnName(log.columnName) === 'Address' ? 'grouped-logs' : 'non-grouped-log'">
-                  <p
-                    class="label-02"
-                    v-if="shouldPrintAddressLabel(log, historyLog.details, idx)">
-                    Address
-                  </p>
-                  <p
-                    class="label-02"
-                    v-else-if="getLabelByColumnName(log.columnName) !== 'Address'">
-                    {{ getLabelByColumnName(log.columnName) }}
-                  </p>
-                  <p>
-                    <span v-if="log.oldValue"><del>{{ log.oldValue }}</del>&nbsp;</span>
-                    <span
-                      v-if="log.columnName === 'clientStatusDesc' ||
-                              log.columnName === 'locnExpiredInd'">
-                      <cds-tag :type="getTagColorByClientStatus(log.newValue)">
-                        <span>{{ log.newValue }}</span>
-                      </cds-tag>
-                    </span>
-                    <span v-else>{{ log.newValue }}</span>
-                  </p>
-                </div>
-              </div>
-            </td>
-          </tr> -->
 
         </tbody>
       </table>

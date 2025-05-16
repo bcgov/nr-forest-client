@@ -927,20 +927,20 @@ cds-actionable-notification * {
   max-width: 50.4375rem;
 }
 
-/*.grouped-logs {
-  display: block;
-  margin-bottom: 0;
+.reason-block {
+  padding-top: 1.5rem;
 }
 
-.non-grouped-log {
-  display: block;
-  margin-bottom: 1.5rem;
+.history-collapsible-button {
+  display: inline-flex; 
+  align-items: center; 
+  gap: 0.25rem; 
+  padding: 0 0.5rem;
 }
 
-.grouped-logs p {
-  margin-bottom: 0; 
-  gap: 0;
-}*/
+del {
+  color: var(--cds-helper-text, #79797B);
+}
 
 .divider {
   margin: 1.5rem 0 1.5rem 0;

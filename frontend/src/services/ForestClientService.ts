@@ -203,7 +203,7 @@ export const reasonRequiredFields = new Set<string>([
 ]);
 
 // Map for general field actions
-const fieldActionMap = new Map<string, string>([
+export const fieldActionMap = new Map<string, string>([
   ['clientIdentification', 'ID'],
   ['clientName', 'NAME'],
   ['legalFirstName', 'NAME'],
@@ -597,6 +597,7 @@ const columnNameToLabelMap: Record<string, string> = {
   wcbFirmNumber: "WorkSafeBC number",
   doingBusinessAs: "Doing business as",
   locnExpiredInd: "Location status",
+  clientComment: "Notes",
 
   locationName: "Location name",
   
