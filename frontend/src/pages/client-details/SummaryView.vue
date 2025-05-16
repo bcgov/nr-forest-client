@@ -40,9 +40,19 @@ const formData = ref<ClientDetails>();
 const isEditing = ref(false);
 const hasAnyChange = ref(false);
 
+const getSafeBirthdate = (birthdate: string) => new Date(birthdate).toISOString().split("T")[0];
+
+const getSafeClientData = (data: ClientDetails) => {
+  const safeData = JSON.parse(JSON.stringify(data));
+  if (safeData.client.birthdate) {
+    safeData.client.birthdate = getSafeBirthdate(safeData.client.birthdate);
+  }
+  return safeData;
+};
+
 const resetFormData = () => {
-  originalData = JSON.parse(JSON.stringify(props.data));
-  formData.value = JSON.parse(JSON.stringify(props.data));
+  originalData = getSafeClientData(props.data);
+  formData.value = getSafeClientData(props.data);
   hasAnyChange.value = false;
 };
 
@@ -209,7 +219,7 @@ const dateOfBirth = computed(() => {
       return birthdate.slice(0, 4);
     }
 
-    return new Date(birthdate).toISOString().split("T")[0];
+    return getSafeBirthdate(birthdate);
   }
   return "";
 });
@@ -452,6 +462,35 @@ const client = computed(() => props.data.client);
         :model-value="formData"
         :original-value="props.data"
         @valid="validation.registrationNumber = $event"
+      />
+    </div>
+    <div v-if="displayEditable('birthdate')">
+      <div class="label-with-icon line-height-0 parent-label">
+        <div class="cds-text-input-label">
+          <span class="cds-text-input-required-label">* </span>
+          <span>Date of birth</span>
+        </div>
+        <cds-tooltip>
+          <Information16 />
+          <cds-tooltip-content>
+            We need the applicant's birthdate to confirm their identity
+          </cds-tooltip-content>
+        </cds-tooltip>
+      </div>
+      <date-input-component
+        id="birthdate"
+        title="Date of birth"
+        :autocomplete="['off', 'off', 'off']"
+        v-model="formData.client.birthdate"
+        :enabled="true"
+        :validations="[
+          ...getValidations('businessInformation.birthdate'),
+          submissionValidation('businessInformation.birthdate'),
+        ]"
+        :year-validations="[...getValidations('businessInformation.birthdate.year')]"
+        @error="validation.birthdate = !$event"
+        @possibly-valid="validation.birthdate = $event"
+        required
       />
     </div>
     <text-input-component
