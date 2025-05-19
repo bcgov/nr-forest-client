@@ -15,7 +15,7 @@ describe("<summary-view />", () => {
         clientName: "Scott",
         legalFirstName: "Michael",
         legalMiddleName: "Gary",
-        birthdate: "1962-08-17",
+        birthdate: "1962-08-17T00:00",
         clientAcronym: "DMPC",
         clientTypeCode: "I",
         clientTypeDesc: "Registered sole proprietorship",
@@ -25,7 +25,8 @@ describe("<summary-view />", () => {
         clientComment:
           "Email from Michael Scott to request any letters for sec deposits be mailed to 3000, 28th St, Scranton",
         wcbFirmNumber: "123456",
-        clientIdTypeDesc: "British Columbia Driver's Licence",
+        clientIdTypeCode: "BCDL",
+        clientIdTypeDesc: "British Columbia Drivers Licence",
         clientIdentification: "64242646",
       },
       doingBusinessAs: "Dunder Mifflin Paper Company",
@@ -110,7 +111,7 @@ describe("<summary-view />", () => {
     // identification Value
     testReadonly("#identification", currentProps.data.client.clientIdentification);
 
-    testReadonly("#dateOfBirth", currentProps.data.client.birthdate);
+    testReadonly("#dateOfBirth", currentProps.data.client.birthdate.substring(0, 10));
     testReadonly("#clientStatus", currentProps.data.client.clientStatusDesc);
     testReadonly("#notes", currentProps.data.client.clientComment);
   });
@@ -213,9 +214,11 @@ describe("<summary-view />", () => {
         testHidden("#input-clientName");
         testHidden("#input-doingBusinessAs");
         testHidden("#input-clientType");
-        testHidden("#input-registrationNumber");
-        testHidden("#input-identification");
-        testHidden("#input-dateOfBirth");
+        testHidden("#input-registryType");
+        testHidden("#input-registryNumber");
+        testHidden("#input-birthdate");
+        testHidden("#input-clientIdType");
+        testHidden("#input-clientIdentification");
       });
 
       it("requests the client statuses according to the client type", () => {
@@ -237,7 +240,7 @@ describe("<summary-view />", () => {
 
         testReadonly("#goodStanding", "Good standing");
         testReadonly("#identification", currentProps.data.client.clientIdentification);
-        testReadonly("#dateOfBirth", currentProps.data.client.birthdate);
+        testReadonly("#dateOfBirth", currentProps.data.client.birthdate.substring(0, 10));
 
         // Make sure the fields enabled for edition are not also displayed in read-only mode.
         testHidden("#acronym");
@@ -397,6 +400,25 @@ describe("<summary-view />", () => {
         desc: "Government",
       },
     ];
+
+    const itEnablesTheEditionOfTheBasicFields = () =>
+      it('enables the edition of the "basic" fields', () => {
+        testTextInput("#input-acronym", props.data.client.clientAcronym);
+        testTextInput("#input-workSafeBCNumber", props.data.client.wcbFirmNumber);
+        testDropdown("#input-clientStatus", props.data.client.clientStatusDesc);
+        testTextarea("[data-id='input-input-notes']", props.data.client.clientComment);
+      });
+
+    const itEnablesTheEditionOfTheClientName = () =>
+      it("also enables the edition of the Client name", () => {
+        testTextInput("#input-clientName", props.data.client.clientName);
+      });
+
+    const itEnablesTheEditionOfTheDoingBusinessAs = () =>
+      it("also enables the edition of the Doing business as", () => {
+        testTextInput("#input-doingBusinessAs", props.data.doingBusinessAs);
+      });
+
     clientTypes1.forEach((clientType) => {
       describe(`when client type is ${clientType.code} - ${clientType.desc}`, () => {
         describe("when the edit button in clicked", () => {
@@ -408,26 +430,19 @@ describe("<summary-view />", () => {
             cy.wait("@getClientStatuses");
           });
 
-          it('enables the edition of the "basic" fields', () => {
-            testTextInput("#input-acronym", props.data.client.clientAcronym);
-            testTextInput("#input-workSafeBCNumber", props.data.client.wcbFirmNumber);
-            testDropdown("#input-clientStatus", props.data.client.clientStatusDesc);
-            testTextarea("[data-id='input-input-notes']", props.data.client.clientComment);
-          });
+          itEnablesTheEditionOfTheBasicFields();
 
-          it("also enables the edition of the Client name", () => {
-            testTextInput("#input-clientName", props.data.client.clientName);
-          });
+          itEnablesTheEditionOfTheClientName();
 
-          it("also enables the edition of the Doing business as", () => {
-            testTextInput("#input-doingBusinessAs", props.data.doingBusinessAs);
-          });
+          itEnablesTheEditionOfTheDoingBusinessAs();
 
           it("disables the edition of everything else", () => {
             testHidden("#input-clientType");
-            testHidden("#input-registrationNumber");
-            testHidden("#input-identification");
-            testHidden("#input-dateOfBirth");
+            testHidden("#input-registryType");
+            testHidden("#input-registryNumber");
+            testHidden("#input-birthdate");
+            testHidden("#input-clientIdType");
+            testHidden("#input-clientIdentification");
           });
 
           it("keeps displaying the other fields in view mode", () => {
@@ -442,7 +457,7 @@ describe("<summary-view />", () => {
 
             testReadonly("#goodStanding", "Good standing");
             testReadonly("#identification", currentProps.data.client.clientIdentification);
-            testReadonly("#dateOfBirth", currentProps.data.client.birthdate);
+            testReadonly("#dateOfBirth", currentProps.data.client.birthdate.substring(0, 10));
 
             // Make sure the fields enabled for edition are not also displayed in read-only mode.
             testHidden("#acronym");
@@ -477,20 +492,11 @@ describe("<summary-view />", () => {
               cy.wait("@getClientStatuses");
             });
 
-            it('enables the edition of the "basic" fields', () => {
-              testTextInput("#input-acronym", props.data.client.clientAcronym);
-              testTextInput("#input-workSafeBCNumber", props.data.client.wcbFirmNumber);
-              testDropdown("#input-clientStatus", props.data.client.clientStatusDesc);
-              testTextarea("[data-id='input-input-notes']", props.data.client.clientComment);
-            });
+            itEnablesTheEditionOfTheBasicFields();
 
-            it("also enables the edition of the Client name", () => {
-              testTextInput("#input-clientName", props.data.client.clientName);
-            });
+            itEnablesTheEditionOfTheClientName();
 
-            it("also enables the edition of the Doing business as", () => {
-              testTextInput("#input-doingBusinessAs", props.data.doingBusinessAs);
-            });
+            itEnablesTheEditionOfTheDoingBusinessAs();
 
             it("also enables the edition of the Registration number (Type and Number)", () => {
               const registryTypeDesc = "Bogus Registry Type";
@@ -501,8 +507,9 @@ describe("<summary-view />", () => {
 
             it("disables the edition of everything else", () => {
               testHidden("#input-clientType");
-              testHidden("#input-identification");
-              testHidden("#input-dateOfBirth");
+              testHidden("#input-birthdate");
+              testHidden("#input-clientIdType");
+              testHidden("#input-clientIdentification");
             });
 
             it("keeps displaying the other fields in view mode", () => {
@@ -510,7 +517,7 @@ describe("<summary-view />", () => {
               testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
               testReadonly("#goodStanding", "Good standing");
               testReadonly("#identification", currentProps.data.client.clientIdentification);
-              testReadonly("#dateOfBirth", currentProps.data.client.birthdate);
+              testReadonly("#dateOfBirth", currentProps.data.client.birthdate.substring(0, 10));
 
               // Make sure the fields enabled for edition are not also displayed in read-only mode.
               testHidden("#acronym");
@@ -521,6 +528,64 @@ describe("<summary-view />", () => {
               testHidden("#notes");
             });
           });
+        });
+      });
+    });
+
+    const individualClientType = { code: "I", desc: "Individual" };
+    describe(`when client type is ${individualClientType.code} - ${individualClientType.desc}`, () => {
+      describe("when the edit button in clicked", () => {
+        beforeEach(() => {
+          props.data.client.clientTypeCode = individualClientType.code;
+          props.data.client.clientTypeDesc = individualClientType.desc;
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+          cy.wait("@getClientStatuses");
+        });
+
+        itEnablesTheEditionOfTheBasicFields();
+
+        it("also enables the edition of the name parts", () => {
+          testTextInput("#input-legalFirstName", props.data.client.legalFirstName);
+          testTextInput("#input-legalMiddleName", props.data.client.legalMiddleName);
+          testTextInput("#input-clientName", props.data.client.clientName);
+        });
+
+        itEnablesTheEditionOfTheDoingBusinessAs();
+
+        it("also enables the edition of the Date of birth", () => {
+          const dateObject = new Date(props.data.client.birthdate);
+          testTextInput("#input-birthdateYear", String(dateObject.getFullYear()));
+          testTextInput(
+            "#input-birthdateMonth",
+            String(dateObject.getMonth() + 1).padStart(2, "0"),
+          );
+          testTextInput("#input-birthdateDay", String(dateObject.getDate()).padStart(2, "0"));
+        });
+
+        it("also enables the edition of the ID fields", () => {
+          testComboBox("#input-clientIdType", props.data.client.clientIdTypeDesc);
+          testTextInput("#input-clientIdentification", props.data.client.clientIdentification);
+        });
+
+        it("disables the edition of everything else", () => {
+          testHidden("#input-registryType");
+          testHidden("#input-registryNumber");
+        });
+
+        it("keeps displaying the other fields in view mode", () => {
+          testReadonly("#clientNumber", currentProps.data.client.clientNumber);
+          testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
+          testReadonly("#goodStanding", "Good standing");
+
+          // Make sure the fields enabled for edition are not also displayed in read-only mode.
+          testHidden("#acronym");
+          testHidden("#doingBusinessAs");
+          testHidden("#workSafeBCNumber");
+          testHidden("#identification");
+          testHidden("#dateOfBirth");
+          testHidden("#clientStatus");
+          testHidden("#notes");
         });
       });
     });
