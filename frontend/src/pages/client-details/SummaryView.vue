@@ -512,7 +512,6 @@ const client = computed(() => props.data.client);
         <combo-box-input-component
           id="input-clientIdType"
           v-if="displayEditable('clientIdType')"
-          class="grouping-03--width-32rem"
           label="ID Type"
           :initial-value="
             content?.find((item) => item.code === formData.client.clientIdTypeCode)?.name
@@ -533,7 +532,6 @@ const client = computed(() => props.data.client);
       <text-input-component
         id="input-clientIdentification"
         v-if="displayEditable('clientIdentification')"
-        class="grouping-02--width-8rem"
         label="ID number"
         placeholder=""
         autocomplete="off"
