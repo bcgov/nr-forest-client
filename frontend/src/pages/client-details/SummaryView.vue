@@ -45,7 +45,11 @@ const getSafeBirthdate = (birthdate: string) => new Date(birthdate).toISOString(
 const getSafeClientData = (data: ClientDetails) => {
   const safeData = JSON.parse(JSON.stringify(data));
   if (safeData.client.birthdate) {
-    safeData.client.birthdate = getSafeBirthdate(safeData.client.birthdate);
+    try {
+      safeData.client.birthdate = getSafeBirthdate(safeData.client.birthdate);
+    } catch {
+      // do nothing
+    }
   }
   return safeData;
 };
@@ -309,11 +313,20 @@ const client = computed(() => props.data.client);
     <read-only-component
       :label="client.clientIdTypeDesc"
       id="identification"
-      v-if="client.clientIdTypeDesc && client.clientIdentification"
+      v-if="
+        displayReadonly('clientIdType') &&
+        displayReadonly('clientIdentification') &&
+        client.clientIdTypeDesc &&
+        client.clientIdentification
+      "
     >
       <span class="body-compact-01">{{ client.clientIdentification }}</span>
     </read-only-component>
-    <read-only-component :label="birthdateLabel" id="dateOfBirth" v-if="dateOfBirth">
+    <read-only-component
+      :label="birthdateLabel"
+      id="dateOfBirth"
+      v-if="displayReadonly('birthdate') && dateOfBirth"
+    >
       <span class="body-compact-01">{{ dateOfBirth }}</span>
     </read-only-component>
     <read-only-component
@@ -464,7 +477,7 @@ const client = computed(() => props.data.client);
         </cds-tooltip>
       </div>
       <date-input-component
-        id="birthdate"
+        id="input-birthdate"
         title="Date of birth"
         :autocomplete="['off', 'off', 'off']"
         v-model="formData.client.birthdate"
