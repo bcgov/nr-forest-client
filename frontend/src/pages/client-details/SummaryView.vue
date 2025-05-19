@@ -143,6 +143,10 @@ const editRoles: Record<FieldId, UserRole[]> = {
   notes: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
 };
 
+const clientNameLabel = computed(() =>
+  formData.value.client.clientTypeCode === "I" ? "Last name" : "Client name",
+);
+
 const companyLikeTypes = ["A", "C", "L", "P", "S", "R", "T", "U"];
 
 const canEditClientStatus = () => {
@@ -339,18 +343,47 @@ const client = computed(() => props.data.client);
     </cds-button>
   </div>
   <div class="form-edit no-padding" v-if="isEditing">
+    <text-input-component
+      id="input-legalFirstName"
+      v-if="displayEditable('legalFirstName')"
+      label="First name"
+      placeholder=""
+      autocomplete="off"
+      v-model="formData.client.legalFirstName"
+      :validations="[
+        ...getValidations('businessInformation.firstName'),
+        submissionValidation(`businessInformation.firstName`),
+      ]"
+      enabled
+      required
+      required-label
+      @empty="validation.legalFirstName = !$event"
+      @error="validation.legalFirstName = !$event"
+    />
+    <text-input-component
+      id="input-legalMiddleName"
+      v-if="displayEditable('legalMiddleName')"
+      label="Middle name"
+      placeholder=""
+      autocomplete="off"
+      v-model="formData.client.legalMiddleName"
+      :validations="[
+        ...getValidations('businessInformation.middleName'),
+        submissionValidation(`businessInformation.middleName`),
+      ]"
+      enabled
+      @empty="validation.legalMiddleName = true"
+      @error="validation.legalMiddleName = !$event"
+    />
     <div
       class="horizontal-input-grouping"
-      v-if="
-        props.data.client.clientTypeCode !== 'I' &&
-        (displayEditable('clientName') || displayEditable('acronym'))
-      "
+      v-if="displayEditable('clientName') || displayEditable('acronym')"
     >
       <text-input-component
         id="input-clientName"
         v-if="displayEditable('clientName')"
         class="grouping-02--width-32rem"
-        label="Client name"
+        :label="clientNameLabel"
         autocomplete="off"
         required
         required-label
@@ -395,59 +428,6 @@ const client = computed(() => props.data.client);
         </template>
       </text-input-component>
     </div>
-    <template v-if="props.data.client.clientTypeCode === 'I'">
-      <text-input-component
-        id="input-legalFirstName"
-        v-if="displayEditable('legalFirstName')"
-        label="First name"
-        placeholder=""
-        autocomplete="off"
-        v-model="formData.client.legalFirstName"
-        :validations="[
-          ...getValidations('businessInformation.firstName'),
-          submissionValidation(`businessInformation.firstName`),
-        ]"
-        enabled
-        required
-        required-label
-        @empty="validation.legalFirstName = !$event"
-        @error="validation.legalFirstName = !$event"
-      />
-
-      <text-input-component
-        id="input-legalMiddleName"
-        v-if="displayEditable('legalMiddleName')"
-        label="Middle name"
-        placeholder=""
-        autocomplete="off"
-        v-model="formData.client.legalMiddleName"
-        :validations="[
-          ...getValidations('businessInformation.middleName'),
-          submissionValidation(`businessInformation.middleName`),
-        ]"
-        enabled
-        @empty="validation.legalMiddleName = true"
-        @error="validation.legalMiddleName = !$event"
-      />
-
-      <text-input-component
-        id="input-clientName"
-        v-if="displayEditable('clientName')"
-        label="Last name"
-        placeholder=""
-        autocomplete="off"
-        v-model="formData.client.clientName"
-        :validations="[
-          ...getValidations('businessInformation.lastName'),
-          submissionValidation(`businessInformation.lastName`),
-        ]"
-        enabled
-        required
-        required-label
-        @empty="validation.clientName = !$event"
-        @error="validation.clientName = !$event"
-      />
-    </template>
     <text-input-component
       id="input-doingBusinessAs"
       v-if="displayEditable('doingBusinessAs')"
