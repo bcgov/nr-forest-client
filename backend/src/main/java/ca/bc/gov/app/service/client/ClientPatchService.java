@@ -47,8 +47,13 @@ public class ClientPatchService {
             .flatMap(validator ->
                 Flux
                     .fromIterable(forestClient)
-                    .filter(validator.shouldValidate())
-                    .flatMap(validator.validate())
+                    .flatMap(node ->
+                        Mono
+                            .just(node)
+                            .filter(validator.shouldValidate())
+                            .flatMap(validator.validate())
+                            .defaultIfEmpty(node)
+                        )
             )
             .reduce(mapper.createArrayNode(), mergeNodes())
             .flatMap(node ->
