@@ -86,6 +86,9 @@ describe("<summary-view />", () => {
     cy.intercept("GET", "/api/codes/registry-types/*", {
       fixture: "registryTypes.json",
     }).as("getRegistryTypes");
+    cy.intercept("GET", "/api/codes/identification-types/legacy", {
+      fixture: "legacyIdentificationTypes.json",
+    }).as("getLegacyIdentificationTypes");
   });
 
   it("renders the SummaryView component", () => {
