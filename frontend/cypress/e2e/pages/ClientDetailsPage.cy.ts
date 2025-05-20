@@ -361,7 +361,118 @@ describe("Client Details Page", () => {
       });
 
     });
-  });  
+  });
+
+  describe("summary (role:CLIENT_ADMIN)", () => {
+    describe("save client type Individual", () => {
+      describe("name change", { testIsolation: false }, () => {
+        beforeEach(function () {
+          init.call(this);
+
+          cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
+
+          cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
+
+          cy.visit("/clients/details/i");
+
+          cy.get("#summaryEditBtn").click();
+
+          cy.clearFormEntry("#input-legalFirstName");
+          cy.fillFormEntry("#input-legalFirstName", "Jack");
+
+          cy.clearFormEntry("#input-legalMiddleName");
+          cy.fillFormEntry("#input-legalMiddleName", "Johnson");
+
+          cy.get("#summarySaveBtn").click();
+
+          cy.wait("@getReasonsList").then(({ request }) => {
+            // requests the list of options related to Name change
+            expect(request.url.endsWith("/NAME")).to.eq(true);
+          });
+        });
+
+        it("opens the reason modal and sends the correct PATCH request with reasons", () => {
+          cy.get("#reason-modal").should("be.visible");
+
+          cy.get("#input-reason-0").should("exist");
+
+          cy.get("#input-reason-0").find('[part="trigger-button"]').click();
+
+          cy.get("#input-reason-0").find("cds-dropdown-item").first().should("be.visible").click();
+
+          cy.get("#reasonSaveBtn").click();
+
+          cy.wait("@saveClientDetails").then((interception) => {
+            const requestBody = interception.request.body;
+
+            cy.log("Request Body:", JSON.stringify(requestBody));
+
+            expect(requestBody).to.deep.include({
+              op: "add",
+              path: "/reasons/0",
+              value: {
+                field: "/client",
+                reason: "R1",
+              },
+            });
+          });
+        });
+      });
+
+      describe("ID change", { testIsolation: false }, () => {
+        beforeEach(function () {
+          init.call(this);
+
+          cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
+
+          cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
+
+          cy.visit("/clients/details/i");
+
+          cy.get("#summaryEditBtn").click();
+
+          cy.selectFormEntry("#input-clientIdType", "Alaska Drivers Licence");
+
+          cy.clearFormEntry("#input-clientIdentification");
+          cy.fillFormEntry("#input-clientIdentification", "ABC12345");
+
+          cy.get("#summarySaveBtn").click();
+
+          cy.wait("@getReasonsList").then(({ request }) => {
+            // requests the list of options related to Name change
+            expect(request.url.endsWith("/ID")).to.eq(true);
+          });
+        });
+
+        it("opens the reason modal and sends the correct PATCH request with reasons", () => {
+          cy.get("#reason-modal").should("be.visible");
+
+          cy.get("#input-reason-0").should("exist");
+
+          cy.get("#input-reason-0").find('[part="trigger-button"]').click();
+
+          cy.get("#input-reason-0").find("cds-dropdown-item").first().should("be.visible").click();
+
+          cy.get("#reasonSaveBtn").click();
+
+          cy.wait("@saveClientDetails").then((interception) => {
+            const requestBody = interception.request.body;
+
+            cy.log("Request Body:", JSON.stringify(requestBody));
+
+            expect(requestBody).to.deep.include({
+              op: "add",
+              path: "/reasons/0",
+              value: {
+                field: "/client",
+                reason: "R1",
+              },
+            });
+          });
+        });
+      });
+    });
+  });
 
   describe("locations tab", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
