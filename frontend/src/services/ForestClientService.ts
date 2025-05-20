@@ -273,11 +273,11 @@ export const extractActionField = (
     and clientName.
     - otherwise, there is only one related field: clientName.
     
-    So only the first scenario needs to handled like a "group of fields".
+    So only the first scenario needs to be handled like a "group of fields".
     */
 
     // a generic path because this action is associated to a group of fields.
-    return "/";
+    return "/client";
   }
 
   const fieldName = extractFieldName(path);
