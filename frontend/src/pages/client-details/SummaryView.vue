@@ -48,7 +48,7 @@ const formatClientData = (data: ClientDetails) => {
     try {
       formattedData.client.birthdate = formatBirthdate(formattedData.client.birthdate);
     } catch {
-      // ignore - just keeps the original value
+      // Intentionally ignoring formatting errors – fallback to original value
     }
   }
   return formattedData;
