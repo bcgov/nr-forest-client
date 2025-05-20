@@ -726,7 +726,7 @@ describe("Reason Fields Handling", () => {
 
     const result = extractReasonFields(patchData, originalData);
     expect(result).toEqual([
-      { field: "clientIdentification", action: "ID" },
+      { field: "/client", action: "ID" },
       { field: "clientStatusCode", action: "ACDC" }, // Active -> Deceased
       { field: "city", action: "ADDR" },
     ]);
