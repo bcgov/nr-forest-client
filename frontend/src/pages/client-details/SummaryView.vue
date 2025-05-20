@@ -48,7 +48,7 @@ const getSafeClientData = (data: ClientDetails) => {
     try {
       safeData.client.birthdate = getSafeBirthdate(safeData.client.birthdate);
     } catch {
-      // do nothing
+      // ignore - just keeps the original value
     }
   }
   return safeData;
