@@ -364,7 +364,7 @@ describe("Client Details Page", () => {
   });
 
   describe("summary (role:CLIENT_ADMIN)", () => {
-    describe.only("save client type Individual", () => {
+    describe("save client type Individual", () => {
       describe("name change", { testIsolation: false }, () => {
         beforeEach(function () {
           init.call(this);
