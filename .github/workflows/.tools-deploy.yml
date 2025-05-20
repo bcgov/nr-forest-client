@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Scale down legacy
         continue-on-error: true
-        uses: bcgov/action-oc-runner@8ae8e22ccc644c73041a3b3ca3f2e6afdddad845 # v1.2.1
+        uses: bcgov/action-oc-runner@12997e908fba505079d1aab6f694a17fe15e9b28 # v1.2.2
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
@@ -85,7 +85,7 @@ jobs:
     steps:
       - name: Create the PR database
         continue-on-error: true
-        uses: bcgov/action-oc-runner@8ae8e22ccc644c73041a3b3ca3f2e6afdddad845 # v1.2.1
+        uses: bcgov/action-oc-runner@12997e908fba505079d1aab6f694a17fe15e9b28 # v1.2.2
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -110,7 +110,7 @@ jobs:
 
       - name: Create the PR user
         continue-on-error: true
-        uses: bcgov/action-oc-runner@8ae8e22ccc644c73041a3b3ca3f2e6afdddad845 # v1.2.1
+        uses: bcgov/action-oc-runner@12997e908fba505079d1aab6f694a17fe15e9b28 # v1.2.2
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -135,7 +135,7 @@ jobs:
 
       - name: Migrate the PR database
         continue-on-error: true
-        uses: bcgov/action-oc-runner@8ae8e22ccc644c73041a3b3ca3f2e6afdddad845 # v1.2.1
+        uses: bcgov/action-oc-runner@12997e908fba505079d1aab6f694a17fe15e9b28 # v1.2.2
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -153,7 +153,7 @@ jobs:
     steps:
       - name: Start the Legacy Service
         continue-on-error: true
-        uses: bcgov/action-oc-runner@8ae8e22ccc644c73041a3b3ca3f2e6afdddad845 # v1.2.1
+        uses: bcgov/action-oc-runner@12997e908fba505079d1aab6f694a17fe15e9b28 # v1.2.2
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
