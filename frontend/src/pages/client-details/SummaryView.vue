@@ -40,23 +40,23 @@ const formData = ref<ClientDetails>();
 const isEditing = ref(false);
 const hasAnyChange = ref(false);
 
-const getSafeBirthdate = (birthdate: string) => new Date(birthdate).toISOString().split("T")[0];
+const formatBirthdate = (birthdate: string) => new Date(birthdate).toISOString().split("T")[0];
 
-const getSafeClientData = (data: ClientDetails) => {
-  const safeData = JSON.parse(JSON.stringify(data));
-  if (safeData.client.birthdate) {
+const formatClientData = (data: ClientDetails) => {
+  const formattedData = JSON.parse(JSON.stringify(data));
+  if (formattedData.client.birthdate) {
     try {
-      safeData.client.birthdate = getSafeBirthdate(safeData.client.birthdate);
+      formattedData.client.birthdate = formatBirthdate(formattedData.client.birthdate);
     } catch {
       // ignore - just keeps the original value
     }
   }
-  return safeData;
+  return formattedData;
 };
 
 const resetFormData = () => {
-  originalData = getSafeClientData(props.data);
-  formData.value = getSafeClientData(props.data);
+  originalData = formatClientData(props.data);
+  formData.value = formatClientData(props.data);
   hasAnyChange.value = false;
 };
 
@@ -227,7 +227,7 @@ const dateOfBirth = computed(() => {
       return birthdate.slice(0, 4);
     }
 
-    return getSafeBirthdate(birthdate);
+    return formatBirthdate(birthdate);
   }
   return "";
 });
