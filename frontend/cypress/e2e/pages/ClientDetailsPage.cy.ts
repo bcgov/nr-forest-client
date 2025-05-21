@@ -351,7 +351,7 @@ describe("Client Details Page", () => {
               op: "add",
               path: "/reasons/0",
               value: {
-                field: "clientStatusCode",
+                field: "/client/clientStatusCode",
                 reason: "R1",
               },
             });
@@ -411,7 +411,7 @@ describe("Client Details Page", () => {
               op: "add",
               path: "/reasons/0",
               value: {
-                field: "/client",
+                field: "/client/name",
                 reason: "R1",
               },
             });
@@ -464,7 +464,7 @@ describe("Client Details Page", () => {
               op: "add",
               path: "/reasons/0",
               value: {
-                field: "/client",
+                field: "/client/id",
                 reason: "R1",
               },
             });

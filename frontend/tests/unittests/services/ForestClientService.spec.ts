@@ -664,13 +664,13 @@ describe("Reason Fields Handling", () => {
   const originalData: ClientDetails = {
     client: {
       clientNumber: "12345",
-      clientName: "John Doe",
+      clientName: "Doe",
       legalFirstName: "John",
       legalMiddleName: "A.",
       clientStatusCode: "ACT",
       clientStatusDesc: "",
-      clientTypeCode: "",
-      clientTypeDesc: "",
+      clientTypeCode: "I",
+      clientTypeDesc: "Individual",
       clientIdTypeCode: "",
       clientIdTypeDesc: "",
       clientIdentification: "12345",
@@ -685,7 +685,7 @@ describe("Reason Fields Handling", () => {
       goodStandingInd: "",
       birthdate: "",
     },
-    doingBusinessAs: [],
+    doingBusinessAs: "",
     addresses: [
       {
         clientNumber: "12345",
@@ -719,16 +719,18 @@ describe("Reason Fields Handling", () => {
 
   it("extracts reason fields from patch data", () => {
     const patchData: jsonpatch.Operation[] = [
-      { op: "replace", path: "/clientIdentification", value: "67890" },
-      { op: "replace", path: "/clientStatusCode", value: "DEC" },
-      { op: "replace", path: "/city", value: "Gotham" },
+      { op: "replace", path: "/client/legalFirstName", value: "Johan" },
+      { op: "replace", path: "/client/clientIdentification", value: "67890" },
+      { op: "replace", path: "/client/clientStatusCode", value: "DEC" },
+      { op: "replace", path: "/addresses/1/city", value: "Gotham" },
     ];
 
     const result = extractReasonFields(patchData, originalData);
     expect(result).toEqual([
-      { field: "/client", action: "ID" },
-      { field: "clientStatusCode", action: "ACDC" }, // Active -> Deceased
-      { field: "city", action: "ADDR" },
+      { field: "/client/name", action: "NAME" },
+      { field: "/client/id", action: "ID" },
+      { field: "/client/clientStatusCode", action: "ACDC" }, // Active -> Deceased
+      { field: "/addresses/1", action: "ADDR" }, // an address group
     ]);
   });
 
