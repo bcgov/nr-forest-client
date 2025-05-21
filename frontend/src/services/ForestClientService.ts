@@ -634,4 +634,8 @@ const columnNameToLabelMap: Record<string, string> = {
 
 export function getLabelByColumnName(columnName: string): string {
   return columnNameToLabelMap[columnName] ?? columnName;
-}
+};
+
+export function removePrefix(input: string): string {
+  return input.split('\\').pop() || '';
+}; 

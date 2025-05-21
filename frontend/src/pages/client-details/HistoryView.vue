@@ -3,7 +3,12 @@ import type { HistoryLogResult } from '@/dto/CommonTypesDto';
 import { useFetchTo } from '@/composables/useFetch';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { getLabelByColumnName, getTagColorByClientStatus, fieldActionMap } from "@/services/ForestClientService";
+import {
+        getLabelByColumnName, 
+        getTagColorByClientStatus, 
+        fieldActionMap, 
+        removePrefix 
+      } from "@/services/ForestClientService";
 import User16 from "@carbon/icons-vue/es/user/16";
 import Location16 from "@carbon/icons-vue/es/location/16";
 import Document16 from "@carbon/icons-vue/es/document/16";
@@ -172,7 +177,7 @@ const getReasonForColumn = (historyLog: any, columnName: string): string | null 
                 </p>
                 <p class="icon-label-inline">
                   <UserAvatar20 /> 
-                  {{ historyLog.updateUserid }} &middot; 
+                  {{ removePrefix(historyLog.updateUserid) }} &middot; 
                   {{ formatDatetime(historyLog.updateTimestamp) }}
                 </p>
               </div>
