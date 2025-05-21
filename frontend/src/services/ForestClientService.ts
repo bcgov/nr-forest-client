@@ -266,7 +266,11 @@ export const extractActionField = (
   action: string,
   clientData: ClientDetails,
 ): string => {
-  if (action === "ID" || (action === "NAME" && clientData.client.clientTypeCode === "I")) {
+  if (action === "ID") {
+    return "/client/id";
+  }
+
+  if (action === "NAME" && clientData.client.clientTypeCode === "I") {
     /*
     Note: when the action is "NAME", there are two scenarios:
     - when the type is Individual, there are three related fields: legalFirstName, legalMiddleName
@@ -277,7 +281,7 @@ export const extractActionField = (
     */
 
     // a generic path because this action is associated to a group of fields.
-    return "/client";
+    return "/client/name";
   }
 
   const fieldName = extractFieldName(path);
