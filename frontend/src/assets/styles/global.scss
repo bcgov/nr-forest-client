@@ -927,14 +927,26 @@ cds-actionable-notification * {
   max-width: 50.4375rem;
 }
 
+.full-width-fixed-table {
+  width: 100%; 
+  table-layout: fixed;
+}
+
 .history-meta-section {
   padding-top: 1.5rem;
 }
 
 .history-indicator-line {
-  border-left: 0.1rem solid #dfdfe1;
+  border-left: 0.1rem solid var(--light-theme-border-border-subtle-00, #dfdfe1);
   padding-left: 1rem;
   padding-bottom: 2rem;
+}
+
+.skeleton-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6.625rem;
 }
 
 .icon-label-inline {

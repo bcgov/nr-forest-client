@@ -83,16 +83,22 @@ const getReasonForColumn = (historyLog: any, columnName: string): string | null 
 
 <template>
   <div class="card-02">
-    <!-- TODO: Remove this when implementing the skeleton -->
-    <cds-inline-loading v-if="loading" />
+
+    <div class="history-indicator-line" v-if="loading">
+      <div class="skeleton-group">
+        <cds-skeleton-text v-shadow="1" class="heading-03-skeleton" />
+        <cds-skeleton-text v-shadow="1" class="heading-03-skeleton" />
+        <cds-skeleton-text v-shadow="1" class="heading-03-skeleton" />
+        <div></div>
+      </div>
+    </div>
 
     <div
       v-if="!loading"
       v-for="(historyLog, index) in historyLogs"
       class="history-indicator-line"
     >
-      <table style="width: 100%; table-layout: fixed;"
-        v-if="!loading">
+      <table class="full-width-fixed-table">
         <colgroup>
           <col style="width: 1.5rem;" />
           <col />
@@ -183,7 +189,6 @@ const getReasonForColumn = (historyLog: any, columnName: string): string | null 
               </div>
             </td>
           </tr>
-
         </tbody>
       </table>
     </div>
