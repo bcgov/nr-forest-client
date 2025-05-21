@@ -284,15 +284,15 @@ export const extractActionField = (
     return "/client/name";
   }
 
-  const fieldName = extractFieldName(path);
-
   if (path.startsWith("/addresses")) {
+    const fieldName = extractFieldName(path);
+
     // Should return something like "/addresses/00"
     const fieldKey = path.split(`/${fieldName}`)[0];
     return fieldKey;
   }
 
-  return fieldName;
+  return path;
 };
 
 // Function to extract required reason fields from patch data
