@@ -40,9 +40,23 @@ const formData = ref<ClientDetails>();
 const isEditing = ref(false);
 const hasAnyChange = ref(false);
 
+const formatBirthdate = (birthdate: string) => new Date(birthdate).toISOString().split("T")[0];
+
+const formatClientData = (data: ClientDetails) => {
+  const formattedData = JSON.parse(JSON.stringify(data));
+  if (formattedData.client.birthdate) {
+    try {
+      formattedData.client.birthdate = formatBirthdate(formattedData.client.birthdate);
+    } catch {
+      // Intentionally ignoring formatting errors – fallback to original value
+    }
+  }
+  return formattedData;
+};
+
 const resetFormData = () => {
-  originalData = JSON.parse(JSON.stringify(props.data));
-  formData.value = JSON.parse(JSON.stringify(props.data));
+  originalData = formatClientData(props.data);
+  formData.value = formatClientData(props.data);
   hasAnyChange.value = false;
 };
 
@@ -82,10 +96,15 @@ const save = () => {
 
 const fieldIdList = [
   "clientName",
+  "legalFirstName",
+  "legalMiddleName",
   "acronym",
   "doingBusinessAs",
   "registrationNumber",
   "workSafeBCNumber",
+  "birthdate",
+  "clientIdType",
+  "clientIdentification",
   "clientStatus",
   "notes",
 ] as const;
@@ -94,10 +113,15 @@ type FieldId = (typeof fieldIdList)[number];
 
 const validation = reactive<Record<FieldId, boolean>>({
   clientName: true,
+  legalFirstName: true,
+  legalMiddleName: true,
   acronym: true,
   doingBusinessAs: true,
   registrationNumber: true,
   workSafeBCNumber: true,
+  birthdate: true,
+  clientIdType: true,
+  clientIdentification: true,
   clientStatus: true,
   notes: true,
 });
@@ -109,15 +133,23 @@ const checkValid = () =>
   );
 
 const editRoles: Record<FieldId, UserRole[]> = {
-  // TODO: add the following values back when working on FSADT1-1611 or FSADT1-1640
   clientName: ["CLIENT_ADMIN"],
+  legalFirstName: ["CLIENT_ADMIN"],
+  legalMiddleName: ["CLIENT_ADMIN"],
   acronym: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   doingBusinessAs: ["CLIENT_ADMIN"],
   registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
+  birthdate: ["CLIENT_ADMIN"],
+  clientIdType: ["CLIENT_ADMIN"],
+  clientIdentification: ["CLIENT_ADMIN"],
   clientStatus: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   notes: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
 };
+
+const clientNameLabel = computed(() =>
+  formData.value.client.clientTypeCode === "I" ? "Last name" : "Client name",
+);
 
 const companyLikeTypes = ["A", "C", "L", "P", "S", "R", "T", "U"];
 
@@ -142,11 +174,16 @@ const canEditClientStatus = () => {
  * Note: it doesn't mean the current user should be allowed to do it.
  */
 const isFieldEditable: Record<FieldId, () => boolean> = {
-  clientName: () => props.data.client.clientTypeCode !== "I",
+  clientName: () => true,
+  legalFirstName: () => props.data.client.clientTypeCode === "I",
+  legalMiddleName: () => props.data.client.clientTypeCode === "I",
   acronym: () => true,
   doingBusinessAs: () => true,
   registrationNumber: () => companyLikeTypes.includes(props.data.client.clientTypeCode),
   workSafeBCNumber: () => true,
+  birthdate: () => props.data.client.clientTypeCode === "I",
+  clientIdType: () => props.data.client.clientTypeCode === "I",
+  clientIdentification: () => props.data.client.clientTypeCode === "I",
   clientStatus: canEditClientStatus,
   notes: () => true,
 };
@@ -190,7 +227,7 @@ const dateOfBirth = computed(() => {
       return birthdate.slice(0, 4);
     }
 
-    return new Date(birthdate).toISOString().split("T")[0];
+    return formatBirthdate(birthdate);
   }
   return "";
 });
@@ -198,6 +235,12 @@ const dateOfBirth = computed(() => {
 const birthdateLabel = computed(() =>
   dateOfBirth.value.length > 4 ? "Date of birth" : "Year of birth",
 );
+
+const updateClientIdType = (value: CodeNameType | undefined) => {
+  if (value) {
+    formData.value.client.clientIdTypeCode = value.code;
+  }
+};
 
 const updateClientStatus = (value: CodeNameType | undefined) => {
   if (value) {
@@ -270,11 +313,20 @@ const client = computed(() => props.data.client);
     <read-only-component
       :label="client.clientIdTypeDesc"
       id="identification"
-      v-if="client.clientIdTypeDesc && client.clientIdentification"
+      v-if="
+        displayReadonly('clientIdType') &&
+        displayReadonly('clientIdentification') &&
+        client.clientIdTypeDesc &&
+        client.clientIdentification
+      "
     >
       <span class="body-compact-01">{{ client.clientIdentification }}</span>
     </read-only-component>
-    <read-only-component :label="birthdateLabel" id="dateOfBirth" v-if="dateOfBirth">
+    <read-only-component
+      :label="birthdateLabel"
+      id="dateOfBirth"
+      v-if="displayReadonly('birthdate') && dateOfBirth"
+    >
       <span class="body-compact-01">{{ dateOfBirth }}</span>
     </read-only-component>
     <read-only-component
@@ -304,6 +356,38 @@ const client = computed(() => props.data.client);
     </cds-button>
   </div>
   <div class="form-edit no-padding" v-if="isEditing">
+    <text-input-component
+      id="input-legalFirstName"
+      v-if="displayEditable('legalFirstName')"
+      label="First name"
+      placeholder=""
+      autocomplete="off"
+      v-model="formData.client.legalFirstName"
+      :validations="[
+        ...getValidations('businessInformation.firstName'),
+        submissionValidation(`businessInformation.firstName`),
+      ]"
+      enabled
+      required
+      required-label
+      @empty="validation.legalFirstName = !$event"
+      @error="validation.legalFirstName = !$event"
+    />
+    <text-input-component
+      id="input-legalMiddleName"
+      v-if="displayEditable('legalMiddleName')"
+      label="Middle name"
+      placeholder=""
+      autocomplete="off"
+      v-model="formData.client.legalMiddleName"
+      :validations="[
+        ...getValidations('businessInformation.middleName'),
+        submissionValidation(`businessInformation.middleName`),
+      ]"
+      enabled
+      @empty="validation.legalMiddleName = true"
+      @error="validation.legalMiddleName = !$event"
+    />
     <div
       class="horizontal-input-grouping"
       v-if="displayEditable('clientName') || displayEditable('acronym')"
@@ -312,7 +396,7 @@ const client = computed(() => props.data.client);
         id="input-clientName"
         v-if="displayEditable('clientName')"
         class="grouping-02--width-32rem"
-        label="Client name"
+        :label="clientNameLabel"
         autocomplete="off"
         required
         required-label
@@ -377,6 +461,83 @@ const client = computed(() => props.data.client);
         :model-value="formData"
         :original-value="props.data"
         @valid="validation.registrationNumber = $event"
+      />
+    </div>
+    <div v-if="displayEditable('birthdate')">
+      <div class="label-with-icon line-height-0 parent-label">
+        <div class="cds-text-input-label">
+          <span class="cds-text-input-required-label">* </span>
+          <span>Date of birth</span>
+        </div>
+        <cds-tooltip>
+          <Information16 />
+          <cds-tooltip-content>
+            We need the applicant's birthdate to confirm their identity
+          </cds-tooltip-content>
+        </cds-tooltip>
+      </div>
+      <date-input-component
+        id="input-birthdate"
+        title="Date of birth"
+        :autocomplete="['off', 'off', 'off']"
+        v-model="formData.client.birthdate"
+        :enabled="true"
+        :validations="[
+          ...getValidations('businessInformation.birthdate'),
+          submissionValidation('businessInformation.birthdate'),
+        ]"
+        :year-validations="[...getValidations('businessInformation.birthdate.year')]"
+        @error="validation.birthdate = !$event"
+        @possibly-valid="validation.birthdate = $event"
+        required
+      />
+    </div>
+    <div class="horizontal-input-grouping">
+      <data-fetcher
+        v-if="displayEditable('clientStatus')"
+        url="/api/codes/identification-types/legacy"
+        :min-length="0"
+        :init-value="[]"
+        :init-fetch="true"
+        :params="{ method: 'GET' }"
+        #="{ content }"
+      >
+        <combo-box-input-component
+          id="input-clientIdType"
+          v-if="displayEditable('clientIdType')"
+          label="ID Type"
+          :initial-value="
+            content?.find((item) => item.code === formData.client.clientIdTypeCode)?.name
+          "
+          required
+          required-label
+          :model-value="content"
+          :enabled="true"
+          tip=""
+          :validations="[
+            ...getValidations('client.clientIdTypeCode'),
+            submissionValidation('client.clientIdTypeCode'),
+          ]"
+          @update:selected-value="updateClientIdType($event)"
+          @empty="validation.clientIdType = !$event"
+        />
+      </data-fetcher>
+      <text-input-component
+        id="input-clientIdentification"
+        v-if="displayEditable('clientIdentification')"
+        label="ID number"
+        placeholder=""
+        autocomplete="off"
+        v-model="formData.client.clientIdentification"
+        :validations="[
+          ...getValidations('client.clientIdentification'),
+          submissionValidation('client.clientIdentification'),
+        ]"
+        enabled
+        required
+        required-label
+        @empty="validation.clientIdentification = !$event"
+        @error="validation.clientIdentification = !$event"
       />
     </div>
     <text-input-component

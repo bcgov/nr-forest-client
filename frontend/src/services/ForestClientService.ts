@@ -189,6 +189,7 @@ export const includesAnyOf = (haystack: any[], needles: any[]): boolean =>
 //Fields that require a reason when changing
 export const reasonRequiredFields = new Set<string>([
   'clientStatusCode',
+  'clientIdTypeCode',
   'clientIdentification',
   'clientName',
   'legalFirstName',
@@ -204,6 +205,7 @@ export const reasonRequiredFields = new Set<string>([
 
 // Map for general field actions
 export const fieldActionMap = new Map<string, string>([
+  ['clientIdTypeCode', 'ID'],
   ['clientIdentification', 'ID'],
   ['clientName', 'NAME'],
   ['legalFirstName', 'NAME'],
@@ -264,7 +266,25 @@ export const extractFieldName = (path: string): string => {
  * @param path
  * @returns string
  */
-export const extractActionField = (path: string): string => {
+export const extractActionField = (
+  path: string,
+  action: string,
+  clientData: ClientDetails,
+): string => {
+  if (action === "ID" || (action === "NAME" && clientData.client.clientTypeCode === "I")) {
+    /*
+    Note: when the action is "NAME", there are two scenarios:
+    - when the type is Individual, there are three related fields: legalFirstName, legalMiddleName
+    and clientName.
+    - otherwise, there is only one related field: clientName.
+    
+    So only the first scenario needs to be handled like a "group of fields".
+    */
+
+    // a generic path because this action is associated to a group of fields.
+    return "/client";
+  }
+
   const fieldName = extractFieldName(path);
 
   if (path.startsWith("/addresses")) {
@@ -287,13 +307,6 @@ export const extractReasonFields = (
       (patch) => patch.op === "replace" && reasonRequiredFields.has(extractFieldName(patch.path)),
     )
     .forEach((patch) => {
-      const actionField = extractActionField(patch.path);
-
-      if (reasonActions[actionField]) {
-        // If the field corresponds to a "group change", like an address, we only need it once.
-        return;
-      }
-
       const fieldName = extractFieldName(patch.path);
 
       let action = '';
@@ -307,8 +320,14 @@ export const extractReasonFields = (
         action = fieldActionMap.get(fieldName) || '';
       }
 
+      if (reasonActions[action]) {
+        // If the field corresponds to a "group change", like an address, we only need it once.
+        return;
+      }
+
       if (action) {
-        reasonActions[actionField] = { field: actionField, action };
+        const actionField = extractActionField(patch.path, action, originalData);
+        reasonActions[action] = { field: actionField, action };
       }
     });
 
@@ -566,7 +585,7 @@ export const contactToEditFormat = (
  * to what the overflow-anchor CSS property is able to do while the content grows, so as to avoid
  * scroll jumping in unexpected ways.
  *
- * @param uiUpdatePromise - The promise whose resolution should triggers the scroll fix.
+ * @param uiUpdatePromise - The promise whose resolution should trigger the scroll fix.
  */
 export const keepScrollBottomPosition = (uiUpdatePromise: Promise<void>): void => {
   const app = document.getElementById("app");
