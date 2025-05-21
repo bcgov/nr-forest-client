@@ -214,7 +214,12 @@ export const fieldActionMap = new Map<string, string>([
   ['city', 'ADDR'],
   ['provinceCode', 'ADDR'],
   ['countryCode', 'ADDR'],
-  ['postalCode', 'ADDR']
+  ['postalCode', 'ADDR'],
+  ['clientStatusDesc', 'ACDC'],
+  ['clientStatusDesc', 'DAC'],
+  ['clientStatusDesc', 'RACT'],
+  ['clientStatusDesc', 'USPN'],
+  ['clientStatusDesc', 'SPN'],
 ]);
 
 // Map for client status transitions
@@ -598,18 +603,7 @@ const columnNameToLabelMap: Record<string, string> = {
   doingBusinessAs: "Doing business as",
   locnExpiredInd: "Location status",
   clientComment: "Notes",
-
   locationName: "Location name",
-  
-  /*addressOne: "Address",
-  addressTwo: "Address",
-  addressThree: "Address",
-  cityProvinceDesc: "Address",
-  city: "Address",
-  provinceDesc: "Address",
-  countryDesc: "Address",
-  postalCode: "Address",*/
-
   addressOne: "Street address or PO box",
   addressTwo: "Delivery information",
   addressThree: "Additional delivery information",
@@ -618,7 +612,6 @@ const columnNameToLabelMap: Record<string, string> = {
   provinceDesc: "Province or territory",
   countryDesc: "Country",
   postalCode: "Postal code",
-
   trustLocationInd: "Trust location",
   contactTypeDesc: "Contact type",
   contactName: "Full name",

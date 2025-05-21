@@ -927,15 +927,20 @@ cds-actionable-notification * {
   max-width: 50.4375rem;
 }
 
-.reason-block {
+.history-meta-section {
   padding-top: 1.5rem;
 }
 
-.history-collapsible-button {
+.history-indicator-line {
+  border-left: 0.1rem solid #dfdfe1;
+  padding-left: 1rem;
+  padding-bottom: 2rem;
+}
+
+.icon-label-inline {
   display: inline-flex; 
   align-items: center; 
   gap: 0.25rem; 
-  padding: 0 0.5rem;
 }
 
 del {

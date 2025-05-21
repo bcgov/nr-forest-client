@@ -4,7 +4,7 @@ import { useFetchTo } from '@/composables/useFetch';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { getLabelByColumnName, getTagColorByClientStatus, fieldActionMap } from "@/services/ForestClientService";
-import Avatar16 from "@carbon/icons-vue/es/user--avatar/16";
+import User16 from "@carbon/icons-vue/es/user/16";
 import Location16 from "@carbon/icons-vue/es/location/16";
 import Document16 from "@carbon/icons-vue/es/document/16";
 import NetworkEnterprise16 from "@carbon/icons-vue/es/network--enterprise/16";
@@ -12,6 +12,7 @@ import ChevronUp16 from "@carbon/icons-vue/es/chevron--up/16";
 import ChevronDown16 from "@carbon/icons-vue/es/chevron--down/16";
 import Enterprise16 from "@carbon/icons-vue/es/enterprise/16";
 import TaskAdd16 from '@carbon/icons-vue/es/task--add/16';
+import UserAvatar20 from '@carbon/icons-vue/es/user--avatar/20';
 
 
 const router = useRouter();
@@ -20,7 +21,7 @@ const clientNumber = router.currentRoute.value.params.id as string;
 const historyLogs = ref<HistoryLogResult[]>([]);
 const { loading } = useFetchTo(`/api/clients/history-logs/${clientNumber}`, historyLogs);
 
-const datetimeFormatter = new Intl.DateTimeFormat("en-US", {
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -28,8 +29,28 @@ const datetimeFormatter = new Intl.DateTimeFormat("en-US", {
     hour12: false,
 });
 
-const formatDatetime = (timestamp: Date): string => {
-  return datetimeFormatter.format(new Date(timestamp));
+const formatDate = (timestamp: Date): string => {
+  return dateFormatter.format(new Date(timestamp));
+};
+
+const formatDatetime = (timestamp: Date | string): string => {
+  const date = new Date(timestamp);
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  };
+
+  const datePart = date.toLocaleDateString('en-US', options);
+  const timePart = date.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+
+  return `${datePart}  ${timePart}`;
 };
 
 const showDetails = ref({});
@@ -63,7 +84,7 @@ const getReasonForColumn = (historyLog: any, columnName: string): string | null 
     <div
       v-if="!loading"
       v-for="(historyLog, index) in historyLogs"
-      style="border-left: 0.1rem solid #dfdfe1; padding-left: 1rem; padding-bottom: 2rem;"
+      class="history-indicator-line"
     >
       <table style="width: 100%; table-layout: fixed;"
         v-if="!loading">
@@ -75,7 +96,7 @@ const getReasonForColumn = (historyLog: any, columnName: string): string | null 
           <tr>
             <td style="vertical-align: middle;">
               <span v-if="historyLog.tableName === 'ClientLocation'"><Location16 /></span>
-              <span v-if="historyLog.tableName === 'ClientContact'"><Avatar16 /></span>
+              <span v-if="historyLog.tableName === 'ClientContact'"><User16 /></span>
               <span v-if="historyLog.tableName === 'RelatedClient'"><NetworkEnterprise16 /></span>
               <span v-if="historyLog.tableName === 'ClientDoingBusinessAs'"><Enterprise16 /></span>
               <span v-if="historyLog.tableName === 'ClientInformation' 
@@ -90,7 +111,7 @@ const getReasonForColumn = (historyLog: any, columnName: string): string | null 
           </tr>
           <tr>
             <td></td>
-            <td class="label-02">{{ formatDatetime(historyLog.updateTimestamp) }}</td>
+            <td class="label-02">{{ formatDate(historyLog.updateTimestamp) }}</td>
           </tr>
           <tr>
             <td>  
@@ -98,7 +119,7 @@ const getReasonForColumn = (historyLog: any, columnName: string): string | null 
                 <cds-button 
                   kind="ghost" 
                   @click="toggleDetails(index)">
-                  <span class="history-collapsible-button">
+                  <span class="icon-label-inline">
                     {{ showDetails[index] ? 'Hide' : 'Show more' }}
                     <ChevronUp16 v-if="showDetails[index]" />
                     <ChevronDown16 v-if="!showDetails[index]" />
@@ -135,7 +156,7 @@ const getReasonForColumn = (historyLog: any, columnName: string): string | null 
                 </p>
 
                 <div v-if="getReasonForColumn(historyLog, historyDtlsLog.columnName)"
-                    class="reason-block">
+                    class="history-meta-section">
                   <p class="label-02">
                     Reason for change
                   </p>
@@ -143,7 +164,17 @@ const getReasonForColumn = (historyLog: any, columnName: string): string | null 
                     {{ getReasonForColumn(historyLog, historyDtlsLog.columnName) }}
                   </p>
                 </div>
+              </div>
 
+              <div>
+                <p class="label-02">
+                  Performed by
+                </p>
+                <p class="icon-label-inline">
+                  <UserAvatar20 /> 
+                  {{ historyLog.updateUserid }} &middot; 
+                  {{ formatDatetime(historyLog.updateTimestamp) }}
+                </p>
               </div>
             </td>
           </tr>
