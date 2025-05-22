@@ -205,6 +205,15 @@ cds-button span {
   color: var(--light-theme-text-text-primary, #131315);
 }
 
+.hide-show-button cds-button[kind="ghost"]::part(button) {
+  width: 5rem;
+
+  // dark theme
+  --cds-focus: var(--dark-theme-focus-focus);
+  --cds-background-hover: var(--dark-theme-background-background-hover);
+  --cds-background-active: var(--dark-theme-background-background-active);
+}
+
 .step-active {
   --cds-border-subtle: var(--light-theme-miscellaneous-interactive);
 }
@@ -893,6 +902,61 @@ cds-actionable-notification * {
   background: #fff;
   max-width: 50.4375rem;
   box-sizing: border-box;
+}
+
+.card-02 {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.card-03 {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  gap: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
+  background: #fff;
+  max-width: 50.4375rem;
+}
+
+.full-width-fixed-table {
+  width: 100%; 
+  table-layout: fixed;
+}
+
+.history-meta-section {
+  padding-top: 1.5rem;
+}
+
+.history-indicator-line {
+  border-left: 0.1rem solid var(--light-theme-border-border-subtle-00, #dfdfe1);
+  padding-left: 1rem;
+  padding-bottom: 2rem;
+}
+
+.skeleton-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6.625rem;
+}
+
+.icon-label-inline {
+  display: inline-flex; 
+  align-items: center; 
+  gap: 0.25rem; 
+}
+
+del {
+  color: var(--cds-helper-text, #79797B);
 }
 
 .divider {

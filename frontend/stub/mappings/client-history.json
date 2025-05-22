@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "name": "Client Details General Partnership - Default",
+      "request": {
+        "urlPattern": "/api/clients/history-logs/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-client-history.json",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 500
+      }
+    }
+  ]
+}
