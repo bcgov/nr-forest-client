@@ -1,4 +1,4 @@
-FROM postgres:13@sha256:7f122a2d2c1f2ba92fda0dbd1020bb47ef5b163c1e537e903b7a525e24c1ba44
+FROM postgres:13@sha256:fe8bebcf0f8a57e6328757698374ef2955f6467779b6d71c3021a3770edd07c9
 
 HEALTHCHECK --interval=35s --timeout=4s CMD pg_isready -d db_prod
  
