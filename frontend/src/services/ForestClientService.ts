@@ -203,26 +203,22 @@ export const reasonRequiredFields = new Set<string>([
   'postalCode'
 ]);
 
-// Map for general field actions
-export const fieldActionMap = new Map<string, string>([
-  ['clientIdTypeCode', 'ID'],
-  ['clientIdentification', 'ID'],
-  ['clientName', 'NAME'],
-  ['legalFirstName', 'NAME'],
-  ['legalMiddleName', 'NAME'],
-  ['addressOne', 'ADDR'],
-  ['addressTwo', 'ADDR'],
-  ['addressThree', 'ADDR'],
-  ['city', 'ADDR'],
-  ['provinceCode', 'ADDR'],
-  ['countryCode', 'ADDR'],
-  ['postalCode', 'ADDR'],
-  ['clientStatusDesc', 'ACDC'],
-  ['clientStatusDesc', 'DAC'],
-  ['clientStatusDesc', 'RACT'],
-  ['clientStatusDesc', 'USPN'],
-  ['clientStatusDesc', 'SPN'],
-]);
+export const fieldActionMap: { [key: string]: string[] } = {
+  'clientIdTypeCode': ['ID'],
+  'clientIdentification': ['ID'],
+  'clientName': ['NAME'],
+  'legalFirstName': ['NAME'],
+  'legalMiddleName': ['NAME'],
+  'fullName': ['NAME'],
+  'addressOne': ['ADDR'],
+  'addressTwo': ['ADDR'],
+  'addressThree': ['ADDR'],
+  'city': ['ADDR'],
+  'provinceCode': ['ADDR'],
+  'countryCode': ['ADDR'],
+  'postalCode': ['ADDR'],
+  'clientStatusDesc': ['ACDC', 'DAC', 'RACT', 'USPN', 'SPN'],
+};
 
 // Map for client status transitions
 const statusTransitionMap = new Map<string, string>([
@@ -321,7 +317,7 @@ export const extractReasonFields = (
         const transitionKey = `${oldValue}-${newValue}`;
         action = statusTransitionMap.get(transitionKey) || '';
       } else {
-        action = fieldActionMap.get(fieldName) || '';
+        action = fieldActionMap[fieldName]?.[0] || '';
       }
 
       if (reasonActions[action]) {
@@ -338,7 +334,7 @@ export const extractReasonFields = (
   return Object.values(reasonActions);
 };
 
-export const getAction = (path: string, oldValue?: string, newValue?: string) => {
+export const getAction = (path: string, oldValue?: string, newValue?: string): string[] | string | null => {
   const fieldName = path.split('/').pop();
 
   if (fieldName === 'clientStatusCode' && oldValue && newValue) {
@@ -347,7 +343,7 @@ export const getAction = (path: string, oldValue?: string, newValue?: string) =>
     return transitionAction || null;
   }
 
-  return fieldActionMap.get(fieldName) || null;
+  return fieldActionMap[fieldName] || null;
 };
 
 const fieldLabelsByAction = new Map<string, string>([

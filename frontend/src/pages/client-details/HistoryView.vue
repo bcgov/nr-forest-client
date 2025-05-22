@@ -73,11 +73,53 @@ watch(
   { immediate: true }
 );
 
-const getReasonForColumn = (historyLog: any, columnName: string): string | null => {
-  const actionCode = fieldActionMap.get(columnName);
-  if (!actionCode || !historyLog.reasons) return null;
-  const reasonObj = historyLog.reasons.find((r: any) => r.actionCode === actionCode);
-  return reasonObj?.reason || null;
+const fieldReasonPriorityMap: { [actionCode: string]: string[] } = {
+  'ADDR': [
+    'addressOne',
+    'addressTwo',
+    'addressThree',
+    'city',
+    'provinceCode',
+    'countryCode',
+    'postalCode'
+  ],
+};
+
+const getReasonForColumn = (
+  historyLog: any,
+  columnName: string
+): string | null => {
+  const possibleActionCodes = fieldActionMap[columnName];
+  if (!possibleActionCodes || !historyLog.reasons || historyLog.reasons.length === 0) {
+    return null;
+  }
+
+  for (const actionCode of possibleActionCodes) {
+    const reasonObj = historyLog.reasons.find((r: any) => r.actionCode === actionCode);
+    if (reasonObj) {
+      const priorityList = fieldReasonPriorityMap[actionCode];
+
+      // If this is a grouped field like ADDR, apply filtering logic
+      if (priorityList) {
+        // Find the last column (from priority list) that appears in the log details
+        const lastMatchingColumn = [...priorityList]
+          .reverse()
+          .find((col) =>
+            historyLog.details.some((d: any) => d.columnName === col)
+          );
+
+        if (columnName === lastMatchingColumn) {
+          return reasonObj.reason;
+        } else {
+          return null;
+        }
+      }
+
+      return reasonObj.reason;
+    }
+  }
+
+  return null;
 };
 </script>
 
@@ -104,8 +146,8 @@ const getReasonForColumn = (historyLog: any, columnName: string): string | null 
           <col />
         </colgroup>
         <tbody>
-          <tr>
-            <td style="vertical-align: middle;">
+          <tr style="text-align: left;">
+            <th style="vertical-align: middle;">
               <span v-if="historyLog.tableName === 'ClientLocation'"><Location16 /></span>
               <span v-if="historyLog.tableName === 'ClientContact'"><User16 /></span>
               <span v-if="historyLog.tableName === 'RelatedClient'"><NetworkEnterprise16 /></span>
@@ -115,10 +157,10 @@ const getReasonForColumn = (historyLog: any, columnName: string): string | null 
               </span>
               <span v-if="historyLog.tableName === 'ClientInformation' 
                           && historyLog.identifierLabel === 'Client created'"><TaskAdd16 /></span>
-            </td>
-            <td style="vertical-align: bottom;">
+            </th>
+            <th style="vertical-align: bottom;">
               <h5>{{ historyLog.identifierLabel }}</h5>
-            </td>
+            </th>
           </tr>
           <tr>
             <td></td>
