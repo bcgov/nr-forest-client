@@ -100,6 +100,7 @@ const fieldIdList = [
   "legalMiddleName",
   "acronym",
   "doingBusinessAs",
+  "clientType",
   "registrationNumber",
   "workSafeBCNumber",
   "birthdate",
@@ -117,6 +118,7 @@ const validation = reactive<Record<FieldId, boolean>>({
   legalMiddleName: true,
   acronym: true,
   doingBusinessAs: true,
+  clientType: true,
   registrationNumber: true,
   workSafeBCNumber: true,
   birthdate: true,
@@ -138,6 +140,7 @@ const editRoles: Record<FieldId, UserRole[]> = {
   legalMiddleName: ["CLIENT_ADMIN"],
   acronym: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   doingBusinessAs: ["CLIENT_ADMIN"],
+  clientType: ["CLIENT_ADMIN"],
   registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   birthdate: ["CLIENT_ADMIN"],
@@ -179,6 +182,7 @@ const isFieldEditable: Record<FieldId, () => boolean> = {
   legalMiddleName: () => props.data.client.clientTypeCode === "I",
   acronym: () => true,
   doingBusinessAs: () => true,
+  clientType: () => true,
   registrationNumber: () => companyLikeTypes.includes(props.data.client.clientTypeCode),
   workSafeBCNumber: () => true,
   birthdate: () => props.data.client.clientTypeCode === "I",
@@ -235,6 +239,12 @@ const dateOfBirth = computed(() => {
 const birthdateLabel = computed(() =>
   dateOfBirth.value.length > 4 ? "Date of birth" : "Year of birth",
 );
+
+const updateClientType = (value: CodeNameType | undefined) => {
+  if (value) {
+    formData.value.client.clientTypeCode = value.code;
+  }
+};
 
 const updateClientIdType = (value: CodeNameType | undefined) => {
   if (value) {
@@ -456,6 +466,32 @@ const client = computed(() => props.data.client);
       @empty="validation.doingBusinessAs = true"
       @error="validation.doingBusinessAs = !$event"
     />
+    <data-fetcher
+      v-if="displayEditable('clientType')"
+      url="/api/codes/client-types/legacy"
+      :min-length="0"
+      :init-value="[]"
+      :init-fetch="true"
+      :params="{ method: 'GET' }"
+      #="{ content }"
+    >
+      <combo-box-input-component
+        id="input-clientType"
+        label="Client type"
+        :initial-value="content?.find((item) => item.code === formData.client.clientTypeCode)?.name"
+        required
+        required-label
+        :model-value="content"
+        :enabled="true"
+        tip=""
+        :validations="[
+          ...getValidations('client.clientTypeCode'),
+          submissionValidation('client.clientTypeCode'),
+        ]"
+        @update:selected-value="updateClientType($event)"
+        @empty="validation.clientType = !$event"
+      />
+    </data-fetcher>
     <div v-if="displayEditable('registrationNumber')">
       <registration-number
         :model-value="formData"
@@ -494,7 +530,7 @@ const client = computed(() => props.data.client);
     </div>
     <div class="horizontal-input-grouping">
       <data-fetcher
-        v-if="displayEditable('clientStatus')"
+        v-if="displayEditable('clientIdType')"
         url="/api/codes/identification-types/legacy"
         :min-length="0"
         :init-value="[]"
@@ -504,7 +540,6 @@ const client = computed(() => props.data.client);
       >
         <combo-box-input-component
           id="input-clientIdType"
-          v-if="displayEditable('clientIdType')"
           label="ID Type"
           :initial-value="
             content?.find((item) => item.code === formData.client.clientIdTypeCode)?.name
