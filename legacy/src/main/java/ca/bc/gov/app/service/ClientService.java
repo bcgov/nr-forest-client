@@ -249,7 +249,8 @@ public class ClientService {
               if (list.isEmpty()) {
                 log.info("No history logs found for client {}", clientNumber);
                 return Flux.error(
-                    new NoValueFoundException("No history logs found for client number: " + clientNumber));
+                    new NoValueFoundException("No history logs found for client number: " 
+                        + clientNumber));
               }
               
               list.sort(
