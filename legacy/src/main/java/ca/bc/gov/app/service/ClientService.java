@@ -246,6 +246,12 @@ public class ClientService {
         .collectList()
         .flatMapMany(
             list -> {
+              if (list.isEmpty()) {
+                log.info("No history logs found for client {}", clientNumber);
+                return Flux.error(
+                    new NoValueFoundException("No history logs found for client number: " + clientNumber));
+              }
+              
               list.sort(
                   Comparator
                       .comparing(
