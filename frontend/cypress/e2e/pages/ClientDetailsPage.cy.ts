@@ -1465,8 +1465,6 @@ describe("Client Details Page", () => {
       cy.get(".heading-03-skeleton").should("be.visible");
       cy.contains("h5", "Client created").should("not.exist");
   
-      //cy.get("#clientNumber").should("not.exist");
-  
       resolveGetClientHistory();
       cy.wait("@getClientHistory");
   
