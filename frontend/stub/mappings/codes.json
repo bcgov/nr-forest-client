@@ -195,6 +195,18 @@
       "response": {
         "status": 200,
         "transformers": ["response-template"],
+        "bodyFileName": "response-registry-types-dummy.json"
+      }
+    },
+    {
+      "name": "Get registry type codes by client type",
+      "request": {
+        "urlPattern": "/api/codes/registry-types/(C|A)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
         "bodyFileName": "response-registry-types-{{request.path.[3]}}.json"
       }
     },

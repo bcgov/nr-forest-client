@@ -121,7 +121,7 @@
       }
     },
     {
-      "name": "Client Details Sole Proprietorship",
+      "name": "Client Details Individual 2",
       "request": {
         "urlPattern": "/api/clients/details/s(.*)",
         "method": "GET"
@@ -136,7 +136,7 @@
       }
     },
     {
-      "name": "Client Details Sole Proprietorship - Some empty fields",
+      "name": "Client Details Individual 2 - Some empty fields",
       "request": {
         "urlPattern": "/api/clients/details/se(.*)",
         "method": "GET"
