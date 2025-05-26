@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { HistoryLogResult } from '@/dto/CommonTypesDto';
+import type { CodeNameType, HistoryLogResult } from '@/dto/CommonTypesDto';
 import { useFetchTo } from '@/composables/useFetch';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -22,9 +22,6 @@ import UserAvatar20 from '@carbon/icons-vue/es/user--avatar/20';
 
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id as string;
-
-const historyLogs = ref<HistoryLogResult[]>([]);
-const { loading } = useFetchTo(`/api/clients/history-logs/${clientNumber}`, historyLogs);
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
     year: "numeric",
@@ -62,6 +59,9 @@ const showDetails = ref({});
 const toggleDetails = (index) => {
   showDetails.value[index] = !showDetails.value[index];
 };
+
+const historyLogs = ref<HistoryLogResult[]>([]);
+let { loading } = useFetchTo(`/api/clients/history-logs/${clientNumber}`, historyLogs);
 
 watch(
   () => historyLogs.value,
@@ -121,10 +121,40 @@ const getReasonForColumn = (
 
   return null;
 };
+
+const auditTables: CodeNameType[] = [
+  { code: 'CLI', name: 'Client summary' },
+  { code: 'CTC', name: 'Contacts' },
+  { code: 'DBA', name: 'Doing business as' },
+  { code: 'LOC', name: 'Locations' },
+  { code: 'RCT', name: 'Related clients' }
+];
+
+const selectedAuditTables = ref<string[]>();
+
+watch(selectedAuditTables, (newCodes) => {
+  useFetchTo(`/api/clients/history-logs/${clientNumber}?sources=${newCodes}`, historyLogs);
+});
 </script>
 
 <template>
   <div class="card-02">
+
+    <multiselect-input-component
+      id="filterById"
+      label="Filter by activity"
+      tip=""
+      initial-value="All activities"
+      :model-value="auditTables"
+      :selectedValues="selectedAuditTables"
+      required
+      required-label
+      :validations="[]"
+      style="width: 36rem;"
+      @update:selected-value="selectedAuditTables = $event.map(item => item.code)"
+    />
+
+    <div style="height: 2rem;"></div>
 
     <div class="history-indicator-line" v-if="loading">
       <div class="skeleton-group">
