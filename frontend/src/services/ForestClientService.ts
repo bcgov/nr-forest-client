@@ -261,26 +261,14 @@ export const extractFieldName = (path: string): string => {
  * @param path
  * @returns string
  */
-export const extractActionField = (
-  path: string,
-  action: string,
-  clientData: ClientDetails,
-): string => {
+export const extractActionField = (path: string, action: string): string => {
   if (action === "ID") {
+    // virtual field representing multiple fields
     return "/client/id";
   }
 
-  if (action === "NAME" && clientData.client.clientTypeCode === "I") {
-    /*
-    Note: when the action is "NAME", there are two scenarios:
-    - when the type is Individual, there are three related fields: legalFirstName, legalMiddleName
-    and clientName.
-    - otherwise, there is only one related field: clientName.
-    
-    So only the first scenario needs to be handled like a "group of fields".
-    */
-
-    // a generic path because this action is associated to a group of fields.
+  if (action === "NAME") {
+    // virtual field representing multiple fields
     return "/client/name";
   }
 
@@ -325,7 +313,7 @@ export const extractReasonFields = (
       }
 
       if (action) {
-        const actionField = extractActionField(patch.path, action, originalData);
+        const actionField = extractActionField(patch.path, action);
         reasonActions[action] = { field: actionField, action };
       }
     });
