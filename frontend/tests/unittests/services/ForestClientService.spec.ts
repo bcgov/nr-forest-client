@@ -751,8 +751,8 @@ describe("Reason Fields Handling", () => {
     });
 
     it("returns correct field mapping for other fields", () => {
-      expect(getAction("/clientIdentification")).toEqual("ID");
-      expect(getAction("/city")).toEqual("ADDR");
+      expect(getAction("/clientIdentification")).toEqual(["ID"]);
+      expect(getAction("/city")).toEqual(["ADDR"]);
       expect(getAction("/unknownField")).toBeNull();
     });
   });
