@@ -1430,25 +1430,17 @@ describe("Client Details Page", () => {
 
   describe("History tab", () => {
     const clientNumber = "12321";
+  
+    let resolveGetClientHistory: () => void;
+  
     beforeEach(() => {
       cy.visit(`/clients/details/${clientNumber}`);
-
+  
       cy.window().then((win) => {
         cy.stub(win, "open").as("windowOpen");
       });
 
-      // Switch to the History tab
-      cy.get("#tab-history").click();
-
-      // Make sure the current tab panel was effectively switched
-      cy.get("#panel-locations").should("have.attr", "hidden");
-      cy.get("#panel-history").should("not.have.attr", "hidden");
-    });
-
-    it("shows text skeletons only while data is loading", () => {
-      let resolveGetClientHistory: () => void;
-  
-      const promiseGetClienHistory = new Promise<void>((resolve) => {
+      const promiseGetClientHistory = new Promise<void>((resolve) => {
         resolveGetClientHistory = resolve;
       });
   
@@ -1458,21 +1450,27 @@ describe("Client Details Page", () => {
           pathname: `/api/clients/history-logs/${clientNumber}`,
         },
         (req) => {
-          req.continue(() => promiseGetClienHistory);
-        },
+          promiseGetClientHistory.then(() => req.continue());
+        }
       ).as("getClientHistory");
   
+      // Now that the intercept is ready, click the tab
+      cy.get("#tab-history").click();
+  
+      cy.get("#panel-locations").should("have.attr", "hidden");
+      cy.get("#panel-history").should("not.have.attr", "hidden");
+    });
+  
+    it("shows text skeletons only while data is loading", () => {
       cy.get(".heading-03-skeleton").should("be.visible");
       cy.contains("h5", "Client created").should("not.exist");
   
       resolveGetClientHistory();
       cy.wait("@getClientHistory");
   
-      // Now that the data is already available, text skeletons should no longer exist
       cy.get(".heading-03-skeleton").should("not.exist");
       cy.contains("h5", "Client created").should("be.visible");
     });
-
-  });
+  });  
 
 });
