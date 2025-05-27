@@ -117,9 +117,9 @@ type FieldConfigRoot = {
   fields: (keyof ClientDetails)[];
 };
 
-type FieldKeys = keyof ClientDetails | "root";
+type FieldPath = keyof ClientDetails | "root";
 
-type FieldConfig<T extends FieldKeys = FieldKeys> = T extends keyof ClientDetails
+type FieldConfig<T extends FieldPath = FieldPath> = T extends keyof ClientDetails
   ? FieldConfigPath<T>
   : FieldConfigRoot;
 
@@ -130,7 +130,12 @@ type FieldConfig<T extends FieldKeys = FieldKeys> = T extends keyof ClientDetail
 type MapFieldId = Exclude<FieldId, keyof ClientDetails["client"]>;
 
 /**
- * Maps local fields to data model fields with type-checking.
+ * Maps local field names to data model fields with type-checking.
+ * The local fields that are not in this map will use the default config, which is:
+ * {
+ *   path: "client"
+ *   fields: [the same as the local field name]
+ * }
  */
 const dataModelMap: {
   [key in MapFieldId]: FieldConfig;
