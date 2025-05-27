@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch, type ComputedRef } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import type { ClientDetails, CodeNameType, UserRole } from "@/dto/CommonTypesDto";
 import RegistrationNumber from "@/pages/client-details/RegistrationNumber.vue";
@@ -89,11 +89,6 @@ defineExpose({
   lockEditing,
 });
 
-const save = () => {
-  const patch = jsonpatch.compare(originalData, formData.value);
-  emit("save", patch);
-};
-
 const fieldIdList = [
   "clientName",
   "legalFirstName",
@@ -111,6 +106,100 @@ const fieldIdList = [
 ] as const;
 
 type FieldId = (typeof fieldIdList)[number];
+
+type FieldConfigPath<T extends keyof ClientDetails> = {
+  path: T;
+  fields: (keyof ClientDetails[T])[];
+};
+
+type FieldConfigRoot = {
+  path?: "root";
+  fields: (keyof ClientDetails)[];
+};
+
+type FieldKeys = keyof ClientDetails | "root";
+
+type FieldConfig<T extends FieldKeys = FieldKeys> = T extends keyof ClientDetails
+  ? FieldConfigPath<T>
+  : FieldConfigRoot;
+
+/**
+ * Local fields that either don't belong in the `client` property or whose name doesn't match any
+ * `client` field.
+ */
+type MapFieldId = Exclude<FieldId, keyof ClientDetails["client"]>;
+
+/**
+ * Maps local fields to data model fields with type-checking.
+ */
+const dataModelMap: {
+  [key in MapFieldId]: FieldConfig;
+} = {
+  doingBusinessAs: {
+    path: "root",
+    fields: ["doingBusinessAs"],
+  },
+  acronym: {
+    path: "client",
+    fields: ["clientAcronym"],
+  },
+  clientType: {
+    path: "client",
+    fields: ["clientTypeCode"],
+  },
+  registrationNumber: {
+    path: "client",
+    fields: ["registryCompanyTypeCode", "corpRegnNmbr"],
+  },
+  workSafeBCNumber: {
+    path: "client",
+    fields: ["wcbFirmNumber"],
+  },
+  clientIdType: {
+    path: "client",
+    fields: ["clientIdTypeCode"],
+  },
+  clientStatus: {
+    path: "client",
+    fields: ["clientStatusCode"],
+  },
+  notes: {
+    path: "client",
+    fields: ["clientComment"],
+  },
+};
+
+const getRemovedFields = () => {
+  const result: FieldId[] = [];
+  Object.keys(originalFieldsEditability).forEach((field: FieldId) => {
+    if (originalFieldsEditability[field].value && !fieldsEditability[field].value) {
+      result.push(field);
+    }
+  });
+  return result;
+};
+
+const save = () => {
+  const clonedFormData: ClientDetails = JSON.parse(JSON.stringify(formData.value));
+  const removedFields = getRemovedFields();
+
+  // Clear the value of removed fields
+  removedFields.forEach((localField: FieldId) => {
+    let path = "client";
+    let fields = [localField];
+    if (dataModelMap[localField]) {
+      ({ path, fields } = dataModelMap[localField]);
+    }
+    const data = path === "root" ? clonedFormData : clonedFormData[path];
+    fields.forEach((field) => {
+      data[field] = null;
+    });
+  });
+
+  const patch = jsonpatch.compare(originalData, clonedFormData);
+
+  emit("save", patch);
+};
 
 const validation = reactive<Record<FieldId, boolean>>({
   clientName: true,
@@ -173,24 +262,33 @@ const canEditClientStatus = () => {
 };
 
 /**
- * Tells whether the field is editable at all, according to the client's type.
+ * Tells whether the field is editable at all, according to the client's data provided.
  * Note: it doesn't mean the current user should be allowed to do it.
  */
-const isFieldEditable: Record<FieldId, () => boolean> = {
+const isFieldEditable: Record<FieldId, (data: ClientDetails) => boolean> = {
   clientName: () => true,
-  legalFirstName: () => props.data.client.clientTypeCode === "I",
-  legalMiddleName: () => props.data.client.clientTypeCode === "I",
+  legalFirstName: (data) => data.client.clientTypeCode === "I",
+  legalMiddleName: (data) => data.client.clientTypeCode === "I",
   acronym: () => true,
   doingBusinessAs: () => true,
   clientType: () => true,
-  registrationNumber: () => companyLikeTypes.includes(props.data.client.clientTypeCode),
+  registrationNumber: (data) => companyLikeTypes.includes(data.client.clientTypeCode),
   workSafeBCNumber: () => true,
-  birthdate: () => props.data.client.clientTypeCode === "I",
-  clientIdType: () => props.data.client.clientTypeCode === "I",
-  clientIdentification: () => props.data.client.clientTypeCode === "I",
+  birthdate: (data) => data.client.clientTypeCode === "I",
+  clientIdType: (data) => data.client.clientTypeCode === "I",
+  clientIdentification: (data) => data.client.clientTypeCode === "I",
   clientStatus: canEditClientStatus,
   notes: () => true,
 };
+
+const fieldsEditability = {} as Record<FieldId, ComputedRef<boolean>>;
+Object.keys(isFieldEditable).forEach((field) => {
+  fieldsEditability[field] = computed<boolean>(() => isFieldEditable[field](formData.value));
+});
+const originalFieldsEditability = {} as Record<FieldId, ComputedRef<boolean>>;
+Object.keys(isFieldEditable).forEach((field) => {
+  originalFieldsEditability[field] = computed<boolean>(() => isFieldEditable[field](props.data));
+});
 
 const canEdit = computed(() =>
   includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
@@ -199,7 +297,7 @@ const canEdit = computed(() =>
 const displayEditable = (fieldId: FieldId) =>
   isEditing.value &&
   includesAnyOf(props.userRoles, editRoles[fieldId]) &&
-  isFieldEditable[fieldId]();
+  fieldsEditability[fieldId].value;
 
 const displayReadonly = (fieldId: FieldId) => !isEditing.value || !displayEditable(fieldId);
 
