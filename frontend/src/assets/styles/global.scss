@@ -206,7 +206,7 @@ cds-button span {
 }
 
 .hide-show-button cds-button[kind="ghost"]::part(button) {
-  width: 5rem;
+  width: 8rem;
 
   // dark theme
   --cds-focus: var(--dark-theme-focus-focus);
