@@ -205,6 +205,7 @@ export const reasonRequiredFields = new Set<string>([
 
 export const fieldActionMap: { [key: string]: string[] } = {
   'clientIdTypeCode': ['ID'],
+  'clientIdTypeDesc': ['ID'],
   'clientIdentification': ['ID'],
   'clientName': ['NAME'],
   'legalFirstName': ['NAME'],
@@ -216,6 +217,8 @@ export const fieldActionMap: { [key: string]: string[] } = {
   'city': ['ADDR'],
   'provinceCode': ['ADDR'],
   'countryCode': ['ADDR'],
+  'provinceDesc': ['ADDR'],
+  'countryDesc': ['ADDR'],
   'postalCode': ['ADDR'],
   'clientStatusDesc': ['ACDC', 'DAC', 'RACT', 'USPN', 'SPN'],
 };

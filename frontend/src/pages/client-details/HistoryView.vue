@@ -18,6 +18,8 @@ import ChevronDown16 from "@carbon/icons-vue/es/chevron--down/16";
 import Enterprise16 from "@carbon/icons-vue/es/enterprise/16";
 import TaskAdd16 from '@carbon/icons-vue/es/task--add/16';
 import UserAvatar20 from '@carbon/icons-vue/es/user--avatar/20';
+import UserSearch from "@carbon/pictograms/es/user--search";
+import useSvg from '@/composables/useSvg';
 
 
 const router = useRouter();
@@ -74,15 +76,19 @@ watch(
 );
 
 const fieldReasonPriorityMap: { [actionCode: string]: string[] } = {
-  'ADDR': [
-    'addressOne',
-    'addressTwo',
-    'addressThree',
-    'city',
-    'provinceCode',
-    'countryCode',
-    'postalCode'
+  "ADDR": [
+    "addressOne",
+    "addressTwo",
+    "addressThree",
+    "city",
+    "provinceDesc",
+    "countryDesc",
+    "postalCode"
   ],
+  "ID": [
+    "clientIdTypeDesc",
+    "clientIdentification"
+  ]
 };
 
 const getReasonForColumn = (
@@ -135,6 +141,8 @@ const selectedAuditTables = ref<string[]>();
 watch(selectedAuditTables, (newCodes) => {
   useFetchTo(`/api/clients/history-logs/${clientNumber}?sources=${newCodes}`, historyLogs);
 });
+
+const userSearchSvg = useSvg(UserSearch);
 </script>
 
 <template>
@@ -232,8 +240,7 @@ watch(selectedAuditTables, (newCodes) => {
                     </cds-tag>
                   </span>
 
-                  <span v-if="historyDtlsLog.columnName !== 'clientStatusDesc' &&
-                              historyDtlsLog.columnName !== 'locnExpiredInd'">
+                  <span v-else>
                       {{ historyDtlsLog.newValue }}
                   </span>
                 </p>
@@ -264,5 +271,13 @@ watch(selectedAuditTables, (newCodes) => {
         </tbody>
       </table>
     </div>
+
+    <div class="empty-table-list"
+      v-if="!loading && historyLogs.length === 0">
+      <user-search-svg alt="User search pictogram" class="standard-svg" />
+      <p class="heading-02">No results for the selected filters</p>
+      <p class="body-compact-01">Consider adjusting the filter by activity and try again.</p>
+    </div>
+
   </div>
 </template>
