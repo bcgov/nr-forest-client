@@ -1450,7 +1450,7 @@ describe("Client Details Page", () => {
           pathname: `/api/clients/history-logs/${clientNumber}`,
         },
         (req) => {
-          promiseGetClientHistory.then(() => req.continue());
+          req.continue(() => promiseGetClientHistory);
         }
       ).as("getClientHistory");
   

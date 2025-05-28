@@ -369,12 +369,19 @@ public final class ForestClientQueries {
                 ELSE AL.FAX_NUMBER
               END AS FAX_NUMBER,
               AL.EMAIL_ADDRESS,
+              CASE 
+                WHEN CL.CLIENT_LOCN_NAME IS NOT NULL THEN AL.CLIENT_LOCN_CODE || ' - ' || CL.CLIENT_LOCN_NAME 
+                    ELSE AL.CLIENT_LOCN_CODE
+              END AS ASSOCIATED_LOCATION,
               AL.UPDATE_TIMESTAMP,
               AL.UPDATE_USERID,
               BC.DESCRIPTION AS CONTACT_TYPE_DESC
           FROM THE.CLI_CON_AUDIT AL
           LEFT OUTER JOIN THE.BUSINESS_CONTACT_CODE BC
               ON AL.BUS_CONTACT_CODE = BC.BUSINESS_CONTACT_CODE
+          LEFT OUTER JOIN THE.CLIENT_LOCATION CL
+              ON AL.CLIENT_NUMBER = CL.CLIENT_NUMBER 
+              AND AL.CLIENT_LOCN_CODE = CL.CLIENT_LOCN_CODE
           WHERE AL.CLIENT_NUMBER = :clientNumber
       ),
       AUDIT_DATA AS (
@@ -394,6 +401,7 @@ public final class ForestClientQueries {
                   WHEN 'secondaryPhone' THEN B.CELL_PHONE
                   WHEN 'faxNumber' THEN B.FAX_NUMBER
                   WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
+                  WHEN 'associatedLocation' THEN B.ASSOCIATED_LOCATION
               END AS NEW_VALUE,
               LAG(
                   CASE COL.COLUMN_NAME
@@ -403,6 +411,7 @@ public final class ForestClientQueries {
                       WHEN 'secondaryPhone' THEN B.CELL_PHONE
                       WHEN 'faxNumber' THEN B.FAX_NUMBER
                       WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
+                      WHEN 'associatedLocation' THEN B.ASSOCIATED_LOCATION
                   END
               ) OVER (
                   PARTITION BY B.CLIENT_CONTACT_ID, COL.COLUMN_NAME
@@ -414,17 +423,19 @@ public final class ForestClientQueries {
               COL.FIELD_ORDER
           FROM BASE_DATA B
           CROSS JOIN (
-              SELECT 'contactTypeDesc' AS COLUMN_NAME, 1 AS FIELD_ORDER FROM DUAL
+              SELECT 'contactName' AS COLUMN_NAME, 1 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'contactName' AS COLUMN_NAME, 2 FROM DUAL
+              SELECT 'contactTypeDesc' AS COLUMN_NAME, 2 FROM DUAL
               UNION ALL
-              SELECT 'businessPhone' AS COLUMN_NAME, 3 FROM DUAL
+              SELECT 'associatedLocation' AS COLUMN_NAME, 3 FROM DUAL
               UNION ALL
-              SELECT 'secondaryPhone' AS COLUMN_NAME, 4 FROM DUAL
+              SELECT 'businessPhone' AS COLUMN_NAME, 4 FROM DUAL
               UNION ALL
-              SELECT 'faxNumber' AS COLUMN_NAME, 5 FROM DUAL
+              SELECT 'secondaryPhone' AS COLUMN_NAME, 5 FROM DUAL
               UNION ALL
-              SELECT 'emailAddress' AS COLUMN_NAME, 6 FROM DUAL
+              SELECT 'faxNumber' AS COLUMN_NAME, 6 FROM DUAL
+              UNION ALL
+              SELECT 'emailAddress' AS COLUMN_NAME, 7 FROM DUAL
           ) COL
       )
       SELECT
