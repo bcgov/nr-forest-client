@@ -371,20 +371,20 @@ watch(
   },
 );
 
-const client = computed(() => props.data.client);
+const originalClient = computed(() => props.data.client);
 </script>
 
 <template>
   <div class="grouping-10 no-padding">
     <read-only-component label="Client number" id="clientNumber">
-      <span class="body-compact-01">{{ client.clientNumber }}</span>
+      <span class="body-compact-01">{{ originalClient.clientNumber }}</span>
     </read-only-component>
     <read-only-component
       label="Acronym"
       id="acronym"
-      v-if="displayReadonly('acronym') && client.clientAcronym"
+      v-if="displayReadonly('acronym') && originalClient.clientAcronym"
     >
-      <span class="body-compact-01">{{ client.clientAcronym }}</span>
+      <span class="body-compact-01">{{ originalClient.clientAcronym }}</span>
     </read-only-component>
     <read-only-component
       label="Doing business as"
@@ -394,7 +394,7 @@ const client = computed(() => props.data.client);
       <span class="body-compact-01">{{ props.data.doingBusinessAs }}</span>
     </read-only-component>
     <read-only-component label="Client type" id="clientType">
-      <span class="body-compact-01">{{ client.clientTypeDesc }}</span>
+      <span class="body-compact-01">{{ originalClient.clientTypeDesc }}</span>
     </read-only-component>
     <read-only-component
       label="Registration number"
@@ -406,9 +406,9 @@ const client = computed(() => props.data.client);
     <read-only-component
       label="WorkSafeBC number"
       id="workSafeBCNumber"
-      v-if="displayReadonly('workSafeBCNumber') && client.wcbFirmNumber"
+      v-if="displayReadonly('workSafeBCNumber') && originalClient.wcbFirmNumber"
     >
-      <span class="body-compact-01">{{ client.wcbFirmNumber }}</span>
+      <span class="body-compact-01">{{ originalClient.wcbFirmNumber }}</span>
     </read-only-component>
     <read-only-component
       label="BC Registries standing"
@@ -417,23 +417,23 @@ const client = computed(() => props.data.client);
     >
       <div class="internal-grouping-01">
         <span class="body-compact-01 default-typography">{{
-          goodStanding(client.goodStandingInd)
+          goodStanding(originalClient.goodStandingInd)
         }}</span>
-        <Check20 v-if="client.goodStandingInd === 'Y'" class="good" />
-        <Warning20 v-if="client.goodStandingInd !== 'Y'" class="warning" />
+        <Check20 v-if="originalClient.goodStandingInd === 'Y'" class="good" />
+        <Warning20 v-if="originalClient.goodStandingInd !== 'Y'" class="warning" />
       </div>
     </read-only-component>
     <read-only-component
-      :label="client.clientIdTypeDesc"
+      :label="originalClient.clientIdTypeDesc"
       id="identification"
       v-if="
         displayReadonly('clientIdType') &&
         displayReadonly('clientIdentification') &&
-        client.clientIdTypeDesc &&
-        client.clientIdentification
+        originalClient.clientIdTypeDesc &&
+        originalClient.clientIdentification
       "
     >
-      <span class="body-compact-01">{{ client.clientIdentification }}</span>
+      <span class="body-compact-01">{{ originalClient.clientIdentification }}</span>
     </read-only-component>
     <read-only-component
       :label="birthdateLabel"
@@ -448,17 +448,20 @@ const client = computed(() => props.data.client);
       v-if="displayReadonly('clientStatus')"
     >
       <span class="body-compact-01">
-        <cds-tag :type="getTagColorByClientStatus(client.clientStatusDesc)">
-          <span>{{ client.clientStatusDesc }}</span>
+        <cds-tag :type="getTagColorByClientStatus(originalClient.clientStatusDesc)">
+          <span>{{ originalClient.clientStatusDesc }}</span>
         </cds-tag>
       </span>
     </read-only-component>
   </div>
-  <div class="grouping-10 no-padding" v-if="displayReadonly('notes') && client.clientComment">
+  <div
+    class="grouping-10 no-padding"
+    v-if="displayReadonly('notes') && originalClient.clientComment"
+  >
     <read-only-component label="Notes" id="notes">
       <span
         class="body-compact-01"
-        v-dompurify-html="getFormattedHtml(client.clientComment)"
+        v-dompurify-html="getFormattedHtml(originalClient.clientComment)"
       ></span>
     </read-only-component>
   </div>
@@ -696,7 +699,8 @@ const client = computed(() => props.data.client);
     />
     <data-fetcher
       v-if="displayEditable('clientStatus')"
-      :url="`/api/codes/client-statuses/${client.clientTypeCode}`"
+      :key="formData.client.clientTypeCode"
+      :url="`/api/codes/client-statuses/${formData.client.clientTypeCode}`"
       :min-length="0"
       :init-value="[]"
       :init-fetch="true"
