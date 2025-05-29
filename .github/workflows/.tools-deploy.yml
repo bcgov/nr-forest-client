@@ -21,7 +21,6 @@ jobs:
         name: Build (legacydb)
         with:
           package: legacydb
-          tag: ${{ github.event.number }}
           tag_fallback: latest
           triggers: ('legacydb/')
 
