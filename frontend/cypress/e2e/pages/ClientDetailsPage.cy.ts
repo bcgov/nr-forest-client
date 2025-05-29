@@ -1470,6 +1470,7 @@ describe("Client Details Page", () => {
   
       cy.get(".heading-03-skeleton").should("not.exist");
       cy.contains("h5", "Client created").should("be.visible");
+      cy.get("#historyLogDtlsId").should("be.visible");
     });
 
     it("shows empty state page when there is no data for the selected filter", () => {

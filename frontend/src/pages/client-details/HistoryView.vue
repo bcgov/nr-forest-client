@@ -224,7 +224,8 @@ const userSearchSvg = useSvg(UserSearch);
           <tr v-if="showDetails[index]" :id="'logDetails' + index">
             <td></td>
             <td class="card-03">
-              <div v-for="(historyDtlsLog, index) in historyLog.details">
+              <div id="historyLogDtlsId" 
+                v-for="(historyDtlsLog, index) in historyLog.details">
                 <p class="label-02" v-if="getLabelByColumnName(historyDtlsLog.columnName)">
                   {{ getLabelByColumnName(historyDtlsLog.columnName) }}
                 </p>
