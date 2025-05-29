@@ -1471,6 +1471,15 @@ describe("Client Details Page", () => {
       cy.get(".heading-03-skeleton").should("not.exist");
       cy.contains("h5", "Client created").should("be.visible");
     });
+
+    it("shows empty state page when there is no data for the selected filter", () => {
+      cy.selectFormEntry("#filterById", "Doing business as");
+
+      resolveGetClientHistory();
+      cy.wait("@getClientHistory");
+
+      cy.get(".empty-table-list").should("be.visible");
+    });
   });  
 
 });
