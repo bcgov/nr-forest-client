@@ -1,0 +1,235 @@
+[
+  {
+    "tableName": "ClientContact",
+    "idx": "4913-3015",
+    "identifierLabel": "Contact \"JOHN BENEDETTI\" updated",
+    "updateTimestamp": "2025-04-29T10:13:46",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": "First Nations Administrator",
+        "newValue": "Director"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": "JOHN DOE",
+        "newValue": "JOHN BENEDETTI"
+      },
+      {
+        "columnName": "emailAddress",
+        "oldValue": null,
+        "newValue": "JOHN@GMAIL.COM"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4858-3015",
+    "identifierLabel": "Contact \"PEPITO PEREZ\" updated",
+    "updateTimestamp": "2025-01-28T17:10:12",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "businessPhone",
+        "oldValue": null,
+        "newValue": "(988) 777-7777"
+      },
+      {
+        "columnName": "secondaryPhone",
+        "oldValue": "(250) 440-8452",
+        "newValue": null
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4857-3015",
+    "identifierLabel": "Contact \"PEPITO PEREZ\" updated",
+    "updateTimestamp": "2025-01-28T17:08:16",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "secondaryPhone",
+        "oldValue": "(604) 440-8452",
+        "newValue": "(250) 440-8452"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4856-3015",
+    "identifierLabel": "Contact \"PEPITO PEREZ\" added",
+    "updateTimestamp": "2025-01-28T17:06:47",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": null,
+        "newValue": "First Nations Administrator"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": null,
+        "newValue": "PEPITO PEREZ"
+      },
+      {
+        "columnName": "secondaryPhone",
+        "oldValue": null,
+        "newValue": "(604) 440-8452"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4855-3011",
+    "identifierLabel": "Contact \"MARIA MARTINEZ\" deleted",
+    "updateTimestamp": "2025-01-28T16:50:45",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "DEL",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": null,
+        "newValue": "Billing"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": null,
+        "newValue": "MARIA MARTINEZ"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4850-2950",
+    "identifierLabel": "Contact \"DFGHDG DSFGSDG\" deleted",
+    "updateTimestamp": "2025-01-20T08:43:20",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "DEL",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": null,
+        "newValue": "Director"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": null,
+        "newValue": "DFGHDG DSFGSDG"
+      },
+      {
+        "columnName": "businessPhone",
+        "oldValue": null,
+        "newValue": "(888) 999-3333"
+      },
+      {
+        "columnName": "emailAddress",
+        "oldValue": null,
+        "newValue": "m@hhh.cvom"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4849-3011",
+    "identifierLabel": "Contact \"MARIA MARTINEZ\" added",
+    "updateTimestamp": "2025-01-20T08:42:17",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": null,
+        "newValue": "Billing"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": null,
+        "newValue": "MARIA MARTINEZ"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4775-2950",
+    "identifierLabel": "Contact \"DFGHDG DSFGSDG\" added",
+    "updateTimestamp": "2024-08-28T15:08:26",
+    "updateUserid": "idir\\ottomated",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": null,
+        "newValue": "Director"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": null,
+        "newValue": "DFGHDG DSFGSDG"
+      },
+      {
+        "columnName": "businessPhone",
+        "oldValue": null,
+        "newValue": "(888) 999-3333"
+      },
+      {
+        "columnName": "emailAddress",
+        "oldValue": null,
+        "newValue": "m@hhh.cvom"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  }
+]

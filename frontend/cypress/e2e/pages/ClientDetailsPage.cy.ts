@@ -102,7 +102,7 @@ describe("Client Details Page", () => {
     cy.contains("cds-tab", "Client locations");
     cy.contains("cds-tab", "Client contacts");
     cy.contains("cds-tab", "Related clients");
-    cy.contains("cds-tab", "Activity log");
+    cy.contains("cds-tab", "History");
   });
 
   const nameScenarios = [
@@ -1428,35 +1428,67 @@ describe("Client Details Page", () => {
     });
   });
 
-  describe("activity log tab", () => {
+  describe("History tab", () => {
     const clientNumber = "12321";
+  
+    let resolveGetClientHistory: () => void;
+  
     beforeEach(() => {
       cy.visit(`/clients/details/${clientNumber}`);
-
+  
       cy.window().then((win) => {
         cy.stub(win, "open").as("windowOpen");
       });
 
-      // Switch to the Activity log tab
-      cy.get("#tab-activity").click();
-
-      // Make sure the current tab panel was effectively switched
+      const promiseGetClientHistory = new Promise<void>((resolve) => {
+        resolveGetClientHistory = resolve;
+      });
+  
+      cy.intercept(
+        {
+          method: "GET",
+          pathname: `/api/clients/history-logs/${clientNumber}`,
+        },
+        (req) => {
+          req.continue(() => promiseGetClientHistory);
+        }
+      ).as("getClientHistory");
+  
+      // Now that the intercept is ready, click the tab
+      cy.get("#tab-history").click();
+  
       cy.get("#panel-locations").should("have.attr", "hidden");
-      cy.get("#panel-activity").should("not.have.attr", "hidden");
+      cy.get("#panel-history").should("not.have.attr", "hidden");
+    });
+  
+    it("shows text skeletons only while data is loading", () => {
+      cy.get(".heading-03-skeleton").should("be.visible");
+      cy.get(".history-indicator-line").should("be.visible");
+      cy.contains("h5", "Client created").should("not.exist");
+  
+      resolveGetClientHistory();
+      cy.wait("@getClientHistory");
+  
+      cy.get(".heading-03-skeleton").should("not.exist");
+      //At least a 'Client created' should be displayed
+      cy.contains("h5", "Client created").should("be.visible");
+      //The logs should the present
+      cy.get("#historyLogDtlsId").should("be.visible");
+      //The details should be visible
+      cy.get("#logDetails0").should("be.visible");
+      //As at least 'Client created' must be displayed, the minimum value displayed is the status
+      cy.get("cds-tag").should("be.visible");
     });
 
-    it("should display the Under construction message", () => {
-      cy.get("#panel-activity").contains("Under construction").should("be.visible");
-    });
+    it("shows empty state page when there is no data for the selected filter", () => {
+      cy.selectFormEntry("#filterById", "Doing business as");
 
-    it("should open the Maintenance page in the legacy application", () => {
-      cy.get("#open-maintenance-btn").click();
-      cy.get("@windowOpen").should(
-        "be.calledWith",
-        `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
-        "_blank",
-        "noopener",
-      );
+      resolveGetClientHistory();
+      cy.wait("@getClientHistory");
+
+      cy.get(".empty-table-list").should("be.visible");
+      cy.get(".standard-svg").should("be.visible");
     });
-  });
+  });  
+
 });
