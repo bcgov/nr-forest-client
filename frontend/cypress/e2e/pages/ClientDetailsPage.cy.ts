@@ -1463,14 +1463,21 @@ describe("Client Details Page", () => {
   
     it("shows text skeletons only while data is loading", () => {
       cy.get(".heading-03-skeleton").should("be.visible");
+      cy.get(".history-indicator-line").should("be.visible");
       cy.contains("h5", "Client created").should("not.exist");
   
       resolveGetClientHistory();
       cy.wait("@getClientHistory");
   
       cy.get(".heading-03-skeleton").should("not.exist");
+      //At least a 'Client created' should be displayed
       cy.contains("h5", "Client created").should("be.visible");
+      //The logs should the present
       cy.get("#historyLogDtlsId").should("be.visible");
+      //The details should be visible
+      cy.get("#logDetails0").should("be.visible");
+      //As at least 'Client created' must be displayed, the minimum value displayed is the status
+      cy.get("cds-tag").should("be.visible");
     });
 
     it("shows empty state page when there is no data for the selected filter", () => {
@@ -1480,6 +1487,7 @@ describe("Client Details Page", () => {
       cy.wait("@getClientHistory");
 
       cy.get(".empty-table-list").should("be.visible");
+      cy.get(".standard-svg").should("be.visible");
     });
   });  
 
