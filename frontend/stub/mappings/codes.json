@@ -34,18 +34,6 @@
       }
     },
     {
-      "name": "Get Identification Types List in Legacy",
-      "request": {
-        "urlPattern": "/api/codes/client-types/legacy",
-        "method": "GET"
-      },
-      "response": {
-        "status": 200,
-        "transformers": ["response-template"],
-        "bodyFileName": "response-client-types-legacy.json"
-      }
-    },
-    {
       "name": "Province Codes",
       "request": {
         "urlPattern": "/api/codes/countries/([A-Z]+)/provinces\\?page=0&size=250",
@@ -90,6 +78,19 @@
         "status": 200,
         "transformers": ["response-template"],
         "bodyFileName": "response-province-{{request.path.[3]}}-{{request.path.[4]}}.json"
+      }
+    },
+    {
+      "name": "Get Client Types List in Legacy",
+      "priority": 1,
+      "request": {
+        "urlPattern": "/api/codes/client-types/legacy",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "bodyFileName": "response-client-types-legacy.json"
       }
     },
     {
@@ -189,6 +190,18 @@
       "name": "Get registry type codes by client type",
       "request": {
         "urlPattern": "/api/codes/registry-types/([A-Z]+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "bodyFileName": "response-registry-types-dummy.json"
+      }
+    },
+    {
+      "name": "Get registry type codes by client type",
+      "request": {
+        "urlPattern": "/api/codes/registry-types/(C|A)",
         "method": "GET"
       },
       "response": {

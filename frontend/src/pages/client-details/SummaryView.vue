@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch, type ComputedRef } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import type { ClientDetails, CodeNameType, UserRole } from "@/dto/CommonTypesDto";
 import RegistrationNumber from "@/pages/client-details/RegistrationNumber.vue";
@@ -89,17 +89,13 @@ defineExpose({
   lockEditing,
 });
 
-const save = () => {
-  const patch = jsonpatch.compare(originalData, formData.value);
-  emit("save", patch);
-};
-
 const fieldIdList = [
   "clientName",
   "legalFirstName",
   "legalMiddleName",
   "acronym",
   "doingBusinessAs",
+  "clientType",
   "registrationNumber",
   "workSafeBCNumber",
   "birthdate",
@@ -111,12 +107,112 @@ const fieldIdList = [
 
 type FieldId = (typeof fieldIdList)[number];
 
+type FieldConfigPath<T extends keyof ClientDetails> = {
+  path: T;
+  fields: (keyof ClientDetails[T])[];
+};
+
+type FieldConfigRoot = {
+  path?: "root";
+  fields: (keyof ClientDetails)[];
+};
+
+type FieldPath = keyof ClientDetails | "root";
+
+type FieldConfig<T extends FieldPath = FieldPath> = T extends keyof ClientDetails
+  ? FieldConfigPath<T>
+  : FieldConfigRoot;
+
+/**
+ * Local fields that either don't belong in the `client` property or whose name doesn't match any
+ * `client` field.
+ */
+type MapFieldId = Exclude<FieldId, keyof ClientDetails["client"]>;
+
+/**
+ * Maps local field names to data model fields with type-checking.
+ * The local fields that are not in this map will use the default config, which is:
+ * {
+ *   path: "client"
+ *   fields: [the same as the local field name]
+ * }
+ */
+const dataModelMap: {
+  [key in MapFieldId]: FieldConfig;
+} = {
+  doingBusinessAs: {
+    path: "root",
+    fields: ["doingBusinessAs"],
+  },
+  acronym: {
+    path: "client",
+    fields: ["clientAcronym"],
+  },
+  clientType: {
+    path: "client",
+    fields: ["clientTypeCode"],
+  },
+  registrationNumber: {
+    path: "client",
+    fields: ["registryCompanyTypeCode", "corpRegnNmbr"],
+  },
+  workSafeBCNumber: {
+    path: "client",
+    fields: ["wcbFirmNumber"],
+  },
+  clientIdType: {
+    path: "client",
+    fields: ["clientIdTypeCode"],
+  },
+  clientStatus: {
+    path: "client",
+    fields: ["clientStatusCode"],
+  },
+  notes: {
+    path: "client",
+    fields: ["clientComment"],
+  },
+};
+
+const getRemovedFields = () => {
+  const result: FieldId[] = [];
+  Object.keys(originalFieldsEditability).forEach((field: FieldId) => {
+    if (originalFieldsEditability[field].value && !fieldsEditability[field].value) {
+      result.push(field);
+    }
+  });
+  return result;
+};
+
+const save = () => {
+  const clonedFormData: ClientDetails = JSON.parse(JSON.stringify(formData.value));
+  const removedFields = getRemovedFields();
+
+  // Clear the value of removed fields
+  removedFields.forEach((localField: FieldId) => {
+    let path = "client";
+    let fields = [localField];
+    if (dataModelMap[localField]) {
+      ({ path, fields } = dataModelMap[localField]);
+    }
+    const data = path === "root" ? clonedFormData : clonedFormData[path];
+    fields.forEach((field) => {
+      data[field] = null;
+    });
+  });
+
+  const patch = jsonpatch.compare(originalData, clonedFormData);
+
+  emit("save", patch);
+};
+
 const validation = reactive<Record<FieldId, boolean>>({
   clientName: true,
   legalFirstName: true,
   legalMiddleName: true,
   acronym: true,
   doingBusinessAs: true,
+  clientType: true,
   registrationNumber: true,
   workSafeBCNumber: true,
   birthdate: true,
@@ -138,6 +234,7 @@ const editRoles: Record<FieldId, UserRole[]> = {
   legalMiddleName: ["CLIENT_ADMIN"],
   acronym: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   doingBusinessAs: ["CLIENT_ADMIN"],
+  clientType: ["CLIENT_ADMIN"],
   registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   birthdate: ["CLIENT_ADMIN"],
@@ -170,23 +267,33 @@ const canEditClientStatus = () => {
 };
 
 /**
- * Tells whether the field is editable at all, according to the client's type.
+ * Tells whether the field is editable at all, according to the client's data provided.
  * Note: it doesn't mean the current user should be allowed to do it.
  */
-const isFieldEditable: Record<FieldId, () => boolean> = {
+const isFieldEditable: Record<FieldId, (data: ClientDetails) => boolean> = {
   clientName: () => true,
-  legalFirstName: () => props.data.client.clientTypeCode === "I",
-  legalMiddleName: () => props.data.client.clientTypeCode === "I",
+  legalFirstName: (data) => data.client.clientTypeCode === "I",
+  legalMiddleName: (data) => data.client.clientTypeCode === "I",
   acronym: () => true,
   doingBusinessAs: () => true,
-  registrationNumber: () => companyLikeTypes.includes(props.data.client.clientTypeCode),
+  clientType: () => true,
+  registrationNumber: (data) => companyLikeTypes.includes(data.client.clientTypeCode),
   workSafeBCNumber: () => true,
-  birthdate: () => props.data.client.clientTypeCode === "I",
-  clientIdType: () => props.data.client.clientTypeCode === "I",
-  clientIdentification: () => props.data.client.clientTypeCode === "I",
+  birthdate: (data) => data.client.clientTypeCode === "I",
+  clientIdType: (data) => data.client.clientTypeCode === "I",
+  clientIdentification: (data) => data.client.clientTypeCode === "I",
   clientStatus: canEditClientStatus,
   notes: () => true,
 };
+
+const fieldsEditability = {} as Record<FieldId, ComputedRef<boolean>>;
+Object.keys(isFieldEditable).forEach((field) => {
+  fieldsEditability[field] = computed<boolean>(() => isFieldEditable[field](formData.value));
+});
+const originalFieldsEditability = {} as Record<FieldId, ComputedRef<boolean>>;
+Object.keys(isFieldEditable).forEach((field) => {
+  originalFieldsEditability[field] = computed<boolean>(() => isFieldEditable[field](props.data));
+});
 
 const canEdit = computed(() =>
   includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
@@ -195,7 +302,7 @@ const canEdit = computed(() =>
 const displayEditable = (fieldId: FieldId) =>
   isEditing.value &&
   includesAnyOf(props.userRoles, editRoles[fieldId]) &&
-  isFieldEditable[fieldId]();
+  fieldsEditability[fieldId].value;
 
 const displayReadonly = (fieldId: FieldId) => !isEditing.value || !displayEditable(fieldId);
 
@@ -236,6 +343,12 @@ const birthdateLabel = computed(() =>
   dateOfBirth.value.length > 4 ? "Date of birth" : "Year of birth",
 );
 
+const updateClientType = (value: CodeNameType | undefined) => {
+  if (value) {
+    formData.value.client.clientTypeCode = value.code;
+  }
+};
+
 const updateClientIdType = (value: CodeNameType | undefined) => {
   if (value) {
     formData.value.client.clientIdTypeCode = value.code;
@@ -258,20 +371,20 @@ watch(
   },
 );
 
-const client = computed(() => props.data.client);
+const originalClient = computed(() => props.data.client);
 </script>
 
 <template>
   <div class="grouping-10 no-padding">
     <read-only-component label="Client number" id="clientNumber">
-      <span class="body-compact-01">{{ client.clientNumber }}</span>
+      <span class="body-compact-01">{{ originalClient.clientNumber }}</span>
     </read-only-component>
     <read-only-component
       label="Acronym"
       id="acronym"
-      v-if="displayReadonly('acronym') && client.clientAcronym"
+      v-if="displayReadonly('acronym') && originalClient.clientAcronym"
     >
-      <span class="body-compact-01">{{ client.clientAcronym }}</span>
+      <span class="body-compact-01">{{ originalClient.clientAcronym }}</span>
     </read-only-component>
     <read-only-component
       label="Doing business as"
@@ -281,7 +394,7 @@ const client = computed(() => props.data.client);
       <span class="body-compact-01">{{ props.data.doingBusinessAs }}</span>
     </read-only-component>
     <read-only-component label="Client type" id="clientType">
-      <span class="body-compact-01">{{ client.clientTypeDesc }}</span>
+      <span class="body-compact-01">{{ originalClient.clientTypeDesc }}</span>
     </read-only-component>
     <read-only-component
       label="Registration number"
@@ -293,9 +406,9 @@ const client = computed(() => props.data.client);
     <read-only-component
       label="WorkSafeBC number"
       id="workSafeBCNumber"
-      v-if="displayReadonly('workSafeBCNumber') && client.wcbFirmNumber"
+      v-if="displayReadonly('workSafeBCNumber') && originalClient.wcbFirmNumber"
     >
-      <span class="body-compact-01">{{ client.wcbFirmNumber }}</span>
+      <span class="body-compact-01">{{ originalClient.wcbFirmNumber }}</span>
     </read-only-component>
     <read-only-component
       label="BC Registries standing"
@@ -304,23 +417,23 @@ const client = computed(() => props.data.client);
     >
       <div class="internal-grouping-01">
         <span class="body-compact-01 default-typography">{{
-          goodStanding(client.goodStandingInd)
+          goodStanding(originalClient.goodStandingInd)
         }}</span>
-        <Check20 v-if="client.goodStandingInd === 'Y'" class="good" />
-        <Warning20 v-if="client.goodStandingInd !== 'Y'" class="warning" />
+        <Check20 v-if="originalClient.goodStandingInd === 'Y'" class="good" />
+        <Warning20 v-if="originalClient.goodStandingInd !== 'Y'" class="warning" />
       </div>
     </read-only-component>
     <read-only-component
-      :label="client.clientIdTypeDesc"
+      :label="originalClient.clientIdTypeDesc"
       id="identification"
       v-if="
         displayReadonly('clientIdType') &&
         displayReadonly('clientIdentification') &&
-        client.clientIdTypeDesc &&
-        client.clientIdentification
+        originalClient.clientIdTypeDesc &&
+        originalClient.clientIdentification
       "
     >
-      <span class="body-compact-01">{{ client.clientIdentification }}</span>
+      <span class="body-compact-01">{{ originalClient.clientIdentification }}</span>
     </read-only-component>
     <read-only-component
       :label="birthdateLabel"
@@ -335,17 +448,20 @@ const client = computed(() => props.data.client);
       v-if="displayReadonly('clientStatus')"
     >
       <span class="body-compact-01">
-        <cds-tag :type="getTagColorByClientStatus(client.clientStatusDesc)">
-          <span>{{ client.clientStatusDesc }}</span>
+        <cds-tag :type="getTagColorByClientStatus(originalClient.clientStatusDesc)">
+          <span>{{ originalClient.clientStatusDesc }}</span>
         </cds-tag>
       </span>
     </read-only-component>
   </div>
-  <div class="grouping-10 no-padding" v-if="displayReadonly('notes') && client.clientComment">
+  <div
+    class="grouping-10 no-padding"
+    v-if="displayReadonly('notes') && originalClient.clientComment"
+  >
     <read-only-component label="Notes" id="notes">
       <span
         class="body-compact-01"
-        v-dompurify-html="getFormattedHtml(client.clientComment)"
+        v-dompurify-html="getFormattedHtml(originalClient.clientComment)"
       ></span>
     </read-only-component>
   </div>
@@ -456,6 +572,32 @@ const client = computed(() => props.data.client);
       @empty="validation.doingBusinessAs = true"
       @error="validation.doingBusinessAs = !$event"
     />
+    <data-fetcher
+      v-if="displayEditable('clientType')"
+      url="/api/codes/client-types/legacy"
+      :min-length="0"
+      :init-value="[]"
+      :init-fetch="true"
+      :params="{ method: 'GET' }"
+      #="{ content }"
+    >
+      <combo-box-input-component
+        id="input-clientType"
+        label="Client type"
+        :initial-value="content?.find((item) => item.code === formData.client.clientTypeCode)?.name"
+        required
+        required-label
+        :model-value="content"
+        :enabled="true"
+        tip=""
+        :validations="[
+          ...getValidations('client.clientTypeCode'),
+          submissionValidation('client.clientTypeCode'),
+        ]"
+        @update:selected-value="updateClientType($event)"
+        @empty="validation.clientType = !$event"
+      />
+    </data-fetcher>
     <div v-if="displayEditable('registrationNumber')">
       <registration-number
         :model-value="formData"
@@ -492,9 +634,12 @@ const client = computed(() => props.data.client);
         required
       />
     </div>
-    <div class="horizontal-input-grouping">
+    <div
+      class="horizontal-input-grouping"
+      v-if="displayEditable('clientIdType') || displayEditable('clientIdentification')"
+    >
       <data-fetcher
-        v-if="displayEditable('clientStatus')"
+        v-if="displayEditable('clientIdType')"
         url="/api/codes/identification-types/legacy"
         :min-length="0"
         :init-value="[]"
@@ -504,7 +649,6 @@ const client = computed(() => props.data.client);
       >
         <combo-box-input-component
           id="input-clientIdType"
-          v-if="displayEditable('clientIdType')"
           label="ID Type"
           :initial-value="
             content?.find((item) => item.code === formData.client.clientIdTypeCode)?.name
@@ -558,7 +702,8 @@ const client = computed(() => props.data.client);
     />
     <data-fetcher
       v-if="displayEditable('clientStatus')"
-      :url="`/api/codes/client-statuses/${client.clientTypeCode}`"
+      :key="formData.client.clientTypeCode"
+      :url="`/api/codes/client-statuses/${formData.client.clientTypeCode}`"
       :min-length="0"
       :init-value="[]"
       :init-fetch="true"
