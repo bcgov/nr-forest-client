@@ -277,7 +277,11 @@ const userSearchSvg = useSvg(UserSearch);
     <div class="empty-table-list"
       v-if="!loading && historyLogs.length === 0">
       <user-search-svg alt="User search pictogram" class="standard-svg" />
-      <p class="heading-02">No results for the selected filters</p>
+      <p class="heading-02">
+        No results for the selected 
+        <span v-if="selectedAuditTables.length === 1">filter</span>
+        <span v-else>filters</span>
+      </p>
       <p class="body-compact-01">Consider adjusting the filters and try again.</p>
     </div>
 
