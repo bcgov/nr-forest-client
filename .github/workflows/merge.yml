@@ -32,7 +32,6 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
-      oracledb-servicename: dbq01.nrs.bcgov
       environment: test
       target: test
       url: forestclient-tst.nrs.gov.bc.ca
@@ -52,7 +51,6 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
-      oracledb-servicename: dbp01.nrs.bcgov
       environment: prod
       target: prod
       url: forestclient.nrs.gov.bc.ca
