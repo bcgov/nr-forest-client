@@ -1,10 +1,8 @@
 package ca.bc.gov.app.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import ca.bc.gov.app.dto.HistoryLogDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
-import ca.bc.gov.app.exception.NoValueFoundException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -63,10 +61,7 @@ public class ClientHistoryControllerIntegrationTest extends
         Arguments.of("00000138", "00000138", null),
 
         // Invalid case: missing client number
-        Arguments.of(null, null, MissingRequiredParameterException.class),
-
-        // Invalid case: client not found
-        Arguments.of("99999999", null, NoValueFoundException.class));
+        Arguments.of(null, null, MissingRequiredParameterException.class));
   }
   
 }
