@@ -1,0 +1,61 @@
+{
+  "mappings": [
+    {
+      "name": "Client History by Source (CTC - Contacts)",
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPattern": "/api/clients/history-logs/[^/]+",
+        "queryParameters": {
+          "sources": {
+            "matches": "(?i)ctc"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyFileName": "response-client-history-source-CTC.json",
+        "fixedDelayMilliseconds": 2000
+      }
+    },
+    {
+      "name": "Client History by Source (Dynamic)",
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPattern": "/api/clients/history-logs/[^/]+",
+        "queryParameters": {
+          "sources": {
+            "matches": ".*"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyFileName": "response-client-history-source-{{request.query.sources}}.json",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 2000
+      }
+    },
+    {
+      "name": "Complete Client History",
+      "priority": 10,
+      "request": {
+        "urlPattern": "/api/clients/history-logs/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-client-history.json",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 2000
+      }
+    }
+  ]
+}

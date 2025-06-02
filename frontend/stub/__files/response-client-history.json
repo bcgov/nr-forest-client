@@ -1,0 +1,1231 @@
+[
+  {
+    "tableName": "ClientInformation",
+    "idx": "1255059",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-05-20T13:44:43",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Deactivated",
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "RACT",
+        "reason": "Obligation Satisfied"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1255044",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-05-20T13:36:00",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Active",
+        "newValue": "Suspended"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "SPN",
+        "reason": "Dissolution in Progress"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197130-03",
+    "identifierLabel": "Location \"03 - ANOTHER LOCATION\" updated",
+    "updateTimestamp": "2025-05-15T10:16:02",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "addressOne",
+        "oldValue": "ADDRESS1",
+        "newValue": "5473 Oak St"
+      },
+      {
+        "columnName": "addressTwo",
+        "oldValue": "ADDRESS2",
+        "newValue": "Unit 101"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "ADDR",
+        "reason": "Correction"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197129-03",
+    "identifierLabel": "Location \"03 - ANOTHER LOCATION\" added",
+    "updateTimestamp": "2025-05-15T10:14:05",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "locnExpiredInd",
+        "oldValue": null,
+        "newValue": "Active"
+      },
+      {
+        "columnName": "locationName",
+        "oldValue": null,
+        "newValue": "ANOTHER LOCATION"
+      },
+      {
+        "columnName": "addressOne",
+        "oldValue": null,
+        "newValue": "ADDRESS1"
+      },
+      {
+        "columnName": "addressTwo",
+        "oldValue": null,
+        "newValue": "ADDRESS2"
+      },
+      {
+        "columnName": "city",
+        "oldValue": null,
+        "newValue": "ABBOTSFORD"
+      },
+      {
+        "columnName": "provinceDesc",
+        "oldValue": null,
+        "newValue": "selaginella"
+      },
+      {
+        "columnName": "countryDesc",
+        "oldValue": null,
+        "newValue": "CANADA"
+      },
+      {
+        "columnName": "postalCode",
+        "oldValue": null,
+        "newValue": "V9B0W4"
+      },
+      {
+        "columnName": "trustLocationInd",
+        "oldValue": null,
+        "newValue": "No"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1255039",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-05-14T15:56:45",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "fullName",
+        "oldValue": "Kovacek, Thompson And Boyer",
+        "newValue": "Kovacek, Thompson And BoyerD."
+      },
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Suspended",
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "USPN",
+        "reason": "Obligation Satisfied"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197128-02",
+    "identifierLabel": "Location \"02 - TEST LOCATION\" added",
+    "updateTimestamp": "2025-05-14T14:40:57",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "locnExpiredInd",
+        "oldValue": null,
+        "newValue": "Active"
+      },
+      {
+        "columnName": "locationName",
+        "oldValue": null,
+        "newValue": "TEST LOCATION"
+      },
+      {
+        "columnName": "addressOne",
+        "oldValue": null,
+        "newValue": "940 TOAT RD"
+      },
+      {
+        "columnName": "addressThree",
+        "oldValue": null,
+        "newValue": "3"
+      },
+      {
+        "columnName": "city",
+        "oldValue": null,
+        "newValue": "AHOUSAT"
+      },
+      {
+        "columnName": "provinceDesc",
+        "oldValue": null,
+        "newValue": "selaginella"
+      },
+      {
+        "columnName": "countryDesc",
+        "oldValue": null,
+        "newValue": "CANADA"
+      },
+      {
+        "columnName": "postalCode",
+        "oldValue": null,
+        "newValue": "V9B0W4"
+      },
+      {
+        "columnName": "trustLocationInd",
+        "oldValue": null,
+        "newValue": "No"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197127-01",
+    "identifierLabel": "Location \"01 - THIS IS ATEST\" updated",
+    "updateTimestamp": "2025-05-14T14:39:20",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "locationName",
+        "oldValue": "THISISATEST",
+        "newValue": "THIS IS ATEST"
+      },
+      {
+        "columnName": "addressTwo",
+        "oldValue": null,
+        "newValue": "COMP 1"
+      },
+      {
+        "columnName": "addressThree",
+        "oldValue": null,
+        "newValue": "COMP 2"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "ADDR",
+        "reason": "Correction"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197108-01",
+    "identifierLabel": "Location \"01 - THISISATEST\" updated",
+    "updateTimestamp": "2025-04-29T10:14:25",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "locnExpiredInd",
+        "oldValue": "Active",
+        "newValue": "Deactivated"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197107-01",
+    "identifierLabel": "Location \"01 - THISISATEST\" added",
+    "updateTimestamp": "2025-04-29T10:14:15",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "locnExpiredInd",
+        "oldValue": null,
+        "newValue": "Active"
+      },
+      {
+        "columnName": "locationName",
+        "oldValue": null,
+        "newValue": "THISISATEST"
+      },
+      {
+        "columnName": "addressOne",
+        "oldValue": null,
+        "newValue": "840-330 ST MARY AVE"
+      },
+      {
+        "columnName": "city",
+        "oldValue": null,
+        "newValue": "WINNIPEG"
+      },
+      {
+        "columnName": "provinceDesc",
+        "oldValue": null,
+        "newValue": "curacies"
+      },
+      {
+        "columnName": "countryDesc",
+        "oldValue": null,
+        "newValue": "CANADA"
+      },
+      {
+        "columnName": "postalCode",
+        "oldValue": null,
+        "newValue": "R3C3Z5"
+      },
+      {
+        "columnName": "trustLocationInd",
+        "oldValue": null,
+        "newValue": "No"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4913-3015",
+    "identifierLabel": "Contact \"JOHN BENEDETTI\" updated",
+    "updateTimestamp": "2025-04-29T10:13:46",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": "First Nations Administrator",
+        "newValue": "Director"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": "JOHN DOE",
+        "newValue": "JOHN BENEDETTI"
+      },
+      {
+        "columnName": "emailAddress",
+        "oldValue": null,
+        "newValue": "JOHN@GMAIL.COM"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227614",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-24T09:37:36",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "wcbFirmNumber",
+        "oldValue": "674444",
+        "newValue": "7777"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227613",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-24T09:33:47",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "wcbFirmNumber",
+        "oldValue": "67876",
+        "newValue": "674444"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227612",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-24T09:32:28",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "wcbFirmNumber",
+        "oldValue": "6787",
+        "newValue": "67876"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227605",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-23T12:18:36",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "wcbFirmNumber",
+        "oldValue": "678",
+        "newValue": "6787"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227595",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-10T14:10:25",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": "BC060551500",
+        "newValue": "BC0605515"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227594",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-10T13:29:12",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "fullName",
+        "oldValue": "Kovacek, Thompson And BoyerD.",
+        "newValue": "Kovacek, Thompson And Boyer"
+      },
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": "BC0605515",
+        "newValue": "BC060551500"
+      },
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Active",
+        "newValue": "Suspended"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "SPN",
+        "reason": "Bankruptcy in Progress"
+      },
+      {
+        "actionCode": "NAME",
+        "reason": "Correction"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197077-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRESS\" updated",
+    "updateTimestamp": "2025-04-04T13:37:29",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "city",
+        "oldValue": "BRANDON",
+        "newValue": "ACTON"
+      },
+      {
+        "columnName": "provinceDesc",
+        "oldValue": "curacies",
+        "newValue": "periphery"
+      },
+      {
+        "columnName": "postalCode",
+        "oldValue": "V8T4L1",
+        "newValue": "V8T4L2"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "ADDR",
+        "reason": "Moved"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227583",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-04T12:40:23",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "fullName",
+        "oldValue": "Kovacek, Thompson And BoyerD",
+        "newValue": "Kovacek, Thompson And BoyerD."
+      },
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Deactivated",
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "NAME",
+        "reason": "Legal Name Change"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197076-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRESS\" updated",
+    "updateTimestamp": "2025-04-04T12:40:23",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "locnExpiredInd",
+        "oldValue": "Deactivated",
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227551",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-03-20T10:36:52",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": "BC06055150",
+        "newValue": "BC0605515"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227500",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-02-11T15:48:12",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Active",
+        "newValue": "Deactivated"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "DAC",
+        "reason": "Company Reorganization"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197037-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRESS\" updated",
+    "updateTimestamp": "2025-02-11T15:48:12",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "locnExpiredInd",
+        "oldValue": "Active",
+        "newValue": "Deactivated"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197035-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRESS\" updated",
+    "updateTimestamp": "2025-02-11T13:01:30",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "locnExpiredInd",
+        "oldValue": "Deactivated",
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227495",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-02-11T13:01:30",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Deactivated",
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "RACT",
+        "reason": "Correction"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227494",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-02-11T13:01:16",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Active",
+        "newValue": "Deactivated"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "DAC",
+        "reason": "Continuation In"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197034-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRESS\" updated",
+    "updateTimestamp": "2025-02-11T13:01:16",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "locnExpiredInd",
+        "oldValue": "Active",
+        "newValue": "Deactivated"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197033-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRESS\" updated",
+    "updateTimestamp": "2025-02-11T12:03:37",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "postalCode",
+        "oldValue": "V8T4L7",
+        "newValue": "V8T4L1"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "ADDR",
+        "reason": "Correction"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197032-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRESS\" updated",
+    "updateTimestamp": "2025-02-11T12:02:35",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "addressOne",
+        "oldValue": "2404 DOUGLAS ST",
+        "newValue": "2404 DOUGLAS STREET"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "ADDR",
+        "reason": "Correction"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197031-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRESS\" updated",
+    "updateTimestamp": "2025-02-11T12:02:25",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "locationName",
+        "oldValue": "MAILING ADDRES",
+        "newValue": "MAILING ADDRESS"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197030-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRES\" updated",
+    "updateTimestamp": "2025-02-11T12:02:18",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "locationName",
+        "oldValue": "MAILING ADDRESS",
+        "newValue": "MAILING ADDRES"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197029-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRESS\" updated",
+    "updateTimestamp": "2025-02-11T12:02:09",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "city",
+        "oldValue": "VICTORIA",
+        "newValue": "BRANDON"
+      },
+      {
+        "columnName": "provinceDesc",
+        "oldValue": "selaginella",
+        "newValue": "curacies"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "ADDR",
+        "reason": "Correction"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227492",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-02-11T11:50:45",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": "BC06055159",
+        "newValue": "BC06055150"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4858-3015",
+    "identifierLabel": "Contact \"PEPITO PEREZ\" updated",
+    "updateTimestamp": "2025-01-28T17:10:12",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "businessPhone",
+        "oldValue": null,
+        "newValue": "(988) 777-7777"
+      },
+      {
+        "columnName": "secondaryPhone",
+        "oldValue": "(250) 440-8452",
+        "newValue": null
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4857-3015",
+    "identifierLabel": "Contact \"PEPITO PEREZ\" updated",
+    "updateTimestamp": "2025-01-28T17:08:16",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "secondaryPhone",
+        "oldValue": "(604) 440-8452",
+        "newValue": "(250) 440-8452"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4856-3015",
+    "identifierLabel": "Contact \"PEPITO PEREZ\" added",
+    "updateTimestamp": "2025-01-28T17:06:47",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": null,
+        "newValue": "First Nations Administrator"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": null,
+        "newValue": "PEPITO PEREZ"
+      },
+      {
+        "columnName": "secondaryPhone",
+        "oldValue": null,
+        "newValue": "(604) 440-8452"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4855-3011",
+    "identifierLabel": "Contact \"MARIA MARTINEZ\" deleted",
+    "updateTimestamp": "2025-01-28T16:50:45",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "DEL",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": null,
+        "newValue": "Billing"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": null,
+        "newValue": "MARIA MARTINEZ"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227468",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-01-20T10:16:11",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientAcronym",
+        "oldValue": null,
+        "newValue": "PGTS"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4850-2950",
+    "identifierLabel": "Contact \"DFGHDG DSFGSDG\" deleted",
+    "updateTimestamp": "2025-01-20T08:43:20",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "DEL",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": null,
+        "newValue": "Director"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": null,
+        "newValue": "DFGHDG DSFGSDG"
+      },
+      {
+        "columnName": "businessPhone",
+        "oldValue": null,
+        "newValue": "(888) 999-3333"
+      },
+      {
+        "columnName": "emailAddress",
+        "oldValue": null,
+        "newValue": "m@hhh.cvom"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4849-3011",
+    "identifierLabel": "Contact \"MARIA MARTINEZ\" added",
+    "updateTimestamp": "2025-01-20T08:42:17",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": null,
+        "newValue": "Billing"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": null,
+        "newValue": "MARIA MARTINEZ"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227463",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-01-15T08:57:00",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": "BC0605515",
+        "newValue": "BC06055159"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227450",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2024-11-07T11:40:17",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "wcbFirmNumber",
+        "oldValue": null,
+        "newValue": "678"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227449",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2024-11-07T11:39:46",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientComment",
+        "oldValue": null,
+        "newValue": "THIS TEST"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientContact",
+    "idx": "4775-2950",
+    "identifierLabel": "Contact \"DFGHDG DSFGSDG\" added",
+    "updateTimestamp": "2024-08-28T15:08:26",
+    "updateUserid": "idir\\ottomated",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "contactTypeDesc",
+        "oldValue": null,
+        "newValue": "Director"
+      },
+      {
+        "columnName": "contactName",
+        "oldValue": null,
+        "newValue": "DFGHDG DSFGSDG"
+      },
+      {
+        "columnName": "businessPhone",
+        "oldValue": null,
+        "newValue": "(888) 999-3333"
+      },
+      {
+        "columnName": "emailAddress",
+        "oldValue": null,
+        "newValue": "m@hhh.cvom"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2196939-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRESS\" added",
+    "updateTimestamp": "2024-08-28T15:08:24",
+    "updateUserid": "idir\\ottomated",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "locnExpiredInd",
+        "oldValue": null,
+        "newValue": "Active"
+      },
+      {
+        "columnName": "locationName",
+        "oldValue": null,
+        "newValue": "MAILING ADDRESS"
+      },
+      {
+        "columnName": "addressOne",
+        "oldValue": null,
+        "newValue": "2404 DOUGLAS ST"
+      },
+      {
+        "columnName": "city",
+        "oldValue": null,
+        "newValue": "VICTORIA"
+      },
+      {
+        "columnName": "provinceDesc",
+        "oldValue": null,
+        "newValue": "selaginella"
+      },
+      {
+        "columnName": "countryDesc",
+        "oldValue": null,
+        "newValue": "CANADA"
+      },
+      {
+        "columnName": "postalCode",
+        "oldValue": null,
+        "newValue": "V8T4L7"
+      },
+      {
+        "columnName": "trustLocationInd",
+        "oldValue": null,
+        "newValue": "No"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227137",
+    "identifierLabel": "Client created",
+    "updateTimestamp": "2024-08-28T15:08:24",
+    "updateUserid": "idir\\ottomated",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "fullName",
+        "oldValue": null,
+        "newValue": "Kovacek, Thompson And Boyer"
+      },
+      {
+        "columnName": "clientTypeDesc",
+        "oldValue": null,
+        "newValue": "Corporation"
+      },
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": null,
+        "newValue": "BC0605515"
+      },
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": null,
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  }
+]

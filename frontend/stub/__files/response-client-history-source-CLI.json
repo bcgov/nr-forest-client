@@ -1,0 +1,492 @@
+[
+  {
+    "tableName": "ClientInformation",
+    "idx": "1255059",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-05-20T13:44:43",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Deactivated",
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "RACT",
+        "reason": "Obligation Satisfied"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1255044",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-05-20T13:36:00",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Active",
+        "newValue": "Suspended"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "SPN",
+        "reason": "Dissolution in Progress"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1255039",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-05-14T15:56:45",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "fullName",
+        "oldValue": "Kovacek, Thompson And Boyer",
+        "newValue": "Kovacek, Thompson And BoyerD."
+      },
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Suspended",
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "USPN",
+        "reason": "Obligation Satisfied"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227614",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-24T09:37:36",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "wcbFirmNumber",
+        "oldValue": "674444",
+        "newValue": "7777"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227613",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-24T09:33:47",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "wcbFirmNumber",
+        "oldValue": "67876",
+        "newValue": "674444"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227612",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-24T09:32:28",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "wcbFirmNumber",
+        "oldValue": "6787",
+        "newValue": "67876"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227605",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-23T12:18:36",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "wcbFirmNumber",
+        "oldValue": "678",
+        "newValue": "6787"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227595",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-10T14:10:25",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": "BC060551500",
+        "newValue": "BC0605515"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227594",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-10T13:29:12",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "fullName",
+        "oldValue": "Kovacek, Thompson And BoyerD.",
+        "newValue": "Kovacek, Thompson And Boyer"
+      },
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": "BC0605515",
+        "newValue": "BC060551500"
+      },
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Active",
+        "newValue": "Suspended"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "SPN",
+        "reason": "Bankruptcy in Progress"
+      },
+      {
+        "actionCode": "NAME",
+        "reason": "Correction"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientLocation",
+    "idx": "2197077-00",
+    "identifierLabel": "Location \"00 - MAILING ADDRESS\" updated",
+    "updateTimestamp": "2025-04-04T13:37:29",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "city",
+        "oldValue": "BRANDON",
+        "newValue": "ACTON"
+      },
+      {
+        "columnName": "provinceDesc",
+        "oldValue": "curacies",
+        "newValue": "periphery"
+      },
+      {
+        "columnName": "postalCode",
+        "oldValue": "V8T4L1",
+        "newValue": "V8T4L2"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "ADDR",
+        "reason": "Moved"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227583",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-04-04T12:40:23",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "fullName",
+        "oldValue": "Kovacek, Thompson And BoyerD",
+        "newValue": "Kovacek, Thompson And BoyerD."
+      },
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Deactivated",
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "NAME",
+        "reason": "Legal Name Change"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227551",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-03-20T10:36:52",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": "BC06055150",
+        "newValue": "BC0605515"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227500",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-02-11T15:48:12",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Active",
+        "newValue": "Deactivated"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "DAC",
+        "reason": "Company Reorganization"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227495",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-02-11T13:01:30",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Deactivated",
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "RACT",
+        "reason": "Correction"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227494",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-02-11T13:01:16",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": "Active",
+        "newValue": "Deactivated"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": "DAC",
+        "reason": "Continuation In"
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227492",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-02-11T11:50:45",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": "BC06055159",
+        "newValue": "BC06055150"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227468",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-01-20T10:16:11",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientAcronym",
+        "oldValue": null,
+        "newValue": "PGTS"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227463",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2025-01-15T08:57:00",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": "BC0605515",
+        "newValue": "BC06055159"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227450",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2024-11-07T11:40:17",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "wcbFirmNumber",
+        "oldValue": null,
+        "newValue": "678"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227449",
+    "identifierLabel": "Client summary updated",
+    "updateTimestamp": "2024-11-07T11:39:46",
+    "updateUserid": "IDIR\\MARIAMAR",
+    "changeType": "UPD",
+    "details": [
+      {
+        "columnName": "clientComment",
+        "oldValue": null,
+        "newValue": "THIS TEST"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  },
+  {
+    "tableName": "ClientInformation",
+    "idx": "1227137",
+    "identifierLabel": "Client created",
+    "updateTimestamp": "2024-08-28T15:08:24",
+    "updateUserid": "idir\\ottomated",
+    "changeType": "INS",
+    "details": [
+      {
+        "columnName": "fullName",
+        "oldValue": null,
+        "newValue": "Kovacek, Thompson And Boyer"
+      },
+      {
+        "columnName": "clientTypeDesc",
+        "oldValue": null,
+        "newValue": "Corporation"
+      },
+      {
+        "columnName": "corpRegnNmbr",
+        "oldValue": null,
+        "newValue": "BC0605515"
+      },
+      {
+        "columnName": "clientStatusDesc",
+        "oldValue": null,
+        "newValue": "Active"
+      }
+    ],
+    "reasons": [
+      {
+        "actionCode": null,
+        "reason": null
+      }
+    ]
+  }
+]
