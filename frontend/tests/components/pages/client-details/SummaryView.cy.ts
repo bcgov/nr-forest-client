@@ -83,6 +83,9 @@ describe("<summary-view />", () => {
     cy.intercept("GET", `${getClientStatusesBaseUrl}/*`, {
       fixture: "clientStatuses.json",
     }).as("getClientStatuses");
+    cy.intercept("GET", "/api/codes/client-types/legacy", {
+      fixture: "legacyClientTypes.json",
+    }).as("getRegistryTypes");
     cy.intercept("GET", "/api/codes/registry-types/*", {
       fixture: "registryTypes.json",
     }).as("getRegistryTypes");
