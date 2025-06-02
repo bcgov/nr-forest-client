@@ -632,6 +632,7 @@ const columnNameToLabelMap: Record<string, string> = {
   cityProvinceDesc: "City and province, state or territory",
   city: "City",
   provinceDesc: "Province or territory",
+  stateDesc: "State",
   countryDesc: "Country",
   postalCode: "Postal code",
   trustLocationInd: "Trust location",

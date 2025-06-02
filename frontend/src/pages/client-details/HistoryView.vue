@@ -82,6 +82,7 @@ const fieldReasonPriorityMap: { [actionCode: string]: string[] } = {
     "addressThree",
     "city",
     "provinceDesc",
+    "stateDesc",
     "countryDesc",
     "postalCode"
   ],
@@ -277,7 +278,7 @@ const userSearchSvg = useSvg(UserSearch);
       v-if="!loading && historyLogs.length === 0">
       <user-search-svg alt="User search pictogram" class="standard-svg" />
       <p class="heading-02">No results for the selected filters</p>
-      <p class="body-compact-01">Consider adjusting the filter by activity and try again.</p>
+      <p class="body-compact-01">Consider adjusting the filters and try again.</p>
     </div>
 
   </div>
