@@ -159,6 +159,13 @@ public final class ForestClientQueries {
             AL.ADDRESS_1,
             AL.CITY,
             CASE
+                WHEN UPPER(AL.COUNTRY) = 'USA' OR UPPER(AL.COUNTRY) = 'US' OR UPPER(AL.COUNTRY) = 'UNITED STATES OF AMERICA'
+                    THEN PC.PROVINCE_STATE_NAME
+                ELSE NULL
+            END AS STATE_DESC,
+            CASE
+                WHEN UPPER(AL.COUNTRY) = 'USA' OR UPPER(AL.COUNTRY) = 'US' OR UPPER(AL.COUNTRY) = 'UNITED STATES OF AMERICA'
+                    THEN NULL
                 WHEN PC.PROVINCE_STATE_NAME IS NULL THEN AL.PROVINCE
                 ELSE PC.PROVINCE_STATE_NAME
             END AS PROVINCE_DESC,
@@ -208,8 +215,6 @@ public final class ForestClientQueries {
         FROM THE.CLI_LOCN_AUDIT AL
         LEFT OUTER JOIN THE.CLIENT_UPDATE_REASON_CODE RC
             ON AL.CLIENT_UPDATE_REASON_CODE = RC.CLIENT_UPDATE_REASON_CODE
-        LEFT OUTER JOIN THE.CLIENT_UPDATE_REASON_CODE RC
-            ON AL.CLIENT_UPDATE_REASON_CODE = RC.CLIENT_UPDATE_REASON_CODE
         LEFT OUTER JOIN THE.MAILING_PROVINCE_STATE PC
             ON AL.PROVINCE = PC.PROVINCE_STATE_CODE
         WHERE AL.CLIENT_NUMBER = :clientNumber
@@ -239,6 +244,7 @@ public final class ForestClientQueries {
                   WHEN 'addressOne' THEN B.ADDRESS_1
                   WHEN 'city' THEN B.CITY
                   WHEN 'provinceDesc' THEN B.PROVINCE_DESC
+                  WHEN 'stateDesc' THEN B.STATE_DESC
                   WHEN 'countryDesc' THEN B.COUNTRY_DESC
                   WHEN 'postalCode' THEN B.POSTAL_CODE
                   WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
@@ -260,6 +266,7 @@ public final class ForestClientQueries {
                       WHEN 'addressOne' THEN B.ADDRESS_1
                       WHEN 'city' THEN B.CITY
                       WHEN 'provinceDesc' THEN B.PROVINCE_DESC
+                      WHEN 'stateDesc' THEN B.STATE_DESC
                       WHEN 'countryDesc' THEN B.COUNTRY_DESC
                       WHEN 'postalCode' THEN B.POSTAL_CODE
                       WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
@@ -298,27 +305,29 @@ public final class ForestClientQueries {
               UNION ALL
               SELECT 'provinceDesc' AS COLUMN_NAME, 7 AS FIELD_ORDER FROM DUAL 
               UNION ALL
-              SELECT 'countryDesc' AS COLUMN_NAME, 8 AS FIELD_ORDER FROM DUAL 
+              SELECT 'stateDesc' AS COLUMN_NAME, 8 AS FIELD_ORDER FROM DUAL 
               UNION ALL
-              SELECT 'postalCode' AS COLUMN_NAME, 9 AS FIELD_ORDER FROM DUAL  
+              SELECT 'countryDesc' AS COLUMN_NAME, 9 AS FIELD_ORDER FROM DUAL 
               UNION ALL
-              SELECT 'emailAddress' AS COLUMN_NAME, 10 AS FIELD_ORDER FROM DUAL    
+              SELECT 'postalCode' AS COLUMN_NAME, 10 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'businessPhone' AS COLUMN_NAME, 11 AS FIELD_ORDER FROM DUAL  
+              SELECT 'emailAddress' AS COLUMN_NAME, 11 AS FIELD_ORDER FROM DUAL    
               UNION ALL
-              SELECT 'cellPhone' AS COLUMN_NAME, 12 AS FIELD_ORDER FROM DUAL  
+              SELECT 'businessPhone' AS COLUMN_NAME, 12 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'homePhone' AS COLUMN_NAME, 13 AS FIELD_ORDER FROM DUAL  
+              SELECT 'cellPhone' AS COLUMN_NAME, 13 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'faxNumber' AS COLUMN_NAME, 14 AS FIELD_ORDER FROM DUAL
+              SELECT 'homePhone' AS COLUMN_NAME, 14 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'cliLocnComment' AS COLUMN_NAME, 15 AS FIELD_ORDER FROM DUAL
+              SELECT 'faxNumber' AS COLUMN_NAME, 15 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'hdbsCompanyCode' AS COLUMN_NAME, 16 AS FIELD_ORDER FROM DUAL
+              SELECT 'cliLocnComment' AS COLUMN_NAME, 16 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'returnedMailDate' AS COLUMN_NAME, 17 AS FIELD_ORDER FROM DUAL
+              SELECT 'hdbsCompanyCode' AS COLUMN_NAME, 17 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'trustLocationInd' AS COLUMN_NAME, 18 AS FIELD_ORDER FROM DUAL
+              SELECT 'returnedMailDate' AS COLUMN_NAME, 18 AS FIELD_ORDER FROM DUAL
+              UNION ALL
+              SELECT 'trustLocationInd' AS COLUMN_NAME, 19 AS FIELD_ORDER FROM DUAL
           ) COL
       )
       SELECT
@@ -371,12 +380,19 @@ public final class ForestClientQueries {
                 ELSE AL.FAX_NUMBER
               END AS FAX_NUMBER,
               AL.EMAIL_ADDRESS,
+              CASE 
+                WHEN CL.CLIENT_LOCN_NAME IS NOT NULL THEN AL.CLIENT_LOCN_CODE || ' - ' || CL.CLIENT_LOCN_NAME 
+                    ELSE AL.CLIENT_LOCN_CODE
+              END AS ASSOCIATED_LOCATION,
               AL.UPDATE_TIMESTAMP,
               AL.UPDATE_USERID,
               BC.DESCRIPTION AS CONTACT_TYPE_DESC
           FROM THE.CLI_CON_AUDIT AL
           LEFT OUTER JOIN THE.BUSINESS_CONTACT_CODE BC
               ON AL.BUS_CONTACT_CODE = BC.BUSINESS_CONTACT_CODE
+          LEFT OUTER JOIN THE.CLIENT_LOCATION CL
+              ON AL.CLIENT_NUMBER = CL.CLIENT_NUMBER 
+              AND AL.CLIENT_LOCN_CODE = CL.CLIENT_LOCN_CODE
           WHERE AL.CLIENT_NUMBER = :clientNumber
       ),
       AUDIT_DATA AS (
@@ -396,6 +412,7 @@ public final class ForestClientQueries {
                   WHEN 'secondaryPhone' THEN B.CELL_PHONE
                   WHEN 'faxNumber' THEN B.FAX_NUMBER
                   WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
+                  WHEN 'associatedLocation' THEN B.ASSOCIATED_LOCATION
               END AS NEW_VALUE,
               LAG(
                   CASE COL.COLUMN_NAME
@@ -405,6 +422,7 @@ public final class ForestClientQueries {
                       WHEN 'secondaryPhone' THEN B.CELL_PHONE
                       WHEN 'faxNumber' THEN B.FAX_NUMBER
                       WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
+                      WHEN 'associatedLocation' THEN B.ASSOCIATED_LOCATION
                   END
               ) OVER (
                   PARTITION BY B.CLIENT_CONTACT_ID, COL.COLUMN_NAME
@@ -416,17 +434,19 @@ public final class ForestClientQueries {
               COL.FIELD_ORDER
           FROM BASE_DATA B
           CROSS JOIN (
-              SELECT 'contactTypeDesc' AS COLUMN_NAME, 1 AS FIELD_ORDER FROM DUAL
+              SELECT 'contactName' AS COLUMN_NAME, 1 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'contactName' AS COLUMN_NAME, 2 FROM DUAL
+              SELECT 'contactTypeDesc' AS COLUMN_NAME, 2 FROM DUAL
               UNION ALL
-              SELECT 'businessPhone' AS COLUMN_NAME, 3 FROM DUAL
+              SELECT 'associatedLocation' AS COLUMN_NAME, 3 FROM DUAL
               UNION ALL
-              SELECT 'secondaryPhone' AS COLUMN_NAME, 4 FROM DUAL
+              SELECT 'businessPhone' AS COLUMN_NAME, 4 FROM DUAL
               UNION ALL
-              SELECT 'faxNumber' AS COLUMN_NAME, 5 FROM DUAL
+              SELECT 'secondaryPhone' AS COLUMN_NAME, 5 FROM DUAL
               UNION ALL
-              SELECT 'emailAddress' AS COLUMN_NAME, 6 FROM DUAL
+              SELECT 'faxNumber' AS COLUMN_NAME, 6 FROM DUAL
+              UNION ALL
+              SELECT 'emailAddress' AS COLUMN_NAME, 7 FROM DUAL
           ) COL
       )
       SELECT

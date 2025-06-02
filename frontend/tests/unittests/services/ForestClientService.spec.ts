@@ -153,6 +153,10 @@ describe("ForestClientService.ts", () => {
     ])("gets the expected result from input '%s': '%s'", (input, expectedOutput) => {
       expect(toTitleCase(input)).toEqual(expectedOutput);
     });
+
+    it("returns empty string when input is undefined", () => {
+      expect(toTitleCase(undefined as unknown as string)).toEqual("");
+    });
   });
 
   describe("getTagColorByClientStatus", () => {
@@ -531,9 +535,7 @@ describe("ForestClientService.ts", () => {
       businessPhone: "2502863767",
       secondaryPhone: "2505553700",
       faxNumber: "2502863768",
-      emailAddress: "cheryl@ktb.com",
-      createdBy: "peter",
-      updatedBy: "mike",
+      emailAddress: "cheryl@ktb.com"
     };
 
     it("converts from Contact format to ClientContact format properly", () => {
@@ -552,7 +554,7 @@ describe("ForestClientService.ts", () => {
       expect(clientContact.emailAddress).toEqual(contact.email);
 
       // Information that doesn't exist on the Contact format
-      const missingProperties: (keyof ClientContact)[] = ["clientNumber", "createdBy", "updatedBy"];
+      const missingProperties: (keyof ClientContact)[] = ["clientNumber"];
 
       for (const key in clientContact) {
         if (!missingProperties.includes(key as keyof ClientContact)) {
@@ -743,6 +745,22 @@ describe("Reason Fields Handling", () => {
     expect(result).toEqual([]);
   });
 
+  it("handles unknown status transition with empty action", () => {
+    const patchData: jsonpatch.Operation[] = [
+      { op: "replace", path: "/client/clientStatusCode", value: "XYZ" },
+    ];
+  
+    const result = extractReasonFields(patchData, {
+      ...originalData,
+      client: {
+        ...originalData.client,
+        clientStatusCode: "ABC",
+      },
+    });
+  
+    expect(result).toEqual([]);
+  });
+
   describe("getAction", () => {
     it("returns correct action for client status changes", () => {
       expect(getAction("/clientStatusCode", "ACT", "DAC")).toEqual("DAC");
@@ -751,8 +769,8 @@ describe("Reason Fields Handling", () => {
     });
 
     it("returns correct field mapping for other fields", () => {
-      expect(getAction("/clientIdentification")).toEqual("ID");
-      expect(getAction("/city")).toEqual("ADDR");
+      expect(getAction("/clientIdentification")).toEqual(["ID"]);
+      expect(getAction("/city")).toEqual(["ADDR"]);
       expect(getAction("/unknownField")).toBeNull();
     });
   });

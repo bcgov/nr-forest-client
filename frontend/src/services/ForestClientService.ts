@@ -203,21 +203,25 @@ export const reasonRequiredFields = new Set<string>([
   'postalCode'
 ]);
 
-// Map for general field actions
-const fieldActionMap = new Map<string, string>([
-  ['clientIdTypeCode', 'ID'],
-  ['clientIdentification', 'ID'],
-  ['clientName', 'NAME'],
-  ['legalFirstName', 'NAME'],
-  ['legalMiddleName', 'NAME'],
-  ['addressOne', 'ADDR'],
-  ['addressTwo', 'ADDR'],
-  ['addressThree', 'ADDR'],
-  ['city', 'ADDR'],
-  ['provinceCode', 'ADDR'],
-  ['countryCode', 'ADDR'],
-  ['postalCode', 'ADDR']
-]);
+export const fieldActionMap: { [key: string]: string[] } = {
+  'clientIdTypeCode': ['ID'],
+  'clientIdTypeDesc': ['ID'],
+  'clientIdentification': ['ID'],
+  'clientName': ['NAME'],
+  'legalFirstName': ['NAME'],
+  'legalMiddleName': ['NAME'],
+  'fullName': ['NAME'],
+  'addressOne': ['ADDR'],
+  'addressTwo': ['ADDR'],
+  'addressThree': ['ADDR'],
+  'city': ['ADDR'],
+  'provinceCode': ['ADDR'],
+  'countryCode': ['ADDR'],
+  'provinceDesc': ['ADDR'],
+  'countryDesc': ['ADDR'],
+  'postalCode': ['ADDR'],
+  'clientStatusDesc': ['ACDC', 'DAC', 'RACT', 'USPN', 'SPN'],
+};
 
 // Map for client status transitions
 const statusTransitionMap = new Map<string, string>([
@@ -304,7 +308,7 @@ export const extractReasonFields = (
         const transitionKey = `${oldValue}-${newValue}`;
         action = statusTransitionMap.get(transitionKey) || '';
       } else {
-        action = fieldActionMap.get(fieldName) || '';
+        action = fieldActionMap[fieldName]?.[0] || '';
       }
 
       if (reasonActions[action]) {
@@ -321,7 +325,7 @@ export const extractReasonFields = (
   return Object.values(reasonActions);
 };
 
-export const getAction = (path: string, oldValue?: string, newValue?: string) => {
+export const getAction = (path: string, oldValue?: string, newValue?: string): string[] | string | null => {
   const fieldName = path.split('/').pop();
 
   if (fieldName === 'clientStatusCode' && oldValue && newValue) {
@@ -330,7 +334,7 @@ export const getAction = (path: string, oldValue?: string, newValue?: string) =>
     return transitionAction || null;
   }
 
-  return fieldActionMap.get(fieldName) || null;
+  return fieldActionMap[fieldName] || null;
 };
 
 const fieldLabelsByAction = new Map<string, string>([
@@ -595,3 +599,55 @@ export const formatLocation = (code: string, name: string): string => {
 
   return title;
 };
+
+const columnNameToLabelMap: Record<string, string> = {
+  fullName: "Full name",
+  clientTypeDesc: "Client type",
+  clientAcronym: "Acronym",
+  birthdate: "Date of birth",
+  clientIdTypeDesc: "ID type",
+  clientIdentification: "ID number",
+  clientStatusDesc: "Client status",
+  corpRegnNmbr: "Registration number",
+  wcbFirmNumber: "WorkSafeBC number",
+  doingBusinessAs: "Doing business as",
+  locnExpiredInd: "Location status",
+  clientComment: "Notes",
+  locationName: "Location name",
+  addressOne: "Street address or PO box",
+  addressTwo: "Delivery information",
+  addressThree: "Additional delivery information",
+  cityProvinceDesc: "City and province, state or territory",
+  city: "City",
+  provinceDesc: "Province or territory",
+  stateDesc: "State",
+  countryDesc: "Country",
+  postalCode: "Postal code",
+  trustLocationInd: "Trust location",
+  contactTypeDesc: "Contact type",
+  associatedLocation: "Associated location",
+  contactName: "Full name",
+  emailAddress: "Email address",
+  businessPhone: "Primary phone number",
+  secondaryPhone: "Secondary phone number",
+  homePhone: "Tertiary phone number",
+  cellPhone: "Secondary phone number",
+  cliLocnComment: "Notes",
+  faxNumber: "Fax",
+  returnedMailDate: "Returned mail date",
+  primaryClient: "Primary client",
+  primaryClientLocation: "Primary client location",
+  relationshipType: "Relationship type",
+  relatedClient: "Related client",
+  relatedClientLocation: "Related client location",
+  signingAuthInd: "Signing auth",
+  percentOwnership: "Percent ownership"
+};
+
+export function getLabelByColumnName(columnName: string): string {
+  return columnNameToLabelMap[columnName] ?? columnName;
+};
+
+export function removePrefix(input: string): string {
+  return input.split('\\').pop() || '';
+}; 
