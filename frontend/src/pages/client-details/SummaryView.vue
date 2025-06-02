@@ -634,7 +634,10 @@ const originalClient = computed(() => props.data.client);
         required
       />
     </div>
-    <div class="horizontal-input-grouping">
+    <div
+      class="horizontal-input-grouping"
+      v-if="displayEditable('clientIdType') || displayEditable('clientIdentification')"
+    >
       <data-fetcher
         v-if="displayEditable('clientIdType')"
         url="/api/codes/identification-types/legacy"

@@ -219,7 +219,7 @@ describe("<summary-view />", () => {
         testHidden("#input-clientType");
         testHidden("#input-registryType");
         testHidden("#input-registryNumber");
-        testHidden("#input-birthdate");
+        testHidden("#input-birthdateYear");
         testHidden("#input-clientIdType");
         testHidden("#input-clientIdentification");
       });
@@ -404,9 +404,32 @@ describe("<summary-view />", () => {
       },
     ];
 
+    // An arbitrary type among the group that contains types: B, F and G
+    const firstNationClientType = clientTypes1[0];
+
+    const ministryClientType = clientTypes1[1];
+
+    const clientTypes2 = [
+      { code: "A", desc: "Association" },
+      { code: "C", desc: "Corporation" },
+      { code: "L", desc: "Limited Partnership" },
+      { code: "P", desc: "General Partnership" },
+      { code: "S", desc: "Society" },
+      { code: "R", desc: "First Nation Group" },
+      { code: "T", desc: "First Nation Tribal Council" },
+      { code: "U", desc: "Unregistered Company" },
+    ];
+
+    const associationClientType = clientTypes2[0];
+
+    const corporationClientType = clientTypes2[1];
+
+    const individualClientType = { code: "I", desc: "Individual" };
+
     const itEnablesTheEditionOfTheBasicFields = () =>
       it('enables the edition of the "basic" fields', () => {
         testTextInput("#input-acronym", props.data.client.clientAcronym);
+        testComboBox("#input-clientType", props.data.client.clientTypeDesc);
         testTextInput("#input-workSafeBCNumber", props.data.client.wcbFirmNumber);
         testDropdown("#input-clientStatus", props.data.client.clientStatusDesc);
         testTextarea("[data-id='input-input-notes']", props.data.client.clientComment);
@@ -422,67 +445,245 @@ describe("<summary-view />", () => {
         testTextInput("#input-doingBusinessAs", props.data.doingBusinessAs);
       });
 
-    clientTypes1.forEach((clientType) => {
-      describe(`when client type is ${clientType.code} - ${clientType.desc}`, () => {
-        describe("when the edit button in clicked", () => {
-          beforeEach(() => {
-            props.data.client.clientTypeCode = clientType.code;
-            props.data.client.clientTypeDesc = clientType.desc;
-            mount(props);
-            cy.get("#summaryEditBtn").click();
-            cy.wait("@getClientStatuses");
+    // Higher order function to prepare for a specific client type change
+    const changeClientType = (desc: string) => () => {
+      cy.selectFormEntry("#input-clientType", desc);
+    };
+
+    const itReloadsTheClientStatusList = (changeType: () => void) =>
+      it("reloads the client status list", () => {
+        changeType();
+        cy.wait("@getClientStatuses");
+      });
+
+    const itReloadsTheRegistryTypesList = (changeType: () => void) =>
+      it("reloads the registry types list", () => {
+        changeType();
+        cy.wait("@getRegistryTypes");
+      });
+
+    const itAddsTheRegistrationNumberInputs = (changeType: () => void) =>
+      it("adds the Registration number inputs (Type and Number) to the form", () => {
+        testHidden("#input-registryType");
+        testHidden("#input-registryNumber");
+
+        changeType();
+
+        testComboBox("#input-registryType");
+        testTextInput("#input-registryNumber");
+      });
+
+    const itHidesTheRegistrationNumberInputs = (changeType: () => void) =>
+      it("hides the Registration number inputs (Type and Number)", () => {
+        testComboBox("#input-registryType");
+        testTextInput("#input-registryNumber");
+
+        changeType();
+
+        testHidden("#input-registryType");
+        testHidden("#input-registryNumber");
+      });
+
+    const itDeletesTheRegistrationNumberValues = () =>
+      it("deletes the Registration Type and the Registration Number values", () => {
+        cy.get("#summarySaveBtn").click();
+
+        cy.get("@vueWrapper").should((vueWrapper) => {
+          const saveData = vueWrapper.emitted("save")[0][0];
+
+          expect(saveData).to.be.an("array");
+
+          expect(saveData).to.deep.include({
+            op: "replace",
+            path: "/client/registryCompanyTypeCode",
+            value: null,
           });
 
-          itEnablesTheEditionOfTheBasicFields();
-
-          itEnablesTheEditionOfTheClientName();
-
-          itEnablesTheEditionOfTheDoingBusinessAs();
-
-          it("disables the edition of everything else", () => {
-            testHidden("#input-clientType");
-            testHidden("#input-registryType");
-            testHidden("#input-registryNumber");
-            testHidden("#input-birthdate");
-            testHidden("#input-clientIdType");
-            testHidden("#input-clientIdentification");
-          });
-
-          it("keeps displaying the other fields in view mode", () => {
-            testReadonly("#clientNumber", currentProps.data.client.clientNumber);
-            testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
-
-            // registryCompanyTypeCode + corpRegnNmbr
-            testReadonly(
-              "#registrationNumber",
-              `${currentProps.data.client.registryCompanyTypeCode}${currentProps.data.client.corpRegnNmbr}`,
-            );
-
-            testReadonly("#goodStanding", "Good standing");
-            testReadonly("#identification", currentProps.data.client.clientIdentification);
-            testReadonly("#dateOfBirth", currentProps.data.client.birthdate.substring(0, 10));
-
-            // Make sure the fields enabled for edition are not also displayed in read-only mode.
-            testHidden("#acronym");
-            testHidden("#doingBusinessAs");
-            testHidden("#workSafeBCNumber");
-            testHidden("#clientStatus");
-            testHidden("#notes");
+          expect(saveData).to.deep.include({
+            op: "replace",
+            path: "/client/corpRegnNmbr",
+            value: null,
           });
         });
       });
+
+    const itAddsIndividualFields = (changeType: () => void) =>
+      it("adds the fields that are only concerned to Individuals", () => {
+        testHidden("#input-legalFirstName");
+        testHidden("#input-legalMiddleName");
+        cy.get("#input-clientName").contains("Client name");
+        testHidden("#input-birthdateYear");
+        testHidden("#input-clientIdType");
+        testHidden("#input-clientIdentification");
+
+        changeType();
+
+        testTextInput("#input-legalFirstName");
+        testTextInput("#input-legalMiddleName");
+        cy.get("#input-clientName").contains("Last name");
+        testTextInput("#input-birthdateYear");
+        testComboBox("#input-clientIdType");
+        testTextInput("#input-clientIdentification");
+      });
+
+    const itHidesIndividualFields = (changeType: () => void) =>
+      it("hides the fields that are only concerned to Individuals", () => {
+        testTextInput("#input-legalFirstName");
+        testTextInput("#input-legalMiddleName");
+        cy.get("#input-clientName").contains("Last name");
+        testTextInput("#input-birthdateYear");
+        testComboBox("#input-clientIdType");
+        testTextInput("#input-clientIdentification");
+
+        changeType();
+
+        testHidden("#input-legalFirstName");
+        testHidden("#input-legalMiddleName");
+        cy.get("#input-clientName").contains("Client name");
+        testHidden("#input-birthdateYear");
+        testHidden("#input-clientIdType");
+        testHidden("#input-clientIdentification");
+      });
+
+    const itDeletesIndividualFieldsValues = () =>
+      it("deletes the values on the fields that are only concerned to Individuals", () => {
+        cy.get("#summarySaveBtn").click();
+
+        cy.get("@vueWrapper").should((vueWrapper) => {
+          const saveData = vueWrapper.emitted("save")[0][0];
+
+          expect(saveData).to.be.an("array");
+
+          expect(saveData).to.deep.include({
+            op: "replace",
+            path: "/client/legalFirstName",
+            value: null,
+          });
+
+          expect(saveData).to.deep.include({
+            op: "replace",
+            path: "/client/legalMiddleName",
+            value: null,
+          });
+
+          expect(saveData).to.deep.include({
+            op: "replace",
+            path: "/client/birthdate",
+            value: null,
+          });
+
+          expect(saveData).to.deep.include({
+            op: "replace",
+            path: "/client/clientIdTypeCode",
+            value: null,
+          });
+
+          expect(saveData).to.deep.include({
+            op: "replace",
+            path: "/client/clientIdentification",
+            value: null,
+          });
+        });
+      });
+
+    describe(`when client type in (${clientTypes1.map((clientType) => `"${clientType.code} - ${clientType.desc}"`).join(", ")})`, () => {
+      clientTypes1.forEach((clientType) => {
+        describe(`more especifically ${clientType.code} - ${clientType.desc}`, () => {
+          describe("and the edit button in clicked", () => {
+            beforeEach(() => {
+              props.data.client.clientTypeCode = clientType.code;
+              props.data.client.clientTypeDesc = clientType.desc;
+              mount(props);
+              cy.get("#summaryEditBtn").click();
+              cy.wait("@getClientStatuses");
+            });
+
+            itEnablesTheEditionOfTheBasicFields();
+
+            itEnablesTheEditionOfTheClientName();
+
+            itEnablesTheEditionOfTheDoingBusinessAs();
+
+            it("disables the edition of everything else", () => {
+              testHidden("#input-registryType");
+              testHidden("#input-registryNumber");
+              testHidden("#input-birthdateYear");
+              testHidden("#input-clientIdType");
+              testHidden("#input-clientIdentification");
+            });
+
+            it("keeps displaying the other fields in view mode", () => {
+              testReadonly("#clientNumber", currentProps.data.client.clientNumber);
+              testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
+
+              // registryCompanyTypeCode + corpRegnNmbr
+              testReadonly(
+                "#registrationNumber",
+                `${currentProps.data.client.registryCompanyTypeCode}${currentProps.data.client.corpRegnNmbr}`,
+              );
+
+              testReadonly("#goodStanding", "Good standing");
+              testReadonly("#identification", currentProps.data.client.clientIdentification);
+              testReadonly("#dateOfBirth", currentProps.data.client.birthdate.substring(0, 10));
+
+              // Make sure the fields enabled for edition are not also displayed in read-only mode.
+              testHidden("#acronym");
+              testHidden("#doingBusinessAs");
+              testHidden("#workSafeBCNumber");
+              testHidden("#clientStatus");
+              testHidden("#notes");
+            });
+          });
+        });
+      });
+
+      describe("and the client type is changed to some other type in the same group", () => {
+        beforeEach(() => {
+          props.data.client.clientTypeCode = firstNationClientType.code;
+          props.data.client.clientTypeDesc = firstNationClientType.desc;
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+          cy.wait("@getClientStatuses");
+        });
+
+        const changeType = changeClientType(ministryClientType.desc);
+
+        itReloadsTheClientStatusList(changeType);
+      });
+
+      describe("and the client type is changed to a company-like type", () => {
+        beforeEach(() => {
+          props.data.client.clientTypeCode = firstNationClientType.code;
+          props.data.client.clientTypeDesc = firstNationClientType.desc;
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+          cy.wait("@getClientStatuses");
+        });
+
+        const changeType = changeClientType(associationClientType.desc);
+
+        itReloadsTheClientStatusList(changeType);
+
+        itAddsTheRegistrationNumberInputs(changeType);
+      });
+
+      describe("and the client type is changed to the Individual type", () => {
+        beforeEach(() => {
+          props.data.client.clientTypeCode = firstNationClientType.code;
+          props.data.client.clientTypeDesc = firstNationClientType.desc;
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+          cy.wait("@getClientStatuses");
+        });
+
+        const changeType = changeClientType(individualClientType.desc);
+
+        itReloadsTheClientStatusList(changeType);
+
+        itAddsIndividualFields(changeType);
+      });
     });
 
-    const clientTypes2 = [
-      { code: "A", desc: "Association" },
-      { code: "C", desc: "Corporation" },
-      { code: "L", desc: "Limited Partnership" },
-      { code: "P", desc: "General Partnership" },
-      { code: "S", desc: "Society" },
-      { code: "R", desc: "First Nation Group" },
-      { code: "T", desc: "First Nation Tribal Council" },
-      { code: "U", desc: "Unregistered Company" },
-    ];
     describe("Company-like types", () => {
       clientTypes2.forEach((clientType) => {
         describe(`when client type is ${clientType.code} - ${clientType.desc}`, () => {
@@ -509,7 +710,6 @@ describe("<summary-view />", () => {
             });
 
             it("disables the edition of everything else", () => {
-              testHidden("#input-clientType");
               testHidden("#input-birthdate");
               testHidden("#input-clientIdType");
               testHidden("#input-clientIdentification");
@@ -533,9 +733,74 @@ describe("<summary-view />", () => {
           });
         });
       });
+
+      describe("and the client type is changed to some other company-like type", () => {
+        beforeEach(() => {
+          props.data.client.clientTypeCode = associationClientType.code;
+          props.data.client.clientTypeDesc = associationClientType.desc;
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+          cy.wait("@getClientStatuses");
+        });
+
+        const changeType = changeClientType(corporationClientType.desc);
+
+        itReloadsTheClientStatusList(changeType);
+
+        itReloadsTheRegistryTypesList(changeType);
+      });
+
+      describe(`and the client type is changed to any type among (${clientTypes1.map((clientType) => `"${clientType.code} - ${clientType.desc}"`).join(", ")})`, () => {
+        beforeEach(() => {
+          props.data.client.clientTypeCode = associationClientType.code;
+          props.data.client.clientTypeDesc = associationClientType.desc;
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+          cy.wait("@getClientStatuses");
+        });
+
+        const changeType = changeClientType(firstNationClientType.desc);
+
+        itReloadsTheClientStatusList(changeType);
+
+        itHidesTheRegistrationNumberInputs(changeType);
+
+        describe("and the Save button is clicked", () => {
+          beforeEach(() => {
+            changeType();
+          });
+
+          itDeletesTheRegistrationNumberValues();
+        });
+      });
+
+      describe("and the client type is changed to the Individual type", () => {
+        beforeEach(() => {
+          props.data.client.clientTypeCode = associationClientType.code;
+          props.data.client.clientTypeDesc = associationClientType.desc;
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+          cy.wait("@getClientStatuses");
+        });
+
+        const changeType = changeClientType(individualClientType.desc);
+
+        itReloadsTheClientStatusList(changeType);
+
+        itHidesTheRegistrationNumberInputs(changeType);
+
+        itAddsIndividualFields(changeType);
+
+        describe("and the Save button is clicked", () => {
+          beforeEach(() => {
+            changeType();
+          });
+
+          itDeletesTheRegistrationNumberValues();
+        });
+      });
     });
 
-    const individualClientType = { code: "I", desc: "Individual" };
     describe(`when client type is ${individualClientType.code} - ${individualClientType.desc}`, () => {
       describe("when the edit button in clicked", () => {
         beforeEach(() => {
@@ -589,6 +854,56 @@ describe("<summary-view />", () => {
           testHidden("#dateOfBirth");
           testHidden("#clientStatus");
           testHidden("#notes");
+        });
+      });
+
+      describe(`and the client type is changed to any type among (${clientTypes1.map((clientType) => `"${clientType.code} - ${clientType.desc}"`).join(", ")})`, () => {
+        beforeEach(() => {
+          props.data.client.clientTypeCode = individualClientType.code;
+          props.data.client.clientTypeDesc = individualClientType.desc;
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+          cy.wait("@getClientStatuses");
+        });
+
+        const changeType = changeClientType(firstNationClientType.desc);
+
+        itReloadsTheClientStatusList(changeType);
+
+        itHidesIndividualFields(changeType);
+
+        describe("and the Save button is clicked", () => {
+          beforeEach(() => {
+            changeType();
+          });
+
+          itDeletesIndividualFieldsValues();
+        });
+      });
+
+      describe("and the client type is changed to a company-like type", () => {
+        beforeEach(() => {
+          props.data.client.clientTypeCode = individualClientType.code;
+          props.data.client.clientTypeDesc = individualClientType.desc;
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+          cy.wait("@getClientStatuses");
+        });
+
+        const changeType = changeClientType(associationClientType.desc);
+
+        itReloadsTheClientStatusList(changeType);
+
+        itHidesIndividualFields(changeType);
+
+        itAddsTheRegistrationNumberInputs(changeType);
+
+        describe("and the Save button is clicked", () => {
+          beforeEach(() => {
+            changeType();
+          });
+
+          itDeletesIndividualFieldsValues();
         });
       });
     });
