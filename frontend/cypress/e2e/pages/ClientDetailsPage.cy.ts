@@ -472,6 +472,83 @@ describe("Client Details Page", () => {
         });
       });
     });
+
+    describe("change client type from Individual to Corporation", { testIsolation: false }, () => {
+      before(function () {
+        init.call(this);
+
+        cy.visit("/clients/details/i");
+
+        cy.get("#summaryEditBtn").click();
+
+        cy.selectFormEntry("#input-clientType", "Corporation");
+      });
+
+      beforeEach(() => {
+        cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
+        cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
+      });
+
+      it("asks both reasons for NAME and ID change", () => {
+        cy.get("#summarySaveBtn").click();
+
+        cy.wait("@getReasonsList").then(({ request }) => {
+          // requests the list of options related to Name change
+          expect(request.url.endsWith("/ID")).to.eq(true);
+        });
+
+        cy.wait("@getReasonsList").then(({ request }) => {
+          // requests the list of options related to Name change
+          expect(request.url.endsWith("/NAME")).to.eq(true);
+        });
+
+        cy.get("#input-reason-0").find('[part="trigger-button"]').click();
+        cy.get("#input-reason-0").find("cds-dropdown-item").first().should("be.visible").click();
+
+        cy.get("#input-reason-1").find('[part="trigger-button"]').click();
+        cy.get("#input-reason-1").find("cds-dropdown-item").first().should("be.visible").click();
+      });
+
+      it("removes the values from Individual related fields", () => {
+        cy.get("#reasonSaveBtn").click();
+
+        cy.wait("@saveClientDetails").then((interception) => {
+          const requestBody = interception.request.body;
+
+          expect(requestBody).to.be.an("array");
+
+          expect(requestBody).to.deep.include({
+            op: "replace",
+            path: "/client/legalFirstName",
+            value: null,
+          });
+
+          expect(requestBody).to.deep.include({
+            op: "replace",
+            path: "/client/legalMiddleName",
+            value: null,
+          });
+
+          expect(requestBody).to.deep.include({
+            op: "replace",
+            path: "/client/birthdate",
+            value: null,
+          });
+
+          expect(requestBody).to.deep.include({
+            op: "replace",
+            path: "/client/clientIdTypeCode",
+            value: null,
+          });
+
+          expect(requestBody).to.deep.include({
+            op: "replace",
+            path: "/client/clientIdentification",
+            value: null,
+          });
+        });
+      });
+    });
   });
 
   describe("locations tab", () => {
