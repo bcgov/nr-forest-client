@@ -211,6 +211,7 @@ export const fieldActionMap: { [key: string]: string[] } = {
   'legalFirstName': ['NAME'],
   'legalMiddleName': ['NAME'],
   'fullName': ['NAME'],
+  'address': ['ADDR'],
   'addressOne': ['ADDR'],
   'addressTwo': ['ADDR'],
   'addressThree': ['ADDR'],
@@ -220,6 +221,7 @@ export const fieldActionMap: { [key: string]: string[] } = {
   'provinceDesc': ['ADDR'],
   'countryDesc': ['ADDR'],
   'postalCode': ['ADDR'],
+  'zipCode': ['ADDR'],
   'clientStatusDesc': ['ACDC', 'DAC', 'RACT', 'USPN', 'SPN'],
 };
 
@@ -614,6 +616,7 @@ const columnNameToLabelMap: Record<string, string> = {
   locnExpiredInd: "Location status",
   clientComment: "Notes",
   locationName: "Location name",
+  address: "Address",
   addressOne: "Street address or PO box",
   addressTwo: "Delivery information",
   addressThree: "Additional delivery information",
@@ -623,6 +626,7 @@ const columnNameToLabelMap: Record<string, string> = {
   stateDesc: "State",
   countryDesc: "Country",
   postalCode: "Postal code",
+  zipCode: "Zip code",
   trustLocationInd: "Trust location",
   contactTypeDesc: "Contact type",
   associatedLocation: "Associated location",
