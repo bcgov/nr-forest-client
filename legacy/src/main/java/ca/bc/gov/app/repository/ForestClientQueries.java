@@ -155,18 +155,16 @@ public final class ForestClientQueries {
             END AS LOCN_EXPIRED_IND,
             AL.CLIENT_LOCN_NAME,
             TRIM(
-                COALESCE(AL.ADDRESS_1, '') ||
-                CASE
-                    WHEN AL.ADDRESS_2 IS NOT NULL THEN '<br>' || AL.ADDRESS_2
-                    ELSE ''
-                END ||
-                CASE
-                    WHEN AL.ADDRESS_3 IS NOT NULL THEN
-                        CASE
-                            WHEN AL.ADDRESS_2 IS NOT NULL THEN '<br>'
-                        END || AL.ADDRESS_3
-                    ELSE ''
-                END
+              COALESCE(AL.ADDRESS_1, '') ||
+              CASE
+                WHEN AL.ADDRESS_2 IS NOT NULL THEN '<br>' || AL.ADDRESS_2
+                ELSE ''
+              END ||
+              CASE
+                WHEN AL.ADDRESS_3 IS NOT NULL THEN
+                  '<br>' || AL.ADDRESS_3
+                ELSE ''
+              END
             ) AS ADDRESS,
             AL.CITY,
             CASE
