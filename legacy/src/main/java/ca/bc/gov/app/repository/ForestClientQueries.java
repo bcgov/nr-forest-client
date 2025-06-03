@@ -157,14 +157,13 @@ public final class ForestClientQueries {
             TRIM(
                 COALESCE(AL.ADDRESS_1, '') ||
                 CASE
-                    WHEN AL.ADDRESS_2 IS NOT NULL THEN
-                        CASE WHEN AL.ADDRESS_1 IS NOT NULL THEN '<br>' END || AL.ADDRESS_2
+                    WHEN AL.ADDRESS_2 IS NOT NULL THEN '<br>' || AL.ADDRESS_2
                     ELSE ''
                 END ||
                 CASE
                     WHEN AL.ADDRESS_3 IS NOT NULL THEN
                         CASE
-                            WHEN AL.ADDRESS_1 IS NOT NULL OR AL.ADDRESS_2 IS NOT NULL THEN '<br>'
+                            WHEN AL.ADDRESS_2 IS NOT NULL THEN '<br>'
                         END || AL.ADDRESS_3
                     ELSE ''
                 END
