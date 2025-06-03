@@ -11,6 +11,7 @@ import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
+import java.util.Locale;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -75,7 +76,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                                 detailEntity.getLastName(),
                                 detailEntity.getOrganizationName()
                             )[1]
-                            .toUpperCase()
+                            .toUpperCase(Locale.ROOT)
                     )
                     .withClientName(
                         ProcessorUtil
@@ -85,7 +86,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                                 detailEntity.getLastName(),
                                 detailEntity.getOrganizationName()
                             )[0]
-                            .toUpperCase()
+                            .toUpperCase(Locale.ROOT)
                     )
                     .withLegalMiddleName(
                         ProcessorUtil
@@ -95,7 +96,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                                 detailEntity.getLastName(),
                                 detailEntity.getOrganizationName()
                             )[2]
-                            .toUpperCase()
+                            .toUpperCase(Locale.ROOT)
                     )
                     .withClientComment(
                         BooleanUtils
