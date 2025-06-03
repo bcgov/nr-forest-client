@@ -29,6 +29,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -358,7 +359,7 @@ public class ClientService {
                     null,
                     index.getAndIncrement(),
                     (addressDto.addressType() != null ? addressDto.addressType() : "").concat(
-                        " address").toUpperCase()
+                        " address").toUpperCase(Locale.ROOT)
                 )
             )
             .flatMap(address -> countryProvinceService.loadCountry(address.country().text())

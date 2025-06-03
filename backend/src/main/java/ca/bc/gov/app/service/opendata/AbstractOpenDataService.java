@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.opendata;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.opendata.OpenData;
+import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -37,10 +38,10 @@ public abstract class AbstractOpenDataService {
                         nationName,
 
                         getSearchField(),
-                        nationName.toLowerCase(),
+                        nationName.toLowerCase(Locale.ROOT),
 
                         getSearchField(),
-                        nationName.toUpperCase(),
+                        nationName.toUpperCase(Locale.ROOT),
 
                         getSearchField(),
                         StringUtils.capitalize(nationName)
