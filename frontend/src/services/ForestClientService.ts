@@ -626,6 +626,7 @@ const columnNameToLabelMap: Record<string, string> = {
   stateDesc: "State",
   countryDesc: "Country",
   postalCode: "Postal code",
+  zipCode: "Zip code",
   trustLocationInd: "Trust location",
   contactTypeDesc: "Contact type",
   associatedLocation: "Associated location",
