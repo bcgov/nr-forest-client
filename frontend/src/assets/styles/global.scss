@@ -962,6 +962,19 @@ del {
   color: var(--cds-helper-text, #79797B);
 }
 
+.table-container {
+  display: table;
+}
+
+.table-row {
+  display: table-row;
+}
+
+.table-cell {
+  display: table-cell;
+  padding-right: 0.5rem;
+}
+
 .divider {
   margin: 1.5rem 0 1.5rem 0;
 }

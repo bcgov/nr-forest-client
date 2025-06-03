@@ -154,23 +154,45 @@ public final class ForestClientQueries {
                 WHEN AL.LOCN_EXPIRED_IND = 'N' THEN 'Active'
             END AS LOCN_EXPIRED_IND,
             AL.CLIENT_LOCN_NAME,
-            AL.ADDRESS_2,
-            AL.ADDRESS_3,
-            AL.ADDRESS_1,
+            TRIM(
+                COALESCE(AL.ADDRESS_1, '') ||
+                CASE
+                    WHEN AL.ADDRESS_2 IS NOT NULL THEN
+                        CASE WHEN AL.ADDRESS_1 IS NOT NULL THEN '<br>' END || AL.ADDRESS_2
+                    ELSE ''
+                END ||
+                CASE
+                    WHEN AL.ADDRESS_3 IS NOT NULL THEN
+                        CASE
+                            WHEN AL.ADDRESS_1 IS NOT NULL OR AL.ADDRESS_2 IS NOT NULL THEN '<br>'
+                        END || AL.ADDRESS_3
+                    ELSE ''
+                END
+            ) AS ADDRESS,
             AL.CITY,
             CASE
-                WHEN UPPER(AL.COUNTRY) = 'USA' OR UPPER(AL.COUNTRY) = 'US' OR UPPER(AL.COUNTRY) = 'UNITED STATES OF AMERICA'
+                WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
                     THEN PC.PROVINCE_STATE_NAME
                 ELSE NULL
             END AS STATE_DESC,
             CASE
-                WHEN UPPER(AL.COUNTRY) = 'USA' OR UPPER(AL.COUNTRY) = 'US' OR UPPER(AL.COUNTRY) = 'UNITED STATES OF AMERICA'
+                WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
                     THEN NULL
                 WHEN PC.PROVINCE_STATE_NAME IS NULL THEN AL.PROVINCE
                 ELSE PC.PROVINCE_STATE_NAME
             END AS PROVINCE_DESC,
             AL.COUNTRY AS COUNTRY_DESC,
-            AL.POSTAL_CODE,
+            CASE 
+              WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA') 
+                THEN AL.POSTAL_CODE 
+              ELSE NULL 
+            END AS ZIP_CODE,
+
+            CASE 
+              WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA') 
+                THEN NULL 
+              ELSE AL.POSTAL_CODE 
+            END AS POSTAL_CODE,
             AL.EMAIL_ADDRESS,
             CASE 
               WHEN LENGTH(AL.BUSINESS_PHONE) = 10 AND REGEXP_LIKE(AL.BUSINESS_PHONE, '^\\d{10}$') THEN
@@ -239,14 +261,13 @@ public final class ForestClientQueries {
               CASE COL.COLUMN_NAME
                   WHEN 'locnExpiredInd' THEN B.LOCN_EXPIRED_IND
                   WHEN 'locationName' THEN B.CLIENT_LOCN_NAME
-                  WHEN 'addressTwo' THEN B.ADDRESS_2
-                  WHEN 'addressThree' THEN B.ADDRESS_3
-                  WHEN 'addressOne' THEN B.ADDRESS_1
+                  WHEN 'address' THEN B.ADDRESS
                   WHEN 'city' THEN B.CITY
                   WHEN 'provinceDesc' THEN B.PROVINCE_DESC
                   WHEN 'stateDesc' THEN B.STATE_DESC
                   WHEN 'countryDesc' THEN B.COUNTRY_DESC
                   WHEN 'postalCode' THEN B.POSTAL_CODE
+                  WHEN 'zipCode' THEN B.ZIP_CODE
                   WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
                   WHEN 'businessPhone' THEN B.BUSINESS_PHONE
                   WHEN 'cellPhone' THEN B.CELL_PHONE
@@ -261,14 +282,13 @@ public final class ForestClientQueries {
                   CASE COL.COLUMN_NAME
                       WHEN 'locnExpiredInd' THEN B.LOCN_EXPIRED_IND
                       WHEN 'locationName' THEN B.CLIENT_LOCN_NAME
-                      WHEN 'addressTwo' THEN B.ADDRESS_2
-                      WHEN 'addressThree' THEN B.ADDRESS_3
-                      WHEN 'addressOne' THEN B.ADDRESS_1
+                      WHEN 'address' THEN B.ADDRESS
                       WHEN 'city' THEN B.CITY
                       WHEN 'provinceDesc' THEN B.PROVINCE_DESC
                       WHEN 'stateDesc' THEN B.STATE_DESC
                       WHEN 'countryDesc' THEN B.COUNTRY_DESC
                       WHEN 'postalCode' THEN B.POSTAL_CODE
+                      WHEN 'zipCode' THEN B.ZIP_CODE
                       WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
                       WHEN 'businessPhone' THEN B.BUSINESS_PHONE
                       WHEN 'cellPhone' THEN B.CELL_PHONE
@@ -295,39 +315,37 @@ public final class ForestClientQueries {
               UNION ALL
               SELECT 'locationName' AS COLUMN_NAME, 2 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'addressOne' AS COLUMN_NAME, 3 AS FIELD_ORDER FROM DUAL
+              SELECT 'address' AS COLUMN_NAME, 3 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'addressTwo' AS COLUMN_NAME, 4 AS FIELD_ORDER FROM DUAL
+              SELECT 'city' AS COLUMN_NAME, 4 AS FIELD_ORDER FROM DUAL    
               UNION ALL
-              SELECT 'addressThree' AS COLUMN_NAME, 5 AS FIELD_ORDER FROM DUAL
+              SELECT 'provinceDesc' AS COLUMN_NAME, 5 AS FIELD_ORDER FROM DUAL 
               UNION ALL
-              SELECT 'city' AS COLUMN_NAME, 6 AS FIELD_ORDER FROM DUAL    
+              SELECT 'stateDesc' AS COLUMN_NAME, 6 AS FIELD_ORDER FROM DUAL 
               UNION ALL
-              SELECT 'provinceDesc' AS COLUMN_NAME, 7 AS FIELD_ORDER FROM DUAL 
+              SELECT 'countryDesc' AS COLUMN_NAME, 7 AS FIELD_ORDER FROM DUAL 
               UNION ALL
-              SELECT 'stateDesc' AS COLUMN_NAME, 8 AS FIELD_ORDER FROM DUAL 
+              SELECT 'postalCode' AS COLUMN_NAME, 8 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'countryDesc' AS COLUMN_NAME, 9 AS FIELD_ORDER FROM DUAL 
+              SELECT 'zipCode' AS COLUMN_NAME, 9 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'postalCode' AS COLUMN_NAME, 10 AS FIELD_ORDER FROM DUAL  
+              SELECT 'emailAddress' AS COLUMN_NAME, 10 AS FIELD_ORDER FROM DUAL    
               UNION ALL
-              SELECT 'emailAddress' AS COLUMN_NAME, 11 AS FIELD_ORDER FROM DUAL    
+              SELECT 'businessPhone' AS COLUMN_NAME, 11 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'businessPhone' AS COLUMN_NAME, 12 AS FIELD_ORDER FROM DUAL  
+              SELECT 'cellPhone' AS COLUMN_NAME, 12 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'cellPhone' AS COLUMN_NAME, 13 AS FIELD_ORDER FROM DUAL  
+              SELECT 'homePhone' AS COLUMN_NAME, 13 AS FIELD_ORDER FROM DUAL  
               UNION ALL
-              SELECT 'homePhone' AS COLUMN_NAME, 14 AS FIELD_ORDER FROM DUAL  
+              SELECT 'faxNumber' AS COLUMN_NAME, 14 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'faxNumber' AS COLUMN_NAME, 15 AS FIELD_ORDER FROM DUAL
+              SELECT 'cliLocnComment' AS COLUMN_NAME, 15 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'cliLocnComment' AS COLUMN_NAME, 16 AS FIELD_ORDER FROM DUAL
+              SELECT 'hdbsCompanyCode' AS COLUMN_NAME, 16 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'hdbsCompanyCode' AS COLUMN_NAME, 17 AS FIELD_ORDER FROM DUAL
+              SELECT 'returnedMailDate' AS COLUMN_NAME, 17 AS FIELD_ORDER FROM DUAL
               UNION ALL
-              SELECT 'returnedMailDate' AS COLUMN_NAME, 18 AS FIELD_ORDER FROM DUAL
-              UNION ALL
-              SELECT 'trustLocationInd' AS COLUMN_NAME, 19 AS FIELD_ORDER FROM DUAL
+              SELECT 'trustLocationInd' AS COLUMN_NAME, 18 AS FIELD_ORDER FROM DUAL
           ) COL
       )
       SELECT
@@ -348,7 +366,7 @@ public final class ForestClientQueries {
           (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL) OR
           (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
       )
-      ORDER BY A.IDX DESC, A.FIELD_ORDER ASC    
+      ORDER BY A.IDX DESC, A.FIELD_ORDER ASC
       """;
   
   public static final String CONTACT_HISTORY = """
