@@ -505,13 +505,16 @@ const originalClient = computed(() => props.data.client);
       @error="validation.legalMiddleName = !$event"
     />
     <div
-      class="horizontal-input-grouping"
+      :class="{
+        'display-contents': formData.client.clientTypeCode === 'I',
+        'horizontal-input-grouping': formData.client.clientTypeCode !== 'I',
+      }"
       v-if="displayEditable('clientName') || displayEditable('acronym')"
     >
       <text-input-component
         id="input-clientName"
         v-if="displayEditable('clientName')"
-        class="grouping-02--width-32rem"
+        :class="{ 'grouping-02--width-32rem': formData.client.clientTypeCode !== 'I' }"
         :label="clientNameLabel"
         autocomplete="off"
         required
@@ -528,7 +531,7 @@ const originalClient = computed(() => props.data.client);
       <text-input-component
         id="input-acronym"
         v-if="displayEditable('acronym')"
-        :class="{ 'grouping-02--width-8rem': displayEditable('clientName') }"
+        :class="{ 'grouping-02--width-8rem': formData.client.clientTypeCode !== 'I' }"
         label="Acronym"
         placeholder=""
         mask="NNNNNNNN"
