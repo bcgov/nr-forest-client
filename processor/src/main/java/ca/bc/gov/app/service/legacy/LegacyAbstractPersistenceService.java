@@ -14,6 +14,7 @@ import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -248,7 +249,7 @@ public abstract class LegacyAbstractPersistenceService {
                 message.parameters().get(ApplicationConstant.LOCATION_CODE).toString(),
                 submissionContact.getContactTypeCode(),
                 String.format("%s %s", submissionContact.getFirstName(),
-                    submissionContact.getLastName()).toUpperCase(),
+                    submissionContact.getLastName()).toUpperCase(Locale.ROOT),
                 RegExUtils.replaceAll(submissionContact.getBusinessPhoneNumber(), "\\D",
                     StringUtils.EMPTY),
                 RegExUtils.replaceAll(

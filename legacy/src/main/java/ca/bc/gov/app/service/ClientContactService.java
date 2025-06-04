@@ -6,6 +6,7 @@ import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientContactRepository;
 import io.micrometer.observation.annotation.Observed;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
@@ -129,7 +130,7 @@ public class ClientContactService {
                             .where(ApplicationConstants.CLIENT_NUMBER)
                             .is(clientNumber)
                             .and("CLIENT_LOCN_CODE").is(locationCode)
-                            .and("CONTACT_NAME").is(contactName.toUpperCase())
+                            .and("CONTACT_NAME").is(contactName.toUpperCase(Locale.ROOT))
                     ),
                 ForestClientContactEntity.class
             )

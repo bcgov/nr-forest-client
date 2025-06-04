@@ -3,6 +3,7 @@ package ca.bc.gov.app.entity;
 import ca.bc.gov.app.ApplicationConstant;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.Locale;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -109,7 +110,7 @@ public class SubmissionLocationEntity {
         )
         .filter(StringUtils::isNotBlank)
         .skip(index)
-        .map(String::toUpperCase)
+        .map(s -> s.toUpperCase(Locale.ROOT))
         .findFirst()
         .orElse(StringUtils.EMPTY);
   }

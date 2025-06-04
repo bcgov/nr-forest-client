@@ -10,6 +10,7 @@ import ca.bc.gov.app.repository.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -75,11 +76,11 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                 )
                     .withBirthdate(detail.getBirthdate())
                     .withLegalFirstName(
-                        ProcessorUtil.splitName(detail.getOrganizationName())[1].toUpperCase())
+                        ProcessorUtil.splitName(detail.getOrganizationName())[1].toUpperCase(Locale.ROOT))
                     .withClientName(
-                        ProcessorUtil.splitName(detail.getOrganizationName())[0].toUpperCase())
+                        ProcessorUtil.splitName(detail.getOrganizationName())[0].toUpperCase(Locale.ROOT))
                     .withLegalMiddleName(
-                        ProcessorUtil.splitName(detail.getOrganizationName())[2].toUpperCase())
+                        ProcessorUtil.splitName(detail.getOrganizationName())[2].toUpperCase(Locale.ROOT))
                     .withClientComment(
                         getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
                         " submitted the sole proprietor with data acquired from Business BCeID")
