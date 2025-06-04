@@ -8,14 +8,9 @@
     "changeType": "UPD",
     "details": [
       {
-        "columnName": "addressOne",
+        "columnName": "address",
         "oldValue": "ADDRESS1",
-        "newValue": "5473 Oak St"
-      },
-      {
-        "columnName": "addressTwo",
-        "oldValue": "ADDRESS2",
-        "newValue": "Unit 101"
+        "newValue": "Unit 101<br>5473 Oak St"
       }
     ],
     "reasons": [
@@ -44,14 +39,9 @@
         "newValue": "ANOTHER LOCATION"
       },
       {
-        "columnName": "addressOne",
+        "columnName": "address",
         "oldValue": null,
         "newValue": "ADDRESS1"
-      },
-      {
-        "columnName": "addressTwo",
-        "oldValue": null,
-        "newValue": "ADDRESS2"
       },
       {
         "columnName": "city",
@@ -105,14 +95,9 @@
         "newValue": "TEST LOCATION"
       },
       {
-        "columnName": "addressOne",
+        "columnName": "address",
         "oldValue": null,
         "newValue": "940 TOAT RD"
-      },
-      {
-        "columnName": "addressThree",
-        "oldValue": null,
-        "newValue": "3"
       },
       {
         "columnName": "city",
@@ -159,16 +144,6 @@
         "columnName": "locationName",
         "oldValue": "THISISATEST",
         "newValue": "THIS IS ATEST"
-      },
-      {
-        "columnName": "addressTwo",
-        "oldValue": null,
-        "newValue": "COMP 1"
-      },
-      {
-        "columnName": "addressThree",
-        "oldValue": null,
-        "newValue": "COMP 2"
       }
     ],
     "reasons": [
@@ -218,7 +193,7 @@
         "newValue": "THISISATEST"
       },
       {
-        "columnName": "addressOne",
+        "columnName": "address",
         "oldValue": null,
         "newValue": "840-330 ST MARY AVE"
       },
@@ -400,7 +375,7 @@
     "changeType": "UPD",
     "details": [
       {
-        "columnName": "addressOne",
+        "columnName": "address",
         "oldValue": "2404 DOUGLAS ST",
         "newValue": "2404 DOUGLAS STREET"
       }
@@ -499,7 +474,7 @@
         "newValue": "MAILING ADDRESS"
       },
       {
-        "columnName": "addressOne",
+        "columnName": "address",
         "oldValue": null,
         "newValue": "2404 DOUGLAS ST"
       },

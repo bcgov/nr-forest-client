@@ -3,6 +3,7 @@ package ca.bc.gov.app.util;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -289,7 +290,7 @@ public class JwtPrincipalUtil {
     String provider = getClaimValue(claims, "custom:idp_name");
 
     if (StringUtils.isNotBlank(provider)) {
-      return provider.startsWith("ca.bc.gov.flnr.fam.") ? "BCSC" : provider.toUpperCase();
+      return provider.startsWith("ca.bc.gov.flnr.fam.") ? "BCSC" : provider.toUpperCase(Locale.ROOT);
     }
     return StringUtils.EMPTY;
   }

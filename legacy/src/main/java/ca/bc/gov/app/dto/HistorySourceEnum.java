@@ -1,6 +1,7 @@
 package ca.bc.gov.app.dto;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import lombok.Getter;
 
@@ -27,7 +28,7 @@ public enum HistorySourceEnum {
   }
 
   public static HistorySourceEnum fromValue(String value) {
-    HistorySourceEnum source = SOURCES.get(value.toLowerCase());
+    HistorySourceEnum source = SOURCES.get(value.toLowerCase(Locale.ROOT));
     if (source == null) {
       throw new IllegalArgumentException(value);
     }

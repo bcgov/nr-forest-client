@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 import {
         getLabelByColumnName, 
         getTagColorByClientStatus, 
+        getFormattedHtml,
         fieldActionMap, 
         removePrefix 
       } from "@/services/ForestClientService";
@@ -77,14 +78,13 @@ watch(
 
 const fieldReasonPriorityMap: { [actionCode: string]: string[] } = {
   "ADDR": [
-    "addressOne",
-    "addressTwo",
-    "addressThree",
+    "address",
     "city",
     "provinceDesc",
     "stateDesc",
     "countryDesc",
-    "postalCode"
+    "postalCode",
+    "zipCode",
   ],
   "ID": [
     "clientIdTypeDesc",
@@ -97,6 +97,7 @@ const getReasonForColumn = (
   columnName: string
 ): string | null => {
   const possibleActionCodes = fieldActionMap[columnName];
+  console.log(possibleActionCodes, historyLog, columnName);
   if (!possibleActionCodes || !historyLog.reasons || historyLog.reasons.length === 0) {
     return null;
   }
@@ -230,21 +231,27 @@ const userSearchSvg = useSvg(UserSearch);
                 <p class="label-02" v-if="getLabelByColumnName(historyDtlsLog.columnName)">
                   {{ getLabelByColumnName(historyDtlsLog.columnName) }}
                 </p>
+          
                 <p>
-                  <span v-if="historyDtlsLog.oldValue">
-                    <del class="helper-text">{{ historyDtlsLog.oldValue }}</del>&nbsp;
-                  </span>
+                  <div class="table-container">
+                    <div class="table-row">
+                      <div class="table-cell" v-if="historyDtlsLog.oldValue">
+                        <del class="helper-text">
+                          <span v-dompurify-html="getFormattedHtml(historyDtlsLog.oldValue)"></span>
+                        </del>&nbsp;
+                      </div>
+                      <div class="table-cell">
+                        <span v-if="historyDtlsLog.columnName === 'clientStatusDesc' ||
+                                    historyDtlsLog.columnName === 'locnExpiredInd'">
+                          <cds-tag :type="getTagColorByClientStatus(historyDtlsLog.newValue)">
+                            <span>{{ historyDtlsLog.newValue }}</span>
+                          </cds-tag>
+                        </span>
 
-                  <span v-if="historyDtlsLog.columnName === 'clientStatusDesc' ||
-                              historyDtlsLog.columnName === 'locnExpiredInd'">
-                    <cds-tag :type="getTagColorByClientStatus(historyDtlsLog.newValue)">
-                      <span>{{ historyDtlsLog.newValue }}</span>
-                    </cds-tag>
-                  </span>
-
-                  <span v-else>
-                      {{ historyDtlsLog.newValue }}
-                  </span>
+                        <span v-else v-dompurify-html="getFormattedHtml(historyDtlsLog.newValue)"></span>
+                      </div>
+                    </div>
+                  </div>
                 </p>
 
                 <div v-if="getReasonForColumn(historyLog, historyDtlsLog.columnName)"

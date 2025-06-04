@@ -6,6 +6,7 @@ import ca.bc.gov.app.dto.legacy.ForestClientContactDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.dto.legacy.ForestClientLocationDto;
 import ca.bc.gov.app.entity.SubmissionLocationEntity;
+import java.util.Locale;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RegExUtils;
@@ -40,14 +41,14 @@ public class LegacyService {
         new ForestClientLocationDto(
             clientNumber,
             String.format("%02d", index),
-            detail.getName().toUpperCase(),
+            detail.getName().toUpperCase(Locale.ROOT),
             detail.getAddressValue1(),
             detail.getAddressValue2(),
             detail.getAddressValue3(),
-            detail.getCityName().toUpperCase(),
-            detail.getProvinceCode().toUpperCase(),
+            detail.getCityName().toUpperCase(Locale.ROOT),
+            detail.getProvinceCode().toUpperCase(Locale.ROOT),
             detail.getPostalCode(),
-            detail.getCountryCode().toUpperCase(),
+            detail.getCountryCode().toUpperCase(Locale.ROOT),
             RegExUtils.replaceAll(detail.getBusinessPhoneNumber(), "\\D", StringUtils.EMPTY),
             StringUtils.EMPTY,
             RegExUtils.replaceAll(detail.getSecondaryPhoneNumber(), "\\D", StringUtils.EMPTY),
