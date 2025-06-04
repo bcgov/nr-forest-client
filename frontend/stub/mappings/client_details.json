@@ -313,16 +313,9 @@
         "method": "PATCH",
         "bodyPatterns": [
           {
-            "matchesJsonPath": {
-              "expression": "$[0].path",
-              "equalTo": "/client/clientAcronym"
-            }
-          },
-          {
-            "matchesJsonPath": {
-              "expression": "$[0].value",
-              "contains": "ERR"
-            }
+            "equalToJson": "[{\"op\":\"replace\",\"path\":\"/client/clientAcronym\",\"value\":\"ERR\"}]",
+            "ignoreArrayOrder" : true,
+            "ignoreExtraElements" : true
           }
         ]
       },
@@ -332,6 +325,31 @@
           {
             "fieldId": "/client/clientAcronym",
             "errorMsg": "Client acronym already exists",
+            "match": "00000001"
+          }
+        ],
+        "fixedDelayMilliseconds": 200
+      }
+    },
+    {
+      "name": "PATCH - Client Details - Duplicate Registration Number Error",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)",
+        "method": "PATCH",
+        "bodyPatterns": [
+          {
+            "equalToJson": "[{\"op\":\"replace\",\"path\":\"/client/corpRegnNmbr\",\"value\":\"9090\"}]",
+            "ignoreArrayOrder" : true,
+            "ignoreExtraElements" : true
+          }
+        ]
+      },
+      "response": {
+        "status": 400,
+        "jsonBody": [
+          {
+            "fieldId": "/client/registrationNumber",
+            "errorMsg": "Registration number already exists",
             "match": "00000001"
           }
         ],

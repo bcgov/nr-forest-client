@@ -6,14 +6,17 @@ import { isMinSize } from "@/helpers/validators/GlobalValidators";
 describe("Text Input Component", () => {
   const id = "my-input";
   const validations = [(value: any) => (value ? "" : "Field is required")];
+  let objectError: any;
   const advancedValidations = (errorData: any) => [
-    (value: any) =>
-      value
+    (value: any) => {
+      objectError = value
         ? ""
         : {
             errorMsg: "Required message",
             ...errorData,
-          },
+          };
+      return objectError;
+    },
   ];
 
   const setInputValue = async (
@@ -293,5 +296,27 @@ describe("Text Input Component", () => {
     await wrapper.find(`#${id}`).trigger("blur");
 
     expect(wrapper.find("[slot='invalid-text']").text()).toContain("Hello bar");
+  });
+
+  it("emits the whole error object when the error returned is an object", async () => {
+    const wrapper = mount(TextInputComponent, {
+      props: {
+        id,
+        label: "TestField",
+        placeholder: "",
+        modelValue: "",
+        validations: advancedValidations({ warning: true }),
+        enabled: true,
+      },
+      directives: {
+        masked: () => {},
+      },
+    });
+
+    await wrapper.find(`#${id}`).trigger("input");
+    await wrapper.find(`#${id}`).trigger("blur");
+
+    expect(wrapper.emitted("error")).toBeTruthy();
+    expect(wrapper.emitted("error")![0][0]).toStrictEqual(objectError);
   });
 });

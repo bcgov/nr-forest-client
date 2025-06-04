@@ -269,6 +269,7 @@ describe("Client Details Page", () => {
 
           cy.visit("/clients/details/p");
           cy.get("#summaryEditBtn").click();
+          cy.clearFormEntry("#input-acronym");
           cy.fillFormEntry("#input-acronym", "ERR");
           cy.get("#summarySaveBtn").click();
         });

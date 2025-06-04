@@ -543,15 +543,26 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
     toastBus.emit(toastNotification);
     globalError.value = error;
     if (error.code === AxiosError.ERR_BAD_REQUEST && Array.isArray(error.response.data)) {
-      const validationMessages: ValidationMessageType[] = (error.response.data as any[]).map(
-        (error) => ({
-          fieldId: error?.fieldId,
-          fieldName: "",
-          errorMsg: error?.errorMsg || "custom", // we need a non-empty value here to activate the error state
-          custom: {
-            ...error,
-          },
-        }),
+      const validationMessages: ValidationMessageType[] = (error.response.data as any[]).flatMap(
+        (error) => {
+          /*
+          For the registrationNumber error, splits the error in two so as to put the two related fields in error
+          state.
+          Also uses a common parent path "/client/registrationNumber" so as to identify it as a group error
+          i.e. an error that concerns to the two fields combined.
+          */
+          const registrationNumberGroup = ["/client/registrationNumber/type", "/client/registrationNumber/number"];
+
+          const fieldList = error?.fieldId === "/client/registrationNumber" ? registrationNumberGroup : [error?.fieldId];
+          return fieldList.map((fieldId) => ({
+            fieldId,
+            fieldName: "",
+            errorMsg: error?.errorMsg || "custom", // we need a non-empty value here to activate the error state
+            custom: {
+              ...error,
+            },
+          }));
+        },
       );
       errorBus.emit(validationMessages, {
         skipNotification: true,
