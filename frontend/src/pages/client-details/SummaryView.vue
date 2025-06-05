@@ -372,6 +372,8 @@ watch(
 );
 
 const originalClient = computed(() => props.data.client);
+
+const isIndividual = computed(() => formData.value.client.clientTypeCode === "I");
 </script>
 
 <template>
@@ -505,13 +507,16 @@ const originalClient = computed(() => props.data.client);
       @error="validation.legalMiddleName = !$event"
     />
     <div
-      class="horizontal-input-grouping"
+      :class="{
+        'display-contents': isIndividual,
+        'horizontal-input-grouping': !isIndividual,
+      }"
       v-if="displayEditable('clientName') || displayEditable('acronym')"
     >
       <text-input-component
         id="input-clientName"
         v-if="displayEditable('clientName')"
-        class="grouping-02--width-32rem"
+        :class="{ 'grouping-02--width-32rem': !isIndividual }"
         :label="clientNameLabel"
         autocomplete="off"
         required
@@ -528,7 +533,7 @@ const originalClient = computed(() => props.data.client);
       <text-input-component
         id="input-acronym"
         v-if="displayEditable('acronym')"
-        :class="{ 'grouping-02--width-8rem': displayEditable('clientName') }"
+        :class="{ 'grouping-02--width-8rem': !isIndividual }"
         label="Acronym"
         placeholder=""
         mask="NNNNNNNN"
