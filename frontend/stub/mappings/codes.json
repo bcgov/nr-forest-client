@@ -201,7 +201,7 @@
     {
       "name": "Get registry type codes by client type",
       "request": {
-        "urlPattern": "/api/codes/registry-types/(C|A)",
+        "urlPattern": "/api/codes/registry-types/(C|A|P)",
         "method": "GET"
       },
       "response": {

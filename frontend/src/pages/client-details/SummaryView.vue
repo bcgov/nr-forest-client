@@ -548,7 +548,7 @@ const isIndividual = computed(() => formData.value.client.clientTypeCode === "I"
         @error="validation.acronym = !$event"
       >
         <template #error="{ data }">
-          <template v-if="data?.custom?.match">
+          <template v-if="typeof data === 'object' && data?.custom?.match">
             Looks like this acronym belongs to client
             <span
               ><a
