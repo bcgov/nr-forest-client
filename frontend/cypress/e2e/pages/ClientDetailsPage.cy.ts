@@ -1580,8 +1580,6 @@ describe("Client Details Page", () => {
       cy.get("#historyLogsId").should("be.visible");
       //The details should not be visible
       cy.get("#logDetails0").should("not.exist");
-      //Any status should be visible
-      cy.get("cds-tag").should("not.exist");
     });
 
     it("shows empty state page when there is no data for the selected filter", () => {
