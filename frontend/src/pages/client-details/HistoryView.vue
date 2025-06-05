@@ -70,7 +70,7 @@ watch(
   () => historyLogs.value,
   (newLogs) => {
     newLogs.forEach((_, index) => {
-      showDetails.value[index] = true;
+      showDetails.value[index] = false;
     });
   },
   { immediate: true }
@@ -179,6 +179,7 @@ const userSearchSvg = useSvg(UserSearch);
       v-if="!loading"
       v-for="(historyLog, index) in historyLogs"
       class="history-indicator-line"
+      id="historyLogsId"
     >
       <table class="full-width-fixed-table">
         <colgroup>
