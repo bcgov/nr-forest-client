@@ -8,6 +8,14 @@ describe("ComboBoxInputComponent", () => {
     (value: any) => (value === "A" ? "A is not supported" : ""),
   ];
 
+  const objectError = {
+    errorMsg: "A is not supported",
+    custom: {
+      foo: "bar",
+    },
+  };
+  const objectErrorValidations = [(value: any) => (value === "A" ? objectError : "")];
+
   const eventContent = (value: string) => {
     return {
       detail: {
@@ -189,7 +197,7 @@ describe("ComboBoxInputComponent", () => {
     expect(wrapper.emitted("error")).toBeTruthy();
 
     // Error payload is empty - i.e. it is valid
-    expect(wrapper.emitted("error")![0][0]).toBe("");
+    expect(wrapper.emitted("error")![0][0]).toBe(undefined);
   });
 
   it.each([[""], [undefined], [null]])(
@@ -244,7 +252,7 @@ describe("ComboBoxInputComponent", () => {
     });
 
     expect(wrapper.emitted("error")).toBeTruthy();
-    expect(wrapper.emitted("error")![0][0]).toBe("");
+    expect(wrapper.emitted("error")![0][0]).toBe(undefined);
   });
 
   it("should reset selected to initial value when list change", async () => {
@@ -290,5 +298,28 @@ describe("ComboBoxInputComponent", () => {
       code: "",
       name: "",
     });
+  });
+
+  it("should emit the whole error object when the error returned is an object", async () => {
+    const wrapper = mount(ComboBoxInputComponent, {
+      props: {
+        id: "test",
+        label: "test",
+        tip: "",
+        modelValue: [
+          { code: "A", name: "Value A" },
+          { code: "B", name: "Value B" },
+        ],
+        initialValue: "",
+        validations: objectErrorValidations,
+      },
+    });
+
+    const dropdown = wrapper.find("cds-combo-box");
+
+    await dropdown.trigger("cds-combo-box-selected", eventContent("Value A"));
+
+    expect(wrapper.emitted("error")).toBeTruthy();
+    expect(wrapper.emitted("error")![0][0]).toBe(objectError);
   });
 });

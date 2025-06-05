@@ -37,7 +37,7 @@ const props = withDefaults(
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: "error", value: string | undefined): void;
+  (e: "error", value: string | ValidationMessageType | undefined): void;
   (e: "empty", value: boolean): void;
   (e: "update:model-value", value: string): void;
 }>();
@@ -49,7 +49,7 @@ const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 const warning = ref(false);
 
-const errorData = ref<ValidationMessageType>();
+const errorData = ref<string | ValidationMessageType>();
 
 /**
  * Sets the error and emits an error event.
@@ -64,7 +64,7 @@ const setError = (errorObject: string | ValidationMessageType | undefined) => {
     warning.value = errorObject.warning;
   }
 
-  errorData.value = typeof errorObject === "object" && errorObject;
+  errorData.value = errorObject;
 
   /*
   The error should be emitted whenever it is found, instead of watching and emitting only when it
@@ -73,7 +73,7 @@ const setError = (errorObject: string | ValidationMessageType | undefined) => {
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
   an empty one to allow subscribers to know in case the field still has the same error.
   */
-  emit("error", error.value);
+  emit("error", errorData.value);
 };
 
 watch(
