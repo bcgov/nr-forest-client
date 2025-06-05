@@ -153,68 +153,70 @@ watch([registryTypeValidation, registryNumberValidation], () => {
 emit("valid", true);
 </script>
 <template>
-  <div class="label-with-icon line-height-0 parent-label">
-    <div class="cds-text-input-label">
-      <span>Registration number</span>
+  <div id="registration-number" class="display-contents">
+    <div class="label-with-icon line-height-0 parent-label">
+      <div class="cds-text-input-label">
+        <span>Registration number</span>
+      </div>
     </div>
-  </div>
-  <div class="horizontal-input-grouping combined-inputs">
-    <combo-box-input-component
-      id="input-registryType"
-      class="grouping-03--width-32rem"
-      label="Type"
-      :initial-value="
-        formattedRegistryTypesList?.find(
-          (item) => item.code === modelValue.client.registryCompanyTypeCode,
-        )?.name
-      "
-      required
-      :model-value="formattedRegistryTypesList"
-      :enabled="true"
-      tip=""
-      :validations="[
-        ...getValidations('client.registryCompanyTypeCode'),
-        submissionValidation('/client/registryCompanyTypeCode'),
-        submissionValidation('/client/registrationNumber/type'),
-      ]"
-      :error-message="localTypeError"
-      @update:selected-value="updateRegistryType($event)"
-      @error="setRegistryTypeError($event)"
-      @empty="setRegistryTypeEmpty($event)"
-    />
-    <text-input-component
-      id="input-registryNumber"
-      class="grouping-02--width-8rem"
-      label="Number"
-      mask="#########"
-      placeholder=""
-      autocomplete="off"
-      v-model="modelValue.client.corpRegnNmbr"
-      :validations="[
-        ...getValidations('client.corpRegnNmbr'),
-        submissionValidation('/client/corpRegnNmbr'),
-        submissionValidation('/client/registrationNumber/number'),
-      ]"
-      enabled
-      :error-message="localNumberError"
-      @empty="setRegistryNumberEmpty($event)"
-      @error="setRegistryNumberError($event)"
-    />
-  </div>
-  <div class="cds--form-requirement field-error">
-    <template v-if="typeof displayedError === 'object' && displayedError?.custom?.match">
-      Looks like this registration number belongs to client
-      <span
-        ><a
-          :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${displayedError.custom.match}`"
-          target="_blank"
-          rel="noopener"
-          >{{ displayedError.custom.match }}</a
-        ></span
-      >. Try another registration number
-    </template>
-    <template v-else>
-      {{ displayedError }}
-    </template>
+    <div class="horizontal-input-grouping combined-inputs">
+      <combo-box-input-component
+        id="input-registryType"
+        class="grouping-03--width-32rem"
+        label="Type"
+        :initial-value="
+          formattedRegistryTypesList?.find(
+            (item) => item.code === modelValue.client.registryCompanyTypeCode,
+          )?.name
+        "
+        required
+        :model-value="formattedRegistryTypesList"
+        :enabled="true"
+        tip=""
+        :validations="[
+          ...getValidations('client.registryCompanyTypeCode'),
+          submissionValidation('/client/registryCompanyTypeCode'),
+          submissionValidation('/client/registrationNumber/type'),
+        ]"
+        :error-message="localTypeError"
+        @update:selected-value="updateRegistryType($event)"
+        @error="setRegistryTypeError($event)"
+        @empty="setRegistryTypeEmpty($event)"
+      />
+      <text-input-component
+        id="input-registryNumber"
+        class="grouping-02--width-8rem"
+        label="Number"
+        mask="#########"
+        placeholder=""
+        autocomplete="off"
+        v-model="modelValue.client.corpRegnNmbr"
+        :validations="[
+          ...getValidations('client.corpRegnNmbr'),
+          submissionValidation('/client/corpRegnNmbr'),
+          submissionValidation('/client/registrationNumber/number'),
+        ]"
+        enabled
+        :error-message="localNumberError"
+        @empty="setRegistryNumberEmpty($event)"
+        @error="setRegistryNumberError($event)"
+      />
+    </div>
+    <div class="cds--form-requirement field-error">
+      <template v-if="typeof displayedError === 'object' && displayedError?.custom?.match">
+        Looks like this registration number belongs to client
+        <span
+          ><a
+            :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${displayedError.custom.match}`"
+            target="_blank"
+            rel="noopener"
+            >{{ displayedError.custom.match }}</a
+          ></span
+        >. Try another registration number
+      </template>
+      <template v-else>
+        {{ displayedError }}
+      </template>
+    </div>
   </div>
 </template>

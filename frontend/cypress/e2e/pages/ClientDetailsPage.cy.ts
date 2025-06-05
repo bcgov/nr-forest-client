@@ -550,6 +550,32 @@ describe("Client Details Page", () => {
         });
       });
     });
+
+    describe("on duplicated registration number failure ", { testIsolation: false }, () => {
+      before(function () {
+        init.call(this);
+
+        cy.visit("/clients/details/p");
+        cy.get("#summaryEditBtn").click();
+        cy.clearFormEntry("#input-registryNumber");
+        cy.fillFormEntry("#input-registryNumber", "9090");
+        cy.get("#summarySaveBtn").click();
+      });
+
+      it("shows the error toast", () => {
+        cy.get("cds-toast-notification[kind='error']").should("be.visible");
+      });
+
+      it("shows a custom error message on the Registration number input group", () => {
+        cy.get("#registration-number .field-error").contains(
+          "Looks like this registration number belongs to client 00000001. Try another registration number",
+        );
+
+        cy.get("#registration-number .field-error").find("a").should("have.attr", "href");
+
+        cy.get("#registration-number .field-error").find("a").should("have.text", "00000001");
+      });
+    });
   });
 
   describe("locations tab", () => {
