@@ -195,6 +195,22 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.addresses[0].city",
             "VICTORIA",
             "HAMILTON"
+        ),
+        argumentSet(
+            "Update corporate client name with a reason",
+            "00000158",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientName\",\"value\":\"THE OAK HERITAGE GROUP\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/client/name\",\"reason\":\"CORR\"}}]",
+            "$.client.clientName",
+            "OAK HERITAGE GROUP",
+            "THE OAK HERITAGE GROUP"
+        ),
+        argumentSet(
+            "Update individual client name with a reason",
+            "00000103",
+            "[{\"op\":\"replace\",\"path\":\"/client/legalMiddleName\",\"value\":\"WALLACE\"},{\"op\":\"replace\",\"path\":\"/client/legalFirstName\",\"value\":\"LAWRENCE\"},{\"op\":\"replace\",\"path\":\"/client/clientName\",\"value\":\"FISHBORN\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/client/name\",\"reason\":\"LNAM\"}}]",
+            "$.client.legalFirstName",
+            "ADELICE",
+            "LAWRENCE"
         )
     );
   }
