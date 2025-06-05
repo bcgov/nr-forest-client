@@ -88,7 +88,7 @@ public class PatchOperationClientService implements ClientPatchOperation {
           mapper
       );
 
-      if(filteredNode.isEmpty())
+      if (filteredNode.isEmpty())
         return Mono.empty();
 
       return
