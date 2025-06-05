@@ -21,8 +21,8 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(3)
-public class PatchOperationStatusService implements ClientPatchOperation {
+@Order(2)
+public class PatchOperationNameService implements ClientPatchOperation {
 
   private final ForestClientRepository clientRepository;
   private final ClientUpdateReasonRepository clientUpdateReasonRepository;
@@ -52,7 +52,7 @@ public class PatchOperationStatusService implements ClientPatchOperation {
    */
   @Override
   public List<String> getRestrictedPaths() {
-    return List.of("/clientStatusCode");
+    return List.of("/clientName","/legalMiddleName","/legalFirstName");
   }
 
   @Override
@@ -108,13 +108,14 @@ public class PatchOperationStatusService implements ClientPatchOperation {
     return Mono.empty();
   }
 
-  private Mono<Void> patchReason(String clientNumber, Object patch, ObjectMapper mapper,
+  private Mono<Void> patchReason(String clientNumber, JsonNode patch, ObjectMapper mapper,
       String userName) {
 
     JsonNode filteredNode = PatchUtils.filterOperationsByOp(
         patch,
         "add",
         "reasons",
+        List.of("name"),
         mapper
     );
 

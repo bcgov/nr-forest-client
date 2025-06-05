@@ -40,7 +40,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(3)
+@Order(4)
 public class PatchOperationLocationService implements ClientPatchOperation {
 
   private final R2dbcEntityOperations entityTemplate;

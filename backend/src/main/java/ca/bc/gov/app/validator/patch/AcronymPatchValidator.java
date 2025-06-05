@@ -1,8 +1,9 @@
-package ca.bc.gov.app.service.client.validators;
+package ca.bc.gov.app.validator.patch;
 
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.service.client.ClientLegacyService;
+import ca.bc.gov.app.validator.PatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,8 @@ public class AcronymPatchValidator implements PatchValidator {
   @Override
   public Predicate<JsonNode> shouldValidate() {
     return node ->
-        node.get("path").asText().endsWith("/clientAcronym")
+        node.has("path")
+        && node.get("path").asText().endsWith("/clientAcronym")
         && node.get("op").asText().equals("replace");
   }
 

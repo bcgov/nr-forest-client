@@ -2,7 +2,9 @@ package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.service.client.ClientPatchService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
+import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ import reactor.core.publisher.Mono;
 public class ClientPatchController {
 
   private final ClientPatchService service;
+  private final ObjectMapper mapper;
 
   /**
    * Handles a **JSON Patch** request to partially update a forest client.
@@ -53,7 +56,17 @@ public class ClientPatchController {
         clientNumber,
         JwtPrincipalUtil.getUserId(principal)
     );
-    return service.patchClient(clientNumber, forestClient, JwtPrincipalUtil.getUserId(principal));
+
+    JsonNode roles = mapper.createObjectNode()
+        .put("roles", String.join(",",JwtPrincipalUtil.getGroups(principal)))
+        .put("userId", JwtPrincipalUtil.getUserId(principal));
+
+
+    return service.patchClient(
+        clientNumber,
+        PatchUtils.mergeNodes(mapper).apply(forestClient,roles),
+        JwtPrincipalUtil.getUserId(principal)
+    );
   }
 
 }

@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(8)
+@Order(9)
 public class PatchOperationContactAssociationService implements ClientPatchOperation {
 
   private static final String GET_ALL_CONTACT_IDS = """
@@ -99,6 +99,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
 
     return
         Flux.fromStream(StreamSupport.stream(patch.spliterator(), false))
+            .filter(node -> node.has("path"))
             .filter(node -> node.get("path").asText().contains("locationCodes"))
             .flatMap(node ->
                 getLocationCodeOrder(clientNumber, Long.parseLong(PatchUtils.loadId(node)))
