@@ -1,12 +1,11 @@
 package ca.bc.gov.app.service.client;
 
-import ca.bc.gov.app.service.client.validators.PatchValidator;
+import ca.bc.gov.app.util.PatchUtils;
+import ca.bc.gov.app.validator.PatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
-import java.util.function.BinaryOperator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -51,26 +50,15 @@ public class ClientPatchService {
                         Mono
                             .just(node)
                             .filter(validator.shouldValidate())
-                            .flatMap(validator.validate())
+                            .flatMap(validator.validate()
+                                .andThen(validator.globalValidator(forestClient)))
                             .defaultIfEmpty(node)
-                        )
+                    )
             )
-            .reduce(mapper.createArrayNode(), mergeNodes())
+            .reduce(mapper.createArrayNode(), PatchUtils.mergeNodes(mapper))
             .flatMap(node ->
                 legacyService.patchClient(clientNumber, node, userName)
             );
   }
 
-  private BinaryOperator<JsonNode> mergeNodes() {
-    return (node1, node2) -> {
-      ArrayNode arrayNode = mapper.createArrayNode();
-      if (node1 instanceof ArrayNode) {
-        arrayNode = node1.deepCopy();
-      } else {
-        arrayNode.add(node1);
-      }
-      arrayNode.add(node2);
-      return arrayNode;
-    };
-  }
 }
