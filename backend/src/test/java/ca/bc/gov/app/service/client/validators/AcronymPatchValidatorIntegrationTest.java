@@ -9,6 +9,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
+import ca.bc.gov.app.validator.patch.AcronymPatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
