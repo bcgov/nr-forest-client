@@ -253,7 +253,7 @@ public class PatchUtils {
    */
   public static String loadId(JsonNode node) {
 
-    if(!node.has("path")) {
+    if (!node.has("path")) {
       return StringUtils.EMPTY;
     }
 
@@ -340,7 +340,7 @@ public class PatchUtils {
         // Then for each operation in the JsonNode we do
         .forEach(operation -> {
 
-          if(!operation.has("path") || !operation.has("op"))
+          if (!operation.has("path") || !operation.has("op"))
             return;
 
           // Get the path of the operation
