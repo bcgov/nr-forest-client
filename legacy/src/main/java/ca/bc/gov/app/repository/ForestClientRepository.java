@@ -22,11 +22,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
 
   Flux<ForestClientEntity> findBy(Pageable page);
 
-  @Query("""
-      SELECT * FROM FOREST_CLIENT x
-       WHERE (UPPER(x.REGISTRY_COMPANY_TYPE_CODE) || x.CORP_REGN_NMBR) = UPPER(:registrationNumber)
-       OR UPPER(x.CLIENT_NAME) = UPPER(:companyName)
-       OR x.CLIENT_IDENTIFICATION = UPPER(:registrationNumber)""")
+  @Query(ForestClientQueries.CLIENT_BY_REGISTRATION_OR_NAME)
   Flux<ForestClientEntity> findClientByIncorporationOrName(
       @Param("registrationNumber") String registrationNumber,
       @Param("companyName") String companyName

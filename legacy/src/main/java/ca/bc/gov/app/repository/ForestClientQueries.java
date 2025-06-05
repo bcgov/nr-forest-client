@@ -677,5 +677,12 @@ public final class ForestClientQueries {
       )
       ORDER BY A.IDX DESC, A.FIELD_ORDER ASC
       """;
+
+  public static final String CLIENT_BY_REGISTRATION_OR_NAME = """
+      SELECT * FROM FOREST_CLIENT x
+      WHERE (UPPER(x.REGISTRY_COMPANY_TYPE_CODE) || x.CORP_REGN_NMBR) = UPPER(:registrationNumber)
+          OR UPPER(x.CLIENT_NAME) = UPPER(:companyName)
+          OR x.CLIENT_IDENTIFICATION = UPPER(:registrationNumber)    
+      """;
   
 }
