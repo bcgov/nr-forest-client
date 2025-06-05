@@ -1577,7 +1577,7 @@ describe("Client Details Page", () => {
       //At least a 'Client created' should be displayed
       cy.contains("h5", "Client created").should("be.visible");
       //The logs should the present
-      cy.get("#logDetails0").should("be.visible");
+      cy.get("#historyLogsId").should("be.visible");
       //The details should not be visible
       cy.get("#logDetails0").should("not.exist");
       //Any status should be visible
