@@ -1,4 +1,4 @@
-package ca.bc.gov.app.service.client.validators;
+package ca.bc.gov.app.validator.patch;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -9,7 +9,6 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
-import ca.bc.gov.app.validator.patch.AcronymPatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -41,9 +40,9 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
       .build();
 
   @Autowired
-  private AcronymPatchValidator service;
+  private AcronymPatchValidator validator;
 
-  private static JsonNode NODE = new ObjectMapper().createObjectNode()
+  private static final JsonNode NODE = new ObjectMapper().createObjectNode()
       .put("op", "replace")
       .put("path", "/client/clientAcronym")
       .put("value", "ABC");
@@ -54,7 +53,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
   @MethodSource("validationAllowed")
   @DisplayName("Should check if validation is allowed")
   void shouldCheckIfValidationAllowed(JsonNode node, boolean valid) {
-    Assertions.assertEquals(valid, service.shouldValidate().test(node));
+    Assertions.assertEquals(valid, validator.shouldValidate().test(node));
   }
 
   @Test
@@ -69,7 +68,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
         );
 
     StepVerifier
-        .create(service.validate().apply(NODE))
+        .create(validator.validate().apply(NODE))
         .expectNext(NODE)
         .verifyComplete();
   }
@@ -79,7 +78,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
   void shouldFailWithSizeIssue() {
 
     StepVerifier
-        .create(service.validate().apply(new ObjectMapper().createObjectNode()
+        .create(validator.validate().apply(new ObjectMapper().createObjectNode()
             .put("op", "replace")
             .put("path", "/client/clientAcronym")
             .put("value", "W")))
@@ -99,7 +98,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
         );
 
     StepVerifier
-        .create(service.validate().apply(NODE))
+        .create(validator.validate().apply(NODE))
         .expectError(ValidationException.class)
         .verify();
   }
