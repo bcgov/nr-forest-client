@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(2)
+@Order(3)
 public class PatchOperationStatusService implements ClientPatchOperation {
 
   private final ForestClientRepository clientRepository;
