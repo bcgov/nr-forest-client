@@ -70,7 +70,7 @@ watch(
   () => historyLogs.value,
   (newLogs) => {
     newLogs.forEach((_, index) => {
-      showDetails.value[index] = true;
+      showDetails.value[index] = false;
     });
   },
   { immediate: true }

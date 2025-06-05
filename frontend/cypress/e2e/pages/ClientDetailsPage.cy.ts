@@ -1577,11 +1577,11 @@ describe("Client Details Page", () => {
       //At least a 'Client created' should be displayed
       cy.contains("h5", "Client created").should("be.visible");
       //The logs should the present
-      cy.get("#historyLogDtlsId").should("be.visible");
-      //The details should be visible
       cy.get("#logDetails0").should("be.visible");
-      //As at least 'Client created' must be displayed, the minimum value displayed is the status
-      cy.get("cds-tag").should("be.visible");
+      //The details should not be visible
+      cy.get("#logDetails0").should("not.exist");
+      //Any status should be visible
+      cy.get("cds-tag").should("not.exist");
     });
 
     it("shows empty state page when there is no data for the selected filter", () => {
