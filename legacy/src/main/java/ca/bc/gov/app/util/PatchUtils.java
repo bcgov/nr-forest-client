@@ -140,7 +140,7 @@ public class PatchUtils {
         .forEach(operation -> {
 
           //TODO: Potentially dangerous
-          if(!operation.has("path"))
+          if (!operation.has("path"))
             return;
 
           // Get the path of the operation
