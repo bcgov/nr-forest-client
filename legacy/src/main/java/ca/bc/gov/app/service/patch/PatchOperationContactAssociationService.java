@@ -106,7 +106,6 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
                     .map(convertToAction(node))
             )
             .collectList()
-            .doOnNext(System.out::println)
             .flatMap(entries ->
                 Flux
                     .fromIterable(entries)
