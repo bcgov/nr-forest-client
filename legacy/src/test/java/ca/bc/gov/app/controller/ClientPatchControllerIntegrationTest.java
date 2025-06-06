@@ -215,10 +215,12 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Update birthdate",
             "00000103",
+            //The value here includes time because the backend service injects the time
             "[{\"op\":\"replace\",\"path\":\"/client/birthdate\",\"value\":\"1971-02-03 00:00:00\"}]",
             "$.client.birthdate",
             "1966-02-04T00:00:00",
             "1971-02-03T00:00:00"
+            //Yes value here doesn't match the patch format, but this is how the API works
         )
     );
   }
