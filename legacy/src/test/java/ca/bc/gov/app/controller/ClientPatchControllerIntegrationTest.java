@@ -211,6 +211,14 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.legalFirstName",
             "ADELICE",
             "LAWRENCE"
+        ),
+        argumentSet(
+            "Update birthdate",
+            "00000103",
+            "[{\"op\":\"replace\",\"path\":\"/client/birthdate\",\"value\":\"1971-02-03 00:00:00\"}]",
+            "$.client.birthdate",
+            "1966-02-04T00:00:00",
+            "1971-02-03T00:00:00"
         )
     );
   }
