@@ -85,9 +85,7 @@ const lockEditing = () => {
   isEditing.value = false;
 };
 
-defineExpose({
-  lockEditing,
-});
+defineExpose({lockEditing,});
 
 const fieldIdList = [
   "clientName",
