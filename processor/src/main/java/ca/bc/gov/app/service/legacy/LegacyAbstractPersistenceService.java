@@ -295,7 +295,7 @@ public abstract class LegacyAbstractPersistenceService {
             ProcessorUtil.limitString(updatedBy, 30),
             ApplicationConstant.ORG_UNIT,
             StringUtils.EMPTY,
-            StringUtils.EMPTY
+            null
         );
   }
 
