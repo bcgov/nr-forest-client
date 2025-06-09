@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(3)
+@Order(4)
 public class PatchOperationStatusService implements ClientPatchOperation {
 
   private final ForestClientRepository clientRepository;
@@ -122,6 +122,7 @@ public class PatchOperationStatusService implements ClientPatchOperation {
         Flux
             .fromIterable(filteredNode)
             .map(op -> PatchUtils.loadAddValue(op, FieldReasonDto.class,mapper))
+            .filter(reason -> reason.field().equals("/client/clientStatusCode"))
             .doOnNext(op -> log.info("Client {} updated field {} due to {}", clientNumber, op.field(), op.reason()))
             .flatMap(opValue -> updateReasonCode(clientNumber, opValue.reason()))
             .collectList()

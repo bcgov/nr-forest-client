@@ -123,6 +123,7 @@ public class PatchOperationNameService implements ClientPatchOperation {
         Flux
             .fromIterable(filteredNode)
             .map(op -> PatchUtils.loadAddValue(op, FieldReasonDto.class,mapper))
+            .filter(reason -> reason.field().equals("/client/name"))
             .doOnNext(op -> log.info("Client {} updated field {} due to {}", clientNumber, op.field(), op.reason()))
             .flatMap(opValue -> updateReasonCode(clientNumber, opValue.reason()))
             .collectList()
