@@ -221,6 +221,14 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "1966-02-04T00:00:00",
             "1971-02-03T00:00:00"
             //Yes value here doesn't match the patch format, but this is how the API works
+        ),
+        argumentSet(
+            "Update corporation number and type",
+            "00000158",
+            "[{\"op\":\"replace\",\"path\":\"/client/corpRegnNmbr\",\"value\":\"1003402\"},{\"op\":\"replace\",\"path\":\"/client/registryCompanyTypeCode\",\"value\":\"REG\"}]",
+            "$.client.corpRegnNmbr",
+            "0003402",
+            "1003402"
         )
     );
   }
