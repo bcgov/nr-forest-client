@@ -14,12 +14,6 @@ public interface ForestClientMapper extends
 
   @Override
   @Mapping(
-      target = "wcbFirmNumber",
-      source = "wcbFirmNumber",
-      qualifiedByName = "EmptySpaceQualifier",
-      defaultValue = " "
-  )
-  @Mapping(
       target = "updatedAt",
       source = "clientNumber",
       qualifiedByName = "CurrentDateTimeQualifier"
