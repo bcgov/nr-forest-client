@@ -229,6 +229,14 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.corpRegnNmbr",
             "0003402",
             "1003402"
+        ),
+        argumentSet(
+            "Update client id",
+            "00000103",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientIdentification\",\"value\":\"44654656\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/client/id\",\"reason\":\"CORR\"}}]",
+            "$.client.clientIdentification",
+            "3176776",
+            "44654656"
         )
     );
   }
