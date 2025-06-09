@@ -43,7 +43,7 @@ jobs:
           app:
             component: backend
       configmap-frontend: |-
-        window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{\"STAFF_CLIENT_DETAIL\":true}');
+        window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{}');
 
   deploy-prod:
     name: Deploy (PROD)
