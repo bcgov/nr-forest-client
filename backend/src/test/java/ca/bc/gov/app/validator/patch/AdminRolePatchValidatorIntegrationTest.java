@@ -57,15 +57,11 @@ class AdminRolePatchValidatorIntegrationTest extends AbstractTestContainerIntegr
     StepVerifier
         .create(
             validator
-                .validate()
-                .andThen(
-                    validator
-                        .globalValidator(
-                            MAPPER
-                                .createArrayNode()
-                                .add(OTHER_DATA)
-                                .add(ADMIN)
-                        )
+                .globalValidator(
+                    MAPPER
+                        .createArrayNode()
+                        .add(OTHER_DATA)
+                        .add(ADMIN)
                 ).apply(ADMIN))
         .expectNext(ADMIN)
         .verifyComplete();
@@ -78,15 +74,11 @@ class AdminRolePatchValidatorIntegrationTest extends AbstractTestContainerIntegr
     StepVerifier
         .create(
             validator
-                .validate()
-                .andThen(
-                    validator
-                        .globalValidator(
-                            MAPPER
-                                .createArrayNode()
-                                .add(ADMIN_DATA)
-                                .add(EDITOR)
-                        )
+                .globalValidator(
+                    MAPPER
+                        .createArrayNode()
+                        .add(ADMIN_DATA)
+                        .add(EDITOR)
                 ).apply(EDITOR))
         .expectError(ValidationException.class)
         .verify();

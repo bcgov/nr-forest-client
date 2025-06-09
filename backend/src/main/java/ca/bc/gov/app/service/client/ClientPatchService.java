@@ -50,12 +50,14 @@ public class ClientPatchService {
                         Mono
                             .just(node)
                             .filter(validator.shouldValidate())
-                            .flatMap(validator.validate()
-                                .andThen(validator.globalValidator(forestClient)))
+                            .flatMap(validator.validate())
+                            .flatMap(validator.globalValidator(forestClient))
                             .defaultIfEmpty(node)
+                            .doOnNext(x -> log.info("Validated node: {}", x))
                     )
+                    .reduce(mapper.createArrayNode(), PatchUtils.mergeNodes(mapper))
             )
-            .reduce(mapper.createArrayNode(), PatchUtils.mergeNodes(mapper))
+            .next()
             .flatMap(node ->
                 legacyService.patchClient(clientNumber, node, userName)
             );
