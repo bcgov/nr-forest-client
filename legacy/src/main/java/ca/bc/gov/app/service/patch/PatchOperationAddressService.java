@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(4)
+@Order(5)
 public class PatchOperationAddressService implements ClientPatchOperation {
 
   public static final String LOCATION_REASON_UPDATE = """

@@ -84,7 +84,7 @@ public class PatchUtils {
         // Then for each operation in the JsonNode we do
         .forEach(operation -> {
           // A check if the path of the operation starts with the specified path prefix
-          if (operation.get("path").asText().startsWith(String.format("/%s", checkPath))) {
+          if (operation.has("path") && operation.get("path").asText().startsWith(String.format("/%s", checkPath))) {
             filteredNode.set(true);
           }
         });
@@ -138,6 +138,11 @@ public class PatchUtils {
     patch
         // Then for each operation in the JsonNode we do
         .forEach(operation -> {
+
+          //TODO: Potentially dangerous
+          if (!operation.has("path"))
+            return;
+
           // Get the path of the operation
           String path = operation.get("path").asText();
           // If the path starts with the prefixed path
@@ -247,6 +252,11 @@ public class PatchUtils {
    * @return the ID extracted from the path of the JSON Patch operation
    */
   public static String loadId(JsonNode node) {
+
+    if (!node.has("path")) {
+      return StringUtils.EMPTY;
+    }
+
     String id = PatchUtils.extractPathInfo(node.get("path").asText()).getLeft();
     if (StringUtils.isNotBlank(id)) {
       return id;
@@ -329,6 +339,10 @@ public class PatchUtils {
     patch
         // Then for each operation in the JsonNode we do
         .forEach(operation -> {
+
+          if (!operation.has("path") || !operation.has("op"))
+            return;
+
           // Get the path of the operation
           String path = operation.get("path").asText();
           // If the path starts with the prefixed path
