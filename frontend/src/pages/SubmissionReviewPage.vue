@@ -21,7 +21,7 @@ import type {
   ModalNotification,
 } from "@/dto/CommonTypesDto";
 import { formatDistanceToNow, format } from "date-fns";
-import { greenDomain } from "@/CoreConstants";
+import { featureFlags, greenDomain } from "@/CoreConstants";
 import {
   adminEmail,
   getObfuscatedEmailLink,
@@ -273,6 +273,26 @@ const getLegacyUrl = (duplicatedClient, label) => {
   }
 };
 
+/**
+ * Gets the URL to this very application, instead of the legacy one.
+ */
+const getDefaultUrl = (duplicatedClient: string, label: string) => {
+  const clientNumber = duplicatedClient.trim();
+  const hash = label ? `#${label}` : "";
+  return `/clients/details/${clientNumber}${hash}`;
+};
+
+/**
+ * Gets either the default or the legacy url according to the related featureFlag.
+ */
+const getUrl = (duplicatedClient: string, label: string) => {
+  const url = featureFlags.STAFF_CLIENT_DETAIL
+    ? getDefaultUrl(duplicatedClient, label)
+    : getLegacyUrl(duplicatedClient, label);
+
+  return url;
+};
+
 const renderListItem = (label, clientNumbers) => {
   let finalLabel = "";
   if (label === 'contact' || label === 'location') {
@@ -290,7 +310,7 @@ const renderListItem = (label, clientNumbers) => {
   const clients = [...new Set<string>(clientNumbers.split(","))];
   finalLabel += clients
                   .map(clientNumber =>
-                    '<a target="_blank" href="' + getLegacyUrl(clientNumber, label) + '">' +
+                    '<a target="_blank" href="' + getUrl(clientNumber, label) + '">' +
                     clientNumber +
                     "</a>")
                   .join(', ');
