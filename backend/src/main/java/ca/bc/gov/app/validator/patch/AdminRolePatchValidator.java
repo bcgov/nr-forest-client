@@ -21,8 +21,14 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class AdminRolePatchValidator implements PatchValidator {
 
-  private final List<String> adminOnlyPaths = List.of("/client/clientName",
-      "/client/legalMiddleName", "/client/legalFirstName", "/client/birthdate");
+  private final List<String> adminOnlyPaths = List.of(
+      "/client/clientName",
+      "/client/legalMiddleName",
+      "/client/legalFirstName",
+      "/client/birthdate",
+      "/client/corpRegnNmbr",
+      "/client/registryCompanyTypeCode"
+  );
 
   @Override
   public Predicate<JsonNode> shouldValidate() {
