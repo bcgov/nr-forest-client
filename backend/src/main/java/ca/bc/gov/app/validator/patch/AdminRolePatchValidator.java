@@ -27,7 +27,9 @@ public class AdminRolePatchValidator implements PatchValidator {
       "/client/legalFirstName",
       "/client/birthdate",
       "/client/corpRegnNmbr",
-      "/client/registryCompanyTypeCode"
+      "/client/registryCompanyTypeCode",
+      "/client/clientIdentification",
+      "/client/clientIdTypeCode"
   );
 
   @Override
