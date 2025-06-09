@@ -234,7 +234,7 @@ const userSearchSvg = useSvg(UserSearch);
                 </p>
           
                 <p>
-                  <div class="table-container">
+                  <span class="table-container">
                     <div class="table-row">
                       <div class="table-cell" v-if="historyDtlsLog.oldValue">
                         <del class="helper-text">
@@ -252,7 +252,7 @@ const userSearchSvg = useSvg(UserSearch);
                         <span v-else v-dompurify-html="getFormattedHtml(historyDtlsLog.newValue)"></span>
                       </div>
                     </div>
-                  </div>
+                  </span>
                 </p>
 
                 <div v-if="getReasonForColumn(historyLog, historyDtlsLog.columnName)"
