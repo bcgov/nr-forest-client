@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
 public class AdminRolePatchValidator implements PatchValidator {
 
   private final List<String> adminOnlyPaths = List.of("/client/clientName",
-      "/client/legalMiddleName", "/client/legalFirstName");
+      "/client/legalMiddleName", "/client/legalFirstName", "/client/birthdate");
 
   @Override
   public Predicate<JsonNode> shouldValidate() {

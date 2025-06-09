@@ -3,6 +3,7 @@ package ca.bc.gov.app.entity;
 
 import static ca.bc.gov.app.ApplicationConstants.ORACLE_ATTRIBUTE_SCHEMA;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -56,6 +57,7 @@ public class ForestClientEntity {
   private String clientTypeCode;
   
   @Column("birthdate")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime birthdate;
   
   @Column("client_id_type_code")

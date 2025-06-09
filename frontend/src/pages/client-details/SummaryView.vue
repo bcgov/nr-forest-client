@@ -84,9 +84,7 @@ const lockEditing = () => {
   isEditing.value = false;
 };
 
-defineExpose({
-  lockEditing,
-});
+defineExpose({lockEditing,});
 
 const fieldIdList = [
   "clientName",
@@ -371,8 +369,6 @@ watch(
 );
 
 const originalClient = computed(() => props.data.client);
-
-const isIndividual = computed(() => formData.value.client.clientTypeCode === "I");
 </script>
 
 <template>
@@ -505,59 +501,49 @@ const isIndividual = computed(() => formData.value.client.clientTypeCode === "I"
       @empty="validation.legalMiddleName = true"
       @error="validation.legalMiddleName = !$event"
     />
-    <div
-      :class="{
-        'display-contents': isIndividual,
-        'horizontal-input-grouping': !isIndividual,
-      }"
-      v-if="displayEditable('clientName') || displayEditable('acronym')"
+    <text-input-component
+      id="input-clientName"
+      v-if="displayEditable('clientName')"
+      :label="clientNameLabel"
+      autocomplete="off"
+      required
+      required-label
+      placeholder=""
+      v-model="formData.client.clientName"
+      :validations="[
+        ...getValidations('businessInformation.businessName'),
+        submissionValidation('businessInformation.businessName'),
+      ]"
+      @empty="validation.clientName = !$event"
+      @error="validation.clientName = !$event"
+    />
+    <text-input-component
+      id="input-acronym"
+      v-if="displayEditable('acronym')"
+      label="Acronym"
+      placeholder=""
+      mask="NNNNNNNN"
+      autocomplete="off"
+      v-model="formData.client.clientAcronym"
+      :validations="[
+        ...getValidations('businessInformation.clientAcronym'),
+        submissionValidation('/client/clientAcronym'),
+      ]"
+      enabled
+      @empty="validation.acronym = true"
+      @error="validation.acronym = !$event"
     >
-      <text-input-component
-        id="input-clientName"
-        v-if="displayEditable('clientName')"
-        :class="{ 'grouping-02--width-32rem': !isIndividual }"
-        :label="clientNameLabel"
-        autocomplete="off"
-        required
-        required-label
-        placeholder=""
-        v-model="formData.client.clientName"
-        :validations="[
-          ...getValidations('businessInformation.businessName'),
-          submissionValidation('businessInformation.businessName'),
-        ]"
-        @empty="validation.clientName = !$event"
-        @error="validation.clientName = !$event"
-      />
-      <text-input-component
-        id="input-acronym"
-        v-if="displayEditable('acronym')"
-        :class="{ 'grouping-02--width-8rem': !isIndividual }"
-        label="Acronym"
-        placeholder=""
-        mask="NNNNNNNN"
-        autocomplete="off"
-        v-model="formData.client.clientAcronym"
-        :validations="[
-          ...getValidations('businessInformation.clientAcronym'),
-          submissionValidation('/client/clientAcronym'),
-        ]"
-        enabled
-        @empty="validation.acronym = true"
-        @error="validation.acronym = !$event"
-      >
-        <template #error="{ data }">
-          <template v-if="typeof data === 'object' && data?.custom?.match">
-            Looks like this acronym belongs to client
-            <span>
-              <a :href="`/clients/details/${data.custom.match}`" target="_blank" rel="noopener">
-                {{ data.custom.match }}
-              </a></span
-            >. Try another acronym
-          </template>
+      <template #error="{ data }">
+        <template v-if="typeof data === 'object' && data?.custom?.match">
+          Looks like this acronym belongs to client
+          <span>
+            <a :href="`/clients/details/${data.custom.match}`" target="_blank" rel="noopener">
+              {{ data.custom.match }}</a
+            ></span
+          >. Try another acronym
         </template>
-      </text-input-component>
-    </div>
+      </template>
+    </text-input-component>
     <text-input-component
       id="input-doingBusinessAs"
       v-if="displayEditable('doingBusinessAs')"
