@@ -69,6 +69,8 @@ import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalVali
 // Route related
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id as string;
+const { hash } = router.currentRoute.value;
+const initialTab = (hash || "#locations").substring(1);
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
@@ -879,9 +881,9 @@ onMounted(async () => {
       </div>
       <div class="invisible"></div>
     </div>
-    <div v-if="!fetchError.code" class="client-details-content tabs-container opaque-background">
-      <cds-tabs value="locations" type="contained">
-        <cds-tab 
+    <div :id="initialTab" v-if="!fetchError.code" class="client-details-content tabs-container opaque-background">
+      <cds-tabs :value="initialTab" type="contained">
+        <cds-tab
           id="tab-locations" target="panel-locations" value="locations">
           <div>
             Client locations
