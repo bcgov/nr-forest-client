@@ -70,7 +70,7 @@ import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalVali
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id as string;
 const { hash } = router.currentRoute.value;
-const initialTab = (hash || "#locations").substring(1);
+let selectedTab = (hash || "#locations").substring(1);
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
@@ -784,7 +784,9 @@ onMounted(async () => {
 
   const tabs = document.querySelector('cds-tabs');
   if (tabs) {
-    tabs.addEventListener('cds-tabs-selected', () => {
+    tabs.addEventListener('cds-tabs-selected', (event: any) => {
+      selectedTab = event.detail.item.value;
+      
       setTimeout(() => {
         const panel = document.getElementById('panel-history');
         if (panel) {
@@ -881,8 +883,8 @@ onMounted(async () => {
       </div>
       <div class="invisible"></div>
     </div>
-    <div :id="initialTab" v-if="!fetchError.code" class="client-details-content tabs-container opaque-background">
-      <cds-tabs :value="initialTab" type="contained">
+    <div :id="selectedTab" v-if="!fetchError.code" class="client-details-content tabs-container opaque-background">
+      <cds-tabs :value="selectedTab" type="contained">
         <cds-tab
           id="tab-locations" target="panel-locations" value="locations">
           <div>
