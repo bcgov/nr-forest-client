@@ -18,7 +18,8 @@ public interface ClientUpdateReasonRepository extends
       WHERE
         fca.CLIENT_NUMBER = :number
         AND cur.CLIENT_UPDATE_REASON_CODE = 'UND'
-        AND cur.CLIENT_UPDATE_ACTION_CODE = :action"""
+        AND cur.CLIENT_UPDATE_ACTION_CODE = :action
+        AND ROWNUM = 1"""
   )
   Mono<ClientUpdateReasonEntity> findUndefinedByNumberWithFilteredActions(String number, String action);
 
@@ -30,7 +31,8 @@ public interface ClientUpdateReasonRepository extends
       WHERE
         fca.CLIENT_NUMBER = :number
         AND cur.CLIENT_UPDATE_REASON_CODE = 'UND'
-        AND cur.CLIENT_UPDATE_ACTION_CODE NOT IN ('ID', 'NAME')"""
+        AND cur.CLIENT_UPDATE_ACTION_CODE NOT IN ('ID', 'NAME')
+        AND ROWNUM = 1"""
   )
   Mono<ClientUpdateReasonEntity> findUndefinedByNumberWithFilteredActions(String number);
 }
