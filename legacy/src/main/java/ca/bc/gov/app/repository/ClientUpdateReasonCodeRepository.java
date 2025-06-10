@@ -24,7 +24,7 @@ public interface ClientUpdateReasonCodeRepository
       AND (EXPIRY_DATE IS NULL OR EXPIRY_DATE > :activeDate)
       AND EFFECTIVE_DATE <= :activeDate
       """)
-  Flux<CodeNameDto> findActiveByClientTypeAndActionCode(
+  Flux<CodeNameDto> findUndefinedByNumberAndActionCode(
       String clientTypeCode,
       String actionCode,
       LocalDate activeDate);

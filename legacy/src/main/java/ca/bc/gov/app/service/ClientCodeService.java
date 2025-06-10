@@ -32,7 +32,7 @@ public class ClientCodeService {
     log.info("Loading active update reason codes for {} {}", clientTypeCode, actionCode);
     
     return clientUpdateReasonCodeRepository
-        .findActiveByClientTypeAndActionCode(
+        .findUndefinedByNumberAndActionCode(
             clientTypeCode,
             actionCode, 
             LocalDate.now()
