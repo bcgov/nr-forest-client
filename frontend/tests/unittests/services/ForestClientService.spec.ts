@@ -723,7 +723,7 @@ describe("Reason Fields Handling", () => {
     const patchData: jsonpatch.Operation[] = [
       { op: "replace", path: "/client/legalFirstName", value: "Johan" },
       { op: "replace", path: "/client/clientIdentification", value: "67890" },
-      { op: "replace", path: "/client/clientStatusCode", value: "DEC" },
+      { op: "replace", path: "/client/clientStatusCode", value: "DAC" },
       { op: "replace", path: "/addresses/1/city", value: "Gotham" },
     ];
 
@@ -731,7 +731,7 @@ describe("Reason Fields Handling", () => {
     expect(result).toEqual([
       { field: "/client/name", action: "NAME" },
       { field: "/client/id", action: "ID" },
-      { field: "/client/clientStatusCode", action: "ACDC" }, // Active -> Deceased
+      { field: "/client/clientStatusCode", action: "DAC" },
       { field: "/addresses/1", action: "ADDR" }, // an address group
     ]);
   });
