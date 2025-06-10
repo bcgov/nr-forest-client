@@ -1,33 +1,27 @@
 package ca.bc.gov.app.service.patch;
 
-import static ca.bc.gov.app.util.QueryUtils.repeatAndLog;
-
-import ca.bc.gov.app.dto.FieldReasonDto;
-import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.repository.ClientUpdateReasonRepository;
 import ca.bc.gov.app.repository.ForestClientRepository;
-import ca.bc.gov.app.util.PatchUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
-import java.time.LocalDateTime;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
 @Observed
-@RequiredArgsConstructor
 @Order(2)
-public class PatchOperationNameService implements ClientPatchOperation {
+public class PatchOperationNameService extends PatchOperationReasonService {
 
-  private final ForestClientRepository clientRepository;
-  private final ClientUpdateReasonRepository clientUpdateReasonRepository;
+
+  public PatchOperationNameService(
+      @Autowired ForestClientRepository clientRepository,
+      @Autowired ClientUpdateReasonRepository clientUpdateReasonRepository
+  ) {
+    super(clientRepository, clientUpdateReasonRepository);
+  }
 
   /**
    * Returns the prefix associated with this patch operation.
@@ -58,91 +52,18 @@ public class PatchOperationNameService implements ClientPatchOperation {
   }
 
   @Override
-  public Mono<Void> applyPatch(
-      String clientNumber,
-      JsonNode patch,
-      ObjectMapper mapper,
-      String userName
-  ) {
-    if (!PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
-      return Mono.empty();
-    }
-    return patchClient(clientNumber, patch, mapper, userName);
+  String getFieldName() {
+    return "/client/name";
   }
 
-  private Mono<Void> patchClient(String clientNumber, JsonNode patch, ObjectMapper mapper,
-      String userName) {
-    if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
-      JsonNode filteredNode = PatchUtils.filterPatchOperations(
-          patch,
-          getPrefix(),
-          getRestrictedPaths(),
-          mapper
-      );
-
-      return clientRepository
-          .findByClientNumber(clientNumber)
-          .flatMap(entity ->
-              Mono
-                  .just(
-                      PatchUtils.patchClient(
-                          filteredNode,
-                          entity,
-                          ForestClientEntity.class,
-                          mapper
-                      )
-                  )
-                  .filter(client -> !entity.equals(client))
-                  //Can only happen if there's a change
-                  .map(client ->
-                      client
-                          .withUpdatedAt(LocalDateTime.now())
-                          .withUpdatedBy(userName) // Is still missing the user org unit
-                          .withRevision(client.getRevision() + 1)
-                  )
-                  .doOnNext(
-                      client -> log.info("Applying Forest Client changes to {}", clientNumber))
-          )
-          .flatMap(clientRepository::save)
-          .flatMap(entity -> patchReason(clientNumber, patch, mapper, userName))
-          .then();
-    }
-    return Mono.empty();
+  @Override
+  String getReasonId() {
+    return "NAME";
   }
 
-  private Mono<Void> patchReason(String clientNumber, JsonNode patch, ObjectMapper mapper,
-      String userName) {
-
-    JsonNode filteredNode = PatchUtils.filterOperationsByOp(
-        patch,
-        "add",
-        "reasons",
-        mapper
-    );
-
-    return
-        Flux
-            .fromIterable(filteredNode)
-            .map(op -> PatchUtils.loadAddValue(op, FieldReasonDto.class, mapper))
-            .filter(reason -> reason.field().equals("/client/name"))
-            .doOnNext(
-                op -> log.info("Client {} updated field {} due to {}", clientNumber, op.field(),
-                    op.reason()))
-            .flatMap(opValue -> updateReasonCode(clientNumber, opValue.reason()))
-            .collectList()
-            .then();
+  @Override
+  String getReasonType() {
+    return "NAME";
   }
 
-  private Mono<Void> updateReasonCode(String clientNumber, String reasonCode) {
-
-    return
-        Mono.defer(() -> clientUpdateReasonRepository
-                .findByNumberAndStatusCode(clientNumber, "NAME"))
-            .repeatWhenEmpty(5, repeatAndLog("NAME"))
-            .map(reason -> reason.withUpdateReasonCode(reasonCode))
-            .doOnNext(reason -> log.info("Reason code applied to {} as {}", clientNumber,
-                reason.getUpdateReasonCode()))
-            .flatMap(clientUpdateReasonRepository::save)
-            .then();
-  }
 }
