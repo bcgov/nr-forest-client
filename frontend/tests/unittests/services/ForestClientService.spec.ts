@@ -723,7 +723,7 @@ describe("Reason Fields Handling", () => {
     const patchData: jsonpatch.Operation[] = [
       { op: "replace", path: "/client/legalFirstName", value: "Johan" },
       { op: "replace", path: "/client/clientIdentification", value: "67890" },
-      { op: "replace", path: "/client/clientStatusCode", value: "DEC" },
+      { op: "replace", path: "/client/clientStatusCode", value: "ACT" },
       { op: "replace", path: "/addresses/1/city", value: "Gotham" },
     ];
 
