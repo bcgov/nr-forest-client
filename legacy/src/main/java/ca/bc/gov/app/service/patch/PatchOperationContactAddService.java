@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(8)
+@Order(9)
 public class PatchOperationContactAddService implements ClientPatchOperation {
 
   private final R2dbcEntityOperations entityTemplate;

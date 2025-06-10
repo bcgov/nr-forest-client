@@ -12,11 +12,10 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @Observed
-@Order(4)
-public class PatchOperationStatusService extends PatchOperationReasonService {
+@Order(3)
+public class PatchOperationIdService extends PatchOperationReasonService {
 
-
-  public PatchOperationStatusService(
+  public PatchOperationIdService(
       @Autowired ForestClientRepository clientRepository,
       @Autowired ClientUpdateReasonRepository clientUpdateReasonRepository
   ) {
@@ -48,22 +47,23 @@ public class PatchOperationStatusService extends PatchOperationReasonService {
    */
   @Override
   public List<String> getRestrictedPaths() {
-    return List.of("/clientStatusCode");
+    return List.of("/clientIdentification", "/clientIdTypeCode");
   }
 
   @Override
-  String getFieldName() {
-    return "/client/clientStatusCode";
+  public String getFieldName() {
+    return "/client/id";
   }
 
   @Override
-  String getReasonId() {
-    return "STATUS";
+  public String getReasonId() {
+    return "ID";
   }
 
   @Override
-  String getReasonType() {
-    return null;
+  public String getReasonType() {
+    return "ID";
   }
+
 
 }

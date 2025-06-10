@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(9)
+@Order(10)
 public class PatchOperationContactAssociationService implements ClientPatchOperation {
 
   private static final String GET_ALL_CONTACT_IDS = """

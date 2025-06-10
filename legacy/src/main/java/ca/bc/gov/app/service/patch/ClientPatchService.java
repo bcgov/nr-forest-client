@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -44,11 +45,12 @@ public class ClientPatchService {
       JsonNode forestClient,
       String userId
   ) {
-    log.info("Patching client with client number {} if any changes are detected {}", clientNumber,forestClient);
+    log.info("Patching client with client number {} if any changes are detected {}", clientNumber,
+        forestClient);
 
-    return partialServices
-        .stream()
-        .map(service -> service.applyPatch(clientNumber, forestClient, mapper, userId))
-        .reduce(Mono.empty(), Mono::then);
+    return Flux
+        .fromStream(partialServices.stream())
+        .concatMap(service -> service.applyPatch(clientNumber, forestClient, mapper, userId))
+        .then();
   }
 }

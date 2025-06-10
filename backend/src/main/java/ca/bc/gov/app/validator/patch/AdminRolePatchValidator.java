@@ -21,8 +21,16 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class AdminRolePatchValidator implements PatchValidator {
 
-  private final List<String> adminOnlyPaths = List.of("/client/clientName",
-      "/client/legalMiddleName", "/client/legalFirstName", "/client/birthdate");
+  private final List<String> adminOnlyPaths = List.of(
+      "/client/clientName",
+      "/client/legalMiddleName",
+      "/client/legalFirstName",
+      "/client/birthdate",
+      "/client/corpRegnNmbr",
+      "/client/registryCompanyTypeCode",
+      "/client/clientIdentification",
+      "/client/clientIdTypeCode"
+  );
 
   @Override
   public Predicate<JsonNode> shouldValidate() {
@@ -37,14 +45,13 @@ public class AdminRolePatchValidator implements PatchValidator {
   }
 
   @Override
-  public Function<Mono<JsonNode>, Mono<JsonNode>> globalValidator(JsonNode globalForestClient) {
-    return globalJsonNodeMono ->
-        globalJsonNodeMono
-            .flatMapMany(globalJsonNode ->
-                Flux.fromStream(StreamSupport.stream(
+  public Function<JsonNode, Mono<JsonNode>> globalValidator(JsonNode globalForestClient) {
+    return node ->
+        Flux
+            .fromStream(StreamSupport.stream(
                     globalForestClient.spliterator(),
                     false
-                ))
+                )
             )
             .filter(jsonNode -> jsonNode.has("path"))
             .map(jsonNode -> jsonNode.get("path").asText())
@@ -59,6 +66,6 @@ public class AdminRolePatchValidator implements PatchValidator {
             )
             .next()
             .cast(JsonNode.class)
-            .switchIfEmpty(globalJsonNodeMono);
+            .defaultIfEmpty(node);
   }
 }
