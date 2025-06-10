@@ -731,7 +731,7 @@ describe("Reason Fields Handling", () => {
     expect(result).toEqual([
       { field: "/client/name", action: "NAME" },
       { field: "/client/id", action: "ID" },
-      { field: "/client/clientStatusCode", action: "ACDC" }, // Active -> Deceased
+      { field: "/client/clientStatusCode", action: "RACT" }, // Deactivated → Active
       { field: "/addresses/1", action: "ADDR" }, // an address group
     ]);
   });
