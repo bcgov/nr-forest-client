@@ -32,9 +32,9 @@ public class QueryUtils {
         repeat
             .zipWith(Flux.range(1, 5))
             .delayElements(Duration.ofMillis(200))
-            .doOnNext(retrySignal -> log.warn(
+            .doOnNext(tuple -> log.warn(
                     "[Check #{}] Waiting for trigger to create the reason audit entry for {} change",
-                    retrySignal,
+                    tuple.getT2(),
                     reason
                 )
             );
