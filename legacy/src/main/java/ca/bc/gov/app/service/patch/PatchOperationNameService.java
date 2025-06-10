@@ -1,5 +1,7 @@
 package ca.bc.gov.app.service.patch;
 
+import static ca.bc.gov.app.util.QueryUtils.repeatAndLog;
+
 import ca.bc.gov.app.dto.FieldReasonDto;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.repository.ClientUpdateReasonRepository;
@@ -52,7 +54,7 @@ public class PatchOperationNameService implements ClientPatchOperation {
    */
   @Override
   public List<String> getRestrictedPaths() {
-    return List.of("/clientName","/legalMiddleName","/legalFirstName");
+    return List.of("/clientName", "/legalMiddleName", "/legalFirstName");
   }
 
   @Override
@@ -65,12 +67,10 @@ public class PatchOperationNameService implements ClientPatchOperation {
     if (!PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
       return Mono.empty();
     }
-    return
-        patchClient(clientNumber, patch, mapper, userName)
-            .then(patchReason(clientNumber, patch, mapper, userName));
+    return patchClient(clientNumber, patch, mapper, userName);
   }
 
-  private Mono<Void> patchClient(String clientNumber, Object patch, ObjectMapper mapper,
+  private Mono<Void> patchClient(String clientNumber, JsonNode patch, ObjectMapper mapper,
       String userName) {
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
       JsonNode filteredNode = PatchUtils.filterPatchOperations(
@@ -100,9 +100,11 @@ public class PatchOperationNameService implements ClientPatchOperation {
                           .withUpdatedBy(userName) // Is still missing the user org unit
                           .withRevision(client.getRevision() + 1)
                   )
-                  .doOnNext(client -> log.info("Applying Forest Client changes to {}", clientNumber))
+                  .doOnNext(
+                      client -> log.info("Applying Forest Client changes to {}", clientNumber))
           )
           .flatMap(clientRepository::save)
+          .flatMap(entity -> patchReason(clientNumber, patch, mapper, userName))
           .then();
     }
     return Mono.empty();
@@ -115,27 +117,32 @@ public class PatchOperationNameService implements ClientPatchOperation {
         patch,
         "add",
         "reasons",
-        List.of("name"),
         mapper
     );
 
     return
         Flux
             .fromIterable(filteredNode)
-            .map(op -> PatchUtils.loadAddValue(op, FieldReasonDto.class,mapper))
+            .map(op -> PatchUtils.loadAddValue(op, FieldReasonDto.class, mapper))
             .filter(reason -> reason.field().equals("/client/name"))
-            .doOnNext(op -> log.info("Client {} updated field {} due to {}", clientNumber, op.field(), op.reason()))
+            .doOnNext(
+                op -> log.info("Client {} updated field {} due to {}", clientNumber, op.field(),
+                    op.reason()))
             .flatMap(opValue -> updateReasonCode(clientNumber, opValue.reason()))
             .collectList()
             .then();
   }
 
   private Mono<Void> updateReasonCode(String clientNumber, String reasonCode) {
-    return clientUpdateReasonRepository
-        .findByNumberAndStatusCode(clientNumber)
-        .map(reason -> reason.withUpdateReasonCode(reasonCode))
-        .doOnNext(reason -> log.info("Reason code applied to {} as {}",clientNumber, reason.getUpdateReasonCode()))
-        .flatMap(clientUpdateReasonRepository::save)
-        .then();
+
+    return
+        Mono.defer(() -> clientUpdateReasonRepository
+                .findByNumberAndStatusCode(clientNumber, "NAME"))
+            .repeatWhenEmpty(5, repeatAndLog("NAME"))
+            .map(reason -> reason.withUpdateReasonCode(reasonCode))
+            .doOnNext(reason -> log.info("Reason code applied to {} as {}", clientNumber,
+                reason.getUpdateReasonCode()))
+            .flatMap(clientUpdateReasonRepository::save)
+            .then();
   }
 }
