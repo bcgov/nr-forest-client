@@ -95,7 +95,7 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
   }
 
   private String getDoingBusinessAsName(JsonNode patch) {
-    if(patch.has(0) && patch.get(0).has("value")) {
+    if (patch.has(0) && patch.get(0).has("value")) {
       return patch.get(0).get("value").asText().toUpperCase(Locale.ROOT);
     }
     throw new IllegalArgumentException("No value provided for doing business as");
