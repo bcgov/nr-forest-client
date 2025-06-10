@@ -237,6 +237,14 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.clientIdentification",
             "FM3176776",
             "44654656"
+        ),
+        argumentSet(
+            "Update doing business name",
+            "00000103",
+            "[{\"op\":\"replace\",\"path\":\"/doingBusinessAs\",\"value\":\"TIRULIRU\"}]",
+            "$.doingBusinessAs",
+            "TWIMBO",
+            "TIRULIRU"
         )
     );
   }
