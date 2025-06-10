@@ -1,5 +1,7 @@
 package ca.bc.gov.app.service.patch;
 
+import static ca.bc.gov.app.ApplicationConstants.DEFAULT_PAGE_SIZE;
+
 import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
@@ -64,7 +66,7 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
               dba
                   .withDoingBusinessAsName(getDoingBusinessAsName(filteredNode))
                   .withUpdatedBy(userId)
-                  .withUpdatedByUnit(70L) // We use 70 as the default org unit
+                  .withUpdatedByUnit(DEFAULT_PAGE_SIZE) // We use 70 as the default org unit
                   .withUpdatedAt(LocalDateTime.now())
                   .withRevision(dba.getRevision() + 1)
           )
@@ -80,7 +82,7 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
                           getDoingBusinessAsName(filteredNode),
                           userId,
                           userId,
-                          70L //We use 70 as the default org unit
+                          DEFAULT_PAGE_SIZE //We use 70 as the default org unit
                       )
                   )
                   .doOnNext(dba -> log.info("No DBAs found for client {}, creating one as {}",
