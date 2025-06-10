@@ -21,7 +21,6 @@ import type {
   ModalNotification,
 } from "@/dto/CommonTypesDto";
 import { formatDistanceToNow, format } from "date-fns";
-import { greenDomain } from "@/CoreConstants";
 import {
   adminEmail,
   getObfuscatedEmailLink,
@@ -261,16 +260,10 @@ const getListItemContent = ref((clientNumbers, label) => {
   return clientNumbers ? renderListItem(label, clientNumbers.trim()) : "";
 });
 
-const getLegacyUrl = (duplicatedClient, label) => {
-  const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
-  switch (label) {
-    case 'contact':
-      return `https://${greenDomain}/int/client/client06ContactListAction.do?bean.clientNumber=${encodedClientNumber}`;
-    case 'location':
-      return `https://${greenDomain}/int/client/client07LocationListAction.do?bean.clientNumber=${encodedClientNumber}`;
-    default:
-      return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
-  }
+const getUrl = (duplicatedClient: string, label: string) => {
+  const clientNumber = duplicatedClient.trim();
+  const hash = label ? `#${label}` : "";
+  return `/clients/details/${clientNumber}${hash}`;
 };
 
 const renderListItem = (label, clientNumbers) => {
@@ -290,7 +283,7 @@ const renderListItem = (label, clientNumbers) => {
   const clients = [...new Set<string>(clientNumbers.split(","))];
   finalLabel += clients
                   .map(clientNumber =>
-                    '<a target="_blank" href="' + getLegacyUrl(clientNumber, label) + '">' +
+                    '<a target="_blank" href="' + getUrl(clientNumber, label) + '">' +
                     clientNumber +
                     "</a>")
                   .join(', ');
@@ -537,10 +530,7 @@ const isProcessing = computed(() => {
               
               <read-only-component label="Client number" v-if="data.business.clientNumber">
                 <span class="body-compact-01">
-                  <a
-                    target="_blank"
-                    :href="'https://' + greenDomain + '/int/client/client02MaintenanceAction.do?bean.clientNumber=' + data.business.clientNumber"
-                  >
+                  <a target="_blank" :href="`/clients/details/${data.business.clientNumber}`">
                     {{ data.business.clientNumber }}
                   </a>
                 </span>

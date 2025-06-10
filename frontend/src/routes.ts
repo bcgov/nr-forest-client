@@ -252,7 +252,6 @@ export const routes = [
       headersStyle: "headers-compact",
       sideMenu: true,
       profile: true,
-      featureFlagged: "STAFF_CLIENT_DETAIL",
     },
   },
   {

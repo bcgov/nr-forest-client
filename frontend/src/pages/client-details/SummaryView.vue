@@ -9,7 +9,6 @@ import {
   goodStanding,
   includesAnyOf,
 } from "@/services/ForestClientService";
-import { greenDomain } from "@/CoreConstants";
 
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
 import Warning20 from "@carbon/icons-vue/es/warning--filled/20";
@@ -537,12 +536,9 @@ const originalClient = computed(() => props.data.client);
       <template #error="{ data }">
         <template v-if="typeof data === 'object' && data?.custom?.match">
           Looks like this acronym belongs to client
-          <span
-            ><a
-              :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${data.custom.match}`"
-              target="_blank"
-              rel="noopener"
-              >{{ data.custom.match }}</a
+          <span>
+            <a :href="`/clients/details/${data.custom.match}`" target="_blank" rel="noopener">
+              {{ data.custom.match }}</a
             ></span
           >. Try another acronym
         </template>

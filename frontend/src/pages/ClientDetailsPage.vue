@@ -70,6 +70,11 @@ import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalVali
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id as string;
 
+const selectedTab = ref<string>();
+watch(router.currentRoute, ({ hash }) => {
+  selectedTab.value = (hash || "#locations").substring(1);
+}, { immediate: true });
+
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
 const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
@@ -782,7 +787,9 @@ onMounted(async () => {
 
   const tabs = document.querySelector('cds-tabs');
   if (tabs) {
-    tabs.addEventListener('cds-tabs-selected', () => {
+    tabs.addEventListener('cds-tabs-selected', (event: any) => {
+      selectedTab.value = event.detail.item.value;
+      
       setTimeout(() => {
         const panel = document.getElementById('panel-history');
         if (panel) {
@@ -879,9 +886,9 @@ onMounted(async () => {
       </div>
       <div class="invisible"></div>
     </div>
-    <div v-if="!fetchError.code" class="client-details-content tabs-container opaque-background">
-      <cds-tabs value="locations" type="contained">
-        <cds-tab 
+    <div :id="selectedTab" v-if="!fetchError.code" class="client-details-content tabs-container opaque-background">
+      <cds-tabs :value="selectedTab" type="contained">
+        <cds-tab
           id="tab-locations" target="panel-locations" value="locations">
           <div>
             Client locations

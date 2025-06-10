@@ -2,7 +2,6 @@
 import { computed, nextTick, ref, watch } from "vue";
 import { useEventBus } from "@vueuse/core";
 
-import { greenDomain } from "@/CoreConstants";
 import { useFetchTo } from "@/composables/useFetch";
 import type { ClientDetails, CodeNameType, ValidationMessageType } from "@/dto/CommonTypesDto";
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
@@ -207,7 +206,7 @@ emit("valid", true);
         Looks like this registration number belongs to client
         <span
           ><a
-            :href="`https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${displayedError.custom.match}`"
+            :href="`/clients/details/${displayedError.custom.match}`"
             target="_blank"
             rel="noopener"
             >{{ displayedError.custom.match }}</a
