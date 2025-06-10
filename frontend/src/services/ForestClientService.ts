@@ -227,7 +227,7 @@ export const fieldActionMap: { [key: string]: string[] } = {
 
 // Map for client status transitions
 const statusTransitionMap = new Map<string, string>([
-  ['ACT-DEC', 'ACDC'],  // Active → Deceased
+  ['ACT-DEC', ''],      // Active → Deceased (No reason needed)
   ['ACT-DAC', 'DAC'],   // Active → Deactivated
   ['DEC-ACT', 'RACT'],  // Deceased → Active
   ['REC-ACT', 'RACT'],  // Receivership → Active
