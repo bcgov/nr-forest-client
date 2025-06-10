@@ -20,7 +20,7 @@ public interface ClientUpdateReasonRepository extends
         AND cur.CLIENT_UPDATE_REASON_CODE = 'UND'
         AND cur.CLIENT_UPDATE_ACTION_CODE = :action"""
   )
-  Mono<ClientUpdateReasonEntity> findByNumberAndStatusCode(String number, String action);
+  Mono<ClientUpdateReasonEntity> findUndefinedByNumberWithFilteredActions(String number, String action);
 
   @Query("""
       SELECT
@@ -32,5 +32,5 @@ public interface ClientUpdateReasonRepository extends
         AND cur.CLIENT_UPDATE_REASON_CODE = 'UND'
         AND cur.CLIENT_UPDATE_ACTION_CODE NOT IN ('ID', 'NAME')"""
   )
-  Mono<ClientUpdateReasonEntity> findByNumberAndStatusCode(String number);
+  Mono<ClientUpdateReasonEntity> findUndefinedByNumberWithFilteredActions(String number);
 }

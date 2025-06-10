@@ -200,8 +200,8 @@ public abstract class PatchOperationReasonService implements ClientPatchOperatio
       String reasonType
   ) {
     if (StringUtils.isNotBlank(reasonType)) {
-      return () -> clientUpdateReasonRepository.findByNumberAndStatusCode(clientNumber, reasonType);
+      return () -> clientUpdateReasonRepository.findUndefinedByNumberWithFilteredActions(clientNumber, reasonType);
     }
-    return () -> clientUpdateReasonRepository.findByNumberAndStatusCode(clientNumber);
+    return () -> clientUpdateReasonRepository.findUndefinedByNumberWithFilteredActions(clientNumber);
   }
 }
