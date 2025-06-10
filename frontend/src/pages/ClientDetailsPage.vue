@@ -69,8 +69,11 @@ import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalVali
 // Route related
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id as string;
-const { hash } = router.currentRoute.value;
-let selectedTab = (hash || "#locations").substring(1);
+
+const selectedTab = ref<string>();
+watch(router.currentRoute, ({ hash }) => {
+  selectedTab.value = (hash || "#locations").substring(1);
+}, { immediate: true });
 
 const toastBus = useEventBus<ModalNotification>("toast-notification");
 
@@ -785,7 +788,7 @@ onMounted(async () => {
   const tabs = document.querySelector('cds-tabs');
   if (tabs) {
     tabs.addEventListener('cds-tabs-selected', (event: any) => {
-      selectedTab = event.detail.item.value;
+      selectedTab.value = event.detail.item.value;
       
       setTimeout(() => {
         const panel = document.getElementById('panel-history');
