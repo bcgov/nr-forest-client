@@ -655,3 +655,35 @@ export function getLabelByColumnName(columnName: string): string {
 export function removePrefix(input: string): string {
   return input.split('\\').pop() || '';
 }; 
+
+export const formatDatetime = (timestamp: Date | string): string => {
+  const date = new Date(timestamp);
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  };
+
+  const datePart = date.toLocaleDateString('en-US', options);
+  const timePart = date.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+
+  return `${datePart}  ${timePart}`;
+};
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+    hour12: false,
+});
+
+export const formatDate = (timestamp: Date): string => {
+  return dateFormatter.format(new Date(timestamp));
+};
