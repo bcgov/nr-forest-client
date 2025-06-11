@@ -1,4 +1,4 @@
-FROM ghcr.io/graalvm/native-image:ol8-java17-22.3.3@sha256:d55ebb6eec6751b87ce9d34ab1004fa088d227d90d3edb4d9b3a994e54ac285a AS build
+FROM ghcr.io/graalvm/native-image:ol8-java17-22.3.3 AS build
 
 # Install Maven
 RUN microdnf update --nodocs -y && \
@@ -23,7 +23,7 @@ COPY src ./src
 RUN mvn -Pnative native:compile
 
 ### Deployer
-FROM gcr.io/distroless/java-base:nonroot@sha256:0f4c98b703de8a2abcc2e3fdef78e1bb4936e619dbdd34f74ac6fd54d43fd184 AS deploy
+FROM gcr.io/distroless/java-base:nonroot AS deploy
 ARG PORT=8080
 
 # Copy
