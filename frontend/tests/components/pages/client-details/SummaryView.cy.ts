@@ -418,15 +418,15 @@ describe("<summary-view />", () => {
       { code: "U", desc: "Unregistered Company" },
     ];
 
-    const clientTypes2 = [
+    const companyLikeTypes = [
       ...bcRegisteredTypes,
       { code: "B", desc: "First Nation Band" },
       { code: "T", desc: "First Nation Tribal Council" },
     ];
 
-    const associationClientType = clientTypes2[0];
+    const associationClientType = companyLikeTypes[0];
 
-    const corporationClientType = clientTypes2[1];
+    const corporationClientType = companyLikeTypes[1];
 
     const individualClientType = { code: "I", desc: "Individual" };
 
@@ -692,7 +692,7 @@ describe("<summary-view />", () => {
     });
 
     describe("Company-like types", () => {
-      clientTypes2.forEach((clientType) => {
+      companyLikeTypes.forEach((clientType) => {
         describe(`when client type is ${clientType.code} - ${clientType.desc}`, () => {
           describe("when the edit button in clicked", () => {
             beforeEach(() => {
