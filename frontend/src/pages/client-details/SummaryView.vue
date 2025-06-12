@@ -245,7 +245,8 @@ const clientNameLabel = computed(() =>
   formData.value.client.clientTypeCode === "I" ? "Last name" : "Client name",
 );
 
-const companyLikeTypes = ["A", "C", "L", "P", "S", "R", "T", "U"];
+const bcRegisteredTypes = ["A", "C", "L", "P", "S", "U"];
+const companyLikeTypes = [...bcRegisteredTypes, "B", "T"];
 
 const canEditClientStatus = () => {
   const { clientStatusCode } = props.data.client;
@@ -410,7 +411,9 @@ const originalClient = computed(() => props.data.client);
     <read-only-component
       label="BC Registries standing"
       id="goodStanding"
-      v-if="safeClientRegistrationNumber"
+      v-if="
+        safeClientRegistrationNumber && bcRegisteredTypes.includes(originalClient.clientTypeCode)
+      "
     >
       <div class="internal-grouping-01">
         <span class="body-compact-01 default-typography">{{
