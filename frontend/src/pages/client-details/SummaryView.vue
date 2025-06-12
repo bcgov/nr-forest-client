@@ -245,7 +245,10 @@ const clientNameLabel = computed(() =>
   formData.value.client.clientTypeCode === "I" ? "Last name" : "Client name",
 );
 
+// Types whose standing status can be checked with BC Registries
 const bcRegisteredTypes = ["A", "C", "L", "P", "S", "U"];
+
+// All Types that can have a Registration number
 const companyLikeTypes = [...bcRegisteredTypes, "B", "T"];
 
 const canEditClientStatus = () => {
