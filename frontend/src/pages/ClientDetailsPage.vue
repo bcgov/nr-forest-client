@@ -572,6 +572,7 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
       errorBus.emit(validationMessages, {
         skipNotification: true,
       });
+      setScrollPoint("top-notification");
     }
   };
   handlePatch(patchData, onSuccess, onFailure);
