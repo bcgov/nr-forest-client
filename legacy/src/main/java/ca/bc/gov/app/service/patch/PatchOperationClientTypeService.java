@@ -51,29 +51,8 @@ public class PatchOperationClientTypeService implements ClientPatchOperation {
           clientRepository
               .findByClientNumber(clientNumber)
               .flatMap(entity ->
-                  Mono
-                      .just(
-                          PatchUtils.patchClient(
-                              filteredNode,
-                              entity,
-                              ForestClientEntity.class,
-                              mapper
-                          )
-                      )
-                      .map(client -> client
-                          .withUpdatedBy(userId)
-                          .withUpdatedAt(LocalDateTime.now())
-                          .withRevision(client.getRevision() + 1)
-                      )
-                      .filter(client -> !entity.equals(client))
-                      //Can only happen if there's a change
-                      .map(client ->
-                          client
-                              .withUpdatedAt(LocalDateTime.now())
-                              .withUpdatedBy(userId) // Is still missing the user org unit
-                              .withRevision(client.getRevision() + 1)
-                      )
-                      .doOnNext(client -> log.info("Applying Forest Client changes {}", client))
+                  patchForestClientEntity(mapper, userId, entity, filteredNode)
+                  .doOnNext(client -> log.info("Applying Forest Client changes {}", client))
               )
               .flatMap(clientRepository::save)
               .then();
@@ -81,4 +60,5 @@ public class PatchOperationClientTypeService implements ClientPatchOperation {
 
     return Mono.empty();
   }
+
 }
