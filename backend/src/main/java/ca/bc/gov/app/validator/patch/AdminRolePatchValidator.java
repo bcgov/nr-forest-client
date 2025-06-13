@@ -37,7 +37,8 @@ public class AdminRolePatchValidator implements PatchValidator {
   @Override
   public Predicate<JsonNode> shouldValidate() {
     return node ->
-        node.has("roles")
+        node.has("path")
+        && node.get("path").asText().equals("/roles")
         && !node.get("roles").asText(StringUtils.EMPTY).contains(ApplicationConstant.ROLE_ADMIN);
   }
 
