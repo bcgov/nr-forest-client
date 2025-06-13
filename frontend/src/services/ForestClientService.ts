@@ -652,9 +652,10 @@ export function getLabelByColumnName(columnName: string): string {
   return columnNameToLabelMap[columnName] ?? columnName;
 };
 
-export function removePrefix(input: string): string {
+export function removePrefix(input?: string | null): string {
+  if (!input) return '';
   return input.split('\\').pop() || '';
-}; 
+};
 
 export const formatDatetime = (timestamp: Date | string): string => {
   const date = new Date(timestamp);
