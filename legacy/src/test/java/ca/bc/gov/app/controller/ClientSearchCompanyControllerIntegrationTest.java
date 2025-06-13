@@ -51,7 +51,7 @@ class ClientSearchCompanyControllerIntegrationTest extends
         .uri(uriBuilder ->
             uriBuilder
                 .path("/api/search/registrationOrName")
-                .queryParam("registrationNumber", "00000001")
+                .queryParam("registrationNumber", "FM00000001")
                 .build(new HashMap<>())
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)

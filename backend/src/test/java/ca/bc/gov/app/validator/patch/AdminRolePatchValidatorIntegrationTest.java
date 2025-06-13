@@ -63,7 +63,8 @@ class AdminRolePatchValidatorIntegrationTest extends AbstractTestContainerIntegr
                     MAPPER
                         .createArrayNode()
                         .add(OTHER_DATA)
-                        .add(ADMIN)
+                        .add(ADMIN),
+                    "00000001"
                 ).apply(ADMIN))
         .expectNext(ADMIN)
         .verifyComplete();
@@ -80,7 +81,8 @@ class AdminRolePatchValidatorIntegrationTest extends AbstractTestContainerIntegr
                     MAPPER
                         .createArrayNode()
                         .add(ADMIN_DATA)
-                        .add(EDITOR)
+                        .add(EDITOR),
+                    "00000001"
                 ).apply(EDITOR))
         .expectError(ValidationException.class)
         .verify();

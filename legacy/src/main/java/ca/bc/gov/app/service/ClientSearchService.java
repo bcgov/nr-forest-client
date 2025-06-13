@@ -506,7 +506,6 @@ public class ClientSearchService {
         .doOnNext(dto -> log.info("Found client with client number {}", clientNumber));
   }
 
-
   /**
    * Performs a predictive search for clients using a "like" or similarity-based strategy.
    * If the search value is blank or null, a {@link MissingRequiredParameterException} is returned.
@@ -572,6 +571,16 @@ public class ClientSearchService {
             LocalDateTime.now().minus(configuration.getData().getPredictiveCap())).doOnNext(
             dto -> log.info("Found complex empty search as {} {} with score {}", dto.clientNumber(),
                 dto.clientFullName(), dto.score())).map(dto -> Pair.of(dto, count)));
+  }
+
+  public Flux<ForestClientDto> searchByCorporationValues(
+      String clientNumber,
+      String companyType,
+      String companyNumber
+      ){
+    return clientRepository
+        .findByCompanyTypeOrNumber(clientNumber, companyType, companyNumber)
+        .map(forestClientMapper::toDto);
   }
 
   /**

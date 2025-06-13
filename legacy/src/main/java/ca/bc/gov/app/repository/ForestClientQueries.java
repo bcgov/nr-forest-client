@@ -682,8 +682,7 @@ public final class ForestClientQueries {
       SELECT * FROM FOREST_CLIENT x
       WHERE (UPPER(x.REGISTRY_COMPANY_TYPE_CODE) || x.CORP_REGN_NMBR) = UPPER(:registrationNumber)
           OR UPPER(x.CLIENT_NAME) = UPPER(:companyName)
-          OR x.CLIENT_IDENTIFICATION = UPPER(:registrationNumber)    
-      """;
+          OR x.CLIENT_IDENTIFICATION = UPPER(:registrationNumber)""";
 
   public static final String FIND_FUZZY_INDIVIDUAL_BY_NAME_AND_DOB = """
       SELECT *
@@ -1080,5 +1079,14 @@ public final class ForestClientQueries {
         CL.CLIENT_LOCN_CODE = '00'
         AND (C.UPdate_TIMESTAMP >= :date OR C.ADD_TIMESTAMP >= :date)
       """;
+
+  public static final String SEARCH_OTHER_CORP_NUMBER = """
+      SELECT
+      	*
+      FROM FOREST_CLIENT fc
+      WHERE
+      	fc.CLIENT_NUMBER != :clientNumber
+      	AND fc.REGISTRY_COMPANY_TYPE_CODE = (NVL(:companyType,(SELECT REGISTRY_COMPANY_TYPE_CODE FROM FOREST_CLIENT WHERE CLIENT_NUMBER = :clientNumber)))
+      	AND fc.CORP_REGN_NMBR = (NVL(:companyNumber,(SELECT CORP_REGN_NMBR FROM FOREST_CLIENT WHERE CLIENT_NUMBER = :clientNumber)))""";
   
 }

@@ -293,4 +293,14 @@ public class ClientSearchController {
     }
   }
 
+  @GetMapping("/corporationValues/{clientNumber}")
+  public Flux<ForestClientDto> searchByCorporationValues(
+      @PathVariable String clientNumber,
+      @RequestParam(required = false) String registryCompanyTypeCode,
+      @RequestParam(required = false) String corpRegnNmbr
+  ){
+    log.info("Receiving request to search by corporation values {}{} that is not from {}",registryCompanyTypeCode, corpRegnNmbr, clientNumber);
+    return service.searchByCorporationValues(clientNumber, registryCompanyTypeCode, corpRegnNmbr);
+  }
+
 }

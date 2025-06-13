@@ -48,7 +48,8 @@ public class AdminRolePatchValidator implements PatchValidator {
   }
 
   @Override
-  public Function<JsonNode, Mono<JsonNode>> globalValidator(JsonNode globalForestClient) {
+  public Function<JsonNode, Mono<JsonNode>> globalValidator(JsonNode globalForestClient,
+      String clientNumber) {
     return node ->
         Flux
             .fromStream(StreamSupport.stream(

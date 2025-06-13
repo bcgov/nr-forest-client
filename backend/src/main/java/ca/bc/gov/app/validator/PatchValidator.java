@@ -9,7 +9,7 @@ public interface PatchValidator {
 
   Predicate<JsonNode> shouldValidate();
   Function<JsonNode, Mono<JsonNode>> validate();
-  default Function<JsonNode,Mono<JsonNode>> globalValidator(JsonNode globalForestClient){
+  default Function<JsonNode,Mono<JsonNode>> globalValidator(JsonNode globalForestClient, String clientNumber){
     return Mono::just;
   }
 }
