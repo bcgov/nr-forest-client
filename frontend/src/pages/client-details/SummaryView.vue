@@ -23,6 +23,7 @@ import {
   resetSubmissionValidators,
   submissionValidation,
 } from "@/helpers/validators/SubmissionValidators";
+import { useFetchTo } from "@/composables/useFetch";
 
 const props = defineProps<{
   data: ClientDetails;
@@ -373,9 +374,47 @@ watch(
 );
 
 const originalClient = computed(() => props.data.client);
+
+const bcRegistryError = ref<boolean>(false);
+
+const goodStandingInd = ref<string>();
+
+const goodStandingIndUri = computed(() =>
+  `/api/clients/${originalClient.value.clientNumber}/good-standing`
+);
+
+const { error } = useFetchTo(goodStandingIndUri, goodStandingInd);
+
+watch(error, () => {
+  if (
+    error.value.response?.status >= 500 ||
+    error.value.response?.status === 408
+  ) {
+    bcRegistryError.value = true;
+  }
+});
+
+watch(goodStandingInd, () => {
+  if (goodStandingInd.value) {
+    originalClient.value.goodStandingInd = goodStandingInd.value;
+  }
+});
 </script>
 
 <template>
+  <cds-inline-notification
+    data-text="Client information"
+    v-shadow="2"
+    id="bcRegistryDownNotification"
+    v-if="bcRegistryError || (error?.response?.status ?? false)"
+    low-contrast="true"
+    open="true"
+    kind="error"
+    hide-close-button="true"
+    title="BC Registries is down">
+      <span class="body-compact-01"> You'll need to try again later.</span>      
+  </cds-inline-notification>
+
   <div class="grouping-10 no-padding">
     <read-only-component label="Client number" id="clientNumber">
       <span class="body-compact-01">{{ originalClient.clientNumber }}</span>
