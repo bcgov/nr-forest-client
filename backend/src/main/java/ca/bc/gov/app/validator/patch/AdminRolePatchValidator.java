@@ -30,7 +30,8 @@ public class AdminRolePatchValidator implements PatchValidator {
       "/client/registryCompanyTypeCode",
       "/client/clientIdentification",
       "/client/clientIdTypeCode",
-      "/doingBusinessAs"
+      "/doingBusinessAs",
+      "/client/clientTypeCode"
   );
 
   @Override

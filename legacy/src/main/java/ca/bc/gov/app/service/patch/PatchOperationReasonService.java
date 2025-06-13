@@ -82,25 +82,8 @@ public abstract class PatchOperationReasonService implements ClientPatchOperatio
                   clientRepository
                       .findByClientNumber(clientNumber)
                       .flatMap(entity ->
-                          Mono
-                              .just(
-                                  PatchUtils.patchClient(
-                                      node,
-                                      entity,
-                                      ForestClientEntity.class,
-                                      mapper
-                                  )
-                              )
-                              .filter(client -> !entity.equals(client))
-                              //Can only happen if there's a change
-                              .map(client ->
-                                  client
-                                      .withUpdatedAt(LocalDateTime.now())
-                                      .withUpdatedBy(userName) // Is still missing the user org unit
-                                      .withRevision(client.getRevision() + 1)
-                              )
-                              .doOnNext(client -> log.info("Applying Forest Client changes to {}",
-                                  clientNumber))
+                          patchForestClientEntity(mapper, userName, entity, node)
+                              .doOnNext(client -> log.info("Applying Forest Client changes {}", client))
                       )
               )
               .flatMap(clientRepository::save)
