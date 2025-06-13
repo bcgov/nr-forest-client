@@ -1,6 +1,6 @@
 {
   "client": {
-    "registryCompanyTypeCode": "GP",
+    "registryCompanyTypeCode": "FM",
     "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
     "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
     "clientName": "KOVACEK, THOMPSON AND BOYER",
