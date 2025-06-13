@@ -244,5 +244,70 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         .expectNext(clientDto.withClient(clientDto.client()))
         .verifyComplete();
   }
+  
+  @Test
+  @DisplayName("Should return 'Y' for client with good standing in BC Registry")
+  void shouldReturnYWhenClientIsInGoodStanding() {
+    String clientNumber = "00123456";
+    String corpRegnNmbr = "C00123456";
+    String registryCompanyTypeCode = "B";
+
+    ForestClientDetailsDto clientDto = new ForestClientDetailsDto(
+        new ForestClientInformationDto(
+            clientNumber,
+            "MY COMPANY LTD.",
+            null,
+            null,
+            "ACT",
+            "Active",
+            "C",
+            "Corporation",
+            "ID",
+            "Client Identification",
+            clientNumber,
+            registryCompanyTypeCode,
+            corpRegnNmbr,
+            "MYCO",
+            "678",
+            "Test Client",
+            LocalDateTime.of(2021, 1, 1, 0, 0),
+            "Admin",
+            null,
+            null
+        ),
+        null,
+        null,
+        null
+    );
+
+    BcRegistryBusinessDto businessDto = new BcRegistryBusinessDto(
+        List.of(),
+        true,
+        false,
+        false,
+        false,
+        corpRegnNmbr,
+        "MY COMPANY LTD.",
+        "LIC",
+        "Active"
+    );
+
+    BcRegistryDocumentDto documentDto = new BcRegistryDocumentDto(
+        businessDto,
+        null,
+        null
+    );
+
+    Mockito.when(legacyService.searchByClientNumber(clientNumber))
+        .thenReturn(Mono.just(clientDto));
+
+    Mockito.when(bcRegistryService.requestDocumentData("B" + corpRegnNmbr))
+        .thenReturn(Flux.just(documentDto));
+
+    service.getGoodStandingIndicator(clientNumber)
+        .as(StepVerifier::create)
+        .expectNext("Y")
+        .verifyComplete();
+  }
 
 }
