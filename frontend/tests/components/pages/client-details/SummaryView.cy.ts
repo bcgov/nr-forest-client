@@ -110,8 +110,6 @@ describe("<summary-view />", () => {
 
     testReadonly("#workSafeBCNumber", currentProps.data.client.wcbFirmNumber);
 
-    testReadonly("#goodStanding", "Good standing");
-
     // identification Label
     testReadonly("#identification", currentProps.data.client.clientIdTypeDesc);
     // identification Value
@@ -244,7 +242,6 @@ describe("<summary-view />", () => {
           `${currentProps.data.client.registryCompanyTypeCode}${currentProps.data.client.corpRegnNmbr}`,
         );
 
-        testReadonly("#goodStanding", "Good standing");
         testReadonly("#identification", currentProps.data.client.clientIdentification);
         testReadonly("#dateOfBirth", currentProps.data.client.birthdate.substring(0, 10));
 
@@ -394,16 +391,16 @@ describe("<summary-view />", () => {
 
     const clientTypes1 = [
       {
-        code: "B",
-        desc: "First Nation Band",
-      },
-      {
         code: "F",
         desc: "Ministry of Forests and Range",
       },
       {
         code: "G",
         desc: "Government",
+      },
+      {
+        code: "R",
+        desc: "First Nation Group",
       },
     ];
 
@@ -412,20 +409,24 @@ describe("<summary-view />", () => {
 
     const ministryClientType = clientTypes1[1];
 
-    const clientTypes2 = [
+    const bcRegisteredTypes = [
       { code: "A", desc: "Association" },
       { code: "C", desc: "Corporation" },
       { code: "L", desc: "Limited Partnership" },
       { code: "P", desc: "General Partnership" },
       { code: "S", desc: "Society" },
-      { code: "R", desc: "First Nation Group" },
-      { code: "T", desc: "First Nation Tribal Council" },
       { code: "U", desc: "Unregistered Company" },
     ];
 
-    const associationClientType = clientTypes2[0];
+    const companyLikeTypes = [
+      ...bcRegisteredTypes,
+      { code: "B", desc: "First Nation Band" },
+      { code: "T", desc: "First Nation Tribal Council" },
+    ];
 
-    const corporationClientType = clientTypes2[1];
+    const associationClientType = companyLikeTypes[0];
+
+    const corporationClientType = companyLikeTypes[1];
 
     const individualClientType = { code: "I", desc: "Individual" };
 
@@ -625,7 +626,6 @@ describe("<summary-view />", () => {
                 `${currentProps.data.client.registryCompanyTypeCode}${currentProps.data.client.corpRegnNmbr}`,
               );
 
-              testReadonly("#goodStanding", "Good standing");
               testReadonly("#identification", currentProps.data.client.clientIdentification);
               testReadonly("#dateOfBirth", currentProps.data.client.birthdate.substring(0, 10));
 
@@ -635,6 +635,10 @@ describe("<summary-view />", () => {
               testHidden("#workSafeBCNumber");
               testHidden("#clientStatus");
               testHidden("#notes");
+            });
+
+            it("hides the BC Registries standing field", () => {
+              testHidden("#goodStanding");
             });
           });
         });
@@ -688,7 +692,7 @@ describe("<summary-view />", () => {
     });
 
     describe("Company-like types", () => {
-      clientTypes2.forEach((clientType) => {
+      companyLikeTypes.forEach((clientType) => {
         describe(`when client type is ${clientType.code} - ${clientType.desc}`, () => {
           describe("when the edit button in clicked", () => {
             beforeEach(() => {
@@ -721,7 +725,6 @@ describe("<summary-view />", () => {
             it("keeps displaying the other fields in view mode", () => {
               testReadonly("#clientNumber", currentProps.data.client.clientNumber);
               testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
-              testReadonly("#goodStanding", "Good standing");
               testReadonly("#identification", currentProps.data.client.clientIdentification);
               testReadonly("#dateOfBirth", currentProps.data.client.birthdate.substring(0, 10));
 
@@ -733,6 +736,16 @@ describe("<summary-view />", () => {
               testHidden("#clientStatus");
               testHidden("#notes");
             });
+
+            if (bcRegisteredTypes.find((type) => type.code === clientType.code)) {
+              it("shows the BC Registries standing field", () => {
+                testReadonly("#goodStanding", "Good standing");
+              });
+            } else {
+              it("hides the BC Registries standing field", () => {
+                testHidden("#goodStanding");
+              });
+            }
           });
         });
       });
@@ -847,7 +860,6 @@ describe("<summary-view />", () => {
         it("keeps displaying the other fields in view mode", () => {
           testReadonly("#clientNumber", currentProps.data.client.clientNumber);
           testReadonly("#clientType", currentProps.data.client.clientTypeDesc);
-          testReadonly("#goodStanding", "Good standing");
 
           // Make sure the fields enabled for edition are not also displayed in read-only mode.
           testHidden("#acronym");
@@ -857,6 +869,10 @@ describe("<summary-view />", () => {
           testHidden("#dateOfBirth");
           testHidden("#clientStatus");
           testHidden("#notes");
+        });
+
+        it("hides the BC Registries standing field", () => {
+          testHidden("#goodStanding");
         });
       });
 
