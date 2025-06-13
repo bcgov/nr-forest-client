@@ -17,6 +17,8 @@
     "clientStatusCode": "ACT",
     "clientStatusDesc": "Active",
     "clientComment": "",
+    "clientCommentUpdateDate": "",
+    "clientCommentUpdateUser": "",
     "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}"
   },
   "doingBusinessAs": null,

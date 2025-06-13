@@ -350,11 +350,6 @@ const openRelatedClientsLegacy = () => {
   window.open(url, "_blank", "noopener");
 };
 
-const openMaintenanceLegacy = () => {
-  const url = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`;
-  window.open(url, "_blank", "noopener");
-};
-
 const summitSvg = useSvg(summit);
 const toolsSvg = useSvg(tools);
 
