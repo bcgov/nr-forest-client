@@ -467,7 +467,10 @@ const originalClient = computed(() => props.data.client);
     <read-only-component label="Notes" id="notes">
       <span class="body-compact-01" style="display: inline;">
         <span v-dompurify-html="getFormattedHtml(originalClient.clientComment)"></span>
-        <span class="icon-label-inline"> | Note by <UserAvatar20 /> 
+        <span 
+          class="icon-label-inline" 
+          v-if="originalClient.clientCommentUpdateUser && originalClient.clientCommentUpdateDate"
+        > | Note by <UserAvatar20 /> 
           {{ removePrefix(originalClient.clientCommentUpdateUser) }} &middot; 
           {{ formatDate(originalClient.clientCommentUpdateDate) }}
         </span>
