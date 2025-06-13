@@ -11,7 +11,7 @@
     "clientIdTypeCode": null,
     "clientIdTypeDesc": null,
     "clientIdentification": null,
-    "registryCompanyTypeCode": "GP",
+    "registryCompanyTypeCode": "FM",
     "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
     "clientAcronym": "KTB",
     "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}",
