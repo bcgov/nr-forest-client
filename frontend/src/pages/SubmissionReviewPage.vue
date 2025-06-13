@@ -262,7 +262,10 @@ const getListItemContent = ref((clientNumbers, label) => {
 
 const getUrl = (duplicatedClient: string, label: string) => {
   const clientNumber = duplicatedClient.trim();
-  const hash = label ? `#${label}` : "";
+  let hash = "";
+  if (["location", "contact"].includes(label)) {
+    hash = `#${label}s`;
+  }
   return `/clients/details/${clientNumber}${hash}`;
 };
 
