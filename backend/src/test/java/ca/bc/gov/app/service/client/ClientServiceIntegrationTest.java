@@ -162,7 +162,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     service.getClientDetailsByClientNumber(clientNumber)
         .as(StepVerifier::create)
-        .expectNext(clientDto.withClient(clientDto.client().withGoodStandingInd("Y")))
+        .expectNext(clientDto)
         .verifyComplete();
   }
 
@@ -241,7 +241,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
     service.getClientDetailsByClientNumber(clientNumber)
         .as(StepVerifier::create)
-        .expectNext(clientDto.withClient(clientDto.client().withGoodStandingInd("Y")))
+        .expectNext(clientDto.withClient(clientDto.client()))
         .verifyComplete();
   }
 
