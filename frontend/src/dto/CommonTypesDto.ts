@@ -369,7 +369,7 @@ export interface ClientInformation {
   wcbFirmNumber: string;
   ocgSupplierNmbr: string;
   clientComment: string;
-  clientCommentUpdateDate: string;
+  clientCommentUpdateDate: Date;
   clientCommentUpdateUser: string;
   goodStandingInd: string;
   birthdate: string;
