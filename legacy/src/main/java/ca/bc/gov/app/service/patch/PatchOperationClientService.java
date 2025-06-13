@@ -62,7 +62,8 @@ public class PatchOperationClientService implements ClientPatchOperation {
         "/clientAcronym",
         "/birthdate",
         "/corpRegnNmbr",
-        "/registryCompanyTypeCode"
+        "/registryCompanyTypeCode",
+        "/clientTypeCode"
     );
   }
 

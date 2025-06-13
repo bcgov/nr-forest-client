@@ -249,7 +249,7 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Change client type",
             "00000114",
-            "[{\"op\":\"replace\",\"path\":\"/client/clientTypeCode\",\"value\":\"F\"}]",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientTypeCode\",\"value\":\"F\"},{\"op\":\"replace\",\"path\":\"/client/corpRegnNmbr\",\"value\":null},{\"op\":\"replace\",\"path\":\"/client/registryCompanyTypeCode\",\"value\":null}]",
             "$.client.clientTypeCode",
             "C",
             "F"
