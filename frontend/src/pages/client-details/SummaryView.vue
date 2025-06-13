@@ -386,7 +386,7 @@ const goodStandingIndUri = computed(() =>
   `/api/clients/${originalClient.value.clientNumber}/good-standing`
 );
 
-const { error } = useFetchTo(goodStandingIndUri, goodStandingInd);
+const { loading: goodStandingIndLoading, error } = useFetchTo(goodStandingIndUri, goodStandingInd);
 
 watch(error, () => {
   if (
@@ -461,11 +461,17 @@ watch(goodStandingInd, () => {
       "
     >
       <div class="internal-grouping-01">
-        <span class="body-compact-01 default-typography">{{
-          goodStanding(originalClient.goodStandingInd)
-        }}</span>
-        <Check20 v-if="originalClient.goodStandingInd === 'Y'" class="good" />
-        <Warning20 v-if="originalClient.goodStandingInd !== 'Y'" class="warning" />
+        <span v-if="goodStandingIndLoading">
+          <cds-skeleton-text v-shadow="1" class="heading-03-skeleton" />
+        </span>
+        <span v-else class="icon-label-inline">
+          <span class="body-compact-01 default-typography">{{
+            goodStanding(originalClient.goodStandingInd)
+          }}</span>
+          
+          <Check20 v-if="originalClient.goodStandingInd === 'Y'" class="good" />
+          <Warning20 v-if="originalClient.goodStandingInd !== 'Y'" class="warning" />
+        </span>
       </div>
     </read-only-component>
     <read-only-component
