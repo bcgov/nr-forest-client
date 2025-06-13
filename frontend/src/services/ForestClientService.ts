@@ -657,8 +657,11 @@ export function removePrefix(input?: string | null): string {
   return input.split('\\').pop() || '';
 };
 
-export const formatDatetime = (timestamp: Date | string): string => {
+export const formatDatetime = (timestamp?: Date | string | number | null): string => {
+  if (!timestamp) return '';
+
   const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return '';
 
   const options: Intl.DateTimeFormatOptions = {
     month: 'short',
@@ -685,6 +688,11 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
     hour12: false,
 });
 
-export const formatDate = (timestamp: Date): string => {
-  return dateFormatter.format(new Date(timestamp));
+export const formatDate = (timestamp?: Date | string | number | null): string => {
+  if (!timestamp) return '';
+
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return '';
+
+  return dateFormatter.format(date);
 };
