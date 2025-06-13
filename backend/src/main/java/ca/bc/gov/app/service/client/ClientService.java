@@ -150,11 +150,7 @@ public class ClientService {
     return legacyService
         .searchByClientNumber(clientNumber)
         .flatMap(forestClientDetailsDto -> Mono
-            .just(forestClientDetailsDto)
-            .filter(dto ->
-                StringUtils.isNotBlank(dto.client().registryCompanyTypeCode()) 
-                && StringUtils.isNotBlank(dto.client().corpRegnNmbr())
-            )            
+            .just(forestClientDetailsDto)      
             .onErrorContinue(UnexpectedErrorException.class, (ex, obj) ->
                 log.error("Unexpected error occurred while fetching data for client number: {}",
                     clientNumber)
