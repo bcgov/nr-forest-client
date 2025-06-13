@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
 
 public class TestConstants {
 
@@ -866,14 +867,21 @@ public class TestConstants {
           "ChallengeParameters": {}
       }""";
 
-
   public static Map<String, Object> getClaims(String idpName) {
+    return getClaims(idpName,null);
+  }
+
+  public static Map<String, Object> getClaims(
+      String idpName,
+      String role
+  ) {
 
     Map<String, Object> idir = Map.of(
         "custom:idp_user_id", UUID.randomUUID().toString(),
         "custom:idp_username", "jdoe",
         "custom:idp_name", "idir",
         "custom:idp_display_name", "Doe, Jhon UAT:EX",
+        "cognito:groups", StringUtils.isNotBlank(role) ?  List.of(role) : List.of(),
         "email", "jdoe@mail.ca"
     );
 
@@ -886,7 +894,8 @@ public class TestConstants {
         "custom:idp_business_id", UUID.randomUUID().toString(),
         "custom:idp_business_name", "Example Inc.",
         "given_name", "Jhon",
-        "family_name", "Doe"
+        "family_name", "Doe",
+        "cognito:groups", StringUtils.isNotBlank(role) ?  List.of(role) : List.of()
     );
 
     Map<String, Object> bcsc = Map.of(
@@ -899,7 +908,8 @@ public class TestConstants {
             "{\\\"street_address\\\":\\\"4000 SEYMOUR PLACE\\\",\\\"country\\\":\\\"CA\\\",\\\"locality\\\":\\\"VICTORIA\\\",\\\"region\\\":\\\"BC\\\",\\\"postal_code\\\":\\\"V8Z 1C8\\\"}"),
         "birthdate", "1986-11-12",
         "given_name", "Jhon",
-        "family_name", "Doe"
+        "family_name", "Doe",
+        "cognito:groups", StringUtils.isNotBlank(role) ?  List.of(role) : List.of()
     );
 
     return switch (idpName) {
