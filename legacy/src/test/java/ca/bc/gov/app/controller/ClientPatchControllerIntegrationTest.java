@@ -245,6 +245,14 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.doingBusinessAs",
             "TWIMBO",
             "TIRULIRU"
+        ),
+        argumentSet(
+            "Change client type",
+            "00000114",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientTypeCode\",\"value\":\"F\"}]",
+            "$.client.clientTypeCode",
+            "C",
+            "F"
         )
     );
   }
