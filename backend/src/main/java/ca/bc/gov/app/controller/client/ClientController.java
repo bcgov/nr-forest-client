@@ -72,6 +72,12 @@ public class ClientController {
     return clientService.getClientDetailsByClientNumber(clientNumber);
   }
 
+  @GetMapping("/{clientNumber}/good-standing")
+  public Mono<String> getGoodStanding(@PathVariable String clientNumber) {
+    log.info("Requesting good standing indicator for client number {}", clientNumber);
+    return clientService.getGoodStandingIndicator(clientNumber);
+  }
+  
   /**
    * Performs a full-text search for clients based on the provided keyword, with pagination
    * support.
