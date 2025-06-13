@@ -3,11 +3,11 @@ FROM ghcr.io/graalvm/native-image:ol8-java17-22.3.3 AS build
 # Install Maven
 RUN microdnf update --nodocs -y && \
     microdnf install -y wget tar && \
-    wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz && \
-    tar xzf apache-maven-3.8.6-bin.tar.gz -C /opt && \
-    ln -s /opt/apache-maven-3.8.6 /opt/maven && \
+    wget https://dlcdn.apache.org/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.tar.gz && \
+    tar xzf apache-maven-3.9.10-bin.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-3.9.10 /opt/maven && \
     ln -s /opt/maven/bin/mvn /usr/bin/mvn && \
-    rm apache-maven-3.8.6-bin.tar.gz && \
+    rm apache-maven-3.9.10-bin.tar.gz && \
     microdnf clean all
 
 # Add Maven to the PATH environment variable
