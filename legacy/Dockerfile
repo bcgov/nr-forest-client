@@ -3,7 +3,7 @@ FROM ghcr.io/graalvm/native-image:ol8-java17-22.3.3 AS build
 
 # Install Maven
 RUN microdnf update --nodocs -y && \
-    microdnf install -y wget tar && \
+    microdnf install -y wget tar gzip && \
     wget https://dlcdn.apache.org/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.tar.gz && \
     tar xzf apache-maven-3.9.10-bin.tar.gz -C /opt && \
     ln -s /opt/apache-maven-3.9.10 /opt/maven && \
