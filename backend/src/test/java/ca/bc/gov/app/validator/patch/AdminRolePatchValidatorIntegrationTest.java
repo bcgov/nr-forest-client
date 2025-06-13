@@ -36,10 +36,12 @@ class AdminRolePatchValidatorIntegrationTest extends AbstractTestContainerIntegr
       .put("value", "ABC");
 
   public static final JsonNode ADMIN = MAPPER.createObjectNode()
+      .put("path","/roles")
       .put("roles", ApplicationConstant.ROLE_ADMIN)
       .put("userId", "test");
 
   public static final JsonNode EDITOR = MAPPER.createObjectNode()
+      .put("path","/roles")
       .put("roles", ApplicationConstant.ROLE_EDITOR)
       .put("userId", "test");
 

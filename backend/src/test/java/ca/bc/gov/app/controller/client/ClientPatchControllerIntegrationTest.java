@@ -44,7 +44,7 @@ class ClientPatchControllerIntegrationTest
   protected WebTestClient client;
 
   @BeforeEach
-  public void setUp(){
+  public void setUp() {
     legacyStub.resetAll();
   }
 
@@ -55,12 +55,13 @@ class ClientPatchControllerIntegrationTest
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(
+                    TestConstants.getClaims("idir", ApplicationConstant.ROLE_VIEWER))))
                 .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_VIEWER))
         )
         .patch()
         .uri("/api/clients/details/00123456")
-        .contentType(MediaType.asMediaType(new MimeType("application","json-patch+json")))
+        .contentType(MediaType.asMediaType(new MimeType("application", "json-patch+json")))
         .bodyValue(PATCH_BODY)
         .exchange()
         .expectStatus()
@@ -77,17 +78,17 @@ class ClientPatchControllerIntegrationTest
                 .willReturn(aResponse().withStatus(202))
         );
 
-
     client
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(
+                    TestConstants.getClaims("idir", ApplicationConstant.ROLE_EDITOR))))
                 .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
         )
         .patch()
         .uri("/api/clients/details/00123456")
-        .contentType(MediaType.asMediaType(new MimeType("application","json-patch+json")))
+        .contentType(MediaType.asMediaType(new MimeType("application", "json-patch+json")))
         .bodyValue(PATCH_BODY)
         .exchange()
         .expectStatus()
@@ -104,17 +105,17 @@ class ClientPatchControllerIntegrationTest
                 .willReturn(aResponse().withStatus(404))
         );
 
-
     client
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
-                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(
+                    TestConstants.getClaims("idir", ApplicationConstant.ROLE_EDITOR))))
                 .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
         )
         .patch()
         .uri("/api/clients/details/00123456")
-        .contentType(MediaType.asMediaType(new MimeType("application","json-patch+json")))
+        .contentType(MediaType.asMediaType(new MimeType("application", "json-patch+json")))
         .bodyValue(PATCH_BODY)
         .exchange()
         .expectStatus()

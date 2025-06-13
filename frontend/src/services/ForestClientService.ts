@@ -652,6 +652,47 @@ export function getLabelByColumnName(columnName: string): string {
   return columnNameToLabelMap[columnName] ?? columnName;
 };
 
-export function removePrefix(input: string): string {
+export function removePrefix(input?: string | null): string {
+  if (!input) return '';
   return input.split('\\').pop() || '';
-}; 
+};
+
+export const formatDatetime = (timestamp?: Date | string | number | null): string => {
+  if (!timestamp) return '';
+
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return '';
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  };
+
+  const datePart = date.toLocaleDateString('en-US', options);
+  const timePart = date.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+
+  return `${datePart}  ${timePart}`;
+};
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+    hour12: false,
+});
+
+export const formatDate = (timestamp?: Date | string | number | null): string => {
+  if (!timestamp) return '';
+
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return '';
+
+  return dateFormatter.format(date);
+};

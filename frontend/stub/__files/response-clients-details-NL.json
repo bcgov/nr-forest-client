@@ -1,22 +1,24 @@
 {
-    "client": {
-        "registryCompanyTypeCode": "SP",
-        "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
-        "clientNumber":"{{randomValue length=4 type='NUMERIC'}}",
-        "clientName": "Scott",
-        "legalFirstName": "Michael",
-        "legalMiddleName": "",
-        "birthdate": "1962-08-17T00:00",
-        "clientAcronym": "",
-        "clientTypeCode": "RSP",
-        "clientTypeDesc": "Registered sole proprietorship",
-        "goodStandingInd": "N",
-        "clientStatusCode": "ACT",
-        "clientStatusDesc": "Active",
-        "clientComment": "",
-        "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}"
-    },
-    "doingBusinessAs": null,
-    "contacts": [],
-    "addresses": []
+  "client": {
+    "registryCompanyTypeCode": "SP",
+    "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
+    "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
+    "clientName": "Scott",
+    "legalFirstName": "Michael",
+    "legalMiddleName": "",
+    "birthdate": "1962-08-17T00:00",
+    "clientAcronym": "",
+    "clientTypeCode": "RSP",
+    "clientTypeDesc": "Registered sole proprietorship",
+    "goodStandingInd": "N",
+    "clientStatusCode": "ACT",
+    "clientStatusDesc": "Active",
+    "clientComment": "",
+    "clientCommentUpdateDate": "",
+    "clientCommentUpdateUser": "",
+    "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}"
+  },
+  "doingBusinessAs": null,
+  "contacts": [],
+  "addresses": []
 }

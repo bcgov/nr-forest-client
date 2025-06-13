@@ -57,14 +57,24 @@ public class ClientPatchController {
         JwtPrincipalUtil.getUserId(principal)
     );
 
-    JsonNode roles = mapper.createObjectNode()
-        .put("roles", String.join(",",JwtPrincipalUtil.getGroups(principal)))
+    JsonNode roles = mapper
+        .createObjectNode()
+        .put("path", "/roles")
+        .put("roles", String.join(",",JwtPrincipalUtil.getGroups(principal)));
+
+    JsonNode userId = mapper
+        .createObjectNode()
+        .put("path", "/userId")
         .put("userId", JwtPrincipalUtil.getUserId(principal));
 
+    JsonNode mergedWithRoles = PatchUtils.mergeNodes(mapper)
+        .apply(forestClient, roles);
+    JsonNode mergedWithUserId = PatchUtils.mergeNodes(mapper)
+        .apply(mergedWithRoles, userId);
 
     return service.patchClient(
         clientNumber,
-        PatchUtils.mergeNodes(mapper).apply(forestClient,roles),
+        mergedWithUserId,
         JwtPrincipalUtil.getUserId(principal)
     );
   }

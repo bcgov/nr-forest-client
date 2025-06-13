@@ -8,6 +8,8 @@ import {
   getTagColorByClientStatus,
   goodStanding,
   includesAnyOf,
+  removePrefix,
+  formatDate,
 } from "@/services/ForestClientService";
 
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
@@ -16,6 +18,7 @@ import Information16 from "@carbon/icons-vue/es/information/16";
 import Edit16 from "@carbon/icons-vue/es/edit/16";
 import Save16 from "@carbon/icons-vue/es/save/16";
 import Close16 from "@carbon/icons-vue/es/close/16";
+import UserAvatar20 from '@carbon/icons-vue/es/user--avatar/20';
 
 // Importing validators
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
@@ -501,10 +504,16 @@ watch(goodStandingInd, () => {
     v-if="displayReadonly('notes') && originalClient.clientComment"
   >
     <read-only-component label="Notes" id="notes">
-      <span
-        class="body-compact-01"
-        v-dompurify-html="getFormattedHtml(originalClient.clientComment)"
-      ></span>
+      <span class="body-compact-01" style="display: inline;">
+        <span v-dompurify-html="getFormattedHtml(originalClient.clientComment)"></span>
+        <span 
+          class="icon-label-inline" 
+          v-if="originalClient.clientCommentUpdateUser && originalClient.clientCommentUpdateDate"
+        > | Note by <UserAvatar20 /> 
+          {{ removePrefix(originalClient.clientCommentUpdateUser) }} &middot; 
+          {{ formatDate(originalClient.clientCommentUpdateDate) }}
+        </span>
+      </span>
     </read-only-component>
   </div>
   <div class="grouping-10 no-padding" v-if="canEdit && !isEditing">

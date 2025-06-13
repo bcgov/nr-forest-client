@@ -8,7 +8,9 @@ import {
         getTagColorByClientStatus, 
         getFormattedHtml,
         fieldActionMap, 
-        removePrefix 
+        removePrefix ,
+        formatDatetime,
+        formatDate,
       } from "@/services/ForestClientService";
 import User16 from "@carbon/icons-vue/es/user/16";
 import Location16 from "@carbon/icons-vue/es/location/16";
@@ -25,38 +27,6 @@ import useSvg from '@/composables/useSvg';
 
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id as string;
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-    hour12: false,
-});
-
-const formatDate = (timestamp: Date): string => {
-  return dateFormatter.format(new Date(timestamp));
-};
-
-const formatDatetime = (timestamp: Date | string): string => {
-  const date = new Date(timestamp);
-
-  const options: Intl.DateTimeFormatOptions = {
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
-  };
-
-  const datePart = date.toLocaleDateString('en-US', options);
-  const timePart = date.toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
-
-  return `${datePart}  ${timePart}`;
-};
 
 const showDetails = ref({});
 const toggleDetails = (index) => {

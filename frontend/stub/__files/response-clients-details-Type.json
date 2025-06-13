@@ -6,23 +6,8 @@
     "legalMiddleName": null,
     "clientStatusCode": "ACT",
     "clientStatusDesc": "Active",
-    {{#assign 'clientTypeCode'}}{{replace request.path.[3] 'type:' ''}}{{/assign}}
-    "clientTypeCode": "{{clientTypeCode}}",
-    {{#parseJson 'clientTypeMapping'}}{
-      "A": "Association",
-      "B": "First Nation Band",
-      "C": "Corporation",
-      "F": "Ministry of Forests and Range",
-      "G": "Government",
-      "I": "Individual",
-      "L": "Limited Partnership",
-      "P": "General Partnership",
-      "R": "First Nation Group",
-      "S": "Society",
-      "T": "First Nation Tribal Council",
-      "U": "Unregistered Company"
-    }{{/parseJson}}
-    "clientTypeDesc": "{{lookup clientTypeMapping clientTypeCode}}",
+    "clientTypeCode": "P",
+    "clientTypeDesc": "General Partnership",
     "clientIdTypeCode": null,
     "clientIdTypeDesc": null,
     "clientIdentification": null,
@@ -31,8 +16,8 @@
     "clientAcronym": "KTB",
     "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}",
     "clientComment": "Email from Cheryl Bibby to request any letters for sec deposits be mailed to 3000, 28th St, Vernon",
-    "clientCommentUpdateDate": null,
-    "clientCommentUpdateUser": null,
+    "clientCommentUpdateDate": "2024-11-07T11:39:46",
+    "clientCommentUpdateUser": "IDIR\\PPEREZ",
     "goodStandingInd": "Y",
     "birthdate": null
   },

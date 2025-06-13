@@ -4,6 +4,7 @@ import ca.bc.gov.app.util.PatchUtils;
 import ca.bc.gov.app.validator.PatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -38,26 +39,26 @@ public class ClientPatchService {
       JsonNode forestClient,
       String userName
   ) {
-    log.info("{} requested to patch client {}", userName, clientNumber);
+    log.info("{} requested to patch client {} with data {}", userName, clientNumber, forestClient);
 
     return
         Flux
-            .fromIterable(validators)
-            .flatMap(validator ->
+            .fromIterable(forestClient)
+            .flatMap(node ->
                 Flux
-                    .fromIterable(forestClient)
-                    .flatMap(node ->
+                    .fromIterable(validators)
+                    .flatMap(validator ->
                         Mono
                             .just(node)
                             .filter(validator.shouldValidate())
                             .flatMap(validator.validate())
                             .flatMap(validator.globalValidator(forestClient))
-                            .defaultIfEmpty(node)
-                            .doOnNext(x -> log.info("Validated node: {}", x))
                     )
-                    .reduce(mapper.createArrayNode(), PatchUtils.mergeNodes(mapper))
+                    .reduce(PatchUtils.mergeNodes(mapper))
+                    .defaultIfEmpty(node)
             )
-            .next()
+            .collect(mapper::createArrayNode, ArrayNode::add)
+            .doOnNext(x -> log.info("Final merged patch: {}", x))
             .flatMap(node ->
                 legacyService.patchClient(clientNumber, node, userName)
             );
