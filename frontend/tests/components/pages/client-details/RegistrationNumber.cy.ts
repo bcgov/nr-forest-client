@@ -94,16 +94,17 @@ describe("<registration-number />", () => {
     });
   });
 
-  it("validates successfully when both inputs become empty", () => {
+  it("returns an error when both inputs become empty", () => {
     mount();
 
     cy.get("#input-registryType").shadow().find("div#selection-button").click();
     cy.clearFormEntry("#input-registryNumber");
 
-    cy.get(".field-error").should("have.text", "");
+    // the message will either refer to the type or the number, but both start with "You must".
+    cy.get(".field-error").contains("You must");
 
     checkLastValid((valid) => {
-      expect(valid).to.equal(true);
+      expect(valid).to.equal(false);
     });
   });
 
@@ -131,7 +132,7 @@ describe("<registration-number />", () => {
       cy.fillFormEntry("#input-registryNumber", "7");
 
       // Raised an error because the value got changed
-      cy.contains(".field-error", "You must provide a type if the number is filled in");
+      cy.contains(".field-error", "You must select a type");
 
       checkLastValid((valid) => {
         expect(valid).to.equal(false);
@@ -163,7 +164,7 @@ describe("<registration-number />", () => {
     it("returns an error when the Number becomes empty", () => {
       cy.clearFormEntry("#input-registryNumber");
 
-      cy.contains(".field-error", "You must provide a number if a type is selected");
+      cy.contains(".field-error", "You must provide a number");
 
       checkLastValid((valid) => {
         expect(valid).to.equal(false);
@@ -173,7 +174,7 @@ describe("<registration-number />", () => {
     it("returns an error when the Type becomes empty", () => {
       cy.get("#input-registryType").shadow().find("div#selection-button").click();
 
-      cy.contains(".field-error", "You must provide a type if the number is filled in");
+      cy.contains(".field-error", "You must select a type");
 
       checkLastValid((valid) => {
         expect(valid).to.equal(false);
@@ -197,7 +198,7 @@ describe("<registration-number />", () => {
     it("returns an error when the Number gets filled in", () => {
       cy.fillFormEntry("#input-registryNumber", "123");
 
-      cy.contains(".field-error", "You must provide a type if the number is filled in");
+      cy.contains(".field-error", "You must select a type");
 
       checkLastValid((valid) => {
         expect(valid).to.equal(false);
@@ -207,7 +208,7 @@ describe("<registration-number />", () => {
     it("returns an error when the Type gets filled in", () => {
       cy.selectFormEntry("#input-registryType", "BRT - Bogus Registry Type");
 
-      cy.contains(".field-error", "You must provide a number if a type is selected");
+      cy.contains(".field-error", "You must provide a number");
 
       checkLastValid((valid) => {
         expect(valid).to.equal(false);

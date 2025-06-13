@@ -73,8 +73,8 @@ const validateType = (): string => {
     return "";
   }
 
-  if (!modelValue.client.registryCompanyTypeCode && modelValue.client.corpRegnNmbr) {
-    return "You must provide a type if the number is filled in";
+  if (!modelValue.client.registryCompanyTypeCode) {
+    return "You must select a type";
   }
 
   return "";
@@ -85,8 +85,8 @@ const validateNumber = (): string => {
     return "";
   }
 
-  if (modelValue.client.registryCompanyTypeCode && !modelValue.client.corpRegnNmbr) {
-    return "You must provide a number if a type is selected";
+  if (!modelValue.client.corpRegnNmbr) {
+    return "You must provide a number";
   }
 
   return "";
@@ -196,6 +196,7 @@ emit("valid", true);
           submissionValidation('/client/registrationNumber/number'),
         ]"
         enabled
+        required
         :error-message="localNumberError"
         @empty="setRegistryNumberEmpty($event)"
         @error="setRegistryNumberError($event)"
