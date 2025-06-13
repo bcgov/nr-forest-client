@@ -52,7 +52,7 @@ public class ClientPatchService {
                             .just(node)
                             .filter(validator.shouldValidate())
                             .flatMap(validator.validate())
-                            .flatMap(validator.globalValidator(forestClient))
+                            .flatMap(validator.globalValidator(forestClient, clientNumber))
                     )
                     .reduce(PatchUtils.mergeNodes(mapper))
                     .defaultIfEmpty(node)
