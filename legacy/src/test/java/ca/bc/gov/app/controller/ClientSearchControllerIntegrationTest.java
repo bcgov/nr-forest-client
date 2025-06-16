@@ -7,6 +7,7 @@ import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.exception.NoValueFoundException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.BodyContentSpec;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import org.springframework.web.reactive.function.BodyInserters;
 
@@ -611,6 +613,41 @@ class ClientSearchControllerIntegrationTest extends
     }
   }
 
+  @ParameterizedTest
+  @MethodSource("byCorporationNumber")
+  @DisplayName("Search client by corporation values")
+  void shouldSearchByCorporationInfo(
+      String clientNumber,
+      String registryCompanyTypeCode,
+      String corpRegnNmbr,
+      String expectedClientNumber
+  ) {
+    BodyContentSpec response =
+        client
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/search/corporationValues/{clientNumber}")
+                    .queryParam("registryCompanyTypeCode", Optional.ofNullable(registryCompanyTypeCode))
+                    .queryParam("corpRegnNmbr", Optional.ofNullable(corpRegnNmbr))
+                    .build(Map.of("clientNumber", clientNumber))
+            )
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody();
+
+    if (StringUtils.isNotBlank(expectedClientNumber)) {
+      response
+          .jsonPath("$[0].clientNumber").isEqualTo(expectedClientNumber)
+          .consumeWith(System.out::println);
+    } else {
+      response
+          .json("[]")
+          .consumeWith(System.out::println);
+    }
+  }
+
   private static Stream<Arguments> byClientNumber() {
     return Stream.of(
         // Valid case
@@ -621,6 +658,61 @@ class ClientSearchControllerIntegrationTest extends
 
         // Invalid case: client not found
         Arguments.of("99999999", null, NoValueFoundException.class));
+  }
+
+  private static Stream<Arguments> byCorporationNumber(){
+    return Stream.of(
+        Arguments.argumentSet(
+            "No value, matches other",
+            "00000137",
+            null,
+            null,
+            "00000007"
+        ),
+        Arguments.argumentSet(
+            "Type value, matches other",
+            "00000137",
+            "FM",
+            null,
+            "00000007"
+        ),
+        Arguments.argumentSet(
+            "Number value, matches other",
+            "00000137",
+            null,
+            "00000002",
+            "00000002"
+        ),
+        Arguments.argumentSet(
+            "All values, matches other",
+            "00000137",
+            "FM",
+            "00000001",
+            "00000001"
+        ),
+        //Keep in mind that the following case is not valid
+        Arguments.argumentSet(
+            "Type value, matches none",
+            "00000137",
+            "DINA",
+            null,
+            null
+        ),
+        Arguments.argumentSet(
+            "Number value, matches none",
+            "00000137",
+            null,
+            "00000099",
+            null
+        ),
+        Arguments.argumentSet(
+            "All values, matches none",
+            "00000137",
+            "FM",
+            "00000099",
+            null
+        )
+    );
   }
 
 }
