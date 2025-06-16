@@ -155,6 +155,7 @@ emit("valid", true);
   <div id="registration-number" class="display-contents">
     <div class="label-with-icon line-height-0 parent-label">
       <div class="cds-text-input-label">
+        <span class="cds-text-input-required-label">* </span>
         <span>Registration number</span>
       </div>
     </div>
