@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch, type ComputedRef } from "vue";
 import * as jsonpatch from "fast-json-patch";
-import type { ClientDetails, CodeNameType, UserRole } from "@/dto/CommonTypesDto";
+import type { ClientDetails, CodeNameType, SaveEvent, UserRole } from "@/dto/CommonTypesDto";
 import RegistrationNumber from "@/pages/client-details/RegistrationNumber.vue";
 import {
   getFormattedHtml,
@@ -18,7 +18,7 @@ import Information16 from "@carbon/icons-vue/es/information/16";
 import Edit16 from "@carbon/icons-vue/es/edit/16";
 import Save16 from "@carbon/icons-vue/es/save/16";
 import Close16 from "@carbon/icons-vue/es/close/16";
-import UserAvatar20 from '@carbon/icons-vue/es/user--avatar/20';
+import UserAvatar20 from "@carbon/icons-vue/es/user--avatar/20";
 
 // Importing validators
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
@@ -34,7 +34,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "save", value: jsonpatch.Operation[]): void;
+  (e: "save", payload: SaveEvent<ClientDetails>): void;
 }>();
 
 let originalData: ClientDetails;
@@ -204,7 +204,15 @@ const save = () => {
 
   const patch = jsonpatch.compare(originalData, clonedFormData);
 
-  emit("save", patch);
+  emit("save", {
+    patch,
+    updatedData: clonedFormData,
+    action: {
+      infinitive: "update",
+      pastParticiple: "updated",
+    },
+    operationType: "update",
+  });
 };
 
 const validation = reactive<Record<FieldId, boolean>>({
