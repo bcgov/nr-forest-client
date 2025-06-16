@@ -5,6 +5,11 @@ import "@carbon/web-components/es/components/button/index";
 
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 
+const formatData = (data: ClientDetails) => {
+  data.client.birthdate = data.client.birthdate.substring(0, 10);
+  return data;
+};
+
 describe("<summary-view />", () => {
   const getDefaultProps = () => ({
     data: {
@@ -295,10 +300,19 @@ describe("<summary-view />", () => {
         cy.get("@vueWrapper").should((vueWrapper) => {
           const saveData = vueWrapper.emitted("save")[0][0];
 
-          expect(saveData).to.be.an("array");
-          expect(saveData).to.have.lengthOf(1);
+          const { patch, updatedData } = saveData;
 
-          expect(saveData[0].op).to.eq("replace");
+          expect(patch).to.be.an("array");
+          expect(patch).to.have.lengthOf(1);
+
+          expect(patch[0].op).to.eq("replace");
+
+          const expectedData = formatData(structuredClone(props.data));
+
+          expectedData.client.wcbFirmNumber = "";
+
+          // Contains the client data as edited by the user
+          expect(updatedData).to.deep.eq(expectedData);
         });
       });
     });
@@ -495,19 +509,25 @@ describe("<summary-view />", () => {
         cy.get("@vueWrapper").should((vueWrapper) => {
           const saveData = vueWrapper.emitted("save")[0][0];
 
-          expect(saveData).to.be.an("array");
+          const { patch, updatedData } = saveData;
 
-          expect(saveData).to.deep.include({
+          expect(patch).to.be.an("array");
+
+          expect(patch).to.deep.include({
             op: "replace",
             path: "/client/registryCompanyTypeCode",
             value: null,
           });
 
-          expect(saveData).to.deep.include({
+          expect(patch).to.deep.include({
             op: "replace",
             path: "/client/corpRegnNmbr",
             value: null,
           });
+
+          // Contains the client data as edited by the user
+          expect(updatedData.client.registryCompanyTypeCode).to.eq(null);
+          expect(updatedData.client.corpRegnNmbr).to.eq(null);
         });
       });
 
@@ -556,37 +576,46 @@ describe("<summary-view />", () => {
         cy.get("@vueWrapper").should((vueWrapper) => {
           const saveData = vueWrapper.emitted("save")[0][0];
 
-          expect(saveData).to.be.an("array");
+          const { patch, updatedData } = saveData;
 
-          expect(saveData).to.deep.include({
+          expect(patch).to.be.an("array");
+
+          expect(patch).to.deep.include({
             op: "replace",
             path: "/client/legalFirstName",
             value: null,
           });
 
-          expect(saveData).to.deep.include({
+          expect(patch).to.deep.include({
             op: "replace",
             path: "/client/legalMiddleName",
             value: null,
           });
 
-          expect(saveData).to.deep.include({
+          expect(patch).to.deep.include({
             op: "replace",
             path: "/client/birthdate",
             value: null,
           });
 
-          expect(saveData).to.deep.include({
+          expect(patch).to.deep.include({
             op: "replace",
             path: "/client/clientIdTypeCode",
             value: null,
           });
 
-          expect(saveData).to.deep.include({
+          expect(patch).to.deep.include({
             op: "replace",
             path: "/client/clientIdentification",
             value: null,
           });
+
+          // Contains the client data as edited by the user
+          expect(updatedData.client.legalFirstName).to.eq(null);
+          expect(updatedData.client.legalMiddleName).to.eq(null);
+          expect(updatedData.client.birthdate).to.eq(null);
+          expect(updatedData.client.clientIdTypeCode).to.eq(null);
+          expect(updatedData.client.clientIdentification).to.eq(null);
         });
       });
 
