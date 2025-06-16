@@ -57,6 +57,7 @@ import {
   type ClientContact,
   createClientContact,
   type ValidationMessageType,
+  type ClientInformation,
 } from "@/dto/CommonTypesDto";
 
 // Page components
@@ -105,9 +106,9 @@ watch(fetchError, (value) => {
   globalError.value = value;
 });
 
-const clientFullName = computed(() => {
-  if (data.value) {
-    const { legalFirstName, legalMiddleName, clientName } = data.value.client;
+const buildFullName = (clientInfo: ClientInformation) => {
+  if (clientInfo) {
+    const { legalFirstName, legalMiddleName, clientName } = clientInfo;
     const rawParts = [legalFirstName, legalMiddleName, clientName];
     const populatedParts = [];
     for (const part of rawParts) {
@@ -117,6 +118,13 @@ const clientFullName = computed(() => {
     }
     const fullClientName = populatedParts.join(" ");
     return fullClientName;
+  }
+  return "";
+};
+
+const clientFullName = computed(() => {
+  if (data.value) {
+    return buildFullName(data.value.client);
   }
   return "";
 });
@@ -517,13 +525,17 @@ const handlePatch = (
 };
 
 // Function to save
-const saveSummary = (patchData: jsonpatch.Operation[]) => {
+const saveSummary = (payload: SaveEvent<ClientDetails>) => {
+  const { updatedData: updatedClient, patch: patchData} = payload;
+
+  const updatedFullName = buildFullName(updatedClient.client);
+
   const onSuccess: OnSuccess = () => {
     const toastNotification: ModalNotification = {
       kind: "Success",
       active: true,
       handler: () => {},
-      message: `Client <span class="weight-700">“${clientFullName.value}”</span> was updated`,
+      message: `Client <span class="weight-700">“${updatedFullName}”</span> was updated`,
       toastTitle: undefined,
     };
     toastBus.emit(toastNotification);
