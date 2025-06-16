@@ -29,6 +29,7 @@ import reactor.test.StepVerifier;
 class RegistrationNumberPatchValidatorIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   public static final String CLIENT_NUMBER = "01000001";
+  
   @RegisterExtension
   static WireMockExtension legacyStub = WireMockExtension
       .newInstance()
