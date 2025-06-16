@@ -525,9 +525,17 @@ describe("<summary-view />", () => {
             value: null,
           });
 
+          const expectedData = formatData(structuredClone(props.data));
+
+          expectedData.client.registryCompanyTypeCode = null;
+          expectedData.client.corpRegnNmbr = null;
+
+          // skips the check on the clientTypeCode
+          delete expectedData.client.clientTypeCode;
+          delete updatedData.client.clientTypeCode;
+
           // Contains the client data as edited by the user
-          expect(updatedData.client.registryCompanyTypeCode).to.eq(null);
-          expect(updatedData.client.corpRegnNmbr).to.eq(null);
+          expect(updatedData).to.deep.eq(expectedData);
         });
       });
 
@@ -610,12 +618,20 @@ describe("<summary-view />", () => {
             value: null,
           });
 
+          const expectedData = formatData(structuredClone(props.data));
+
+          expectedData.client.legalFirstName = null;
+          expectedData.client.legalMiddleName = null;
+          expectedData.client.birthdate = null;
+          expectedData.client.clientIdTypeCode = null;
+          expectedData.client.clientIdentification = null;
+
+          // skips the check on the clientTypeCode
+          delete expectedData.client.clientTypeCode;
+          delete updatedData.client.clientTypeCode;
+
           // Contains the client data as edited by the user
-          expect(updatedData.client.legalFirstName).to.eq(null);
-          expect(updatedData.client.legalMiddleName).to.eq(null);
-          expect(updatedData.client.birthdate).to.eq(null);
-          expect(updatedData.client.clientIdTypeCode).to.eq(null);
-          expect(updatedData.client.clientIdentification).to.eq(null);
+          expect(updatedData).to.deep.eq(expectedData);
         });
       });
 
