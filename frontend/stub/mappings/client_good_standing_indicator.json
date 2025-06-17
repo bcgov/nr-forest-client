@@ -1,0 +1,18 @@
+{
+  "mappings": [
+    {
+      "name": "Client Good Standing Indicator",
+      "priority": 10,
+      "request": {
+        "urlPattern": "/api/clients/(.*)/good-standing",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "Y",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 2000
+      }
+    }
+  ]
+}
