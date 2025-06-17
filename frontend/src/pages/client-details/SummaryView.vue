@@ -478,7 +478,13 @@ watch(goodStandingInd, () => {
           }}</span>
           
           <Check20 v-if="originalClient.goodStandingInd === 'Y'" class="good" />
-          <Warning20 v-if="originalClient.goodStandingInd !== 'Y'" class="warning" />
+
+          <cds-tooltip v-if="originalClient.goodStandingInd !== 'Y'">
+            <Warning20 class="warning" />
+            <cds-tooltip-content>
+              Check BC Registries for the reason
+            </cds-tooltip-content>
+          </cds-tooltip>
         </span>
       </div>
     </read-only-component>
