@@ -138,7 +138,7 @@ describe("Submission Review Page", () => {
               )
               .should(
                 "contain",
-                `Partial match on business name - Client number: ${testCase.incorporationName}`
+                `Possible match with existing business name and/or ID - Client number: ${testCase.incorporationName}`
               );
           }
 
