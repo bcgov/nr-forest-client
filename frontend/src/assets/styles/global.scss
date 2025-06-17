@@ -2005,11 +2005,11 @@ div.internal-grouping-01 span.body-compact-01 ~ svg.good {
   fill: var(--cds-support-success);
 }
 
-div.internal-grouping-01 span.body-compact-01 ~ svg.warning {
+svg.warning {
   fill: var(--cds-support-warning);
 }
 
-div.internal-grouping-01 span.body-compact-01 ~ svg.warning path[data-icon-path="inner-path"] {
+svg.warning path[data-icon-path="inner-path"] {
   fill: #000000;
   opacity: 1;
 }
