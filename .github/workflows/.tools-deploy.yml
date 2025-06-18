@@ -17,11 +17,10 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: bcgov/action-builder-ghcr@v2.3.0
+      - uses: bcgov/action-builder-ghcr@ec30e4ce1ac3c25c93ec26cf370ecba028dc478e # v3.0.1
         name: Build (legacydb)
         with:
           package: legacydb
-          tag: ${{ github.event.number }}
           tag_fallback: latest
           triggers: ('legacydb/')
 
@@ -32,7 +31,7 @@ jobs:
     steps:
       - name: Scale down legacy
         continue-on-error: true
-        uses: bcgov/action-oc-runner@v1.2.0
+        uses: bcgov/action-oc-runner@10033668ef4374d9bb78149faa73e4ccda0e93dd # v1.2.3
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
@@ -59,7 +58,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Initializing Deployment
-        uses: bcgov/action-deployer-openshift@v4.0.0
+        uses: bcgov/action-deployer-openshift@d972993c70aba88e4f2fe66a66c4b7149fa9fcad # v4.0.0
         with:
           file: legacydb/openshift.deploy.yml
           oc_namespace: d2723f-tools
@@ -85,7 +84,7 @@ jobs:
     steps:
       - name: Create the PR database
         continue-on-error: true
-        uses: bcgov/action-oc-runner@v1.2.0
+        uses: bcgov/action-oc-runner@10033668ef4374d9bb78149faa73e4ccda0e93dd # v1.2.3
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -110,7 +109,7 @@ jobs:
 
       - name: Create the PR user
         continue-on-error: true
-        uses: bcgov/action-oc-runner@v1.2.0
+        uses: bcgov/action-oc-runner@10033668ef4374d9bb78149faa73e4ccda0e93dd # v1.2.3
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -135,7 +134,7 @@ jobs:
 
       - name: Migrate the PR database
         continue-on-error: true
-        uses: bcgov/action-oc-runner@v1.2.0
+        uses: bcgov/action-oc-runner@10033668ef4374d9bb78149faa73e4ccda0e93dd # v1.2.3
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -153,7 +152,7 @@ jobs:
     steps:
       - name: Start the Legacy Service
         continue-on-error: true
-        uses: bcgov/action-oc-runner@v1.2.0
+        uses: bcgov/action-oc-runner@10033668ef4374d9bb78149faa73e4ccda0e93dd # v1.2.3
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}

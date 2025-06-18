@@ -1,23 +1,23 @@
 {
   "client": {
     "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
-    "clientName": "KOVACEK, THOMPSON AND BOYER",
+    "clientName": "Missing Registry Type Co",
     "legalFirstName": null,
     "legalMiddleName": null,
     "clientStatusCode": "ACT",
     "clientStatusDesc": "Active",
-    "clientTypeCode": "P",
-    "clientTypeDesc": "General Partnership",
+    "clientTypeCode": "C",
+    "clientTypeDesc": "Corporation",
     "clientIdTypeCode": null,
     "clientIdTypeDesc": null,
     "clientIdentification": null,
-    "registryCompanyTypeCode": "GP",
+    "registryCompanyTypeCode": "",
     "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
-    "clientAcronym": "KTB",
+    "clientAcronym": "",
     "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}",
     "clientComment": "Email from Cheryl Bibby to request any letters for sec deposits be mailed to 3000, 28th St, Vernon",
-    "clientCommentUpdateDate": null,
-    "clientCommentUpdateUser": null,
+    "clientCommentUpdateDate": "2024-11-07T11:39:46",
+    "clientCommentUpdateUser": "IDIR\\PPEREZ",
     "goodStandingInd": "Y",
     "birthdate": null
   },
@@ -46,7 +46,7 @@
     {
       "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
       "clientLocnCode": "01",
-      "clientLocnName": "Accountant address",
+      "clientLocnName": "Accountant's address",
       "addressOne": "C/O Mike Oliveira",
       "addressTwo": "{{randomValue length=4 type='NUMERIC'}} Oak St",
       "addressThree": "",
@@ -84,33 +84,12 @@
       "emailAddress": "warehouse@mail.com",
       "locnExpiredInd": "N",
       "cliLocnComment": "Sample location 02 comment"
-    },
-    {
-      "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
-      "clientLocnCode": "03",
-      "clientLocnName": "Dungeon",
-      "addressOne": "C/O Arden Elf",
-      "addressTwo": "{{randomValue length=4 type='NUMERIC'}} Pain St",
-      "addressThree": "",
-      "city": "Deer Lake",
-      "provinceCode": "BC",
-      "provinceDesc": "British Columbia",
-      "countryCode": "CA",
-      "countryDesc": "Canada",
-      "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
-      "businessPhone": "2502865767",
-      "homePhone": "2505555101",
-      "cellPhone": "2505555700",
-      "faxNumber": "2502865768",
-      "emailAddress": "warehouse@mail.com",
-      "locnExpiredInd": "N",
-      "cliLocnComment": "Follow his quest..."
     }
   ],
   "contacts": [
     {
       "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
-      "contactId": 10,
+      "contactId": 1,
       "contactName": "Cheryl Bibby",
       "contactTypeCode": "BL",
       "contactTypeDesc": "Billing",
@@ -122,7 +101,7 @@
     },
     {
       "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
-      "contactId": 11,
+      "contactId": 2,
       "contactName": "Edward Burns",
       "contactTypeCode": "DI",
       "contactTypeDesc": "Director",
@@ -134,7 +113,7 @@
     },
     {
       "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
-      "contactId": 12,
+      "contactId": 3,
       "contactName": "Christoffer Stewart",
       "contactTypeCode": "BL",
       "contactTypeDesc": "Billing",
@@ -145,5 +124,5 @@
       "locationCodes": ["02"]
     }
   ],
-  "doingBusinessAs": ""
+  "doingBusinessAs": null
 }

@@ -189,6 +189,7 @@ export const includesAnyOf = (haystack: any[], needles: any[]): boolean =>
 //Fields that require a reason when changing
 export const reasonRequiredFields = new Set<string>([
   'clientStatusCode',
+  'clientIdTypeCode',
   'clientIdentification',
   'clientName',
   'legalFirstName',
@@ -202,24 +203,31 @@ export const reasonRequiredFields = new Set<string>([
   'postalCode'
 ]);
 
-// Map for general field actions
-const fieldActionMap = new Map<string, string>([
-  ['clientIdentification', 'ID'],
-  ['clientName', 'NAME'],
-  ['legalFirstName', 'NAME'],
-  ['legalMiddleName', 'NAME'],
-  ['addressOne', 'ADDR'],
-  ['addressTwo', 'ADDR'],
-  ['addressThree', 'ADDR'],
-  ['city', 'ADDR'],
-  ['provinceCode', 'ADDR'],
-  ['countryCode', 'ADDR'],
-  ['postalCode', 'ADDR']
-]);
+export const fieldActionMap: { [key: string]: string[] } = {
+  'clientIdTypeCode': ['ID'],
+  'clientIdTypeDesc': ['ID'],
+  'clientIdentification': ['ID'],
+  'clientName': ['NAME'],
+  'legalFirstName': ['NAME'],
+  'legalMiddleName': ['NAME'],
+  'fullName': ['NAME'],
+  'address': ['ADDR'],
+  'addressOne': ['ADDR'],
+  'addressTwo': ['ADDR'],
+  'addressThree': ['ADDR'],
+  'city': ['ADDR'],
+  'provinceCode': ['ADDR'],
+  'countryCode': ['ADDR'],
+  'provinceDesc': ['ADDR'],
+  'countryDesc': ['ADDR'],
+  'postalCode': ['ADDR'],
+  'zipCode': ['ADDR'],
+  'clientStatusDesc': ['ACDC', 'DAC', 'RACT', 'USPN', 'SPN'],
+};
 
 // Map for client status transitions
 const statusTransitionMap = new Map<string, string>([
-  ['ACT-DEC', 'ACDC'],  // Active → Deceased
+  ['ACT-DEC', ''],      // Active → Deceased (No reason needed)
   ['ACT-DAC', 'DAC'],   // Active → Deactivated
   ['DEC-ACT', 'RACT'],  // Deceased → Active
   ['REC-ACT', 'RACT'],  // Receivership → Active
@@ -259,16 +267,26 @@ export const extractFieldName = (path: string): string => {
  * @param path
  * @returns string
  */
-export const extractActionField = (path: string): string => {
-  const fieldName = extractFieldName(path);
+export const extractActionField = (path: string, action: string): string => {
+  if (action === "ID") {
+    // virtual field representing multiple fields
+    return "/client/id";
+  }
+
+  if (action === "NAME") {
+    // virtual field representing multiple fields
+    return "/client/name";
+  }
 
   if (path.startsWith("/addresses")) {
+    const fieldName = extractFieldName(path);
+
     // Should return something like "/addresses/00"
     const fieldKey = path.split(`/${fieldName}`)[0];
     return fieldKey;
   }
 
-  return fieldName;
+  return path;
 };
 
 // Function to extract required reason fields from patch data
@@ -282,13 +300,6 @@ export const extractReasonFields = (
       (patch) => patch.op === "replace" && reasonRequiredFields.has(extractFieldName(patch.path)),
     )
     .forEach((patch) => {
-      const actionField = extractActionField(patch.path);
-
-      if (reasonActions[actionField]) {
-        // If the field corresponds to a "group change", like an address, we only need it once.
-        return;
-      }
-
       const fieldName = extractFieldName(patch.path);
 
       let action = '';
@@ -299,18 +310,24 @@ export const extractReasonFields = (
         const transitionKey = `${oldValue}-${newValue}`;
         action = statusTransitionMap.get(transitionKey) || '';
       } else {
-        action = fieldActionMap.get(fieldName) || '';
+        action = fieldActionMap[fieldName]?.[0] || '';
+      }
+
+      if (reasonActions[action]) {
+        // If the field corresponds to a "group change", like an address, we only need it once.
+        return;
       }
 
       if (action) {
-        reasonActions[actionField] = { field: actionField, action };
+        const actionField = extractActionField(patch.path, action);
+        reasonActions[action] = { field: actionField, action };
       }
     });
 
   return Object.values(reasonActions);
 };
 
-export const getAction = (path: string, oldValue?: string, newValue?: string) => {
+export const getAction = (path: string, oldValue?: string, newValue?: string): string[] | string | null => {
   const fieldName = path.split('/').pop();
 
   if (fieldName === 'clientStatusCode' && oldValue && newValue) {
@@ -319,7 +336,7 @@ export const getAction = (path: string, oldValue?: string, newValue?: string) =>
     return transitionAction || null;
   }
 
-  return fieldActionMap.get(fieldName) || null;
+  return fieldActionMap[fieldName] || null;
 };
 
 const fieldLabelsByAction = new Map<string, string>([
@@ -561,7 +578,7 @@ export const contactToEditFormat = (
  * to what the overflow-anchor CSS property is able to do while the content grows, so as to avoid
  * scroll jumping in unexpected ways.
  *
- * @param uiUpdatePromise - The promise whose resolution should triggers the scroll fix.
+ * @param uiUpdatePromise - The promise whose resolution should trigger the scroll fix.
  */
 export const keepScrollBottomPosition = (uiUpdatePromise: Promise<void>): void => {
   const app = document.getElementById("app");
@@ -583,4 +600,99 @@ export const formatLocation = (code: string, name: string): string => {
   const title = parts.join(" - ");
 
   return title;
+};
+
+const columnNameToLabelMap: Record<string, string> = {
+  fullName: "Full name",
+  clientTypeDesc: "Client type",
+  clientAcronym: "Acronym",
+  birthdate: "Date of birth",
+  clientIdTypeDesc: "ID type",
+  clientIdentification: "ID number",
+  clientStatusDesc: "Client status",
+  corpRegnNmbr: "Registration number",
+  wcbFirmNumber: "WorkSafeBC number",
+  doingBusinessAs: "Doing business as",
+  locnExpiredInd: "Location status",
+  clientComment: "Notes",
+  locationName: "Location name",
+  address: "Address",
+  addressOne: "Street address or PO box",
+  addressTwo: "Delivery information",
+  addressThree: "Additional delivery information",
+  cityProvinceDesc: "City and province, state or territory",
+  city: "City",
+  provinceDesc: "Province or territory",
+  stateDesc: "State",
+  countryDesc: "Country",
+  postalCode: "Postal code",
+  zipCode: "Zip code",
+  trustLocationInd: "Trust location",
+  contactTypeDesc: "Contact type",
+  associatedLocation: "Associated location",
+  contactName: "Full name",
+  emailAddress: "Email address",
+  businessPhone: "Primary phone number",
+  secondaryPhone: "Secondary phone number",
+  homePhone: "Tertiary phone number",
+  cellPhone: "Secondary phone number",
+  cliLocnComment: "Notes",
+  faxNumber: "Fax",
+  returnedMailDate: "Returned mail date",
+  primaryClient: "Primary client",
+  primaryClientLocation: "Primary client location",
+  relationshipType: "Relationship type",
+  relatedClient: "Related client",
+  relatedClientLocation: "Related client location",
+  signingAuthInd: "Signing auth",
+  percentOwnership: "Percent ownership"
+};
+
+export function getLabelByColumnName(columnName: string): string {
+  return columnNameToLabelMap[columnName] ?? columnName;
+};
+
+export function removePrefix(input?: string | null): string {
+  if (!input) return '';
+  return input.split('\\').pop() || '';
+};
+
+export const formatDatetime = (timestamp?: Date | string | number | null): string => {
+  if (!timestamp) return '';
+
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return '';
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  };
+
+  const datePart = date.toLocaleDateString('en-US', options);
+  const timePart = date.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+
+  return `${datePart}  ${timePart}`;
+};
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+    hour12: false,
+});
+
+export const formatDate = (timestamp?: Date | string | number | null): string => {
+  if (!timestamp) return '';
+
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return '';
+
+  return dateFormatter.format(date);
 };

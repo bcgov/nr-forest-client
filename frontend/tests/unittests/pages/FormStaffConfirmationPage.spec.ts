@@ -2,9 +2,6 @@ import { describe, it, expect, vi } from "vitest";
 
 import { mount } from "@vue/test-utils";
 import FormStaffConfirmationPage from "@/pages/FormStaffConfirmationPage.vue";
-import * as constants from "@/CoreConstants";
-
-const { featureFlags, greenDomain } = constants;
 
 describe("FormStaffConfirmationPage.vue", () => {
   // Helper function to mount component with props
@@ -44,33 +41,12 @@ describe("FormStaffConfirmationPage.vue", () => {
     expect(button.attributes("href")).toBe("/new-client-staff");
   });
 
-  it("opens client details in the same application when the feature flag is enabled", () => {
-    vi.spyOn(constants, "featureFlags", "get").mockReturnValue({
-      ...featureFlags,
-      STAFF_CLIENT_DETAIL: true,
-    });
+  it("opens client details", () => {
     const clientNumber = "123";
     const wrapper = createComponent({ clientNumber, clientEmail: "test@example.com" });
     const button = wrapper.find("#openClientDtlsBtnId");
     const spy = vi.spyOn(window, "open");
     button.trigger("click");
     expect(spy).toBeCalledWith(`/clients/details/${clientNumber}`, "_self");
-  });
-
-  it("opens client details in the legacy application when the feature flag is disabled", () => {
-    vi.spyOn(constants, "featureFlags", "get").mockReturnValue({
-      ...featureFlags,
-      STAFF_CLIENT_DETAIL: false,
-    });
-    const clientNumber = "123";
-    const wrapper = createComponent({ clientNumber, clientEmail: "test@example.com" });
-    const button = wrapper.find("#openClientDtlsBtnId");
-    const spy = vi.spyOn(window, "open");
-    button.trigger("click");
-    expect(spy).toBeCalledWith(
-      `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
-      "_blank",
-      "noopener",
-    );
   });
 });

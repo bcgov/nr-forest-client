@@ -1,7 +1,10 @@
 package ca.bc.gov.app.service.patch;
 
+import ca.bc.gov.app.entity.ForestClientEntity;
+import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
 import java.util.List;
 import reactor.core.publisher.Mono;
 
@@ -53,5 +56,36 @@ public interface ClientPatchOperation {
    * @return A {@link Mono} that completes when the patch has been applied.
    */
   Mono<Void> applyPatch(String clientNumber, JsonNode patch, ObjectMapper mapper, String userId);
+
+  default Mono<ForestClientEntity> patchForestClientEntity(
+      ObjectMapper mapper,
+      String userId,
+      ForestClientEntity entity,
+      JsonNode filteredNode
+  ) {
+    return Mono
+        .just(
+            PatchUtils.patchClient(
+                filteredNode,
+                entity,
+                ForestClientEntity.class,
+                mapper
+            )
+        )
+        .filter(client -> !entity.equals(client))
+        .map(client -> client
+            .withUpdatedBy(userId)
+            .withUpdatedAt(LocalDateTime.now())
+            .withRevision(client.getRevision() + 1)
+        )
+        //Can only happen if there's a change
+        .map(client ->
+            client
+                .withUpdatedAt(LocalDateTime.now())
+                .withUpdatedBy(userId) // Is still missing the user org unit
+                .withRevision(client.getRevision() + 1)
+        );
+  }
+
 }
 

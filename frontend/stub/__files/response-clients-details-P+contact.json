@@ -1,6 +1,6 @@
 {
   "client": {
-    "registryCompanyTypeCode": "GP",
+    "registryCompanyTypeCode": "FM",
     "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
     "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
     "clientName": "KOVACEK, THOMPSON AND BOYER",
@@ -8,14 +8,16 @@
     "clientTypeCode": "P",
     "clientTypeDesc": "General Partnership",
     "goodStandingInd": "Y",
-    "clientStatusCode": "DAC",
-    "clientStatusDesc": "Deactivated",
+    "clientStatusCode": "ACT",
+    "clientStatusDesc": "Active",
     "clientComment": "Email from Cheryl Bibby to request any letters for sec deposits be mailed to 3000, 28th St, Vernon",
+    "clientCommentUpdateDate": "2024-11-07T11:39:46",
+    "clientCommentUpdateUser": "IDIR\\PPEREZ",
     "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}"
   },
   "contacts": [
     {
-      "contactId": "{{randomValue length=8 type='NUMERIC'}}",
+      "contactId": 10,
       "locationCodes": ["00"],
       "contactName": "Cheryl Bibby",
       "contactTypeCode": "BL",
@@ -26,7 +28,7 @@
       "emailAddress": "cheryl@ktb.com"
     },
     {
-      "contactId": "{{randomValue length=8 type='NUMERIC'}}",
+      "contactId": 11,
       "locationCodes": ["01", "02"],
       "contactName": "Edward Burns",
       "contactTypeCode": "DI",
@@ -37,9 +39,20 @@
       "emailAddress": "burns@ktb.com"
     },
     {
-      "contactId": "{{randomValue length=8 type='NUMERIC'}}",
+      "contactId": 12,
       "locationCodes": ["02"],
       "contactName": "Christoffer Stewart",
+      "contactTypeCode": "BL",
+      "contactTypeDesc": "Billing",
+      "businessPhone": "",
+      "secondaryPhone": "",
+      "faxNumber": "",
+      "emailAddress": ""
+    },
+    {
+      "contactId": 13,
+      "locationCodes": ["01"],
+      "contactName": "John Stewart",
       "contactTypeCode": "BL",
       "contactTypeDesc": "Billing",
       "businessPhone": "",
@@ -52,9 +65,9 @@
     {
       "clientLocnName": "Mailing address",
       "clientLocnCode": "00",
-      "addressOne": "{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
-      "addressTwo": "C/O Tony Pineda",
-      "addressThree": "Sample additional info",
+      "addressOne": "C/O Tony Pineda",
+      "addressTwo": "Sample additional info",
+      "addressThree": "{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
       "countryCode": "CA",
       "countryDesc": "Canada",
       "provinceCode": "SK",
@@ -72,8 +85,8 @@
     {
       "clientLocnName": "Accountant address",
       "clientLocnCode": "01",
-      "addressOne": "{{randomValue length=4 type='NUMERIC'}} Oak St",
-      "addressTwo": "C/O Mike Oliveira",
+      "addressOne": "C/O Mike Oliveira",
+      "addressTwo": "{{randomValue length=4 type='NUMERIC'}} Oak St",
       "addressThree": "",
       "countryCode": "CA",
       "countryDesc": "Canada",
@@ -93,7 +106,7 @@
       "clientLocnName": "Warehouse",
       "clientLocnCode": "02",
       "addressOne": "{{randomValue length=4 type='NUMERIC'}} Joy St",
-      "addressTwo": "C/O John Wayne",
+      "addressTwo": "",
       "addressThree": "",
       "countryCode": "CA",
       "countryDesc": "Canada",

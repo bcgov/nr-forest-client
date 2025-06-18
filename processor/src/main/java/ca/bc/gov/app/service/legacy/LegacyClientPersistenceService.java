@@ -11,6 +11,7 @@ import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.util.ProcessorUtil;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -81,7 +82,7 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
                                 submissionDetail.getRegistrationNumber()
                         )
                     )
-                    .withClientName(submissionDetail.getOrganizationName().toUpperCase())
+                    .withClientName(submissionDetail.getOrganizationName().toUpperCase(Locale.ROOT))
                     .withClientTypeCode(submissionDetail.getClientTypeCode())
                     .withRegistryCompanyTypeCode(
                         ProcessorUtil.extractLetters(submissionDetail.getRegistrationNumber())

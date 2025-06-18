@@ -3,12 +3,12 @@
     {
       "name": "Client Details General Partnership - Default",
       "request": {
-        "urlPattern": "/api/clients/details/g?(.*)",
+        "urlPattern": "/api/clients/details/p?(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-G.json",
+        "bodyFileName": "response-clients-details-P.json",
         "transformers": [
           "response-template"
         ],
@@ -18,12 +18,12 @@
     {
       "name": "Client Details General Partnership - Default - Additional location",
       "request": {
-        "urlPattern": "/api/clients/details/g?(.*)+location",
+        "urlPattern": "/api/clients/details/p?(.*)+location",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-G+location.json",
+        "bodyFileName": "response-clients-details-P+location.json",
         "transformers": [
           "response-template"
         ],
@@ -33,12 +33,12 @@
     {
       "name": "Client Details General Partnership - Default - Removed contact",
       "request": {
-        "urlPattern": "/api/clients/details/g?(.*)-contact",
+        "urlPattern": "/api/clients/details/p?(.*)-contact",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-G-contact.json",
+        "bodyFileName": "response-clients-details-P-contact.json",
         "transformers": [
           "response-template"
         ],
@@ -48,12 +48,12 @@
     {
       "name": "Client Details General Partnership - Default - Added contact",
       "request": {
-        "urlPattern": "/api/clients/details/g?(.*)\\+contact",
+        "urlPattern": "/api/clients/details/p?(.*)\\+contact",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-G+contact.json",
+        "bodyFileName": "response-clients-details-P+contact.json",
         "transformers": [
           "response-template"
         ],
@@ -78,12 +78,12 @@
     {
       "name": "Client Details General Partnership - Doing business as",
       "request": {
-        "urlPattern": "/api/clients/details/gd(.*)",
+        "urlPattern": "/api/clients/details/pd(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-GD.json",
+        "bodyFileName": "response-clients-details-PD.json",
         "transformers": [
           "response-template"
         ],
@@ -93,12 +93,12 @@
     {
       "name": "Client Details General Partnership - Deactivated",
       "request": {
-        "urlPattern": "/api/clients/details/gdac(.*)",
+        "urlPattern": "/api/clients/details/pdac(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-GDAC.json",
+        "bodyFileName": "response-clients-details-PDAC.json",
         "transformers": [
           "response-template"
         ],
@@ -108,12 +108,12 @@
     {
       "name": "Client Details General Partnership - Suspended",
       "request": {
-        "urlPattern": "/api/clients/details/gspn(.*)",
+        "urlPattern": "/api/clients/details/pspn(.*)",
         "method": "GET"
       },
       "response": {
         "status": 200,
-        "bodyFileName": "response-clients-details-GSPN.json",
+        "bodyFileName": "response-clients-details-PSPN.json",
         "transformers": [
           "response-template"
         ],
@@ -121,7 +121,7 @@
       }
     },
     {
-      "name": "Client Details Sole Proprietorship",
+      "name": "Client Details Individual 2",
       "request": {
         "urlPattern": "/api/clients/details/s(.*)",
         "method": "GET"
@@ -136,7 +136,7 @@
       }
     },
     {
-      "name": "Client Details Sole Proprietorship - Some empty fields",
+      "name": "Client Details Individual 2 - Some empty fields",
       "request": {
         "urlPattern": "/api/clients/details/se(.*)",
         "method": "GET"
@@ -211,6 +211,36 @@
       }
     },
     {
+      "name": "Client Details - Parameterized Type",
+      "request": {
+        "urlPattern": "/api/clients/details/type:(.)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-Type.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Corporation - missing registry type",
+      "request": {
+        "urlPattern": "/api/clients/details/mrt(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-missing-registry-type.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Client Details - Error 400",
       "request": {
         "urlPattern": "/api/clients/details/(.*)e4..",
@@ -257,7 +287,7 @@
       }
     },
     {
-      "name": "PATCH - Client Details - Error",
+      "name": "PATCH - Client Details - Generic Error",
       "request": {
         "urlPattern": "/api/clients/details/(.*)",
         "method": "PATCH",
@@ -273,6 +303,56 @@
       "response": {
         "status": 400,
         "body": "Sample error message",
+        "fixedDelayMilliseconds": 200
+      }
+    },
+    {
+      "name": "PATCH - Client Details - Duplicate Acronym Error",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)",
+        "method": "PATCH",
+        "bodyPatterns": [
+          {
+            "equalToJson": "[{\"op\":\"replace\",\"path\":\"/client/clientAcronym\",\"value\":\"ERR\"}]",
+            "ignoreArrayOrder" : true,
+            "ignoreExtraElements" : true
+          }
+        ]
+      },
+      "response": {
+        "status": 400,
+        "jsonBody": [
+          {
+            "fieldId": "/client/clientAcronym",
+            "errorMsg": "Client acronym already exists",
+            "match": "00000001"
+          }
+        ],
+        "fixedDelayMilliseconds": 200
+      }
+    },
+    {
+      "name": "PATCH - Client Details - Duplicate Registration Number Error",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)",
+        "method": "PATCH",
+        "bodyPatterns": [
+          {
+            "equalToJson": "[{\"op\":\"replace\",\"path\":\"/client/corpRegnNmbr\",\"value\":\"9090\"}]",
+            "ignoreArrayOrder" : true,
+            "ignoreExtraElements" : true
+          }
+        ]
+      },
+      "response": {
+        "status": 400,
+        "jsonBody": [
+          {
+            "fieldId": "/client/registrationNumber",
+            "errorMsg": "Registration number already exists",
+            "match": "00000001"
+          }
+        ],
         "fixedDelayMilliseconds": 200
       }
     }

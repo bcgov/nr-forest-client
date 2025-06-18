@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
 import { AxiosError } from "axios";
 import * as jsonpatch from "fast-json-patch";
 
@@ -56,20 +56,35 @@ import {
   createClientLocation,
   type ClientContact,
   createClientContact,
+  type ValidationMessageType,
+  type ClientInformation,
 } from "@/dto/CommonTypesDto";
 
 // Page components
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
+import HistoryView from "@/pages/client-details/HistoryView.vue";
 import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 
 // Route related
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id as string;
 
+const selectedTab = ref<string>();
+watch(router.currentRoute, ({ hash }) => {
+  selectedTab.value = (hash || "#locations").substring(1);
+}, { immediate: true });
+
 const toastBus = useEventBus<ModalNotification>("toast-notification");
+
 const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
+
+/**
+ * Event bus for submission error notifications.
+ */
+ const errorBus = useEventBus<ValidationMessageType[]>("submission-error-notification");
+
 const { setFocusedComponent, setScrollPoint } = useFocus();
 
 const data = ref<ClientDetails>(undefined);
@@ -91,9 +106,9 @@ watch(fetchError, (value) => {
   globalError.value = value;
 });
 
-const clientFullName = computed(() => {
-  if (data.value) {
-    const { legalFirstName, legalMiddleName, clientName } = data.value.client;
+const buildFullName = (clientInfo: ClientInformation) => {
+  if (clientInfo) {
+    const { legalFirstName, legalMiddleName, clientName } = clientInfo;
     const rawParts = [legalFirstName, legalMiddleName, clientName];
     const populatedParts = [];
     for (const part of rawParts) {
@@ -103,6 +118,13 @@ const clientFullName = computed(() => {
     }
     const fullClientName = populatedParts.join(" ");
     return fullClientName;
+  }
+  return "";
+};
+
+const clientFullName = computed(() => {
+  if (data.value) {
+    return buildFullName(data.value.client);
   }
   return "";
 });
@@ -289,7 +311,7 @@ const addLocation = () => {
 
   const index = sortedLocations.value.length - 1;
   setScrollPoint(`location-${index}-heading`, undefined, () => {
-    setFocusedComponent(`location-${index}-heading`)
+    setFocusedComponent(`location-${index}-heading`);
   });
 };
 
@@ -313,7 +335,7 @@ const addContact = () => {
   contactsState[contactId] = createContactState({ startOpen: true });
   
   setScrollPoint(`contact-${contactId}-heading`, undefined, () => {
-    setFocusedComponent(`contact-${contactId}-heading`)
+    setFocusedComponent(`contact-${contactId}-heading`);
   });
 };
 
@@ -333,11 +355,6 @@ const updateContactName = (contactName: string, contactId: number) => {
 
 const openRelatedClientsLegacy = () => {
   const url = `https://${greenDomain}/int/client/client04RelatedClientListAction.do?bean.clientNumber=${clientNumber}`;
-  window.open(url, "_blank", "noopener");
-};
-
-const openMaintenanceLegacy = () => {
-  const url = `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`;
   window.open(url, "_blank", "noopener");
 };
 
@@ -508,13 +525,17 @@ const handlePatch = (
 };
 
 // Function to save
-const saveSummary = (patchData: jsonpatch.Operation[]) => {
+const saveSummary = (payload: SaveEvent<ClientDetails>) => {
+  const { updatedData: updatedClient, patch: patchData} = payload;
+
+  const updatedFullName = buildFullName(updatedClient.client);
+
   const onSuccess: OnSuccess = () => {
     const toastNotification: ModalNotification = {
       kind: "Success",
       active: true,
       handler: () => {},
-      message: `Client <span class="weight-700">“${clientFullName.value}”</span> was updated`,
+      message: `Client <span class="weight-700">“${updatedFullName}”</span> was updated`,
       toastTitle: undefined,
     };
     toastBus.emit(toastNotification);
@@ -533,6 +554,33 @@ const saveSummary = (patchData: jsonpatch.Operation[]) => {
     };
     toastBus.emit(toastNotification);
     globalError.value = error;
+    if (error.code === AxiosError.ERR_BAD_REQUEST && Array.isArray(error.response.data)) {
+      const validationMessages: ValidationMessageType[] = (error.response.data as any[]).flatMap(
+        (error) => {
+          /*
+          For the registrationNumber error, splits the error in two so as to put the two related fields in error
+          state.
+          Also uses a common parent path "/client/registrationNumber" so as to identify it as a group error
+          i.e. an error that concerns to the two fields combined.
+          */
+          const registrationNumberGroup = ["/client/registrationNumber/type", "/client/registrationNumber/number"];
+
+          const fieldList = error?.fieldId === "/client/registrationNumber" ? registrationNumberGroup : [error?.fieldId];
+          return fieldList.map((fieldId) => ({
+            fieldId,
+            fieldName: "",
+            errorMsg: error?.errorMsg || "custom", // we need a non-empty value here to activate the error state
+            custom: {
+              ...error,
+            },
+          }));
+        },
+      );
+      errorBus.emit(validationMessages, {
+        skipNotification: true,
+      });
+      setScrollPoint("top-notification");
+    }
   };
   handlePatch(patchData, onSuccess, onFailure);
 };
@@ -739,6 +787,26 @@ const resetGlobalError = () => {
 };
 
 resetGlobalError();
+
+const isHistoryPanelVisible = ref(false);
+
+onMounted(async () => {
+  await nextTick();
+
+  const tabs = document.querySelector('cds-tabs');
+  if (tabs) {
+    tabs.addEventListener('cds-tabs-selected', (event: any) => {
+      selectedTab.value = event.detail.item.value;
+      
+      setTimeout(() => {
+        const panel = document.getElementById('panel-history');
+        if (panel) {
+          isHistoryPanelVisible.value = !panel.hasAttribute('hidden');
+        }
+      }, 0);
+    });
+  }
+});
 </script>
 
 <template>
@@ -826,9 +894,10 @@ resetGlobalError();
       </div>
       <div class="invisible"></div>
     </div>
-    <div v-if="!fetchError.code" class="client-details-content tabs-container opaque-background">
-      <cds-tabs value="locations" type="contained">
-        <cds-tab id="tab-locations" target="panel-locations" value="locations">
+    <div :id="selectedTab" v-if="!fetchError.code" class="client-details-content tabs-container opaque-background">
+      <cds-tabs :value="selectedTab" type="contained">
+        <cds-tab
+          id="tab-locations" target="panel-locations" value="locations">
           <div>
             Client locations
             <Location16 />
@@ -846,9 +915,9 @@ resetGlobalError();
             <NetworkEnterprise16 />
           </div>
         </cds-tab>
-        <cds-tab id="tab-activity" target="panel-activity" value="activity">
+        <cds-tab id="tab-history" target="panel-history" value="history">
           <div>
-            Activity log
+            History
             <RecentlyViewed16 />
           </div>
         </cds-tab>
@@ -1055,28 +1124,12 @@ resetGlobalError();
           </div>
         </div>
       </div>
-      <div id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" hidden>
-        <div class="tab-panel tab-panel--empty">
-          <div class="empty-table-list">
-            <tools-svg alt="Tools pictogram" class="standard-svg" />
-            <div class="description">
-              <div class="inner-description">
-                <p class="heading-02">Under construction</p>
-                <p class="body-compact-01">
-                  Check this content in the legacy system. It opens in a new tab.
-                </p>
-              </div>
-              <cds-button
-                id="open-maintenance-btn"
-                kind="tertiary"
-                size="md"
-                @click.prevent="openMaintenanceLegacy"
-              >
-                <span>Open in legacy system</span>
-                <Launch16 slot="icon" />
-              </cds-button>
-            </div>
-          </div>
+
+      <div id="panel-history" role="tabpanel" aria-labelledby="tab-history" hidden>
+        <div class="tab-panel tab-panel--populated" style="padding-top: 2.7rem;">
+          <template v-if="data && isHistoryPanelVisible">
+            <history-view />
+          </template>
         </div>
       </div>
     </div>

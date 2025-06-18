@@ -1,8 +1,6 @@
 import type { ClientSearchResult } from "@/dto/CommonTypesDto";
 
 describe("Search Page", () => {
-  const greenDomain = Cypress.env("VITE_GREEN_DOMAIN");
-
   const predictiveSearchCounter = {
     count: 0,
   };
@@ -148,7 +146,7 @@ describe("Search Page", () => {
         cy.fillFormEntry("#search-box", "d", { skipBlur: true });
       });
 
-      it("makes another the API call with the updated keywords", () => {
+      it("makes another API call with the updated keywords", () => {
         cy.wait("@predictiveSearch").then((interception) => {
           expect(interception.request.query.keyword).to.eq("card");
         });
@@ -187,16 +185,6 @@ describe("Search Page", () => {
           `/clients/details/${clientNumber}`,
           "_self",
         );
-      });
-      describe("and STAFF_CLIENT_DETAIL is turned off", () => {
-        it("navigates to the client details in the legacy application", () => {
-          cy.get("@windowOpen").should(
-            "be.calledWith",
-            `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
-            "_blank",
-            "noopener",
-          );
-        });
       });
     });
 
@@ -242,16 +230,6 @@ describe("Search Page", () => {
             `/clients/details/${clientNumber}`,
             "_self",
           );
-        });
-        describe("and STAFF_CLIENT_DETAIL is turned off", () => {
-          it("navigates to the client details in the legacy application", () => {
-            cy.get("@windowOpen").should(
-              "be.calledWith",
-              `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
-              "_blank",
-              "noopener",
-            );
-          });
         });
       });
 

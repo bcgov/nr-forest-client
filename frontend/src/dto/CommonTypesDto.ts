@@ -29,6 +29,7 @@ export interface ValidationMessageType {
   errorMsg: string;
   originalValue?: string;
   warning?: boolean;
+  custom?: Record<string, any>;
 }
 
 export interface FuzzyMatchResult {
@@ -368,7 +369,7 @@ export interface ClientInformation {
   wcbFirmNumber: string;
   ocgSupplierNmbr: string;
   clientComment: string;
-  clientCommentUpdateDate: string;
+  clientCommentUpdateDate: Date;
   clientCommentUpdateUser: string;
   goodStandingInd: string;
   birthdate: string;
@@ -397,4 +398,26 @@ export interface SaveEvent<T> {
   updatedData: T;
   action: ActionWords;
   operationType: OperationType;
+}
+
+export interface HistoryLogDetail {
+  columnName: string;
+  oldValue: string;
+  newValue: string;
+}
+
+export interface HistoryLogReason {
+  actionCode: string;
+  reason: string;
+}
+
+export interface HistoryLogResult {
+  tableName: string;
+  idx: string;
+  identifierLabel: string;
+  updateTimestamp: Date;
+  updateUserid: string;
+  changeType: string;
+  details: HistoryLogDetail[];
+  reasons: HistoryLogReason[];
 }

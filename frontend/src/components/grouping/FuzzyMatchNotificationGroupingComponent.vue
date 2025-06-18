@@ -11,7 +11,6 @@ import type {
   ValidationMessageType,
   MiscFuzzyMatchResult,
 } from "@/dto/CommonTypesDto";
-import { greenDomain } from "@/CoreConstants";
 import { convertFieldNameToSentence } from "@/services/ForestClientService";
 
 const props = defineProps<{
@@ -195,20 +194,17 @@ const getListItemContent = ref((match: MiscFuzzyMatchResult) => {
   return match && match.result?.match ? renderListItem(match) : "";
 });
 
-const getLegacyUrl = (duplicatedClient, label) => {
-  const encodedClientNumber = encodeURIComponent(duplicatedClient.trim());
-  switch (label) {
-    case "contact":
-      return `https://${greenDomain}/int/client/client06ContactListAction.do?bean.clientNumber=${encodedClientNumber}`;
-    case "location":
-      return `https://${greenDomain}/int/client/client07LocationListAction.do?bean.clientNumber=${encodedClientNumber}`;
-    default:
-      return `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${encodedClientNumber}`;
+const getUrl = (duplicatedClient: string, label: string) => {
+  const clientNumber = duplicatedClient.trim();
+  let hash = "";
+  if (["location", "contact"].includes(label)) {
+    hash = `#${label}s`;
   }
+  return `/clients/details/${clientNumber}${hash}`;
 };
 
 const mapNumberToUrl = (clientNumber: string, field: string) => {
-  return '<a target="_blank" href="' + getLegacyUrl(clientNumber, field) + '">' + clientNumber + "</a>";
+  return '<a target="_blank" href="' + getUrl(clientNumber, field) + '">' + clientNumber + "</a>";
 };
 
 const renderListItem = (misc: MiscFuzzyMatchResult) => {

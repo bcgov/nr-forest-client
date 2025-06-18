@@ -1,12 +1,12 @@
 package ca.bc.gov.app.service.client;
 
-import ca.bc.gov.app.service.client.validators.PatchValidator;
+import ca.bc.gov.app.util.PatchUtils;
+import ca.bc.gov.app.validator.PatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
-import java.util.function.BinaryOperator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,33 +39,29 @@ public class ClientPatchService {
       JsonNode forestClient,
       String userName
   ) {
-    log.info("{} requested to patch client {}", userName, clientNumber);
+    log.info("{} requested to patch client {} with data {}", userName, clientNumber, forestClient);
 
     return
         Flux
-            .fromIterable(validators)
-            .flatMap(validator ->
+            .fromIterable(forestClient)
+            .flatMap(node ->
                 Flux
-                    .fromIterable(forestClient)
-                    .filter(validator.shouldValidate())
-                    .flatMap(validator.validate())
+                    .fromIterable(validators)
+                    .flatMap(validator ->
+                        Mono
+                            .just(node)
+                            .filter(validator.shouldValidate())
+                            .flatMap(validator.validate())
+                            .flatMap(validator.globalValidator(forestClient, clientNumber))
+                    )
+                    .reduce(PatchUtils.mergeNodes(mapper))
+                    .defaultIfEmpty(node)
             )
-            .reduce(mapper.createArrayNode(), mergeNodes())
+            .collect(mapper::createArrayNode, ArrayNode::add)
+            .doOnNext(x -> log.info("Final merged patch: {}", x))
             .flatMap(node ->
                 legacyService.patchClient(clientNumber, node, userName)
             );
   }
 
-  private BinaryOperator<JsonNode> mergeNodes() {
-    return (node1, node2) -> {
-      ArrayNode arrayNode = mapper.createArrayNode();
-      if (node1 instanceof ArrayNode) {
-        arrayNode = node1.deepCopy();
-      } else {
-        arrayNode.add(node1);
-      }
-      arrayNode.add(node2);
-      return arrayNode;
-    };
-  }
 }

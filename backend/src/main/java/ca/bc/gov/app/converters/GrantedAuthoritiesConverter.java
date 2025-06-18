@@ -3,6 +3,7 @@ package ca.bc.gov.app.converters;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -53,7 +54,7 @@ private List<GrantedAuthority> loadRoles(Jwt jwt) {
     roles = rawRolesList.stream()
         .filter(Objects::nonNull)
         .map(Object::toString)
-        .map(String::toUpperCase)
+        .map(s -> s.toUpperCase(Locale.ROOT))
         .toList();
   }
 
@@ -88,7 +89,7 @@ private List<GrantedAuthority> loadRoleFromIdp(Jwt jwt) {
       // If the claim starts with "ca.bc.gov.flnr.fam." then convert it to "bcsc"
       .map(idp -> idp.startsWith("ca.bc.gov.flnr.fam.") ? "bcsc" : idp)
       // Convert the string to uppercase
-      .map(String::toUpperCase)
+      .map(s -> s.toUpperCase(Locale.ROOT))
       // Add the "ROLE_" prefix and "_USER" suffix to the string
       .map(idp -> "ROLE_" + idp + "_USER")
       // Create a new SimpleGrantedAuthority object with the string

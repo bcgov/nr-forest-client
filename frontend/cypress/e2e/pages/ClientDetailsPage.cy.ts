@@ -102,7 +102,7 @@ describe("Client Details Page", () => {
     cy.contains("cds-tab", "Client locations");
     cy.contains("cds-tab", "Client contacts");
     cy.contains("cds-tab", "Related clients");
-    cy.contains("cds-tab", "Activity log");
+    cy.contains("cds-tab", "History");
   });
 
   const nameScenarios = [
@@ -210,7 +210,7 @@ describe("Client Details Page", () => {
             },
           ).as("getClientDetails");
 
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
           cy.get("#summaryEditBtn").click();
           cy.clearFormEntry("#input-workSafeBCNumber");
           cy.get("#summarySaveBtn").click();
@@ -240,11 +240,11 @@ describe("Client Details Page", () => {
         });
       });
 
-      describe("on failure", { testIsolation: false }, () => {
+      describe("on generic failure", { testIsolation: false }, () => {
         before(function () {
           init.call(this);
 
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
           cy.get("#summaryEditBtn").click();
           cy.fillFormEntry("[data-id='input-input-notes']", "error", { area: true });
           cy.get("#summarySaveBtn").click();
@@ -262,6 +262,32 @@ describe("Client Details Page", () => {
           cy.get("#summarySaveBtn").should("be.visible");
         });
       });
+
+      describe("on duplicated acronym failure ", { testIsolation: false }, () => {
+        before(function () {
+          init.call(this);
+
+          cy.visit("/clients/details/p");
+          cy.get("#summaryEditBtn").click();
+          cy.clearFormEntry("#input-acronym");
+          cy.fillFormEntry("#input-acronym", "ERR");
+          cy.get("#summarySaveBtn").click();
+        });
+
+        it("shows the error toast", () => {
+          cy.get("cds-toast-notification[kind='error']").should("be.visible");
+        });
+
+        it("shows a custom error message on the Acronym input field", () => {
+          cy.get("#input-acronym")
+            .find("[slot='invalid-text']")
+            .contains("Looks like this acronym belongs to client 00000001. Try another acronym");
+
+          cy.get("#input-acronym").find("[slot='invalid-text'] a").should("have.attr", "href");
+
+          cy.get("#input-acronym").find("[slot='invalid-text'] a").should("have.text", "00000001");
+        });
+      });
     });
   });
 
@@ -277,7 +303,7 @@ describe("Client Details Page", () => {
           cy.intercept("GET", "/api/codes/update-reasons/*/*")
             .as("getReasonsList");
   
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
 
           cy.get("#summaryEditBtn")
             .click();
@@ -326,7 +352,7 @@ describe("Client Details Page", () => {
               op: "add",
               path: "/reasons/0",
               value: {
-                field: "clientStatusCode",
+                field: "/client/clientStatusCode",
                 reason: "R1",
               },
             });
@@ -336,14 +362,228 @@ describe("Client Details Page", () => {
       });
 
     });
-  });  
+  });
+
+  describe("summary (role:CLIENT_ADMIN)", () => {
+    describe("save client type Individual", () => {
+      describe("name change", { testIsolation: false }, () => {
+        beforeEach(function () {
+          init.call(this);
+
+          cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
+
+          cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
+
+          cy.visit("/clients/details/i");
+
+          cy.get("#summaryEditBtn").click();
+
+          cy.clearFormEntry("#input-legalFirstName");
+          cy.fillFormEntry("#input-legalFirstName", "Jack");
+
+          cy.clearFormEntry("#input-legalMiddleName");
+          cy.fillFormEntry("#input-legalMiddleName", "Johnson");
+
+          cy.get("#summarySaveBtn").click();
+
+          cy.wait("@getReasonsList").then(({ request }) => {
+            // requests the list of options related to Name change
+            expect(request.url.endsWith("/NAME")).to.eq(true);
+          });
+        });
+
+        it("opens the reason modal and sends the correct PATCH request with reasons", () => {
+          cy.get("#reason-modal").should("be.visible");
+
+          cy.get("#input-reason-0").should("exist");
+
+          cy.get("#input-reason-0").find('[part="trigger-button"]').click();
+
+          cy.get("#input-reason-0").find("cds-dropdown-item").first().should("be.visible").click();
+
+          cy.get("#reasonSaveBtn").click();
+
+          cy.wait("@saveClientDetails").then((interception) => {
+            const requestBody = interception.request.body;
+
+            cy.log("Request Body:", JSON.stringify(requestBody));
+
+            expect(requestBody).to.deep.include({
+              op: "add",
+              path: "/reasons/0",
+              value: {
+                field: "/client/name",
+                reason: "R1",
+              },
+            });
+          });
+        });
+      });
+
+      describe("ID change", { testIsolation: false }, () => {
+        beforeEach(function () {
+          init.call(this);
+
+          cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
+
+          cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
+
+          cy.visit("/clients/details/i");
+
+          cy.get("#summaryEditBtn").click();
+
+          cy.selectFormEntry("#input-clientIdType", "Alaska Drivers Licence");
+
+          cy.clearFormEntry("#input-clientIdentification");
+          cy.fillFormEntry("#input-clientIdentification", "ABC12345");
+
+          cy.get("#summarySaveBtn").click();
+
+          cy.wait("@getReasonsList").then(({ request }) => {
+            // requests the list of options related to Name change
+            expect(request.url.endsWith("/ID")).to.eq(true);
+          });
+        });
+
+        it("opens the reason modal and sends the correct PATCH request with reasons", () => {
+          cy.get("#reason-modal").should("be.visible");
+
+          cy.get("#input-reason-0").should("exist");
+
+          cy.get("#input-reason-0").find('[part="trigger-button"]').click();
+
+          cy.get("#input-reason-0").find("cds-dropdown-item").first().should("be.visible").click();
+
+          cy.get("#reasonSaveBtn").click();
+
+          cy.wait("@saveClientDetails").then((interception) => {
+            const requestBody = interception.request.body;
+
+            cy.log("Request Body:", JSON.stringify(requestBody));
+
+            expect(requestBody).to.deep.include({
+              op: "add",
+              path: "/reasons/0",
+              value: {
+                field: "/client/id",
+                reason: "R1",
+              },
+            });
+          });
+        });
+      });
+    });
+
+    describe("change client type from Individual to Corporation", { testIsolation: false }, () => {
+      before(function () {
+        init.call(this);
+
+        cy.visit("/clients/details/i");
+
+        cy.get("#summaryEditBtn").click();
+
+        cy.selectFormEntry("#input-clientType", "Corporation");
+      });
+
+      beforeEach(() => {
+        cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
+        cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
+      });
+
+      it("asks both reasons for NAME and ID change", () => {
+        cy.get("#summarySaveBtn").click();
+
+        cy.wait("@getReasonsList").then(({ request }) => {
+          // requests the list of options related to Name change
+          expect(request.url.endsWith("/ID")).to.eq(true);
+        });
+
+        cy.wait("@getReasonsList").then(({ request }) => {
+          // requests the list of options related to Name change
+          expect(request.url.endsWith("/NAME")).to.eq(true);
+        });
+
+        cy.get("#input-reason-0").find('[part="trigger-button"]').click();
+        cy.get("#input-reason-0").find("cds-dropdown-item").first().should("be.visible").click();
+
+        cy.get("#input-reason-1").find('[part="trigger-button"]').click();
+        cy.get("#input-reason-1").find("cds-dropdown-item").first().should("be.visible").click();
+      });
+
+      it("removes the values from Individual related fields", () => {
+        cy.get("#reasonSaveBtn").click();
+
+        cy.wait("@saveClientDetails").then((interception) => {
+          const requestBody = interception.request.body;
+
+          expect(requestBody).to.be.an("array");
+
+          expect(requestBody).to.deep.include({
+            op: "replace",
+            path: "/client/legalFirstName",
+            value: null,
+          });
+
+          expect(requestBody).to.deep.include({
+            op: "replace",
+            path: "/client/legalMiddleName",
+            value: null,
+          });
+
+          expect(requestBody).to.deep.include({
+            op: "replace",
+            path: "/client/birthdate",
+            value: null,
+          });
+
+          expect(requestBody).to.deep.include({
+            op: "replace",
+            path: "/client/clientIdTypeCode",
+            value: null,
+          });
+
+          expect(requestBody).to.deep.include({
+            op: "replace",
+            path: "/client/clientIdentification",
+            value: null,
+          });
+        });
+      });
+    });
+
+    describe("on duplicated registration number failure ", { testIsolation: false }, () => {
+      before(function () {
+        init.call(this);
+
+        cy.visit("/clients/details/p");
+        cy.get("#summaryEditBtn").click();
+        cy.clearFormEntry("#input-registryNumber");
+        cy.fillFormEntry("#input-registryNumber", "9090");
+        cy.get("#summarySaveBtn").click();
+      });
+
+      it("shows the error toast", () => {
+        cy.get("cds-toast-notification[kind='error']").should("be.visible");
+      });
+
+      it("shows a custom error message on the Registration number input group", () => {
+        cy.get("#registration-number .field-error").contains(
+          "Looks like this registration number belongs to client 00000001. Try another registration number",
+        );
+
+        cy.get("#registration-number .field-error").find("a").should("have.attr", "href");
+
+        cy.get("#registration-number .field-error").find("a").should("have.text", "00000001");
+      });
+    });
+  });
 
   describe("locations tab", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
       describe("3 active locations", () => {
         before(function () {
           init.call(this);
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
         });
 
         it("displays the number of locations", () => {
@@ -390,7 +630,7 @@ describe("Client Details Page", () => {
       describe("2 locations - 1 active and 1 deactivated", () => {
         before(function () {
           init.call(this);
-          cy.visit("/clients/details/gd");
+          cy.visit("/clients/details/pd");
         });
         it("doesn't display the tag Deactivated when location is not expired", () => {
           cy.get("cds-tag#location-00-deactivated").should("not.exist");
@@ -415,11 +655,11 @@ describe("Client Details Page", () => {
 
     describe("regular, isolated tests", () => {
       beforeEach(() => {
-        cy.visit("/clients/details/g");
+        cy.visit("/clients/details/p");
       });
 
       it("hides the address on the accordion's title when it's expanded", () => {
-        cy.visit("/clients/details/g");
+        cy.visit("/clients/details/p");
 
         // Clicks to expand the accordion
         cy.get("#location-00 [slot='title']").click();
@@ -428,7 +668,7 @@ describe("Client Details Page", () => {
       });
 
       it("keeps accordions' states while tabs are switched", () => {
-        cy.visit("/clients/details/g");
+        cy.visit("/clients/details/p");
 
         // Expand first and third locations, leave second one collapsed
         cy.get("#location-00 [slot='title']").click();
@@ -458,7 +698,7 @@ describe("Client Details Page", () => {
     describe("when role:CLIENT_EDITOR", () => {
       describe("name duplication", () => {
         beforeEach(() => {
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
 
           // Clicks to expand the accordion
           cy.get("#location-00 [slot='title']").click();
@@ -521,7 +761,7 @@ describe("Client Details Page", () => {
                 },
               ).as("patchClientDetails");
 
-              cy.visit("/clients/details/g");
+              cy.visit("/clients/details/p");
               cy.wait("@getClientDetails");
 
               if (scenario.name === "edit") {
@@ -633,7 +873,7 @@ describe("Client Details Page", () => {
             before(function () {
               init.call(this);
 
-              cy.visit("/clients/details/g");
+              cy.visit("/clients/details/p");
 
               if (scenario.name === "edit") {
                 // Clicks to expand the accordion
@@ -701,7 +941,7 @@ describe("Client Details Page", () => {
 
                 cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
 
-                cy.visit("/clients/details/g");
+                cy.visit("/clients/details/p");
 
                 // Clicks to expand the accordion
                 cy.get("#location-00 [slot='title']").click();
@@ -767,7 +1007,7 @@ describe("Client Details Page", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
       before(function () {
         init.call(this);
-        cy.visit("/clients/details/g");
+        cy.visit("/clients/details/p");
 
         // Switch to the Contacts tab
         cy.get("#tab-contacts").click();
@@ -809,7 +1049,7 @@ describe("Client Details Page", () => {
     describe("regular, isolated tests", () => {
       describe("3 contacts", () => {
         beforeEach(() => {
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
 
           // Switch to the Contacts tab
           cy.get("#tab-contacts").click();
@@ -852,7 +1092,7 @@ describe("Client Details Page", () => {
       });
       describe("no contacts", () => {
         beforeEach(() => {
-          cy.visit("/clients/details/gd");
+          cy.visit("/clients/details/pd");
 
           // Switch to the Contacts tab
           cy.get("#tab-contacts").click();
@@ -926,7 +1166,7 @@ describe("Client Details Page", () => {
     describe("when role:CLIENT_EDITOR", () => {
       describe("name duplication", () => {
         beforeEach(() => {
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
 
           // Switch to the Contacts tab
           cy.get("#tab-contacts").click();
@@ -992,7 +1232,7 @@ describe("Client Details Page", () => {
                 },
               ).as("patchClientDetails");
 
-              cy.visit("/clients/details/g");
+              cy.visit("/clients/details/p");
               cy.wait("@getClientDetails");
 
               // Switch to the Contacts tab
@@ -1114,7 +1354,7 @@ describe("Client Details Page", () => {
             before(function () {
               init.call(this);
 
-              cy.visit("/clients/details/g");
+              cy.visit("/clients/details/p");
 
               // Switch to the Contacts tab
               cy.get("#tab-contacts").click();
@@ -1206,7 +1446,7 @@ describe("Client Details Page", () => {
             },
           ).as("getClientDetails");
 
-          cy.visit("/clients/details/g");
+          cy.visit("/clients/details/p");
           cy.wait("@getClientDetails");
 
           // Switch to the Contacts tab
@@ -1292,35 +1532,102 @@ describe("Client Details Page", () => {
     });
   });
 
-  describe("activity log tab", () => {
+  describe("History tab", () => {
     const clientNumber = "12321";
+  
+    let resolveGetClientHistory: () => void;
+  
     beforeEach(() => {
       cy.visit(`/clients/details/${clientNumber}`);
-
+  
       cy.window().then((win) => {
         cy.stub(win, "open").as("windowOpen");
       });
 
-      // Switch to the Activity log tab
-      cy.get("#tab-activity").click();
-
-      // Make sure the current tab panel was effectively switched
+      const promiseGetClientHistory = new Promise<void>((resolve) => {
+        resolveGetClientHistory = resolve;
+      });
+  
+      cy.intercept(
+        {
+          method: "GET",
+          pathname: `/api/clients/history-logs/${clientNumber}`,
+        },
+        (req) => {
+          req.continue(() => promiseGetClientHistory);
+        }
+      ).as("getClientHistory");
+  
+      // Now that the intercept is ready, click the tab
+      cy.get("#tab-history").click();
+  
       cy.get("#panel-locations").should("have.attr", "hidden");
-      cy.get("#panel-activity").should("not.have.attr", "hidden");
+      cy.get("#panel-history").should("not.have.attr", "hidden");
+    });
+  
+    it("shows text skeletons only while data is loading", () => {
+      cy.get(".heading-03-skeleton").should("be.visible");
+      cy.get(".history-indicator-line").should("be.visible");
+      cy.contains("h5", "Client created").should("not.exist");
+  
+      resolveGetClientHistory();
+      cy.wait("@getClientHistory");
+  
+      cy.get(".heading-03-skeleton").should("not.exist");
+      //At least a 'Client created' should be displayed
+      cy.contains("h5", "Client created").should("be.visible");
+      //The logs should the present
+      cy.get("#historyLogsId").should("be.visible");
+      //The details should not be visible
+      cy.get("#logDetails0").should("not.exist");
     });
 
-    it("should display the Under construction message", () => {
-      cy.get("#panel-activity").contains("Under construction").should("be.visible");
+    it("shows empty state page when there is no data for the selected filter", () => {
+      cy.selectFormEntry("#filterById", "Doing business as");
+
+      resolveGetClientHistory();
+      cy.wait("@getClientHistory");
+
+      cy.get(".empty-table-list").should("be.visible");
+      cy.get(".standard-svg").should("be.visible");
+    });
+  });
+
+  describe("hash links", { testIsolation: false }, () => {
+    before(function () {
+      init.call(this);
+
+      cy.intercept({
+        method: "GET",
+        pathname: "/api/clients/details/*",
+      }).as("getClientDetails");
+
+      cy.visit("/clients/details/p");
     });
 
-    it("should open the Maintenance page in the legacy application", () => {
-      cy.get("#open-maintenance-btn").click();
-      cy.get("@windowOpen").should(
-        "be.calledWith",
-        `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientNumber}`,
-        "_blank",
-        "noopener",
-      );
+    it("opens the locations tab by default", () => {
+      cy.visit("/clients/details/p");
+      cy.get("#panel-locations").should("not.have.attr", "hidden");
+    });
+
+    it("opens the contacts tab", () => {
+      cy.visit("/clients/details/p#contacts");
+      cy.get("#panel-contacts").should("not.have.attr", "hidden");
+    });
+
+    it("opens the Related clients tab", () => {
+      cy.visit("/clients/details/p#related");
+      cy.get("#panel-related").should("not.have.attr", "hidden");
+    });
+
+    it("opens the History tab", () => {
+      cy.visit("/clients/details/p#history");
+      cy.get("#panel-history").should("not.have.attr", "hidden");
+    });
+
+    it("opens the locations tab", () => {
+      cy.visit("/clients/details/p#locations");
+      cy.get("#panel-locations").should("not.have.attr", "hidden");
     });
   });
 });

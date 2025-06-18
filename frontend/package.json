@@ -25,10 +25,14 @@
     "start": "vite --host --port 3000",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "cross-env VITE_NODE_ENV=test VITE_GREEN_DOMAIN=green-domain.com start-server-and-test stub http://127.0.0.1:8080 start",
+    "preview:test": "cross-env VITE_NODE_ENV=test VITE_GREEN_DOMAIN=green-domain.com start-server-and-test stub:test http://127.0.0.1:8080 start",
     "preview:app": "cross-env VITE_NODE_ENV=test vite --host --port 3000",
     "typecheck": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --fix --ignore-path .gitignore",
     "stub": "wiremock --enable-stub-cors --global-response-templating --port 8080 --https-port 8081 --root-dir ./stub --verbose",
+    "generate:stub:test": "ts-node -O '{\"module\":\"commonjs\"}' stub-tests.ts",
+    "prestub:test": "npm run generate:stub:test",
+    "stub:test": "wiremock --enable-stub-cors --global-response-templating --port 8080 --https-port 8081 --root-dir ./stub-tests --verbose",
     "precoverage": "npm run test:report:clean",
     "coverage": "npm run test:unit && npm run test:component && npm run test:e2e",
     "postcoverage": "npm run test:report:merge",
@@ -36,7 +40,7 @@
     "posttest:component": "mv reports/.nyc_report reports/component",
     "test:unit": "cross-env VITE_NODE_ENV=test NODE_ENV=test vitest run --coverage",
     "posttest:unit": "mv reports/.vite_report reports/unit",
-    "test:e2e": "cross-env VITE_NODE_ENV=test VITE_GREEN_DOMAIN=green-domain.com VITE_FEATURE_FLAGS={\\\"STAFF_CLIENT_DETAIL\\\":true} start-server-and-test preview http://127.0.0.1:3000 'cypress run --headless'",
+    "test:e2e": "cross-env VITE_NODE_ENV=test VITE_GREEN_DOMAIN=green-domain.com start-server-and-test preview:test http://127.0.0.1:3000 'cypress run --headless'",
     "posttest:e2e": "mv reports/.nyc_report reports/e2e",
     "pretest:report:merge": "rm -rf reports-merge && mkdir -p reports-merge && for name in component e2e unit; do cp reports/$name/coverage-final.json reports-merge/$name.json; done",
     "test:report:merge": "mkdir -p .nyc_output && rm -rf coverage && nyc --config nyc.config.json merge reports-merge &&  mv coverage.json .nyc_output/out.json && nyc --config nyc.config.json report --reporter lcov --reporter text-summary --report-dir coverage --temp-dir .nyc_output",
@@ -65,10 +69,10 @@
     "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^3.13.12",
+    "@cypress/code-coverage": "^3.14.4",
     "@rushstack/eslint-patch": "^1.1.0",
     "@types/jsdom": "^21.1.7",
-    "@types/node": "^22.10.7",
+    "@types/node": "^24.0.3",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
     "@vitejs/plugin-vue": "^5.2.1",
@@ -78,7 +82,7 @@
     "@vue/test-utils": "^2.4.0",
     "@vue/tsconfig": "^0.7.0",
     "cross-env": "^7.0.3",
-    "cypress": "^14.2.1",
+    "cypress": "^14.4.1",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard": "^17.1.0",
@@ -106,7 +110,7 @@
     "vue-eslint-parser": "^9.4.3",
     "vue-svg-loader": "^0.16.0",
     "vue-tsc": "^2.2.0",
-    "wiremock": "^3.12.1"
+    "wiremock": "^3.13.1"
   },
   "overrides": {
     "follow-redirects@<1.15.6": "1.15.6"

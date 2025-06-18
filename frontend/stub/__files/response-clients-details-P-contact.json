@@ -1,6 +1,6 @@
 {
   "client": {
-    "registryCompanyTypeCode": "GP",
+    "registryCompanyTypeCode": "FM",
     "corpRegnNmbr": "{{randomValue length=8 type='NUMERIC'}}",
     "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
     "clientName": "KOVACEK, THOMPSON AND BOYER",
@@ -8,25 +8,16 @@
     "clientTypeCode": "P",
     "clientTypeDesc": "General Partnership",
     "goodStandingInd": "Y",
-    "clientStatusCode": "SPN",
-    "clientStatusDesc": "Suspended",
+    "clientStatusCode": "ACT",
+    "clientStatusDesc": "Active",
     "clientComment": "Email from Cheryl Bibby to request any letters for sec deposits be mailed to 3000, 28th St, Vernon",
+    "clientCommentUpdateDate": "2024-11-07T11:39:46",
+    "clientCommentUpdateUser": "IDIR\\PPEREZ",
     "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}"
   },
   "contacts": [
     {
-      "contactId": "{{randomValue length=8 type='NUMERIC'}}",
-      "locationCodes": ["00"],
-      "contactName": "Cheryl Bibby",
-      "contactTypeCode": "BL",
-      "contactTypeDesc": "Billing",
-      "businessPhone": "{{randomValue length=10 type='NUMERIC'}}",
-      "secondaryPhone": "{{randomValue length=10 type='NUMERIC'}}",
-      "faxNumber": "{{randomValue length=10 type='NUMERIC'}}",
-      "emailAddress": "cheryl@ktb.com"
-    },
-    {
-      "contactId": "{{randomValue length=8 type='NUMERIC'}}",
+      "contactId": 11,
       "locationCodes": ["01", "02"],
       "contactName": "Edward Burns",
       "contactTypeCode": "DI",
@@ -37,7 +28,7 @@
       "emailAddress": "burns@ktb.com"
     },
     {
-      "contactId": "{{randomValue length=8 type='NUMERIC'}}",
+      "contactId": 12,
       "locationCodes": ["02"],
       "contactName": "Christoffer Stewart",
       "contactTypeCode": "BL",

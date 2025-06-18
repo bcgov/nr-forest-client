@@ -13,6 +13,7 @@ import ca.bc.gov.app.repository.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
 import ca.bc.gov.app.service.bcregistry.BcRegistryService;
 import ca.bc.gov.app.util.ProcessorUtil;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
@@ -103,7 +104,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                                 "sole proprietor registered on BC Registry with number",
                                 submissionDetail.getRegistrationNumber(),
                                 "and company name",
-                                submissionDetail.getOrganizationName().toUpperCase()
+                                submissionDetail.getOrganizationName().toUpperCase(Locale.ROOT)
                             )
                         )
                     )
@@ -116,10 +117,10 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     .withWcbFirmNumber(submissionDetail.getWorkSafeBCNumber())
 
                     .withLegalFirstName(
-                        isStaffSubmitted(message) ? submissionDetail.getFirstName().toUpperCase()
+                        isStaffSubmitted(message) ? submissionDetail.getFirstName().toUpperCase(Locale.ROOT)
                             : StringUtils.EMPTY)
                     .withClientName(
-                        isStaffSubmitted(message) ? submissionDetail.getLastName().toUpperCase()
+                        isStaffSubmitted(message) ? submissionDetail.getLastName().toUpperCase(Locale.ROOT)
                             : StringUtils.EMPTY)
                     .withClientTypeCode("I")
                     .withClientIdTypeCode("BCRE")
@@ -142,7 +143,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     message.parameters()
                 )
                     .withParameter(ApplicationConstant.FOREST_CLIENT_NAME,
-                            atomicClientName.get().toUpperCase()
+                            atomicClientName.get().toUpperCase(Locale.ROOT)
                     )
                     .withParameter(ApplicationConstant.REGISTRATION_NUMBER,
                         String.join(StringUtils.EMPTY,
@@ -156,7 +157,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     )
                     .withParameter(
                         ApplicationConstant.DOING_BUSINESS_AS,
-                        atomicClientName.get().toUpperCase()
+                        atomicClientName.get().toUpperCase(Locale.ROOT)
                     )
             );
 
@@ -179,8 +180,8 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
         .map(BcRegistryPartyDto::officer)
         .map(contact ->
             new String[]{
-                contact.firstName().toUpperCase(),
-                contact.lastName().toUpperCase()
+                contact.firstName().toUpperCase(Locale.ROOT),
+                contact.lastName().toUpperCase(Locale.ROOT)
             })
         .switchIfEmpty(
             //In case of negative results from BC Registry (rare)
@@ -199,8 +200,8 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                 .filter(index -> index.getT1() < 2)
                 .map(Tuple2::getT2)
                 .map(contact -> new String[]{
-                    contact.getFirstName().toUpperCase(),
-                    contact.getLastName().toUpperCase()
+                    contact.getFirstName().toUpperCase(Locale.ROOT),
+                    contact.getLastName().toUpperCase(Locale.ROOT)
                 })
                 //Grab the last, as it should cover the case of the second being removed
                 .last()

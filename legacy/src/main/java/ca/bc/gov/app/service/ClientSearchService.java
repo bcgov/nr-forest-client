@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -98,7 +99,7 @@ public class ClientSearchService {
                 registrationNumber, companyName, dto.getClientNumber(), dto.getClientName()))
         .switchIfEmpty(Flux.from(Mono.justOrEmpty(Optional.ofNullable(companyName)))
             .filter(StringUtils::isNotBlank).flatMap(
-                name -> doingBusinessAsRepository.findByDoingBusinessAsName(name.toUpperCase())
+                name -> doingBusinessAsRepository.findByDoingBusinessAsName(name.toUpperCase(Locale.ROOT))
                     .doOnNext(dto -> log.info("Found client doing business as: {} {}",
                         dto.getClientNumber(), dto.getDoingBusinessAsName()))
                     .map(ClientDoingBusinessAsEntity::getClientNumber)
@@ -505,7 +506,6 @@ public class ClientSearchService {
         .doOnNext(dto -> log.info("Found client with client number {}", clientNumber));
   }
 
-
   /**
    * Performs a predictive search for clients using a "like" or similarity-based strategy.
    * If the search value is blank or null, a {@link MissingRequiredParameterException} is returned.
@@ -529,12 +529,12 @@ public class ClientSearchService {
       return Flux.error(new MissingRequiredParameterException("value"));
     }
 
-    return forestClientRepository.countByPredictiveSearchWithLike(value.toUpperCase())
+    return forestClientRepository.countByPredictiveSearchWithLike(value.toUpperCase(Locale.ROOT))
         .flatMapMany(count -> {
             if (count > 0) {
               return forestClientRepository
                   .findByPredictiveSearchWithLike(
-                      value.toUpperCase(), page.getPageSize(), page.getOffset()
+                      value.toUpperCase(Locale.ROOT), page.getPageSize(), page.getOffset()
                   )
                   .doOnNext(dto -> log.info(
                       "Performed search with like for value {} as {} {} with score {}", 
@@ -543,10 +543,10 @@ public class ClientSearchService {
                   .map(dto -> Pair.of(dto, count));
             } else {
               return forestClientRepository
-                  .countByPredictiveSearchWithSimilarity(value.toUpperCase())
+                  .countByPredictiveSearchWithSimilarity(value.toUpperCase(Locale.ROOT))
                   .flatMapMany(similarityCount -> forestClientRepository
                       .findByPredictiveSearchWithSimilarity(
-                          value.toUpperCase(), page.getPageSize(), page.getOffset()
+                          value.toUpperCase(Locale.ROOT), page.getPageSize(), page.getOffset()
                       )
                       .doOnNext(dto -> log.info(
                           "Performed search with similarity for value {} as {} {} with score {}",
@@ -571,6 +571,16 @@ public class ClientSearchService {
             LocalDateTime.now().minus(configuration.getData().getPredictiveCap())).doOnNext(
             dto -> log.info("Found complex empty search as {} {} with score {}", dto.clientNumber(),
                 dto.clientFullName(), dto.score())).map(dto -> Pair.of(dto, count)));
+  }
+
+  public Flux<ForestClientDto> searchByCorporationValues(
+      String clientNumber,
+      String companyType,
+      String companyNumber
+      ){
+    return clientRepository
+        .findByCompanyTypeOrNumber(clientNumber, companyType, companyNumber)
+        .map(forestClientMapper::toDto);
   }
 
   /**

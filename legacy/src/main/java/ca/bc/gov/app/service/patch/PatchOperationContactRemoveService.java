@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(5)
+@Order(7)
 public class PatchOperationContactRemoveService implements ClientPatchOperation {
 
   private static final String REMOVE_ALL_CONTACTS = """

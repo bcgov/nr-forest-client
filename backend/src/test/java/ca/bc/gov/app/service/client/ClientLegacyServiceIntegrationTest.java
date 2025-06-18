@@ -10,7 +10,6 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
@@ -39,7 +38,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import reactor.test.StepVerifier;
 
 @DisplayName("Integration Test | Client Legacy Service Test")
@@ -62,7 +60,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
   private ClientLegacyService service;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     legacyStub.resetAll();
   }
 
@@ -623,6 +621,83 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
               return dto.tableName().equals("ClientInformation")
                   && dto.details().get(0).columnName().equals("clientName");
           })
+          .verifyComplete();
+  }
+  
+  
+  @Test
+  @DisplayName("Retrieve active registry types by client type")
+  void testFindActiveRegistryTypesByClientType() {
+      String clientTypeCode = "C";
+
+      CodeNameDto expectedDto = new CodeNameDto("BC", "British Columbia Company");
+
+      Logger logger = (Logger) LoggerFactory.getLogger(ClientLegacyService.class);
+
+      ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+      listAppender.start();
+      logger.addAppender(listAppender);
+      
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/registry-types/" + clientTypeCode))
+              .willReturn(okJson("[{\"code\":\"BC\",\"name\":\"British Columbia Company\"}]"))
+      );
+
+      service
+          .findActiveRegistryTypeCodesByClientTypeCode(clientTypeCode)
+          .as(StepVerifier::create)
+          .expectNext(expectedDto)
+          .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Retrieve active client types")
+  void testFindActiveClientTypes() {
+
+      CodeNameDto expectedDto = new CodeNameDto("C", "Corporation");
+
+      Logger logger = (Logger) LoggerFactory.getLogger(ClientLegacyService.class);
+
+      ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+      listAppender.start();
+      logger.addAppender(listAppender);
+      
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-types"))
+              .willReturn(aResponse()
+                  .withStatus(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody("[{\"code\":\"C\",\"name\":\"Corporation\"}]"))
+      );
+
+      service
+          .findActiveClientTypeCodes()
+          .as(StepVerifier::create)
+          .expectNext(expectedDto)
+          .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Retrieve active client ID types")
+  void testFindActiveClientIdTypes() {
+
+      CodeNameDto expectedDto = new CodeNameDto("BCDL", "British Columbia Drivers Licence");
+
+      Logger logger = (Logger) LoggerFactory.getLogger(ClientLegacyService.class);
+
+      ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+      listAppender.start();
+      logger.addAppender(listAppender);
+      
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/client-id-types"))
+              .willReturn(okJson("[{\"code\":\"BCDL\",\"name\":\"British Columbia Drivers Licence\"}]"))
+      );
+
+      service
+          .findActiveIdentificationTypeCodes()
+          .as(StepVerifier::create)
+          .expectNext(expectedDto)
           .verifyComplete();
   }
   

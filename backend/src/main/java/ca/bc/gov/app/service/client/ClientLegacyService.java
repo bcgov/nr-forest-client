@@ -561,12 +561,12 @@ public class ClientLegacyService {
   }
 
   public Flux<Pair<HistoryLogDto, Long>> retrieveHistoryLogs(
-    String clientNumber, int page, int size, List<String> sources) {
-	
-    log.info("Retrieving history log for client {} with page {} and size {} and sources {}",
-             clientNumber, page, size, sources);
+      String clientNumber, int page, int size, List<String> sources) {
 
-	return
+    log.info("Retrieving history log for client {} with page {} and size {} and sources {}",
+        clientNumber, page, size, sources);
+
+    return
 	    legacyApi
 	        .get()
 	        .uri(builder ->
@@ -579,7 +579,8 @@ public class ClientLegacyService {
 	        )
 	        .exchangeToFlux(response -> {
 	            List<String> totalCountHeader = response.headers().header("X-Total-Count");
-	            Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
+	            Long count = totalCountHeader.isEmpty() ? 
+	                0L : Long.valueOf(totalCountHeader.get(0));
 
 	            return response
 	                .bodyToFlux(HistoryLogDto.class)
@@ -590,6 +591,55 @@ public class ClientLegacyService {
 	                "Found audit data in legacy system for client number {}", clientNumber
 	            )
 	        );
+  }
+
+  public Flux<CodeNameDto> findActiveRegistryTypeCodesByClientTypeCode(String clientTypeCode) {
+    log.info("Searching for active registry types in legacy by client type {}", clientTypeCode);
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/registry-types/{clientTypeCode}", clientTypeCode)
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                    "Found active registry types in legacy with client type {}",
+                    clientTypeCode
+                )
+            );
+  }
+
+  public Flux<CodeNameDto> findActiveClientTypeCodes() {
+    log.info("Searching for active client types in legacy {}");
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/client-types")
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                    "Found active client types in legacy"
+                )
+            );
+  }
+
+  public Flux<CodeNameDto> findActiveIdentificationTypeCodes() {
+    log.info("Searching for active client ID types in legacy {}");
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/client-id-types")
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                    "Found active client ID types in legacy"
+                )
+            );
   }
 
 }

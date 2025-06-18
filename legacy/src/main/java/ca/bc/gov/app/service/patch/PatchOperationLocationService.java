@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,7 +40,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(3)
+@Order(5)
 public class PatchOperationLocationService implements ClientPatchOperation {
 
   private final R2dbcEntityOperations entityTemplate;
@@ -273,8 +274,7 @@ public class PatchOperationLocationService implements ClientPatchOperation {
   }
 
   private String uppercaseIt(String str) {
-    return StringUtils.isNotBlank(str) ? str.toUpperCase() : str;
+    return StringUtils.isNotBlank(str) ? str.toUpperCase(Locale.ROOT) : str;
   }
-
 
 }

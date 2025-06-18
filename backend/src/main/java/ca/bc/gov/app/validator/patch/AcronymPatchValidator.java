@@ -1,8 +1,9 @@
-package ca.bc.gov.app.service.client.validators;
+package ca.bc.gov.app.validator.patch;
 
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.service.client.ClientLegacyService;
+import ca.bc.gov.app.validator.PatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,8 @@ public class AcronymPatchValidator implements PatchValidator {
   @Override
   public Predicate<JsonNode> shouldValidate() {
     return node ->
-        node.get("path").asText().endsWith("/clientAcronym")
+        node.has("path")
+        && node.get("path").asText().endsWith("/clientAcronym")
         && node.get("op").asText().equals("replace");
   }
 
@@ -32,16 +34,16 @@ public class AcronymPatchValidator implements PatchValidator {
             .flatMap(this::validateUniqueness);
   }
 
-  private static ValidationException getError(String message) {
+  private static ValidationException getError(String message, String clientNumber) {
     return new ValidationException(
-        List.of(new ValidationError("/client/clientAcronym", message))
+        List.of(new ValidationError("/client/clientAcronym", message, clientNumber))
     );
   }
 
   private Mono<JsonNode> validateSize(JsonNode node) {
     String clientAcronym = node.get("value").asText();
     if (clientAcronym.length() > 8 || clientAcronym.length() < 3) {
-      return Mono.error(getError("Client acronym must be between 3 and 8 characters"));
+      return Mono.error(getError("Client acronym must be between 3 and 8 characters", null));
     }
     return Mono.just(node);
   }
@@ -53,7 +55,7 @@ public class AcronymPatchValidator implements PatchValidator {
             Map.of("acronym", List.of(node.get("value").asText()))
         )
         .next()
-        .flatMap(value -> Mono.error(getError("Client acronym already exists")))
+        .flatMap(value -> Mono.error(getError("Client acronym already exists", value.clientNumber())))
         .cast(JsonNode.class)
         .defaultIfEmpty(node);
   }

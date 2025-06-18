@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Observed
 @RequiredArgsConstructor
-@Order(7)
+@Order(9)
 public class PatchOperationContactAddService implements ClientPatchOperation {
 
   private final R2dbcEntityOperations entityTemplate;
@@ -64,7 +65,7 @@ public class PatchOperationContactAddService implements ClientPatchOperation {
                             dto.clientNumber(),
                             locationCode,
                             dto.contactTypeCode(),
-                            dto.contactName().toUpperCase(),
+                            dto.contactName().toUpperCase(Locale.ROOT),
                             dto.businessPhone(),
                             dto.secondaryPhone(),
                             dto.faxNumber(),

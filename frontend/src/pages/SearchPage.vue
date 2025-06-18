@@ -27,7 +27,6 @@ import useSvg from "@/composables/useSvg";
 
 // @ts-ignore
 import Search16 from "@carbon/icons-vue/es/search/16";
-import { greenDomain, featureFlags } from "@/CoreConstants";
 import {
   isAscii,
   isMaxSizeMsg,
@@ -139,14 +138,8 @@ const searchResultToText = (searchResult: ClientSearchResult): string => {
 
 const openClientDetails = (clientCode: string) => {
   if (clientCode) {
-    const url = featureFlags.STAFF_CLIENT_DETAIL
-      ? `/clients/details/${clientCode}`
-      : `https://${greenDomain}/int/client/client02MaintenanceAction.do?bean.clientNumber=${clientCode}`;
-
-    if (featureFlags.STAFF_CLIENT_DETAIL)
-      window.open(url, "_self");
-    else
-      window.open(url, "_blank", "noopener");
+    const url = `/clients/details/${clientCode}`;
+    window.open(url, "_self");
   }
 };
 
@@ -215,7 +208,7 @@ onMounted(() => {
           :aria-label="ariaLabel"
           autocomplete="off"
           tip=""
-          placeholder="Search by client number, name or acronym"
+          placeholder="Search by client number, name, acronym, mailing address, email address and more"
           size="lg"
           v-model="rawSearchKeyword"
           :contents="searchResultToCodeNameValueList(content)"

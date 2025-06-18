@@ -29,6 +29,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -149,27 +150,7 @@ public class ClientService {
     return legacyService
         .searchByClientNumber(clientNumber)
         .flatMap(forestClientDetailsDto -> Mono
-            .just(forestClientDetailsDto)
-            .filter(dto ->
-                StringUtils.isNotBlank(dto.client().registryCompanyTypeCode()) 
-                && StringUtils.isNotBlank(dto.client().corpRegnNmbr())
-            )            
-            .flatMap(dto ->
-                bcRegistryService
-                    .requestDocumentData(
-                        String.format(
-                            "%s%s",
-                            dto.client().registryCompanyTypeCode(),
-                            dto.client().corpRegnNmbr()
-                        )
-                    )
-                    .next()
-            )
-            .map(documentMono -> populateGoodStandingInd(forestClientDetailsDto, documentMono))
-
-            .onErrorContinue(NoClientDataFound.class, (ex, obj) ->
-                log.error("No data found on BC Registry for client number: {}", clientNumber)
-            )
+            .just(forestClientDetailsDto)      
             .onErrorContinue(UnexpectedErrorException.class, (ex, obj) ->
                 log.error("Unexpected error occurred while fetching data for client number: {}",
                     clientNumber)
@@ -180,6 +161,36 @@ public class ClientService {
                         "Corporation registration number not provided. Returning legacy details."))
             )
         );
+  }
+  
+  public Mono<String> getGoodStandingIndicator(String clientNumber) {
+    return legacyService
+        .searchByClientNumber(clientNumber)
+        .filter(dto ->
+            StringUtils.isNotBlank(dto.client().registryCompanyTypeCode())
+            && StringUtils.isNotBlank(dto.client().corpRegnNmbr())
+        )
+        .flatMap(dto ->
+            bcRegistryService
+                .requestDocumentData(
+                    dto.client().registryCompanyTypeCode()
+                        + dto.client().corpRegnNmbr()
+                )
+                .next()
+                .map(document -> {
+                  Boolean goodStanding = document.business().goodStanding();
+                  return BooleanUtils.toString(goodStanding, "Y", "N", StringUtils.EMPTY);
+                })
+        )
+        .onErrorResume(NoClientDataFound.class, ex -> {
+          log.error("No data found on BC Registry for client number: {}", clientNumber);
+          return Mono.just(StringUtils.EMPTY);
+        })
+        .onErrorResume(UnexpectedErrorException.class, ex -> {
+          log.error("Unexpected error occurred while fetching data for client number: {}", clientNumber);
+          return Mono.just(StringUtils.EMPTY);
+        })
+        .switchIfEmpty(Mono.just(StringUtils.EMPTY));
   }
 
   /**
@@ -263,29 +274,6 @@ public class ClientService {
             .then();
   }
 
-  private ForestClientDetailsDto populateGoodStandingInd(
-      ForestClientDetailsDto forestClientDetailsDto,
-      BcRegistryDocumentDto document
-  ) {
-    Boolean goodStandingInd = document.business().goodStanding();
-    String goodStanding = BooleanUtils.toString(
-        goodStandingInd,
-        "Y",
-        "N",
-        StringUtils.EMPTY
-    );
-
-    log.info("Setting goodStandingInd for client: {} to {}",
-        forestClientDetailsDto.client().clientNumber(), goodStanding);
-
-    return
-        forestClientDetailsDto.withClient(
-            forestClientDetailsDto
-                .client()
-                .withGoodStandingInd(goodStanding)
-        );
-  }
-
   private Function<BcRegistryDocumentDto, Mono<ClientDetailsDto>> buildDetails() {
     return document ->
         buildAddress(
@@ -358,7 +346,7 @@ public class ClientService {
                     null,
                     index.getAndIncrement(),
                     (addressDto.addressType() != null ? addressDto.addressType() : "").concat(
-                        " address").toUpperCase()
+                        " address").toUpperCase(Locale.ROOT)
                 )
             )
             .flatMap(address -> countryProvinceService.loadCountry(address.country().text())

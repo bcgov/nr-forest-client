@@ -195,6 +195,64 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.addresses[0].city",
             "VICTORIA",
             "HAMILTON"
+        ),
+        argumentSet(
+            "Update corporate client name with a reason",
+            "00000158",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientName\",\"value\":\"THE OAK HERITAGE GROUP\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/client/name\",\"reason\":\"CORR\"}}]",
+            "$.client.clientName",
+            "OAK HERITAGE GROUP",
+            "THE OAK HERITAGE GROUP"
+        ),
+        argumentSet(
+            "Update individual client name with a reason",
+            "00000103",
+            "[{\"op\":\"replace\",\"path\":\"/client/legalMiddleName\",\"value\":\"WALLACE\"},{\"op\":\"replace\",\"path\":\"/client/legalFirstName\",\"value\":\"LAWRENCE\"},{\"op\":\"replace\",\"path\":\"/client/clientName\",\"value\":\"FISHBORN\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/client/name\",\"reason\":\"LNAM\"}}]",
+            "$.client.legalFirstName",
+            "ADELICE",
+            "LAWRENCE"
+        ),
+        argumentSet(
+            "Update birthdate",
+            "00000103",
+            //The value here includes time because the backend service injects the time
+            "[{\"op\":\"replace\",\"path\":\"/client/birthdate\",\"value\":\"1971-02-03 00:00:00\"}]",
+            "$.client.birthdate",
+            "1966-02-04T00:00:00",
+            "1971-02-03T00:00:00"
+            //Yes value here doesn't match the patch format, but this is how the API works
+        ),
+        argumentSet(
+            "Update corporation number and type",
+            "00000158",
+            "[{\"op\":\"replace\",\"path\":\"/client/corpRegnNmbr\",\"value\":\"1003402\"},{\"op\":\"replace\",\"path\":\"/client/registryCompanyTypeCode\",\"value\":\"REG\"}]",
+            "$.client.corpRegnNmbr",
+            "0003402",
+            "1003402"
+        ),
+        argumentSet(
+            "Update client id",
+            "00000103",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientIdentification\",\"value\":\"44654656\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/client/id\",\"reason\":\"CORR\"}}]",
+            "$.client.clientIdentification",
+            "FM3176776",
+            "44654656"
+        ),
+        argumentSet(
+            "Update doing business name",
+            "00000103",
+            "[{\"op\":\"replace\",\"path\":\"/doingBusinessAs\",\"value\":\"TIRULIRU\"}]",
+            "$.doingBusinessAs",
+            "TWIMBO",
+            "TIRULIRU"
+        ),
+        argumentSet(
+            "Change client type",
+            "00000114",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientTypeCode\",\"value\":\"F\"},{\"op\":\"replace\",\"path\":\"/client/corpRegnNmbr\",\"value\":null},{\"op\":\"replace\",\"path\":\"/client/registryCompanyTypeCode\",\"value\":null}]",
+            "$.client.clientTypeCode",
+            "C",
+            "F"
         )
     );
   }

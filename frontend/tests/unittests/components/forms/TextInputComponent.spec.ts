@@ -6,6 +6,18 @@ import { isMinSize } from "@/helpers/validators/GlobalValidators";
 describe("Text Input Component", () => {
   const id = "my-input";
   const validations = [(value: any) => (value ? "" : "Field is required")];
+  let objectError: any;
+  const advancedValidations = (errorData: any) => [
+    (value: any) => {
+      objectError = value
+        ? ""
+        : {
+            errorMsg: "Required message",
+            ...errorData,
+          };
+      return objectError;
+    },
+  ];
 
   const setInputValue = async (
     inputWrapper: DOMWrapper<HTMLInputElement>,
@@ -159,5 +171,152 @@ describe("Text Input Component", () => {
 
     expect(wrapper.emitted("empty")).toBeTruthy();
     expect(wrapper.emitted("empty")![0][0]).toBe(true);
+  });
+
+  it("renders the error message", async () => {
+    const wrapper = mount(TextInputComponent, {
+      props: {
+        id,
+        label: "TestField",
+        placeholder: "",
+        modelValue: "",
+        validations,
+        enabled: true,
+      },
+      directives: {
+        masked: () => {},
+      },
+    });
+
+    await wrapper.find(`#${id}`).trigger("input");
+    await wrapper.find(`#${id}`).trigger("blur");
+
+    expect(wrapper.find("[slot='invalid-text']").text()).toContain("Field is required");
+  });
+
+  it("renders the error as supplied in the error slot", async () => {
+    const wrapper = mount(TextInputComponent, {
+      props: {
+        id,
+        label: "TestField",
+        placeholder: "",
+        modelValue: "",
+        validations,
+        enabled: true,
+      },
+      directives: {
+        masked: () => {},
+      },
+      slots: {
+        error: "Custom message",
+      },
+    });
+
+    await wrapper.find(`#${id}`).trigger("input");
+    await wrapper.find(`#${id}`).trigger("blur");
+
+    expect(wrapper.find("[slot='invalid-text']").text()).toContain("Custom message");
+    expect(wrapper.find("[slot='invalid-text']").text()).not.toContain("Field is required");
+  });
+
+  it("renders the error message as a warning", async () => {
+    const wrapper = mount(TextInputComponent, {
+      props: {
+        id,
+        label: "TestField",
+        placeholder: "",
+        modelValue: "",
+        validations: advancedValidations({ warning: true }),
+        enabled: true,
+      },
+      directives: {
+        masked: () => {},
+      },
+    });
+
+    await wrapper.find(`#${id}`).trigger("input");
+    await wrapper.find(`#${id}`).trigger("blur");
+
+    expect(wrapper.find("[slot='warn-text']").text()).toContain("Required message");
+    expect(wrapper.find("[slot='invalid-text']").exists()).toBe(false);
+  });
+
+  it("renders the supplied contents of error slot as a warning", async () => {
+    const wrapper = mount(TextInputComponent, {
+      props: {
+        id,
+        label: "TestField",
+        placeholder: "",
+        modelValue: "",
+        validations: advancedValidations({ warning: true }),
+        enabled: true,
+      },
+      directives: {
+        masked: () => {},
+      },
+      slots: {
+        error: "Custom message",
+      },
+    });
+
+    await wrapper.find(`#${id}`).trigger("input");
+    await wrapper.find(`#${id}`).trigger("blur");
+
+    expect(wrapper.find("[slot='warn-text']").text()).toContain("Custom message");
+    expect(wrapper.find("[slot='warn-text']").text()).not.toContain("Field is required");
+    expect(wrapper.find("[slot='invalid-text']").exists()).toBe(false);
+  });
+
+  it("supplies the error data to the error slot", async () => {
+    const wrapper = mount(TextInputComponent, {
+      props: {
+        id,
+        label: "TestField",
+        placeholder: "",
+        modelValue: "",
+        validations: advancedValidations({
+          custom: {
+            foo: "bar",
+          },
+        }),
+        enabled: true,
+      },
+      directives: {
+        masked: () => {},
+      },
+      slots: {
+        error: `<template #error="{ data }">
+        Hello {{ data.custom.foo }}
+        </template>
+      `,
+      },
+    });
+
+    await wrapper.find(`#${id}`).trigger("input");
+    await wrapper.find(`#${id}`).trigger("blur");
+
+    expect(wrapper.find("[slot='invalid-text']").text()).toContain("Hello bar");
+  });
+
+  it("emits the whole error object when the error returned is an object", async () => {
+    const wrapper = mount(TextInputComponent, {
+      props: {
+        id,
+        label: "TestField",
+        placeholder: "",
+        modelValue: "",
+        validations: advancedValidations({ warning: true }),
+        enabled: true,
+      },
+      directives: {
+        masked: () => {},
+      },
+    });
+
+    await wrapper.find(`#${id}`).trigger("input");
+    await wrapper.find(`#${id}`).trigger("blur");
+
+    expect(wrapper.emitted("error")).toBeTruthy();
+    expect(wrapper.emitted("error")![0][0]).toStrictEqual(objectError);
   });
 });

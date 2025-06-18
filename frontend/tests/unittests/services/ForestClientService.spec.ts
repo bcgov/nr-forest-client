@@ -153,6 +153,10 @@ describe("ForestClientService.ts", () => {
     ])("gets the expected result from input '%s': '%s'", (input, expectedOutput) => {
       expect(toTitleCase(input)).toEqual(expectedOutput);
     });
+
+    it("returns empty string when input is undefined", () => {
+      expect(toTitleCase(undefined as unknown as string)).toEqual("");
+    });
   });
 
   describe("getTagColorByClientStatus", () => {
@@ -303,9 +307,9 @@ describe("ForestClientService.ts", () => {
     const location = {
       clientLocnName: "Mailing address",
       clientLocnCode: "00",
-      addressOne: "C/O Tony Pineda",
-      addressTwo: "Sample additional info",
-      addressThree: "123 Richmond Ave",
+      addressOne: "886 Richmond Ave",
+      addressTwo: "C/O Tony Pineda",
+      addressThree: "Sample additional info",
       countryCode: "CA",
       countryDesc: "Canada",
       provinceCode: "SK",
@@ -531,9 +535,7 @@ describe("ForestClientService.ts", () => {
       businessPhone: "2502863767",
       secondaryPhone: "2505553700",
       faxNumber: "2502863768",
-      emailAddress: "cheryl@ktb.com",
-      createdBy: "peter",
-      updatedBy: "mike",
+      emailAddress: "cheryl@ktb.com"
     };
 
     it("converts from Contact format to ClientContact format properly", () => {
@@ -552,7 +554,7 @@ describe("ForestClientService.ts", () => {
       expect(clientContact.emailAddress).toEqual(contact.email);
 
       // Information that doesn't exist on the Contact format
-      const missingProperties: (keyof ClientContact)[] = ["clientNumber", "createdBy", "updatedBy"];
+      const missingProperties: (keyof ClientContact)[] = ["clientNumber"];
 
       for (const key in clientContact) {
         if (!missingProperties.includes(key as keyof ClientContact)) {
@@ -664,13 +666,13 @@ describe("Reason Fields Handling", () => {
   const originalData: ClientDetails = {
     client: {
       clientNumber: "12345",
-      clientName: "John Doe",
+      clientName: "Doe",
       legalFirstName: "John",
       legalMiddleName: "A.",
       clientStatusCode: "ACT",
       clientStatusDesc: "",
-      clientTypeCode: "",
-      clientTypeDesc: "",
+      clientTypeCode: "I",
+      clientTypeDesc: "Individual",
       clientIdTypeCode: "",
       clientIdTypeDesc: "",
       clientIdentification: "12345",
@@ -685,7 +687,7 @@ describe("Reason Fields Handling", () => {
       goodStandingInd: "",
       birthdate: "",
     },
-    doingBusinessAs: [],
+    doingBusinessAs: "",
     addresses: [
       {
         clientNumber: "12345",
@@ -719,16 +721,18 @@ describe("Reason Fields Handling", () => {
 
   it("extracts reason fields from patch data", () => {
     const patchData: jsonpatch.Operation[] = [
-      { op: "replace", path: "/clientIdentification", value: "67890" },
-      { op: "replace", path: "/clientStatusCode", value: "DEC" },
-      { op: "replace", path: "/city", value: "Gotham" },
+      { op: "replace", path: "/client/legalFirstName", value: "Johan" },
+      { op: "replace", path: "/client/clientIdentification", value: "67890" },
+      { op: "replace", path: "/client/clientStatusCode", value: "DAC" },
+      { op: "replace", path: "/addresses/1/city", value: "Gotham" },
     ];
 
     const result = extractReasonFields(patchData, originalData);
     expect(result).toEqual([
-      { field: "clientIdentification", action: "ID" },
-      { field: "clientStatusCode", action: "ACDC" }, // Active -> Deceased
-      { field: "city", action: "ADDR" },
+      { field: "/client/name", action: "NAME" },
+      { field: "/client/id", action: "ID" },
+      { field: "/client/clientStatusCode", action: "DAC" },
+      { field: "/addresses/1", action: "ADDR" }, // an address group
     ]);
   });
 
@@ -741,6 +745,22 @@ describe("Reason Fields Handling", () => {
     expect(result).toEqual([]);
   });
 
+  it("handles unknown status transition with empty action", () => {
+    const patchData: jsonpatch.Operation[] = [
+      { op: "replace", path: "/client/clientStatusCode", value: "XYZ" },
+    ];
+  
+    const result = extractReasonFields(patchData, {
+      ...originalData,
+      client: {
+        ...originalData.client,
+        clientStatusCode: "ABC",
+      },
+    });
+  
+    expect(result).toEqual([]);
+  });
+
   describe("getAction", () => {
     it("returns correct action for client status changes", () => {
       expect(getAction("/clientStatusCode", "ACT", "DAC")).toEqual("DAC");
@@ -749,8 +769,8 @@ describe("Reason Fields Handling", () => {
     });
 
     it("returns correct field mapping for other fields", () => {
-      expect(getAction("/clientIdentification")).toEqual("ID");
-      expect(getAction("/city")).toEqual("ADDR");
+      expect(getAction("/clientIdentification")).toEqual(["ID"]);
+      expect(getAction("/city")).toEqual(["ADDR"]);
       expect(getAction("/unknownField")).toBeNull();
     });
   });

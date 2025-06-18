@@ -1,5 +1,6 @@
 package ca.bc.gov.app.util;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
@@ -81,7 +82,7 @@ public class ProcessorUtil {
     if (StringUtils.isBlank(code)) {
       return StringUtils.EMPTY;
     }
-    return switch (code.toLowerCase()) {
+    return switch (code.toLowerCase(Locale.ROOT)) {
       case "bcsc" -> "BCSC";
       case "bceidbusiness" -> "BCEI";
       case "idir" -> "OTHR";
@@ -97,7 +98,7 @@ public class ProcessorUtil {
   }
 
   private static String getStringFromPattern(String input, Pattern pattern) {
-    if(StringUtils.isBlank(input))
+    if (StringUtils.isBlank(input))
       return StringUtils.EMPTY;
     Matcher matcher = pattern.matcher(input);
     if (matcher.find()) {
