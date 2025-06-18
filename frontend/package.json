@@ -69,10 +69,10 @@
     "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^3.13.12",
+    "@cypress/code-coverage": "^3.14.4",
     "@rushstack/eslint-patch": "^1.1.0",
     "@types/jsdom": "^21.1.7",
-    "@types/node": "^22.10.7",
+    "@types/node": "^24.0.3",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
     "@vitejs/plugin-vue": "^5.2.1",
@@ -82,7 +82,7 @@
     "@vue/test-utils": "^2.4.0",
     "@vue/tsconfig": "^0.7.0",
     "cross-env": "^7.0.3",
-    "cypress": "^14.2.1",
+    "cypress": "^14.4.1",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard": "^17.1.0",
@@ -110,7 +110,7 @@
     "vue-eslint-parser": "^9.4.3",
     "vue-svg-loader": "^0.16.0",
     "vue-tsc": "^2.2.0",
-    "wiremock": "^3.12.1"
+    "wiremock": "^3.13.1"
   },
   "overrides": {
     "follow-redirects@<1.15.6": "1.15.6"

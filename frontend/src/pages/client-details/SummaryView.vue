@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch, type ComputedRef } from "vue";
 import * as jsonpatch from "fast-json-patch";
-import type { ClientDetails, CodeNameType, UserRole } from "@/dto/CommonTypesDto";
+import type { ClientDetails, CodeNameType, SaveEvent, UserRole } from "@/dto/CommonTypesDto";
 import RegistrationNumber from "@/pages/client-details/RegistrationNumber.vue";
 import {
   getFormattedHtml,
@@ -18,7 +18,7 @@ import Information16 from "@carbon/icons-vue/es/information/16";
 import Edit16 from "@carbon/icons-vue/es/edit/16";
 import Save16 from "@carbon/icons-vue/es/save/16";
 import Close16 from "@carbon/icons-vue/es/close/16";
-import UserAvatar20 from '@carbon/icons-vue/es/user--avatar/20';
+import UserAvatar20 from "@carbon/icons-vue/es/user--avatar/20";
 
 // Importing validators
 import { getValidations } from "@/helpers/validators/StaffFormValidations";
@@ -26,6 +26,7 @@ import {
   resetSubmissionValidators,
   submissionValidation,
 } from "@/helpers/validators/SubmissionValidators";
+import { useFetchTo } from "@/composables/useFetch";
 
 const props = defineProps<{
   data: ClientDetails;
@@ -33,7 +34,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "save", value: jsonpatch.Operation[]): void;
+  (e: "save", payload: SaveEvent<ClientDetails>): void;
 }>();
 
 let originalData: ClientDetails;
@@ -203,7 +204,15 @@ const save = () => {
 
   const patch = jsonpatch.compare(originalData, clonedFormData);
 
-  emit("save", patch);
+  emit("save", {
+    patch,
+    updatedData: clonedFormData,
+    action: {
+      infinitive: "update",
+      pastParticiple: "updated",
+    },
+    operationType: "update",
+  });
 };
 
 const validation = reactive<Record<FieldId, boolean>>({
@@ -376,9 +385,47 @@ watch(
 );
 
 const originalClient = computed(() => props.data.client);
+
+const bcRegistryError = ref<boolean>(false);
+
+const goodStandingInd = ref<string>();
+
+const goodStandingIndUri = computed(() =>
+  `/api/clients/${originalClient.value.clientNumber}/good-standing`
+);
+
+const { loading: goodStandingIndLoading, error } = useFetchTo(goodStandingIndUri, goodStandingInd);
+
+watch(error, () => {
+  if (
+    error.value.response?.status >= 500 ||
+    error.value.response?.status === 408
+  ) {
+    bcRegistryError.value = true;
+  }
+});
+
+watch(goodStandingInd, () => {
+  if (goodStandingInd.value) {
+    originalClient.value.goodStandingInd = goodStandingInd.value;
+  }
+});
 </script>
 
 <template>
+  <cds-inline-notification
+    data-text="Client information"
+    v-shadow="2"
+    id="bcRegistryDownNotification"
+    v-if="bcRegistryError || (error?.response?.status ?? false)"
+    low-contrast="true"
+    open="true"
+    kind="error"
+    hide-close-button="true"
+    title="BC Registries is down">
+      <span class="body-compact-01"> You'll need to try again later.</span>      
+  </cds-inline-notification>
+
   <div class="grouping-10 no-padding">
     <read-only-component label="Client number" id="clientNumber">
       <span class="body-compact-01">{{ originalClient.clientNumber }}</span>
@@ -422,11 +469,23 @@ const originalClient = computed(() => props.data.client);
       "
     >
       <div class="internal-grouping-01">
-        <span class="body-compact-01 default-typography">{{
-          goodStanding(originalClient.goodStandingInd)
-        }}</span>
-        <Check20 v-if="originalClient.goodStandingInd === 'Y'" class="good" />
-        <Warning20 v-if="originalClient.goodStandingInd !== 'Y'" class="warning" />
+        <span v-if="goodStandingIndLoading">
+          <cds-skeleton-text v-shadow="1" class="heading-03-skeleton" />
+        </span>
+        <span v-else class="icon-label-inline">
+          <span class="body-compact-01 default-typography">{{
+            goodStanding(originalClient.goodStandingInd)
+          }}</span>
+          
+          <Check20 v-if="originalClient.goodStandingInd === 'Y'" class="good" />
+
+          <cds-tooltip v-if="originalClient.goodStandingInd !== 'Y'">
+            <Warning20 class="warning" />
+            <cds-tooltip-content>
+              Check BC Registries for the reason
+            </cds-tooltip-content>
+          </cds-tooltip>
+        </span>
       </div>
     </read-only-component>
     <read-only-component

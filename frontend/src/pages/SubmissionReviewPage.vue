@@ -275,7 +275,7 @@ const renderListItem = (label, clientNumbers) => {
     finalLabel = "Matching one or more " + label + "s";
   }
   else if (label === 'corporationName') {
-    finalLabel = "Partial match on business name";
+    finalLabel = "Possible match with existing business name and/or ID";
   }
   else {
     finalLabel = "Partial match on " + convertFieldNameToSentence(label).toLowerCase() ;

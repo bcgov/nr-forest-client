@@ -40,14 +40,14 @@
         <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-        <testcontainers.version>1.21.0</testcontainers.version>
+        <testcontainers.version>1.21.1</testcontainers.version>
         <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
         <junit-platform.version>1.9.1</junit-platform.version>
         <netty.version>4.1.119.Final</netty.version>
         <logback.version>1.5.18</logback.version>
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.3</nimbus-jose-jwt.version>
-        <spring-security-core.version>6.4.5</spring-security-core.version>
+        <spring-security-core.version>6.5.0</spring-security-core.version>
     </properties>
 
     <dependencies>
@@ -123,6 +123,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <version>42.7.7</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -200,7 +201,7 @@
         <dependency>
             <groupId>org.wiremock</groupId>
             <artifactId>wiremock-standalone</artifactId>
-            <version>3.13.0</version>
+            <version>3.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -217,6 +218,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>6.2.8</version>
+            </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
