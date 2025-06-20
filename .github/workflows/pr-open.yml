@@ -30,6 +30,7 @@ jobs:
     permissions:
       packages: write
       id-token: write
+      attestations: write
     strategy:
       matrix:
         package: [backend, database, frontend, legacy, processor]
