@@ -736,29 +736,36 @@ public final class ForestClientQueries {
           C.BIRTHDATE
       FROM THE.FOREST_CLIENT C
           INNER JOIN THE.CLIENT_STATUS_CODE S ON C.CLIENT_STATUS_CODE = S.CLIENT_STATUS_CODE
-        INNER JOIN THE.CLIENT_TYPE_CODE T ON C.CLIENT_TYPE_CODE = T.CLIENT_TYPE_CODE
-        LEFT JOIN THE.CLIENT_ID_TYPE_CODE IT ON C.CLIENT_ID_TYPE_CODE = IT.CLIENT_ID_TYPE_CODE
-        LEFT JOIN (
-            SELECT
-                CLIENT_NUMBER,
-                UPDATE_USERID,
-                UPDATE_TIMESTAMP
-            FROM (
-                SELECT
-                    CLIENT_NUMBER,
-                    UPDATE_USERID,
-                    UPDATE_TIMESTAMP,
-                    ROW_NUMBER() OVER (
-                        PARTITION BY CLIENT_NUMBER ORDER BY UPDATE_TIMESTAMP DESC
-                    ) AS RN
-                FROM
-                    THE.FOR_CLI_AUDIT
-                WHERE
-                    CLIENT_COMMENT IS NOT NULL
-            )
-            WHERE RN = 1
+          INNER JOIN THE.CLIENT_TYPE_CODE T ON C.CLIENT_TYPE_CODE = T.CLIENT_TYPE_CODE
+          LEFT JOIN THE.CLIENT_ID_TYPE_CODE IT ON C.CLIENT_ID_TYPE_CODE = IT.CLIENT_ID_TYPE_CODE
+          LEFT JOIN (
+              SELECT        
+                  CLIENT_NUMBER,
+                  UPDATE_USERID,
+                  UPDATE_TIMESTAMP
+              FROM (
+                  SELECT
+                      AL.FOREST_CLIENT_AUDIT_ID AS IDX,
+                      AL.CLIENT_COMMENT AS NEW_VALUE,
+                      LAG(AL.CLIENT_COMMENT) OVER (
+                          PARTITION BY AL.CLIENT_NUMBER
+                          ORDER BY AL.FOREST_CLIENT_AUDIT_ID
+                      ) AS OLD_VALUE,
+                      AL.UPDATE_TIMESTAMP,
+                      AL.UPDATE_USERID,
+                      AL.CLIENT_NUMBER
+                  FROM THE.FOR_CLI_AUDIT AL
+                  WHERE AL.CLIENT_NUMBER = :clientNumber
+              )
+              WHERE (
+                  (OLD_VALUE IS NULL AND TRIM(NEW_VALUE) IS NOT NULL) OR
+                  (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL) OR
+                  (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
+              )
+              ORDER BY IDX DESC
+              FETCH FIRST 1 ROWS ONLY
         ) FCA ON C.CLIENT_NUMBER = FCA.CLIENT_NUMBER
-      WHERE C.CLIENT_NUMBER = :clientNumber    
+      WHERE C.CLIENT_NUMBER = :clientNumber
       """;
 
   public static final String FIND_BY_PREDICTIVE_SEARCH_WITH_LIKE = """
