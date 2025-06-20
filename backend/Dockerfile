@@ -20,7 +20,7 @@ COPY pom.xml ./
 COPY src ./src
 
 # Build
-RUN mvn -Pnative native:compile
+RUN mvn -Pnative package -DskipTests -Dskip.unit.tests=true
 
 ### Deployer
 FROM gcr.io/distroless/java-base:nonroot AS deploy
