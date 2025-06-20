@@ -830,7 +830,7 @@ watch(goodStandingInd, () => {
         @click="save"
         :disabled="!hasAnyChange || !checkValid()"
       >
-        <span class="width-unset">Save client information</span>
+        <span class="width-unset">Save changes</span>
         <Save16 slot="icon" />
       </cds-button>
       <cds-button id="summaryCancelBtn" kind="tertiary" size="md" @click="cancel">
