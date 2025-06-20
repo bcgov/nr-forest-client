@@ -54,7 +54,7 @@ const getProviderRedirectUri = (provider: string) => {
 };
 
 export const getRedirectSignOutMap = (): Record<string, string> => {
-  const map = {};
+  const map: Record<string, string> = {};
   const providers = ["bceidbusiness", "bcsc", "idir"];
 
   // adds one signOut url for each provider
