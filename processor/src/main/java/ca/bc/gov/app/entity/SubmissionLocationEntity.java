@@ -104,13 +104,13 @@ public class SubmissionLocationEntity {
 
   private String getAddressValue(int index) {
     return Stream.of(
-            this.streetAddress,
             this.complementaryAddress1,
-            this.complementaryAddress2
+            this.complementaryAddress2,
+            this.streetAddress
         )
         .filter(StringUtils::isNotBlank)
         .skip(index)
-        .map(s -> s.toUpperCase(Locale.ROOT))
+        .map(value -> value.toUpperCase(Locale.ROOT))
         .findFirst()
         .orElse(StringUtils.EMPTY);
   }
