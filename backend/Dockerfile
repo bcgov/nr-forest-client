@@ -1,3 +1,4 @@
+### Builder
 FROM ghcr.io/graalvm/native-image:22.3.3 AS build
 
 # Copy
