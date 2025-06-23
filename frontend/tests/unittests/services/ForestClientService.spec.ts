@@ -23,6 +23,7 @@ import {
   contactToEditFormat,
   indexToLocationCode,
   formatLocation,
+  preserveUnchangedData,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type { UserRole, ClientDetails, ClientLocation, ClientContact } from "@/dto/CommonTypesDto";
@@ -808,6 +809,50 @@ describe("Reason Fields Handling", () => {
 
     it("returns only the name when the code is empty", () => {
       expect(formatLocation("", "Name")).toEqual("Name");
+    });
+  });
+
+  describe("preserveUnchangedData", () => {
+    describe("when data was null", () => {
+      const original = {
+        a: "1",
+        b: null,
+        c: "3",
+      };
+      it("replaces empty string with null", () => {
+        const data = JSON.parse(JSON.stringify(original));
+        data.b = "";
+        const result = preserveUnchangedData(data, original);
+        expect(result.b).toEqual(null);
+      });
+    });
+
+    describe("when data was an empty string", () => {
+      const original = {
+        a: "1",
+        b: "",
+        c: "3",
+      };
+      it("replaces null with empty string", () => {
+        const data = JSON.parse(JSON.stringify(original));
+        data.b = null;
+        const result = preserveUnchangedData(data, original);
+        expect(result.b).toEqual("");
+      });
+    });
+
+    describe("when data was not null nor an empty string", () => {
+      const original = {
+        a: "1",
+        b: "2",
+        c: "3",
+      };
+      it("replaces empty string with null", () => {
+        const data = JSON.parse(JSON.stringify(original));
+        data.b = "";
+        const result = preserveUnchangedData(data, original);
+        expect(result.b).toEqual(null);
+      });
     });
   });
 });

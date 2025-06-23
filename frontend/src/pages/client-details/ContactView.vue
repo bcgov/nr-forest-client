@@ -20,6 +20,7 @@ import {
   formatPhoneNumber,
   includesAnyOf,
   keepScrollBottomPosition as keepScrollBottomPositionFn,
+  preserveUnchangedData,
 } from "@/services/ForestClientService";
 import type { Contact } from "@/dto/ApplyClientNumberDto";
 import { useFetchTo } from "@/composables/useFetch";
@@ -92,8 +93,8 @@ watch(
   formContactData,
   () => {
     if (isEditing.value) {
-      hasAnyChange.value =
-        JSON.stringify(formContactData.value) !== JSON.stringify(originalContactData);
+      const updatedData = preserveUnchangedData(formContactData.value, originalContactData);
+      hasAnyChange.value = JSON.stringify(updatedData) !== JSON.stringify(originalContactData);
 
       if (formContactData.value.fullName !== previousValue.fullName) {
         emit("updateContactName", formContactData.value.fullName);
@@ -127,12 +128,13 @@ defineExpose({
 });
 
 const save = (
-  updatedContact: ClientContact,
+  rawUpdatedContact: ClientContact,
   action: ActionWords = {
     infinitive: "update",
     pastParticiple: "updated",
   },
 ) => {
+  const updatedContact = preserveUnchangedData(rawUpdatedContact, originalData);
   const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedContact);
 
   const operationType = props.createMode ? "insert" : "update";

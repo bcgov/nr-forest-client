@@ -10,6 +10,7 @@ import {
   includesAnyOf,
   removePrefix,
   formatDate,
+  preserveUnchangedData,
 } from "@/services/ForestClientService";
 
 import Check20 from "@carbon/icons-vue/es/checkmark--filled/20";
@@ -69,7 +70,8 @@ watch(
   formData,
   () => {
     if (isEditing.value) {
-      hasAnyChange.value = JSON.stringify(formData.value) !== JSON.stringify(originalData);
+      const updatedData = preserveUnchangedData(formData.value, originalData);
+      hasAnyChange.value = JSON.stringify(updatedData) !== JSON.stringify(originalData);
     }
   },
   { deep: true },
@@ -186,7 +188,7 @@ const getRemovedFields = () => {
 };
 
 const save = () => {
-  const clonedFormData: ClientDetails = JSON.parse(JSON.stringify(formData.value));
+  const updatedData = preserveUnchangedData(formData.value, originalData);
   const removedFields = getRemovedFields();
 
   // Clear the value of removed fields
@@ -196,17 +198,17 @@ const save = () => {
     if (dataModelMap[localField]) {
       ({ path, fields } = dataModelMap[localField]);
     }
-    const data = path === "root" ? clonedFormData : clonedFormData[path];
+    const data = path === "root" ? updatedData : updatedData[path];
     fields.forEach((field) => {
       data[field] = null;
     });
   });
 
-  const patch = jsonpatch.compare(originalData, clonedFormData);
+  const patch = jsonpatch.compare(originalData, updatedData);
 
   emit("save", {
     patch,
-    updatedData: clonedFormData,
+    updatedData,
     action: {
       infinitive: "update",
       pastParticiple: "updated",
