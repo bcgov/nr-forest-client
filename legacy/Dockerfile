@@ -1,31 +1,17 @@
 ### Builder
-FROM ghcr.io/graalvm/native-image:ol8-java17-22.3.3 AS build
-
-# Install Maven
-RUN microdnf update --nodocs -y && \
-    microdnf install -y wget tar gzip && \
-    wget https://dlcdn.apache.org/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.tar.gz && \
-    tar xzf apache-maven-3.9.10-bin.tar.gz -C /opt && \
-    ln -s /opt/apache-maven-3.9.10 /opt/maven && \
-    ln -s /opt/maven/bin/mvn /usr/bin/mvn && \
-    rm apache-maven-3.9.10-bin.tar.gz && \
-    microdnf clean all
-
-# Add Maven to the PATH environment variable
-ENV MAVEN_HOME=/opt/maven
-ENV PATH=$MAVEN_HOME/bin:$PATH
+FROM ghcr.io/graalvm/native-image:22.3.3 AS build
 
 # Copy
 WORKDIR /app
-COPY pom.xml ./
+COPY pom.xml mvnw ./
 COPY src ./src
+COPY .mvn/ ./.mvn
 
 # Build
-RUN mvn -Pnative native:compile
+RUN ./mvnw -Pnative package -DskipTests -Dskip.unit.tests=true
 
 ### Deployer
 FROM gcr.io/distroless/java-base:nonroot AS deploy
-ARG PORT=9000
 
 # Copy
 WORKDIR /app
@@ -33,8 +19,8 @@ COPY --from=build /app/target/nr-forest-client-legacy ./nr-forest-client-legacy
 
 # User, port and health check
 USER 1001
-EXPOSE ${PORT}
-HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status":"UP"'
+EXPOSE 9000
+HEALTHCHECK CMD curl -f http://localhost:9000/actuator/health | grep '"status":"UP"'
 
 ENV SPRING_PROFILES_ACTIVE=container
 

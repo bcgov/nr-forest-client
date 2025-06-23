@@ -590,6 +590,9 @@
     <profiles>
         <profile>
             <id>dev</id>
+            <properties>
+                <build.profile.id>dev</build.profile.id>
+            </properties>
         </profile>
 
         <profile>
@@ -635,7 +638,30 @@
                 <build.profile.id>native</build.profile.id>
                 <skip.integration.tests>true</skip.integration.tests>
                 <skip.unit.tests>true</skip.unit.tests>
+                <jacoco.skip>true</jacoco.skip>
             </properties>
+            <build>
+                <plugins>
+                <!--
+                    GraalVM: Cloud Native support
+                    More: https://docs.spring.io/spring-boot/docs/current/reference/html/native-image.html
+                    Even more: https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
+                -->
+                <plugin>
+                    <groupId>org.graalvm.buildtools</groupId>
+                    <artifactId>native-maven-plugin</artifactId>
+                    <executions>
+                    <execution>
+                        <id>build-native</id>
+                        <goals>
+                        <goal>compile-no-fork</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                    </executions>
+                </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
