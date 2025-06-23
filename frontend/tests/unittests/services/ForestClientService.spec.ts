@@ -812,7 +812,7 @@ describe("Reason Fields Handling", () => {
     });
   });
 
-  describe.only("preserveUnchangedData", () => {
+  describe("preserveUnchangedData", () => {
     describe("when data was null", () => {
       const original = {
         a: "1",
