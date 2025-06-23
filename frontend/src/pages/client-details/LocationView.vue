@@ -16,6 +16,7 @@ import {
   keepScrollBottomPosition as keepScrollBottomPositionFn,
   locationToCreateFormat,
   locationToEditFormat,
+  preserveUnchangedData,
   removeNullText,
 } from "@/services/ForestClientService";
 
@@ -86,8 +87,8 @@ watch(
   formAddressData,
   () => {
     if (isEditing.value) {
-      hasAnyChange.value =
-        JSON.stringify(formAddressData.value) !== JSON.stringify(originalAddressData);
+      const updatedData = preserveUnchangedData(formAddressData.value, originalAddressData);
+      hasAnyChange.value = JSON.stringify(updatedData) !== JSON.stringify(originalAddressData);
     }
   },
   { deep: true },
@@ -115,12 +116,13 @@ defineExpose({
 });
 
 const save = (
-  updatedLocation: ClientLocation,
+  rawUpdatedLocation: ClientLocation,
   action: ActionWords = {
     infinitive: "update",
     pastParticiple: "updated",
   },
 ) => {
+  const updatedLocation = preserveUnchangedData(rawUpdatedLocation, originalData);
   const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedLocation);
 
   const operationType = props.createMode ? "insert" : "update";

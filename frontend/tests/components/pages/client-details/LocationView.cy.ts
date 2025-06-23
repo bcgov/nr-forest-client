@@ -380,7 +380,7 @@ describe("<location-view />", () => {
             // Contains the location data as edited/created by the user
             expect(updatedData).to.deep.eq({
               ...customProps.data,
-              emailAddress: "",
+              emailAddress: null,
             });
           });
         });
