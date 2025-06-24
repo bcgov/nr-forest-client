@@ -2,6 +2,7 @@ package ca.bc.gov.app.controller.filters;
 
 import io.micrometer.context.ContextRegistry;
 import java.util.function.Function;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -55,6 +56,10 @@ public abstract class ContextPropagatorWebFilter implements WebFilter {
                 .contextWrite(Context.of(getContextKey(), userId))
                 // While we are at it, we also set the context for the reactive part
                 .doOnNext(v -> contextLoad())
+            )
+            .switchIfEmpty(chain
+                .filter(exchange)
+                .contextWrite(Context.of(getContextKey(), StringUtils.EMPTY))
             );
   }
 

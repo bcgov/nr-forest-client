@@ -14,6 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import static ca.bc.gov.app.util.ClientMapper.LAST_NAME;
+
 /**
  * This is a utility class for handling JWT principals. It provides methods to extract various
  * attributes from a JwtAuthenticationToken object. The class is designed with a private constructor
@@ -21,8 +23,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class JwtPrincipalUtil {
-
-  public static final String LAST_NAME = "lastName";
 
   /**
    * Retrieves the provider of the JWT token from the given JwtAuthenticationToken principal. The
