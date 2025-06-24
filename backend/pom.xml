@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.0</version>
+        <version>3.5.3</version>
         <relativePath />
     </parent>
 
@@ -40,7 +40,7 @@
         <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-        <testcontainers.version>1.21.1</testcontainers.version>
+        <testcontainers.version>1.21.2</testcontainers.version>
         <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
         <junit-platform.version>1.9.1</junit-platform.version>
         <netty.version>4.1.119.Final</netty.version>
@@ -48,6 +48,8 @@
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.3</nimbus-jose-jwt.version>
         <spring-security-core.version>6.5.1</spring-security-core.version>
+        <micrometer.version>1.15.1</micrometer.version>
+        <micrometer-tracing.version>1.5.1</micrometer-tracing.version>
     </properties>
 
     <dependencies>
@@ -642,24 +644,24 @@
             </properties>
             <build>
                 <plugins>
-                <!--
+                    <!--
                     GraalVM: Cloud Native support
                     More: https://docs.spring.io/spring-boot/docs/current/reference/html/native-image.html
                     Even more: https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
                 -->
-                <plugin>
-                    <groupId>org.graalvm.buildtools</groupId>
-                    <artifactId>native-maven-plugin</artifactId>
-                    <executions>
-                    <execution>
-                        <id>build-native</id>
-                        <goals>
-                        <goal>compile-no-fork</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                    </executions>
-                </plugin>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
