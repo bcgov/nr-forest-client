@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.0</version>
+    <version>3.5.3</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
@@ -164,7 +164,7 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>oracle-xe</artifactId>
-      <version>1.21.1</version>
+      <version>1.21.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -544,79 +544,79 @@
 
   <profiles>
     <profile>
-        <id>dev</id>
-        <properties>
-            <build.profile.id>dev</build.profile.id>
-        </properties>
+      <id>dev</id>
+      <properties>
+        <build.profile.id>dev</build.profile.id>
+      </properties>
     </profile>
 
     <profile>
-        <id>all-tests</id>
-        <properties>
-            <build.profile.id>all-tests</build.profile.id>
-            <skip.integration.tests>false</skip.integration.tests>
-            <skip.unit.tests>false</skip.unit.tests>
-            <jacoco.skip>false</jacoco.skip>
-        </properties>
+      <id>all-tests</id>
+      <properties>
+        <build.profile.id>all-tests</build.profile.id>
+        <skip.integration.tests>false</skip.integration.tests>
+        <skip.unit.tests>false</skip.unit.tests>
+        <jacoco.skip>false</jacoco.skip>
+      </properties>
     </profile>
 
     <profile>
-        <id>integration-test</id>
-        <properties>
-            <build.profile.id>integration-test</build.profile.id>
-            <skip.integration.tests>false</skip.integration.tests>
-            <skip.unit.tests>true</skip.unit.tests>
-        </properties>
+      <id>integration-test</id>
+      <properties>
+        <build.profile.id>integration-test</build.profile.id>
+        <skip.integration.tests>false</skip.integration.tests>
+        <skip.unit.tests>true</skip.unit.tests>
+      </properties>
     </profile>
 
     <profile>
-        <id>macos</id>
-        <activation>
-            <os>
-                <family>mac</family>
-                <arch>aarch64</arch>
-            </os>
-        </activation>
-        <dependencies>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-resolver-dns-native-macos</artifactId>
-                <classifier>osx-aarch_64</classifier>
-                <version>${netty.version}</version>
-            </dependency>
-        </dependencies>
+      <id>macos</id>
+      <activation>
+        <os>
+          <family>mac</family>
+          <arch>aarch64</arch>
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-resolver-dns-native-macos</artifactId>
+          <classifier>osx-aarch_64</classifier>
+          <version>${netty.version}</version>
+        </dependency>
+      </dependencies>
     </profile>
 
     <profile>
-        <id>native</id>
-        <properties>
-            <build.profile.id>native</build.profile.id>
-            <skip.integration.tests>true</skip.integration.tests>
-            <skip.unit.tests>true</skip.unit.tests>
-            <jacoco.skip>true</jacoco.skip>
-        </properties>
-        <build>
-            <plugins>
-            <!--
+      <id>native</id>
+      <properties>
+        <build.profile.id>native</build.profile.id>
+        <skip.integration.tests>true</skip.integration.tests>
+        <skip.unit.tests>true</skip.unit.tests>
+        <jacoco.skip>true</jacoco.skip>
+      </properties>
+      <build>
+        <plugins>
+          <!--
                 GraalVM: Cloud Native support
                 More: https://docs.spring.io/spring-boot/docs/current/reference/html/native-image.html
                 Even more: https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
             -->
-            <plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-                <executions>
-                <execution>
-                    <id>build-native</id>
-                    <goals>
-                    <goal>compile-no-fork</goal>
-                    </goals>
-                    <phase>package</phase>
-                </execution>
-                </executions>
-            </plugin>
-            </plugins>
-        </build>
+          <plugin>
+            <groupId>org.graalvm.buildtools</groupId>
+            <artifactId>native-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>build-native</id>
+                <goals>
+                  <goal>compile-no-fork</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
