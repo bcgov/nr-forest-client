@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller.filters;
 
 import io.micrometer.context.ContextRegistry;
+import java.util.List;
 import java.util.function.Function;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
@@ -41,6 +42,10 @@ public abstract class ContextPropagatorWebFilter implements WebFilter {
     // This is to be able to tackle non-reactive context
     contextLoad();
 
+    // If the request is for metrics or health, we skip the context propagation
+    if(List.of("/metrics","/health").contains(exchange.getRequest().getPath().toString()))
+      return chain.filter(exchange);
+
     return
         // Here we are getting the user id from the security context
         ReactiveSecurityContextHolder
@@ -72,7 +77,7 @@ public abstract class ContextPropagatorWebFilter implements WebFilter {
         .registerThreadLocalAccessor(
             getContextKey(),
             () -> MDC.get(getContextKey()),
-            userId -> MDC.put(getContextKey(), userId),
+            contextValue -> MDC.put(getContextKey(), contextValue),
             () -> MDC.remove(getContextKey())
         );
   }
