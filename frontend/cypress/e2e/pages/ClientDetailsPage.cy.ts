@@ -196,9 +196,7 @@ describe("Client Details Page", () => {
           count: 0,
         };
 
-        before(function () {
-          init.call(this);
-
+        const registerInterceptors = () => {
           cy.intercept(
             {
               method: "GET",
@@ -209,11 +207,25 @@ describe("Client Details Page", () => {
               req.continue();
             },
           ).as("getClientDetails");
+        };
+
+        before(function () {
+          init.call(this);
+
+          registerInterceptors();
 
           cy.visit("/clients/details/p");
           cy.get("#summaryEditBtn").click();
           cy.clearFormEntry("#input-workSafeBCNumber");
           cy.get("#summarySaveBtn").click();
+        });
+
+        beforeEach(() => {
+          registerInterceptors();
+        });
+
+        it("disables the Save button while waiting for the response", () => {
+          cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
         });
 
         it("shows the success toast", () => {
@@ -250,6 +262,10 @@ describe("Client Details Page", () => {
           cy.get("#summarySaveBtn").click();
         });
 
+        it("disables the Save button while waiting for the response", () => {
+          cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+        });
+
         it("shows the error toast", () => {
           cy.get("cds-toast-notification[kind='error']").should("be.visible");
         });
@@ -260,6 +276,10 @@ describe("Client Details Page", () => {
           cy.get("[data-id='input-input-notes']").should("be.visible");
 
           cy.get("#summarySaveBtn").should("be.visible");
+        });
+
+        it("re-enables the Save button", () => {
+          cy.get("#summarySaveBtn").shadow().find("button").should("be.enabled");
         });
       });
 
@@ -342,6 +362,9 @@ describe("Client Details Page", () => {
             .click();
         
           cy.get("#reasonSaveBtn").click();
+
+          // Should disable to prevent multiple clicks
+          cy.get("#reasonSaveBtn").shadow().find("button").should("be.disabled");
         
           cy.wait("@saveClientDetails").then((interception) => {
             const requestBody = interception.request.body;
@@ -403,6 +426,9 @@ describe("Client Details Page", () => {
 
           cy.get("#reasonSaveBtn").click();
 
+          // Should disable to prevent multiple clicks
+          cy.get("#reasonSaveBtn").shadow().find("button").should("be.disabled");
+
           cy.wait("@saveClientDetails").then((interception) => {
             const requestBody = interception.request.body;
 
@@ -455,6 +481,9 @@ describe("Client Details Page", () => {
           cy.get("#input-reason-0").find("cds-dropdown-item").first().should("be.visible").click();
 
           cy.get("#reasonSaveBtn").click();
+
+          // Should disable to prevent multiple clicks
+          cy.get("#reasonSaveBtn").shadow().find("button").should("be.disabled");
 
           cy.wait("@saveClientDetails").then((interception) => {
             const requestBody = interception.request.body;
@@ -512,6 +541,9 @@ describe("Client Details Page", () => {
 
       it("removes the values from Individual related fields", () => {
         cy.get("#reasonSaveBtn").click();
+
+        // Should disable to prevent multiple clicks
+        cy.get("#reasonSaveBtn").shadow().find("button").should("be.disabled");
 
         cy.wait("@saveClientDetails").then((interception) => {
           const requestBody = interception.request.body;
@@ -720,6 +752,9 @@ describe("Client Details Page", () => {
 
       const scenarios = [{ name: "edit" }, { name: "create" }];
       scenarios.forEach((scenario) => {
+        const indexString = scenario.name === "edit" ? "00" : "null";
+        const saveButtonSelector = `#location-${indexString}-SaveBtn`;
+
         describe(`${scenario.name} - save`, () => {
           describe("on success", { testIsolation: false }, () => {
             const getClientDetailsCounter = {
@@ -727,9 +762,8 @@ describe("Client Details Page", () => {
             };
 
             let patchClientDetailsRequest;
-            before(function () {
-              init.call(this);
 
+            const registerInterceptors = () => {
               cy.intercept(
                 {
                   method: "GET",
@@ -760,6 +794,12 @@ describe("Client Details Page", () => {
                   req.continue();
                 },
               ).as("patchClientDetails");
+            };
+
+            before(function () {
+              init.call(this);
+
+              registerInterceptors();
 
               cy.visit("/clients/details/p");
               cy.wait("@getClientDetails");
@@ -772,8 +812,11 @@ describe("Client Details Page", () => {
                 cy.clearFormEntry("#emailAddress_0");
 
                 cy.get("#location-00-SaveBtn").click();
-                cy.wait("@getClientDetails");
               }
+            });
+
+            beforeEach(() => {
+              registerInterceptors();
             });
 
             if (scenario.name === "create") {
@@ -801,9 +844,13 @@ describe("Client Details Page", () => {
                 cy.selectAutocompleteEntry("#addr_null", "123", "V8V8V8");
 
                 cy.get("#location-null-SaveBtn").click();
-                cy.wait("@getClientDetails");
               });
             }
+
+            it("disables the Save button while waiting for the response", () => {
+              cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+              cy.wait("@getClientDetails");
+            });
 
             it("prefixes the path with the corresponding location code", () => {
               if (scenario.name === "edit") {
@@ -908,6 +955,10 @@ describe("Client Details Page", () => {
               }
             });
 
+            it("disables the Save button while waiting for the response", () => {
+              cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+            });
+
             it("shows the error toast", () => {
               cy.get("cds-toast-notification[kind='error']").should("be.visible");
 
@@ -929,6 +980,10 @@ describe("Client Details Page", () => {
               } else {
                 cy.get("#location-null-SaveBtn").should("be.visible");
               }
+            });
+
+            it("re-enables the Save button", () => {
+              cy.get(saveButtonSelector).shadow().find("button").should("be.enabled");
             });
           });
 
@@ -975,6 +1030,9 @@ describe("Client Details Page", () => {
                   .click();
 
                 cy.get("#reasonSaveBtn").click();
+
+                // Should disable to prevent multiple clicks
+                cy.get("#reasonSaveBtn").shadow().find("button").should("be.disabled");
 
                 cy.wait("@saveClientDetails").then((interception) => {
                   const requestBody = interception.request.body;
@@ -1191,6 +1249,9 @@ describe("Client Details Page", () => {
 
       const scenarios = [{ name: "edit" }, { name: "create" }];
       scenarios.forEach((scenario) => {
+        const indexString = scenario.name === "edit" ? "10" : "null";
+        const saveButtonSelector = `#contact-${indexString}-SaveBtn`;
+
         describe(`${scenario.name} - save`, () => {
           describe("on success", { testIsolation: false }, () => {
             const getClientDetailsCounter = {
@@ -1198,9 +1259,8 @@ describe("Client Details Page", () => {
             };
 
             let patchClientDetailsRequest;
-            before(function () {
-              init.call(this);
 
+            const registerInterceptors = () => {
               cy.intercept(
                 {
                   method: "GET",
@@ -1231,6 +1291,12 @@ describe("Client Details Page", () => {
                   req.continue();
                 },
               ).as("patchClientDetails");
+            };
+
+            before(function () {
+              init.call(this);
+
+              registerInterceptors();
 
               cy.visit("/clients/details/p");
               cy.wait("@getClientDetails");
@@ -1248,8 +1314,11 @@ describe("Client Details Page", () => {
                 cy.fillFormEntry("#emailAddress_10", "something@else.com");
 
                 cy.get("#contact-10-SaveBtn").click();
-                cy.wait("@getClientDetails");
               }
+            });
+
+            beforeEach(() => {
+              registerInterceptors();
             });
 
             if (scenario.name === "create") {
@@ -1283,9 +1352,13 @@ describe("Client Details Page", () => {
                 cy.fillFormEntry("#businessPhoneNumber_null", "1234567890");
 
                 cy.get("#contact-null-SaveBtn").click();
-                cy.wait("@getClientDetails");
               });
             }
+
+            it("disables the Save button while waiting for the response", () => {
+              cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+              cy.wait("@getClientDetails");
+            });
 
             it("prefixes the path with the corresponding location code", () => {
               if (scenario.name === "edit") {
@@ -1393,6 +1466,10 @@ describe("Client Details Page", () => {
               }
             });
 
+            it("disables the Save button while waiting for the response", () => {
+              cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+            });
+
             it("shows the error toast", () => {
               cy.get("cds-toast-notification[kind='error']").should("be.visible");
 
@@ -1410,6 +1487,10 @@ describe("Client Details Page", () => {
               cy.get(`#emailAddress_${id}`).should("be.visible");
 
               cy.get(`#contact-${id}-SaveBtn`).should("be.visible");
+            });
+
+            it("re-enables the Save button", () => {
+              cy.get(saveButtonSelector).shadow().find("button").should("be.enabled");
             });
           });
         });
