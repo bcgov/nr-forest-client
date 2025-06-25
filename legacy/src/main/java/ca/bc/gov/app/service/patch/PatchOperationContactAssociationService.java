@@ -33,7 +33,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
       ORDER BY CLIENT_LOCN_CODE""";
 
   private static final String CHECK_CONTACT_EXIST = """
-      SELECT COUNT(1)
+      SELECT COUNT(1) as cnt
       FROM CLIENT_CONTACT
       WHERE
         CLIENT_NUMBER = :client_number
@@ -302,7 +302,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
         .bind("location_code", locationCode)
         .fetch()
         .one()
-        .map(result -> result.get("COUNT(1)"))
+        .map(result -> result.get("cnt"))
         .map(String::valueOf)
         .map(Long::parseLong)
         .map(value -> value > 0);
