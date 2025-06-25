@@ -94,9 +94,12 @@ watch(
   { deep: true },
 );
 
+const saving = ref(false);
+
 const edit = () => {
   resetFormData();
   isEditing.value = true;
+  saving.value = false;
 };
 
 const cancel = () => {
@@ -111,8 +114,13 @@ const lockEditing = () => {
   }
 };
 
+const setSaving = (value: boolean) => {
+  saving.value = value;
+};
+
 defineExpose({
   lockEditing,
+  setSaving,
 });
 
 const save = (
@@ -122,6 +130,8 @@ const save = (
     pastParticiple: "updated",
   },
 ) => {
+  saving.value = true;
+
   const updatedLocation = preserveUnchangedData(rawUpdatedLocation, originalData);
   const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedLocation);
 
@@ -336,6 +346,7 @@ const handleRemoveAdditionalDelivery = () => {
         kind="tertiary"
         size="md"
         @click="handleReactivate"
+        :disabled="saving"
       >
         <span class="width-unset">Reactivate location</span>
         <Renew16 slot="icon" />
@@ -361,7 +372,7 @@ const handleRemoveAdditionalDelivery = () => {
           kind="primary"
           size="md"
           @click="saveForm"
-          :disabled="!hasAnyChange || !valid"
+          :disabled="saving || !hasAnyChange || !valid"
         >
           <template v-if="props.createMode">
             <span class="width-unset">Save location</span>
@@ -377,6 +388,7 @@ const handleRemoveAdditionalDelivery = () => {
           kind="tertiary"
           size="md"
           @click="cancel"
+          :disabled="saving"
         >
           <span class="width-unset">Cancel</span>
           <Close16 slot="icon" />
@@ -387,6 +399,7 @@ const handleRemoveAdditionalDelivery = () => {
           kind="danger--tertiary"
           size="md"
           @click="handleDeactivate"
+          :disabled="saving"
         >
           <span class="width-unset">Deactivate location</span>
           <Undefined16 slot="icon" />
@@ -416,7 +429,12 @@ const handleRemoveAdditionalDelivery = () => {
     </cds-modal-body>
 
     <cds-modal-footer>
-      <cds-modal-footer-button kind="secondary" data-modal-close class="cds--modal-close-btn">
+      <cds-modal-footer-button
+        kind="secondary"
+        data-modal-close
+        class="cds--modal-close-btn"
+        :disabled="saving"
+      >
         Cancel
       </cds-modal-footer-button>
 
@@ -425,6 +443,7 @@ const handleRemoveAdditionalDelivery = () => {
         class="cds--modal-submit-btn"
         v-on:click="deactivate"
         :danger-descriptor="`Deactivate &quot;${props.data.clientLocnName}&quot;`"
+        :disabled="saving"
       >
         Deactivate location
         <Undefined16 slot="icon" />
@@ -450,11 +469,21 @@ const handleRemoveAdditionalDelivery = () => {
     </cds-modal-body>
 
     <cds-modal-footer>
-      <cds-modal-footer-button kind="secondary" data-modal-close class="cds--modal-close-btn">
+      <cds-modal-footer-button
+        kind="secondary"
+        data-modal-close
+        class="cds--modal-close-btn"
+        :disabled="saving"
+      >
         Cancel
       </cds-modal-footer-button>
 
-      <cds-modal-footer-button kind="primary" class="cds--modal-submit-btn" v-on:click="reactivate">
+      <cds-modal-footer-button
+        kind="primary"
+        class="cds--modal-submit-btn"
+        v-on:click="reactivate"
+        :disabled="saving"
+      >
         Reactivate location
         <Renew16 slot="icon" />
       </cds-modal-footer-button>
