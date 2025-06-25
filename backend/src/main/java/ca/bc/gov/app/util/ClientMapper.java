@@ -1,5 +1,6 @@
 package ca.bc.gov.app.util;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientAddressDto;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ClientContactDto;
@@ -17,9 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientMapper {
-
-  public static final String FIRST_NAME = "firstName";
-  public static final String LAST_NAME = "lastName";
 
   /**
    * Maps a {@link ClientBusinessInformationDto} object to a {@link SubmissionDetailEntity} object,
@@ -189,8 +187,8 @@ public class ClientMapper {
 
       return
           Map.of(
-              FIRST_NAME, firstName.split(" ")[0].trim(),
-              LAST_NAME,
+              ApplicationConstant.FIRST_NAME, firstName.split(" ")[0].trim(),
+              ApplicationConstant.LAST_NAME,
 
               Stream.concat(
                       Stream
@@ -203,14 +201,14 @@ public class ClientMapper {
 
     } else if (nameParts.length >= 2) {
       return Map.of(
-          FIRST_NAME, nameParts[0].trim(),
-          LAST_NAME, String.join(" ", Arrays.copyOfRange(nameParts, 1, nameParts.length))
+          ApplicationConstant.FIRST_NAME, nameParts[0].trim(),
+          ApplicationConstant.LAST_NAME, String.join(" ", Arrays.copyOfRange(nameParts, 1, nameParts.length))
       );
     }
 
     return Map.of(
-        FIRST_NAME, nameParts[0],
-        LAST_NAME, ""
+        ApplicationConstant.FIRST_NAME, nameParts[0],
+        ApplicationConstant.LAST_NAME, ""
     );
   }
 
