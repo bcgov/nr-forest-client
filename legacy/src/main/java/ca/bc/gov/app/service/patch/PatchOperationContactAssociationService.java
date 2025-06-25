@@ -76,8 +76,6 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
       AND CONTACT_NAME = (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id)
       AND CLIENT_LOCN_CODE = :old_location_code""";
 
-  public static final BiFunction<Void, Void, Void> AGGREGATOR = (previous, subsequent) -> subsequent;
-
   private final R2dbcEntityOperations entityTemplate;
 
   @Override
@@ -195,7 +193,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
                 clientNumber
             )
         )
-        .reduce(AGGREGATOR);
+        .then();
   }
 
   private Mono<Void> applyAdd(
@@ -240,7 +238,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
                 userId
             )
         )
-        .reduce(AGGREGATOR);
+        .then();
   }
 
   private Mono<Void> applyReplace(
@@ -288,7 +286,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
                 userId
             )
         )
-        .reduce(AGGREGATOR);
+        .then();
   }
 
   private Mono<Boolean> hasContactAssociation(
