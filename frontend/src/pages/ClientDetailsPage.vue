@@ -433,11 +433,14 @@ watch(
 // Function to update reasons and send final PATCH request
 const confirmReasons = () => {
   isSaveFirstClick.value = false;
+
+  // Prevents double-click
+  saveDisabled.value = true;
+
   const reasonInputIdList = reasonPatchData.value.map((_, index) => `input-reason-${index}`);
   revalidateBus.emit(reasonInputIdList);
 
   if (!checkReasonCodesValidations()) {
-    saveDisabled.value = true;
     return;
   }
 
