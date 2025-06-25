@@ -47,7 +47,7 @@
     <mapstruct.version>1.6.3</mapstruct.version>
     <netty.version>4.1.119.Final</netty.version>
     <logback.version>1.5.18</logback.version>
-    <flyway.version>10.13.0</flyway.version>
+    <flyway.version>11.9.1</flyway.version>
     <oracle-driver.version>23.8.0.25.04</oracle-driver.version>
   </properties>
 
@@ -170,11 +170,13 @@
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
+      <version>${flyway.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-database-oracle</artifactId>
+      <version>${flyway.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
