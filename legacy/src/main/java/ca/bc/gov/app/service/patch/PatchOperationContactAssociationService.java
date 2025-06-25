@@ -117,37 +117,6 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
 
   }
 
-  private Mono<Void> processReplace(String clientNumber, String userId,
-      List<ContactAssociationDto> entries) {
-    return Flux
-        .fromIterable(entries)
-        .filter(entry -> entry.operation().equals("replace"))
-        .concatMap(entry -> applyReplace(
-                entry.entityId(),
-                entry.oldLocationCode(),
-                entry.newLocationCode(),
-                clientNumber,
-                userId
-            )
-        )
-        .reduce(AGGREGATOR);
-  }
-
-  private Mono<Void> processRemove(
-      String clientNumber,
-      List<ContactAssociationDto> entries
-  ) {
-    return Flux
-        .fromIterable(entries)
-        .filter(entry -> entry.operation().equals("remove"))
-        .concatMap(entry -> applyRemove(
-                entry.entityId(),
-                entry.oldLocationCode(),
-                clientNumber
-            )
-        )
-        .reduce(AGGREGATOR);
-  }
 
   private static Function<List<String>, ContactAssociationDto> convertToAction(JsonNode node) {
     return locations -> {
@@ -213,6 +182,22 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
             .then();
   }
 
+  private Mono<Void> processRemove(
+      String clientNumber,
+      List<ContactAssociationDto> entries
+  ) {
+    return Flux
+        .fromIterable(entries)
+        .filter(entry -> entry.operation().equals("remove"))
+        .concatMap(entry -> applyRemove(
+                entry.entityId(),
+                entry.oldLocationCode(),
+                clientNumber
+            )
+        )
+        .reduce(AGGREGATOR);
+  }
+
   private Mono<Void> applyAdd(
       Long entityId,
       String locationCode,
@@ -240,6 +225,14 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
     return Flux
         .fromIterable(entries)
         .filter(entry -> entry.operation().equals("add"))
+        //If no contact association exists for the entityId and newLocationCode, then add it
+        .filterWhen(entry -> hasContactAssociation(
+                clientNumber,
+                entry.entityId(),
+                entry.newLocationCode()
+            )
+            .map(result -> !result) // Only add if it does not exist
+        )
         .concatMap(entry -> applyAdd(
                 entry.entityId(),
                 entry.newLocationCode(),
@@ -269,6 +262,52 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
             .fetch()
             .one()
             .then();
+  }
+
+  private Mono<Void> processReplace(
+      String clientNumber,
+      String userId,
+      List<ContactAssociationDto> entries
+  ) {
+    return Flux
+        .fromIterable(entries)
+        .filter(entry -> entry.operation().equals("replace"))
+        //If no contact association exists for the entityId and newLocationCode, then add it
+        .filterWhen(entry -> hasContactAssociation(
+                clientNumber,
+                entry.entityId(),
+                entry.newLocationCode()
+            )
+                .map(result -> !result) // Only add if it does not exist
+        )
+        .concatMap(entry -> applyReplace(
+                entry.entityId(),
+                entry.oldLocationCode(),
+                entry.newLocationCode(),
+                clientNumber,
+                userId
+            )
+        )
+        .reduce(AGGREGATOR);
+  }
+
+  private Mono<Boolean> hasContactAssociation(
+      String clientNumber,
+      Long entityId,
+      String locationCode
+  ) {
+    return entityTemplate
+        .getDatabaseClient()
+        .sql(CHECK_CONTACT_EXIST)
+        .bind("client_number", clientNumber)
+        .bind("entity_id", entityId)
+        .bind("location_code", locationCode)
+        .fetch()
+        .one()
+        .map(result -> result.get("COUNT(1)"))
+        .map(String::valueOf)
+        .map(Long::parseLong)
+        .map(value -> value > 0);
   }
 
 
