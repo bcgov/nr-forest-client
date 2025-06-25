@@ -41,11 +41,11 @@
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <testcontainers.version>1.21.2</testcontainers.version>
-        <netty.version>4.1.119.Final</netty.version>
         <logback.version>1.5.18</logback.version>
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.3</nimbus-jose-jwt.version>
         <spring-security-core.version>6.5.1</spring-security-core.version>
+        <netty.version>4.1.119.Final</netty.version>
         <micrometer.version>1.15.1</micrometer.version>
         <micrometer-tracing.version>1.5.1</micrometer-tracing.version>
         <flyway.version>11.9.1</flyway.version>
