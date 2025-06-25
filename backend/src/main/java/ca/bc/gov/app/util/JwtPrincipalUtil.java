@@ -1,5 +1,8 @@
 package ca.bc.gov.app.util;
 
+import static ca.bc.gov.app.ApplicationConstant.FIRST_NAME;
+import static ca.bc.gov.app.ApplicationConstant.LAST_NAME;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +24,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class JwtPrincipalUtil {
-
-  public static final String LAST_NAME = "lastName";
 
   /**
    * Retrieves the provider of the JWT token from the given JwtAuthenticationToken principal. The
@@ -404,12 +405,12 @@ public class JwtPrincipalUtil {
     if (useDisplayName) {
       Map<String, String> names = ClientMapper.parseName(getDisplayNameValue(claims),
           getProviderValue(claims));
-      firstName = names.get("firstName");
+      firstName = names.get(FIRST_NAME);
       lastName = names.get(LAST_NAME);
     }
 
     // Put extracted or computed first and last names into the map
-    additionalInfo.put("firstName", firstName.trim());
+    additionalInfo.put(FIRST_NAME, firstName.trim());
     additionalInfo.put(LAST_NAME, lastName.trim());
     additionalInfo.put("fullName", String.join(" ", firstName, lastName).trim());
 
