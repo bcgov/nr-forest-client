@@ -50,6 +50,8 @@
     <flyway.version>11.9.1</flyway.version>
     <oracle-driver.version>23.8.0.25.04</oracle-driver.version>
     <opentelemetry.version>1.51.0</opentelemetry.version>
+    <selenium.version>4.33.0</selenium.version>
+    <mockito.version>5.18.0</mockito.version>
   </properties>
 
   <dependencies>
@@ -223,6 +225,20 @@
         <groupId>io.micrometer</groupId>
         <artifactId>micrometer-tracing-bom</artifactId>
         <version>${micrometer-tracing.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-bom</artifactId>
+        <version>${selenium.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-bom</artifactId>
+        <version>${mockito.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
