@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller.filters;
 
 import io.micrometer.context.ContextRegistry;
+import java.util.List;
 import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
@@ -20,6 +21,8 @@ import reactor.util.context.Context;
  * tracing in both reactive and non-reactive parts of the application.
  */
 public abstract class ContextPropagatorWebFilter implements WebFilter {
+
+  private static final List<String> SKIP_PATHS = List.of("/health", "/metrics");
 
   protected abstract String getContextKey();
 
@@ -41,6 +44,16 @@ public abstract class ContextPropagatorWebFilter implements WebFilter {
   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
     // This is to be able to tackle non-reactive context
     contextLoad();
+
+    String method = exchange.getRequest().getMethod().name();
+    String path = exchange.getRequest().getPath().value();
+    if(method.equals("GET") && SKIP_PATHS.stream().anyMatch(path::startsWith)) {
+      // Why this is here you ask? Well, we don't want to log the user id for health and metrics endpoints
+      // Also, we skip all the other security context loading and MDC setting for these paths
+      // This is to avoid unnecessary overhead for these endpoints, and to prevent them
+      // from failing if the security context is not set (as it is not for these endpoints)
+      return chain.filter(exchange).contextWrite(Context.of(getContextKey(), StringUtils.EMPTY));
+    }
 
     return
         // Here we are getting the user id from the security context

@@ -26,7 +26,7 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
     // Allow all access to metrics and health endpoints
     // This is due to the internal platform checks that require access to these endpoints
     authorize
-        .pathMatchers(HttpMethod.GET, "/metrics/**", "/health/**").permitAll();
+        .pathMatchers(HttpMethod.GET, "/metrics", "/health").permitAll();
 
     // Only Admins and Editors are able to use the match endpoint
     authorize
