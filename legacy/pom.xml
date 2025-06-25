@@ -49,6 +49,7 @@
     <logback.version>1.5.18</logback.version>
     <flyway.version>11.9.1</flyway.version>
     <oracle-driver.version>23.8.0.25.04</oracle-driver.version>
+    <opentelemetry.version>1.51.0</opentelemetry.version>
   </properties>
 
   <dependencies>
@@ -98,6 +99,7 @@
     <dependency>
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-exporter-zipkin</artifactId>
+      <version>${opentelemetry.version}</version>
     </dependency>
 
     <dependency>
