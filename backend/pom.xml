@@ -51,8 +51,10 @@
         <flyway.version>11.9.1</flyway.version>
         <opentelemetry.version>1.51.0</opentelemetry.version>
         <selenium.version>4.33.0</selenium.version>
-        <junit.version>5.13.1</junit.version>
+        <org.junit.version>5.13.1</org.junit.version>
+        <junit.version>4.13.2</junit.version>
         <mockito.version>5.18.0</mockito.version>
+        <jooq.version>3.20.5</jooq.version>
     </properties>
 
     <dependencies>
@@ -150,7 +152,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -191,7 +193,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>${junit.version}</version>
+            <version>${org.junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -284,20 +286,27 @@
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>${junit.version}</version>
+                <version>${org.junit.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.13.2</version>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-bom</artifactId>
                 <version>${mockito.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-bom</artifactId>
+                <version>${jooq.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
