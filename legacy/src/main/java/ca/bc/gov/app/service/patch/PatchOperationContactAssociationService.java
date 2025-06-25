@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,14 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
       	AND CONTACT_NAME = (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id)
       ORDER BY CLIENT_LOCN_CODE""";
 
+  private static final String CHECK_CONTACT_EXIST = """
+      SELECT COUNT(1) as cnt
+      FROM CLIENT_CONTACT
+      WHERE
+        CLIENT_NUMBER = :client_number
+        AND CONTACT_NAME = (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id)
+        AND CLIENT_LOCN_CODE = :location_code""";
+
   public static final String REMOVE_CONTACT_ASSOCIATION = """
       DELETE FROM THE.CLIENT_CONTACT WHERE
       CLIENT_NUMBER = :client_number
@@ -46,24 +55,14 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
         ADD_TIMESTAMP, ADD_USERID, ADD_ORG_UNIT, REVISION_COUNT
       )
       VALUES
-      (
-      client_contact_seq.NEXTVAL,
-      :client_number,
-      :location_code,
+      (client_contact_seq.NEXTVAL, :client_number, :location_code,
       (SELECT cl.BUS_CONTACT_CODE FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
       (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
       (SELECT cl.BUSINESS_PHONE FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
       (SELECT cl.CELL_PHONE FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
       (SELECT cl.FAX_NUMBER FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
       (SELECT cl.EMAIL_ADDRESS FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.UPDATE_TIMESTAMP FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.UPDATE_USERID FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.UPDATE_ORG_UNIT FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.ADD_TIMESTAMP FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.ADD_USERID FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.ADD_ORG_UNIT FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.REVISION_COUNT FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id)
-      )""";
+      SYSDATE, :user_id, 70, SYSDATE, :user_id, 70, 1)""";
 
   public static final String REPLACE_CONTACT_ASSOCIATION = """
       UPDATE THE.CLIENT_CONTACT
@@ -107,45 +106,15 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
             )
             .collectList()
             .flatMap(entries ->
-                Flux
-                    .fromIterable(entries)
-                    .filter(entry -> entry.operation().equals("remove"))
-                    .flatMap(entry -> applyRemove(
-                            entry.entityId(),
-                            entry.oldLocationCode(),
-                            clientNumber
-                        )
-                    )
-                    .then(
-                        Flux
-                            .fromIterable(entries)
-                            .filter(entry -> entry.operation().equals("add"))
-                            .flatMap(entry -> applyAdd(
-                                    entry.entityId(),
-                                    entry.newLocationCode(),
-                                    clientNumber
-                                )
-                            )
-                            .then(Flux
-                                .fromIterable(entries)
-                                .filter(entry -> entry.operation().equals("replace"))
-                                .flatMap(entry -> applyReplace(
-                                        entry.entityId(),
-                                        entry.oldLocationCode(),
-                                        entry.newLocationCode(),
-                                        clientNumber,
-                                        userId
-                                    )
-                                )
-                                .then()
-                            )
-                    )
-
+                processRemove(clientNumber, entries)
+                    .then(processAdd(clientNumber, userId, entries))
+                    .then(processReplace(clientNumber, userId, entries))
             )
             .then();
 
 
   }
+
 
   private static Function<List<String>, ContactAssociationDto> convertToAction(JsonNode node) {
     return locations -> {
@@ -211,10 +180,27 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
             .then();
   }
 
+  private Mono<Void> processRemove(
+      String clientNumber,
+      List<ContactAssociationDto> entries
+  ) {
+    return Flux
+        .fromIterable(entries)
+        .filter(entry -> entry.operation().equals("remove"))
+        .concatMap(entry -> applyRemove(
+                entry.entityId(),
+                entry.oldLocationCode(),
+                clientNumber
+            )
+        )
+        .then();
+  }
+
   private Mono<Void> applyAdd(
       Long entityId,
       String locationCode,
-      String clientNumber
+      String clientNumber,
+      String userId
   ) {
     return
         entityTemplate
@@ -223,9 +209,36 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
             .bind("client_number", clientNumber)
             .bind("entity_id", entityId)
             .bind("location_code", locationCode)
+            .bind("user_id", userId)
             .fetch()
             .one()
             .then();
+  }
+
+  private Mono<Void> processAdd(
+      String clientNumber,
+      String userId,
+      List<ContactAssociationDto> entries
+  ) {
+    return Flux
+        .fromIterable(entries)
+        .filter(entry -> entry.operation().equals("add"))
+        //If no contact association exists for the entityId and newLocationCode, then add it
+        .filterWhen(entry -> hasContactAssociation(
+                clientNumber,
+                entry.entityId(),
+                entry.newLocationCode()
+            )
+            .map(result -> !result) // Only add if it does not exist
+        )
+        .concatMap(entry -> applyAdd(
+                entry.entityId(),
+                entry.newLocationCode(),
+                clientNumber,
+                userId
+            )
+        )
+        .then();
   }
 
   private Mono<Void> applyReplace(
@@ -243,10 +256,56 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
             .bind("entity_id", entityId)
             .bind("old_location_code", oldLocationCode)
             .bind("new_location_code", newLocationCode)
-            .bind("user_id", "system")
+            .bind("user_id", userId)
             .fetch()
             .one()
             .then();
+  }
+
+  private Mono<Void> processReplace(
+      String clientNumber,
+      String userId,
+      List<ContactAssociationDto> entries
+  ) {
+    return Flux
+        .fromIterable(entries)
+        .filter(entry -> entry.operation().equals("replace"))
+        //If no contact association exists for the entityId and newLocationCode, then add it
+        .filterWhen(entry -> hasContactAssociation(
+                clientNumber,
+                entry.entityId(),
+                entry.newLocationCode()
+            )
+                .map(result -> !result) // Only add if it does not exist
+        )
+        .concatMap(entry -> applyReplace(
+                entry.entityId(),
+                entry.oldLocationCode(),
+                entry.newLocationCode(),
+                clientNumber,
+                userId
+            )
+        )
+        .then();
+  }
+
+  private Mono<Boolean> hasContactAssociation(
+      String clientNumber,
+      Long entityId,
+      String locationCode
+  ) {
+    return entityTemplate
+        .getDatabaseClient()
+        .sql(CHECK_CONTACT_EXIST)
+        .bind("client_number", clientNumber)
+        .bind("entity_id", entityId)
+        .bind("location_code", locationCode)
+        .fetch()
+        .one()
+        .map(result -> result.get("cnt"))
+        .map(String::valueOf)
+        .map(Long::parseLong)
+        .map(value -> value > 0);
   }
 
 
