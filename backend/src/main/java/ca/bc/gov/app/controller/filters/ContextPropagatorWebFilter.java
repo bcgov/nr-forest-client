@@ -21,6 +21,8 @@ import reactor.util.context.Context;
  */
 public abstract class ContextPropagatorWebFilter implements WebFilter {
 
+  private static final List<String> SKIP_PATHS = List.of("/metrics", "/health");
+
   protected abstract String getContextKey();
 
   protected abstract Function<Authentication, String> getContextValueExtractor();
@@ -43,9 +45,9 @@ public abstract class ContextPropagatorWebFilter implements WebFilter {
     contextLoad();
 
     // If the request is for metrics or health, we skip the context propagation
-    if (List.of("/metrics","/health").contains(exchange.getRequest().getPath().toString()))
+    if (SKIP_PATHS.contains(exchange.getRequest().getPath().toString())) {
       return chain.filter(exchange);
-
+    }
     return
         // Here we are getting the user id from the security context
         ReactiveSecurityContextHolder
