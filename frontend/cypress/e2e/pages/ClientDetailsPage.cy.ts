@@ -37,6 +37,13 @@ describe("Client Details Page", () => {
         currentRole = testRole;
       }
     });
+
+    cy.intercept("PATCH", "/api/clients/details/*", (req) => {
+      req.on("response", (res) => {
+        // additional time to be able to assert the disabling of Save buttons
+        res.setDelay(150);
+      });
+    }).as("saveClientDetails");
   }
 
   beforeEach(init);
@@ -316,9 +323,6 @@ describe("Client Details Page", () => {
       describe("with reason modal", { testIsolation: false }, () => {
         beforeEach(function () {
           init.call(this);
-  
-          cy.intercept("PATCH", "/api/clients/details/*")
-            .as("saveClientDetails");
           
           cy.intercept("GET", "/api/codes/update-reasons/*/*")
             .as("getReasonsList");
@@ -393,8 +397,6 @@ describe("Client Details Page", () => {
         beforeEach(function () {
           init.call(this);
 
-          cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
-
           cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
 
           cy.visit("/clients/details/i");
@@ -449,8 +451,6 @@ describe("Client Details Page", () => {
       describe("ID change", { testIsolation: false }, () => {
         beforeEach(function () {
           init.call(this);
-
-          cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
 
           cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
 
@@ -991,8 +991,6 @@ describe("Client Details Page", () => {
             describe("with reason modal", { testIsolation: false }, () => {
               beforeEach(function () {
                 init.call(this);
-
-                cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
 
                 cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
 
