@@ -43,7 +43,7 @@ public abstract class ContextPropagatorWebFilter implements WebFilter {
     contextLoad();
 
     // If the request is for metrics or health, we skip the context propagation
-    if(List.of("/metrics","/health").contains(exchange.getRequest().getPath().toString()))
+    if (List.of("/metrics","/health").contains(exchange.getRequest().getPath().toString()))
       return chain.filter(exchange);
 
     return
