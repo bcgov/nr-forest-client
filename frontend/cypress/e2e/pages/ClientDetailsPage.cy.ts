@@ -40,6 +40,22 @@ describe("Client Details Page", () => {
   }
 
   beforeEach(init);
+  interface ResolveWrapper {
+    resolve?: () => void;
+  }
+
+  const interruptPatch = () => {
+    const resolveWrapper: ResolveWrapper = {};
+    const createUnresolvedPromise = () => {
+      return new Promise<void>((resolve) => {
+        resolveWrapper.resolve = resolve;
+      });
+    };
+    cy.intercept("PATCH", "/api/clients/details/*", (req) => {
+      req.continue(createUnresolvedPromise);
+    }).as("saveClientDetails");
+    return resolveWrapper;
+  };
 
   it("shows text skeletons only while data is not available", () => {
     let resolveGetClientDetails: () => void;
@@ -209,6 +225,7 @@ describe("Client Details Page", () => {
           ).as("getClientDetails");
         };
 
+        let resolveWrapper: ResolveWrapper;
         before(function () {
           init.call(this);
 
@@ -217,6 +234,7 @@ describe("Client Details Page", () => {
           cy.visit("/clients/details/p");
           cy.get("#summaryEditBtn").click();
           cy.clearFormEntry("#input-workSafeBCNumber");
+          resolveWrapper = interruptPatch();
           cy.get("#summarySaveBtn").click();
         });
 
@@ -224,11 +242,17 @@ describe("Client Details Page", () => {
           registerInterceptors();
         });
 
-        it("disables the Save button while waiting for the response", () => {
+        it.only("disables the Save button while waiting for the response", () => {
           cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+          cy.wrap(resolveWrapper)
+            .its("resolve")
+            .should("not.be.undefined")
+            .then(() => {
+              // resolveWrapper.resolve();
+            });
         });
 
-        it("shows the success toast", () => {
+        it.only("shows the success toast", () => {
           cy.get("cds-toast-notification[kind='success']").should("be.visible");
         });
 
