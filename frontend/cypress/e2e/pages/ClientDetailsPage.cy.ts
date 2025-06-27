@@ -40,21 +40,48 @@ describe("Client Details Page", () => {
   }
 
   beforeEach(init);
-  interface ResolveWrapper {
-    resolve?: () => void;
-  }
 
+  let resumePatch: () => void;
+  /**
+   * This structure allows to both interrupt and resume the Patch request.
+   *
+   * @returns function to resume the Patch request
+   */
   const interruptPatch = () => {
-    const resolveWrapper: ResolveWrapper = {};
-    const createUnresolvedPromise = () => {
-      return new Promise<void>((resolve) => {
-        resolveWrapper.resolve = resolve;
+    let resolvePatchIntercepted: () => void;
+    const promisePatchIntercepted = new Promise<void>((resolve) => {
+      resolvePatchIntercepted = resolve;
+    });
+
+    let resumePatch: () => void;
+
+    const createUnresolvedPromise = () =>
+      new Promise<void>((resolve) => {
+        resumePatch = resolve;
+        resolvePatchIntercepted();
       });
-    };
+
+    /**
+     * Resolves the promise once the Patch has been intercepted.
+     * i.e. Waits in case the Patch has not been intercepted yet, and resolves it after that.
+     *
+     * This is very handy because it's not trivial to know if the request was already intercepted,
+     * since you can't use cy.wait, since the request would be in an interrupted state.
+     *
+     * Of course there are cases where this is not needed - the moment you would want to resume it,
+     * you know there would be enough time for the request to be intercepted...
+     * This was created to other cases, where that wouldn't work.
+     *
+     * As a last note. We could also just don't care and wait for it to auto-resolve after some
+     * time - which seems to be 2 seconds - but then we would have this time penalty in our tests.
+     */
+    const resumePatchAsap = () => promisePatchIntercepted.then(resumePatch);
+
     cy.intercept("PATCH", "/api/clients/details/*", (req) => {
       req.continue(createUnresolvedPromise);
     }).as("saveClientDetails");
-    return resolveWrapper;
+
+    return resumePatchAsap;
   };
 
   it("shows text skeletons only while data is not available", () => {
@@ -225,7 +252,6 @@ describe("Client Details Page", () => {
           ).as("getClientDetails");
         };
 
-        let resolveWrapper: ResolveWrapper;
         before(function () {
           init.call(this);
 
@@ -234,7 +260,7 @@ describe("Client Details Page", () => {
           cy.visit("/clients/details/p");
           cy.get("#summaryEditBtn").click();
           cy.clearFormEntry("#input-workSafeBCNumber");
-          resolveWrapper = interruptPatch();
+          resumePatch = interruptPatch();
           cy.get("#summarySaveBtn").click();
         });
 
@@ -242,17 +268,12 @@ describe("Client Details Page", () => {
           registerInterceptors();
         });
 
-        it.only("disables the Save button while waiting for the response", () => {
+        it("disables the Save button while waiting for the response", () => {
           cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
-          cy.wrap(resolveWrapper)
-            .its("resolve")
-            .should("not.be.undefined")
-            .then(() => {
-              // resolveWrapper.resolve();
-            });
+          resumePatch();
         });
 
-        it.only("shows the success toast", () => {
+        it("shows the success toast", () => {
           cy.get("cds-toast-notification[kind='success']").should("be.visible");
         });
 
@@ -283,11 +304,13 @@ describe("Client Details Page", () => {
           cy.visit("/clients/details/p");
           cy.get("#summaryEditBtn").click();
           cy.fillFormEntry("[data-id='input-input-notes']", "error", { area: true });
+          resumePatch = interruptPatch();
           cy.get("#summarySaveBtn").click();
         });
 
         it("disables the Save button while waiting for the response", () => {
           cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+          resumePatch();
         });
 
         it("shows the error toast", () => {
@@ -867,12 +890,14 @@ describe("Client Details Page", () => {
 
                 cy.selectAutocompleteEntry("#addr_null", "123", "V8V8V8");
 
+                resumePatch = interruptPatch();
                 cy.get("#location-null-SaveBtn").click();
               });
             }
 
             it("disables the Save button while waiting for the response", () => {
               cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+              resumePatch();
               cy.wait("@getClientDetails");
             });
 
@@ -972,6 +997,7 @@ describe("Client Details Page", () => {
                 cy.fillFormEntry("[data-id='input-notes_null']", "error", { area: true });
               }
 
+              resumePatch = interruptPatch();
               if (scenario.name === "edit") {
                 cy.get("#location-00-SaveBtn").click();
               } else {
@@ -981,6 +1007,7 @@ describe("Client Details Page", () => {
 
             it("disables the Save button while waiting for the response", () => {
               cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+              resumePatch();
             });
 
             it("shows the error toast", () => {
@@ -1375,12 +1402,14 @@ describe("Client Details Page", () => {
 
                 cy.fillFormEntry("#businessPhoneNumber_null", "1234567890");
 
+                resumePatch = interruptPatch();
                 cy.get("#contact-null-SaveBtn").click();
               });
             }
 
             it("disables the Save button while waiting for the response", () => {
               cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+              resumePatch();
               cy.wait("@getClientDetails");
             });
 
@@ -1486,12 +1515,14 @@ describe("Client Details Page", () => {
 
                 cy.fillFormEntry("#businessPhoneNumber_null", "1234567890");
 
+                resumePatch = interruptPatch();
                 cy.get("#contact-null-SaveBtn").click();
               }
             });
 
             it("disables the Save button while waiting for the response", () => {
               cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+              resumePatch();
             });
 
             it("shows the error toast", () => {
