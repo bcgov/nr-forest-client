@@ -283,7 +283,7 @@
       "response": {
         "status": 202,
         "body": "Sample success message",
-        "fixedDelayMilliseconds": 200
+        "fixedDelayMilliseconds": 500
       }
     },
     {
@@ -303,7 +303,7 @@
       "response": {
         "status": 400,
         "body": "Sample error message",
-        "fixedDelayMilliseconds": 200
+        "fixedDelayMilliseconds": 500
       }
     },
     {
@@ -328,7 +328,7 @@
             "match": "00000001"
           }
         ],
-        "fixedDelayMilliseconds": 200
+        "fixedDelayMilliseconds": 500
       }
     },
     {
@@ -353,7 +353,7 @@
             "match": "00000001"
           }
         ],
-        "fixedDelayMilliseconds": 200
+        "fixedDelayMilliseconds": 500
       }
     }
   ]

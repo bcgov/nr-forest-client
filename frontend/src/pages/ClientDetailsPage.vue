@@ -433,11 +433,14 @@ watch(
 // Function to update reasons and send final PATCH request
 const confirmReasons = () => {
   isSaveFirstClick.value = false;
+
+  // Prevents double-click
+  saveDisabled.value = true;
+
   const reasonInputIdList = reasonPatchData.value.map((_, index) => `input-reason-${index}`);
   revalidateBus.emit(reasonInputIdList);
 
   if (!checkReasonCodesValidations()) {
-    saveDisabled.value = true;
     return;
   }
 
@@ -531,6 +534,7 @@ const saveSummary = (payload: SaveEvent<ClientDetails>) => {
   const updatedFullName = buildFullName(updatedClient.client);
 
   const onSuccess: OnSuccess = () => {
+    summaryRef.value.setSaving(false);
     const toastNotification: ModalNotification = {
       kind: "Success",
       active: true,
@@ -545,6 +549,7 @@ const saveSummary = (payload: SaveEvent<ClientDetails>) => {
   };
 
   const onFailure: OnFailure = (error) => {
+    summaryRef.value.setSaving(false);
     const toastNotification: ModalNotification = {
       kind: "Error",
       active: true,
@@ -639,6 +644,8 @@ const saveLocation =
     const updatedTitle = getUpdatedLocationTitle(updatedLocation);
 
     const onSuccess: OnSuccess = () => {
+      locationsRef.value[index].setSaving(false);
+
       const toastNotification: ModalNotification = {
         kind: "Success",
         active: true,
@@ -667,6 +674,7 @@ const saveLocation =
     };
 
     const onFailure: OnFailure = (error) => {
+      locationsRef.value[index].setSaving(false);
       const toastNotification: ModalNotification = {
         kind: "Error",
         active: true,
@@ -721,6 +729,8 @@ const operateContact =
     const updatedTitle = updatedContact.contactName;
 
     const onSuccess: OnSuccess = () => {
+      contactsRef.value[index].setSaving(false);
+
       const toastNotification: ModalNotification = {
         kind: "Success",
         active: true,
@@ -751,6 +761,7 @@ const operateContact =
     };
 
     const onFailure: OnFailure = (error) => {
+      contactsRef.value[index].setSaving(false);
       const toastNotification: ModalNotification = {
         kind: "Error",
         active: true,

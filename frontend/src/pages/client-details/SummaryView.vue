@@ -77,9 +77,12 @@ watch(
   { deep: true },
 );
 
+const saving = ref(false);
+
 const edit = () => {
   resetFormData();
   isEditing.value = true;
+  saving.value = false;
 };
 
 const cancel = () => {
@@ -90,7 +93,11 @@ const lockEditing = () => {
   isEditing.value = false;
 };
 
-defineExpose({lockEditing,});
+const setSaving = (value: boolean) => {
+  saving.value = value;
+};
+
+defineExpose({ lockEditing, setSaving });
 
 const fieldIdList = [
   "clientName",
@@ -188,6 +195,8 @@ const getRemovedFields = () => {
 };
 
 const save = () => {
+  saving.value = true;
+
   const updatedData = preserveUnchangedData(formData.value, originalData);
   const removedFields = getRemovedFields();
 
@@ -830,12 +839,18 @@ watch(goodStandingInd, () => {
         kind="primary"
         size="md"
         @click="save"
-        :disabled="!hasAnyChange || !checkValid()"
+        :disabled="saving || !hasAnyChange || !checkValid()"
       >
         <span class="width-unset">Save changes</span>
         <Save16 slot="icon" />
       </cds-button>
-      <cds-button id="summaryCancelBtn" kind="tertiary" size="md" @click="cancel">
+      <cds-button
+        id="summaryCancelBtn"
+        kind="tertiary"
+        size="md"
+        @click="cancel"
+        :disabled="saving"
+      >
         <span class="width-unset">Cancel</span>
         <Close16 slot="icon" />
       </cds-button>
