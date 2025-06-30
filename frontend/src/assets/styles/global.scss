@@ -122,6 +122,10 @@
 
   --tab-panel-padding: 2.5rem;
   --tab-panel-gap: 2rem;
+
+  --dropdown-list-max-block-size: 13.75rem;
+
+  --modal-content-padding-block-end: 3rem;
 }
 
 @media screen and (hover: none) {
@@ -1863,6 +1867,10 @@ cds-header-panel[expanded] {
 
 .margin-left-1_75rem {
   margin-left: 1.75rem;
+}
+
+.modal-dropdown-container {
+  margin-bottom: calc(var(--dropdown-list-max-block-size) - var(--modal-content-padding-block-end));
 }
 
 .no-margin {

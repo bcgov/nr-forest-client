@@ -361,11 +361,8 @@ describe("Client Details Page", () => {
   describe("summary (role:CLIENT_EDITOR)", () => {
     describe("save", () => {
       describe("with reason modal", { testIsolation: false }, () => {
-        beforeEach(function () {
+        before(function () {
           init.call(this);
-  
-          cy.intercept("PATCH", "/api/clients/details/*")
-            .as("saveClientDetails");
           
           cy.intercept("GET", "/api/codes/update-reasons/*/*")
             .as("getReasonsList");
@@ -391,7 +388,7 @@ describe("Client Details Page", () => {
           cy.wait("@getReasonsList");
         });
 
-        it("opens the reason modal and sends the correct PATCH request with reasons", () => {
+        it("renders the reason modal properly", () => {
           cy.get("#reason-modal")
             .should("be.visible");
         
@@ -401,13 +398,47 @@ describe("Client Details Page", () => {
           cy.get("#input-reason-0")
             .find('[part="trigger-button"]')
             .click();
-        
+
+          /*
+          Make sure the amount of options would get the dropdown list to its maximum size.
+          i.e. a size that requires a scroll bar in it.
+          */
+          cy.get("#input-reason-0").find("cds-dropdown-item").should("have.length.above", 7);
+
+          // Double-checking to make sure the dropdown list has a scrollbar
+          cy.get("#input-reason-0")
+            .shadow()
+            .find("#menu-body")
+            .then(($el) => {
+              expect($el.prop("scrollHeight")).greaterThan(0);
+              expect($el.prop("clientHeight")).greaterThan(0);
+              expect($el.prop("scrollHeight")).greaterThan($el.prop("clientHeight"));
+            });
+
+          /*
+          And now checking the modal body has no scrollbar.
+          Otherwise the dropdown list would be covered by the modal footer and users have to use
+          two scrollbars in order to view all the options, and it fails if the user drags the
+          scrollbar instead of using the mouse-wheel, because then the dropdown gets closed.
+          */
+          cy.get("#reason-modal")
+            .find("cds-modal-body")
+            .then(($el) => {
+              expect($el.prop("scrollHeight")).greaterThan(0);
+              expect($el.prop("clientHeight")).greaterThan(0);
+              expect($el.prop("scrollHeight")).eq($el.prop("clientHeight"));
+            });
+        });
+
+        it("sends the correct PATCH request with reasons", () => {
           cy.get("#input-reason-0")
             .find("cds-dropdown-item")
             .first()
             .should("be.visible")
             .click();
-        
+
+          cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
+
           cy.get("#reasonSaveBtn").click();
 
           // Should disable to prevent multiple clicks
