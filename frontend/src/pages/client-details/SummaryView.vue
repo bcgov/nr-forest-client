@@ -195,8 +195,6 @@ const getRemovedFields = () => {
 };
 
 const save = () => {
-  saving.value = true;
-
   const updatedData = preserveUnchangedData(formData.value, originalData);
   const removedFields = getRemovedFields();
 
