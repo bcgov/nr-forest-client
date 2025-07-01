@@ -1216,7 +1216,8 @@ onMounted(async () => {
     </cds-modal-body>
 
     <cds-modal-footer>
-      <cds-modal-footer-button 
+      <cds-modal-footer-button
+        id="reasonCancelBtn"
         kind="secondary" 
         data-modal-close 
         class="cds--modal-close-btn">
