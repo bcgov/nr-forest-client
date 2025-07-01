@@ -1170,7 +1170,7 @@ onMounted(async () => {
     </cds-modal-header>
   
     <cds-modal-body id="reason-modal-body">
-      <div v-if="reasonPatchData && reasonPatchData.length > 0">
+      <div class="modal-dropdown-container" v-if="reasonPatchData && reasonPatchData.length > 0">
 
         <p class="body-compact-01">
           Select a reason for the following 
