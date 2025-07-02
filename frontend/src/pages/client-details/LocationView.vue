@@ -130,8 +130,6 @@ const save = (
     pastParticiple: "updated",
   },
 ) => {
-  saving.value = true;
-
   const updatedLocation = preserveUnchangedData(rawUpdatedLocation, originalData);
   const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedLocation);
 
