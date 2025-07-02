@@ -1,5 +1,11 @@
 [ 
-  { "code": "R1", "name": "Reason 1" }, 
-  { "code": "R2", "name": "Reason 2" }, 
-  { "code": "R3", "name": "Reason 3" } 
+  { "code": "R1", "name": "Reason 1" },
+  { "code": "R2", "name": "Reason 2" },
+  { "code": "R3", "name": "Reason 3" },
+  { "code": "R4", "name": "Reason 4" },
+  { "code": "R5", "name": "Reason 5" },
+  { "code": "R6", "name": "Reason 6" },
+  { "code": "R7", "name": "Reason 7" },
+  { "code": "R8", "name": "Reason 8" },
+  { "code": "R9", "name": "Reason 9" }
 ]

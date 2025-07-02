@@ -363,6 +363,8 @@ const toolsSvg = useSvg(tools);
 
 const summaryRef = ref<InstanceType<typeof SummaryView> | null>(null);
 
+const saveableComponentRef = ref<InstanceType<typeof SummaryView | typeof LocationView | typeof ContactView> | null>(null);
+
 const reasonModalActiveInd = ref(false);
 
 type ReasonPatch = jsonpatch.AddOperation<FieldReason> & {
@@ -457,6 +459,11 @@ const confirmReasons = () => {
 };
 
 const sendPatchRequest = (reasonPatchData: ReasonPatch[]) => {
+  // Stores a reference to the component that triggered the Patch request
+  const patchingComponent = saveableComponentRef.value;
+  
+  patchingComponent.setSaving(true);
+
   const reasonChanges: jsonpatch.Operation[] = reasonPatchData.map((patch) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { action, ...operation } = patch;
@@ -474,6 +481,8 @@ const sendPatchRequest = (reasonPatchData: ReasonPatch[]) => {
   } = useJsonPatch(`/api/clients/details/${clientNumber}`, finalPatchData.value, { skip: true });
 
   patch().then(() => {
+    patchingComponent.setSaving(false);
+
     if (response.value.status) {
       onSuccessPatch.value(response.value);
     }
@@ -533,8 +542,9 @@ const saveSummary = (payload: SaveEvent<ClientDetails>) => {
 
   const updatedFullName = buildFullName(updatedClient.client);
 
+  saveableComponentRef.value = summaryRef.value;
+
   const onSuccess: OnSuccess = () => {
-    summaryRef.value.setSaving(false);
     const toastNotification: ModalNotification = {
       kind: "Success",
       active: true,
@@ -549,7 +559,6 @@ const saveSummary = (payload: SaveEvent<ClientDetails>) => {
   };
 
   const onFailure: OnFailure = (error) => {
-    summaryRef.value.setSaving(false);
     const toastNotification: ModalNotification = {
       kind: "Error",
       active: true,
@@ -643,9 +652,9 @@ const saveLocation =
 
     const updatedTitle = getUpdatedLocationTitle(updatedLocation);
 
-    const onSuccess: OnSuccess = () => {
-      locationsRef.value[index].setSaving(false);
+    saveableComponentRef.value = locationsRef.value[index];
 
+    const onSuccess: OnSuccess = () => {
       const toastNotification: ModalNotification = {
         kind: "Success",
         active: true,
@@ -674,7 +683,6 @@ const saveLocation =
     };
 
     const onFailure: OnFailure = (error) => {
-      locationsRef.value[index].setSaving(false);
       const toastNotification: ModalNotification = {
         kind: "Error",
         active: true,
@@ -728,9 +736,9 @@ const operateContact =
 
     const updatedTitle = updatedContact.contactName;
 
-    const onSuccess: OnSuccess = () => {
-      contactsRef.value[index].setSaving(false);
+    saveableComponentRef.value = contactsRef.value[index];
 
+    const onSuccess: OnSuccess = () => {
       const toastNotification: ModalNotification = {
         kind: "Success",
         active: true,
@@ -761,7 +769,6 @@ const operateContact =
     };
 
     const onFailure: OnFailure = (error) => {
-      contactsRef.value[index].setSaving(false);
       const toastNotification: ModalNotification = {
         kind: "Error",
         active: true,
@@ -1163,7 +1170,7 @@ onMounted(async () => {
     </cds-modal-header>
   
     <cds-modal-body id="reason-modal-body">
-      <div v-if="reasonPatchData && reasonPatchData.length > 0">
+      <div class="modal-dropdown-container" v-if="reasonPatchData && reasonPatchData.length > 0">
 
         <p class="body-compact-01">
           Select a reason for the following 
@@ -1209,7 +1216,8 @@ onMounted(async () => {
     </cds-modal-body>
 
     <cds-modal-footer>
-      <cds-modal-footer-button 
+      <cds-modal-footer-button
+        id="reasonCancelBtn"
         kind="secondary" 
         data-modal-close 
         class="cds--modal-close-btn">
