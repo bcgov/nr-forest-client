@@ -202,6 +202,21 @@ watch(
   }
 );
 
+const shouldUpdateFromHTMLInputEvent = ref(false);
+
+watch(
+  () => props.mask,
+  () => {
+    if (cdsTextInputRef.value) {
+      const input = cdsTextInputRef.value.shadowRoot?.querySelector("input");
+      if (input) {
+        // Unblocks the value update so it conforms to the updated mask
+        shouldUpdateFromHTMLInputEvent.value = true;
+      }
+    }
+  },
+);
+
 watch(cdsTextInputRef, async (cdsTextInput) => {
   /*
   This is a workaround to fix a broken behavior that happens when changing the value of the
@@ -216,7 +231,26 @@ watch(cdsTextInputRef, async (cdsTextInput) => {
     const input = cdsTextInput.shadowRoot?.querySelector("input");
     if (input) {
       input.addEventListener("input", (ev) => {
-        selectedValue.value = ev.target.value;
+        if (ev.isTrusted) {
+          selectedValue.value = ev.target.value;
+          return;
+        }
+
+        if (shouldUpdateFromHTMLInputEvent.value) {
+          selectedValue.value = ev.target.value;
+          shouldUpdateFromHTMLInputEvent.value = false;
+        } else {
+          const localTarget = ev.target;
+
+          /*
+          This workaround fixes a behavior where every input value updates according to its mask
+          after a change in *another* input, for example, a single typed character or a selected
+          dropdown.
+          */
+          setTimeout(() => {
+            localTarget.value = selectedValue.value;
+          }, 0);
+        }
       });
     }
   }
