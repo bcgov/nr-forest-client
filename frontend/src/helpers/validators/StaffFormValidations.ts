@@ -334,6 +334,10 @@ fieldValidations["client.clientIdentification"] = [
   isMaxSizeMsg("ID number", 40),
 ];
 
+fieldValidations["client.clientIdentification-OTHR"] = [isAscii("ID number")];
+
+fieldValidations["client.clientIdentification-nonOTHR"] = [hasOnlyNamingCharacters("ID number")];
+
 // General information
 
 export const addValidation = (key: string, validation: (value: string) => string): void => {

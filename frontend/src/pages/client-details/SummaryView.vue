@@ -419,6 +419,19 @@ watch(goodStandingInd, () => {
     originalClient.value.goodStandingInd = goodStandingInd.value;
   }
 });
+
+const clientIdentificationMask = computed(() => {
+  if (formData.value.client.clientIdTypeCode === "OTHR") {
+    return undefined;
+  } else {
+    return "N".repeat(40);
+  }
+});
+
+const additionalClientIdentificationValidations = computed(() => {
+  const suffix = formData.value.client.clientIdTypeCode === "OTHR" ? "OTHR" : "nonOTHR";
+  return getValidations(`client.clientIdentification-${suffix}`);
+});
 </script>
 
 <template>
@@ -743,8 +756,10 @@ watch(goodStandingInd, () => {
         placeholder=""
         autocomplete="off"
         v-model="formData.client.clientIdentification"
+        :mask="clientIdentificationMask"
         :validations="[
           ...getValidations('client.clientIdentification'),
+          ...additionalClientIdentificationValidations,
           submissionValidation('client.clientIdentification'),
         ]"
         enabled
