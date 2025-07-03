@@ -5,12 +5,16 @@ import { mask, tokens } from "vue-the-mask";
 tokens.N = { pattern: /[0-9a-zA-Z]/, transform: (v) => v.toLocaleUpperCase() };
 
 export const masking = (shadowSelector: string) => (el: any, binding: any) => {
-  if (el.shadowRoot && binding.value) {
+  if (el.shadowRoot) {
     const input = el.shadowRoot.querySelector(shadowSelector)
     if (input) {
       if (binding.value !== input.getAttribute('v-mask')) {
         input.setAttribute('v-mask', binding.value)
-        mask(input, binding)
+        if (binding.value) {
+          mask(input, binding);
+        } else {
+          input.oninput = null;
+        }
       }
     }
   }
