@@ -605,7 +605,6 @@ watch(goodStandingInd, () => {
       v-if="displayEditable('acronym')"
       label="Acronym"
       placeholder=""
-      mask="NNNNNNNN"
       autocomplete="off"
       v-model="formData.client.clientAcronym"
       :validations="[
