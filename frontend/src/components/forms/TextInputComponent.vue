@@ -201,6 +201,26 @@ watch(
     }
   }
 );
+
+watch(cdsTextInputRef, async (cdsTextInput) => {
+  /*
+  This is a workaround to fix a broken behavior that happens when changing the value of the
+  `v-masked` directive, where the value of the HTML input does update properly, but for whatever
+  reason the input event doesn't reach the Carbon component, so our model remains outdated.
+  In order to fix it we handle the input event from the inner HTML input element.
+  */
+  if (cdsTextInput) {
+    // wait for the DOM updates to complete
+    await nextTick();
+
+    const input = cdsTextInput.shadowRoot?.querySelector("input");
+    if (input) {
+      input.addEventListener("input", (ev) => {
+        selectedValue.value = ev.target.value;
+      });
+    }
+  }
+});
 </script>
 
 <template>
