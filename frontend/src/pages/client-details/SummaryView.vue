@@ -420,14 +420,6 @@ watch(goodStandingInd, () => {
   }
 });
 
-const clientIdentificationMask = computed(() => {
-  if (formData.value.client.clientIdTypeCode === "OTHR") {
-    return undefined;
-  } else {
-    return "N".repeat(40);
-  }
-});
-
 const additionalClientIdentificationValidations = computed(() => {
   const suffix = formData.value.client.clientIdTypeCode === "OTHR" ? "OTHR" : "nonOTHR";
   return getValidations(`client.clientIdentification-${suffix}`);
@@ -756,7 +748,6 @@ const additionalClientIdentificationValidations = computed(() => {
         placeholder=""
         autocomplete="off"
         v-model="formData.client.clientIdentification"
-        :mask="clientIdentificationMask"
         :validations="[
           ...getValidations('client.clientIdentification'),
           ...additionalClientIdentificationValidations,
