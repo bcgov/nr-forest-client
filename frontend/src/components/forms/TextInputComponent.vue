@@ -210,8 +210,17 @@ watch(
     if (cdsTextInputRef.value) {
       const input = cdsTextInputRef.value.shadowRoot?.querySelector("input");
       if (input) {
-        // Unblocks the value update so it conforms to the updated mask
+        /*
+        Unblocks the value update so it conforms to the updated mask.
+        But just for a moment, because that's enough anyway, and then we reset the flag to prevent
+        side-effects.
+        */
         shouldUpdateFromHTMLInputEvent.value = true;
+
+        // Prevent later, unrelated input event
+        setTimeout(() => {
+          shouldUpdateFromHTMLInputEvent.value = false;
+        }, 0);
       }
     }
   },
@@ -232,7 +241,6 @@ watch(cdsTextInputRef, async (cdsTextInput) => {
     if (input) {
       input.addEventListener("input", (ev) => {
         if (ev.isTrusted) {
-          selectedValue.value = ev.target.value;
           return;
         }
 
@@ -240,13 +248,12 @@ watch(cdsTextInputRef, async (cdsTextInput) => {
           selectedValue.value = ev.target.value;
           shouldUpdateFromHTMLInputEvent.value = false;
         } else {
-          const localTarget = ev.target;
-
           /*
           This workaround fixes a behavior where every input value updates according to its mask
           after a change in *another* input, for example, a single typed character or a selected
           dropdown.
           */
+          const localTarget = ev.target;
           setTimeout(() => {
             localTarget.value = selectedValue.value;
           }, 0);
