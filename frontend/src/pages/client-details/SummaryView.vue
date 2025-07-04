@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch, type ComputedRef } from "vue";
+import { computed, nextTick, reactive, ref, watch, type ComputedRef } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import type { ClientDetails, CodeNameType, SaveEvent, UserRole } from "@/dto/CommonTypesDto";
 import RegistrationNumber from "@/pages/client-details/RegistrationNumber.vue";
@@ -28,6 +28,7 @@ import {
   submissionValidation,
 } from "@/helpers/validators/SubmissionValidators";
 import { useFetchTo } from "@/composables/useFetch";
+import { useEventBus } from "@vueuse/core";
 
 const props = defineProps<{
   data: ClientDetails;
@@ -37,6 +38,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "save", payload: SaveEvent<ClientDetails>): void;
 }>();
+
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 let originalData: ClientDetails;
 const formData = ref<ClientDetails>();
@@ -424,6 +427,13 @@ const additionalClientIdentificationValidations = computed(() => {
   const suffix = formData.value.client.clientIdTypeCode === "OTHR" ? "OTHR" : "nonOTHR";
   return getValidations(`client.clientIdentification-${suffix}`);
 });
+
+watch(
+  () => formData.value.client.clientIdTypeCode,
+  () => {
+    nextTick(() => revalidateBus.emit(["input-clientIdentification"]));
+  },
+);
 </script>
 
 <template>
