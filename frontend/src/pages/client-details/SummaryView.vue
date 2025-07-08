@@ -450,6 +450,8 @@ watch(
     nextTick(() => revalidateBus.emit(["input-clientIdentification"]));
   },
 );
+
+const clientIdentificationMask = "U".repeat(40);
 </script>
 
 <template>
@@ -774,6 +776,7 @@ watch(
         placeholder=""
         autocomplete="off"
         v-model="formData.client.clientIdentification"
+        :mask="clientIdentificationMask"
         :validations="[
           ...getValidations('client.clientIdentification'),
           ...additionalClientIdentificationValidations,
