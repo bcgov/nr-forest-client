@@ -240,13 +240,6 @@ watch(cdsTextInputRef, async (cdsTextInput) => {
     const input = cdsTextInput.shadowRoot?.querySelector("input");
     if (input) {
       input.addEventListener("input", (ev) => {
-        // When the user types in, updates according to the mask right away.
-        if (ev.isTrusted && shouldUpdateFromHTMLInputEvent.value) {
-          selectedValue.value = ev.target.value;
-          shouldUpdateFromHTMLInputEvent.value = false;
-          return;
-        }
-
         if (shouldUpdateFromHTMLInputEvent.value) {
           selectedValue.value = ev.target.value;
           shouldUpdateFromHTMLInputEvent.value = false;
