@@ -4,6 +4,8 @@ import lombok.With;
 
 @With
 public record ClientRelatedProjection(
+    String clientNumber,
+    String clientName,
     String clientLocnCode,
     String clientLocnName,
     String relatedClntNmbr,

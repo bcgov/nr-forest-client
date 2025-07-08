@@ -1098,28 +1098,38 @@ public final class ForestClientQueries {
 
   public static final String RELATED_CLIENT_LIST = """
       SELECT
-      	rc.CLIENT_LOCN_CODE,
-      	cl.CLIENT_LOCN_NAME AS client_locn_name,
-      	rc.RELATED_CLNT_NMBR,
-      	CASE
+        rc.CLIENT_NUMBER,
+        CASE
+            WHEN fc.LEGAL_FIRST_NAME IS NOT NULL AND fc.LEGAL_MIDDLE_NAME IS NOT NULL THEN
+            fc.LEGAL_FIRST_NAME || ' ' || fc.LEGAL_MIDDLE_NAME || ' ' || fc.CLIENT_NAME
+            WHEN fc.LEGAL_FIRST_NAME IS NOT NULL THEN
+              fc.LEGAL_FIRST_NAME || ' ' || fc.CLIENT_NAME
+            ELSE
+              NVL(fc.LEGAL_FIRST_NAME, '') || NVL(fc.LEGAL_MIDDLE_NAME, '') || fc.CLIENT_NAME
+          END AS CLIENT_NAME,
+        rc.CLIENT_LOCN_CODE,
+        cl.CLIENT_LOCN_NAME AS client_locn_name,
+        rc.RELATED_CLNT_NMBR,
+        CASE
             WHEN rfc.LEGAL_FIRST_NAME IS NOT NULL AND rfc.LEGAL_MIDDLE_NAME IS NOT NULL THEN
-      	    rfc.LEGAL_FIRST_NAME || ' ' || rfc.LEGAL_MIDDLE_NAME || ' ' || rfc.CLIENT_NAME
+            rfc.LEGAL_FIRST_NAME || ' ' || rfc.LEGAL_MIDDLE_NAME || ' ' || rfc.CLIENT_NAME
             WHEN rfc.LEGAL_FIRST_NAME IS NOT NULL THEN
               rfc.LEGAL_FIRST_NAME || ' ' || rfc.CLIENT_NAME
             ELSE
               NVL(rfc.LEGAL_FIRST_NAME, '') || NVL(rfc.LEGAL_MIDDLE_NAME, '') || rfc.CLIENT_NAME
           END AS RELATED_CLNT_NAME,
-      	rc.RELATED_CLNT_LOCN,
-      	rcl.CLIENT_LOCN_NAME AS related_clnt_name,
-      	rc.RELATIONSHIP_CODE,
-      	crc.DESCRIPTION AS relationship_name,
-      	rc.SIGNING_AUTH_IND,
-      	rc.PERCENT_OWNERSHIP,
-      	CASE
-      		WHEN rc.CLIENT_NUMBER = :clientNumber THEN 'TRUE'
-      		WHEN rc.RELATED_CLNT_NMBR = :clientNumber THEN 'FALSE'
-      	END AS PRIMARY_CLIENT
+        rc.RELATED_CLNT_LOCN,
+        rcl.CLIENT_LOCN_NAME AS related_clnt_locn_name,
+        rc.RELATIONSHIP_CODE,
+        crc.DESCRIPTION AS relationship_name,
+        rc.SIGNING_AUTH_IND,
+        rc.PERCENT_OWNERSHIP,
+        CASE
+          WHEN rc.CLIENT_NUMBER = :clientNumber THEN 'TRUE'
+          WHEN rc.RELATED_CLNT_NMBR = :clientNumber THEN 'FALSE'
+        END AS PRIMARY_CLIENT
       FROM RELATED_CLIENT rc
+      LEFT JOIN THE.FOREST_CLIENT fc ON fc.CLIENT_NUMBER = rc.CLIENT_NUMBER
       LEFT JOIN THE.FOREST_CLIENT rfc ON rfc.CLIENT_NUMBER = rc.RELATED_CLNT_NMBR
       LEFT JOIN THE.CLIENT_LOCATION cl ON cl.CLIENT_NUMBER = rc.CLIENT_NUMBER AND cl.CLIENT_LOCN_CODE = rc.CLIENT_LOCN_CODE
       LEFT JOIN THE.CLIENT_LOCATION rcl ON rcl.CLIENT_NUMBER = rc.RELATED_CLNT_NMBR AND rcl.CLIENT_LOCN_CODE = rc.RELATED_CLNT_LOCN
