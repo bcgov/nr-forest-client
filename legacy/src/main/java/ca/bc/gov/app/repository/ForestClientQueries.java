@@ -1095,5 +1095,35 @@ public final class ForestClientQueries {
       	fc.CLIENT_NUMBER != :clientNumber
       	AND fc.REGISTRY_COMPANY_TYPE_CODE = (NVL(:companyType,(SELECT REGISTRY_COMPANY_TYPE_CODE FROM FOREST_CLIENT WHERE CLIENT_NUMBER = :clientNumber)))
       	AND fc.CORP_REGN_NMBR = (NVL(:companyNumber,(SELECT CORP_REGN_NMBR FROM FOREST_CLIENT WHERE CLIENT_NUMBER = :clientNumber)))""";
+
+  public static final String RELATED_CLIENT_LIST = """
+      SELECT
+      	rc.CLIENT_LOCN_CODE,
+      	cl.CLIENT_LOCN_NAME AS client_locn_name,
+      	rc.RELATED_CLNT_NMBR,
+      	CASE
+            WHEN rfc.LEGAL_FIRST_NAME IS NOT NULL AND rfc.LEGAL_MIDDLE_NAME IS NOT NULL THEN
+      	    rfc.LEGAL_FIRST_NAME || ' ' || rfc.LEGAL_MIDDLE_NAME || ' ' || rfc.CLIENT_NAME
+            WHEN rfc.LEGAL_FIRST_NAME IS NOT NULL THEN
+              rfc.LEGAL_FIRST_NAME || ' ' || rfc.CLIENT_NAME
+            ELSE
+              NVL(rfc.LEGAL_FIRST_NAME, '') || NVL(rfc.LEGAL_MIDDLE_NAME, '') || rfc.CLIENT_NAME
+          END AS RELATED_CLNT_NAME,
+      	rc.RELATED_CLNT_LOCN,
+      	rcl.CLIENT_LOCN_NAME AS related_clnt_name,
+      	rc.RELATIONSHIP_CODE,
+      	crc.DESCRIPTION AS relationship_name,
+      	rc.SIGNING_AUTH_IND,
+      	rc.PERCENT_OWNERSHIP,
+      	CASE
+      		WHEN rc.CLIENT_NUMBER = :clientNumber THEN 'TRUE'
+      		WHEN rc.RELATED_CLNT_NMBR = :clientNumber THEN 'FALSE'
+      	END AS PRIMARY_CLIENT
+      FROM RELATED_CLIENT rc
+      LEFT JOIN THE.FOREST_CLIENT rfc ON rfc.CLIENT_NUMBER = rc.RELATED_CLNT_NMBR
+      LEFT JOIN THE.CLIENT_LOCATION cl ON cl.CLIENT_NUMBER = rc.CLIENT_NUMBER AND cl.CLIENT_LOCN_CODE = rc.CLIENT_LOCN_CODE
+      LEFT JOIN THE.CLIENT_LOCATION rcl ON rcl.CLIENT_NUMBER = rc.RELATED_CLNT_NMBR AND rcl.CLIENT_LOCN_CODE = rc.RELATED_CLNT_LOCN
+      LEFT JOIN THE.CLIENT_RELATIONSHIP_CODE crc ON crc.CLIENT_RELATIONSHIP_CODE = rc.RELATIONSHIP_CODE
+      WHERE rc.CLIENT_NUMBER = :clientNumber OR rc.RELATED_CLNT_NMBR = :clientNumber""";
   
 }

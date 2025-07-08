@@ -1,0 +1,18 @@
+package ca.bc.gov.app.entity;
+
+import lombok.With;
+
+@With
+public record ClientRelatedProjection(
+    String clientLocnCode,
+    String clientLocnName,
+    String relatedClntNmbr,
+    String relatedClntName,
+    String relatedClntLocn,
+    String relatedClntLocnName,
+    String relationshipCode,
+    String relationshipName,
+    String signingAuthInd,
+    Float percentOwnership,
+    Boolean primaryClient
+) {}

@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.dto.ForestClientDto;
+import ca.bc.gov.app.entity.ClientRelatedProjection;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -64,6 +65,24 @@ class ClientControllerIntegrationTest extends
 
   }
 
+  @ParameterizedTest
+  @MethodSource("related")
+  @DisplayName("List related clients")
+  void shouldListRelatedClients(String clientNumber, int size) {
+    client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder.path("/api/clients/{clientNumber}/related-clients")
+                .build(Map.of("clientNumber", clientNumber))
+            )
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(ClientRelatedProjection.class)
+        .hasSize(size)
+        .consumeWith(System.out::println);
+  }
+
   private static Stream<Arguments> saveClient() {
     return Stream.of(
         Arguments.of("TESTADOC", null),
@@ -71,6 +90,14 @@ class ClientControllerIntegrationTest extends
         Arguments.of("SAMPLER FOREST PRODUCTS INC.", null),
         Arguments.of("BORIS AND BORIS INC.", null),
         Arguments.of("CORP. OF THE CITY OF VICTORIA", null)
+    );
+  }
+
+  private static Stream<Arguments> related() {
+    return Stream.of(
+        Arguments.of("00000158", 2),
+        Arguments.of("00000172", 1),
+        Arguments.of("00000145", 0)
     );
   }
 }
