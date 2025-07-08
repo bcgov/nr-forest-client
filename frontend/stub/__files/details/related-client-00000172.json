@@ -1,0 +1,33 @@
+{
+    "01": [
+        {
+            "client": {
+                "client": {
+                    "code": "00000159",
+                    "name": "GREEN CANOPY"
+                },
+                "location": {
+                    "code": "01",
+                    "name": "YARD 01"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000172",
+                    "name": "NATURE NURTURERS"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "MAIN OFFICE"
+                }
+            },
+            "relationship": {
+                "code": "OF",
+                "name": "Officer"
+            },
+            "percentageOwnership": 50.0,
+            "hasSigningAuthority": true,
+            "isMainParticipant": false
+        }
+    ]
+}
