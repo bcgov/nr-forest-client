@@ -189,8 +189,8 @@ const dataModelMap: {
 
 const getRemovedFields = () => {
   const result: FieldId[] = [];
-  Object.keys(originalFieldsEditability).forEach((field: FieldId) => {
-    if (originalFieldsEditability[field].value && !fieldsEditability[field].value) {
+  Object.keys(originalFieldsEditability.value).forEach((field: FieldId) => {
+    if (originalFieldsEditability.value[field] && !fieldsEditability.value[field]) {
       result.push(field);
     }
   });
@@ -311,13 +311,29 @@ const isFieldEditable: Record<FieldId, (data: ClientDetails) => boolean> = {
   notes: () => true,
 };
 
-const fieldsEditability = {} as Record<FieldId, ComputedRef<boolean>>;
-Object.keys(isFieldEditable).forEach((field) => {
-  fieldsEditability[field] = computed<boolean>(() => isFieldEditable[field](formData.value));
+const fieldsEditability = computed<Record<FieldId, boolean>>(() => {
+  const result = {} as Record<FieldId, boolean>;
+  Object.keys(isFieldEditable).forEach((field) => {
+    result[field] = isFieldEditable[field](formData.value);
+  });
+  return result;
 });
-const originalFieldsEditability = {} as Record<FieldId, ComputedRef<boolean>>;
-Object.keys(isFieldEditable).forEach((field) => {
-  originalFieldsEditability[field] = computed<boolean>(() => isFieldEditable[field](props.data));
+
+watch(fieldsEditability, () => {
+  const removedFields = getRemovedFields();
+
+  // Removed fields should be considered valid
+  removedFields.forEach((localField: FieldId) => {
+    validation[localField] = true;
+  });
+});
+
+const originalFieldsEditability = computed<Record<FieldId, boolean>>(() => {
+  const result = {} as Record<FieldId, boolean>;
+  Object.keys(isFieldEditable).forEach((field) => {
+    result[field] = isFieldEditable[field](props.data);
+  });
+  return result;
 });
 
 const canEdit = computed(() =>
@@ -327,7 +343,7 @@ const canEdit = computed(() =>
 const displayEditable = (fieldId: FieldId) =>
   isEditing.value &&
   includesAnyOf(props.userRoles, editRoles[fieldId]) &&
-  fieldsEditability[fieldId].value;
+  fieldsEditability.value[fieldId];
 
 const displayReadonly = (fieldId: FieldId) => !isEditing.value || !displayEditable(fieldId);
 
