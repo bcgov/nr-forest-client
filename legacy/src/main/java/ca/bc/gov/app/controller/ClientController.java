@@ -2,6 +2,8 @@ package ca.bc.gov.app.controller;
 
 import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.dto.HistoryLogDto;
+import ca.bc.gov.app.entity.ClientRelatedProjection;
+import ca.bc.gov.app.service.ClientRelatedService;
 import ca.bc.gov.app.service.ClientService;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +32,8 @@ import reactor.core.publisher.Mono;
 @Observed
 public class ClientController {
 
-
   private final ClientService service;
+  private final ClientRelatedService relatedService;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -56,6 +58,14 @@ public class ClientController {
             .putIfAbsent("X-Total-Count", List.of(pair.getValue().toString()))
         )
         .map(Pair::getKey);
+  }
+
+  @GetMapping("/{clientNumber}/related-clients")
+  public Flux<ClientRelatedProjection> getRelatedClients(
+      @PathVariable String clientNumber
+  ) {
+    log.info("Receiving request to fetch related clients for client number {}", clientNumber);
+    return relatedService.getRelatedClientList(clientNumber);
   }
   
 }
