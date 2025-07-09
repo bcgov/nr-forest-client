@@ -667,8 +667,8 @@ public class ClientLegacyService {
             )
             .doOnNext(
                 relatedClient -> log.info(
-                    "Found related relatedClient: {} for relatedClient number {}",
-                    relatedClient, clientNumber
+                    "Found {} related clients for number: {}",
+                    relatedClient.size(), clientNumber
                 )
             );
   }
