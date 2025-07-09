@@ -309,7 +309,7 @@ describe("<summary-view />", () => {
 
           const expectedData = formatData(structuredClone(props.data));
 
-          expectedData.client.wcbFirmNumber = "";
+          expectedData.client.wcbFirmNumber = null;
 
           // Contains the client data as edited by the user
           expect(updatedData).to.deep.eq(expectedData);

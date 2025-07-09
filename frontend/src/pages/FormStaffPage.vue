@@ -387,7 +387,7 @@ const goToStep = (index: number, skipCheck: boolean = false) => {
 };
 
 const submitBtnDisabled = ref(false);
-let nextBtnDisabled = ref(false);
+const nextBtnDisabled = ref(false);
 
 const submit = () => {
   revalidateBus.emit();

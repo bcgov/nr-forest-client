@@ -1,0 +1,38 @@
+{
+  "mappings":[
+    {
+      "name": "Related Client - Default",
+      "request": {
+        "urlPattern": "/api/clients/details/(.*)/related-clients",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "body": "{}"
+      }
+    },
+    {
+      "name": "Related Client - Existing related client",
+      "request": {
+        "urlPattern": "/api/clients/details/00000(137|158|159|172)/related-clients",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "details/related-client-{{request.path.3}}.json"
+      }
+    }
+  ]
+}

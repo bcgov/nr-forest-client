@@ -363,6 +363,8 @@ const toolsSvg = useSvg(tools);
 
 const summaryRef = ref<InstanceType<typeof SummaryView> | null>(null);
 
+const saveableComponentRef = ref<InstanceType<typeof SummaryView | typeof LocationView | typeof ContactView> | null>(null);
+
 const reasonModalActiveInd = ref(false);
 
 type ReasonPatch = jsonpatch.AddOperation<FieldReason> & {
@@ -433,11 +435,14 @@ watch(
 // Function to update reasons and send final PATCH request
 const confirmReasons = () => {
   isSaveFirstClick.value = false;
+
+  // Prevents double-click
+  saveDisabled.value = true;
+
   const reasonInputIdList = reasonPatchData.value.map((_, index) => `input-reason-${index}`);
   revalidateBus.emit(reasonInputIdList);
 
   if (!checkReasonCodesValidations()) {
-    saveDisabled.value = true;
     return;
   }
 
@@ -454,6 +459,11 @@ const confirmReasons = () => {
 };
 
 const sendPatchRequest = (reasonPatchData: ReasonPatch[]) => {
+  // Stores a reference to the component that triggered the Patch request
+  const patchingComponent = saveableComponentRef.value;
+  
+  patchingComponent.setSaving(true);
+
   const reasonChanges: jsonpatch.Operation[] = reasonPatchData.map((patch) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { action, ...operation } = patch;
@@ -471,6 +481,8 @@ const sendPatchRequest = (reasonPatchData: ReasonPatch[]) => {
   } = useJsonPatch(`/api/clients/details/${clientNumber}`, finalPatchData.value, { skip: true });
 
   patch().then(() => {
+    patchingComponent.setSaving(false);
+
     if (response.value.status) {
       onSuccessPatch.value(response.value);
     }
@@ -529,6 +541,8 @@ const saveSummary = (payload: SaveEvent<ClientDetails>) => {
   const { updatedData: updatedClient, patch: patchData} = payload;
 
   const updatedFullName = buildFullName(updatedClient.client);
+
+  saveableComponentRef.value = summaryRef.value;
 
   const onSuccess: OnSuccess = () => {
     const toastNotification: ModalNotification = {
@@ -638,6 +652,8 @@ const saveLocation =
 
     const updatedTitle = getUpdatedLocationTitle(updatedLocation);
 
+    saveableComponentRef.value = locationsRef.value[index];
+
     const onSuccess: OnSuccess = () => {
       const toastNotification: ModalNotification = {
         kind: "Success",
@@ -719,6 +735,8 @@ const operateContact =
     }
 
     const updatedTitle = updatedContact.contactName;
+
+    saveableComponentRef.value = contactsRef.value[index];
 
     const onSuccess: OnSuccess = () => {
       const toastNotification: ModalNotification = {
@@ -1152,7 +1170,7 @@ onMounted(async () => {
     </cds-modal-header>
   
     <cds-modal-body id="reason-modal-body">
-      <div v-if="reasonPatchData && reasonPatchData.length > 0">
+      <div class="modal-dropdown-container" v-if="reasonPatchData && reasonPatchData.length > 0">
 
         <p class="body-compact-01">
           Select a reason for the following 
@@ -1198,7 +1216,8 @@ onMounted(async () => {
     </cds-modal-body>
 
     <cds-modal-footer>
-      <cds-modal-footer-button 
+      <cds-modal-footer-button
+        id="reasonCancelBtn"
         kind="secondary" 
         data-modal-close 
         class="cds--modal-close-btn">

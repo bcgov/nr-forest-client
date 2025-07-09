@@ -696,3 +696,37 @@ export const formatDate = (timestamp?: Date | string | number | null): string =>
 
   return dateFormatter.format(date);
 };
+
+/**
+ * Adjusts the data based on the original values so as to prevent changing any field from null to
+ * empty string (or vice-versa).
+ *
+ * Also replaces newly cleared values from empty string to null.
+ */
+export const preserveUnchangedData = <T>(data: T, original: T): T => {
+  const dataClone = JSON.parse(JSON.stringify(data));
+  for (const key in dataClone) {
+    if ([null, ""].includes(dataClone[key] as any)) {
+      dataClone[key] = null; // default empty value
+
+      if ([null, ""].includes(original[key] as any)) {
+        // copy original empty value
+        dataClone[key] = original[key];
+      }
+
+      continue;
+    }
+
+    if (Array.isArray(dataClone[key])) {
+      // skip - keep as is
+      continue;
+    }
+
+    if (typeof dataClone[key] === "object") {
+      // recursive
+      dataClone[key] = preserveUnchangedData(dataClone[key], original[key]);
+    }
+  }
+
+  return dataClone;
+};

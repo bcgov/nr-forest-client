@@ -332,6 +332,7 @@ fieldValidations["client.clientIdTypeCode"] = [isNotEmpty("You must select an ID
 fieldValidations["client.clientIdentification"] = [
   isNotEmpty("You must provide an ID number"),
   isMaxSizeMsg("ID number", 40),
+  isAscii("ID number"),
 ];
 
 // General information

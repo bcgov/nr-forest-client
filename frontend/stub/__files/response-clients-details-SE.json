@@ -30,9 +30,9 @@
       "contactTypeCode": "BL",
       "contactTypeDesc": "Billing",
       "businessPhone": "{{randomValue length=10 type='NUMERIC'}}",
-      "secondaryPhone": "",
-      "faxNumber": "",
-      "emailAddress": ""
+      "secondaryPhone": null,
+      "faxNumber": null,
+      "emailAddress": null
     }
   ],
   "addresses": [

@@ -20,6 +20,7 @@ import {
   formatPhoneNumber,
   includesAnyOf,
   keepScrollBottomPosition as keepScrollBottomPositionFn,
+  preserveUnchangedData,
 } from "@/services/ForestClientService";
 import type { Contact } from "@/dto/ApplyClientNumberDto";
 import { useFetchTo } from "@/composables/useFetch";
@@ -92,8 +93,8 @@ watch(
   formContactData,
   () => {
     if (isEditing.value) {
-      hasAnyChange.value =
-        JSON.stringify(formContactData.value) !== JSON.stringify(originalContactData);
+      const updatedData = preserveUnchangedData(formContactData.value, originalContactData);
+      hasAnyChange.value = JSON.stringify(updatedData) !== JSON.stringify(originalContactData);
 
       if (formContactData.value.fullName !== previousValue.fullName) {
         emit("updateContactName", formContactData.value.fullName);
@@ -105,9 +106,12 @@ watch(
   { deep: true },
 );
 
+const saving = ref(false);
+
 const edit = () => {
   resetFormData();
   isEditing.value = true;
+  saving.value = false;
 };
 
 const cancel = () => {
@@ -122,17 +126,23 @@ const lockEditing = () => {
   }
 };
 
+const setSaving = (value: boolean) => {
+  saving.value = value;
+};
+
 defineExpose({
   lockEditing,
+  setSaving,
 });
 
 const save = (
-  updatedContact: ClientContact,
+  rawUpdatedContact: ClientContact,
   action: ActionWords = {
     infinitive: "update",
     pastParticiple: "updated",
   },
 ) => {
+  const updatedContact = preserveUnchangedData(rawUpdatedContact, originalData);
   const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedContact);
 
   const operationType = props.createMode ? "insert" : "update";
@@ -258,7 +268,7 @@ const valid = ref(false);
           kind="primary"
           size="md"
           @click="saveForm"
-          :disabled="!hasAnyChange || !valid"
+          :disabled="saving || !hasAnyChange || !valid"
         >
           <template v-if="props.createMode">
             <span class="width-unset">Save contact</span>
@@ -269,7 +279,13 @@ const valid = ref(false);
             <Save16 slot="icon" />
           </template>
         </cds-button>
-        <cds-button :id="`contact-${index}-CancelBtn`" kind="tertiary" size="md" @click="cancel">
+        <cds-button
+          :id="`contact-${index}-CancelBtn`"
+          kind="tertiary"
+          size="md"
+          @click="cancel"
+          :disabled="saving"
+        >
           <span class="width-unset">Cancel</span>
           <Close16 slot="icon" />
         </cds-button>
@@ -279,6 +295,7 @@ const valid = ref(false);
           kind="danger--tertiary"
           size="md"
           @click="handleDelete"
+          :disabled="saving"
         >
           <span class="width-unset">Delete contact</span>
           <Trash16 slot="icon" />
@@ -303,7 +320,12 @@ const valid = ref(false);
     <cds-modal-body id="modal-delete-body"></cds-modal-body>
 
     <cds-modal-footer>
-      <cds-modal-footer-button kind="secondary" data-modal-close class="cds--modal-close-btn">
+      <cds-modal-footer-button
+        kind="secondary"
+        data-modal-close
+        class="cds--modal-close-btn"
+        :disabled="saving"
+      >
         Cancel
       </cds-modal-footer-button>
 
@@ -312,6 +334,7 @@ const valid = ref(false);
         class="cds--modal-submit-btn"
         v-on:click="deleteContact"
         :danger-descriptor="`Delete &quot;${props.data.contactName}&quot;`"
+        :disabled="saving"
       >
         Delete contact
         <Trash16 slot="icon" />

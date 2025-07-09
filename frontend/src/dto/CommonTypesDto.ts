@@ -421,3 +421,19 @@ export interface HistoryLogResult {
   details: HistoryLogDetail[];
   reasons: HistoryLogReason[];
 }
+
+export interface RelatedClientDto {
+  client: CodeNameType
+  location: CodeNameType
+}
+
+export interface RelatedClientEntry {
+  client: RelatedClientDto
+  relatedClient: RelatedClientDto
+  relationship: CodeNameType
+  percentageOwnership: number
+  hasSigningAuthority: boolean | null
+  isMainParticipant: boolean
+}
+
+export type RelatedClientList = Record<string, RelatedClientEntry[]>

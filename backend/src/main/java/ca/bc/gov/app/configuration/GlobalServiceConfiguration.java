@@ -61,6 +61,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flipkart.zjsonpatch.JsonPatch;
 import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.database.postgresql.TransactionalModel;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -140,7 +141,8 @@ import org.springframework.web.reactive.function.client.WebClient;
     BcRegistryFacetRequestQueryDto.class,
     JsonPatch.class,
     JsonNode.class,
-    ForestClientContactDetailsDto.class
+    ForestClientContactDetailsDto.class,
+    TransactionalModel.class
 })
 public class GlobalServiceConfiguration {
 
