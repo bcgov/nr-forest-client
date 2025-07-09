@@ -10,6 +10,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Named.named;
+import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
@@ -501,60 +502,101 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .isEmpty();
   }
 
+  @ParameterizedTest
+  @MethodSource("related")
+  @DisplayName("List related clients")
+  void shouldListRelatedClients(String clientNumber, Map<String, Long> expected,
+      String legacyResponse) {
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/clients/" + clientNumber + "/related-clients"))
+                .willReturn(okJson(legacyResponse))
+        );
+
+    var bodyExpectation =
+        client
+            .mutateWith(csrf())
+            .mutateWith(
+                mockJwt()
+                    .jwt(jwt -> jwt.claims(
+                        claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                    .authorities(new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR))
+            )
+            .get()
+            .uri("/api/clients/details/{clientNumber}/related-clients",
+                Map.of("clientNumber", clientNumber))
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody();
+
+    if (expected.isEmpty()) {
+      bodyExpectation.json("{}");
+    } else {
+      expected.forEach((key, size) -> {
+        bodyExpectation
+            .jsonPath("$." + key).isArray()
+            .jsonPath("$." + key + ".length()").isEqualTo(size);
+      });
+    }
+
+  }
+
   private static Stream<Arguments> clientDetailing() {
     return
         Stream.of(
             Arguments.of(
-                named("All worked fine","AA0000001"),
+                named("All worked fine", "AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 200, TestConstants.BCREG_DOC_DATA,
                 200, TestConstants.BCREG_RESPONSE_OK,
                 TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
-                named("Duplicated with all good due to legacy","AA0000001"),
+                named("Duplicated with all good due to legacy", "AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 200, TestConstants.BCREG_DOC_DATA,
                 409, TestConstants.BCREG_RESPONSE_DUP,
                 TestConstants.LEGACY_OK
             ),
             Arguments.of(
-                named("All good, even with some legacy data","AA0000001"),
+                named("All good, even with some legacy data", "AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 200, TestConstants.BCREG_DOC_DATA,
                 200, TestConstants.BCREG_RESPONSE_OK,
                 TestConstants.LEGACY_OK.replace("0000001", "0000002")
             ),
             Arguments.of(
-                named("Can't find it, but facet can","AA0000001"),
+                named("Can't find it, but facet can", "AA0000001"),
                 404, TestConstants.BCREG_NOK,
                 404, TestConstants.BCREG_NOK,
                 200, BcRegistryTestConstants.BCREG_RESPONSE_ANY,
                 TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
-                named("Can't find what you're looking, but facet saved you","AA0000001"),
+                named("Can't find what you're looking, but facet saved you", "AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 404, TestConstants.BCREG_NOK,
                 200, BcRegistryTestConstants.BCREG_RESPONSE_ANY,
                 TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
-                named("Bc registry key is wrong","AA0000001"),
+                named("Bc registry key is wrong", "AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 401, TestConstants.BCREG_401,
                 401, TestConstants.BCREG_RESPONSE_401,
                 TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
-                named("All keys went south","AA0000001"),
+                named("All keys went south", "AA0000001"),
                 401, TestConstants.BCREG_401,
                 401, TestConstants.BCREG_401,
                 401, TestConstants.BCREG_RESPONSE_401,
                 TestConstants.LEGACY_EMPTY
             ),
             Arguments.of(
-                named("Errors and keys","AA0000001"),
+                named("Errors and keys", "AA0000001"),
                 400, TestConstants.BCREG_400,
                 400, TestConstants.BCREG_400,
                 401, TestConstants.BCREG_RESPONSE_401,
@@ -562,7 +604,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             ),
 
             Arguments.of(
-                named("Sole prop from org is a no bueno","AA0000001"),
+                named("Sole prop from org is a no bueno", "AA0000001"),
                 200, TestConstants.BCREG_DOC_REQ_RES,
                 200, TestConstants.BCREG_DOC_DATA
                     .replace("\"partyType\": \"person\"", "\"partyType\": \"organization\"")
@@ -661,6 +703,29 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                     .replace("\"legalType\": \"SP\"", "\"legalType\": \"LP\""),
                 TestConstants.LEGACY_EMPTY,
                 200, TestConstants.BCREG_RESPONSE_OK
+            )
+        );
+  }
+
+  private static Stream<Arguments> related() {
+    return
+        Stream.of(
+            argumentSet("No Related clients",
+                "00000001",
+                Map.of(),
+                "[]"
+            ),
+            argumentSet(
+                "Single entry with single location",
+                "00000002",
+                Map.of("00", 1L),
+                "[{\"clientLocnCode\": \"00\",\"primaryClient\": false}]"
+            ),
+            argumentSet(
+                "Double location",
+                "00000003",
+                Map.of("00", 1L, "01", 1L),
+                "[{\"clientLocnCode\": \"00\",\"primaryClient\": false},{\"clientLocnCode\": \"01\",\"primaryClient\": true}]"
             )
         );
   }
