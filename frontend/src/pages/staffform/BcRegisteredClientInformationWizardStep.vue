@@ -388,7 +388,7 @@ onMounted(() => {
         autocomplete="off"
         required
         required-label
-        tip=""
+        tip="Enter client name and then select from the list"
         v-model="formData.businessInformation.businessName"
         :contents="content"
         :validations="[

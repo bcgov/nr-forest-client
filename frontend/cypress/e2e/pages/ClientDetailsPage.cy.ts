@@ -1,3 +1,5 @@
+import type { CyHttpMessages } from "cypress/types/net-stubbing";
+
 describe("Client Details Page", () => {
   const greenDomain = Cypress.env("VITE_GREEN_DOMAIN");
 
@@ -42,12 +44,13 @@ describe("Client Details Page", () => {
   beforeEach(init);
 
   let resumePatch: () => void;
+
   /**
    * This structure allows to both interrupt and resume the Patch request.
    *
    * @returns function to resume the Patch request
    */
-  const interruptPatch = () => {
+  const interruptPatch = (requestCallback?: (req: CyHttpMessages.IncomingHttpRequest) => void) => {
     let resolvePatchIntercepted: () => void;
     const promisePatchIntercepted = new Promise<void>((resolve) => {
       resolvePatchIntercepted = resolve;
@@ -75,10 +78,14 @@ describe("Client Details Page", () => {
      * As a last note. We could also just don't care and wait for it to auto-resolve after some
      * time - which seems to be 2 seconds - but then we would have this time penalty in our tests.
      */
-    const resumePatchAsap = () => promisePatchIntercepted.then(resumePatch);
+    const resumePatchAsap = () =>
+      promisePatchIntercepted.then(() => {
+        resumePatch();
+      });
 
     cy.intercept("PATCH", "/api/clients/details/*", (req) => {
       req.continue(createUnresolvedPromise);
+      requestCallback?.(req);
     }).as("saveClientDetails");
 
     return resumePatchAsap;
@@ -361,15 +368,15 @@ describe("Client Details Page", () => {
   describe("summary (role:CLIENT_EDITOR)", () => {
     describe("save", () => {
       describe("with reason modal", { testIsolation: false }, () => {
-        beforeEach(function () {
+        const registerInterceptors = () => {
+          cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
+        };
+
+        before(function () {
           init.call(this);
-  
-          cy.intercept("PATCH", "/api/clients/details/*")
-            .as("saveClientDetails");
-          
-          cy.intercept("GET", "/api/codes/update-reasons/*/*")
-            .as("getReasonsList");
-  
+
+          registerInterceptors();
+
           cy.visit("/clients/details/p");
 
           cy.get("#summaryEditBtn")
@@ -391,7 +398,11 @@ describe("Client Details Page", () => {
           cy.wait("@getReasonsList");
         });
 
-        it("opens the reason modal and sends the correct PATCH request with reasons", () => {
+        beforeEach(() => {
+          registerInterceptors();
+        });
+
+        it("renders the reason modal properly", () => {
           cy.get("#reason-modal")
             .should("be.visible");
         
@@ -401,17 +412,69 @@ describe("Client Details Page", () => {
           cy.get("#input-reason-0")
             .find('[part="trigger-button"]')
             .click();
-        
+
+          /*
+          Make sure the amount of options would get the dropdown list to its maximum size.
+          i.e. a size that requires a scroll bar in it.
+          */
+          cy.get("#input-reason-0").find("cds-dropdown-item").should("have.length.above", 7);
+
+          // Double-checking to make sure the dropdown list has a scrollbar
+          cy.get("#input-reason-0")
+            .shadow()
+            .find("#menu-body")
+            .then(($el) => {
+              expect($el.prop("scrollHeight")).greaterThan(0);
+              expect($el.prop("clientHeight")).greaterThan(0);
+              expect($el.prop("scrollHeight")).greaterThan($el.prop("clientHeight"));
+            });
+
+          /*
+          And now checking the modal body has no scrollbar.
+          Otherwise the dropdown list would be covered by the modal footer and users have to use
+          two scrollbars in order to view all the options, and it fails if the user drags the
+          scrollbar instead of using the mouse-wheel, because then the dropdown gets closed.
+          */
+          cy.get("#reason-modal")
+            .find("cds-modal-body")
+            .then(($el) => {
+              expect($el.prop("scrollHeight")).greaterThan(0);
+              expect($el.prop("clientHeight")).greaterThan(0);
+              expect($el.prop("scrollHeight")).eq($el.prop("clientHeight"));
+            });
+        });
+
+        it("keeps the Summary Save button enabled in case the user hits the Cancel button", () => {
+          cy.get("#reasonCancelBtn").click();
+
+          // Should be still enabled
+          cy.get("#summarySaveBtn").shadow().find("button").should("be.enabled");
+        });
+
+        it("sends the correct PATCH request with reasons", () => {
+          cy.get("#summarySaveBtn").click();
+
+          cy.wait("@getReasonsList");
+
+          cy.get("#input-reason-0").find('[part="trigger-button"]').click();
+
           cy.get("#input-reason-0")
             .find("cds-dropdown-item")
             .first()
             .should("be.visible")
             .click();
-        
+
+          resumePatch = interruptPatch();
+
           cy.get("#reasonSaveBtn").click();
 
-          // Should disable to prevent multiple clicks
+          // Should disable the dialog button to prevent multiple clicks
           cy.get("#reasonSaveBtn").shadow().find("button").should("be.disabled");
+
+          // Should disable the Summary button prevent multiple clicks
+          cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+
+          resumePatch();
         
           cy.wait("@saveClientDetails").then((interception) => {
             const requestBody = interception.request.body;
@@ -439,8 +502,6 @@ describe("Client Details Page", () => {
       describe("name change", { testIsolation: false }, () => {
         beforeEach(function () {
           init.call(this);
-
-          cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
 
           cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
 
@@ -471,10 +532,17 @@ describe("Client Details Page", () => {
 
           cy.get("#input-reason-0").find("cds-dropdown-item").first().should("be.visible").click();
 
+          resumePatch = interruptPatch();
+
           cy.get("#reasonSaveBtn").click();
 
-          // Should disable to prevent multiple clicks
+          // Should disable the dialog button to prevent multiple clicks
           cy.get("#reasonSaveBtn").shadow().find("button").should("be.disabled");
+
+          // Should disable the Summary button prevent multiple clicks
+          cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+
+          resumePatch();
 
           cy.wait("@saveClientDetails").then((interception) => {
             const requestBody = interception.request.body;
@@ -496,8 +564,6 @@ describe("Client Details Page", () => {
       describe("ID change", { testIsolation: false }, () => {
         beforeEach(function () {
           init.call(this);
-
-          cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
 
           cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
 
@@ -527,10 +593,17 @@ describe("Client Details Page", () => {
 
           cy.get("#input-reason-0").find("cds-dropdown-item").first().should("be.visible").click();
 
+          resumePatch = interruptPatch();
+
           cy.get("#reasonSaveBtn").click();
 
-          // Should disable to prevent multiple clicks
+          // Should disable the dialog button to prevent multiple clicks
           cy.get("#reasonSaveBtn").shadow().find("button").should("be.disabled");
+
+          // Should disable the Summary button prevent multiple clicks
+          cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+
+          resumePatch();
 
           cy.wait("@saveClientDetails").then((interception) => {
             const requestBody = interception.request.body;
@@ -562,7 +635,6 @@ describe("Client Details Page", () => {
       });
 
       beforeEach(() => {
-        cy.intercept("PATCH", "/api/clients/details/*").as("saveClientDetails");
         cy.intercept("GET", "/api/codes/update-reasons/*/*").as("getReasonsList");
       });
 
@@ -587,10 +659,17 @@ describe("Client Details Page", () => {
       });
 
       it("removes the values from Individual related fields", () => {
+        resumePatch = interruptPatch();
+
         cy.get("#reasonSaveBtn").click();
 
-        // Should disable to prevent multiple clicks
+        // Should disable the dialog button to prevent multiple clicks
         cy.get("#reasonSaveBtn").shadow().find("button").should("be.disabled");
+
+        // Should disable the Summary button prevent multiple clicks
+        cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+
+        resumePatch();
 
         cy.wait("@saveClientDetails").then((interception) => {
           const requestBody = interception.request.body;
@@ -830,23 +909,16 @@ describe("Client Details Page", () => {
                   });
                 },
               ).as("getClientDetails");
-
-              cy.intercept(
-                {
-                  method: "PATCH",
-                  pathname: "/api/clients/details/*",
-                },
-                (req) => {
-                  patchClientDetailsRequest = req;
-                  req.continue();
-                },
-              ).as("patchClientDetails");
             };
 
             before(function () {
               init.call(this);
 
               registerInterceptors();
+
+              resumePatch = interruptPatch((req) => {
+                patchClientDetailsRequest = req;
+              });
 
               cy.visit("/clients/details/p");
               cy.wait("@getClientDetails");
@@ -890,7 +962,7 @@ describe("Client Details Page", () => {
 
                 cy.selectAutocompleteEntry("#addr_null", "123", "V8V8V8");
 
-                resumePatch = interruptPatch();
+                // resumePatch = interruptPatch();
                 cy.get("#location-null-SaveBtn").click();
               });
             }
@@ -1080,10 +1152,17 @@ describe("Client Details Page", () => {
                   .should("be.visible")
                   .click();
 
+                resumePatch = interruptPatch();
+
                 cy.get("#reasonSaveBtn").click();
 
-                // Should disable to prevent multiple clicks
+                // Should disable the dialog button to prevent multiple clicks
                 cy.get("#reasonSaveBtn").shadow().find("button").should("be.disabled");
+
+                // Should disable the Summary button prevent multiple clicks
+                cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+
+                resumePatch();
 
                 cy.wait("@saveClientDetails").then((interception) => {
                   const requestBody = interception.request.body;

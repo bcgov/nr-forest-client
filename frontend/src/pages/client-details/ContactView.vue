@@ -142,8 +142,6 @@ const save = (
     pastParticiple: "updated",
   },
 ) => {
-  saving.value = true;
-
   const updatedContact = preserveUnchangedData(rawUpdatedContact, originalData);
   const patch = props.createMode ? null : jsonpatch.compare(originalData, updatedContact);
 

@@ -195,8 +195,6 @@ const getRemovedFields = () => {
 };
 
 const save = () => {
-  saving.value = true;
-
   const updatedData = preserveUnchangedData(formData.value, originalData);
   const removedFields = getRemovedFields();
 
@@ -607,7 +605,6 @@ watch(goodStandingInd, () => {
       v-if="displayEditable('acronym')"
       label="Acronym"
       placeholder=""
-      mask="NNNNNNNN"
       autocomplete="off"
       v-model="formData.client.clientAcronym"
       :validations="[
