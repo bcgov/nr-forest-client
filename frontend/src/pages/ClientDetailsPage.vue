@@ -829,11 +829,14 @@ const relatedClientList = ref<RelatedClientList>({});
 let { fetch: fetchRelatedClients, loading: loadingRelatedClients } = useFetchTo(`/api/clients/details/${clientNumber}/related-clients`, relatedClientList, { skip: true });
 
 if (featureFlags.RELATED_CLIENTS) {
-  watch(isRelatedClientsPanelVisible, (visible) => {
-    if (visible) {
-      fetchRelatedClients();
+  const watchRelatedTab = watch(isRelatedClientsPanelVisible, (visible) => {
+    if (visible && !loadingRelatedClients.value) {
+      fetchRelatedClients().asyncResponse.then(() => {
+        watchRelatedTab.stop();
+      });
     }
   });
+
 }
 
 const clientRelationshipsCount = computed(() =>
