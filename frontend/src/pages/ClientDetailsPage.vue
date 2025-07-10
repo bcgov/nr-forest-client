@@ -28,11 +28,12 @@ import RecentlyViewed16 from "@carbon/icons-vue/es/recently-viewed/16";
 import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
 import Location20 from "@carbon/icons-vue/es/location/20";
 import User20 from "@carbon/icons-vue/es/user/20";
+import NetworkEnterprise20 from "@carbon/icons-vue/es/network--enterprise/20";
 import Launch16 from "@carbon/icons-vue/es/launch/16";
 import Add16 from "@carbon/icons-vue/es/add/16";
 import Save16 from "@carbon/icons-vue/es/save/16";
 
-import { greenDomain } from "@/CoreConstants";
+import { featureFlags, greenDomain } from "@/CoreConstants";
 import {
   adminEmail,
   extractReasonFields,
@@ -58,6 +59,7 @@ import {
   createClientContact,
   type ValidationMessageType,
   type ClientInformation,
+  type RelatedClientList,
 } from "@/dto/CommonTypesDto";
 
 // Page components
@@ -171,26 +173,26 @@ const sortedLocations = computed(() => {
   return result;
 });
 
-interface LocationState {
+interface CollapsibleState {
   isReloading?: boolean;
   name: string;
   startOpen?: boolean;
 }
 
-const createLocationState = (locationState?: Partial<LocationState>): LocationState => ({
+const createCollapsibleState = (initialState?: Partial<CollapsibleState>): CollapsibleState => ({
   isReloading: false,
   name: "",
   startOpen: false,
-  ...locationState,
+  ...initialState,
 });
 
-const locationsState = reactive<Record<string, LocationState>>({});
+const locationsState = reactive<Record<string, CollapsibleState>>({});
 
 watch(sortedLocations, () => {
   sortedLocations.value?.forEach((location) => {
     const locationCode = location.clientLocnCode;
     if (!locationsState[locationCode]) {
-      locationsState[locationCode] = createLocationState();
+      locationsState[locationCode] = createCollapsibleState();
     }
     // reset location name
     locationsState[locationCode].name = location.clientLocnName;
@@ -230,26 +232,13 @@ watch(sortedContacts, (value) => {
   }
 });
 
-interface ContactState {
-  isReloading?: boolean;
-  name: string;
-  startOpen?: boolean;
-}
-
-const createContactState = (contactState?: Partial<ContactState>): ContactState => ({
-  isReloading: false,
-  name: "",
-  startOpen: false,
-  ...contactState,
-});
-
-const contactsState = reactive<Record<string, LocationState>>({});
+const contactsState = reactive<Record<string, CollapsibleState>>({});
 
 watch(sortedContacts, (_value, oldValue) => {
   sortedContacts.value?.forEach((contact) => {
     const contactId = contact.contactId;
     if (!contactsState[contactId]) {
-      contactsState[contactId] = createContactState();
+      contactsState[contactId] = createCollapsibleState();
     }
     // reset to the original value
     contactsState[contactId].name = contact.contactName;
@@ -307,7 +296,7 @@ const formatContact = (contact: ClientContact) => {
 const addLocation = () => {
   const codeString = null;
   newLocation.value = createClientLocation(clientNumber, codeString);
-  locationsState[codeString] = createLocationState({ startOpen: true });
+  locationsState[codeString] = createCollapsibleState({ startOpen: true });
 
   const index = sortedLocations.value.length - 1;
   setScrollPoint(`location-${index}-heading`, undefined, () => {
@@ -332,7 +321,7 @@ const updateLocationName = (locationName: string, locationCode: string) => {
 const addContact = () => {
   const contactId = null;
   newContact.value = createClientContact(contactId, clientNumber);
-  contactsState[contactId] = createContactState({ startOpen: true });
+  contactsState[contactId] = createCollapsibleState({ startOpen: true });
   
   setScrollPoint(`contact-${contactId}-heading`, undefined, () => {
     setFocusedComponent(`contact-${contactId}-heading`);
@@ -667,7 +656,7 @@ const saveLocation =
       locationsRef.value[index].lockEditing();
 
       if (!locationsState[locationCode]) {
-        locationsState[locationCode] = createLocationState();
+        locationsState[locationCode] = createCollapsibleState();
       }
 
       locationsState[locationCode].isReloading = true;
@@ -751,7 +740,7 @@ const operateContact =
       contactsRef.value[index].lockEditing();
 
       if (!contactsState[contactId]) {
-        contactsState[contactId] = createContactState();
+        contactsState[contactId] = createCollapsibleState();
       }
 
       contactsState[contactId].isReloading = true;
@@ -808,6 +797,8 @@ resetGlobalError();
 
 const isHistoryPanelVisible = ref(false);
 
+const isRelatedClientsPanelVisible = ref(false);
+
 onMounted(async () => {
   await nextTick();
 
@@ -817,14 +808,60 @@ onMounted(async () => {
       selectedTab.value = event.detail.item.value;
       
       setTimeout(() => {
-        const panel = document.getElementById('panel-history');
-        if (panel) {
-          isHistoryPanelVisible.value = !panel.hasAttribute('hidden');
+        const historyPanel = document.getElementById('panel-history');
+        if (historyPanel) {
+          isHistoryPanelVisible.value = !historyPanel.hasAttribute('hidden');
+        }
+
+        const relatedPanel = document.getElementById('panel-related');
+        if (relatedPanel) {
+          isRelatedClientsPanelVisible.value = !relatedPanel.hasAttribute('hidden');
         }
       }, 0);
     });
   }
 });
+
+const findLocation = (locationCode: string) =>
+  sortedLocations.value?.find((location) => location.clientLocnCode === locationCode);
+
+const relatedClientList = ref<RelatedClientList>({});
+let { fetch: fetchRelatedClients, loading: loadingRelatedClients } = useFetchTo(`/api/clients/details/${clientNumber}/related-clients`, relatedClientList, { skip: true });
+
+if (featureFlags.RELATED_CLIENTS) {
+  watch(isRelatedClientsPanelVisible, (visible) => {
+    if (visible) {
+      fetchRelatedClients();
+    }
+  });
+}
+
+const clientRelationshipsCount = computed(() =>
+  Object.keys(relatedClientList.value).reduce(
+    (previousValue, locationCode) => previousValue + relatedClientList.value[locationCode]?.length,
+    0,
+  ),
+);
+
+const relatedLocationsState = reactive<Record<string, CollapsibleState>>({});
+
+watch(() => Object.keys(relatedClientList.value), (relatedLocationCodeList) => {
+  relatedLocationCodeList?.forEach((relatedLocationCode) => {
+    if (!relatedLocationsState[relatedLocationCode]) {
+      relatedLocationsState[relatedLocationCode] = createCollapsibleState();
+    }
+
+    // reset location name
+    relatedLocationsState[relatedLocationCode].name = locationsState[relatedLocationCode].name;
+  });
+});
+
+const formatRelatedLocation = (locationCode: string) => {
+  if (locationCode === null) {
+    return "New client relationship";
+  }
+  return `Under location “${formatLocation(locationCode, locationsState[locationCode].name)}”`;
+};
 </script>
 
 <template>
@@ -1119,7 +1156,94 @@ onMounted(async () => {
         </div>
       </div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden>
-        <div class="tab-panel tab-panel--empty">
+        <template v-if="$features.RELATED_CLIENTS">
+          <template v-if="loadingRelatedClients || clientRelationshipsCount">
+            <div class="tab-header space-between">
+              <cds-skeleton-text v-if="loadingRelatedClients" v-shadow="1" class="heading-05-skeleton" />
+              <template v-else>
+                <h3 class="padding-left-1rem">
+                  {{ formatCount(clientRelationshipsCount) }}
+                  {{ pluralize("client relationship", clientRelationshipsCount) }}
+                </h3>
+                <cds-button
+                  v-if="userHasAuthority"
+                  id="addClientRelationshipBtn"
+                  kind="primary"
+                  size="md"
+                  @click=""
+                  :disabled="false"
+                >
+                  <span class="width-unset">Add client relationship</span>
+                  <Add16 slot="icon" />
+                </cds-button>
+              </template>
+            </div>
+            <div class="tab-panel tab-panel--populated">
+              <cds-accordion
+                v-for="(locationCode, index) in Object.keys(relatedClientList)"
+                :key="locationCode"
+                :id="`relationships-location-${locationCode}`"
+              >
+                <div :data-scroll="`relationships-location-${locationCode}-heading`" class="header-tabs-offset"></div>
+                <cds-accordion-item
+                  size="lg"
+                  class="grouping-13"
+                  v-shadow="1"
+                  :open="relatedLocationsState[locationCode]?.startOpen"
+                  :data-focus="`relationships-location-${locationCode}-heading`"
+                >
+                  <div
+                    slot="title"
+                    class="flex-column-0_25rem"
+                    :class="{ invisible: relatedLocationsState[locationCode]?.isReloading }"
+                  >
+                    <span class="label-with-icon">
+                      <NetworkEnterprise20 />
+                      {{ formatRelatedLocation(locationCode) }}
+                      <cds-tag
+                        :id="`relationships-location-${locationCode}-deactivated`"
+                        v-if="findLocation(locationCode)?.locnExpiredInd === 'Y'"
+                        type="purple"
+                        title=""
+                      >
+                        <span>Deactivated</span>
+                      </cds-tag>
+                    </span>
+                  </div>
+                  <!-- TODO: Relationship View component (to be created) goes here -->
+                </cds-accordion-item>
+              </cds-accordion>
+            </div>
+          </template>
+          <div class="tab-panel tab-panel--empty" v-else>
+            <div class="empty-table-list">
+              <summit-svg alt="Summit pictogram" class="standard-svg" />
+              <div class="description">
+                <div class="inner-description">
+                  <p class="heading-02">Nothing to show yet!</p>
+                  <p class="body-compact-01" v-if="userHasAuthority">
+                    Click “Add client relationship” button to start
+                  </p>
+                  <p class="body-compact-01" v-else>
+                    No relationships have been added to this client account
+                  </p>
+                </div>
+                <cds-button
+                  v-if="userHasAuthority"
+                  id="addClientRelationshipBtn"
+                  kind="primary"
+                  size="md"
+                  @click=""
+                  :disabled="false"
+                >
+                  <span class="width-unset">Add client relationship</span>
+                  <Add16 slot="icon" />
+                </cds-button>
+              </div>
+            </div>
+          </div>
+        </template>
+        <div class="tab-panel tab-panel--empty" v-else>
           <div class="empty-table-list">
             <tools-svg alt="Tools pictogram" class="standard-svg" />
             <div class="description">
