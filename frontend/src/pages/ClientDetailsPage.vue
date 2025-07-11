@@ -848,14 +848,14 @@ const clientRelationshipsCount = computed(() =>
 
 const relatedLocationsState = reactive<Record<string, CollapsibleState>>({});
 
-watch(() => Object.keys(relatedClientList.value), (relatedLocationCodeList) => {
+watch([() => Object.keys(relatedClientList.value), locationsState], ([relatedLocationCodeList]) => {
   relatedLocationCodeList?.forEach((relatedLocationCode) => {
     if (!relatedLocationsState[relatedLocationCode]) {
       relatedLocationsState[relatedLocationCode] = createCollapsibleState();
     }
 
     // reset location name
-    relatedLocationsState[relatedLocationCode].name = locationsState[relatedLocationCode].name;
+    relatedLocationsState[relatedLocationCode].name = locationsState[relatedLocationCode]?.name;
   });
 });
 
@@ -863,7 +863,7 @@ const formatRelatedLocation = (locationCode: string) => {
   if (locationCode === null) {
     return "New client relationship";
   }
-  return `Under location “${formatLocation(locationCode, locationsState[locationCode].name)}”`;
+  return `Under location “${formatLocation(locationCode, relatedLocationsState[locationCode].name)}”`;
 };
 </script>
 
