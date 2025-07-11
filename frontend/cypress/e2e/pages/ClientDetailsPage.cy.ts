@@ -1808,33 +1808,94 @@ describe("Client Details Page", () => {
     });
 
     describe("regular, isolated tests", () => {
-      before(function () {
+      beforeEach(function () {
         init.call(this);
         cy.visit("/clients/details/p");
-
-        // Switch to the Related clients tab
-        cy.get("#tab-related").click();
       });
 
-      it("keeps accordions' states while tabs are switched", () => {
-        // Expand first location, leave second one collapsed
-        cy.get("#relationships-location-00 [slot='title']").click();
+      describe("before switching to the Related clients tab", () => {
+        it("fetches the Related clients data only once", () => {
+          const getRelatedClientsCounter = {
+            count: 0,
+          };
+          let resolveGetRelatedClients: () => void;
 
-        // Switch to another tab (Contacts)
-        cy.get("#tab-contacts").click();
+          const promiseGetRelatedClients = new Promise<void>((resolve) => {
+            resolveGetRelatedClients = resolve;
+          });
 
-        // Make sure the current tab panel was effectively switched
-        cy.get("#panel-related").should("have.attr", "hidden");
-        cy.get("#panel-contacts").should("not.have.attr", "hidden");
+          cy.intercept(
+            {
+              method: "GET",
+              pathname: "/api/clients/details/*/related-clients",
+            },
+            (req) => {
+              getRelatedClientsCounter.count++;
+              req.continue(() => promiseGetRelatedClients);
+            },
+          ).as("getRelatedClients");
 
-        // Switch back to tab Related clients
-        cy.get("#tab-related").click();
+          cy.get("#tab-related").click();
 
-        // First location is still open
-        cy.get("#relationships-location-00 cds-accordion-item").should("have.attr", "open");
+          // Switch to another tab while the request is in progress
+          cy.get("#tab-contacts").click();
 
-        // Second location is still closed
-        cy.get("#relationships-location-01 cds-accordion-item").should("not.have.attr", "open");
+          // Make sure the current tab panel was effectively switched
+          cy.get("#panel-related").should("have.attr", "hidden");
+          cy.get("#panel-contacts").should("not.have.attr", "hidden");
+
+          // Switch back to tab Related clients
+          cy.get("#tab-related").click();
+
+          // Complete the request
+          resolveGetRelatedClients();
+
+          // Confirm request is done
+          cy.wait("@getRelatedClients");
+
+          cy.wrap(getRelatedClientsCounter).its("count").should("eq", 1);
+
+          // Switch to another tab again - this time no request is in progress
+          cy.get("#tab-contacts").click();
+
+          // Make sure the current tab panel was effectively switched
+          cy.get("#panel-related").should("have.attr", "hidden");
+          cy.get("#panel-contacts").should("not.have.attr", "hidden");
+
+          // Switch back to tab Related clients
+          cy.get("#tab-related").click();
+
+          // The API was still called only once
+          cy.wrap(getRelatedClientsCounter).its("count").should("eq", 1);
+        });
+      });
+
+      describe("after switching to the Related clients tab", () => {
+        beforeEach(function () {
+          // Switch to the Related clients tab
+          cy.get("#tab-related").click();
+        });
+
+        it("keeps accordions' states while tabs are switched", () => {
+          // Expand first location, leave second one collapsed
+          cy.get("#relationships-location-00 [slot='title']").click();
+
+          // Switch to another tab (Contacts)
+          cy.get("#tab-contacts").click();
+
+          // Make sure the current tab panel was effectively switched
+          cy.get("#panel-related").should("have.attr", "hidden");
+          cy.get("#panel-contacts").should("not.have.attr", "hidden");
+
+          // Switch back to tab Related clients
+          cy.get("#tab-related").click();
+
+          // First location is still open
+          cy.get("#relationships-location-00 cds-accordion-item").should("have.attr", "open");
+
+          // Second location is still closed
+          cy.get("#relationships-location-01 cds-accordion-item").should("not.have.attr", "open");
+        });
       });
     });
   });
