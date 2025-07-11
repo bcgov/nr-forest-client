@@ -1964,13 +1964,6 @@ describe("Client Details Page", () => {
   describe("hash links", { testIsolation: false }, () => {
     before(function () {
       init.call(this);
-
-      cy.intercept({
-        method: "GET",
-        pathname: "/api/clients/details/*",
-      }).as("getClientDetails");
-
-      cy.visit("/clients/details/p");
     });
 
     it("opens the locations tab by default", () => {
@@ -1981,21 +1974,29 @@ describe("Client Details Page", () => {
     it("opens the contacts tab", () => {
       cy.visit("/clients/details/p#contacts");
       cy.get("#panel-contacts").should("not.have.attr", "hidden");
+
+      cy.get("#panel-locations").should("have.attr", "hidden");
     });
 
     it("opens the Related clients tab", () => {
       cy.visit("/clients/details/p#related");
       cy.get("#panel-related").should("not.have.attr", "hidden");
+
+      cy.get("#panel-contacts").should("have.attr", "hidden");
     });
 
     it("opens the History tab", () => {
       cy.visit("/clients/details/p#history");
       cy.get("#panel-history").should("not.have.attr", "hidden");
+
+      cy.get("#panel-related").should("have.attr", "hidden");
     });
 
     it("opens the locations tab", () => {
       cy.visit("/clients/details/p#locations");
       cy.get("#panel-locations").should("not.have.attr", "hidden");
+
+      cy.get("#panel-history").should("have.attr", "hidden");
     });
   });
 });
