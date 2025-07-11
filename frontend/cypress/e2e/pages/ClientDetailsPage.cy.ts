@@ -817,8 +817,6 @@ describe("Client Details Page", () => {
       });
 
       it("hides the address on the accordion's title when it's expanded", () => {
-        cy.visit("/clients/details/p");
-
         // Clicks to expand the accordion
         cy.get("#location-00 [slot='title']").click();
 
@@ -826,8 +824,6 @@ describe("Client Details Page", () => {
       });
 
       it("keeps accordions' states while tabs are switched", () => {
-        cy.visit("/clients/details/p");
-
         // Expand first and third locations, leave second one collapsed
         cy.get("#location-00 [slot='title']").click();
         cy.get("#location-02 [slot='title']").click();
@@ -1715,7 +1711,7 @@ describe("Client Details Page", () => {
     });
   });
 
-  describe("related clients tab", () => {
+  describe("related clients tab - under construction", () => {
     const clientNumber = "12321";
     beforeEach(() => {
       cy.visit(`/clients/details/${clientNumber}`);
@@ -1744,6 +1740,103 @@ describe("Client Details Page", () => {
         "_blank",
         "noopener",
       );
+    });
+  });
+
+  describe("related clients tab", () => {
+    describe("non-user action tests", { testIsolation: false }, () => {
+      describe("3 relationships under 2 active locations", () => {
+        before(function () {
+          init.call(this);
+          cy.visit("/clients/details/p");
+
+          // Switch to the Related clients tab
+          cy.get("#tab-related").click();
+        });
+
+        it("displays the number of relationships", () => {
+          cy.get("#panel-related").contains("03 client relationships");
+        });
+
+        it("displays one collapsed accordion component for each location", () => {
+          cy.get("#panel-related").within(() => {
+            // There are 2 accordions
+            cy.get("cds-accordion").should("have.length", 2);
+
+            // All accordions are initially collapsed
+            cy.get("cds-accordion cds-accordion-item").each(($el) => {
+              expect($el).not.to.have.attr("open");
+            });
+          });
+        });
+
+        it("displays the location name on the accordion's title", () => {
+          cy.get("#relationships-location-00 [slot='title']").contains("00 - Mailing address");
+          cy.get("#relationships-location-01 [slot='title']").contains("01 - Accountant address");
+        });
+      });
+
+      describe("3 relationships under 2 locations - 1 active and 1 deactivated", () => {
+        before(function () {
+          init.call(this);
+          cy.visit("/clients/details/pd");
+
+          // Switch to the Related clients tab
+          cy.get("#tab-related").click();
+        });
+        it("doesn't display the tag Deactivated when location is not expired", () => {
+          cy.get("cds-tag#relationships-location-00-deactivated").should("not.exist");
+        });
+
+        it("displays the tag Deactivated when location is expired", () => {
+          cy.get("cds-tag#relationships-location-01-deactivated").contains("Deactivated");
+        });
+      });
+
+      describe("location without name", () => {
+        before(function () {
+          init.call(this);
+          cy.visit("/clients/details/se");
+
+          // Switch to the Related clients tab
+          cy.get("#tab-related").click();
+        });
+        it("displays only the location code, without the dash", () => {
+          cy.get("#relationships-location-01 [slot='title']").contains("01");
+          cy.get("#relationships-location-01 [slot='title']").contains("-").should("not.exist");
+        });
+      });
+    });
+
+    describe("regular, isolated tests", () => {
+      before(function () {
+        init.call(this);
+        cy.visit("/clients/details/p");
+
+        // Switch to the Related clients tab
+        cy.get("#tab-related").click();
+      });
+
+      it("keeps accordions' states while tabs are switched", () => {
+        // Expand first location, leave second one collapsed
+        cy.get("#relationships-location-00 [slot='title']").click();
+
+        // Switch to another tab (Contacts)
+        cy.get("#tab-contacts").click();
+
+        // Make sure the current tab panel was effectively switched
+        cy.get("#panel-related").should("have.attr", "hidden");
+        cy.get("#panel-contacts").should("not.have.attr", "hidden");
+
+        // Switch back to tab Related clients
+        cy.get("#tab-related").click();
+
+        // First location is still open
+        cy.get("#relationships-location-00 cds-accordion-item").should("have.attr", "open");
+
+        // Second location is still closed
+        cy.get("#relationships-location-01 cds-accordion-item").should("not.have.attr", "open");
+      });
     });
   });
 
