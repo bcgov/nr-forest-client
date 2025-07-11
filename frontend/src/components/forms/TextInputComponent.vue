@@ -201,63 +201,6 @@ watch(
     }
   }
 );
-
-const shouldUpdateFromHTMLInputEvent = ref(false);
-
-watch(
-  () => props.mask,
-  () => {
-    if (cdsTextInputRef.value) {
-      const input = cdsTextInputRef.value.shadowRoot?.querySelector("input");
-      if (input) {
-        /*
-        Unblocks the value update so it conforms to the updated mask.
-        But just for a moment, because that's enough anyway, and then we reset the flag to prevent
-        side-effects.
-        */
-        shouldUpdateFromHTMLInputEvent.value = true;
-
-        // Prevent later, unrelated input event
-        setTimeout(() => {
-          shouldUpdateFromHTMLInputEvent.value = false;
-        }, 0);
-      }
-    }
-  },
-);
-
-watch(cdsTextInputRef, async (cdsTextInput) => {
-  /*
-  This is a workaround to fix a broken behavior that happens when changing the value of the
-  `v-masked` directive, where the value of the HTML input does update properly, but for whatever
-  reason the input event doesn't reach the Carbon component, so our model remains outdated.
-  In order to fix it we handle the input event from the inner HTML input element.
-  */
-  if (cdsTextInput) {
-    // wait for the DOM updates to complete
-    await nextTick();
-
-    const input = cdsTextInput.shadowRoot?.querySelector("input");
-    if (input) {
-      input.addEventListener("input", (ev) => {
-        if (shouldUpdateFromHTMLInputEvent.value) {
-          selectedValue.value = ev.target.value;
-          shouldUpdateFromHTMLInputEvent.value = false;
-        } else {
-          /*
-          This workaround fixes a behavior where every input value updates according to its mask
-          after a change in *another* input, for example, a single typed character or a selected
-          dropdown.
-          */
-          const localTarget = ev.target;
-          setTimeout(() => {
-            localTarget.value = selectedValue.value;
-          }, 0);
-        }
-      });
-    }
-  }
-});
 </script>
 
 <template>

@@ -1,30 +1,18 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { nextTick } from "vue";
 import { mask, tokens } from "vue-the-mask";
 
 // add custom token
 tokens.N = { pattern: /[0-9a-zA-Z]/, transform: (v) => v.toLocaleUpperCase() };
-tokens.U = { pattern: /./, transform: (v) => v.toLocaleUpperCase() };
 
 export const masking = (shadowSelector: string) => (el: any, binding: any) => {
-  if (el.shadowRoot) {
-    /*
-    nextTick allows to wait for the HTML input element to be loaded, so the mask is properly
-    applied before the first key gets typed on it.
-    */
-    nextTick(() => {
-      const input = el.shadowRoot.querySelector(shadowSelector)
-      if (input) {
-        if (binding.value !== input.getAttribute('v-mask')) {
-          input.setAttribute('v-mask', binding.value)
-          if (binding.value) {
-            mask(input, binding);
-          } else {
-            input.oninput = null;
-          }
-        }
+  if (el.shadowRoot && binding.value) {
+    const input = el.shadowRoot.querySelector(shadowSelector)
+    if (input) {
+      if (binding.value !== input.getAttribute('v-mask')) {
+        input.setAttribute('v-mask', binding.value)
+        mask(input, binding)
       }
-    });
+    }
   }
 }
 

@@ -503,7 +503,7 @@ describe("<individual-client-information-wizard-step />", () => {
         describe("and the ID number gets filled in with numbers and letters", () => {
           beforeEach(() => {
             cy.clearFormEntry("#clientIdentification");
-            cy.fillFormEntry("#clientIdentification", "123456A");
+            cy.fillFormEntry("#clientIdentification", "1234567A");
             cy.wait(1);
           });
 
@@ -522,7 +522,7 @@ describe("<individual-client-information-wizard-step />", () => {
               cy.wait(1);
             });
 
-            it("should emit valid false because letters get removed from the value which makes it shorter than the minimum allowed", () => {
+            it("should emit valid false because letters are not allowed for BC driver's licence", () => {
               cy.get("@vueWrapper").should((vueWrapper) => {
                 const lastValid = vueWrapper.emitted("valid").slice(-1)[0];
 
