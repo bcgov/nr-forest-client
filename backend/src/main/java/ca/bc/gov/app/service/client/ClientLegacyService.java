@@ -5,7 +5,10 @@ import static ca.bc.gov.app.ApplicationConstant.MDC_USERID;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
+import ca.bc.gov.app.dto.client.RelatedClientDto;
+import ca.bc.gov.app.dto.client.RelatedClientEntryDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
+import ca.bc.gov.app.dto.legacy.ClientRelatedProjection;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
@@ -15,9 +18,12 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.util.Pair;
@@ -512,33 +518,6 @@ public class ClientLegacyService {
         });
   }
 
-  private boolean isValidClientStatus(CodeNameDto dto, String clientTypeCode, Set<String> groups) {
-    if (groups.contains(ApplicationConstant.ROLE_ADMIN)) {
-      return getAdminStatuses(clientTypeCode).contains(dto.code());
-    } else if (groups.contains(ApplicationConstant.ROLE_EDITOR)) {
-      return getEditorStatuses().contains(dto.code());
-    } else if (groups.contains(ApplicationConstant.ROLE_SUSPEND)) {
-      return getSuspendStatuses().contains(dto.code());
-    }
-    return false;
-  }
-
-  private Set<String> getAdminStatuses(String clientTypeCode) {
-    return switch (clientTypeCode) {
-      case "F", "G" -> Set.of("ACT", "DAC");
-      case "I" -> Set.of("ACT", "DEC", "REC", "DAC", "SPN");
-      default -> Set.of("ACT", "DAC", "REC", "SPN");
-    };
-  }
-
-  private Set<String> getEditorStatuses() {
-    return Set.of("ACT", "DAC");
-  }
-
-  private Set<String> getSuspendStatuses() {
-    return Set.of("ACT", "SPN", "REC");
-  }
-
   /**
    * Retrieves active registry type codes from the legacy system.
    *
@@ -641,5 +620,85 @@ public class ClientLegacyService {
                 )
             );
   }
+
+  public Mono<Map<String, List<RelatedClientEntryDto>>> getRelatedClientList(String clientNumber) {
+    log.info("Searching for related clients for relatedClient number {}", clientNumber);
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/clients/{clientNumber}/related-clients", clientNumber)
+            .exchangeToFlux(response -> response.bodyToFlux(ClientRelatedProjection.class))
+            .map(legacyProjection -> new RelatedClientEntryDto(
+                    new RelatedClientDto(
+                        new CodeNameDto(
+                            legacyProjection.clientNumber(),
+                            legacyProjection.clientName()
+                        ),
+                        new CodeNameDto(
+                            legacyProjection.clientLocnCode(),
+                            legacyProjection.clientLocnName()
+                        )
+                    ),
+                    new RelatedClientDto(
+                        new CodeNameDto(
+                            legacyProjection.relatedClntNmbr(),
+                            legacyProjection.relatedClntName()
+                        ),
+                        new CodeNameDto(
+                            legacyProjection.relatedClntLocn(),
+                            legacyProjection.relatedClntLocnName()
+                        )
+                    ),
+                    new CodeNameDto(
+                        legacyProjection.relationshipCode(),
+                        legacyProjection.relationshipName()
+                    ),
+                    legacyProjection.percentOwnership(),
+                    BooleanUtils.toBoolean(Objects.toString(legacyProjection.signingAuthInd(), "N"),
+                        "Y", "N"),
+                    legacyProjection.primaryClient()
+                )
+            )
+            .collectList()
+            .map(list -> list
+                .stream()
+                .collect(Collectors.groupingBy(dto -> dto.client().location().code()))
+            )
+            .doOnNext(
+                relatedClient -> log.info(
+                    "Found {} related clients for number: {}",
+                    relatedClient.size(), clientNumber
+                )
+            );
+  }
+
+  private boolean isValidClientStatus(CodeNameDto dto, String clientTypeCode, Set<String> groups) {
+    if (groups.contains(ApplicationConstant.ROLE_ADMIN)) {
+      return getAdminStatuses(clientTypeCode).contains(dto.code());
+    } else if (groups.contains(ApplicationConstant.ROLE_EDITOR)) {
+      return getEditorStatuses().contains(dto.code());
+    } else if (groups.contains(ApplicationConstant.ROLE_SUSPEND)) {
+      return getSuspendStatuses().contains(dto.code());
+    }
+    return false;
+  }
+
+  private Set<String> getAdminStatuses(String clientTypeCode) {
+    return switch (clientTypeCode) {
+      case "F", "G" -> Set.of("ACT", "DAC");
+      case "I" -> Set.of("ACT", "DEC", "REC", "DAC", "SPN");
+      default -> Set.of("ACT", "DAC", "REC", "SPN");
+    };
+  }
+
+  private Set<String> getEditorStatuses() {
+    return Set.of("ACT", "DAC");
+  }
+
+  private Set<String> getSuspendStatuses() {
+    return Set.of("ACT", "SPN", "REC");
+  }
+
 
 }

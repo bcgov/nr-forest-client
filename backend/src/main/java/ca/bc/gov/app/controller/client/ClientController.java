@@ -4,6 +4,7 @@ import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
+import ca.bc.gov.app.dto.client.RelatedClientEntryDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientLegacyService;
@@ -11,6 +12,7 @@ import ca.bc.gov.app.service.client.ClientService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.WordUtils;
@@ -70,6 +72,13 @@ public class ClientController {
       @PathVariable String clientNumber) {
     log.info("Requesting client details for client number {}", clientNumber);
     return clientService.getClientDetailsByClientNumber(clientNumber);
+  }
+
+  @GetMapping("/details/{clientNumber}/related-clients")
+  public Mono<Map<String, List<RelatedClientEntryDto>>> getRelatedClients(
+      @PathVariable String clientNumber) {
+    log.info("Requesting related relatedClient list for relatedClient number {}", clientNumber);
+    return clientLegacyService.getRelatedClientList(clientNumber);
   }
 
   @GetMapping("/{clientNumber}/good-standing")

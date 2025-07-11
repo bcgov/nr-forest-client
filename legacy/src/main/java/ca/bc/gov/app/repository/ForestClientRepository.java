@@ -3,6 +3,7 @@ package ca.bc.gov.app.repository;
 import ca.bc.gov.app.dto.ForestClientInformationDto;
 import ca.bc.gov.app.dto.HistoryLogDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
+import ca.bc.gov.app.entity.ClientRelatedProjection;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import java.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
@@ -81,5 +82,8 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       String companyType,
       String companyNumber
   );
+
+  @Query(ForestClientQueries.RELATED_CLIENT_LIST)
+  Flux<ClientRelatedProjection> findByClientRelatedList(String clientNumber);
   
 }
