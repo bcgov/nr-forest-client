@@ -928,14 +928,8 @@ describe("Client Details Page", () => {
 
                 cy.get("#location-00-SaveBtn").click();
               }
-            });
 
-            beforeEach(() => {
-              registerInterceptors();
-            });
-
-            if (scenario.name === "create") {
-              it("scrolls down to the new form", () => {
+              if (scenario.name === "create") {
                 cy.get("#addLocationBtn").click();
 
                 cy.get("[data-scroll='location-3-heading']").then(($el) => {
@@ -943,8 +937,10 @@ describe("Client Details Page", () => {
                   cy.spy(element, "scrollIntoView").as("scrollToNewLocation");
                 });
 
+                // test: new collapsible item was added
                 cy.get("cds-accordion[id|='location']").should("have.length", 4);
 
+                // test: it scrolls down to the new form
                 cy.get("@scrollToNewLocation").should("be.called");
 
                 /*
@@ -958,10 +954,13 @@ describe("Client Details Page", () => {
 
                 cy.selectAutocompleteEntry("#addr_null", "123", "V8V8V8");
 
-                // resumePatch = interruptPatch();
                 cy.get("#location-null-SaveBtn").click();
-              });
-            }
+              }
+            });
+
+            beforeEach(() => {
+              registerInterceptors();
+            });
 
             it("disables the Save button while waiting for the response", () => {
               cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
@@ -1406,23 +1405,16 @@ describe("Client Details Page", () => {
                   });
                 },
               ).as("getClientDetails");
-
-              cy.intercept(
-                {
-                  method: "PATCH",
-                  pathname: "/api/clients/details/*",
-                },
-                (req) => {
-                  patchClientDetailsRequest = req;
-                  req.continue();
-                },
-              ).as("patchClientDetails");
             };
 
             before(function () {
               init.call(this);
 
               registerInterceptors();
+
+              resumePatch = interruptPatch((req) => {
+                patchClientDetailsRequest = req;
+              });
 
               cy.visit("/clients/details/p");
               cy.wait("@getClientDetails");
@@ -1441,14 +1433,8 @@ describe("Client Details Page", () => {
 
                 cy.get("#contact-10-SaveBtn").click();
               }
-            });
 
-            beforeEach(() => {
-              registerInterceptors();
-            });
-
-            if (scenario.name === "create") {
-              it("scrolls down to the new form", () => {
+              if (scenario.name === "create") {
                 cy.get("#addContactBtn").click();
 
                 cy.get("[data-scroll='contact-null-heading']").then(($el) => {
@@ -1456,8 +1442,10 @@ describe("Client Details Page", () => {
                   cy.spy(element, "scrollIntoView").as("scrollToNewContact");
                 });
 
+                // test: new collapsible item was added
                 cy.get("cds-accordion[id|='contact']").should("have.length", 4);
 
+                // test: it scrolls down to the new form
                 cy.get("@scrollToNewContact").should("be.called");
 
                 /*
@@ -1477,10 +1465,13 @@ describe("Client Details Page", () => {
 
                 cy.fillFormEntry("#businessPhoneNumber_null", "1234567890");
 
-                resumePatch = interruptPatch();
                 cy.get("#contact-null-SaveBtn").click();
-              });
-            }
+              }
+            });
+
+            beforeEach(() => {
+              registerInterceptors();
+            });
 
             it("disables the Save button while waiting for the response", () => {
               cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
@@ -1555,6 +1546,8 @@ describe("Client Details Page", () => {
             before(function () {
               init.call(this);
 
+              resumePatch = interruptPatch();
+
               cy.visit("/clients/details/p");
 
               // Switch to the Contacts tab
@@ -1590,7 +1583,6 @@ describe("Client Details Page", () => {
 
                 cy.fillFormEntry("#businessPhoneNumber_null", "1234567890");
 
-                resumePatch = interruptPatch();
                 cy.get("#contact-null-SaveBtn").click();
               }
             });
@@ -1711,9 +1703,12 @@ describe("Client Details Page", () => {
     });
   });
 
-  describe("related clients tab - under construction", () => {
+  describe('related clients tab - "Under construction"', () => {
     const clientNumber = "12321";
+
     beforeEach(() => {
+      cy.addToLocalStorage("VITE_FEATURE_FLAGS", { RELATED_CLIENTS: false });
+
       cy.visit(`/clients/details/${clientNumber}`);
 
       cy.window().then((win) => {
@@ -1726,6 +1721,10 @@ describe("Client Details Page", () => {
       // Make sure the current tab panel was effectively switched
       cy.get("#panel-locations").should("have.attr", "hidden");
       cy.get("#panel-related").should("not.have.attr", "hidden");
+    });
+
+    after(() => {
+      cy.addToLocalStorage("VITE_FEATURE_FLAGS", { RELATED_CLIENTS: true });
     });
 
     it("should display the Under construction message", () => {
