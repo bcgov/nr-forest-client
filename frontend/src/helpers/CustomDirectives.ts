@@ -3,7 +3,7 @@ import { mask, tokens } from "vue-the-mask";
 
 // add custom token
 tokens.N = { pattern: /[0-9a-zA-Z]/, transform: (v) => v.toLocaleUpperCase() };
-tokens.U = { pattern: /./, transform: (v) => v.toLocaleUpperCase() };
+tokens.U = { pattern: /[A-Za-z0-9]/, transform: (v) => v.toLocaleUpperCase() };
 
 export const masking = (shadowSelector: string) => (el: any, binding: any) => {
   if (el.shadowRoot && binding.value) {
