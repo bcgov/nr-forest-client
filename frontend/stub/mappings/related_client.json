@@ -15,7 +15,7 @@
           "response-template"
         ],
         "bodyFileName": "details/related-client-sample.json",
-        "fixedDelayMilliseconds": 500
+        "fixedDelayMilliseconds": 50
       }
     },
     {
