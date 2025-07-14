@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
+import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +59,17 @@ public class ForestClientMetricConfiguration {
         return DistributionStatisticConfig
             .builder()
             .percentiles(0.5, 0.95, 0.99)
-            .percentilesHistogram(true)
+            .serviceLevelObjectives(
+                Duration.ofMillis(100).toNanos(),
+                Duration.ofMillis(250).toNanos(),
+                Duration.ofMillis(500).toNanos(),
+                Duration.ofSeconds(1).toNanos(),
+                Duration.ofSeconds(2).toNanos(),
+                Duration.ofSeconds(5).toNanos(),
+                Duration.ofSeconds(15).toNanos(),
+                Duration.ofSeconds(30).toNanos(),
+                Duration.ofMinutes(1).toNanos()
+            )
             .build()
             .merge(config);
       }
