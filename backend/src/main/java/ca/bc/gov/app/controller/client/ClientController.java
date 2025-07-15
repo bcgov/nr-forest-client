@@ -208,7 +208,7 @@ public class ClientController {
   public Flux<ClientListDto> searchRelatedClients(
       @PathVariable String clientNumber,
       @RequestParam(required = false) String type,
-      String value
+      @RequestParam(required = false) String value
   ) {
     log.info(
         "Searching related clients with relation type {} search term {} and excluding client {}",
