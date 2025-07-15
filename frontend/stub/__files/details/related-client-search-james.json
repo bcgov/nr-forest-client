@@ -1,0 +1,34 @@
+[
+    {
+        "clientNumber": "00000010",
+        "clientAcronym": null,
+        "clientFullName": "jjamess bbondd bbondd",
+        "clientType": "Association",
+        "city": null,
+        "clientStatus": "Active"
+    },
+    {
+        "clientNumber": "00000001",
+        "clientAcronym": null,
+        "clientFullName": "JAMES BAXTER (BAXTER'S FAMILY)",
+        "clientType": "Individual",
+        "city": null,
+        "clientStatus": "Active"
+    },
+    {
+        "clientNumber": "00000008",
+        "clientAcronym": "jhunt",
+        "clientFullName": "james hunt hunt",
+        "clientType": "Individual",
+        "city": null,
+        "clientStatus": "Active"
+    },
+    {
+        "clientNumber": "00000007",
+        "clientAcronym": null,
+        "clientFullName": "james bond bond",
+        "clientType": "Individual",
+        "city": null,
+        "clientStatus": "Active"
+    }
+]

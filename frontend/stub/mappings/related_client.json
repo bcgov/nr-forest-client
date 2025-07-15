@@ -33,6 +33,63 @@
         ],
         "bodyFileName": "details/related-client-{{request.path.3}}.json"
       }
+    },
+    {
+      "name": "Related Client search - Default",
+      "request": {
+        "urlPathTemplate": "/api/clients/relation/{clientNumber}",
+        "method": "GET",
+        "pathParameters" : {
+          "clientNumber" : {
+            "doesNotMatch" : "^000000009$"
+          }
+        },
+        "queryParameters" : {
+          "value" : {
+            "matches" : "^(.*)$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "body": "[]"
+      }
+    },
+    {
+      "name": "Related Client - Existing related client",
+      "request": {
+        "urlPathTemplate": "/api/clients/relation/{clientNumber}",
+        "method": "GET",
+        "pathParameters" : {
+          "clientNumber" : {
+            "matches" : "^000000009$"
+          }
+        },
+        "queryParameters" : {
+          "value" : {
+            "matches" : "^james$"
+          },
+          "type" : {
+            "matches" : "^(JV|SH)$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "bodyFileName": "details/related-client-search-{{request.query.value}}-{{request.query.type}}.json"
+      }
     }
   ]
 }
