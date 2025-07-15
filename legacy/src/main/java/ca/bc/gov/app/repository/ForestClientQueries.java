@@ -1050,5 +1050,191 @@ public final class ForestClientQueries {
       LEFT JOIN THE.CLIENT_LOCATION rcl ON rcl.CLIENT_NUMBER = rc.RELATED_CLNT_NMBR AND rcl.CLIENT_LOCN_CODE = rc.RELATED_CLNT_LOCN
       LEFT JOIN THE.CLIENT_RELATIONSHIP_CODE crc ON crc.CLIENT_RELATIONSHIP_CODE = rc.RELATIONSHIP_CODE
       WHERE rc.CLIENT_NUMBER = :clientNumber OR rc.RELATED_CLNT_NMBR = :clientNumber""";
-  
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_SELECT = """
+      SELECT
+        C.CLIENT_NUMBER,
+        C.CLIENT_ACRONYM AS CLIENT_ACRONYM,
+        C.CLIENT_NAME,
+        C.LEGAL_FIRST_NAME AS CLIENT_FIRST_NAME,
+        DBA.DOING_BUSINESS_AS_NAME AS DOING_BUSINESS_AS,
+        C.CLIENT_IDENTIFICATION,
+        C.LEGAL_MIDDLE_NAME AS CLIENT_MIDDLE_NAME,
+        CTC.DESCRIPTION AS CLIENT_TYPE,
+        CSC.DESCRIPTION AS CLIENT_STATUS,
+      """;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_LIKE_ORDER = """
+      (
+          CASE
+              WHEN UPPER(C.CLIENT_NUMBER) LIKE '%' || :value || '%' THEN 100
+              WHEN UPPER(C.CLIENT_ACRONYM) LIKE '%' || :value || '%' THEN 100
+              WHEN UPPER(C.CLIENT_NAME) LIKE '%' || :value || '%' THEN 100
+              WHEN UPPER(C.LEGAL_FIRST_NAME) LIKE '%' || :value || '%' THEN 90
+              WHEN UPPER(C.LEGAL_MIDDLE_NAME) LIKE '%' || :value || '%' THEN 50
+              WHEN UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE '%' || :value || '%' THEN 75
+              WHEN UPPER(C.CLIENT_IDENTIFICATION) LIKE '%' || :value || '%' THEN 70
+              WHEN UPPER(TRIM(
+                  COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+                  COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
+                  COALESCE(C.CLIENT_NAME, '')
+              )) LIKE '%' || :value || '%' THEN 90
+              WHEN UPPER(TRIM(
+                  COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+                  COALESCE(C.CLIENT_NAME, '')
+              )) LIKE '%' || :value || '%' THEN 90
+              WHEN UPPER(TRIM(
+                  COALESCE(C.CLIENT_NAME, '') || ' ' ||
+                  COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
+                  COALESCE(C.LEGAL_FIRST_NAME, '')
+              )) LIKE '%' || :value || '%' THEN 50
+              WHEN UPPER(TRIM(
+                  COALESCE(C.CLIENT_NAME, '') || ' ' ||
+                  COALESCE(C.LEGAL_FIRST_NAME, '')
+              )) LIKE '%' || :value || '%' THEN 50
+              WHEN UPPER(TRIM(
+                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') ||
+                  COALESCE(C.CORP_REGN_NMBR, '')
+              )) LIKE '%' || :value || '%' THEN 70
+              WHEN UPPER(TRIM(
+                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
+                  COALESCE(C.CORP_REGN_NMBR, '')
+              )) LIKE '%' || :value || '%' THEN 40
+              ELSE 0
+          END
+      ) AS SCORE
+      """;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_FROM = """
+      FROM THE.FOREST_CLIENT C
+      LEFT JOIN THE.CLIENT_DOING_BUSINESS_AS DBA ON C.CLIENT_NUMBER = DBA.CLIENT_NUMBER
+      LEFT JOIN THE.CLIENT_TYPE_CODE CTC ON C.CLIENT_TYPE_CODE = CTC.CLIENT_TYPE_CODE
+      LEFT JOIN THE.CLIENT_STATUS_CODE CSC ON C.CLIENT_STATUS_CODE = CSC.CLIENT_STATUS_CODE
+      """;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_LIKE = """
+      WHERE
+        C.CLIENT_NUMBER != :mainClientNumber
+        AND C.CLIENT_TYPE_CODE IN (
+          SELECT DISTINCT(SECONDARY_CLIENT_TYPE_CODE) FROM THE.CLIENT_RELATIONSHIP_TYPE_XREF
+          WHERE PRIMARY_CLIENT_TYPE_CODE = C.CLIENT_TYPE_CODE AND (
+            NVL(:relationType,'NOVALUE') = 'NOVALUE' OR CLIENT_RELATIONSHIP_CODE = :relationType
+          )
+        )
+        AND (
+            UPPER(C.CLIENT_NUMBER) LIKE '%' || :value || '%'
+            OR UPPER(C.CLIENT_ACRONYM) LIKE '%' || :value || '%'
+            OR UPPER(C.CLIENT_NAME) LIKE '%' || :value || '%'
+            OR UPPER(C.LEGAL_FIRST_NAME) LIKE '%' || :value || '%'
+            OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE '%' || :value || '%'
+            OR UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE '%' || :value || '%'
+            OR UPPER(C.CLIENT_IDENTIFICATION) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+                COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
+                COALESCE(C.CLIENT_NAME, '')
+            )) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+                COALESCE(C.CLIENT_NAME, '')
+            )) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                COALESCE(C.CLIENT_NAME, '') || ' ' ||
+                COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
+                COALESCE(C.LEGAL_FIRST_NAME, '')
+            )) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                COALESCE(C.CLIENT_NAME, '') || ' ' ||
+                COALESCE(C.LEGAL_FIRST_NAME, '')
+            )) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') ||
+                COALESCE(C.CORP_REGN_NMBR, '')
+            )) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                    COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
+                    COALESCE(C.CORP_REGN_NMBR, '')
+            )) LIKE '%' || :value || '%'
+        )
+      """;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_SIMILARITY = """
+      WHERE
+        C.CLIENT_NUMBER != :mainClientNumber
+        AND C.CLIENT_TYPE_CODE IN (
+          SELECT DISTINCT(SECONDARY_CLIENT_TYPE_CODE) FROM THE.CLIENT_RELATIONSHIP_TYPE_XREF
+          WHERE PRIMARY_CLIENT_TYPE_CODE = C.CLIENT_TYPE_CODE AND (
+            NVL(:relationType,'NOVALUE') = 'NOVALUE' OR CLIENT_RELATIONSHIP_CODE = :relationType
+          )
+        )
+        AND
+        (
+          C.CLIENT_NUMBER = :value
+          OR C.CLIENT_ACRONYM = :value
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(C.CLIENT_NAME, :value) >= 90
+          OR C.CLIENT_NAME LIKE '%' || :value || '%'
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(C.LEGAL_FIRST_NAME, :value) >= 90
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(DBA.DOING_BUSINESS_AS_NAME, :value) >= 90
+          OR DBA.DOING_BUSINESS_AS_NAME LIKE '%' || :value || '%'
+          OR C.CLIENT_IDENTIFICATION = :value
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(C.LEGAL_MIDDLE_NAME, :value) >= 90
+          OR C.LEGAL_MIDDLE_NAME LIKE '%' || :value || '%'
+          OR (
+              C.CLIENT_TYPE_CODE = 'I' AND (
+                  UTL_MATCH.JARO_WINKLER_SIMILARITY(
+                      TRIM(
+                          COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||\s
+                          COALESCE(C.LEGAL_MIDDLE_NAME, '') ||\s
+                          COALESCE(C.CLIENT_NAME, '')
+                      ), :value
+                  ) >= 90
+                  OR UTL_MATCH.JARO_WINKLER_SIMILARITY(
+                      TRIM(
+                          COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||\s
+                          COALESCE(C.CLIENT_NAME, '')
+                      ), :value
+                  ) >= 90
+                  OR UTL_MATCH.JARO_WINKLER_SIMILARITY(
+                      TRIM(
+                          COALESCE(C.CLIENT_NAME, '') || ' ' ||\s
+                          COALESCE(C.LEGAL_MIDDLE_NAME, '') ||\s
+                          COALESCE(C.LEGAL_FIRST_NAME, '')
+                      ), :value
+                  ) >= 90
+                  OR UTL_MATCH.JARO_WINKLER_SIMILARITY(
+                      TRIM(
+                          COALESCE(C.CLIENT_NAME, '') || ' ' ||\s
+                          COALESCE(C.LEGAL_FIRST_NAME, '')
+                      ), :value
+                  ) >= 90
+              )
+          )
+        )
+      """;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_COUNT_WITH_LIKE =
+      SELECT_COUNT_C_CLIENT_NUMBER
+      + RELATED_CLIENT_AUTOCOMPLETE_FROM
+      + RELATED_CLIENT_AUTOCOMPLETE_LIKE;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_WITH_LIKE =
+      RELATED_CLIENT_AUTOCOMPLETE_SELECT
+      + RELATED_CLIENT_AUTOCOMPLETE_LIKE_ORDER
+      + RELATED_CLIENT_AUTOCOMPLETE_FROM
+      + RELATED_CLIENT_AUTOCOMPLETE_LIKE
+      + ORDER_BY_SCORE_DESC
+      + ORACLE_PAGINATION;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_COUNT_WITH_SIMILARITY =
+      SELECT_COUNT_C_CLIENT_NUMBER
+      + RELATED_CLIENT_AUTOCOMPLETE_FROM
+      + RELATED_CLIENT_AUTOCOMPLETE_SIMILARITY;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_WITH_SIMILARITY =
+      RELATED_CLIENT_AUTOCOMPLETE_SELECT
+      + FIND_BY_PREDICTIVE_SEARCH_SCORE_SIMILARITY
+      + RELATED_CLIENT_AUTOCOMPLETE_FROM
+      + RELATED_CLIENT_AUTOCOMPLETE_SIMILARITY
+      + ORDER_BY_SCORE_DESC
+      + ORACLE_PAGINATION;
 }
