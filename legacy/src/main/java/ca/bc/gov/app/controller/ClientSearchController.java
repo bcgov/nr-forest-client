@@ -320,7 +320,7 @@ public class ClientSearchController {
           if (signal.hasValue()) {
             long total = Optional.ofNullable(signal.get()).map(Pair::getValue).orElse(0L);
             serverResponse.getHeaders().add("X-Total-Count", String.valueOf(total));
-          }else{
+          } else {
             serverResponse.getHeaders().add("X-Total-Count", "0");
           }
           return flux.map(Pair::getKey);
