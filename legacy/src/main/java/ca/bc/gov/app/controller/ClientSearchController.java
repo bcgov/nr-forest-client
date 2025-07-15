@@ -8,6 +8,7 @@ import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -301,6 +302,29 @@ public class ClientSearchController {
   ){
     log.info("Receiving request to search by corporation values {}{} that is not from {}",registryCompanyTypeCode, corpRegnNmbr, clientNumber);
     return service.searchByCorporationValues(clientNumber, registryCompanyTypeCode, corpRegnNmbr);
+  }
+
+  @GetMapping("/relation/{clientNumber}")
+  public Flux<PredictiveSearchResultDto> searchByRelation(
+      @PathVariable String clientNumber,
+      @RequestParam(required = false) String type,
+      @RequestParam String value,
+      ServerHttpResponse serverResponse
+  ) {
+    log.info(
+        "Searching related clients with relation type {} search term {} and excluding client {}",
+        type, value, clientNumber);
+    return service
+        .searchByRelation(clientNumber, type, value)
+        .switchOnFirst((signal, flux) -> {
+          if (signal.hasValue()) {
+            long total = Optional.ofNullable(signal.get()).map(Pair::getValue).orElse(0L);
+            serverResponse.getHeaders().add("X-Total-Count", String.valueOf(total));
+          }else{
+            serverResponse.getHeaders().add("X-Total-Count", "0");
+          }
+          return flux.map(Pair::getKey);
+        });
   }
 
 }
