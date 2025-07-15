@@ -712,6 +712,26 @@ public class ClientLegacyService {
             );
   }
 
+  public Flux<ClientListDto> searchRelatedClients(
+      String clientNumber,
+      String type,
+      String value
+  ) {
+    return
+        legacyApi
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/search/relation/{clientNumber}")
+                    .queryParamIfPresent("type", Optional.ofNullable(type))
+                    .queryParam("value", value)
+                    .build(clientNumber)
+            )
+            .exchangeToFlux(response -> response.bodyToFlux(ClientListDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "relationAutoCompleteSearch");
+  }
+
   private boolean isValidClientStatus(CodeNameDto dto, String clientTypeCode, Set<String> groups) {
     if (groups.contains(ApplicationConstant.ROLE_ADMIN)) {
       return getAdminStatuses(clientTypeCode).contains(dto.code());
