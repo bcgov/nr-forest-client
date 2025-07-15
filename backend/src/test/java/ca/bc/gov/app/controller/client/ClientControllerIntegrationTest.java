@@ -586,7 +586,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             .expectStatus().isOk()
             .expectBody();
 
-    if(expectedSize == 0) {
+    if (expectedSize == 0) {
       bodyExpectation.json("[]");
     } else {
       bodyExpectation
