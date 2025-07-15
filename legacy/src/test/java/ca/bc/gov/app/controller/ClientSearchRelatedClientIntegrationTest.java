@@ -47,7 +47,7 @@ class ClientSearchRelatedClientIntegrationTest extends AbstractTestContainerInte
         .expectHeader().valueEquals("X-Total-Count", String.valueOf(expectedClientNames.size()))
         .expectBody();
 
-    if(expectedClientNames.isEmpty()){
+    if (expectedClientNames.isEmpty()) {
       resultCheck.json("[]");
     } else {
       forEachIndexed(expectedClientNames, (index, name) ->
