@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.bcregistry;
 
 import static ca.bc.gov.app.ApplicationConstant.BUSINESS_SUMMARY_FILING_HISTORY;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAddressDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryAlternateNameDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryBusinessAdressesDto;
@@ -50,7 +51,6 @@ import reactor.core.publisher.Mono;
 @Observed
 public class BcRegistryService {
 
-  public static final String REQUEST_BCREGISTRY = "request.bcregistry";
   private final WebClient bcRegistryApi;
   private final ObservationRegistry registry;
 
@@ -114,7 +114,7 @@ public class BcRegistryService {
                     )
             )
             .bodyToMono(BcRegistryFacetResponseDto.class)
-            .name(REQUEST_BCREGISTRY)
+            .name(ApplicationConstant.REQUEST_BCREGISTRY)
             .tag("kind", "facet")
             .tap(Micrometer.observation(registry))
             .map(BcRegistryFacetResponseDto::searchResults)
@@ -185,7 +185,7 @@ public class BcRegistryService {
                     )
             )
             .bodyToMono(BcRegistryDocumentRequestResponseDto.class)
-            .name(REQUEST_BCREGISTRY)
+            .name(ApplicationConstant.REQUEST_BCREGISTRY)
             .tag("kind", "docreq")
             .tap(Micrometer.observation(registry))
             .flatMapIterable(BcRegistryDocumentRequestResponseDto::documents)
@@ -222,7 +222,7 @@ public class BcRegistryService {
                 exception -> Mono.error(new InvalidAccessTokenException())
             )
             .bodyToMono(BcRegistryDocumentDto.class)
-            .name(REQUEST_BCREGISTRY)
+            .name(ApplicationConstant.REQUEST_BCREGISTRY)
             .tag("kind", "docget")
             .tap(Micrometer.observation(registry))
             .doOnNext(
