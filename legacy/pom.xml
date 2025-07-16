@@ -45,7 +45,7 @@
     <junit-platform.version>1.9.1</junit-platform.version>
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.6.3</mapstruct.version>
-    <netty.version>4.2.2.Final</netty.version>
+    <netty.version>4.1.119.Final</netty.version>
     <logback.version>1.5.18</logback.version>
     <flyway.version>11.10.1</flyway.version>
     <oracle-driver.version>23.8.0.25.04</oracle-driver.version>
