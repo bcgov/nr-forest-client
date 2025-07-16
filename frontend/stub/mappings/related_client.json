@@ -1,9 +1,9 @@
 {
   "mappings":[
     {
-      "name": "Related Client - Default",
+      "name": "Related Client - sample",
       "request": {
-        "urlPattern": "/api/clients/details/(.*)/related-clients",
+        "urlPattern": "/api/clients/details/(.+)/related-clients",
         "method": "GET"
       },
       "response": {
@@ -14,7 +14,26 @@
         "transformers": [
           "response-template"
         ],
-        "body": "{}"
+        "bodyFileName": "details/related-client-sample.json",
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Related Client - Empty",
+      "request": {
+        "urlPattern": "/api/clients/details/e/related-clients",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "transformers": [
+          "response-template"
+        ],
+        "body": "{}",
+        "fixedDelayMilliseconds": 500
       }
     },
     {
@@ -31,7 +50,8 @@
         "transformers": [
           "response-template"
         ],
-        "bodyFileName": "details/related-client-{{request.path.3}}.json"
+        "bodyFileName": "details/related-client-{{request.path.3}}.json",
+        "fixedDelayMilliseconds": 500
       }
     },
     {
