@@ -16,6 +16,11 @@ describe("ClientDetailsPage.vue", () => {
       props,
       global: {
         plugins: [router],
+        config: {
+          globalProperties: {
+            $features: {},
+          },
+        },
       },
     });
   };

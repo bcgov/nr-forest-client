@@ -3,7 +3,7 @@
     {
       "name": "Client Details General Partnership - Default",
       "request": {
-        "urlPattern": "/api/clients/details/p?(.*)",
+        "urlPattern": "/api/clients/details/p?([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -18,7 +18,7 @@
     {
       "name": "Client Details General Partnership - Default - Additional location",
       "request": {
-        "urlPattern": "/api/clients/details/p?(.*)+location",
+        "urlPattern": "/api/clients/details/p?(.*)\\+location",
         "method": "GET"
       },
       "response": {
@@ -63,7 +63,7 @@
     {
       "name": "Client Details Corporation",
       "request": {
-        "urlPattern": "/api/clients/details/c(.*)",
+        "urlPattern": "/api/clients/details/c([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -78,7 +78,7 @@
     {
       "name": "Client Details General Partnership - Doing business as",
       "request": {
-        "urlPattern": "/api/clients/details/pd(.*)",
+        "urlPattern": "/api/clients/details/pd([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -93,7 +93,7 @@
     {
       "name": "Client Details General Partnership - Deactivated",
       "request": {
-        "urlPattern": "/api/clients/details/pdac(.*)",
+        "urlPattern": "/api/clients/details/pdac([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -108,7 +108,7 @@
     {
       "name": "Client Details General Partnership - Suspended",
       "request": {
-        "urlPattern": "/api/clients/details/pspn(.*)",
+        "urlPattern": "/api/clients/details/pspn([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -123,7 +123,7 @@
     {
       "name": "Client Details Individual 2",
       "request": {
-        "urlPattern": "/api/clients/details/s(.*)",
+        "urlPattern": "/api/clients/details/s([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -138,7 +138,7 @@
     {
       "name": "Client Details Individual 2 - Some empty fields",
       "request": {
-        "urlPattern": "/api/clients/details/se(.*)",
+        "urlPattern": "/api/clients/details/se([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -153,7 +153,7 @@
     {
       "name": "Client Details Individual",
       "request": {
-        "urlPattern": "/api/clients/details/i(.*)",
+        "urlPattern": "/api/clients/details/i([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -168,7 +168,7 @@
     {
       "name": "Client Details Individual - Viewer role",
       "request": {
-        "urlPattern": "/api/clients/details/iv(.*)",
+        "urlPattern": "/api/clients/details/iv([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -183,7 +183,7 @@
     {
       "name": "Client Details Individual - null addresses and contacts",
       "request": {
-        "urlPattern": "/api/clients/details/null(.*)",
+        "urlPattern": "/api/clients/details/null([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -198,7 +198,7 @@
     {
       "name": "Client Details Individual - no locations",
       "request": {
-        "urlPattern": "/api/clients/details/nl(.*)",
+        "urlPattern": "/api/clients/details/nl([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -228,7 +228,7 @@
     {
       "name": "Client Details Corporation - missing registry type",
       "request": {
-        "urlPattern": "/api/clients/details/mrt(.*)",
+        "urlPattern": "/api/clients/details/mrt([^/]*)",
         "method": "GET"
       },
       "response": {
@@ -243,7 +243,7 @@
     {
       "name": "Client Details - Error 400",
       "request": {
-        "urlPattern": "/api/clients/details/(.*)e4..",
+        "urlPattern": "/api/clients/details/([^/]*)e4..",
         "method": "GET"
       },
       "response": {
@@ -255,7 +255,7 @@
     {
       "name": "Client Details - Error 500",
       "request": {
-        "urlPattern": "/api/clients/details/(.*)e5..",
+        "urlPattern": "/api/clients/details/([^/]*)e5..",
         "method": "GET"
       },
       "response": {
@@ -267,7 +267,7 @@
     {
       "name": "Client Details - Error Network",
       "request": {
-        "urlPattern": "/api/clients/details/(.*)enet",
+        "urlPattern": "/api/clients/details/([^/]*)enet",
         "method": "GET"
       },
       "response": {
@@ -277,7 +277,7 @@
     {
       "name": "PATCH - Client Details - Success",
       "request": {
-        "urlPattern": "/api/clients/details/(.*)",
+        "urlPattern": "/api/clients/details/([^/]*)",
         "method": "PATCH"
       },
       "response": {
@@ -289,7 +289,7 @@
     {
       "name": "PATCH - Client Details - Generic Error",
       "request": {
-        "urlPattern": "/api/clients/details/(.*)",
+        "urlPattern": "/api/clients/details/([^/]*)",
         "method": "PATCH",
         "bodyPatterns": [
           {
@@ -309,7 +309,7 @@
     {
       "name": "PATCH - Client Details - Duplicate Acronym Error",
       "request": {
-        "urlPattern": "/api/clients/details/(.*)",
+        "urlPattern": "/api/clients/details/([^/]*)",
         "method": "PATCH",
         "bodyPatterns": [
           {
@@ -334,7 +334,7 @@
     {
       "name": "PATCH - Client Details - Duplicate Registration Number Error",
       "request": {
-        "urlPattern": "/api/clients/details/(.*)",
+        "urlPattern": "/api/clients/details/([^/]*)",
         "method": "PATCH",
         "bodyPatterns": [
           {
