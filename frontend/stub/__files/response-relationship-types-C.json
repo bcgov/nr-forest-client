@@ -1,0 +1,30 @@
+[
+  {
+    "code": "AG",
+    "name": "Agent"
+  },
+  {
+    "code": "FM",
+    "name": "Family Member"
+  },
+  {
+    "code": "JV",
+    "name": "Joint Venture Participant"
+  },
+  {
+    "code": "CL",
+    "name": "Corporate Linkage"
+  },
+  {
+    "code": "FA",
+    "name": "First Nations Company Affiliation"
+  },
+  {
+    "code": "BR",
+    "name": "Broker"
+  },
+  {
+    "code": "FP",
+    "name": "First Nations Organizational Association"
+  }
+]

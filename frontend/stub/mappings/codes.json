@@ -245,6 +245,30 @@
         "transformers": ["response-template"],
         "bodyFileName": "response-client-statuses-{{request.path.[3]}}.json"
       }
+    },
+    {
+      "name": "Get relationship type codes by client type",
+      "request": {
+        "urlPattern": "/api/codes/relationship-types/([A-Z]+)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "bodyFileName": "response-relationship-types-dummy.json"
+      }
+    },
+    {
+      "name": "Get relationship type codes by client type",
+      "request": {
+        "urlPattern": "/api/codes/relationship-types/(C|A|P)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "transformers": ["response-template"],
+        "bodyFileName": "response-relationship-types-{{request.path.[3]}}.json"
+      }
     }
   ]
 }
