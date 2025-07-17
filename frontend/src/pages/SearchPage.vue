@@ -12,7 +12,7 @@ import "@carbon/web-components/es/components/tag/index";
 import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
 
-import type { ClientSearchResult, CodeNameValue } from "@/dto/CommonTypesDto";
+import type { ClientSearchResult, CodeNameType, CodeNameValue } from "@/dto/CommonTypesDto";
 import {
   adminEmail,
   getObfuscatedEmailLink,
@@ -164,6 +164,14 @@ onMounted(() => {
   disableSkelleton();
   watch(skeletonReference, disableSkelleton);
 });
+
+const tableData2 = ref<CodeNameType[]>([]);
+
+const uri2 = computed(() =>`/api/codes/relationship-types/C`);
+
+const { response } = useFetchTo(uri2, tableData2);
+console.log(JSON.stringify(response.value));
+
 </script>
 
 <template>

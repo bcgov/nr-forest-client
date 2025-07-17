@@ -759,4 +759,23 @@ public class ClientLegacyService {
     return Set.of("ACT", "SPN", "REC");
   }
 
+  public Flux<CodeNameDto> findActiveRelationshipCodesByClientTypeCode(String clientTypeCode) {
+    log.info("Searching for active relationship types in legacy by client type {}", clientTypeCode);
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/codes/relationship-types/{clientTypeCode}", clientTypeCode)
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "relationshipTypeCodes")
+            // Log the results for debugging purposes
+            .doOnNext(
+                dto -> log.info(
+                    "Found active relationship types in legacy with client type {}",
+                    clientTypeCode
+                )
+            );
+  }
+
 }
