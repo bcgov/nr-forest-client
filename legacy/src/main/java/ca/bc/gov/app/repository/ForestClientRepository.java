@@ -85,5 +85,19 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
 
   @Query(ForestClientQueries.RELATED_CLIENT_LIST)
   Flux<ClientRelatedProjection> findByClientRelatedList(String clientNumber);
+
+  @Query(ForestClientQueries.RELATED_CLIENT_AUTOCOMPLETE_WITH_LIKE)
+  Flux<PredictiveSearchResultDto> findByRelatedClientWithLike(
+      String mainClientNumber, String relationType, String value, int limit, long offset);
+
+  @Query(ForestClientQueries.RELATED_CLIENT_AUTOCOMPLETE_COUNT_WITH_LIKE)
+  Mono<Long> countByRelatedClientWithLike(String mainClientNumber, String relationType, String value);
+
+  @Query(ForestClientQueries.RELATED_CLIENT_AUTOCOMPLETE_WITH_SIMILARITY)
+  Flux<PredictiveSearchResultDto> findByRelatedClientWithSimilarity(
+      String mainClientNumber, String relationType, String value, int limit, long offset);
+
+  @Query(ForestClientQueries.RELATED_CLIENT_AUTOCOMPLETE_COUNT_WITH_SIMILARITY)
+  Mono<Long> countByRelatedClientWithSimilarity(String mainClientNumber, String relationType, String value);
   
 }

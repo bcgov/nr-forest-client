@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import static ca.bc.gov.app.ApplicationConstant.MDC_USERID;
+import static ca.bc.gov.app.ApplicationConstant.REQUEST_LEGACY;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
@@ -98,6 +99,8 @@ public class ClientLegacyService {
                     .build(Map.of())
             )
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "registrationOrNameSearch")
             .doOnNext(
                 dto -> log.info(
                     "Found Legacy data for {} and company name {} in legacy with client number {}",
@@ -122,6 +125,8 @@ public class ClientLegacyService {
             .get()
             .uri("/api/search/clientNumber/{clientNumber}", clientNumber)
             .exchangeToMono(response -> response.bodyToMono(ForestClientDetailsDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "clientNumberSearch")
             .doOnNext(
                 dto -> log.info(
                     "Found Legacy data for in legacy with client number {}",
@@ -161,6 +166,8 @@ public class ClientLegacyService {
             )
             // Convert the response to a Flux of ForestClientDto objects
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "idAndLastNameSearch")
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
@@ -209,6 +216,8 @@ public class ClientLegacyService {
             )
             // Convert the response to a Flux of ForestClientDto objects
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "individualSearch")
             // Log the results for debugging purposes
             .doOnNext(dto ->
                 log.info(
@@ -245,6 +254,8 @@ public class ClientLegacyService {
             .uri("/api/search/id/{idType}/{identification}", idType, identification)
             // Convert the response to a Flux of ForestClientDto objects
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "idTypeIdentificationSearch")
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
@@ -283,6 +294,8 @@ public class ClientLegacyService {
                 clientTypeCode,
                 actionCode)
             .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "updateReasonsCodes")
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
@@ -354,6 +367,8 @@ public class ClientLegacyService {
             )
             // Convert the response to a Flux of ForestClientDto objects
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "searchGeneric" + searchType)
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
@@ -379,6 +394,8 @@ public class ClientLegacyService {
             .uri("/api/search/address")
             .body(BodyInserters.fromValue(dto))
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "addressSearch")
             .doOnNext(
                 client -> log.info("Found Legacy data for location search with client number {}",
                     client.clientNumber())
@@ -398,6 +415,8 @@ public class ClientLegacyService {
             .uri("/api/search/contact")
             .body(BodyInserters.fromValue(dto))
             .exchangeToFlux(response -> response.bodyToFlux(ForestClientDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "contactSearch")
             .doOnNext(
                 client -> log.info("Found Legacy data for contact search with client number {}",
                     client.clientNumber())
@@ -439,6 +458,8 @@ public class ClientLegacyService {
               .bodyToFlux(ClientListDto.class)
               .map(dto -> Pair.of(dto, count));
         })
+        .name(REQUEST_LEGACY)
+        .tag("kind", "searchByKeyword")
         .doOnNext(pair -> {
           ClientListDto dto = pair.getFirst();
           Long totalCount = pair.getSecond();
@@ -459,6 +480,8 @@ public class ClientLegacyService {
             .get()
             .uri("/api/codes/client-statuses")
             .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "clientStatusActiveCodes")
             .doOnNext(
                 dto -> log.info(
                     "Found active client statuses in legacy"
@@ -484,6 +507,8 @@ public class ClientLegacyService {
         .get()
         .uri("/api/codes/client-statuses")
         .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+        .name(REQUEST_LEGACY)
+        .tag("kind", "clientStatusValidCodes")
         .filter(dto -> isValidClientStatus(dto, clientTypeCode, groups))
         .doOnNext(dto -> log.info("Filtered active client status: {}", dto));
   }
@@ -515,7 +540,9 @@ public class ClientLegacyService {
           } else {
             return response.createError();
           }
-        });
+        })
+        .name(REQUEST_LEGACY)
+        .tag("kind", "patchClient");
   }
 
   /**
@@ -531,6 +558,8 @@ public class ClientLegacyService {
             .get()
             .uri("/api/codes/registry-types")
             .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "registryTypeCodes")
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
@@ -565,6 +594,8 @@ public class ClientLegacyService {
 	                .bodyToFlux(HistoryLogDto.class)
 	                .map(dto -> Pair.of(dto, count));
 	         })
+          .name(REQUEST_LEGACY)
+          .tag("kind", "historyLog")
 	        .doOnNext(
 	            dto -> log.info(
 	                "Found audit data in legacy system for client number {}", clientNumber
@@ -580,6 +611,8 @@ public class ClientLegacyService {
             .get()
             .uri("/api/codes/registry-types/{clientTypeCode}", clientTypeCode)
             .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "registryTypeCodes")
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
@@ -590,13 +623,15 @@ public class ClientLegacyService {
   }
 
   public Flux<CodeNameDto> findActiveClientTypeCodes() {
-    log.info("Searching for active client types in legacy {}");
+    log.info("Searching for active client types in legacy");
 
     return
         legacyApi
             .get()
             .uri("/api/codes/client-types")
             .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "clientTypeCodes")
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
@@ -606,13 +641,15 @@ public class ClientLegacyService {
   }
 
   public Flux<CodeNameDto> findActiveIdentificationTypeCodes() {
-    log.info("Searching for active client ID types in legacy {}");
+    log.info("Searching for active client ID types in legacy");
 
     return
         legacyApi
             .get()
             .uri("/api/codes/client-id-types")
             .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "clientIdTypeCodes")
             // Log the results for debugging purposes
             .doOnNext(
                 dto -> log.info(
@@ -629,6 +666,8 @@ public class ClientLegacyService {
             .get()
             .uri("/api/clients/{clientNumber}/related-clients", clientNumber)
             .exchangeToFlux(response -> response.bodyToFlux(ClientRelatedProjection.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "relatedClientList")
             .map(legacyProjection -> new RelatedClientEntryDto(
                     new RelatedClientDto(
                         new CodeNameDto(
@@ -673,6 +712,26 @@ public class ClientLegacyService {
             );
   }
 
+  public Flux<ClientListDto> searchRelatedClients(
+      String clientNumber,
+      String type,
+      String value
+  ) {
+    return
+        legacyApi
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/search/relation/{clientNumber}")
+                    .queryParamIfPresent("type", Optional.ofNullable(type))
+                    .queryParam("value", value)
+                    .build(clientNumber)
+            )
+            .exchangeToFlux(response -> response.bodyToFlux(ClientListDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "relationAutoCompleteSearch");
+  }
+
   private boolean isValidClientStatus(CodeNameDto dto, String clientTypeCode, Set<String> groups) {
     if (groups.contains(ApplicationConstant.ROLE_ADMIN)) {
       return getAdminStatuses(clientTypeCode).contains(dto.code());
@@ -699,6 +758,5 @@ public class ClientLegacyService {
   private Set<String> getSuspendStatuses() {
     return Set.of("ACT", "SPN", "REC");
   }
-
 
 }

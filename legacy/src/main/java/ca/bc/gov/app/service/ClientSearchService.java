@@ -583,6 +583,58 @@ public class ClientSearchService {
         .map(forestClientMapper::toDto);
   }
 
+  public Flux<Pair<PredictiveSearchResultDto, Long>> searchByRelation(
+      String clientNumber,
+      String type,
+      String value
+  ) {
+    if (StringUtils.isBlank(value)) {
+      return Flux.error(new MissingRequiredParameterException("value"));
+    }
+
+    return forestClientRepository.countByRelatedClientWithLike(
+            clientNumber,
+            Optional.ofNullable(type).map(String::toUpperCase).orElse("NOVALUE"),
+            value.toUpperCase(Locale.ROOT)
+        )
+        .flatMapMany(count -> {
+          if (count > 0) {
+            return forestClientRepository
+                .findByRelatedClientWithLike(
+                    clientNumber,
+                    Optional.ofNullable(type).map(String::toUpperCase).orElse("NOVALUE"),
+                    value.toUpperCase(Locale.ROOT),
+                    //Why having pagination if hardcoded? We can add pagination if required
+                    10, 0
+                )
+                .doOnNext(dto -> log.info(
+                    "Performed related client search with like for value {} as {} {} with score {}",
+                    value, dto.clientNumber(), dto.clientFullName(), dto.score())
+                )
+                .map(dto -> Pair.of(dto, count));
+          } else {
+            return forestClientRepository
+                .countByRelatedClientWithSimilarity(
+                    clientNumber,
+                    Optional.ofNullable(type).map(String::toUpperCase).orElse("NOVALUE"),
+                    value.toUpperCase(Locale.ROOT)
+                )
+                .flatMapMany(similarityCount -> forestClientRepository
+                    .findByRelatedClientWithSimilarity(
+                        clientNumber,
+                        Optional.ofNullable(type).map(String::toUpperCase).orElse("NOVALUE"),
+                        value.toUpperCase(Locale.ROOT),
+                        //Why having pagination if hardcoded? We can add pagination if required
+                        10, 0
+                    )
+                    .doOnNext(dto -> log.info(
+                        "Performed related client search with similarity for value {} as {} {} with score {}",
+                        value, dto.clientNumber(), dto.clientFullName(), dto.score()))
+                    .map(dto -> Pair.of(dto, similarityCount)));
+          }
+        });
+  }
+
   /**
    * This method is used to search for clients based on a given query criteria, page number, and
    * page size. It first creates a query based on the provided query criteria. Then, it counts the

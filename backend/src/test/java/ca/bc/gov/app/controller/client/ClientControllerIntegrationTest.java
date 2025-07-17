@@ -23,6 +23,7 @@ import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -543,6 +544,57 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
   }
 
+  @ParameterizedTest
+  @MethodSource("relatedSearch")
+  @DisplayName("Search related clients")
+  void shouldSearchAutocompleteRelatedClients(
+      String clientNumber,
+      String type,
+      String value,
+      Long expectedSize
+  ) {
+
+    String legacyResponse = expectedSize > 0 ? "[{\"clientNumber\":\"" + clientNumber + "\"}]" : "[]";
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/search/relation/" + clientNumber))
+                .withQueryParam("value", equalTo(value))
+                .willReturn(okJson(legacyResponse))
+        );
+
+
+    var bodyExpectation =
+        client
+            .mutateWith(csrf())
+            .mutateWith(
+                mockJwt()
+                    .jwt(jwt -> jwt.claims(
+                        claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                    .authorities(new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR))
+            )
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/clients/relation/{clientNumber}")
+                    .queryParamIfPresent("type", Optional.ofNullable(type))
+                    .queryParam("value", value)
+                    .build(clientNumber)
+            )
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody();
+
+    if (expectedSize == 0) {
+      bodyExpectation.json("[]");
+    } else {
+      bodyExpectation
+          .jsonPath("$").isArray()
+          .jsonPath("$.length()").isEqualTo(expectedSize);
+    }
+  }
+
   private static Stream<Arguments> clientDetailing() {
     return
         Stream.of(
@@ -726,6 +778,40 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 "00000003",
                 Map.of("00", 1L, "01", 1L),
                 "[{\"clientLocnCode\": \"00\",\"primaryClient\": false},{\"clientLocnCode\": \"01\",\"primaryClient\": true}]"
+            )
+        );
+  }
+
+  private static Stream<Arguments> relatedSearch() {
+    return
+        Stream.of(
+            argumentSet(
+                "Search by group, with no type for OAK HERITAGE GROUP",
+                "00000158",
+                null,
+                "group",
+                1L
+            ),
+            argumentSet(
+                "James Hunt looking for other James",
+                "00000009",
+                null,
+                "james",
+                1L
+            ),
+            argumentSet(
+                "James Hunt looking for other FM James",
+                "00000009",
+                "FM",
+                "james",
+                1L
+            ),
+            argumentSet(
+                "James Hunt looking for other FM James with no results",
+                "00000009",
+                "FM",
+                "james hunt hunt",
+                0L
             )
         );
   }

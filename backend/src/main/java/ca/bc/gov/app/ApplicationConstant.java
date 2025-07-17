@@ -139,5 +139,7 @@ public final class ApplicationConstant {
   public static final String MDC_USERROLES = "X-Role";
   public static final String FIRST_NAME = "firstName";
   public static final String LAST_NAME = "lastName";
+  public static final String REQUEST_BCREGISTRY = "request.bcregistry";
+  public static final String REQUEST_LEGACY = "request.legacy";
 }
 

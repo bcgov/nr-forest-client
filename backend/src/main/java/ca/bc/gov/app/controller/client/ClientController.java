@@ -189,4 +189,31 @@ public class ClientController {
     return clientService.findByIndividual(userId, lastName);
   }
 
+  /**
+   * Searches for related clients based on a specific relation type and value.
+   *
+   * <p>This endpoint allows searching for related clients by providing a client number,
+   * relation type, and search term. It returns a Flux with the result list.
+   *
+   * @param clientNumber the client number of the current client. This will be used to filter out
+   *                     the main client out of the results, and in case type is also provided, it
+   *                     will help to filter results that only matches that possible combination.
+   * @param type         the type of relation. Used to filter results that only matches that
+   *                     possible type of relationship.
+   * @param value        the search term to filter related clients, can be client name, number or
+   *                     other values.
+   * @return  a {@link Flux} emitting {@link ClientListDto} objects containing the search results
+   */
+  @GetMapping("/relation/{clientNumber}")
+  public Flux<ClientListDto> searchRelatedClients(
+      @PathVariable String clientNumber,
+      @RequestParam(required = false) String type,
+      @RequestParam(required = false) String value
+  ) {
+    log.info(
+        "Searching related clients with relation type {} search term {} and excluding client {}",
+        type, value, clientNumber);
+    return clientLegacyService.searchRelatedClients(clientNumber, type, value);
+  }
+
 }

@@ -6,12 +6,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ForestClientQueries {
 
+  public static final String ORACLE_PAGINATION = " OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY";
+  public static final String ORDER_BY_SCORE_DESC = " ORDER BY SCORE DESC ";
+  public static final String SELECT_COUNT_C_CLIENT_NUMBER = "SELECT COUNT(C.CLIENT_NUMBER) ";
+
   public static final String CLIENT_INFORMATION_HISTORY = """
       WITH BASE_DATA AS (
         SELECT
             AL.FOREST_CLIENT_AUDIT_ID AS IDX,
             AL.CLIENT_NUMBER,
-            CASE 
+            CASE
                 WHEN AL.LEGAL_FIRST_NAME IS NOT NULL AND AL.LEGAL_MIDDLE_NAME IS NOT NULL THEN
                     AL.LEGAL_FIRST_NAME || ' ' || AL.LEGAL_MIDDLE_NAME || ' ' || AL.CLIENT_NAME
                 WHEN AL.LEGAL_FIRST_NAME IS NOT NULL THEN
@@ -179,40 +183,40 @@ public final class ForestClientQueries {
                 ELSE PC.PROVINCE_STATE_NAME
             END AS PROVINCE_DESC,
             AL.COUNTRY AS COUNTRY_DESC,
-            CASE 
-              WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA') 
-                THEN AL.POSTAL_CODE 
-              ELSE NULL 
+            CASE
+              WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
+                THEN AL.POSTAL_CODE
+              ELSE NULL
             END AS ZIP_CODE,
 
-            CASE 
-              WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA') 
-                THEN NULL 
-              ELSE AL.POSTAL_CODE 
+            CASE
+              WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
+                THEN NULL
+              ELSE AL.POSTAL_CODE
             END AS POSTAL_CODE,
             AL.EMAIL_ADDRESS,
-            CASE 
+            CASE
               WHEN LENGTH(AL.BUSINESS_PHONE) = 10 AND REGEXP_LIKE(AL.BUSINESS_PHONE, '^\\d{10}$') THEN
                 '(' || SUBSTR(AL.BUSINESS_PHONE, 1, 3) || ') ' ||
                 SUBSTR(AL.BUSINESS_PHONE, 4, 3) || '-' ||
                 SUBSTR(AL.BUSINESS_PHONE, 7, 4)
               ELSE AL.BUSINESS_PHONE
             END AS BUSINESS_PHONE,
-            CASE 
+            CASE
                 WHEN LENGTH(AL.CELL_PHONE) = 10 AND REGEXP_LIKE(AL.CELL_PHONE, '^\\d{10}$') THEN
                   '(' || SUBSTR(AL.CELL_PHONE, 1, 3) || ') ' ||
                   SUBSTR(AL.CELL_PHONE, 4, 3) || '-' ||
                   SUBSTR(AL.CELL_PHONE, 7, 4)
                 ELSE AL.CELL_PHONE
             END AS CELL_PHONE,
-            CASE 
+            CASE
                 WHEN LENGTH(AL.HOME_PHONE) = 10 AND REGEXP_LIKE(AL.HOME_PHONE, '^\\d{10}$') THEN
                   '(' || SUBSTR(AL.HOME_PHONE, 1, 3) || ') ' ||
                   SUBSTR(AL.HOME_PHONE, 4, 3) || '-' ||
                   SUBSTR(AL.HOME_PHONE, 7, 4)
                 ELSE AL.HOME_PHONE
             END AS HOME_PHONE,
-            CASE 
+            CASE
                 WHEN LENGTH(AL.FAX_NUMBER) = 10 AND REGEXP_LIKE(AL.FAX_NUMBER, '^\\d{10}$') THEN
                   '(' || SUBSTR(AL.FAX_NUMBER, 1, 3) || ') ' ||
                   SUBSTR(AL.FAX_NUMBER, 4, 3) || '-' ||
@@ -243,13 +247,13 @@ public final class ForestClientQueries {
               'ClientLocation' AS TABLE_NAME,
               B.IDX,
               CASE
-                  WHEN B.CHANGE_TYPE = 'INS' THEN 
-                      CASE 
+                  WHEN B.CHANGE_TYPE = 'INS' THEN
+                      CASE
                           WHEN B.CLIENT_LOCN_NAME IS NOT NULL THEN 'Location "' || B.CLIENT_LOCN_CODE || ' - ' || B.CLIENT_LOCN_NAME || '" added'
                           ELSE 'Location "' || B.CLIENT_LOCN_CODE || '" added'
                       END
-                  WHEN B.CHANGE_TYPE = 'UPD' THEN 
-                      CASE 
+                  WHEN B.CHANGE_TYPE = 'UPD' THEN
+                      CASE
                           WHEN B.CLIENT_LOCN_NAME IS NOT NULL THEN 'Location "' || B.CLIENT_LOCN_CODE || ' - ' || B.CLIENT_LOCN_NAME || '" updated'
                           ELSE 'Location "' || B.CLIENT_LOCN_CODE || '" updated'
                       END
@@ -373,21 +377,21 @@ public final class ForestClientQueries {
               AL.CLIENT_CONTACT_ID,
               AL.CLIENT_AUDIT_CODE,
               AL.CONTACT_NAME,
-              CASE 
+              CASE
                 WHEN LENGTH(AL.BUSINESS_PHONE) = 10 AND REGEXP_LIKE(AL.BUSINESS_PHONE, '^\\d{10}$') THEN
                   '(' || SUBSTR(AL.BUSINESS_PHONE, 1, 3) || ') ' ||
                   SUBSTR(AL.BUSINESS_PHONE, 4, 3) || '-' ||
                   SUBSTR(AL.BUSINESS_PHONE, 7, 4)
                 ELSE AL.BUSINESS_PHONE
               END AS BUSINESS_PHONE,
-              CASE 
+              CASE
                 WHEN LENGTH(AL.CELL_PHONE) = 10 AND REGEXP_LIKE(AL.CELL_PHONE, '^\\d{10}$') THEN
                   '(' || SUBSTR(AL.CELL_PHONE, 1, 3) || ') ' ||
                   SUBSTR(AL.CELL_PHONE, 4, 3) || '-' ||
                   SUBSTR(AL.CELL_PHONE, 7, 4)
                 ELSE AL.CELL_PHONE
               END AS CELL_PHONE,
-              CASE 
+              CASE
                 WHEN LENGTH(AL.FAX_NUMBER) = 10 AND REGEXP_LIKE(AL.FAX_NUMBER, '^\\d{10}$') THEN
                   '(' || SUBSTR(AL.FAX_NUMBER, 1, 3) || ') ' ||
                   SUBSTR(AL.FAX_NUMBER, 4, 3) || '-' ||
@@ -395,7 +399,7 @@ public final class ForestClientQueries {
                 ELSE AL.FAX_NUMBER
               END AS FAX_NUMBER,
               AL.EMAIL_ADDRESS,
-              CASE 
+              CASE
                 WHEN CL.CLIENT_LOCN_NAME IS NOT NULL THEN AL.CLIENT_LOCN_CODE || ' - ' || CL.CLIENT_LOCN_NAME 
                     ELSE AL.CLIENT_LOCN_CODE
               END AS ASSOCIATED_LOCATION,
@@ -536,8 +540,8 @@ public final class ForestClientQueries {
           A.IDX,
           A.IDENTIFIER_LABEL,
           A.COLUMN_NAME,
-          CASE 
-              WHEN A.CHANGE_TYPE <> 'DEL' THEN A.OLD_VALUE 
+          CASE
+              WHEN A.CHANGE_TYPE <> 'DEL' THEN A.OLD_VALUE
               ELSE null
           END AS OLD_VALUE,
           A.NEW_VALUE,
@@ -552,7 +556,7 @@ public final class ForestClientQueries {
           (OLD_VALUE IS NOT NULL AND NEW_VALUE IS NULL) OR
           (TRIM(OLD_VALUE) <> TRIM(NEW_VALUE))
       )
-      ORDER BY A.IDX DESC, A.FIELD_ORDER ASC   
+      ORDER BY A.IDX DESC, A.FIELD_ORDER ASC
       """;
   
   public static final String RELATED_CLIENT_HISTORY = """
@@ -739,7 +743,7 @@ public final class ForestClientQueries {
           INNER JOIN THE.CLIENT_TYPE_CODE T ON C.CLIENT_TYPE_CODE = T.CLIENT_TYPE_CODE
           LEFT JOIN THE.CLIENT_ID_TYPE_CODE IT ON C.CLIENT_ID_TYPE_CODE = IT.CLIENT_ID_TYPE_CODE
           LEFT JOIN (
-              SELECT        
+              SELECT
                   CLIENT_NUMBER,
                   UPDATE_USERID,
                   UPDATE_TIMESTAMP
@@ -768,7 +772,7 @@ public final class ForestClientQueries {
       WHERE C.CLIENT_NUMBER = :clientNumber
       """;
 
-  public static final String FIND_BY_PREDICTIVE_SEARCH_WITH_LIKE = """
+  public static final String FIND_BY_PREDICTIVE_SEARCH_SELECT = """
       SELECT
           C.CLIENT_NUMBER,
           C.CLIENT_ACRONYM AS CLIENT_ACRONYM,
@@ -779,175 +783,117 @@ public final class ForestClientQueries {
           C.LEGAL_MIDDLE_NAME AS CLIENT_MIDDLE_NAME,
           CL.CITY AS CITY,
           CTC.DESCRIPTION AS CLIENT_TYPE,
-          CSC.DESCRIPTION AS CLIENT_STATUS,
-          (
-              CASE
-                  WHEN UPPER(C.CLIENT_NUMBER) LIKE UPPER('%' || :value || '%') THEN 100
-                  WHEN UPPER(C.CLIENT_ACRONYM) LIKE UPPER('%' || :value || '%') THEN 100
-                  WHEN UPPER(C.CLIENT_NAME) LIKE UPPER('%' || :value || '%') THEN 100
-                  WHEN UPPER(C.LEGAL_FIRST_NAME) LIKE UPPER('%' || :value || '%') THEN 90
-                  WHEN UPPER(C.LEGAL_MIDDLE_NAME) LIKE UPPER('%' || :value || '%') THEN 50
-                  WHEN UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE UPPER('%' || :value || '%') THEN 75
-                  WHEN UPPER(C.CLIENT_IDENTIFICATION) LIKE UPPER('%' || :value || '%') THEN 70
-                  WHEN UPPER(TRIM(
-                      COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
-                      COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
-                      COALESCE(C.CLIENT_NAME, '')
-                  )) LIKE UPPER('%' || :value || '%') THEN 90
-                  WHEN UPPER(TRIM(
-                      COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
-                      COALESCE(C.CLIENT_NAME, '')
-                  )) LIKE UPPER('%' || :value || '%') THEN 90
-                  WHEN UPPER(TRIM(
-                      COALESCE(C.CLIENT_NAME, '') || ' ' ||
-                      COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
-                      COALESCE(C.LEGAL_FIRST_NAME, '')
-                  )) LIKE UPPER('%' || :value || '%') THEN 50
-                  WHEN UPPER(TRIM(
-                      COALESCE(C.CLIENT_NAME, '') || ' ' ||
-                      COALESCE(C.LEGAL_FIRST_NAME, '')
-                  )) LIKE UPPER('%' || :value || '%') THEN 50
-                  WHEN UPPER(TRIM(
-                      COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') ||
-                      COALESCE(C.CORP_REGN_NMBR, '')
-                  )) LIKE UPPER('%' || :value || '%') THEN 70
-                  WHEN UPPER(TRIM(
-                      COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
-                      COALESCE(C.CORP_REGN_NMBR, '')
-                  )) LIKE UPPER('%' || :value || '%') THEN 40
-                  WHEN UPPER(CL.ADDRESS_1) LIKE UPPER('%' || :value || '%') THEN 50
-                  WHEN UPPER(CL.POSTAL_CODE) LIKE UPPER('%' || :value || '%') THEN 45
-                  WHEN UPPER(CL.EMAIL_ADDRESS) LIKE UPPER('%' || :value || '%') THEN 40
-                  ELSE 0
-              END
-          ) AS SCORE
-      FROM THE.FOREST_CLIENT C
-      LEFT JOIN THE.CLIENT_DOING_BUSINESS_AS DBA ON C.CLIENT_NUMBER = DBA.CLIENT_NUMBER
-      LEFT JOIN THE.CLIENT_TYPE_CODE CTC ON C.CLIENT_TYPE_CODE = CTC.CLIENT_TYPE_CODE
-      LEFT JOIN THE.CLIENT_LOCATION CL ON C.CLIENT_NUMBER = CL.CLIENT_NUMBER
-      LEFT JOIN THE.CLIENT_STATUS_CODE CSC ON C.CLIENT_STATUS_CODE = CSC.CLIENT_STATUS_CODE
-      WHERE
-          (
-              UPPER(C.CLIENT_NUMBER) LIKE UPPER('%' || :value || '%')
-              OR UPPER(C.CLIENT_ACRONYM) LIKE UPPER('%' || :value || '%')
-              OR UPPER(C.CLIENT_NAME) LIKE UPPER('%' || :value || '%')
-              OR UPPER(C.LEGAL_FIRST_NAME) LIKE UPPER('%' || :value || '%')
-              OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE UPPER('%' || :value || '%')
-              OR UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE UPPER('%' || :value || '%')
-              OR UPPER(C.CLIENT_IDENTIFICATION) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
+          CSC.DESCRIPTION AS CLIENT_STATUS,""";
+
+  public static final String FIND_BY_PREDICTIVE_SEARCH_SCORE_LIKE = """
+      (
+          CASE
+              WHEN UPPER(C.CLIENT_NUMBER) LIKE UPPER('%' || :value || '%') THEN 100
+              WHEN UPPER(C.CLIENT_ACRONYM) LIKE UPPER('%' || :value || '%') THEN 100
+              WHEN UPPER(C.CLIENT_NAME) LIKE UPPER('%' || :value || '%') THEN 100
+              WHEN UPPER(C.LEGAL_FIRST_NAME) LIKE UPPER('%' || :value || '%') THEN 90
+              WHEN UPPER(C.LEGAL_MIDDLE_NAME) LIKE UPPER('%' || :value || '%') THEN 50
+              WHEN UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE UPPER('%' || :value || '%') THEN 75
+              WHEN UPPER(C.CLIENT_IDENTIFICATION) LIKE UPPER('%' || :value || '%') THEN 70
+              WHEN UPPER(TRIM(
                   COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
                   COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
                   COALESCE(C.CLIENT_NAME, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
+              )) LIKE UPPER('%' || :value || '%') THEN 90
+              WHEN UPPER(TRIM(
                   COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
                   COALESCE(C.CLIENT_NAME, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
+              )) LIKE UPPER('%' || :value || '%') THEN 90
+              WHEN UPPER(TRIM(
                   COALESCE(C.CLIENT_NAME, '') || ' ' ||
                   COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
                   COALESCE(C.LEGAL_FIRST_NAME, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
+              )) LIKE UPPER('%' || :value || '%') THEN 50
+              WHEN UPPER(TRIM(
                   COALESCE(C.CLIENT_NAME, '') || ' ' ||
                   COALESCE(C.LEGAL_FIRST_NAME, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
+              )) LIKE UPPER('%' || :value || '%') THEN 50
+              WHEN UPPER(TRIM(
                   COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') ||
                   COALESCE(C.CORP_REGN_NMBR, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
-                      COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
-                      COALESCE(C.CORP_REGN_NMBR, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(CL.ADDRESS_1) LIKE UPPER('%' || :value || '%')
-              OR UPPER(CL.POSTAL_CODE) LIKE UPPER('%' || :value || '%')
-              OR UPPER(CL.EMAIL_ADDRESS) LIKE UPPER('%' || :value || '%')
-          )
-          AND CL.CLIENT_LOCN_CODE = '00'
-      ORDER BY SCORE DESC
-      OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY
+              )) LIKE UPPER('%' || :value || '%') THEN 70
+              WHEN UPPER(TRIM(
+                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
+                  COALESCE(C.CORP_REGN_NMBR, '')
+              )) LIKE UPPER('%' || :value || '%') THEN 40
+              WHEN UPPER(CL.ADDRESS_1) LIKE UPPER('%' || :value || '%') THEN 50
+              WHEN UPPER(CL.POSTAL_CODE) LIKE UPPER('%' || :value || '%') THEN 45
+              WHEN UPPER(CL.EMAIL_ADDRESS) LIKE UPPER('%' || :value || '%') THEN 40
+              ELSE 0
+          END
+      ) AS SCORE
       """;
 
-  public static final String COUNT_BY_PREDICTIVE_SEARCH_WITH_LIKE = """
-      SELECT
-          COUNT(C.CLIENT_NUMBER)
+  public static final String FIND_BY_PREDICTIVE_SEARCH_SCORE_SIMILARITY = """
+      (
+          CASE WHEN C.CLIENT_NUMBER = :value THEN 112 ELSE 0 END +
+          CASE WHEN C.CLIENT_ACRONYM = :value THEN 111 ELSE 0 END +
+          (UTL_MATCH.JARO_WINKLER_SIMILARITY(
+              C.CLIENT_NAME || ' ' || C.LEGAL_FIRST_NAME, :value
+          ) + 10) +
+          (UTL_MATCH.JARO_WINKLER_SIMILARITY(DBA.DOING_BUSINESS_AS_NAME, :value) + 7) +
+          CASE WHEN C.CLIENT_IDENTIFICATION = :value THEN 106 ELSE 0 END +
+          UTL_MATCH.JARO_WINKLER_SIMILARITY(C.LEGAL_MIDDLE_NAME, :value)
+      ) AS SCORE
+      """;
+
+  public static final String FIND_BY_PREDICTIVE_SEARCH_FROM = """
       FROM THE.FOREST_CLIENT C
       LEFT JOIN THE.CLIENT_DOING_BUSINESS_AS DBA ON C.CLIENT_NUMBER = DBA.CLIENT_NUMBER
       LEFT JOIN THE.CLIENT_TYPE_CODE CTC ON C.CLIENT_TYPE_CODE = CTC.CLIENT_TYPE_CODE
       LEFT JOIN THE.CLIENT_LOCATION CL ON C.CLIENT_NUMBER = CL.CLIENT_NUMBER
       LEFT JOIN THE.CLIENT_STATUS_CODE CSC ON C.CLIENT_STATUS_CODE = CSC.CLIENT_STATUS_CODE
-      WHERE
-          (
-              UPPER(C.CLIENT_NUMBER) LIKE UPPER('%' || :value || '%')
-              OR UPPER(C.CLIENT_ACRONYM) LIKE UPPER('%' || :value || '%')
-              OR UPPER(C.CLIENT_NAME) LIKE UPPER('%' || :value || '%')
-              OR UPPER(C.LEGAL_FIRST_NAME) LIKE UPPER('%' || :value || '%')
-              OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE UPPER('%' || :value || '%')
-              OR UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE UPPER('%' || :value || '%')
-              OR UPPER(C.CLIENT_IDENTIFICATION) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
-                  COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
-                  COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
-                  COALESCE(C.CLIENT_NAME, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
-                  COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
-                  COALESCE(C.CLIENT_NAME, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
-                  COALESCE(C.CLIENT_NAME, '') || ' ' ||
-                  COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
-                  COALESCE(C.LEGAL_FIRST_NAME, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
-                  COALESCE(C.CLIENT_NAME, '') || ' ' ||
-                  COALESCE(C.LEGAL_FIRST_NAME, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
-                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') ||
+      """;
+
+  public static final String FIND_BY_PREDICTIVE_SEARCH_LIKE = """
+      WHERE (
+          UPPER(C.CLIENT_NUMBER) LIKE '%' || :value || '%'
+          OR UPPER(C.CLIENT_ACRONYM) LIKE '%' || :value || '%'
+          OR UPPER(C.CLIENT_NAME) LIKE '%' || :value || '%'
+          OR UPPER(C.LEGAL_FIRST_NAME) LIKE '%' || :value || '%'
+          OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE '%' || :value || '%'
+          OR UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE '%' || :value || '%'
+          OR UPPER(C.CLIENT_IDENTIFICATION) LIKE '%' || :value || '%'
+          OR UPPER(TRIM(
+              COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+              COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
+              COALESCE(C.CLIENT_NAME, '')
+          )) LIKE '%' || :value || '%'
+          OR UPPER(TRIM(
+              COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+              COALESCE(C.CLIENT_NAME, '')
+          )) LIKE '%' || :value || '%'
+          OR UPPER(TRIM(
+              COALESCE(C.CLIENT_NAME, '') || ' ' ||
+              COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
+              COALESCE(C.LEGAL_FIRST_NAME, '')
+          )) LIKE '%' || :value || '%'
+          OR UPPER(TRIM(
+              COALESCE(C.CLIENT_NAME, '') || ' ' ||
+              COALESCE(C.LEGAL_FIRST_NAME, '')
+          )) LIKE '%' || :value || '%'
+          OR UPPER(TRIM(
+              COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') ||
+              COALESCE(C.CORP_REGN_NMBR, '')
+          )) LIKE '%' || :value || '%'
+          OR UPPER(TRIM(
+                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
                   COALESCE(C.CORP_REGN_NMBR, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(TRIM(
-                      COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
-                      COALESCE(C.CORP_REGN_NMBR, '')
-              )) LIKE UPPER('%' || :value || '%')
-              OR UPPER(CL.ADDRESS_1) LIKE UPPER('%' || :value || '%')
-              OR UPPER(CL.POSTAL_CODE) LIKE UPPER('%' || :value || '%')
-              OR UPPER(CL.EMAIL_ADDRESS) LIKE UPPER('%' || :value || '%')
-          )
+          )) LIKE '%' || :value || '%'
+          OR UPPER(CL.ADDRESS_1) LIKE '%' || :value || '%'
+          OR UPPER(CL.POSTAL_CODE) LIKE '%' || :value || '%'
+          OR UPPER(CL.EMAIL_ADDRESS) LIKE '%' || :value || '%'
+      )
       AND CL.CLIENT_LOCN_CODE = '00'
       """;
 
-  public static final String FIND_BY_PREDICTIVE_SEARCH_WITH_SIMILARITY = """
-      SELECT
-        C.CLIENT_NUMBER,
-        C.CLIENT_ACRONYM AS CLIENT_ACRONYM,
-        C.CLIENT_NAME,
-        C.LEGAL_FIRST_NAME AS CLIENT_FIRST_NAME,
-        DBA.DOING_BUSINESS_AS_NAME AS DOING_BUSINESS_AS,
-        C.CLIENT_IDENTIFICATION,
-        C.LEGAL_MIDDLE_NAME AS CLIENT_MIDDLE_NAME,
-        CL.CITY AS CITY,
-        CTC.DESCRIPTION AS CLIENT_TYPE,
-        CSC.DESCRIPTION AS CLIENT_STATUS,
-        (
-            CASE WHEN C.CLIENT_NUMBER = :value THEN 112 ELSE 0 END +
-            CASE WHEN C.CLIENT_ACRONYM = :value THEN 111 ELSE 0 END +
-            (UTL_MATCH.JARO_WINKLER_SIMILARITY(
-                C.CLIENT_NAME || ' ' || C.LEGAL_FIRST_NAME, :value
-            ) + 10) +
-            (UTL_MATCH.JARO_WINKLER_SIMILARITY(DBA.DOING_BUSINESS_AS_NAME, :value) + 7) +
-            CASE WHEN C.CLIENT_IDENTIFICATION = :value THEN 106 ELSE 0 END +
-            UTL_MATCH.JARO_WINKLER_SIMILARITY(C.LEGAL_MIDDLE_NAME, :value)
-        ) AS SCORE
-    FROM THE.FOREST_CLIENT C
-    LEFT JOIN THE.CLIENT_DOING_BUSINESS_AS DBA ON C.CLIENT_NUMBER = DBA.CLIENT_NUMBER
-    LEFT JOIN THE.CLIENT_TYPE_CODE CTC ON C.CLIENT_TYPE_CODE = CTC.CLIENT_TYPE_CODE
-    LEFT JOIN THE.CLIENT_LOCATION CL ON C.CLIENT_NUMBER = CL.CLIENT_NUMBER
-    LEFT JOIN THE.CLIENT_STATUS_CODE CSC ON C.CLIENT_STATUS_CODE = CSC.CLIENT_STATUS_CODE
-    WHERE
+  public static final String FIND_BY_PREDICTIVE_SEARCH_SIMILARITY = """
+      WHERE
         (
             C.CLIENT_NUMBER = :value
             OR C.CLIENT_ACRONYM = :value
@@ -991,63 +937,33 @@ public final class ForestClientQueries {
             )
         )
         AND CL.CLIENT_LOCN_CODE = '00'
-    ORDER BY SCORE DESC
-    OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY
-    """;
+        """;
 
-  public static final String COUNT_BY_PREDICTIVE_SEARCH_WITH_SIMILARITY = """
-      SELECT
-          COUNT(C.CLIENT_NUMBER)
-      FROM THE.FOREST_CLIENT C
-      LEFT JOIN THE.CLIENT_DOING_BUSINESS_AS DBA ON C.CLIENT_NUMBER = DBA.CLIENT_NUMBER
-      LEFT JOIN THE.CLIENT_TYPE_CODE CTC ON C.CLIENT_TYPE_CODE = CTC.CLIENT_TYPE_CODE
-      LEFT JOIN THE.CLIENT_LOCATION CL ON C.CLIENT_NUMBER = CL.CLIENT_NUMBER
-      LEFT JOIN THE.CLIENT_STATUS_CODE CSC ON C.CLIENT_STATUS_CODE = CSC.CLIENT_STATUS_CODE
-      WHERE
-          (
-              C.CLIENT_NUMBER = :value
-              OR C.CLIENT_ACRONYM = :value
-              OR UTL_MATCH.JARO_WINKLER_SIMILARITY(C.CLIENT_NAME, :value) >= 90
-              OR C.CLIENT_NAME LIKE '%' || :value || '%'
-              OR UTL_MATCH.JARO_WINKLER_SIMILARITY(C.LEGAL_FIRST_NAME, :value) >= 90
-              OR UTL_MATCH.JARO_WINKLER_SIMILARITY(DBA.DOING_BUSINESS_AS_NAME, :value) >= 90
-              OR DBA.DOING_BUSINESS_AS_NAME LIKE '%' || :value || '%'
-              OR C.CLIENT_IDENTIFICATION = :value
-              OR UTL_MATCH.JARO_WINKLER_SIMILARITY(C.LEGAL_MIDDLE_NAME, :value) >= 90
-              OR C.LEGAL_MIDDLE_NAME LIKE '%' || :value || '%'
-              OR (
-                  C.CLIENT_TYPE_CODE = 'I' AND (
-                      UTL_MATCH.JARO_WINKLER_SIMILARITY(
-                          TRIM(
-                              COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' || 
-                              COALESCE(C.LEGAL_MIDDLE_NAME, '') || 
-                              COALESCE(C.CLIENT_NAME, '')
-                          ), :value
-                      ) >= 90
-                      OR UTL_MATCH.JARO_WINKLER_SIMILARITY(
-                          TRIM(
-                              COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' || 
-                              COALESCE(C.CLIENT_NAME, '')
-                          ), :value
-                      ) >= 90
-                      OR UTL_MATCH.JARO_WINKLER_SIMILARITY(
-                          TRIM(
-                              COALESCE(C.CLIENT_NAME, '') || ' ' || 
-                              COALESCE(C.LEGAL_MIDDLE_NAME, '') || 
-                              COALESCE(C.LEGAL_FIRST_NAME, '')
-                          ), :value
-                      ) >= 90
-                      OR UTL_MATCH.JARO_WINKLER_SIMILARITY(
-                          TRIM(
-                              COALESCE(C.CLIENT_NAME, '') || ' ' || 
-                              COALESCE(C.LEGAL_FIRST_NAME, '')
-                          ), :value
-                      ) >= 90
-                  )
-              )
-          )
-          AND CL.CLIENT_LOCN_CODE = '00'
-      """;
+  public static final String FIND_BY_PREDICTIVE_SEARCH_WITH_LIKE =
+      FIND_BY_PREDICTIVE_SEARCH_SELECT
+      + FIND_BY_PREDICTIVE_SEARCH_SCORE_LIKE
+      + FIND_BY_PREDICTIVE_SEARCH_FROM
+      + FIND_BY_PREDICTIVE_SEARCH_LIKE
+      + ORDER_BY_SCORE_DESC
+      + ORACLE_PAGINATION;
+
+  public static final String COUNT_BY_PREDICTIVE_SEARCH_WITH_LIKE =
+      SELECT_COUNT_C_CLIENT_NUMBER
+      + FIND_BY_PREDICTIVE_SEARCH_FROM
+      + FIND_BY_PREDICTIVE_SEARCH_LIKE;
+
+  public static final String FIND_BY_PREDICTIVE_SEARCH_WITH_SIMILARITY =
+      FIND_BY_PREDICTIVE_SEARCH_SELECT
+      + FIND_BY_PREDICTIVE_SEARCH_SCORE_SIMILARITY
+      + FIND_BY_PREDICTIVE_SEARCH_FROM
+      + FIND_BY_PREDICTIVE_SEARCH_SIMILARITY
+      + ORDER_BY_SCORE_DESC
+      + ORACLE_PAGINATION;
+
+  public static final String COUNT_BY_PREDICTIVE_SEARCH_WITH_SIMILARITY =
+      SELECT_COUNT_C_CLIENT_NUMBER
+      + FIND_BY_PREDICTIVE_SEARCH_FROM
+      + FIND_BY_PREDICTIVE_SEARCH_SIMILARITY;
 
   public static final String FIND_BY_EMPTY_FULL_SEARCH = """
       SELECT
@@ -1088,13 +1004,12 @@ public final class ForestClientQueries {
       """;
 
   public static final String SEARCH_OTHER_CORP_NUMBER = """
-      SELECT
-      	*
+      SELECT *
       FROM FOREST_CLIENT fc
       WHERE
-      	fc.CLIENT_NUMBER != :clientNumber
-      	AND fc.REGISTRY_COMPANY_TYPE_CODE = (NVL(:companyType,(SELECT REGISTRY_COMPANY_TYPE_CODE FROM FOREST_CLIENT WHERE CLIENT_NUMBER = :clientNumber)))
-      	AND fc.CORP_REGN_NMBR = (NVL(:companyNumber,(SELECT CORP_REGN_NMBR FROM FOREST_CLIENT WHERE CLIENT_NUMBER = :clientNumber)))""";
+        fc.CLIENT_NUMBER != :clientNumber
+        AND fc.REGISTRY_COMPANY_TYPE_CODE = (NVL(:companyType,(SELECT REGISTRY_COMPANY_TYPE_CODE FROM FOREST_CLIENT WHERE CLIENT_NUMBER = :clientNumber)))
+        AND fc.CORP_REGN_NMBR = (NVL(:companyNumber,(SELECT CORP_REGN_NMBR FROM FOREST_CLIENT WHERE CLIENT_NUMBER = :clientNumber)))""";
 
   public static final String RELATED_CLIENT_LIST = """
       SELECT
@@ -1135,5 +1050,191 @@ public final class ForestClientQueries {
       LEFT JOIN THE.CLIENT_LOCATION rcl ON rcl.CLIENT_NUMBER = rc.RELATED_CLNT_NMBR AND rcl.CLIENT_LOCN_CODE = rc.RELATED_CLNT_LOCN
       LEFT JOIN THE.CLIENT_RELATIONSHIP_CODE crc ON crc.CLIENT_RELATIONSHIP_CODE = rc.RELATIONSHIP_CODE
       WHERE rc.CLIENT_NUMBER = :clientNumber OR rc.RELATED_CLNT_NMBR = :clientNumber""";
-  
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_SELECT = """
+      SELECT
+        C.CLIENT_NUMBER,
+        C.CLIENT_ACRONYM AS CLIENT_ACRONYM,
+        C.CLIENT_NAME,
+        C.LEGAL_FIRST_NAME AS CLIENT_FIRST_NAME,
+        DBA.DOING_BUSINESS_AS_NAME AS DOING_BUSINESS_AS,
+        C.CLIENT_IDENTIFICATION,
+        C.LEGAL_MIDDLE_NAME AS CLIENT_MIDDLE_NAME,
+        CTC.DESCRIPTION AS CLIENT_TYPE,
+        CSC.DESCRIPTION AS CLIENT_STATUS,
+      """;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_LIKE_ORDER = """
+      (
+          CASE
+              WHEN UPPER(C.CLIENT_NUMBER) LIKE '%' || :value || '%' THEN 100
+              WHEN UPPER(C.CLIENT_ACRONYM) LIKE '%' || :value || '%' THEN 100
+              WHEN UPPER(C.CLIENT_NAME) LIKE '%' || :value || '%' THEN 100
+              WHEN UPPER(C.LEGAL_FIRST_NAME) LIKE '%' || :value || '%' THEN 90
+              WHEN UPPER(C.LEGAL_MIDDLE_NAME) LIKE '%' || :value || '%' THEN 50
+              WHEN UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE '%' || :value || '%' THEN 75
+              WHEN UPPER(C.CLIENT_IDENTIFICATION) LIKE '%' || :value || '%' THEN 70
+              WHEN UPPER(TRIM(
+                  COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+                  COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
+                  COALESCE(C.CLIENT_NAME, '')
+              )) LIKE '%' || :value || '%' THEN 90
+              WHEN UPPER(TRIM(
+                  COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+                  COALESCE(C.CLIENT_NAME, '')
+              )) LIKE '%' || :value || '%' THEN 90
+              WHEN UPPER(TRIM(
+                  COALESCE(C.CLIENT_NAME, '') || ' ' ||
+                  COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
+                  COALESCE(C.LEGAL_FIRST_NAME, '')
+              )) LIKE '%' || :value || '%' THEN 50
+              WHEN UPPER(TRIM(
+                  COALESCE(C.CLIENT_NAME, '') || ' ' ||
+                  COALESCE(C.LEGAL_FIRST_NAME, '')
+              )) LIKE '%' || :value || '%' THEN 50
+              WHEN UPPER(TRIM(
+                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') ||
+                  COALESCE(C.CORP_REGN_NMBR, '')
+              )) LIKE '%' || :value || '%' THEN 70
+              WHEN UPPER(TRIM(
+                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
+                  COALESCE(C.CORP_REGN_NMBR, '')
+              )) LIKE '%' || :value || '%' THEN 40
+              ELSE 0
+          END
+      ) AS SCORE
+      """;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_FROM = """
+      FROM THE.FOREST_CLIENT C
+      LEFT JOIN THE.CLIENT_DOING_BUSINESS_AS DBA ON C.CLIENT_NUMBER = DBA.CLIENT_NUMBER
+      LEFT JOIN THE.CLIENT_TYPE_CODE CTC ON C.CLIENT_TYPE_CODE = CTC.CLIENT_TYPE_CODE
+      LEFT JOIN THE.CLIENT_STATUS_CODE CSC ON C.CLIENT_STATUS_CODE = CSC.CLIENT_STATUS_CODE
+      """;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_LIKE = """
+      WHERE
+        C.CLIENT_NUMBER != :mainClientNumber
+        AND C.CLIENT_TYPE_CODE IN (
+          SELECT DISTINCT(SECONDARY_CLIENT_TYPE_CODE) FROM THE.CLIENT_RELATIONSHIP_TYPE_XREF
+          WHERE PRIMARY_CLIENT_TYPE_CODE = (SELECT CLIENT_TYPE_CODE FROM FOREST_CLIENT WHERE CLIENT_NUMBER = :mainClientNumber) AND (
+            NVL(:relationType,'NOVALUE') = 'NOVALUE' OR CLIENT_RELATIONSHIP_CODE = :relationType
+          )
+        )
+        AND (
+            UPPER(C.CLIENT_NUMBER) LIKE '%' || :value || '%'
+            OR UPPER(C.CLIENT_ACRONYM) LIKE '%' || :value || '%'
+            OR UPPER(C.CLIENT_NAME) LIKE '%' || :value || '%'
+            OR UPPER(C.LEGAL_FIRST_NAME) LIKE '%' || :value || '%'
+            OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE '%' || :value || '%'
+            OR UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE '%' || :value || '%'
+            OR UPPER(C.CLIENT_IDENTIFICATION) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+                COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
+                COALESCE(C.CLIENT_NAME, '')
+            )) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
+                COALESCE(C.CLIENT_NAME, '')
+            )) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                COALESCE(C.CLIENT_NAME, '') || ' ' ||
+                COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
+                COALESCE(C.LEGAL_FIRST_NAME, '')
+            )) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                COALESCE(C.CLIENT_NAME, '') || ' ' ||
+                COALESCE(C.LEGAL_FIRST_NAME, '')
+            )) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') ||
+                COALESCE(C.CORP_REGN_NMBR, '')
+            )) LIKE '%' || :value || '%'
+            OR UPPER(TRIM(
+                    COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
+                    COALESCE(C.CORP_REGN_NMBR, '')
+            )) LIKE '%' || :value || '%'
+        )
+      """;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_SIMILARITY = """
+      WHERE
+        C.CLIENT_NUMBER != :mainClientNumber
+        AND C.CLIENT_TYPE_CODE IN (
+          SELECT DISTINCT(SECONDARY_CLIENT_TYPE_CODE) FROM THE.CLIENT_RELATIONSHIP_TYPE_XREF
+          WHERE PRIMARY_CLIENT_TYPE_CODE = (SELECT CLIENT_TYPE_CODE FROM FOREST_CLIENT WHERE CLIENT_NUMBER = :mainClientNumber) AND (
+            NVL(:relationType,'NOVALUE') = 'NOVALUE' OR CLIENT_RELATIONSHIP_CODE = :relationType
+          )
+        )
+        AND
+        (
+          C.CLIENT_NUMBER = :value
+          OR C.CLIENT_ACRONYM = :value
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(C.CLIENT_NAME, :value) >= 90
+          OR C.CLIENT_NAME LIKE '%' || :value || '%'
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(C.LEGAL_FIRST_NAME, :value) >= 90
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(DBA.DOING_BUSINESS_AS_NAME, :value) >= 90
+          OR DBA.DOING_BUSINESS_AS_NAME LIKE '%' || :value || '%'
+          OR C.CLIENT_IDENTIFICATION = :value
+          OR UTL_MATCH.JARO_WINKLER_SIMILARITY(C.LEGAL_MIDDLE_NAME, :value) >= 90
+          OR C.LEGAL_MIDDLE_NAME LIKE '%' || :value || '%'
+          OR (
+              C.CLIENT_TYPE_CODE = 'I' AND (
+                  UTL_MATCH.JARO_WINKLER_SIMILARITY(
+                      TRIM(
+                          COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||\s
+                          COALESCE(C.LEGAL_MIDDLE_NAME, '') ||\s
+                          COALESCE(C.CLIENT_NAME, '')
+                      ), :value
+                  ) >= 90
+                  OR UTL_MATCH.JARO_WINKLER_SIMILARITY(
+                      TRIM(
+                          COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||\s
+                          COALESCE(C.CLIENT_NAME, '')
+                      ), :value
+                  ) >= 90
+                  OR UTL_MATCH.JARO_WINKLER_SIMILARITY(
+                      TRIM(
+                          COALESCE(C.CLIENT_NAME, '') || ' ' ||\s
+                          COALESCE(C.LEGAL_MIDDLE_NAME, '') ||\s
+                          COALESCE(C.LEGAL_FIRST_NAME, '')
+                      ), :value
+                  ) >= 90
+                  OR UTL_MATCH.JARO_WINKLER_SIMILARITY(
+                      TRIM(
+                          COALESCE(C.CLIENT_NAME, '') || ' ' ||\s
+                          COALESCE(C.LEGAL_FIRST_NAME, '')
+                      ), :value
+                  ) >= 90
+              )
+          )
+        )
+      """;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_COUNT_WITH_LIKE =
+      SELECT_COUNT_C_CLIENT_NUMBER
+      + RELATED_CLIENT_AUTOCOMPLETE_FROM
+      + RELATED_CLIENT_AUTOCOMPLETE_LIKE;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_WITH_LIKE =
+      RELATED_CLIENT_AUTOCOMPLETE_SELECT
+      + RELATED_CLIENT_AUTOCOMPLETE_LIKE_ORDER
+      + RELATED_CLIENT_AUTOCOMPLETE_FROM
+      + RELATED_CLIENT_AUTOCOMPLETE_LIKE
+      + ORDER_BY_SCORE_DESC
+      + ORACLE_PAGINATION;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_COUNT_WITH_SIMILARITY =
+      SELECT_COUNT_C_CLIENT_NUMBER
+      + RELATED_CLIENT_AUTOCOMPLETE_FROM
+      + RELATED_CLIENT_AUTOCOMPLETE_SIMILARITY;
+
+  public static final String RELATED_CLIENT_AUTOCOMPLETE_WITH_SIMILARITY =
+      RELATED_CLIENT_AUTOCOMPLETE_SELECT
+      + FIND_BY_PREDICTIVE_SEARCH_SCORE_SIMILARITY
+      + RELATED_CLIENT_AUTOCOMPLETE_FROM
+      + RELATED_CLIENT_AUTOCOMPLETE_SIMILARITY
+      + ORDER_BY_SCORE_DESC
+      + ORACLE_PAGINATION;
 }
