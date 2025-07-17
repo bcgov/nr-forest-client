@@ -45,7 +45,7 @@
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.3.1</nimbus-jose-jwt.version>
         <spring-security-core.version>6.5.1</spring-security-core.version>
-        <netty.version>4.2.2.Final</netty.version>
+        <netty.version>4.1.119.Final</netty.version>
         <micrometer.version>1.15.1</micrometer.version>
         <micrometer-tracing.version>1.5.1</micrometer-tracing.version>
         <flyway.version>11.10.2</flyway.version>
