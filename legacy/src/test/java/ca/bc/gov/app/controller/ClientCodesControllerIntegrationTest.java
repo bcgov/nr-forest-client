@@ -128,4 +128,22 @@ class ClientCodesControllerIntegrationTest extends
         .expectBodyList(CodeNameDto.class);
   }
   
+  @Test
+  @DisplayName("Retrieve active relationship types by client type")
+  void shouldGetRelationshipTypesByClientType() {
+    String clientTypeCode = "C";
+    
+    client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/codes/relationship-types/{clientTypeCode}")
+                .build(clientTypeCode)
+        )
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(CodeNameDto.class);
+  }
+  
 }
