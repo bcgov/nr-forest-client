@@ -61,4 +61,11 @@ public class ClientCodesController {
     return clientCodeService.findActiveClientIdTypeCodes();
   }
   
+  @GetMapping("/relationship-types/{clientTypeCode}")
+  public Flux<CodeNameDto> findActiveRelationshipCodesByClientTypeCode(
+      @PathVariable String clientTypeCode) {
+    log.info("Requesting a list of active client relationship codes.");
+    return clientCodeService.findActiveRelationshipCodesByClientTypeCode(clientTypeCode);
+  }
+  
 }

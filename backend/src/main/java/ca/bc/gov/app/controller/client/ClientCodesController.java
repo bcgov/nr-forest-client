@@ -298,4 +298,11 @@ public class ClientCodesController {
     return legacyService.findActiveIdentificationTypeCodes();
   }
   
+  @GetMapping("/relationship-types/{clientTypeCode}")
+  public Flux<CodeNameDto> findActiveRelationshipCodesByClientTypeCode(
+      @PathVariable String clientTypeCode) {
+    log.info("Requesting a list of active relationship codes by client type from legacy.");
+    return legacyService.findActiveRelationshipCodesByClientTypeCode(clientTypeCode);
+  }
+  
 }

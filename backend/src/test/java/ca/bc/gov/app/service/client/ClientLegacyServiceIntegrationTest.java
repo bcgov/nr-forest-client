@@ -624,7 +624,6 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .verifyComplete();
   }
   
-  
   @Test
   @DisplayName("Retrieve active registry types by client type")
   void testFindActiveRegistryTypesByClientType() {
@@ -696,6 +695,31 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
 
       service
           .findActiveIdentificationTypeCodes()
+          .as(StepVerifier::create)
+          .expectNext(expectedDto)
+          .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Retrieve active relationship types by client type")
+  void testFindActiveRelationshipTypesByClientType() {
+      String clientTypeCode = "C";
+
+      CodeNameDto expectedDto = new CodeNameDto("AG", "Agent");
+
+      Logger logger = (Logger) LoggerFactory.getLogger(ClientLegacyService.class);
+
+      ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+      listAppender.start();
+      logger.addAppender(listAppender);
+      
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/codes/relationship-types/" + clientTypeCode))
+              .willReturn(okJson("[{\"code\":\"AG\",\"name\":\"Agent\"}]"))
+      );
+
+      service
+          .findActiveRelationshipCodesByClientTypeCode(clientTypeCode)
           .as(StepVerifier::create)
           .expectNext(expectedDto)
           .verifyComplete();
