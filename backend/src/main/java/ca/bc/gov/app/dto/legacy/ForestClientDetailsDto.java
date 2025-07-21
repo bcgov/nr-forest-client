@@ -1,6 +1,8 @@
 package ca.bc.gov.app.dto.legacy;
 
+import ca.bc.gov.app.dto.client.RelatedClientEntryDto;
 import java.util.List;
+import java.util.Map;
 import lombok.With;
 
 /**
@@ -16,7 +18,8 @@ public record ForestClientDetailsDto(
     ForestClientInformationDto client,
     List<ForestClientLocationDetailsDto> addresses,
     List<ForestClientContactDetailsDto> contacts,
-    String doingBusinessAs
+    String doingBusinessAs,
+    Map<String,List<RelatedClientEntryDto>> relatedClients
 ) {
 
 }
