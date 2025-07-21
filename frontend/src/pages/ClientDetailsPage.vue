@@ -825,30 +825,17 @@ onMounted(async () => {
 const findLocation = (locationCode: string) =>
   sortedLocations.value?.find((location) => location.clientLocnCode === locationCode);
 
-const relatedClientList = ref<RelatedClientList>({});
-let { fetch: fetchRelatedClients, loading: loadingRelatedClients } = useFetchTo(`/api/clients/details/${clientNumber}/related-clients`, relatedClientList, { skip: true });
-
-if (featureFlags.RELATED_CLIENTS) {
-  const watchRelatedTab = watch(isRelatedClientsPanelVisible, (visible) => {
-    if (visible && !loadingRelatedClients.value) {
-      fetchRelatedClients().asyncResponse.then(() => {
-        watchRelatedTab.stop();
-      });
-    }
-  });
-
-}
-
-const clientRelationshipsCount = computed(() =>
-  Object.keys(relatedClientList.value).reduce(
-    (previousValue, locationCode) => previousValue + relatedClientList.value[locationCode]?.length,
+const countRelatedClients = computed(() =>
+(data && data.value?.relatedClients) ?
+  Object.keys(data.value?.relatedClients ?? {}).reduce(
+    (previousValue, locationCode) => previousValue + data.value?.relatedClients[locationCode]?.length,
     0,
-  ),
+  ) : 0
 );
 
 const relatedLocationsState = reactive<Record<string, CollapsibleState>>({});
 
-watch([() => Object.keys(relatedClientList.value), locationsState], ([relatedLocationCodeList]) => {
+watch([() => Object.keys(data.value?.relatedClients ?? {}), locationsState], ([relatedLocationCodeList]) => {
   relatedLocationCodeList?.forEach((relatedLocationCode) => {
     if (!relatedLocationsState[relatedLocationCode]) {
       relatedLocationsState[relatedLocationCode] = createCollapsibleState();
@@ -1160,30 +1147,27 @@ const formatRelatedLocation = (locationCode: string) => {
       </div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden>
         <template v-if="$features.RELATED_CLIENTS">
-          <template v-if="loadingRelatedClients || clientRelationshipsCount">
-            <div class="tab-header space-between">
-              <cds-skeleton-text v-if="loadingRelatedClients" v-shadow="1" class="heading-05-skeleton" />
-              <template v-else>
-                <h3 class="padding-left-1rem">
-                  {{ formatCount(clientRelationshipsCount) }}
-                  {{ pluralize("client relationship", clientRelationshipsCount) }}
-                </h3>
-                <cds-button
-                  v-if="userHasAuthority"
-                  id="addClientRelationshipBtn"
-                  kind="primary"
-                  size="md"
-                  @click=""
-                  :disabled="false"
-                >
-                  <span class="width-unset">Add client relationship</span>
-                  <Add16 slot="icon" />
-                </cds-button>
-              </template>
+          <template v-if="countRelatedClients">
+            <div class="tab-header space-between">              
+              <h3 class="padding-left-1rem">
+                {{ formatCount(countRelatedClients) }}
+                {{ pluralize("client relationship", countRelatedClients) }}
+              </h3>
+              <cds-button
+                v-if="userHasAuthority"
+                id="addClientRelationshipBtn"
+                kind="primary"
+                size="md"
+                @click=""
+                :disabled="false"
+              >
+                <span class="width-unset">Add client relationship</span>
+                <Add16 slot="icon" />
+              </cds-button>              
             </div>
             <div class="tab-panel tab-panel--populated">
               <cds-accordion
-                v-for="(locationCode, index) in Object.keys(relatedClientList)"
+                v-for="(locationCode, index) in Object.keys(data.relatedClients)"
                 :key="locationCode"
                 :id="`relationships-location-${locationCode}`"
               >
