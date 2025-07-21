@@ -464,6 +464,7 @@ export const validateSelection =
       const selected = selector(value);
       return validator(selected);
     } catch (error) {
+      console.log(`Exception while validating selection: ${error}`);
       return selectorErrorMessage;
     }
   };
