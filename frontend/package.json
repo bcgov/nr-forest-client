@@ -98,7 +98,7 @@
     "prettier": "^3.5.3",
     "sass": "^1.89.2",
     "sass-loader": "^16.0.5",
-    "start-server-and-test": "^2.0.8",
+    "start-server-and-test": "^2.0.12",
     "ts-node": "^10.9.1",
     "typescript": "~5.8.3",
     "unplugin-icons": "^22.1.0",
