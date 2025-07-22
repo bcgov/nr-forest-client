@@ -15,11 +15,11 @@
   "devDependencies": {
     "@badeball/cypress-cucumber-preprocessor": "^22.0.0",
     "@bahmutov/cypress-esbuild-preprocessor": "^2.2.0",
-    "@cypress/webpack-preprocessor": "^6.0.4",
+    "@cypress/webpack-preprocessor": "^6.0.0",
     "cypress": "^14.5.2",
     "ts-loader": "^9.4.2",
     "typescript": "^5.0.4",
-    "webpack": "^5.100.2"
+    "webpack": "^5.81.0"
   },
   "cypress-cucumber-preprocessor": {
     "nonGlobalStepDefinitions": true
