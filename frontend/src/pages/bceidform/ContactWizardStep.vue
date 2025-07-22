@@ -8,7 +8,7 @@ import { useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Type Imports
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
-import { emptyContact, locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
+import { emptyContact, defaultLocation } from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
 // Validators
 import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";

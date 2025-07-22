@@ -114,7 +114,7 @@ export const indexedEmptyContact = (index: number): Contact =>
   JSON.parse(
     JSON.stringify({
       locationNames: [],
-      contactType: { value: "", text: "" },
+      contactType: { value: "00", text: "Billing" },
       firstName: "",
       lastName: "",
       phoneNumber: "",
@@ -127,7 +127,7 @@ export const indexedEmptyContact = (index: number): Contact =>
 
 export const emptyContact: Contact = indexedEmptyContact(0);
 
-export const locationName = { value: "0", text: "Mailing address" };
+export const defaultLocation = { value: "0", text: "Mailing address" };
 
 export const formDataDto: FormDataDto = {
   businessInformation: {
@@ -162,6 +162,6 @@ export const newFormDataDto = (): FormDataDto => JSON.parse(JSON.stringify(formD
 
 export const newFormDataDtoExternal = (): FormDataDto => {
   const value = newFormDataDto();
-  value.location.addresses[0].locationName = locationName.text;
+  value.location.addresses[0].locationName = defaultLocation.text;
   return value;
 };

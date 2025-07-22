@@ -4,7 +4,7 @@ import { ref, reactive, computed, watch, toRef } from "vue";
 import {
   newFormDataDtoExternal,
   emptyContact,
-  locationName as defaultLocation,
+  defaultLocation,
 } from "@/dto/ApplyClientNumberDto";
 import {
   BusinessTypeEnum,

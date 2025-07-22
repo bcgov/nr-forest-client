@@ -18,7 +18,7 @@ import AddressWizardStep from "@/pages/bceidform/AddressWizardStep.vue";
 import ContactWizardStep from "@/pages/bceidform/ContactWizardStep.vue";
 import ReviewWizardStep from "@/pages/bceidform/ReviewWizardStep.vue";
 // Imported types
-import { newFormDataDtoExternal, locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
+import { newFormDataDtoExternal, defaultLocation } from "@/dto/ApplyClientNumberDto";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import type {
   ValidationMessageType,
