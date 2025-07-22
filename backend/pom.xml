@@ -45,7 +45,6 @@
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.3.1</nimbus-jose-jwt.version>
         <spring-security-core.version>6.5.1</spring-security-core.version>
-        <netty.version>4.1.119.Final</netty.version>
         <micrometer.version>1.15.2</micrometer.version>
         <micrometer-tracing.version>1.5.2</micrometer-tracing.version>
         <flyway.version>11.10.2</flyway.version>
@@ -323,11 +322,6 @@
                 <version>${spring-security-core.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-http</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.nimbusds</groupId>
                 <artifactId>nimbus-jose-jwt</artifactId>
                 <version>${nimbus-jose-jwt.version}</version>
@@ -336,6 +330,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.projectreactor.netty</groupId>
+                <artifactId>reactor-netty-http</artifactId>
+                <version>1.2.8</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -685,14 +684,6 @@
                     <arch>aarch64</arch>
                 </os>
             </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-resolver-dns-native-macos</artifactId>
-                    <classifier>osx-aarch_64</classifier>
-                    <version>${netty.version}</version>
-                </dependency>
-            </dependencies>
         </profile>
 
         <profile>

@@ -45,7 +45,6 @@
     <junit-platform.version>1.9.1</junit-platform.version>
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.6.3</mapstruct.version>
-    <netty.version>4.1.119.Final</netty.version>
     <logback.version>1.5.18</logback.version>
     <flyway.version>11.10.2</flyway.version>
     <oracle-driver.version>23.8.0.25.04</oracle-driver.version>
@@ -245,11 +244,6 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-codec-http</artifactId>
-        <version>${netty.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.oracle.database.jdbc</groupId>
         <artifactId>ojdbc11</artifactId>
         <version>${oracle-driver.version}</version>
@@ -258,6 +252,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${commons-lang3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.projectreactor.netty</groupId>
+        <artifactId>reactor-netty-http</artifactId>
+        <version>1.2.8</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -604,14 +603,6 @@
           <arch>aarch64</arch>
         </os>
       </activation>
-      <dependencies>
-        <dependency>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-resolver-dns-native-macos</artifactId>
-          <classifier>osx-aarch_64</classifier>
-          <version>${netty.version}</version>
-        </dependency>
-      </dependencies>
     </profile>
 
     <profile>

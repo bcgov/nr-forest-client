@@ -45,7 +45,6 @@
     <junit.version>4.13.2</junit.version>
     <assertj.version>3.24.2</assertj.version>
     <logback.version>1.5.18</logback.version>
-    <netty.version>4.1.119.Final</netty.version>
     <oci.revision>${project.version}</oci.revision>
     <flyway.version>11.10.2</flyway.version>
     <opentelemetry.version>1.52.0</opentelemetry.version>
@@ -216,11 +215,6 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-codec-http</artifactId>
-        <version>${netty.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
         <version>${org.junit.version}</version>
@@ -237,6 +231,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${commons-lang3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.projectreactor.netty</groupId>
+        <artifactId>reactor-netty-http</artifactId>
+        <version>1.2.8</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -559,14 +558,6 @@
           <arch>aarch64</arch>
         </os>
       </activation>
-      <dependencies>
-        <dependency>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-resolver-dns-native-macos</artifactId>
-          <classifier>osx-aarch_64</classifier>
-          <version>${netty.version}</version>
-        </dependency>
-      </dependencies>
     </profile>
     <profile>
       <id>native</id>
