@@ -80,8 +80,8 @@ const features = instance.appContext.config.globalProperties.$features;
 const otherContacts = computed(() => formData.location.contacts.slice(1));
 const addContact = (autoFocus = true) => {
   const newContact = JSON.parse(JSON.stringify(emptyContact));
-  if (!features.BCEID_MULTI_ADDRESS) {
-    newContact.locationNames.push(defaultLocation);
+  if (features.BCEID_MULTI_ADDRESS) {
+    newContact.locationNames = [];
   }
   const newLength = formData.location.contacts.push(newContact);
 
