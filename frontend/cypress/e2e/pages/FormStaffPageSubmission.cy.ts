@@ -70,7 +70,6 @@ describe("Staff Form Submission", () => {
       cy.fillFormEntry(`#faxNumber_${index}`, data.faxNumber);
       cy.wait("@getRoles");
       cy.selectFormEntry(`#role_${index}`, data.role, false);
-      //cy.selectFormEntry(`#addressname_${index}`, data.addressname, true);
 
       // Yelds the contact data
       cy.wrap(data);
