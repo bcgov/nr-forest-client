@@ -19,7 +19,7 @@ Feature: Staff Screens
     Then I click on next
     And I fill the "Primary location" address with the following
       | Field name                      | Value           | Type          |
-      | Location name                   | Office          | text          |
+      | Location name                   | Mailing address | text          |
       | Email address                   | jamesbaxter@mail.ca   | text          |
       | Primary phone number            | 2501231568      | text          |
       | Secondary phone number          | 2501233568      | text          |
@@ -33,7 +33,7 @@ Feature: Staff Screens
       | Secondary phone number          | 2501232567      | text          |
       | Fax                             | 2501444567      | text          |
       | Contact type                    | Billing         | select        |
-      | Associated locations            | Office          | multiselect   |
+      | Associated locations            | Mailing address | multiselect   |
     Then I click on next
     Then I submit
     And I wait for the text "has been created!" to appear
