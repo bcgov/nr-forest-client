@@ -158,10 +158,8 @@ export const formDataDto: FormDataDto = {
   notifyClientInd: ""
 };
 
-export const newFormDataDto = (): FormDataDto => JSON.parse(JSON.stringify(formDataDto));
-
-export const newFormDataDtoExternal = (): FormDataDto => {
-  const value = newFormDataDto();
+export const newFormDataDto = (): FormDataDto => {
+  const value = JSON.parse(JSON.stringify(formDataDto));
   value.location.addresses[0].locationName = defaultLocation.text;
   return value;
 };
