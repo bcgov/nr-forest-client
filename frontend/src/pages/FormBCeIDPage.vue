@@ -18,7 +18,7 @@ import AddressWizardStep from "@/pages/bceidform/AddressWizardStep.vue";
 import ContactWizardStep from "@/pages/bceidform/ContactWizardStep.vue";
 import ReviewWizardStep from "@/pages/bceidform/ReviewWizardStep.vue";
 // Imported types
-import { newFormDataDtoExternal, locationName as defaultLocation } from "@/dto/ApplyClientNumberDto";
+import { newFormDataDto, defaultLocation } from "@/dto/ApplyClientNumberDto";
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
 import type {
   ValidationMessageType,
@@ -76,7 +76,7 @@ if (!features.BCEID_MULTI_ADDRESS) {
   submitterContact.locationNames = [{ ...defaultLocation }];
 }
 
-let formDataDto = ref<FormDataDto>({ ...newFormDataDtoExternal() });
+let formDataDto = ref<FormDataDto>({ ...newFormDataDto() });
 
 //---- Form Data ----//
 let formData = reactive<FormDataDto>({

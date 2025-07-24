@@ -15,7 +15,7 @@ import {
   ProgressNotification,
 } from "@/dto/CommonTypesDto";
 import { BusinessTypeEnum, CodeNameType } from "@/dto/CommonTypesDto";
-import { locationName as defaultLocation, formatAddresses } from "@/dto/ApplyClientNumberDto";
+import { defaultLocation, formatAddresses } from "@/dto/ApplyClientNumberDto";
 import type {
   FormDataDto,
   ForestClientDetailsDto,

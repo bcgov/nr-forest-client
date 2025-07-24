@@ -20,7 +20,7 @@ describe("Staff Form", () => {
   };
 
   const locationBaseData = {
-    name_0: "Headquarters",
+    name_0: "Mailing address",
     addr_0: "2975",
   };
 
@@ -46,10 +46,6 @@ describe("Staff Form", () => {
 
     cy.fillFormEntry("#clientIdentification", data.clientIdentification);
 
-    /*cy.get("#birthdateYear").shadow().find("input").type(data.birthdateYear);
-    cy.get("#birthdateMonth").shadow().find("input").type(data.birthdateMonth);
-    cy.get("#birthdateDay").shadow().find("input").type(data.birthdateDay);*/
-
     //This way of filling out data fails locally only with this component
     cy.fillFormEntry("#birthdateYear", data.birthdateYear);
     cy.fillFormEntry("#birthdateMonth", data.birthdateMonth);
@@ -71,8 +67,6 @@ describe("Staff Form", () => {
   };
 
   const fillLocation = (data = locationBaseData) => {
-    cy.get("#name_0").shadow().find("input").type(data.name_0);
-
     cy.get("#addr_0").shadow().find("input").type(data.addr_0, { delay: 0 });
 
     cy.wait("@searchAddress");

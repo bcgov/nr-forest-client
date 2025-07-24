@@ -117,6 +117,7 @@ const addContact = () => {
     indexedEmptyContact(getNewContactId())
   );
   const contact = formData.location.contacts[newLength - 1];
+
   setScrollPoint(`contact-${contact.index}-heading`);
   setFocusedComponent(`contact-${contact.index}-heading`);
   open[contact.index] = true;

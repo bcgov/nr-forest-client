@@ -24,7 +24,7 @@ Feature: Client Type Code
     And I fill the "Primary contact" information with the following
       | Field name                      | Value           | Type          |  
       | First name                      | Testy           | text          | 
-	    | Last name                       | Tester          | text          |
+      | Last name                       | Tester          | text          |
       | Email address                   | mail5@mail.ca   | text          |
       | Primary phone number            | 7780000007      | text          |      
       | Contact type                    | Billing         | select        |
