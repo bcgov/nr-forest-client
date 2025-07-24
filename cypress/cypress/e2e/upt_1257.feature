@@ -28,6 +28,7 @@ Feature: Client Type Code
       | Email address                   | mail5@mail.ca   | text          |
       | Primary phone number            | 7780000007      | text          |      
       | Contact type                    | Billing         | select        |
+      | Associated locations            | Mailing address | multiselect   |
     And I click on next
     Then I submit
     And I wait for the text "has been created!" to appear
