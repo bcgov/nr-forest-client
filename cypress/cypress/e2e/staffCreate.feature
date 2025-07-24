@@ -19,7 +19,6 @@ Feature: Staff Screens
     Then I click on next
     And I fill the "Primary location" address with the following
       | Field name                      | Value           | Type          |
-      | Location name                   | Mailing address | text          |
       | Email address                   | jamesbaxter@mail.ca   | text          |
       | Primary phone number            | 2501231568      | text          |
       | Secondary phone number          | 2501233568      | text          |
