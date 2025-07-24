@@ -115,8 +115,8 @@ export const formatAddresses = (addresses: Address[]): Address[] => {
 export const indexedEmptyContact = (index: number): Contact =>
   JSON.parse(
     JSON.stringify({
-      locationNames: [ defaultLocation ],
-      contactType: { value: "00", text: "Billing" },
+      locationNames: [],
+      contactType: { value: "", text: "" },
       firstName: "",
       lastName: "",
       phoneNumber: "",
