@@ -4,6 +4,7 @@ import static ca.bc.gov.app.ApplicationConstants.MDC_USERID;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import java.util.Map;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -64,10 +65,65 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
 
   }
 
+  @ParameterizedTest
+  @MethodSource("patchRelatedClients")
+  @DisplayName("Partially update a related client")
+  void shouldSendPatchUpdateToRelatedClient(
+      String clientNumber,
+      String partialBody,
+      String fieldCheck,
+      Object originalFieldValue,
+      Object changedFieldValue
+  ) {
+
+    if (originalFieldValue != null) {
+      checkForRelatedClientData(clientNumber)
+          .jsonPath(fieldCheck).exists()
+          .jsonPath(fieldCheck).isEqualTo(originalFieldValue);
+    } else {
+      checkForRelatedClientData(clientNumber).jsonPath(fieldCheck).doesNotExist();
+    }
+
+    client
+        .patch()
+        .uri("/api/clients/partial/{clientNumber}", clientNumber)
+        .header("Content-Type", "application/json-patch+json")
+        .header(MDC_USERID, "test-user")
+        .bodyValue(partialBody)
+        .exchange()
+        .expectStatus().isAccepted()
+        .expectBody(Void.class)
+        .consumeWith(System.out::println);
+
+    if (changedFieldValue != null) {
+      checkForRelatedClientData(clientNumber)
+          .jsonPath(fieldCheck).exists()
+          .jsonPath(fieldCheck).isNotEmpty()
+          .jsonPath(fieldCheck).isEqualTo(changedFieldValue);
+    } else {
+      checkForRelatedClientData(clientNumber).
+          jsonPath(fieldCheck).doesNotExist();
+    }
+
+  }
+
   private @NotNull BodyContentSpec checkForClientData(String clientNumber) {
     return client
         .get()
         .uri("/api/search/clientNumber/{clientNumber}", clientNumber)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .consumeWith(System.out::println);
+  }
+
+  private @NotNull BodyContentSpec checkForRelatedClientData(String clientNumber) {
+    return client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder.path("/api/clients/{clientNumber}/related-clients")
+                .build(Map.of("clientNumber", clientNumber))
+        )
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -253,6 +309,35 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.clientTypeCode",
             "C",
             "F"
+        )
+    );
+  }
+
+  public static Stream<Arguments> patchRelatedClients(){
+    return Stream.of(
+        argumentSet(
+            "Remove related client",
+            "00000158",
+            "[{ \"op\": \"remove\", \"path\": \"/relatedClients/00/1\" }]",
+            "$[1].clientNumber",
+            "00000158",
+            null
+        ),
+        argumentSet(
+            "Update related client",
+            "00000172",
+            "[{ \"op\": \"replace\", \"path\": \"/relatedClients/01/0/percentageOwnership\", \"value\": \"15\" }]",
+            "$[1].percentOwnership",
+            null,
+            "15.0"
+        ),
+        argumentSet(
+            "Add related client",
+            "00000172",
+            "[{ \"op\": \"add\", \"path\": \"/relatedClients/01\", \"value\": [ { \"relatedClient\": { \"client\": { \"code\": \"00000159\" }, \"location\": { \"code\": \"00\" } }, \"relationship\": { \"code\": \"AG\" }, \"percentageOwnership\": null, \"hasSigningAuthority\": false } ] }]",
+            "$[0].clientNumber",
+            "00000172",
+            "00000159"
         )
     );
   }

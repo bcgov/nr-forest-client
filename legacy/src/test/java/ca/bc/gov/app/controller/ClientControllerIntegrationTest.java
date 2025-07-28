@@ -95,8 +95,8 @@ class ClientControllerIntegrationTest extends
 
   private static Stream<Arguments> related() {
     return Stream.of(
-        Arguments.of("00000158", 2),
-        Arguments.of("00000172", 1),
+        Arguments.of("00000158", 1),
+        Arguments.of("00000172", 3),
         Arguments.of("00000145", 0)
     );
   }
