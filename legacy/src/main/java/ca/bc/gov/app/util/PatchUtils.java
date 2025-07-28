@@ -249,6 +249,16 @@ public class PatchUtils {
     return ids.stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet());
   }
 
+  /**
+   * Extracts and returns a map of IDs and their associated sub-IDs from the given filtered JSON Patch operations.
+   *
+   * <p>The method processes each node in the provided JSON Patch operations, extracting a primary ID and
+   * any associated sub-IDs from the "path" field. The result is a map where each key is a primary ID, and
+   * the value is a set of sub-IDs associated with that primary ID.</p>
+   *
+   * @param filteredNode the JsonNode containing the filtered JSON Patch operations
+   * @return a Map where the keys are primary IDs (as Strings) and the values are Sets of sub-IDs (as Strings)
+   */
   public static Map<String, Set<String>> loadIdsAndSubIds(JsonNode filteredNode) {
     Map<String, Set<String>> subIds = new LinkedHashMap<>();
     filteredNode.forEach(node -> {
