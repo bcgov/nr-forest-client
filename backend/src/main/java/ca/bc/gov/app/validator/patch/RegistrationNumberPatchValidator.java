@@ -1,7 +1,6 @@
 package ca.bc.gov.app.validator.patch;
 
 import static java.util.function.Predicate.not;
-import static org.springframework.data.util.Pair.toMap;
 
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
@@ -11,7 +10,6 @@ import ca.bc.gov.app.validator.PatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;

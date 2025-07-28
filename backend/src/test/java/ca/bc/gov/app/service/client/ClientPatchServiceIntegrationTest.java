@@ -8,7 +8,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.junit.jupiter.api.Assertions.*;
 
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
