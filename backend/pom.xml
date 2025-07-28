@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.3</version>
+        <version>3.5.4</version>
         <relativePath />
     </parent>
 
@@ -47,7 +47,7 @@
         <spring-security-core.version>6.5.2</spring-security-core.version>
         <micrometer.version>1.15.2</micrometer.version>
         <micrometer-tracing.version>1.5.2</micrometer-tracing.version>
-        <flyway.version>11.10.3</flyway.version>
+        <flyway.version>11.10.4</flyway.version>
         <opentelemetry.version>1.52.0</opentelemetry.version>
         <selenium.version>4.34.0</selenium.version>
         <org.junit.version>5.13.4</org.junit.version>
