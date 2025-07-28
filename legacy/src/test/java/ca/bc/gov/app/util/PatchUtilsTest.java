@@ -2,7 +2,9 @@ package ca.bc.gov.app.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.exception.CannotApplyPatchException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,7 +27,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 @DisplayName("Unit Test | Patch Utils")
 class PatchUtilsTest {
 
-  private final ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper mapper = new ObjectMapper();
 
   public static final String SIMPLE = """
       [
@@ -55,7 +57,7 @@ class PatchUtilsTest {
   @Test
   @DisplayName("Apply patch")
   void shouldApplyPatch() throws JsonProcessingException {
-    JsonNode patchNode = mapper.readValue(SIMPLE, JsonNode.class);
+    JsonNode patchNode = toNode(SIMPLE);
     TestEntity result = PatchUtils.patchClient(patchNode, new TestEntity("abc123"),
         TestEntity.class, mapper);
     assertEquals("1234", result.getValue());
@@ -64,7 +66,7 @@ class PatchUtilsTest {
   @Test
   @DisplayName("Fail when patching with invalid value")
   void shouldFailWhenPatching() throws Exception {
-    JsonNode patchNode = mapper.readValue(CONTENT.replace("replace", "join"), JsonNode.class);
+    JsonNode patchNode = toNode(CONTENT.replace("replace", "join"));
     TestEntity abc123 = new TestEntity("abc123");
     assertThrows(CannotApplyPatchException.class, () ->
         PatchUtils.patchClient(patchNode, abc123, TestEntity.class, mapper));
@@ -74,7 +76,7 @@ class PatchUtilsTest {
   @DisplayName("Check and allow or deny patch op")
   @CsvSource({"'value',true", "'value/1',false", "'name',false"})
   void shouldCheckAndAllowOrDenyPatchOp(String path, boolean exist) throws JsonProcessingException {
-    JsonNode patch = mapper.readValue(CONTENT, JsonNode.class);
+    JsonNode patch = toNode(CONTENT);
     assertEquals(exist, PatchUtils.checkOperation(patch, path, mapper));
   }
 
@@ -83,7 +85,7 @@ class PatchUtilsTest {
   @DisplayName("Filter patch ops")
   void shouldFilterPatchOps(String prefix, List<String> paths, String expectation)
       throws JsonProcessingException {
-    JsonNode patch = mapper.readValue(CONTENT, JsonNode.class);
+    JsonNode patch = toNode(CONTENT);
     JsonNode result = PatchUtils.filterPatchOperations(patch, prefix, paths, mapper);
     assertEquals(expectation, result.toString());
   }
@@ -102,26 +104,25 @@ class PatchUtilsTest {
   @Test
   @DisplayName("Load IDs")
   void shouldLoadIds() throws JsonProcessingException {
-    JsonNode patch = mapper.readValue(CONTENT, JsonNode.class);
+    JsonNode patch = toNode(CONTENT);
     assertIterableEquals(Set.of("0"), PatchUtils.loadIds(patch));
   }
 
   @Test
   @DisplayName("Load ID")
   void shouldLoadId() throws JsonProcessingException {
-    JsonNode patch = mapper.readValue(
-        "{\"op\":\"replace\",\"path\":\"/entries/0/personalId\",\"value\":\"1234\"}",
-        JsonNode.class);
+    JsonNode patch = toNode(
+        "{\"op\":\"replace\",\"path\":\"/entries/0/personalId\",\"value\":\"1234\"}"
+    );
     assertEquals("0", PatchUtils.loadId(patch));
   }
 
   @Test
   @DisplayName("Merge two nodes")
   void shouldMergeNodes() throws JsonProcessingException {
-    JsonNode expectation = mapper.readValue("[{\"value\":\"1234\"},{\"value\":\"5678\"}]",
-        JsonNode.class);
-    JsonNode node1 = mapper.createObjectNode().put("value", "1234");
-    JsonNode node2 = mapper.createObjectNode().put("value", "5678");
+    JsonNode expectation = toNode("[{\"value\":\"1234\"},{\"value\":\"5678\"}]");
+    JsonNode node1 = createValueNode("1234");
+    JsonNode node2 = createValueNode("5678");
     JsonNode result = PatchUtils.mergeNodes().apply(node1, node2);
     assertEquals(expectation, result);
   }
@@ -129,9 +130,9 @@ class PatchUtilsTest {
   @Test
   @DisplayName("Merge node to array")
   void shouldMergeNodesIfArray() throws JsonProcessingException {
-    JsonNode expectation = mapper.readValue("[{\"value\":\"5678\"}]", JsonNode.class);
+    JsonNode expectation = toNode("[{\"value\":\"5678\"}]");
     JsonNode node1 = mapper.createArrayNode();
-    JsonNode node2 = mapper.createObjectNode().put("value", "5678");
+    JsonNode node2 = createValueNode("5678");
     JsonNode result = PatchUtils.mergeNodes().apply(node1, node2);
     assertEquals(expectation, result);
   }
@@ -139,15 +140,26 @@ class PatchUtilsTest {
   @Test
   @DisplayName("Filter by ID")
   void shouldFilterById() throws JsonProcessingException {
-    JsonNode expectation = mapper.readValue(
-        "[{\"op\":\"replace\",\"path\":\"/entries/0/personalId\",\"value\":\"1234\"}]",
-        JsonNode.class);
-    assertEquals(expectation,
-        PatchUtils.filterById(
-            mapper.readValue(CONTENT, JsonNode.class)
-            , mapper
-        ).apply("0")
+    JsonNode expectation = toNode(
+        "[{\"op\":\"replace\",\"path\":\"/entries/0/personalId\",\"value\":\"1234\"}]"
     );
+
+    assertEquals(expectation,PatchUtils.filterById(toNode(CONTENT), mapper).apply("0"));
+  }
+
+  @MethodSource("idsAndSubIds")
+  @ParameterizedTest
+  @DisplayName("Load IDs and sub-IDs")
+  void shouldLoadIdsAndSubIds(
+      JsonNode node, String expectedId, String expectedSubId) throws JsonProcessingException {
+    PatchUtils.loadIdsAndSubIds(node).forEach((id, subId) -> {
+      assertEquals(expectedId, id);
+      if (expectedSubId == null) {
+        assertNull(subId);
+      } else {
+        assertTrue(subId.contains(expectedSubId));
+      }
+    });
   }
 
   private static Stream<Arguments> filterOps() {
@@ -178,6 +190,55 @@ class PatchUtilsTest {
             CONTENT.replace("/user", StringUtils.EMPTY)
         )
     );
+  }
+
+  private static Stream<Arguments> idsAndSubIds(){
+    return Stream.of(
+        Arguments.argumentSet(
+            "With ID and sub-ID",
+            createPathNode("/relatedClients/00/1/relatedClient/location/code"),"00","1"
+        ),
+        Arguments.argumentSet(
+            "With ID and sub-ID and extended path",
+            createPathNode("/relatedClients/00/0/relatedClient/location/code"),"00","0"
+        ),
+        Arguments.argumentSet(
+            "With ID and no sub-ID",
+            createPathNode("/relatedClients/00"),"00",null
+        ),
+        Arguments.argumentSet(
+            "With ID and no sub-ID and extended path",
+            createPathNode("/relatedClients/00/relatedClient/location/code"),"00",null
+        ),
+        Arguments.argumentSet(
+            "Started with ID and sub-ID",
+            createPathNode("/00/1/relatedClient/location/code"),"00","1"
+        ),
+        Arguments.argumentSet(
+            "Started with ID and sub-ID and extended path",
+            createPathNode("/00/0/relatedClient/location/code"),"00","0"
+        ),
+        Arguments.argumentSet(
+            "Started with ID and no sub-ID",
+            createPathNode("/00"),"00",null
+        ),
+        Arguments.argumentSet(
+            "Started with ID and no sub-ID and extended path",
+            createPathNode("/00/relatedClient/location/code"),"00",null
+        )
+    );
+  }
+
+  private static JsonNode toNode(String content) throws JsonProcessingException {
+    return mapper.readValue(content,JsonNode.class);
+  }
+
+  private static JsonNode createValueNode(String value) {
+    return mapper.createObjectNode().put("value", value);
+  }
+
+  private static JsonNode createPathNode(String value) {
+    return mapper.createObjectNode().put("path", value);
   }
 
   @Data

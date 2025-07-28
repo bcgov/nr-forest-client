@@ -8,7 +8,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.flipkart.zjsonpatch.JsonPatch;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BinaryOperator;
@@ -243,6 +247,33 @@ public class PatchUtils {
     Set<String> ids = new HashSet<>();
     filteredNode.forEach(node -> ids.add(loadId(node)));
     return ids.stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet());
+  }
+
+  public static Map<String, Set<String>> loadIdsAndSubIds(JsonNode filteredNode) {
+    Map<String, Set<String>> subIds = new LinkedHashMap<>();
+    filteredNode.forEach(node -> {
+          String id = loadId(node);
+          if (StringUtils.isNotBlank(id)) {
+            subIds.putIfAbsent(id, new HashSet<>());
+            subIds.merge(id,
+                Optional
+                    .ofNullable(node.get("path"))
+                    .map(JsonNode::asText)
+                    .map(PatchUtils::extractPathInfo)
+                    .map(Pair::getValue)
+                    .map(PatchUtils::extractPathInfo)
+                    .map(Pair::getKey)
+                    .stream()
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.toSet())
+                , (previousSet, nextSet) -> {
+                  previousSet.addAll(nextSet);
+                  return previousSet;
+                });
+          }
+        }
+    );
+    return subIds;
   }
 
   /**
