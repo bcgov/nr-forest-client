@@ -19,11 +19,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -34,10 +35,10 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
   @Autowired
   private ClientService service;
 
-  @MockBean
+  @MockitoBean
   private ClientLegacyService legacyService;
 
-  @MockBean
+  @MockitoBean
   private BcRegistryService bcRegistryService;
   
 
@@ -153,7 +154,9 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
             null),
         null,
         null,
-        null);
+        null,
+        Map.of()
+    );
 
     Mockito
         .when(legacyService
@@ -232,7 +235,9 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
             )
 
         ),
-        null);
+        null,
+        Map.of()
+    );
 
     Mockito
         .when(legacyService
@@ -277,7 +282,8 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         ),
         null,
         null,
-        null
+        null,
+        Map.of()
     );
 
     BcRegistryBusinessDto businessDto = new BcRegistryBusinessDto(

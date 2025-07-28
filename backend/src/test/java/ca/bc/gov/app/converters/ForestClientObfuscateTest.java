@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
@@ -100,7 +101,8 @@ class ForestClientObfuscateTest {
         ),
         List.of(),
         List.of(),
-        null
+        null,
+        Map.of()
     );
   }
 
