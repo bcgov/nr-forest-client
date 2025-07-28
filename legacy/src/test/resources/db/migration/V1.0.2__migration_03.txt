@@ -1,0 +1,58 @@
+*****************************************************************************
+* CLIENT -                                                                  *
+* Modify trigger around related client tables, by reducing the reliance     *
+* on package calls.                                                         *
+* DATE CREATED : 2025-07-28                                                 *
+* AUTHOR : Paulo Cruz                                                       *
+* System : CLIENT                                                           *
+*                                                                           *
+*****************************************************************************
+ 
+INSTRUCTIONS:
+ 
+Environments include:  DBQ01, DBP01
+ 
+ 
+1) Log in to database as THE, via SQL*Plus.
+ 
+Execute the SET statements before running the scripts
+ 
+$ sqlplus username/password@Environment
+ 
+SET DEFINE ON;
+SET SQLBL ON;
+ 
+2) From the SQL Prompt, run the scripts
+ 
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V3.0.6__trigger_client_rltd_client_ar_iud_trg_update.sql
+
+ 
+ 
+4) Exit SQL*Plus
+ 
+EXIT
+ 
+ 
+*****************************************************************************
+****  ROLLBACK -                                                         ****
+**** these scripts will rever the trigger                                ****
+*****************************************************************************
+ 
+1) Log in to database as THE, via SQL*Plus.
+ 
+Execute the SET statements before running the scripts
+ 
+$ sqlplus username/password@Environment
+ 
+SET DEFINE ON;
+SET SQLBL ON;
+ 
+2) From the SQL Prompt, run the scripts
+ 
+https://raw.githubusercontent.com/bcgov/nr-forest-client/refs/heads/main/legacy/src/test/resources/db/migration/V3.0.5__trigger_client_rltd_client_ar_iud_trg.sql
+
+ 
+ 
+4) Exit SQL*Plus
+ 
+EXIT
