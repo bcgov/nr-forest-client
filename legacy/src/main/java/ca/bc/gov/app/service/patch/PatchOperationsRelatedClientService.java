@@ -42,6 +42,10 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   private final R2dbcEntityOperations entityTemplate;
   private final RelatedClientRepository relatedClientRepository;
 
+  // This regex pattern is used to extract two segments from a path.
+  // It matches a string of the form "/{locationId}/{index}" and captures:
+  // - Group 1: locationId (any sequence of characters except '/')
+  // - Group 2: index (any sequence of characters except '/')
   private final Pattern pattern = Pattern.compile("/([^/]+)/([^/]+)");
   private final String CHECK_RELATION_EXIST = """
       SELECT
