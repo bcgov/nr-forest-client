@@ -35,7 +35,7 @@ EXIT
  
 *****************************************************************************
 ****  ROLLBACK -                                                         ****
-**** these scripts will rever the trigger                                ****
+**** these scripts will revert the trigger                                ****
 *****************************************************************************
  
 1) Log in to database as THE, via SQL*Plus.
