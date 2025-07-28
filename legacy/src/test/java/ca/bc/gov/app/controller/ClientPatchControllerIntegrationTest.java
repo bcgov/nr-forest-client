@@ -335,9 +335,9 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "Add related client",
             "00000172",
             "[{ \"op\": \"add\", \"path\": \"/relatedClients/01\", \"value\": [ { \"relatedClient\": { \"client\": { \"code\": \"00000159\" }, \"location\": { \"code\": \"00\" } }, \"relationship\": { \"code\": \"AG\" }, \"percentageOwnership\": null, \"hasSigningAuthority\": false } ] }]",
-            "$[0].clientNumber",
-            "00000172",
-            "00000159"
+            "$.length()",
+            "2",
+            "3"
         )
     );
   }
