@@ -38,8 +38,7 @@ describe("Staff Form Submission", () => {
   const fillLocation = (index: number, extraData: any = {}) => {
     cy.fixture("testdata/locationBaseData").then((fixtureData: any) => {
       const data = { ...fixtureData, ...extraData };
-
-      cy.fillFormEntry(`#name_${index}`, data.name);
+      
       cy.selectAutocompleteEntry(`#addr_${index}`, data.addr, data.addressId);
       cy.fillFormEntry(`#emailAddress_${index}`, data.emailAddress);
       cy.fillFormEntry(`#businessPhoneNumber_${index}`, data.businessPhoneNumber);

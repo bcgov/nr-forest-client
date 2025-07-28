@@ -98,6 +98,8 @@ export const indexedEmptyAddress = (index: number): Address =>
     }),
   );
 
+export const defaultLocation = { value: "0", text: "Mailing address" };
+
 export const emptyAddress = (): Address => indexedEmptyAddress(0);
 
 export const formatAddresses = (addresses: Address[]): Address[] => {
@@ -107,7 +109,7 @@ export const formatAddresses = (addresses: Address[]): Address[] => {
       locationName: toSentenceCase(address.locationName),
     }));
   }
-  return [{ ...emptyAddress(), locationName: locationName.text }];
+  return [{ ...emptyAddress(), locationName: defaultLocation.text }];
 };
 
 export const indexedEmptyContact = (index: number): Contact =>
@@ -126,8 +128,6 @@ export const indexedEmptyContact = (index: number): Contact =>
   );
 
 export const emptyContact: Contact = indexedEmptyContact(0);
-
-export const locationName = { value: "0", text: "Mailing address" };
 
 export const formDataDto: FormDataDto = {
   businessInformation: {
@@ -158,10 +158,8 @@ export const formDataDto: FormDataDto = {
   notifyClientInd: ""
 };
 
-export const newFormDataDto = (): FormDataDto => JSON.parse(JSON.stringify(formDataDto));
-
-export const newFormDataDtoExternal = (): FormDataDto => {
-  const value = newFormDataDto();
-  value.location.addresses[0].locationName = locationName.text;
+export const newFormDataDto = (): FormDataDto => {
+  const value = JSON.parse(JSON.stringify(formDataDto));
+  value.location.addresses[0].locationName = defaultLocation.text;
   return value;
 };
