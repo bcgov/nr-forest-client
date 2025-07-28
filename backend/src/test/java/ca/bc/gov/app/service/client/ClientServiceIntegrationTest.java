@@ -163,6 +163,11 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
             .searchByClientNumber(clientNumber))
         .thenReturn(Mono.just(clientDto));
 
+    Mockito
+        .when(legacyService
+            .getRelatedClientList(clientNumber))
+        .thenReturn(Mono.empty());
+
     service.getClientDetailsByClientNumber(clientNumber)
         .as(StepVerifier::create)
         .expectNext(clientDto)
@@ -243,6 +248,11 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         .when(legacyService
             .searchByClientNumber(clientNumber))
         .thenReturn(Mono.just(clientDto));
+
+    Mockito
+        .when(legacyService
+            .getRelatedClientList(clientNumber))
+        .thenReturn(Mono.empty());
 
     service.getClientDetailsByClientNumber(clientNumber)
         .as(StepVerifier::create)
