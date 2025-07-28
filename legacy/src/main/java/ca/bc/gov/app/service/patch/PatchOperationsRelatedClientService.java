@@ -302,7 +302,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
             //Save each related client entry on the database
             .then();
       } else {
-        addRelatedEntry(
+        return addRelatedEntry(
             value,
             mapper,
             clientNumber,
