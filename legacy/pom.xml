@@ -47,7 +47,7 @@
     <mapstruct.version>1.6.3</mapstruct.version>
     <logback.version>1.5.18</logback.version>
     <flyway.version>11.10.4</flyway.version>
-    <oracle-driver.version>23.8.0.25.04</oracle-driver.version>
+    <oracle-driver.version>23.9.0.25.07</oracle-driver.version>
     <opentelemetry.version>1.52.0</opentelemetry.version>
     <selenium.version>4.34.0</selenium.version>
     <mockito.version>5.18.0</mockito.version>
