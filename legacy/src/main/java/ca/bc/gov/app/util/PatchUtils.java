@@ -8,7 +8,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.flipkart.zjsonpatch.JsonPatch;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BinaryOperator;
@@ -243,6 +247,43 @@ public class PatchUtils {
     Set<String> ids = new HashSet<>();
     filteredNode.forEach(node -> ids.add(loadId(node)));
     return ids.stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet());
+  }
+
+  /**
+   * Extracts and returns a map of IDs and their associated sub-IDs from the given filtered JSON Patch operations.
+   *
+   * <p>The method processes each node in the provided JSON Patch operations, extracting a primary ID and
+   * any associated sub-IDs from the "path" field. The result is a map where each key is a primary ID, and
+   * the value is a set of sub-IDs associated with that primary ID.</p>
+   *
+   * @param filteredNode the JsonNode containing the filtered JSON Patch operations
+   * @return a Map where the keys are primary IDs (as Strings) and the values are Sets of sub-IDs (as Strings)
+   */
+  public static Map<String, Set<String>> loadIdsAndSubIds(JsonNode filteredNode) {
+    Map<String, Set<String>> subIds = new LinkedHashMap<>();
+    filteredNode.forEach(node -> {
+          String id = loadId(node);
+          if (StringUtils.isNotBlank(id)) {
+            subIds.putIfAbsent(id, new HashSet<>());
+            subIds.merge(id,
+                Optional
+                    .ofNullable(node.get("path"))
+                    .map(JsonNode::asText)
+                    .map(PatchUtils::extractPathInfo)
+                    .map(Pair::getValue)
+                    .map(PatchUtils::extractPathInfo)
+                    .map(Pair::getKey)
+                    .stream()
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.toSet())
+                , (previousSet, nextSet) -> {
+                  previousSet.addAll(nextSet);
+                  return previousSet;
+                });
+          }
+        }
+    );
+    return subIds;
   }
 
   /**

@@ -189,7 +189,8 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           ),
           null,
           null,
-          null
+          null,
+          Map.of()
       );
 
       legacyStub

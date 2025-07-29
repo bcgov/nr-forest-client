@@ -5,23 +5,23 @@ import type { Address } from "./ApplyClientNumberDto";
 export interface CodeDescrType {
   value: string;
   text: string;
-}
+};
 
 export interface CodeNameType {
   code: string;
   name: string;
-}
+};
 
 export interface CodeNameValue<T> extends CodeNameType {
   value: T;
-}
+};
 
 export interface BusinessSearchResult {
   code: string;
   name: string;
   status: string;
   legalType: string;
-}
+};
 
 export interface ValidationMessageType {
   fieldId: string;
@@ -30,30 +30,30 @@ export interface ValidationMessageType {
   originalValue?: string;
   warning?: boolean;
   custom?: Record<string, any>;
-}
+};
 
 export interface FuzzyMatchResult {
   field: string;
   match: string;
   fuzzy: boolean;
   partialMatch: boolean;
-}
+};
 
 export interface MiscFuzzyMatchResult {
   label?: string;
   result: FuzzyMatchResult;
-}
+};
 
 export interface FuzzyMatcherData {
   show: boolean;
   fuzzy: boolean;
   matches: MiscFuzzyMatchResult[];
-}
+};
 
 export interface FuzzyMatcherEvent {
   id: string;
   matches: FuzzyMatchResult[];
-}
+};
 
 export const isEmpty = (receivedValue: any): boolean => {
   const value = isRef(receivedValue) ? receivedValue.value : receivedValue;
@@ -64,7 +64,7 @@ export enum BusinessTypeEnum {
   Unknow,
   R,
   U,
-}
+};
 
 export enum LegalTypeEnum {
   A,
@@ -84,7 +84,7 @@ export enum LegalTypeEnum {
   LP,
   XL,
   XP,
-}
+};
 
 export enum ClientTypeEnum {
   C,
@@ -99,8 +99,8 @@ export enum ClientTypeEnum {
   T,
   G,
   F,
-  U
-}
+  U,
+};
 
 export enum IdentificationTypeEnum {
   BRTH,
@@ -110,26 +110,26 @@ export enum IdentificationTypeEnum {
   FNID,
   USDL,
   OTHR,
-}
+};
 
 export interface IdentificationCodeNameType {
   code: string;
   name: string;
   countryCode: string;
-}
+};
 
 export interface IdentificationCodeDescrType {
   value: string;
   text: string;
   countryCode: string;
-}
+};
 
 export interface ProgressData {
   kind: string;
   title: string;
   subtitle: string;
   enabled: boolean;
-}
+};
 
 export interface Submitter {
   name: string;
@@ -142,7 +142,7 @@ export interface Submitter {
   businessName: string;
   birthdate: string;
   address: Address;
-}
+};
 
 export interface ModalNotification {
   name?: string;
@@ -151,7 +151,7 @@ export interface ModalNotification {
   toastTitle: string;
   active: boolean;
   handler: () => void;
-}
+};
 
 export interface SessionProperties {
   user: Submitter | undefined;
@@ -161,96 +161,92 @@ export interface SessionProperties {
   logOut: () => void;
   isLoggedIn: () => boolean;
   loadDetails: () => Submitter | undefined;
-}
+};
 
 type ProgressNotificationKind = "disabled" | "error" | "navigate";
 
 export interface ProgressNotification {
   kind: ProgressNotificationKind;
   value?: number | number[] | boolean;
-}
-
+};
 
 export interface SubmissionList {
-  id: string
-  name: string
-  status: string
-  submittedAt: string
-  user: string
-  requestType: string
-  clientType: string
-  district: string
-}
+  id: string;
+  name: string;
+  status: string;
+  submittedAt: string;
+  user: string;
+  requestType: string;
+  clientType: string;
+  district: string;
+};
 
-/**
- * Each item resulting from the client search.
- */
 export interface ClientSearchResult {
-  clientNumber: string
-  clientAcronym: string
-  clientFullName: string
-  clientType: string
-  city: string
-  clientStatus: string
-}
+  clientNumber: string;
+  clientAcronym: string;
+  clientFullName: string;
+  clientType: string;
+  city: string;
+  clientStatus: string;
+};
 
 export interface SubmissionDetails {
-  submissionId: number
-  submissionStatus: string
-  submissionType: string
-  submittedTimestamp: Date
-  updateTimestamp: Date
-  approvedTimestamp: Date
-  updateUser: string
-  business: SubmissionDetailsBusiness
-  contact: SubmissionDetailsContact[]
-  address: SubmissionDetailsAddress[]
-  matchers: SubmissionDetailsMatchers
-  rejectionReason: string
-  confirmedMatchUserId: string
-}
+  submissionId: number;
+  submissionStatus: string;
+  submissionType: string;
+  submittedTimestamp: Date;
+  updateTimestamp: Date;
+  approvedTimestamp: Date;
+  updateUser: string;
+  business: SubmissionDetailsBusiness;
+  contact: SubmissionDetailsContact[];
+  address: SubmissionDetailsAddress[];
+  matchers: SubmissionDetailsMatchers;
+  rejectionReason: string;
+  confirmedMatchUserId: string;
+};
 
 export interface SubmissionDetailsBusiness {
-  businessType: string
-  registrationNumber: string
-  clientNumber: string
-  organizationName: string
-  clientType: string
-  clientTypeDesc: string
-  goodStandingInd: string
-  birthdate: string,
-  district: string,
-  districtDesc: string
-}
+  businessType: string;
+  registrationNumber: string;
+  clientNumber: string;
+  organizationName: string;
+  clientType: string;
+  clientTypeDesc: string;
+  goodStandingInd: string;
+  birthdate: string;
+  district: string;
+  districtDesc: string;
+};
 
 export interface SubmissionDetailsContact {
-  index: number
-  contactType: string
-  firstName: string
-  lastName: string
-  phoneNumber: string
-  emailAddress: string
-  locations: string[]
-  userId: string
-}
+  index: number;
+  contactType: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  emailAddress: string;
+  locations: string[];
+  userId: string;
+};
 
 export interface SubmissionDetailsAddress {
-  index: number
-  streetAddress: string
-  country: string
-  province: string
-  city: string
-  postalCode: string
-  name: string
-}
+  index: number;
+  streetAddress: string;
+  country: string;
+  province: string;
+  city: string;
+  postalCode: string;
+  name: string;
+};
 
 export interface SubmissionDetailsMatchers {
-  goodStanding: string
-  corporationName: string
-  registrationNumber: string
-  contact: string
-  location: string
-}
+  goodStanding: string;
+  corporationName: string;
+  registrationNumber: string;
+  contact: string;
+  location: string;
+};
 
 export interface ClientLocation {
   clientNumber: string;
@@ -276,7 +272,7 @@ export interface ClientLocation {
   cliLocnComment: string;
   createdBy: string;
   updatedBy: string;
-}
+};
 
 export const createClientLocation = (
   clientNumber: string,
@@ -288,7 +284,7 @@ export const createClientLocation = (
     clientLocnName: "",
     addressOne: "",
     addressTwo: "",
-    addressThree: null, // hides the input field and displays the button to add it
+    addressThree: null,
     city: "",
     provinceCode: "BC",
     provinceDesc: "British Columbia",
@@ -321,7 +317,7 @@ export interface ClientContact {
   faxNumber: string;
   emailAddress: string;
   locationCodes: string[];
-}
+};
 
 export const createClientContact = (contactId: number, clientNumber: string): ClientContact => {
   const contact = {
@@ -344,12 +340,28 @@ export const createClientContact = (contactId: number, clientNumber: string): Cl
 export interface FieldReason {
   field: string;
   reason: string;
-}
+};
 
 export interface FieldAction {
   field: string;
   action: string;
-}
+};
+
+export interface RelatedClientDto {
+  client: CodeNameType;
+  location: CodeNameType;
+};
+
+export interface RelatedClientEntry {
+  client: RelatedClientDto;
+  relatedClient: RelatedClientDto;
+  relationship: CodeNameType;
+  percentageOwnership: number;
+  hasSigningAuthority: boolean | null;
+  isMainParticipant: boolean;
+};
+
+export type RelatedClientList = Record<string, RelatedClientEntry[]>;
 
 export interface ClientInformation {
   clientNumber: string;
@@ -373,7 +385,7 @@ export interface ClientInformation {
   clientCommentUpdateUser: string;
   goodStandingInd: string;
   birthdate: string;
-}
+};
 
 export interface ClientDetails {
   client: ClientInformation;
@@ -381,7 +393,8 @@ export interface ClientDetails {
   addresses: ClientLocation[];
   contacts: ClientContact[];
   reasons: FieldReason[];
-}
+  relatedClients: RelatedClientList;
+};
 
 const userRoles = ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR", "CLIENT_VIEWER"] as const;
 export type UserRole = (typeof userRoles)[number];
@@ -389,7 +402,7 @@ export type UserRole = (typeof userRoles)[number];
 export interface ActionWords {
   infinitive: string;
   pastParticiple: string;
-}
+};
 
 type OperationType = "update" | "insert" | "delete";
 
@@ -398,18 +411,18 @@ export interface SaveEvent<T> {
   updatedData: T;
   action: ActionWords;
   operationType: OperationType;
-}
+};
 
 export interface HistoryLogDetail {
   columnName: string;
   oldValue: string;
   newValue: string;
-}
+};
 
 export interface HistoryLogReason {
   actionCode: string;
   reason: string;
-}
+};
 
 export interface HistoryLogResult {
   tableName: string;
@@ -420,20 +433,4 @@ export interface HistoryLogResult {
   changeType: string;
   details: HistoryLogDetail[];
   reasons: HistoryLogReason[];
-}
-
-export interface RelatedClientDto {
-  client: CodeNameType
-  location: CodeNameType
-}
-
-export interface RelatedClientEntry {
-  client: RelatedClientDto
-  relatedClient: RelatedClientDto
-  relationship: CodeNameType
-  percentageOwnership: number
-  hasSigningAuthority: boolean | null
-  isMainParticipant: boolean
-}
-
-export type RelatedClientList = Record<string, RelatedClientEntry[]>
+};
