@@ -1968,6 +1968,13 @@ cds-accordion-item[open] .hide-open {
   display: none;
 }
 
+.gap-0_5-rem {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 // Copied from .cds--side-nav__overlay-active in @carbon/styles/css/styles.css so to make it available on all breakpoints
 .overlay-active {
   z-index: 6000;

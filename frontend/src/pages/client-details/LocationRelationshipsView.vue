@@ -213,11 +213,12 @@ const valid = ref(false);
           <cds-table-row v-for="row in sortedData" :key="row">
             <cds-table-cell />
             <cds-table-cell>
-              <span>{{ row.relationship.name }}</span>
-              &nbsp;
-              <cds-tag type="purple" title="" v-if="row.isMainParticipant">
-                <span>Primary</span>
-              </cds-tag>
+              <div class="gap-0_5-rem">
+                <span>{{ row.relationship.name }}</span>
+                <cds-tag type="purple" title="" v-if="row.isMainParticipant">
+                  <span>Primary</span>
+                </cds-tag>
+              </div>
             </cds-table-cell>
             <cds-table-cell>
               <span>
