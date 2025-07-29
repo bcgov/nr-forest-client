@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,6 +20,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 
 @Slf4j
 @DisplayName("Integrated Test | Client Controller")
+@TestInstance(Lifecycle.PER_CLASS)
 class ClientControllerIntegrationTest extends
     AbstractTestContainerIntegrationTest {
 

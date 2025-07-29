@@ -9,6 +9,8 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,6 +20,7 @@ import org.springframework.test.web.reactive.server.WebTestClient.BodyContentSpe
 
 @Slf4j
 @DisplayName("Integrated Test | Client Patch Controller")
+@TestInstance(Lifecycle.PER_CLASS)
 class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
 
   @Autowired
