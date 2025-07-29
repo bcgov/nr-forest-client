@@ -26,7 +26,7 @@
                 "name": "Joint Venture Participant"
             },
             "percentageOwnership": 15.0,
-            "hasSigningAuthority": false,
+            "hasSigningAuthority": null,
             "isMainParticipant": false
         }
     ],
