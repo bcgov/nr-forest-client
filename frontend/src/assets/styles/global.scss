@@ -1808,8 +1808,6 @@ cds-table-header-cell {
     + var(--col-7_0625-rem) + 2 * var(--padding-fixed-rem)
   );
 
-  --col-status-rem: 5.75;
-
   /*
   Border-box allows to keep calculations simple, regardless of the padding, while keeping the
   padding width always the same.
@@ -1837,6 +1835,65 @@ cds-table-header-cell {
   
   .col-7_0625 {
     width: calc( 100% * (var(--col-7_0625-rem) + 2 * var(--padding-fixed-rem)) / var(--total));
+  }
+}
+
+#relatioships-table {
+  --col-248-px: 248;
+  --col-488-px: 488;
+  --col-88-px: 88;
+
+  --padding-fixed-px: 16;
+
+  --col-padding-8-px: 8;
+  --col-padding-16-px: 16;
+  --amount-actions-column: 1;
+
+  &.view-only {
+    --amount-actions-column: 0
+  }
+
+  --total: calc(
+    var(--col-padding-8-px)
+    + var(--col-248-px) + 2 * var(--padding-fixed-px)
+    + var(--col-488-px) + 2 * var(--padding-fixed-px)
+    + (2 + var(--amount-actions-column)) * (var(--col-88-px) + 2 * var(--padding-fixed-px))
+    + var(--col-padding-16-px)
+  );
+
+  /*
+  Border-box allows to keep calculations simple, regardless of the padding, while keeping the
+  padding width always the same.
+  */
+  cds-table-header-cell {
+    box-sizing: border-box;
+  }
+
+  /*
+  Each column width below is a percentage proportional to the corresponding designed value, so it
+  can adjust responsively.
+  */
+
+  .col-248-px {
+    width: calc( 100% * (var(--col-248-px) + 2 * var(--padding-fixed-px)) / var(--total));
+  }
+  
+  .col-488-px {
+    width: calc( 100% * (var(--col-488-px) + 2 * var(--padding-fixed-px)) / var(--total));
+  }
+
+  .col-88-px {
+    width: calc( 100% * (var(--col-88-px) + 2 * var(--padding-fixed-px)) / var(--total));
+  }
+
+  .col-padding-8-px {
+    padding: 0;
+    width: calc(var(--col-padding-8-px) / 16 * 1rem);
+  }
+
+  .col-padding-16-px {
+    padding: 0;
+    width: calc(var(--col-padding-16-px) / 16 * 1rem);
   }
 }
 

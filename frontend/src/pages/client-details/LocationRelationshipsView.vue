@@ -193,15 +193,20 @@ const valid = ref(false);
           <span class="body-compact-01 colorless">{{ formatAddress(props.location) }}</span>
         </a>
       </read-only-component>
-      <cds-table id="relatioships-table" use-zebra-styles>
+      <cds-table id="relatioships-table" :class="{ 'view-only': !canEdit }" use-zebra-styles>
         <cds-table-head>
           <cds-table-header-row>
-            <cds-table-header-cell class="col-padding" />
-            <cds-table-header-cell class="col-123">Relationship type</cds-table-header-cell>
-            <cds-table-header-cell class="col-123">Related client location</cds-table-header-cell>
-            <cds-table-header-cell class="col-123">Percentage owned</cds-table-header-cell>
-            <cds-table-header-cell class="col-123">Signing authority</cds-table-header-cell>
-            <cds-table-header-cell v-if="canEdit && false" class="col-123">Actions</cds-table-header-cell>
+            <cds-table-header-cell class="col-padding-8-px" />
+            <cds-table-header-cell class="col-248-px">Relationship type</cds-table-header-cell>
+            <cds-table-header-cell class="col-488-px">
+              Related client location
+            </cds-table-header-cell>
+            <cds-table-header-cell class="col-88-px">Percentage owned</cds-table-header-cell>
+            <cds-table-header-cell class="col-88-px">Signing authority</cds-table-header-cell>
+            <cds-table-header-cell v-if="canEdit" class="col-88-px">
+              Actions
+            </cds-table-header-cell>
+            <cds-table-header-cell class="col-padding-16-px" />
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
@@ -239,9 +244,10 @@ const valid = ref(false);
             <cds-table-cell>
               <span>{{ row.hasSigningAuthority || "-" }}</span>
             </cds-table-cell>
-            <cds-table-cell v-if="canEdit && false">
+            <cds-table-cell v-if="canEdit">
               <!-- TODO: Actions column contents -->
             </cds-table-cell>
+            <cds-table-cell />
           </cds-table-row>
         </cds-table-body>
       </cds-table>
