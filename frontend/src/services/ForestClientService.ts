@@ -730,3 +730,22 @@ export const preserveUnchangedData = <T>(data: T, original: T): T => {
 
   return dataClone;
 };
+
+export const formatAddress = (location: ClientLocation): string => {
+  const { city, provinceCode, countryDesc, postalCode } = location;
+
+  const { streetAddress } = extractAddressParts(location);
+
+  const list = [streetAddress, city, provinceCode, countryDesc, postalCode];
+  return list.join(", ");
+};
+
+export const compareAny = <T extends string | number | boolean>(a: T, b: T): number => {
+  if (a < b) {
+    return -1;
+  }
+  if (a > b) {
+    return 1;
+  }
+  return 0;
+};

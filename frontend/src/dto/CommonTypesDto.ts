@@ -423,17 +423,28 @@ export interface HistoryLogResult {
 }
 
 export interface RelatedClientDto {
-  client: CodeNameType
-  location: CodeNameType
+  client: CodeNameType;
+  location: CodeNameType;
 }
 
-export interface RelatedClientEntry {
-  client: RelatedClientDto
-  relatedClient: RelatedClientDto
-  relationship: CodeNameType
-  percentageOwnership: number
-  hasSigningAuthority: boolean | null
-  isMainParticipant: boolean
+export interface BaseRelatedClientEntry {
+  relationship: CodeNameType;
+  percentageOwnership: number;
+  hasSigningAuthority: boolean | null;
+  isMainParticipant: boolean;
 }
 
-export type RelatedClientList = Record<string, RelatedClientEntry[]>
+export interface RelatedClientEntry extends BaseRelatedClientEntry {
+  client: RelatedClientDto;
+  relatedClient: RelatedClientDto;
+}
+
+export interface OtherRelatedClientEntry extends BaseRelatedClientEntry {
+  /**
+   * Represents the *other* client - in opposition to the current client - in a relationship, be it
+   * the main participant (the `client`) or not (the `relatedClient`).
+   */
+  otherClient: RelatedClientDto;
+}
+
+export type RelatedClientList = Record<string, RelatedClientEntry[]>;

@@ -24,6 +24,7 @@ import {
   indexToLocationCode,
   formatLocation,
   preserveUnchangedData,
+  formatAddress,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type { UserRole, ClientDetails, ClientLocation, ClientContact } from "@/dto/CommonTypesDto";
@@ -854,5 +855,23 @@ describe("Reason Fields Handling", () => {
         expect(result.b).toEqual(null);
       });
     });
+  });
+});
+
+describe("formatAddress", () => {
+  it("returns a formatted address string", () => {
+    const location: ClientLocation = {
+      addressOne: "123 Main St",
+      addressTwo: null,
+      addressThree: null,
+      city: "Metropolis",
+      provinceCode: "BC",
+      provinceDesc: "British Columbia",
+      countryCode: "CA",
+      countryDesc: "Canada",
+      postalCode: "V1V1V1",
+    } as ClientLocation;
+    const result = formatAddress(location);
+    expect(result).toEqual("123 Main St, Metropolis, BC, Canada, V1V1V1");
   });
 });
