@@ -749,3 +749,16 @@ export const compareAny = <T extends string | number | boolean>(a: T, b: T): num
   }
   return 0;
 };
+
+export const booleanToYesNo = (
+  value: boolean,
+  options = { empty: "-", defaultToFalse: false },
+): string => {
+  if (value === true) {
+    return "Yes";
+  }
+  if (value === false || options.defaultToFalse) {
+    return "No";
+  }
+  return options.empty;
+};

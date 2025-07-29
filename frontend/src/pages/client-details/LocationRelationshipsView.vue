@@ -3,6 +3,7 @@ import { computed, nextTick, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import { OtherRelatedClientEntry, type ActionWords, type ClientLocation, type RelatedClientEntry, type SaveEvent, type UserRole } from "@/dto/CommonTypesDto";
 import {
+  booleanToYesNo,
   compareAny,
   formatAddress,
   formatLocation,
@@ -243,7 +244,7 @@ const valid = ref(false);
               <span>{{ `${row.percentageOwnership}%` || "-" }}</span>
             </cds-table-cell>
             <cds-table-cell>
-              <span>{{ row.hasSigningAuthority || "-" }}</span>
+              <span>{{ booleanToYesNo(row.hasSigningAuthority) || "-" }}</span>
             </cds-table-cell>
             <cds-table-cell v-if="canEdit">
               <!-- TODO: Actions column contents -->
