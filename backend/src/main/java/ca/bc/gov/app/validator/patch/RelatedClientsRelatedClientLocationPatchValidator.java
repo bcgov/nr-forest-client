@@ -5,7 +5,7 @@ import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.validator.PatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -26,8 +26,8 @@ public class RelatedClientsRelatedClientLocationPatchValidator implements PatchV
   }
 
   @Override
-  public BiFunction<JsonNode, String, Mono<JsonNode>> validate() {
-    return (node, clientNumber) -> {
+  public Function<JsonNode, Mono<JsonNode>> validate(String clientNumber) {
+    return (node) -> {
       JsonNode valueNode = node.get("value");
 
       String path = node.get("path").asText();
@@ -45,7 +45,7 @@ public class RelatedClientsRelatedClientLocationPatchValidator implements PatchV
       JsonNode codeNode = valueNode.get("code");
       JsonNode nameNode = valueNode.get("name");
 
-      if (codeNode == null || StringUtils.isBlank(codeNode.asText()) 
+      if (codeNode == null || StringUtils.isBlank(codeNode.asText())
           || nameNode == null || StringUtils.isBlank(nameNode.asText())) {
         return Mono.error(
             new ValidationException(
@@ -59,5 +59,5 @@ public class RelatedClientsRelatedClientLocationPatchValidator implements PatchV
       return Mono.just(node);
     };
   }
-  
+
 }

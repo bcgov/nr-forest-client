@@ -3,7 +3,7 @@ package ca.bc.gov.app.validator.patch;
 import ca.bc.gov.app.validator.PatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,8 +20,8 @@ public class BirthdatePatchValidator implements PatchValidator {
   }
 
   @Override
-  public BiFunction<JsonNode, String, Mono<JsonNode>> validate() {
-    return (node, clientNumber) ->
+  public Function<JsonNode, Mono<JsonNode>> validate(String clientNumber) {
+    return (node) ->
         Mono
             .just(node)
             .map(aNode ->

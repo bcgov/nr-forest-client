@@ -5,7 +5,7 @@ import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.validator.PatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 public class RelatedClientsRelatedClientPatchValidator implements PatchValidator {
-  
+
   private static final Pattern RELATED_CLIENT_PATTERN =
       Pattern.compile("^/relatedClients/(\\d{2})/(\\d+)/relatedClient/client$");
 
@@ -30,8 +30,8 @@ public class RelatedClientsRelatedClientPatchValidator implements PatchValidator
   }
 
   @Override
-  public BiFunction<JsonNode, String, Mono<JsonNode>> validate() {
-    return (node, clientNumber) -> {
+  public Function<JsonNode, Mono<JsonNode>> validate(String clientNumber) {
+    return (node) -> {
       JsonNode valueNode = node.get("value");
 
       String path = node.get("path").asText();
@@ -49,7 +49,7 @@ public class RelatedClientsRelatedClientPatchValidator implements PatchValidator
       JsonNode codeNode = valueNode.get("code");
       JsonNode nameNode = valueNode.get("name");
 
-      if (codeNode == null || StringUtils.isBlank(codeNode.asText()) 
+      if (codeNode == null || StringUtils.isBlank(codeNode.asText())
           || nameNode == null || StringUtils.isBlank(nameNode.asText())) {
         return Mono.error(
             new ValidationException(
@@ -59,7 +59,7 @@ public class RelatedClientsRelatedClientPatchValidator implements PatchValidator
             )
         );
       }
-      
+
       if (clientNumber.equals(codeNode.asText())) {
         return Mono.error(
             new ValidationException(

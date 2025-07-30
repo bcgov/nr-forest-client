@@ -7,7 +7,7 @@ import ca.bc.gov.app.validator.PatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -28,10 +28,8 @@ public class AcronymPatchValidator implements PatchValidator {
   }
 
   @Override
-  public BiFunction<JsonNode, String, Mono<JsonNode>> validate() {
-    return (node, clientNumber) ->
-        validateSize(node)
-            .flatMap(updatedNode -> validateUniqueness(updatedNode));
+  public Function<JsonNode, Mono<JsonNode>> validate(String clientNumber) {
+    return (node) -> validateSize(node).flatMap(this::validateUniqueness);
   }
 
   private static ValidationException getError(String message, String clientNumber) {
@@ -55,7 +53,8 @@ public class AcronymPatchValidator implements PatchValidator {
             Map.of("acronym", List.of(node.get("value").asText()))
         )
         .next()
-        .flatMap(value -> Mono.error(getError("Client acronym already exists", value.clientNumber())))
+        .flatMap(
+            value -> Mono.error(getError("Client acronym already exists", value.clientNumber())))
         .cast(JsonNode.class)
         .defaultIfEmpty(node);
   }

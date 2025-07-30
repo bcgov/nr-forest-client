@@ -48,7 +48,6 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
       .put("value", "ABC");
 
 
-
   @ParameterizedTest
   @MethodSource("validationAllowed")
   @DisplayName("Should check if validation is allowed")
@@ -68,7 +67,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
         );
 
     StepVerifier
-        .create(validator.validate().apply(NODE, "00000001"))
+        .create(validator.validate("00000001").apply(NODE))
         .expectNext(NODE)
         .verifyComplete();
   }
@@ -78,12 +77,12 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
   void shouldFailWithSizeIssue() {
 
     StepVerifier
-        .create(validator.validate().apply(
+        .create(validator.validate("00000001").apply(
             new ObjectMapper().createObjectNode()
-              .put("op", "replace")
-              .put("path", "/client/clientAcronym")
-              .put("value", "W"), 
-            "00000001"))
+                .put("op", "replace")
+                .put("path", "/client/clientAcronym")
+                .put("value", "W")
+        ))
         .expectError(ValidationException.class)
         .verify();
 
@@ -100,7 +99,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
         );
 
     StepVerifier
-        .create(validator.validate().apply(NODE, "00000001"))
+        .create(validator.validate("00000001").apply(NODE))
         .expectError(ValidationException.class)
         .verify();
   }
@@ -108,7 +107,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
   private static Stream<Arguments> validationAllowed() {
     return Stream
         .of(
-            Arguments.of(NODE,true),
+            Arguments.of(NODE, true),
             Arguments.of(new ObjectMapper().createObjectNode()
                 .put("op", "add")
                 .put("path", "/client/clientName")

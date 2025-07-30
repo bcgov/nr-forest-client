@@ -10,7 +10,7 @@ public interface PatchValidator {
 
   Predicate<JsonNode> shouldValidate();
   
-  BiFunction<JsonNode, String, Mono<JsonNode>> validate();
+  Function<JsonNode, Mono<JsonNode>> validate(String clientNumber);
   
   default Function<JsonNode,Mono<JsonNode>> globalValidator(JsonNode globalForestClient, String clientNumber){
     return Mono::just;
