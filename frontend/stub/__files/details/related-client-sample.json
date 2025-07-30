@@ -92,12 +92,12 @@
         {
             "client": {
                 "client": {
-                    "code": "00000177",
-                    "name": "GRAND FARM"
+                    "code": "00000137",
+                    "name": "MATELDA LINDHE"
                 },
                 "location": {
                     "code": "00",
-                    "name": "Headquarters"
+                    "name": "MAPLEWOOD HEIGHTS ADDRESS"
                 }
             },
             "relatedClient": {
