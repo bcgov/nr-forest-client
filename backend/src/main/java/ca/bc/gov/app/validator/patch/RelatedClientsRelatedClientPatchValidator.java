@@ -15,17 +15,17 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
-public class RelatedClientsLocationPatchValidator implements PatchValidator {
+public class RelatedClientsRelatedClientPatchValidator implements PatchValidator {
   
-  private static final Pattern LOCATION_PATH_PATTERN =
-      Pattern.compile("^/relatedClients/(\\d{2})/(\\d+)/client/location$");
+  private static final Pattern RELATED_CLIENT_PATTERN =
+      Pattern.compile("^/relatedClients/(\\d{2})/(\\d+)/relatedClient/client$");
 
   @Override
   public Predicate<JsonNode> shouldValidate() {
     return node -> {
       String op = node.path("op").asText();
       String path = node.path("path").asText();
-      return "replace".equals(op) && LOCATION_PATH_PATTERN.matcher(path).matches();
+      return "replace".equals(op) && RELATED_CLIENT_PATTERN.matcher(path).matches();
     };
   }
 
@@ -40,7 +40,7 @@ public class RelatedClientsLocationPatchValidator implements PatchValidator {
         return Mono.error(
             new ValidationException(
                 List.of(new ValidationError(
-                    path, "A location must be selected", null)
+                    path, "A related client must be selected", null)
                 )
             )
         );
@@ -54,7 +54,17 @@ public class RelatedClientsLocationPatchValidator implements PatchValidator {
         return Mono.error(
             new ValidationException(
                 List.of(new ValidationError(
-                    path, "A location must be selected", null)
+                    path, "A related client must be selected", null)
+                )
+            )
+        );
+      }
+      
+      if (clientNumber.equals(codeNode.asText())) {
+        return Mono.error(
+            new ValidationException(
+                List.of(new ValidationError(
+                    path, "A related client must be different than the primary client", null)
                 )
             )
         );
@@ -63,5 +73,5 @@ public class RelatedClientsLocationPatchValidator implements PatchValidator {
       return Mono.just(node);
     };
   }
-  
+
 }
