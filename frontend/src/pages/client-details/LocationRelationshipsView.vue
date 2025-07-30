@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
-import { OtherRelatedClientEntry, type ActionWords, type ClientLocation, type RelatedClientEntry, type SaveEvent, type UserRole } from "@/dto/CommonTypesDto";
+import {
+  type OtherRelatedClientEntry,
+  type ActionWords,
+  type ClientLocation,
+  type RelatedClientEntry,
+  type SaveEvent,
+  type UserRole,
+} from "@/dto/CommonTypesDto";
 import {
   booleanToYesNo,
   compareAny,
   formatAddress,
   formatLocation,
   formatPhoneNumber,
-  getFormattedHtml,
   includesAnyOf,
   keepScrollBottomPosition as keepScrollBottomPositionFn,
   preserveUnchangedData,
-  removeNullText,
   toTitleCase,
 } from "@/services/ForestClientService";
 
@@ -67,7 +72,7 @@ const sortedData = computed<OtherRelatedClientEntry[]>(() => {
   const result = normalizedData.toSorted(
     (a, b) =>
       compareAny(a.relationship.name, b.relationship.name) ||
-      compareAny(a.isMainParticipant, b.isMainParticipant) ||
+      -compareAny(a.isMainParticipant, b.isMainParticipant) ||
       compareAny(a.otherClient.client.name, b.otherClient.client.name) ||
       compareAny(a.otherClient.location.name, b.otherClient.location.name),
   );
@@ -241,7 +246,7 @@ const valid = ref(false);
               </span>
             </cds-table-cell>
             <cds-table-cell>
-              <span>{{ `${row.percentageOwnership}%` || "-" }}</span>
+              <span>{{ row.percentageOwnership ? `${row.percentageOwnership}%` : "-" }}</span>
             </cds-table-cell>
             <cds-table-cell>
               <span>{{ booleanToYesNo(row.hasSigningAuthority) || "-" }}</span>

@@ -740,7 +740,7 @@ export const formatAddress = (location: ClientLocation): string => {
   return list.join(", ");
 };
 
-export const compareAny = <T extends string | number | boolean>(a: T, b: T): number => {
+export const compareAny = <T>(a: T, b: T): number => {
   if (a < b) {
     return -1;
   }

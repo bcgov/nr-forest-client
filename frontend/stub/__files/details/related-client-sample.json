@@ -25,7 +25,7 @@
                 "code": "JV",
                 "name": "Joint Venture Participant"
             },
-            "percentageOwnership": 15.0,
+            "percentageOwnership": null,
             "hasSigningAuthority": null,
             "isMainParticipant": false
         }
@@ -88,6 +88,35 @@
             "percentageOwnership": 33.0,
             "hasSigningAuthority": false,
             "isMainParticipant": true
+        },
+        {
+            "client": {
+                "client": {
+                    "code": "00000177",
+                    "name": "GRAND FARM"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "Headquarters"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000001",
+                    "name": "Thiz"
+                },
+                "location": {
+                    "code": "01",
+                    "name": "Accountant address"
+                }
+            },
+            "relationship": {
+                "code": "SH",
+                "name": "Shareholder"
+            },
+            "percentageOwnership": 50.0,
+            "hasSigningAuthority": false,
+            "isMainParticipant": false
         }
     ]
 }
