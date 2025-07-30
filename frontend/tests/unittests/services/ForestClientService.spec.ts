@@ -859,10 +859,27 @@ describe("Reason Fields Handling", () => {
 });
 
 describe("formatAddress", () => {
+  const location: ClientLocation = {
+    addressOne: "123 Main St",
+    addressTwo: null,
+    addressThree: null,
+    city: "Metropolis",
+    provinceCode: "BC",
+    provinceDesc: "British Columbia",
+    countryCode: "CA",
+    countryDesc: "Canada",
+    postalCode: "V1V1V1",
+  } as ClientLocation;
+
   it("returns a formatted address string", () => {
+    const result = formatAddress(location);
+    expect(result).toEqual("123 Main St, Metropolis, BC, Canada, V1V1V1");
+  });
+
+  it("uses addressTwo as the street address when it's the last non-empty address part", () => {
     const location: ClientLocation = {
-      addressOne: "123 Main St",
-      addressTwo: null,
+      addressOne: "Skipped",
+      addressTwo: "123 Main St",
       addressThree: null,
       city: "Metropolis",
       provinceCode: "BC",
@@ -873,5 +890,23 @@ describe("formatAddress", () => {
     } as ClientLocation;
     const result = formatAddress(location);
     expect(result).toEqual("123 Main St, Metropolis, BC, Canada, V1V1V1");
+    expect(result).not.toContain("Skipped");
+  });
+
+  it("uses addressThree as the street address when it's non-empty", () => {
+    const location: ClientLocation = {
+      addressOne: "Skipped",
+      addressTwo: "Skipped",
+      addressThree: "123 Main St",
+      city: "Metropolis",
+      provinceCode: "BC",
+      provinceDesc: "British Columbia",
+      countryCode: "CA",
+      countryDesc: "Canada",
+      postalCode: "V1V1V1",
+    } as ClientLocation;
+    const result = formatAddress(location);
+    expect(result).toEqual("123 Main St, Metropolis, BC, Canada, V1V1V1");
+    expect(result).not.toContain("Skipped");
   });
 });
