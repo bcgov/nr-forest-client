@@ -6,6 +6,7 @@ import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.validator.PatchValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
@@ -43,8 +44,9 @@ public class AdminRolePatchValidator implements PatchValidator {
   }
 
   @Override
-  public Function<JsonNode, Mono<JsonNode>> validate() {
-    return Mono::just; // No specific validation here, it will be handled by the global validator
+  public BiFunction<JsonNode, String, Mono<JsonNode>> validate() {
+    // No specific validation here, it will be handled by the global validator
+    return (node, clientNumber) -> Mono.just(node);
   }
 
   @Override

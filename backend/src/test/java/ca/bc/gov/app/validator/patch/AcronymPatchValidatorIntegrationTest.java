@@ -68,7 +68,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
         );
 
     StepVerifier
-        .create(validator.validate().apply(NODE))
+        .create(validator.validate().apply(NODE, "00000001"))
         .expectNext(NODE)
         .verifyComplete();
   }
@@ -78,10 +78,12 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
   void shouldFailWithSizeIssue() {
 
     StepVerifier
-        .create(validator.validate().apply(new ObjectMapper().createObjectNode()
-            .put("op", "replace")
-            .put("path", "/client/clientAcronym")
-            .put("value", "W")))
+        .create(validator.validate().apply(
+            new ObjectMapper().createObjectNode()
+              .put("op", "replace")
+              .put("path", "/client/clientAcronym")
+              .put("value", "W"), 
+            "00000001"))
         .expectError(ValidationException.class)
         .verify();
 
@@ -98,7 +100,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
         );
 
     StepVerifier
-        .create(validator.validate().apply(NODE))
+        .create(validator.validate().apply(NODE, "00000001"))
         .expectError(ValidationException.class)
         .verify();
   }

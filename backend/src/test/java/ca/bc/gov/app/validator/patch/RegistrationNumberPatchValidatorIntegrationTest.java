@@ -68,7 +68,7 @@ class RegistrationNumberPatchValidatorIntegrationTest extends AbstractTestContai
   void shouldNotValidateAsNoCodeExist() {
     validator
         .validate()
-        .apply(ID)
+        .apply(ID, "00000001")
         .as(StepVerifier::create)
         .expectNext(ID)
         .verifyComplete();

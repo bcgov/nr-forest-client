@@ -37,7 +37,7 @@ class BirthdatePatchValidatorIntegrationTest extends AbstractTestContainerIntegr
   void shouldProceedWithNoIssues() {
 
     StepVerifier
-        .create(validator.validate().apply(NODE))
+        .create(validator.validate().apply(NODE, "00000001"))
         .expectNext(MAPPER.createObjectNode()
             .put("op", "replace")
             .put("path", "/client/birthdate")
