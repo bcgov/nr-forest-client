@@ -230,7 +230,7 @@ const valid = ref(false);
                 >
                   {{ row.otherClient.client.code }}
                 </a>
-                , {{ row.otherClient.client.name }}
+                , {{ toTitleCase(row.otherClient.client.name) }}
                 <a
                   :href="`/clients/details/${row.otherClient.client.code}`"
                   target="_blank"

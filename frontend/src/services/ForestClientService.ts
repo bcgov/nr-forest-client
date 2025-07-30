@@ -599,7 +599,7 @@ export const formatLocation = (code: string, name: string): string => {
 
   const title = parts.join(" - ");
 
-  return title;
+  return toTitleCase(title);
 };
 
 const columnNameToLabelMap: Record<string, string> = {
