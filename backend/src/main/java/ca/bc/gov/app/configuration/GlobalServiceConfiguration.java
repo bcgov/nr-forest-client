@@ -203,7 +203,6 @@ public class GlobalServiceConfiguration {
         .baseUrl(configuration.getBcregistry().getUri())
         .defaultHeader("x-apikey", configuration.getBcregistry().getApiKey())
         .defaultHeader("Account-Id", configuration.getBcregistry().getAccountId())
-        .filter(new HealthExchangeFilterFunction(bcRegistryApiHealthIndicator))
         .build();
   }
 
