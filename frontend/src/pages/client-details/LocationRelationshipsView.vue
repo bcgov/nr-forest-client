@@ -52,14 +52,6 @@ const index = indexString !== null ? Number(indexString) : null;
 
 const sortedData = computed<OtherRelatedClientEntry[]>(() => {
   const normalizedData = props.data.map((entry) => {
-    // const {
-    //   client: _c,
-    //   relatedClient: _r,
-    //   ...result
-    // } = {
-    //   ...entry,
-    //   otherClient: entry.isMainParticipant ? entry.relatedClient : entry.client,
-    // };
     const result = {
       ...entry,
       otherClient: entry.isMainParticipant ? entry.relatedClient : entry.client,
@@ -78,11 +70,6 @@ const sortedData = computed<OtherRelatedClientEntry[]>(() => {
   );
   return result;
 });
-
-const businessPhone = computed(() => formatPhoneNumber(props.data.businessPhone));
-const cellPhone = computed(() => formatPhoneNumber(props.data.cellPhone));
-const homePhone = computed(() => formatPhoneNumber(props.data.homePhone));
-const faxNumber = computed(() => formatPhoneNumber(props.data.faxNumber));
 
 let originalData: RelatedClientEntry;
 const formData = ref<RelatedClientEntry>();
