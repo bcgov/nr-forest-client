@@ -25,6 +25,7 @@ import {
   formatLocation,
   preserveUnchangedData,
   formatAddress,
+  compareAny,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type { UserRole, ClientDetails, ClientLocation, ClientContact } from "@/dto/CommonTypesDto";
@@ -908,5 +909,31 @@ describe("formatAddress", () => {
     const result = formatAddress(location);
     expect(result).toEqual("123 Main St, Metropolis, BC, Canada, V1V1V1");
     expect(result).not.toContain("Skipped");
+  });
+});
+
+describe("compareAny", () => {
+  it.each([
+    [25, 25], // number
+    ["bird", "bird"], // string
+    [true, true], // boolean
+  ])("returns 0 when values are equal (%s and %s)", (a, b) => {
+    expect(compareAny(a, b)).toEqual(0);
+  });
+
+  it.each([
+    [25, 30], // number
+    ["bird", "house"], // string
+    [false, true], // boolean
+  ])("returns -1 when the first value is less than the second one (%s and %s)", (a, b) => {
+    expect(compareAny(a, b)).toEqual(-1);
+  });
+
+  it.each([
+    [25, 20], // number
+    ["bird", "air"], // string
+    [true, false], // boolean
+  ])("returns 1 when the first value is greater than the second one (%s and %s)", (a, b) => {
+    expect(compareAny(a, b)).toEqual(1);
   });
 });
