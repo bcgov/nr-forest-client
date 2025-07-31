@@ -5,13 +5,11 @@ import static java.util.function.Predicate.not;
 
 import ca.bc.gov.app.dto.FieldReasonDto;
 import ca.bc.gov.app.entity.ClientUpdateReasonEntity;
-import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.repository.ClientUpdateReasonRepository;
 import ca.bc.gov.app.repository.ForestClientRepository;
 import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

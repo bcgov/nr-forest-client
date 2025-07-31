@@ -149,18 +149,12 @@ public class ClientService {
   public Mono<ForestClientDetailsDto> getClientDetailsByClientNumber(String clientNumber) {
     return legacyService
         .searchByClientNumber(clientNumber)
-        .flatMap(forestClientDetailsDto -> Mono
-            .just(forestClientDetailsDto)      
-            .onErrorContinue(UnexpectedErrorException.class, (ex, obj) ->
-                log.error("Unexpected error occurred while fetching data for client number: {}",
-                    clientNumber)
-            )
-            .switchIfEmpty(
-                Mono.just(forestClientDetailsDto)
-                    .doOnNext(dto -> log.info(
-                        "Corporation registration number not provided. Returning legacy details."))
-            )
-        );
+        .flatMap(details ->
+            legacyService
+                .getRelatedClientList(clientNumber)
+                .map(details::withRelatedClients)
+                .defaultIfEmpty(details)
+            );
   }
   
   public Mono<String> getGoodStandingIndicator(String clientNumber) {

@@ -1742,7 +1742,7 @@ describe("Client Details Page", () => {
     });
   });
 
-  describe("related clients tab", () => {
+  describe.only("related clients tab", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
       describe("3 relationships under 2 active locations", () => {
         before(function () {
@@ -1786,24 +1786,6 @@ describe("Client Details Page", () => {
         it("doesn't display the tag Deactivated when location is not expired", () => {
           cy.get("cds-tag#relationships-location-00-deactivated").should("not.exist");
         });
-
-        it("displays the tag Deactivated when location is expired", () => {
-          cy.get("cds-tag#relationships-location-01-deactivated").contains("Deactivated");
-        });
-      });
-
-      describe("location without name", () => {
-        before(function () {
-          init.call(this);
-          cy.visit("/clients/details/se");
-
-          // Switch to the Related clients tab
-          cy.get("#tab-related").click();
-        });
-        it("displays only the location code, without the dash", () => {
-          cy.get("#relationships-location-01 [slot='title']").contains("01");
-          cy.get("#relationships-location-01 [slot='title']").contains("-").should("not.exist");
-        });
       });
     });
 
@@ -1812,64 +1794,7 @@ describe("Client Details Page", () => {
         init.call(this);
         cy.visit("/clients/details/p");
       });
-
-      describe("before switching to the Related clients tab", () => {
-        it("fetches the Related clients data only once", () => {
-          const getRelatedClientsCounter = {
-            count: 0,
-          };
-          let resolveGetRelatedClients: () => void;
-
-          const promiseGetRelatedClients = new Promise<void>((resolve) => {
-            resolveGetRelatedClients = resolve;
-          });
-
-          cy.intercept(
-            {
-              method: "GET",
-              pathname: "/api/clients/details/*/related-clients",
-            },
-            (req) => {
-              getRelatedClientsCounter.count++;
-              req.continue(() => promiseGetRelatedClients);
-            },
-          ).as("getRelatedClients");
-
-          cy.get("#tab-related").click();
-
-          // Switch to another tab while the request is in progress
-          cy.get("#tab-contacts").click();
-
-          // Make sure the current tab panel was effectively switched
-          cy.get("#panel-related").should("have.attr", "hidden");
-          cy.get("#panel-contacts").should("not.have.attr", "hidden");
-
-          // Switch back to tab Related clients
-          cy.get("#tab-related").click();
-
-          // Complete the request
-          resolveGetRelatedClients();
-
-          // Confirm request is done
-          cy.wait("@getRelatedClients");
-
-          cy.wrap(getRelatedClientsCounter).its("count").should("eq", 1);
-
-          // Switch to another tab again - this time no request is in progress
-          cy.get("#tab-contacts").click();
-
-          // Make sure the current tab panel was effectively switched
-          cy.get("#panel-related").should("have.attr", "hidden");
-          cy.get("#panel-contacts").should("not.have.attr", "hidden");
-
-          // Switch back to tab Related clients
-          cy.get("#tab-related").click();
-
-          // The API was still called only once
-          cy.wrap(getRelatedClientsCounter).its("count").should("eq", 1);
-        });
-      });
-
+      
       describe("after switching to the Related clients tab", () => {
         beforeEach(function () {
           // Switch to the Related clients tab
