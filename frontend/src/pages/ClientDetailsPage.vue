@@ -1182,7 +1182,7 @@ const formatRelatedLocation = (locationCode: string) => {
                     </span>
                   </div>
                   <location-relationships-view
-                    :data="relatedClientList[locationCode]"
+                    :data="data.relatedClients[locationCode]"
                     :location="findLocation(locationCode)"
                     :is-reloading="relatedLocationsState[locationCode]?.isReloading"
                     :user-roles="userRoles"
