@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  * filter operates in both reactive and non-reactive contexts, ensuring compatibility across
  * different parts.
  */
-@Component
+//@Component
 @Slf4j
 @Order(-2)
 public class UserRolesWebFilter extends ContextPropagatorWebFilter {
