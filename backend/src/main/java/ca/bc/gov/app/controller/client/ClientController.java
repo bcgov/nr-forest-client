@@ -143,7 +143,7 @@ public class ClientController {
   public Flux<ClientLookUpDto> findByClientName(@PathVariable String name) {
     log.info("Requesting a list of clients with name {} from the client service.", name);
     return clientService
-        .findByClientNameOrIncorporation(name)
+        .findByClientNameOrIncorporation(name, null)
         .map(client -> client.withName(WordUtils.capitalize(client.name())));
   }
 
@@ -163,7 +163,7 @@ public class ClientController {
     log.info("Requesting a client with registration number {} from the client service.",
         registrationNumber);
     return clientService
-        .findByClientNameOrIncorporation(registrationNumber)
+        .findByClientNameOrIncorporation(null, registrationNumber)
         .next()
         .switchIfEmpty(Mono.error(new NoClientDataFound(registrationNumber)));
   }
