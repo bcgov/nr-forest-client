@@ -441,8 +441,8 @@ export interface RelatedClientEntry extends BaseRelatedClientEntry {
 
 export interface OtherRelatedClientEntry extends BaseRelatedClientEntry {
   /**
-   * Represents the *other* client - in opposition to the current client - in a relationship, be it
-   * the main participant (the `client`) or not (the `relatedClient`).
+   * Represents the *other* client - in opposition to the *current* client - in a relationship, be
+   * it the main participant (the `client`) or not (the `relatedClient`).
    */
   otherClient: RelatedClientDto;
 }

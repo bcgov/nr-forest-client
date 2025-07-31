@@ -1754,7 +1754,7 @@ describe("Client Details Page", () => {
         });
 
         it("displays the number of relationships", () => {
-          cy.get("#panel-related").contains("03 client relationships");
+          cy.get("#panel-related").contains("04 client relationships");
         });
 
         it("displays one collapsed accordion component for each location", () => {
@@ -1775,7 +1775,7 @@ describe("Client Details Page", () => {
         });
       });
 
-      describe("3 relationships under 2 locations - 1 active and 1 deactivated", () => {
+      describe("4 relationships under 2 locations - 1 active and 1 deactivated", () => {
         before(function () {
           init.call(this);
           cy.visit("/clients/details/pd");

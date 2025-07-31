@@ -1202,8 +1202,6 @@ const formatRelatedLocation = (locationCode: string) => {
                     :location="findLocation(locationCode)"
                     :is-reloading="relatedLocationsState[locationCode]?.isReloading"
                     :user-roles="userRoles"
-                    :validations="[]"
-                    keep-scroll-bottom-position
                     :createMode="locationCode === null"
                   />
                 </cds-accordion-item>
