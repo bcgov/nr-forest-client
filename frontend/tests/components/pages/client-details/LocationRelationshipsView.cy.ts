@@ -202,7 +202,7 @@ describe("<location-relationships-view />", () => {
           .find("a")
           .should("have.attr", "href", "/clients/details/00000137")
           .should("have.attr", "target", "_blank")
-          .contains("00 - Maplewood Heights Address");
+          .contains("00 - MAPLEWOOD HEIGHTS ADDRESS");
 
         // Percentage owned
         cy.get("cds-table-cell").eq(3).contains("-");
@@ -268,7 +268,7 @@ describe("<location-relationships-view />", () => {
           .find("a")
           .should("have.attr", "href", "/clients/details/00000172")
           .should("have.attr", "target", "_blank")
-          .contains("00 - Main Office");
+          .contains("00 - MAIN OFFICE");
 
         // Percentage owned
         cy.get("cds-table-cell").eq(3).contains("33%");
