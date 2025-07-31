@@ -188,7 +188,9 @@ public class BcRegistryService {
             .name(ApplicationConstant.REQUEST_BCREGISTRY)
             .tag("kind", "docreq")
             .tap(Micrometer.observation(registry))
+            .doOnNext(entry -> log.info("Document request response for {}: {}", value, entry))
             .flatMapIterable(BcRegistryDocumentRequestResponseDto::documents)
+            .doOnNext(entry -> log.info("Found document entry for {}: {}", value, entry))
             .map(BcRegistryDocumentRequestDocumentDto::documentKey)
             .doOnNext(documentKey -> log.info("Loading document {} for identifier {}", documentKey,
                 value))
@@ -200,6 +202,7 @@ public class BcRegistryService {
   }
 
   private Mono<BcRegistryDocumentDto> getDocumentData(String identifier, String documentKey) {
+    log.info("Requesting document {} for identifier {} for details", documentKey, identifier);
     return
         bcRegistryApi
             .get()
