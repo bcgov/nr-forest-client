@@ -20,12 +20,13 @@ public class RelatedClientsLocationPatchValidatorIntegrationTest
   @Autowired
   private RelatedClientsLocationPatchValidator validator;
 
+  public static final String PATCH_PATH = "/relatedClients/00/0/client/location";
   public static final String CLIENT_NUMBER = "01000001";
   public static final ObjectMapper MAPPER = new ObjectMapper();
 
   private static final JsonNode NODE = MAPPER.createObjectNode()
       .put("op", "replace")
-      .put("path", "/relatedClients/00/0/client/location")
+      .put("path", PATCH_PATH)
       .set("value", MAPPER.createObjectNode()
           .put("code", "00")
           .put("name", "Mailing address"));
@@ -51,7 +52,7 @@ public class RelatedClientsLocationPatchValidatorIntegrationTest
         Arguments.of(NODE, true),
         Arguments.of(MAPPER.createObjectNode()
             .put("op", "add")
-            .put("path", "/relatedClients/00/0/client/location")
+            .put("path", PATCH_PATH)
             .set("value", MAPPER.createObjectNode()
                 .put("code", "00")
                 .put("name", "Mailing address")), false)
