@@ -20,7 +20,7 @@ public class RelatedClientsPercentageOwnedPatchValidatorIntegrationTest
   @Autowired
   private RelatedClientsPercentageOwnedPatchValidator validator;
 
-  public static final String PATCH_PATH = "/relatedClients/00/0/client/percentageOwnership";
+  public static final String PATCH_PATH = "/relatedClients/00/0/percentageOwnership";
   public static final String CLIENT_NUMBER = "01000001";
   public static final ObjectMapper MAPPER = new ObjectMapper();
 
