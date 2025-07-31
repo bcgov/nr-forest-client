@@ -8,9 +8,13 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+@Component
+@RequiredArgsConstructor
 public class RelatedClientsRelatedClientLocationPatchValidator implements PatchValidator {
 
   private static final Pattern RELATED_CLIENT_LOCATION_PATH_PATTERN =
