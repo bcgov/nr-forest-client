@@ -13,17 +13,23 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
 
-@DisplayName("Integrated Test | Patch Validator : Birthdate")
-class BirthdatePatchValidatorIntegrationTest extends AbstractTestContainerIntegrationTest {
+@DisplayName("Integrated Test | Patch Validator : Related Clients - Location")
+public class RelatedClientsLocationPatchValidatorIntegrationTest
+    extends AbstractTestContainerIntegrationTest {
 
   @Autowired
-  private BirthdatePatchValidator validator;
+  private RelatedClientsLocationPatchValidator validator;
 
+  public static final String PATCH_PATH = "/relatedClients/00/0/client/location";
+  public static final String CLIENT_NUMBER = "01000001";
   public static final ObjectMapper MAPPER = new ObjectMapper();
+
   private static final JsonNode NODE = MAPPER.createObjectNode()
       .put("op", "replace")
-      .put("path", "/client/birthdate")
-      .put("value", "1971-02-03");
+      .put("path", PATCH_PATH)
+      .set("value", MAPPER.createObjectNode()
+          .put("code", "00")
+          .put("name", "Mailing address"));
 
   @ParameterizedTest
   @MethodSource("validationAllowed")
@@ -35,25 +41,22 @@ class BirthdatePatchValidatorIntegrationTest extends AbstractTestContainerIntegr
   @Test
   @DisplayName("Should proceed with no issues")
   void shouldProceedWithNoIssues() {
-
     StepVerifier
-        .create(validator.validate("00000001").apply(NODE))
-        .expectNext(MAPPER.createObjectNode()
-            .put("op", "replace")
-            .put("path", "/client/birthdate")
-            .put("value", "1971-02-03 00:00:00"))
+        .create(validator.validate(CLIENT_NUMBER).apply(NODE))
+        .expectNext(NODE)
         .verifyComplete();
   }
 
   private static Stream<Arguments> validationAllowed() {
-    return Stream
-        .of(
-            Arguments.of(NODE, true),
-            Arguments.of(MAPPER.createObjectNode()
-                .put("op", "add")
-                .put("path", "/client/clientName")
-                .put("value", "ABC"), false)
-        );
+    return Stream.of(
+        Arguments.of(NODE, true),
+        Arguments.of(MAPPER.createObjectNode()
+            .put("op", "add")
+            .put("path", PATCH_PATH)
+            .set("value", MAPPER.createObjectNode()
+                .put("code", "00")
+                .put("name", "Mailing address")), false)
+    );
   }
-
+  
 }

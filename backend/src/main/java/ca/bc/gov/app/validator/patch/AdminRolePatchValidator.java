@@ -43,8 +43,9 @@ public class AdminRolePatchValidator implements PatchValidator {
   }
 
   @Override
-  public Function<JsonNode, Mono<JsonNode>> validate() {
-    return Mono::just; // No specific validation here, it will be handled by the global validator
+  public Function<JsonNode, Mono<JsonNode>> validate(String clientNumber) {
+    // No specific validation here, it will be handled by the global validator
+    return Mono::just;
   }
 
   @Override
