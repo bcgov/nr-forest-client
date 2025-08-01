@@ -220,10 +220,6 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
-      annotations:
-        haproxy.router.openshift.io/rate-limit-connections: "true"
-        haproxy.router.openshift.io/rate-limit-connections.rate-http: "150"
-        haproxy.router.openshift.io/rate-limit-connections.rate-tcp: "75"
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
