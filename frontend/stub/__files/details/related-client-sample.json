@@ -25,8 +25,8 @@
                 "code": "JV",
                 "name": "Joint Venture Participant"
             },
-            "percentageOwnership": 15.0,
-            "hasSigningAuthority": false,
+            "percentageOwnership": 50.0,
+            "hasSigningAuthority": null,
             "isMainParticipant": false
         }
     ],
@@ -88,6 +88,35 @@
             "percentageOwnership": 33.0,
             "hasSigningAuthority": false,
             "isMainParticipant": true
+        },
+        {
+            "client": {
+                "client": {
+                    "code": "00000137",
+                    "name": "MATELDA LINDHE"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "MAPLEWOOD HEIGHTS ADDRESS"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000001",
+                    "name": "Thiz"
+                },
+                "location": {
+                    "code": "01",
+                    "name": "Accountant address"
+                }
+            },
+            "relationship": {
+                "code": "PA",
+                "name": "General Partner"
+            },
+            "percentageOwnership": null,
+            "hasSigningAuthority": null,
+            "isMainParticipant": false
         }
     ]
 }
