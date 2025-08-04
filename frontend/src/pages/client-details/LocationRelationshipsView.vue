@@ -81,7 +81,7 @@ const canEdit = computed(() =>
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
-          <cds-table-row v-for="row in sortedData" :key="row">
+          <cds-table-row v-for="(row, rowIndex) in sortedData" :key="row">
             <cds-table-cell />
             <cds-table-cell>
               <div class="gap-0_5-rem">
@@ -119,7 +119,11 @@ const canEdit = computed(() =>
             <cds-table-cell v-if="canEdit">
               <div class="gap-0_5-rem">
                 <cds-tooltip align="top-right">
-                  <cds-button kind="ghost" :disabled="!row.isMainParticipant">
+                  <cds-button
+                    :id="`location-${indexString}-row-${rowIndex}-EditBtn`"
+                    kind="ghost"
+                    :disabled="!row.isMainParticipant"
+                  >
                     <Edit16 slot="icon" />
                   </cds-button>
                   <cds-tooltip-content v-show="!row.isMainParticipant" autoalign>
@@ -129,7 +133,12 @@ const canEdit = computed(() =>
                   </cds-tooltip-content>
                 </cds-tooltip>
                 <cds-tooltip align="top-right">
-                  <cds-button kind="ghost" class="svg-danger" :disabled="!row.isMainParticipant">
+                  <cds-button
+                    :id="`location-${indexString}-row-${rowIndex}-DeleteBtn`"
+                    kind="ghost"
+                    class="svg-danger"
+                    :disabled="!row.isMainParticipant"
+                  >
                     <TrashCan16 slot="icon" />
                   </cds-button>
                   <cds-tooltip-content v-show="!row.isMainParticipant">
