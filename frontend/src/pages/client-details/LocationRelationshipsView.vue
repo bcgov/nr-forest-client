@@ -14,6 +14,8 @@ import {
   includesAnyOf,
   toTitleCase,
 } from "@/services/ForestClientService";
+import Edit16 from "@carbon/icons-vue/es/edit/16";
+import TrashCan16 from "@carbon/icons-vue/es/trash-can/16";
 
 const props = defineProps<{
   data: RelatedClientEntry[];
@@ -115,7 +117,28 @@ const canEdit = computed(() =>
               <span>{{ booleanToYesNo(row.hasSigningAuthority) || "-" }}</span>
             </cds-table-cell>
             <cds-table-cell v-if="canEdit">
-              <!-- TODO: Actions column contents -->
+              <div class="gap-0_5-rem">
+                <cds-tooltip align="top-right">
+                  <cds-button kind="ghost" :disabled="!row.isMainParticipant">
+                    <Edit16 slot="icon" />
+                  </cds-button>
+                  <cds-tooltip-content v-show="!row.isMainParticipant" autoalign>
+                    Go to “{{ row.otherClient.client.code }},
+                    {{ toTitleCase(row.otherClient.client.name) }}” client’s page to edit this
+                    relationship
+                  </cds-tooltip-content>
+                </cds-tooltip>
+                <cds-tooltip align="top-right">
+                  <cds-button kind="ghost" class="svg-danger" :disabled="!row.isMainParticipant">
+                    <TrashCan16 slot="icon" />
+                  </cds-button>
+                  <cds-tooltip-content v-show="!row.isMainParticipant">
+                    Go to “{{ row.otherClient.client.code }},
+                    {{ toTitleCase(row.otherClient.client.name) }}” client’s page to delete this
+                    relationship
+                  </cds-tooltip-content>
+                </cds-tooltip>
+              </div>
             </cds-table-cell>
             <cds-table-cell />
           </cds-table-row>
