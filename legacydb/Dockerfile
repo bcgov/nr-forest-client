@@ -1,4 +1,4 @@
-FROM gvenzl/oracle-free:23.8-slim-faststart
+FROM gvenzl/oracle-free:23.9-slim-faststart
 
 # Copy the custom scripts we need to the image
 COPY --chown=oracle:oracle removeDatabase ${ORACLE_BASE}/removeDatabase
