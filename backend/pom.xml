@@ -43,7 +43,7 @@
         <testcontainers.version>1.21.3</testcontainers.version>
         <logback.version>1.5.18</logback.version>
         <oci.revision>${project.version}</oci.revision>
-        <nimbus-jose-jwt.version>10.4</nimbus-jose-jwt.version>
+        <nimbus-jose-jwt.version>10.4.1</nimbus-jose-jwt.version>
         <spring-security-core.version>6.5.2</spring-security-core.version>
         <micrometer.version>1.15.2</micrometer.version>
         <micrometer-tracing.version>1.5.2</micrometer-tracing.version>
