@@ -43,7 +43,7 @@ public class RelatedClientsRelationshipTypePatchValidator implements PatchValida
       JsonNode nameNode = valueNode.get("name");
 
       if (isBlank(codeNode) || isBlank(nameNode)) {
-        return error(path, "A related client must have a relationship type");
+        return error(path, "A related client must have a valid relationship type");
       }
 
       return Mono.just(node);

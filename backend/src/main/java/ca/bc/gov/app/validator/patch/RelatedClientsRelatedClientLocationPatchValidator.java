@@ -43,7 +43,7 @@ public class RelatedClientsRelatedClientLocationPatchValidator implements PatchV
       JsonNode nameNode = valueNode.get("name");
 
       if (isBlank(codeNode) || isBlank(nameNode)) {
-        return error(path, "A related client must have a location");
+        return error(path, "A related client must have a valid location");
       }
 
       return Mono.just(node);

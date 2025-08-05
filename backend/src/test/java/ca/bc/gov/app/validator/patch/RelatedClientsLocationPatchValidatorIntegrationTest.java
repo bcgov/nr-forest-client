@@ -1,5 +1,6 @@
 package ca.bc.gov.app.validator.patch;
 
+import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,6 +58,22 @@ public class RelatedClientsLocationPatchValidatorIntegrationTest
                 .put("code", "00")
                 .put("name", "Mailing address")), false)
     );
+  }
+  
+  @Test
+  @DisplayName("Should fail if location code is blank")
+  void shouldFailIfCodeIsBlank() {
+    JsonNode invalidNode = MAPPER.createObjectNode()
+        .put("op", "replace")
+        .put("path", PATCH_PATH)
+        .set("value", MAPPER.createObjectNode()
+            .put("code", "")
+            .put("name", "Mailing address"));
+
+    StepVerifier
+        .create(validator.validate(CLIENT_NUMBER).apply(invalidNode))
+        .expectError(ValidationException.class)
+        .verify();
   }
   
 }

@@ -1,5 +1,6 @@
 package ca.bc.gov.app.validator.patch;
 
+import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +44,34 @@ public class RelatedClientsPercentageOwnedPatchValidatorIntegrationTest
         .create(validator.validate(CLIENT_NUMBER).apply(NODE))
         .expectNext(NODE)
         .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Should fail if percentage is out of bounds")
+  void shouldFailIfPercentageOutOfBounds() {
+    JsonNode node = MAPPER.createObjectNode()
+        .put("op", "replace")
+        .put("path", PATCH_PATH)
+        .put("value", 150.00);
+
+    StepVerifier
+        .create(validator.validate(CLIENT_NUMBER).apply(node))
+        .expectError(ValidationException.class)
+        .verify();
+  }
+
+  @Test
+  @DisplayName("Should fail if percentage is not a number")
+  void shouldFailIfPercentageIsNotNumber() {
+    JsonNode node = MAPPER.createObjectNode()
+        .put("op", "replace")
+        .put("path", PATCH_PATH)
+        .put("value", "not-a-number");
+
+    StepVerifier
+        .create(validator.validate(CLIENT_NUMBER).apply(node))
+        .expectError(ValidationException.class)
+        .verify();
   }
 
   private static Stream<Arguments> validationAllowed() {
