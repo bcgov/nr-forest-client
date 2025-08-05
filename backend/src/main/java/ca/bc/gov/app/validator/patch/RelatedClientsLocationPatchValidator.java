@@ -31,37 +31,39 @@ public class RelatedClientsLocationPatchValidator implements PatchValidator {
 
   @Override
   public Function<JsonNode, Mono<JsonNode>> validate(String clientNumber) {
-    return (node) -> {
+    return node -> {
+      String path = node.get("path").asText();
       JsonNode valueNode = node.get("value");
 
-      String path = node.get("path").asText();
-
-      if (valueNode == null || valueNode.isNull() || valueNode.isMissingNode()) {
-        return Mono.error(
-            new ValidationException(
-                List.of(new ValidationError(
-                    path, "A location must be selected", null)
-                )
-            )
-        );
+      if (isMissing(valueNode)) {
+        return error(path, "A location must be selected");
       }
 
       JsonNode codeNode = valueNode.get("code");
       JsonNode nameNode = valueNode.get("name");
 
-      if (codeNode == null || StringUtils.isBlank(codeNode.asText())
-          || nameNode == null || StringUtils.isBlank(nameNode.asText())) {
-        return Mono.error(
-            new ValidationException(
-                List.of(new ValidationError(
-                    path, "A location must be selected", null)
-                )
-            )
-        );
+      if (isBlank(codeNode) || isBlank(nameNode)) {
+        return error(path, "A location must be selected");
       }
 
       return Mono.just(node);
     };
   }
 
+  private boolean isMissing(JsonNode node) {
+    return node == null || node.isNull() || node.isMissingNode();
+  }
+
+  private boolean isBlank(JsonNode node) {
+    return node == null || StringUtils.isBlank(node.asText());
+  }
+
+  private Mono<JsonNode> error(String path, String message) {
+    return Mono.error(
+        new ValidationException(
+            List.of(new ValidationError(path, message, null))
+        )
+    );
+  }
+  
 }
