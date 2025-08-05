@@ -24,6 +24,8 @@ import {
   indexToLocationCode,
   formatLocation,
   preserveUnchangedData,
+  formatAddress,
+  compareAny,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type { UserRole, ClientDetails, ClientLocation, ClientContact } from "@/dto/CommonTypesDto";
@@ -854,5 +856,84 @@ describe("Reason Fields Handling", () => {
         expect(result.b).toEqual(null);
       });
     });
+  });
+});
+
+describe("formatAddress", () => {
+  const location: ClientLocation = {
+    addressOne: "123 Main St",
+    addressTwo: null,
+    addressThree: null,
+    city: "Metropolis",
+    provinceCode: "BC",
+    provinceDesc: "British Columbia",
+    countryCode: "CA",
+    countryDesc: "Canada",
+    postalCode: "V1V1V1",
+  } as ClientLocation;
+
+  it("returns a formatted address string", () => {
+    const result = formatAddress(location);
+    expect(result).toEqual("123 Main St, Metropolis, BC, Canada, V1V1V1");
+  });
+
+  it("uses addressTwo as the street address when it's the last non-empty address part", () => {
+    const location: ClientLocation = {
+      addressOne: "Skipped",
+      addressTwo: "123 Main St",
+      addressThree: null,
+      city: "Metropolis",
+      provinceCode: "BC",
+      provinceDesc: "British Columbia",
+      countryCode: "CA",
+      countryDesc: "Canada",
+      postalCode: "V1V1V1",
+    } as ClientLocation;
+    const result = formatAddress(location);
+    expect(result).toEqual("123 Main St, Metropolis, BC, Canada, V1V1V1");
+    expect(result).not.toContain("Skipped");
+  });
+
+  it("uses addressThree as the street address when it's non-empty", () => {
+    const location: ClientLocation = {
+      addressOne: "Skipped",
+      addressTwo: "Skipped",
+      addressThree: "123 Main St",
+      city: "Metropolis",
+      provinceCode: "BC",
+      provinceDesc: "British Columbia",
+      countryCode: "CA",
+      countryDesc: "Canada",
+      postalCode: "V1V1V1",
+    } as ClientLocation;
+    const result = formatAddress(location);
+    expect(result).toEqual("123 Main St, Metropolis, BC, Canada, V1V1V1");
+    expect(result).not.toContain("Skipped");
+  });
+});
+
+describe("compareAny", () => {
+  it.each([
+    [25, 25], // number
+    ["bird", "bird"], // string
+    [true, true], // boolean
+  ])("returns 0 when values are equal (%s and %s)", (a, b) => {
+    expect(compareAny(a, b)).toEqual(0);
+  });
+
+  it.each([
+    [25, 30], // number
+    ["bird", "house"], // string
+    [false, true], // boolean
+  ])("returns -1 when the first value is less than the second one (%s and %s)", (a, b) => {
+    expect(compareAny(a, b)).toEqual(-1);
+  });
+
+  it.each([
+    [25, 20], // number
+    ["bird", "air"], // string
+    [true, false], // boolean
+  ])("returns 1 when the first value is greater than the second one (%s and %s)", (a, b) => {
+    expect(compareAny(a, b)).toEqual(1);
   });
 });

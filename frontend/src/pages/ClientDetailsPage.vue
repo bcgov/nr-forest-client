@@ -44,6 +44,8 @@ import {
   updateSelectedReason,
   formatLocation,
   extractAddressParts,
+  formatAddress,
+  compareAny,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -66,6 +68,7 @@ import {
 import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
+import LocationRelationshipsView from "@/pages/client-details/LocationRelationshipsView.vue";
 import HistoryView from "@/pages/client-details/HistoryView.vue";
 import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 
@@ -135,15 +138,6 @@ const formatCount = (count = 0) => {
   return String(count).padStart(2, "0");
 };
 
-const formatAddress = (location: ClientLocation) => {
-  const { city, provinceCode, countryDesc, postalCode } = location;
-
-  const { streetAddress } = extractAddressParts(location);
-
-  const list = [streetAddress, city, provinceCode, countryDesc, postalCode];
-  return list.join(", ");
-};
-
 const pluralize = (word: string, count = 0) => {
   if (count === 1) {
     return word;
@@ -151,21 +145,11 @@ const pluralize = (word: string, count = 0) => {
   return `${word}s`;
 };
 
-const compareString = (a: string, b: string) => {
-  if (a < b) {
-    return -1;
-  }
-  if (a > b) {
-    return 1;
-  }
-  return 0;
-};
-
 const newLocation = ref<ClientLocation>();
 
 const sortedLocations = computed(() => {
   const result = data.value?.addresses?.toSorted((a, b) =>
-    compareString(a.clientLocnCode, b.clientLocnCode),
+    compareAny(a.clientLocnCode, b.clientLocnCode),
   );
   if (newLocation.value) {
     result.push(newLocation.value);
@@ -214,7 +198,7 @@ const newContact = ref<ClientContact>();
 
 const sortedContacts = computed(() => {
   const result = data.value?.contacts?.toSorted((a, b) =>
-    compareString(a.contactName, b.contactName),
+    compareAny(a.contactName, b.contactName),
   );
   if (newContact.value) {
     result.push(newContact.value);
@@ -1197,7 +1181,13 @@ const formatRelatedLocation = (locationCode: string) => {
                       </cds-tag>
                     </span>
                   </div>
-                  <!-- TODO: Relationship View component (to be created) goes here -->
+                  <location-relationships-view
+                    :data="data.relatedClients[locationCode]"
+                    :location="findLocation(locationCode)"
+                    :is-reloading="relatedLocationsState[locationCode]?.isReloading"
+                    :user-roles="userRoles"
+                    :createMode="locationCode === null"
+                  />
                 </cds-accordion-item>
               </cds-accordion>
             </div>
