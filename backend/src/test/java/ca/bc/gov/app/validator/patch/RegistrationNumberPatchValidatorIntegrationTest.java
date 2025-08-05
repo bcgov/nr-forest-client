@@ -67,7 +67,7 @@ class RegistrationNumberPatchValidatorIntegrationTest extends AbstractTestContai
   @DisplayName("Validation is always allowed")
   void shouldNotValidateAsNoCodeExist() {
     validator
-        .validate()
+        .validate("00000001")
         .apply(ID)
         .as(StepVerifier::create)
         .expectNext(ID)

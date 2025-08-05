@@ -51,7 +51,7 @@ public class ClientPatchService {
                         Mono
                             .just(node)
                             .filter(validator.shouldValidate())
-                            .flatMap(validator.validate())
+                            .flatMap(validator.validate(clientNumber))
                             .flatMap(validator.globalValidator(forestClient, clientNumber))
                     )
                     .reduce(PatchUtils.mergeNodes(mapper))
