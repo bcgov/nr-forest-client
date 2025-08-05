@@ -1742,9 +1742,9 @@ describe("Client Details Page", () => {
     });
   });
 
-  describe.only("related clients tab", () => {
+  describe("related clients tab", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
-      describe("3 relationships under 2 active locations", () => {
+      describe("4 relationships under 2 active locations", () => {
         before(function () {
           init.call(this);
           cy.visit("/clients/details/p");
@@ -1754,7 +1754,7 @@ describe("Client Details Page", () => {
         });
 
         it("displays the number of relationships", () => {
-          cy.get("#panel-related").contains("03 client relationships");
+          cy.get("#panel-related").contains("04 client relationships");
         });
 
         it("displays one collapsed accordion component for each location", () => {
@@ -1775,7 +1775,7 @@ describe("Client Details Page", () => {
         });
       });
 
-      describe("3 relationships under 2 locations - 1 active and 1 deactivated", () => {
+      describe("4 relationships under 2 locations - 1 active and 1 deactivated", () => {
         before(function () {
           init.call(this);
           cy.visit("/clients/details/pd");
@@ -1785,6 +1785,23 @@ describe("Client Details Page", () => {
         });
         it("doesn't display the tag Deactivated when location is not expired", () => {
           cy.get("cds-tag#relationships-location-00-deactivated").should("not.exist");
+        });
+        it("displays the tag Deactivated when location is expired", () => {
+          cy.get("cds-tag#relationships-location-01-deactivated").contains("Deactivated");
+        });
+      });
+
+      describe("location without name", () => {
+        before(function () {
+          init.call(this);
+          cy.visit("/clients/details/se");
+
+          // Switch to the Related clients tab
+          cy.get("#tab-related").click();
+        });
+        it("displays only the location code, without the dash", () => {
+          cy.get("#relationships-location-01 [slot='title']").contains("01");
+          cy.get("#relationships-location-01 [slot='title']").contains("-").should("not.exist");
         });
       });
     });

@@ -39,10 +39,8 @@ describe("<location-view />", () => {
       addressOne: "C/O Tony Pineda",
       addressTwo: "Sample additional info",
       addressThree: "886 Richmond Ave",
-      country: "Canada", // TODO: remove this when response interface is updated
       countryCode: "CA",
       countryDesc: "Canada",
-      province: "SK", // TODO: remove this when response interface is updated
       provinceCode: "SK",
       provinceDesc: "Saskatchewan",
       city: "Hampton",
