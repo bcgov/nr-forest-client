@@ -20,8 +20,8 @@ public class BirthdatePatchValidator implements PatchValidator {
   }
 
   @Override
-  public Function<JsonNode, Mono<JsonNode>> validate() {
-    return node ->
+  public Function<JsonNode, Mono<JsonNode>> validate(String clientNumber) {
+    return (node) ->
         Mono
             .just(node)
             .map(aNode ->
