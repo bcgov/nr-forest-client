@@ -25,7 +25,7 @@ const props = defineProps<{
   createMode?: boolean;
 }>();
 
-const indexString = props.location.clientLocnCode;
+const locationIndex = props.location.clientLocnCode;
 
 const sortedData = computed<OtherRelatedClientEntry[]>(() => {
   const normalizedData = props.data.map((entry) => {
@@ -58,7 +58,7 @@ const canEdit = computed(() =>
     <template v-if="!props.createMode">
       <read-only-component
         label="Mailing address"
-        :id="`location-relationships-${indexString}-mailingAddress`"
+        :id="`location-relationships-${locationIndex}-mailingAddress`"
       >
         <a>
           <span class="body-compact-01 colorless">{{ formatAddress(props.location) }}</span>
@@ -120,7 +120,7 @@ const canEdit = computed(() =>
               <div class="gap-0_5-rem">
                 <cds-tooltip align="top-right">
                   <cds-button
-                    :id="`location-${indexString}-row-${rowIndex}-EditBtn`"
+                    :id="`location-${locationIndex}-row-${rowIndex}-EditBtn`"
                     kind="ghost"
                     :disabled="!row.isMainParticipant"
                   >
@@ -134,7 +134,7 @@ const canEdit = computed(() =>
                 </cds-tooltip>
                 <cds-tooltip align="top-right">
                   <cds-button
-                    :id="`location-${indexString}-row-${rowIndex}-DeleteBtn`"
+                    :id="`location-${locationIndex}-row-${rowIndex}-DeleteBtn`"
                     kind="ghost"
                     class="svg-danger"
                     :disabled="!row.isMainParticipant"
