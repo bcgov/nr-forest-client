@@ -14,6 +14,8 @@ import {
   includesAnyOf,
   toTitleCase,
 } from "@/services/ForestClientService";
+import Edit16 from "@carbon/icons-vue/es/edit/16";
+import TrashCan16 from "@carbon/icons-vue/es/trash-can/16";
 
 const props = defineProps<{
   data: RelatedClientEntry[];
@@ -23,7 +25,7 @@ const props = defineProps<{
   createMode?: boolean;
 }>();
 
-const indexString = props.location.clientLocnCode;
+const locationIndex = props.location.clientLocnCode;
 
 const sortedData = computed<OtherRelatedClientEntry[]>(() => {
   const normalizedData = props.data.map((entry) => {
@@ -56,7 +58,7 @@ const canEdit = computed(() =>
     <template v-if="!props.createMode">
       <read-only-component
         label="Mailing address"
-        :id="`location-relationships-${indexString}-mailingAddress`"
+        :id="`location-relationships-${locationIndex}-mailingAddress`"
       >
         <a>
           <span class="body-compact-01 colorless">{{ formatAddress(props.location) }}</span>
@@ -79,7 +81,7 @@ const canEdit = computed(() =>
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
-          <cds-table-row v-for="row in sortedData" :key="row">
+          <cds-table-row v-for="(row, rowIndex) in sortedData" :key="row">
             <cds-table-cell />
             <cds-table-cell>
               <div class="gap-0_5-rem">
@@ -115,7 +117,37 @@ const canEdit = computed(() =>
               <span>{{ booleanToYesNo(row.hasSigningAuthority) || "-" }}</span>
             </cds-table-cell>
             <cds-table-cell v-if="canEdit">
-              <!-- TODO: Actions column contents -->
+              <div class="gap-0_5-rem">
+                <cds-tooltip align="top-right">
+                  <cds-button
+                    :id="`location-${locationIndex}-row-${rowIndex}-EditBtn`"
+                    kind="ghost"
+                    :disabled="!row.isMainParticipant"
+                  >
+                    <Edit16 slot="icon" />
+                  </cds-button>
+                  <cds-tooltip-content v-show="!row.isMainParticipant" autoalign>
+                    Go to “{{ row.otherClient.client.code }},
+                    {{ toTitleCase(row.otherClient.client.name) }}” client’s page to edit this
+                    relationship
+                  </cds-tooltip-content>
+                </cds-tooltip>
+                <cds-tooltip align="top-right">
+                  <cds-button
+                    :id="`location-${locationIndex}-row-${rowIndex}-DeleteBtn`"
+                    kind="ghost"
+                    class="svg-danger"
+                    :disabled="!row.isMainParticipant"
+                  >
+                    <TrashCan16 slot="icon" />
+                  </cds-button>
+                  <cds-tooltip-content v-show="!row.isMainParticipant">
+                    Go to “{{ row.otherClient.client.code }},
+                    {{ toTitleCase(row.otherClient.client.name) }}” client’s page to delete this
+                    relationship
+                  </cds-tooltip-content>
+                </cds-tooltip>
+              </div>
             </cds-table-cell>
             <cds-table-cell />
           </cds-table-row>
