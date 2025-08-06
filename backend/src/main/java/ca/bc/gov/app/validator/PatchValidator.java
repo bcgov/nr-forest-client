@@ -8,8 +8,11 @@ import reactor.core.publisher.Mono;
 public interface PatchValidator {
 
   Predicate<JsonNode> shouldValidate();
-  Function<JsonNode, Mono<JsonNode>> validate();
+  
+  Function<JsonNode, Mono<JsonNode>> validate(String clientNumber);
+  
   default Function<JsonNode,Mono<JsonNode>> globalValidator(JsonNode globalForestClient, String clientNumber){
     return Mono::just;
   }
+  
 }
