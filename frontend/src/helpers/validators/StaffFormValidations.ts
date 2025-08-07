@@ -302,7 +302,7 @@ fieldValidations["location.contacts.*.fullName"] = [
   hasOnlyNamingCharacters("full name"),
 ];
 
-fieldValidations["location.contacts.*.emailAddress"] = [
+fieldValidations["location.contacts.*.email"] = [
   optional(isEmail("Please provide a valid email address")),
   optional(isMinSize("Please provide a valid email address")(6)),
   isMaxSizeMsg("email address", 100),
