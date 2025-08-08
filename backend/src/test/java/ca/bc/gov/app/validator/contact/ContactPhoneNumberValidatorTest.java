@@ -70,8 +70,6 @@ class ContactPhoneNumberValidatorTest {
     String invalidPhone = "(250) 2550 2550";
     return
         Stream.of(
-            Arguments.of(StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, "phoneNumber",
-                "The phone number must be a 10-digit number"),
             Arguments.of(validPhone, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY,
                 StringUtils.EMPTY),
             Arguments.of(validPhone, validPhone, StringUtils.EMPTY, StringUtils.EMPTY,

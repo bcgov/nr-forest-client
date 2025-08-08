@@ -73,10 +73,10 @@ const validation = reactive<Record<string, boolean>>({
   firstName: props.singleInputForName || !!selectedValue.firstName,
   lastName: props.singleInputForName || !!selectedValue.lastName,
   fullName: !props.singleInputForName || !!selectedValue.fullName,
-  phoneNumber: false,
+  phoneNumber: true,
   secondaryPhoneNumber: true,
   faxNumber: true,
-  email: false,
+  email: true,
   locationNames: false,
 });
 
@@ -258,9 +258,7 @@ const localFormatLocation = (location: CodeDescrType) => {
         submissionValidation(`location.contacts[${id}].email`)
       ]"
       :enabled="true"
-      required
-      required-label
-      @empty="validation.email = !$event"
+      @empty="validation.email = true"
       @error="validation.email = !$event"
     />
 
@@ -273,14 +271,12 @@ const localFormatLocation = (location: CodeDescrType) => {
         placeholder="( ) ___-____"
         mask="(###) ###-####"
         v-model="selectedValue.phoneNumber"
-        required
-        required-label
         :enabled="true"
         :validations="[
           ...getValidations('location.contacts.*.phoneNumber'),
           submissionValidation(`location.contacts[${id}].phoneNumber`)
         ]"
-        @empty="validation.phoneNumber = !$event"
+        @empty="validation.phoneNumber = true"
         @error="validation.phoneNumber = !$event"
       />
 

@@ -24,30 +24,20 @@ public class ContactPhoneNumberValidator implements ForestClientValidator<Client
 
   @Override
   public Mono<ValidationError> validate(ClientContactDto target, Integer index) {
-
     String fieldName = "location.contacts[" + index + "].";
 
-    if (StringUtils.isBlank(target.phoneNumber())) {
-      return Mono.just(new ValidationError(fieldName + "phoneNumber",
-          "The phone number must be a 10-digit number"));
-    }
-
-    return
-        ClientValidationUtils
-            .validatePhoneNumber(
-                fieldName + "phoneNumber",
-                target.phoneNumber()
-            )
-            .switchIfEmpty(validatePhoneNumber(
-                    fieldName + "secondaryPhoneNumber",
-                    target.secondaryPhoneNumber()
-                )
-            )
-            .switchIfEmpty(validatePhoneNumber(
-                    fieldName + "faxNumber",
-                    target.faxNumber()
-                )
-            );
+    return validatePhoneNumber(
+            fieldName + "phoneNumber", 
+            target.phoneNumber()
+        )
+        .switchIfEmpty(validatePhoneNumber(
+            fieldName + "secondaryPhoneNumber", 
+            target.secondaryPhoneNumber())
+        )
+        .switchIfEmpty(validatePhoneNumber(
+            fieldName + "faxNumber", 
+            target.faxNumber())
+        );
   }
 
   private Mono<ValidationError> validatePhoneNumber(String fieldName, String phoneNumber) {
