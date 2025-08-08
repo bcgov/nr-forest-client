@@ -140,7 +140,7 @@ class ClientSearchControllerIntegrationTest extends
   @MethodSource("byContact")
   @DisplayName("Search someone by contact")
   void shouldSearchByContact(
-      ContactSearchDto contact, 
+      ContactSearchDto contact,
       String expected,
       Class<RuntimeException> exception
   ) {
@@ -152,19 +152,18 @@ class ClientSearchControllerIntegrationTest extends
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange();
 
+    if (StringUtils.isNotBlank(expected)) {
+      response
+          .expectStatus().isOk()
+          .expectBody()
+          .jsonPath("$[0].clientNumber").isNotEmpty()
+          .jsonPath("$[0].clientNumber").isEqualTo(expected)
+          .jsonPath("$[0].clientName").isNotEmpty()
+          .consumeWith(System.out::println);
+    }
+
     if (exception != null) {
       response.expectStatus().is4xxClientError();
-    } else if (StringUtils.isNotBlank(expected)) {
-      response
-        .expectStatus().isOk()
-        .expectBody()
-        .jsonPath("$[0].clientNumber").isEqualTo(expected)
-        .jsonPath("$[0].clientName").isNotEmpty();
-    } else {
-      response.expectStatus().isOk()
-        .expectBody()
-        .json("[]")
-        .consumeWith(System.out::println);
     }
 
   }
@@ -408,82 +407,99 @@ class ClientSearchControllerIntegrationTest extends
   }
 
   private static Stream<Arguments> byContact() {
-    return Stream.of(
-        Arguments.of(new ContactSearchDto(
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-        ), null, MissingRequiredParameterException.class),
-
-        Arguments.of(new ContactSearchDto(
-            "RICARDO",
-            "",
-            "",
-            "RBRISLEN5@UN.ORG",
-            "7589636074",
-            "",
-            ""
-        ), null, MissingRequiredParameterException.class),
-        Arguments.of(new ContactSearchDto(
-            "",
-            "JAMESON",
-            "BRISLEN",
-            "RBRISLEN5@UN.ORG",
-            "7589636074",
-            "",
-            ""
-        ), null, MissingRequiredParameterException.class),
-        Arguments.of(new ContactSearchDto(
-            "RICARDO",
-            "",
-            "BRISLEN",
-            "",
-            "",
-            "",
-            ""
-        ), "00000137", null),
-        Arguments.of(new ContactSearchDto(
-            "RICARDO",
-            null,
-            "BRIEN",
-            "RBRISLEN5@UN.ORG",
-            "",
-            "",
-            ""
-        ), "00000137", null),
-        Arguments.of(new ContactSearchDto(
-            "RICARDO",
-            "  ",
-            "BRISLEN",
-            null,
-            "7589636074",
-            "",
-            ""
-        ), "00000137", null),
-        Arguments.of(new ContactSearchDto(
-            "RICARDO",
-            "JAMESON",
-            "BRISLEN",
-            "RBRISLEN5@UN.ORG",
-            "7589636074",
-            "",
-            ""
-        ), "00000137", null),
-
-        Arguments.of(new ContactSearchDto(
-            "RANDOLPH",
-            null,
-            "BRISLEN",
-            "",
-            "",
-            "",
-            ""
-        ), "00000137", null)
-    );
+    return Stream
+        .of(
+            Arguments.of(new ContactSearchDto(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "BRISLEN",
+                "",
+                "7589636074",
+                "",
+                ""
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "",
+                "",
+                ""
+            ), null, MissingRequiredParameterException.class),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "",
+                "BRIEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                null,
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "  ",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), "00000137", null),
+            Arguments.of(new ContactSearchDto(
+                "RICARDO",
+                "JAMESON",
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), null, null),
+            Arguments.of(new ContactSearchDto(
+                "RANDOLPH",
+                null,
+                "BRISLEN",
+                "RBRISLEN5@UN.ORG",
+                "7589636074",
+                "",
+                ""
+            ), null, null)
+        );
   }
 
   private static Stream<Arguments> emptyCases() {
