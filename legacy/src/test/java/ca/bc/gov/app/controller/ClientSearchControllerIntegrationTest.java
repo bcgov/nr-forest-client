@@ -152,20 +152,20 @@ class ClientSearchControllerIntegrationTest extends
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .exchange();
 
-    if (StringUtils.isNotBlank(expected)) {
-      response
-          .expectStatus().isOk()
-          .expectBody()
-          .jsonPath("$[0].clientNumber").isNotEmpty()
-          .jsonPath("$[0].clientNumber").isEqualTo(expected)
-          .jsonPath("$[0].clientName").isNotEmpty()
-          .consumeWith(System.out::println);
-    }
-
-    if (exception != null) {
-      response.expectStatus().is4xxClientError();
-    }
-
+      if (exception != null) {
+        response.expectStatus().is4xxClientError();
+      } else if (StringUtils.isNotBlank(expected)) {
+          response
+              .expectStatus().isOk()
+              .expectBody()
+              .jsonPath("$[0].clientNumber").isEqualTo(expected)
+              .jsonPath("$[0].clientName").isNotEmpty()
+              .consumeWith(System.out::println);
+      } else {
+          response
+              .expectStatus().isOk()
+              .expectBody().json("[]");
+      }
   }
 
   @ParameterizedTest
