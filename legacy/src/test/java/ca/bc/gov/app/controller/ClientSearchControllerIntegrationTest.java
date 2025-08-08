@@ -434,7 +434,7 @@ class ClientSearchControllerIntegrationTest extends
             "7589636074",
             "",
             ""
-        ), null, null),
+        ), "00000137", null),
         Arguments.of(new ContactSearchDto(
             "RICARDO",
             "JAMESON",
@@ -443,7 +443,7 @@ class ClientSearchControllerIntegrationTest extends
             "",
             "",
             ""
-        ), null, null),
+        ), "00000137", null),
         Arguments.of(new ContactSearchDto(
             "RICARDO",
             "",
@@ -488,7 +488,7 @@ class ClientSearchControllerIntegrationTest extends
             "7589636074",
             "",
             ""
-        ), null, null),
+        ), "00000137", null),
         Arguments.of(new ContactSearchDto(
             "RANDOLPH",
             null,
