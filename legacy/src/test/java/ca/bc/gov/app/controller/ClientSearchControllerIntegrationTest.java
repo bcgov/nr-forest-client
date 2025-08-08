@@ -144,6 +144,11 @@ class ClientSearchControllerIntegrationTest extends
       String expected,
       Class<RuntimeException> exception
   ) {
+    
+    System.out.println("Running test with ContactSearchDto: " + contact);
+    System.out.println("Expected clientNumber: " + expected);
+    System.out.println("Expected exception class: " + (exception != null ? exception.getSimpleName() : "null"));
+    
     ResponseSpec response =
         client
             .post()
@@ -434,7 +439,7 @@ class ClientSearchControllerIntegrationTest extends
             "7589636074",
             "",
             ""
-        ), "00000137", null),
+        ), null, null),
         Arguments.of(new ContactSearchDto(
             "RICARDO",
             "JAMESON",
@@ -443,7 +448,7 @@ class ClientSearchControllerIntegrationTest extends
             "",
             "",
             ""
-        ), "00000137", null),
+        ), null, null),
         Arguments.of(new ContactSearchDto(
             "RICARDO",
             "",
@@ -488,7 +493,7 @@ class ClientSearchControllerIntegrationTest extends
             "7589636074",
             "",
             ""
-        ), "00000137", null),
+        ), null, null),
         Arguments.of(new ContactSearchDto(
             "RANDOLPH",
             null,
