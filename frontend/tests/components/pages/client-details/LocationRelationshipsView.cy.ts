@@ -170,6 +170,21 @@ describe("<location-relationships-view />", () => {
     cy.get("#relatioships-table").should("be.visible");
   });
 
+  it("links to Google Maps search using the address properly encoded", () => {
+    mount();
+
+    const formattedAddress = formatAddress(currentProps.location);
+    const encodedAddress = encodeURIComponent(formattedAddress);
+
+    cy.get("#location-relationships-00-mailingAddress")
+      .find("a")
+      .should(
+        "have.attr",
+        "href",
+        `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`,
+      );
+  });
+
   it("renders the relationships table contents properly", () => {
     mount();
 

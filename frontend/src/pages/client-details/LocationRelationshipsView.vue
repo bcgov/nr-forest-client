@@ -51,6 +51,14 @@ const sortedData = computed<OtherRelatedClientEntry[]>(() => {
 const canEdit = computed(() =>
   includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
 );
+
+const formattedAddress = computed(() => {
+  return formatAddress(props.location);
+});
+
+const encodedAddress = computed(() => {
+  return encodeURIComponent(formattedAddress.value);
+});
 </script>
 
 <template>
@@ -60,8 +68,12 @@ const canEdit = computed(() =>
         label="Mailing address"
         :id="`location-relationships-${locationIndex}-mailingAddress`"
       >
-        <a>
-          <span class="body-compact-01 colorless">{{ formatAddress(props.location) }}</span>
+        <a
+          :href="`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`"
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="body-compact-01 colorless">{{ formattedAddress }}</span>
         </a>
       </read-only-component>
       <cds-table id="relatioships-table" :class="{ 'view-only': !canEdit }" use-zebra-styles>
