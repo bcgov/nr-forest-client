@@ -407,99 +407,82 @@ class ClientSearchControllerIntegrationTest extends
   }
 
   private static Stream<Arguments> byContact() {
-    return Stream
-        .of(
-            Arguments.of(new ContactSearchDto(
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-            ), null, MissingRequiredParameterException.class),
-            Arguments.of(new ContactSearchDto(
-                "RICARDO",
-                "JAMESON",
-                "",
-                "RBRISLEN5@UN.ORG",
-                "7589636074",
-                "",
-                ""
-            ), null, MissingRequiredParameterException.class),
-            Arguments.of(new ContactSearchDto(
-                "RICARDO",
-                "JAMESON",
-                "BRISLEN",
-                "",
-                "7589636074",
-                "",
-                ""
-            ), null, MissingRequiredParameterException.class),
-            Arguments.of(new ContactSearchDto(
-                "RICARDO",
-                "JAMESON",
-                "BRISLEN",
-                "RBRISLEN5@UN.ORG",
-                "",
-                "",
-                ""
-            ), null, MissingRequiredParameterException.class),
-            Arguments.of(new ContactSearchDto(
-                "RICARDO",
-                "",
-                "BRISLEN",
-                "RBRISLEN5@UN.ORG",
-                "7589636074",
-                "",
-                ""
-            ), "00000137", null),
-            Arguments.of(new ContactSearchDto(
-                "RICARDO",
-                "",
-                "BRIEN",
-                "RBRISLEN5@UN.ORG",
-                "7589636074",
-                "",
-                ""
-            ), "00000137", null),
-            Arguments.of(new ContactSearchDto(
-                "RICARDO",
-                null,
-                "BRISLEN",
-                "RBRISLEN5@UN.ORG",
-                "7589636074",
-                "",
-                ""
-            ), "00000137", null),
-            Arguments.of(new ContactSearchDto(
-                "RICARDO",
-                "  ",
-                "BRISLEN",
-                "RBRISLEN5@UN.ORG",
-                "7589636074",
-                "",
-                ""
-            ), "00000137", null),
-            Arguments.of(new ContactSearchDto(
-                "RICARDO",
-                "JAMESON",
-                "BRISLEN",
-                "RBRISLEN5@UN.ORG",
-                "7589636074",
-                "",
-                ""
-            ), null, null),
-            Arguments.of(new ContactSearchDto(
-                "RANDOLPH",
-                null,
-                "BRISLEN",
-                "RBRISLEN5@UN.ORG",
-                "7589636074",
-                "",
-                ""
-            ), null, null)
-        );
+    return Stream.of(
+        Arguments.of(new ContactSearchDto(
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ), null, MissingRequiredParameterException.class),
+
+        Arguments.of(new ContactSearchDto(
+            "RICARDO",
+            "",
+            "",
+            "RBRISLEN5@UN.ORG",
+            "7589636074",
+            "",
+            ""
+        ), null, MissingRequiredParameterException.class),
+        Arguments.of(new ContactSearchDto(
+            "",
+            "JAMESON",
+            "BRISLEN",
+            "RBRISLEN5@UN.ORG",
+            "7589636074",
+            "",
+            ""
+        ), null, MissingRequiredParameterException.class),
+        Arguments.of(new ContactSearchDto(
+            "RICARDO",
+            "",
+            "BRISLEN",
+            "",
+            "",
+            "",
+            ""
+        ), "00000137", null),
+        Arguments.of(new ContactSearchDto(
+            "RICARDO",
+            null,
+            "BRIEN",
+            "RBRISLEN5@UN.ORG",
+            "",
+            "",
+            ""
+        ), "00000137", null),
+        Arguments.of(new ContactSearchDto(
+            "RICARDO",
+            "  ",
+            "BRISLEN",
+            null,
+            "7589636074",
+            "",
+            ""
+        ), "00000137", null),
+        Arguments.of(new ContactSearchDto(
+            "RICARDO",
+            "JAMESON",
+            "BRISLEN",
+            "RBRISLEN5@UN.ORG",
+            "7589636074",
+            "",
+            ""
+        ), "00000137", null),
+
+        Arguments.of(new ContactSearchDto(
+            "RANDOLPH",
+            null,
+            "BRISLEN",
+            "",
+            "",
+            "",
+            ""
+        ), "00000137", null)
+    );
   }
 
   private static Stream<Arguments> emptyCases() {
