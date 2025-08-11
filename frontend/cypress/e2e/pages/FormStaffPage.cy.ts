@@ -761,13 +761,10 @@ describe("Staff Form", () => {
     });
 
     it("should have the notify indicator checked", () => {
-      cy.get('body').then(($body) => {
-        if ($body.find('#notifyClientIndId').length) {
-          cy.get("#notifyClientIndId").should('be.checked');
-        }
-      });
+      cy.get("#notifyClientIndId")
+        .should('have.attr', 'checked');
     });
-
+    
   });
 
 });
