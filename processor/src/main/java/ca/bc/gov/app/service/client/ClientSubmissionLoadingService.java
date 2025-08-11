@@ -118,10 +118,11 @@ public class ClientSubmissionLoadingService {
                                     )
                                 )
                                 .flatMap(districtInfo -> {
-                                  // Exclude client email if notifyClientInd is "N"
+                                  // Exclude client email if notifyClientInd is "N" and there is an email
                                   String clientEmail = submission.getNotifyClientInd().equalsIgnoreCase("N")
-                                      ? null
-                                      : submissionContact.getEmailAddress();
+                                      && StringUtils.isNotEmpty(submissionContact.getEmailAddress())
+                                        ? null
+                                        : submissionContact.getEmailAddress();
 
                                   String rawEmails = getEmails(message, districtInfo.getLeft(), clientEmail);
 
