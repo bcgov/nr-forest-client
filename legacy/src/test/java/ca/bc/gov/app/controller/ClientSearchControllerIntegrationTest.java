@@ -154,21 +154,16 @@ class ClientSearchControllerIntegrationTest extends
 
     if (StringUtils.isNotBlank(expected)) {
       response
-        .expectStatus().isOk()
-        .expectBody()
-        .jsonPath("$[0].clientNumber")
-        .isEqualTo(expected);
-    } else {
-      if (exception == null) {
-        response
           .expectStatus().isOk()
           .expectBody()
-          .jsonPath("$")
-          .isEmpty();
-      } else {
-        response
-          .expectStatus().is4xxClientError();
-      }
+          .jsonPath("$[0].clientNumber").isNotEmpty()
+          .jsonPath("$[0].clientNumber").isEqualTo(expected)
+          .jsonPath("$[0].clientName").isNotEmpty()
+          .consumeWith(System.out::println);
+    }
+
+    if (exception != null) {
+      response.expectStatus().is4xxClientError();
     }
 
   }

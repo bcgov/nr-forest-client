@@ -372,7 +372,6 @@ public class ClientSearchService {
   public Flux<ForestClientDto> findByContact(ContactSearchDto contact) {
 
     if (contact == null || !contact.isValid()) {
-      log.debug("Invalid contact search received: {}", contact);
       return Flux.error(new MissingRequiredParameterException("contact"));
     }
 
