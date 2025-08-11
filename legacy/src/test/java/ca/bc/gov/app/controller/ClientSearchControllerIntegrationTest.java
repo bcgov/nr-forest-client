@@ -140,15 +140,10 @@ class ClientSearchControllerIntegrationTest extends
   @MethodSource("byContact")
   @DisplayName("Search someone by contact")
   void shouldSearchByContact(
-      ContactSearchDto contact,
+      ContactSearchDto contact, 
       String expected,
-      Class<RuntimeException> exception
-  ) {
-    
-    System.out.println("Running test with ContactSearchDto: " + contact);
-    System.out.println("Expected clientNumber: " + expected);
-    System.out.println("Expected exception class: " + (exception != null ? exception.getSimpleName() : "null"));
-    
+      Class<RuntimeException> exception) {
+
     ResponseSpec response =
         client
             .post()
@@ -159,16 +154,21 @@ class ClientSearchControllerIntegrationTest extends
 
     if (StringUtils.isNotBlank(expected)) {
       response
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$[0].clientNumber")
+        .isEqualTo(expected);
+    } else {
+      if (exception == null) {
+        response
           .expectStatus().isOk()
           .expectBody()
-          .jsonPath("$[0].clientNumber").isNotEmpty()
-          .jsonPath("$[0].clientNumber").isEqualTo(expected)
-          .jsonPath("$[0].clientName").isNotEmpty()
-          .consumeWith(System.out::println);
-    }
-
-    if (exception != null) {
-      response.expectStatus().is4xxClientError();
+          .jsonPath("$")
+          .isEmpty();
+      } else {
+        response
+          .expectStatus().is4xxClientError();
+      }
     }
 
   }
