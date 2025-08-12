@@ -19,10 +19,6 @@ Feature: Staff Screens
     Then I click on next
     And I fill the "Primary location" address with the following
       | Field name                      | Value           | Type          |
-      | Email address                   | jamesbaxter@mail.ca   | text          |
-      | Primary phone number            | 2501231568      | text          |
-      | Secondary phone number          | 2501233568      | text          |
-      | Fax                             | 2501239568      | text          |
       | Street address or PO box        | 1520 Blanshard St | autocomplete  |    
     Then I click on next
     And I fill the "Primary contact" information with the following
@@ -48,9 +44,6 @@ Feature: Staff Screens
     And I fill the "Primary location" address with the following
       | Field name                      | Value           | Type          |      
       | Street address or PO box        | 1515 Blanshard  | autocomplete  |
-      | Email address                   | mail2@mail.ca   | text          |
-      | Primary phone number            | 7780000001      | text          |
-      | Secondary phone number          | 7780000002      | text          |
       | Notes                           | This is a test  | textbox       |
     And I add a new location called "Home"
     And I fill the "Home" address with the following
