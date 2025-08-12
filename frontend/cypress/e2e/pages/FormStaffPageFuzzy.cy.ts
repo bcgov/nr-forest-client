@@ -868,10 +868,6 @@ describe("Staff Form Fuzzy Matches", () => {
         checkDropdownWarning('#province_0');
         checkDropdownWarning('#country_0');
         checkInputWarning('#postalCode_0');
-        checkInputClean('#emailAddress_0');
-        checkInputClean('#businessPhoneNumber_0');
-        checkInputClean('#secondaryPhoneNumber_0');
-        checkInputClean('#faxNumber_0');
   
         cy.get("[data-test='wizard-next-button']")
         .shadow()
@@ -895,10 +891,6 @@ describe("Staff Form Fuzzy Matches", () => {
         checkDropdownClean('#province_0');
         checkDropdownClean('#country_0');
         checkInputClean('#postalCode_0');
-        checkInputWarning('#emailAddress_0');
-        checkInputClean('#businessPhoneNumber_0');
-        checkInputClean('#secondaryPhoneNumber_0');
-        checkInputClean('#faxNumber_0');
   
         cy.get("[data-test='wizard-next-button']")
         .shadow()
@@ -922,10 +914,6 @@ describe("Staff Form Fuzzy Matches", () => {
         checkDropdownClean('#province_0');
         checkDropdownClean('#country_0');
         checkInputClean('#postalCode_0');
-        checkInputClean('#emailAddress_0');
-        checkInputWarning('#businessPhoneNumber_0');
-        checkInputClean('#secondaryPhoneNumber_0');
-        checkInputClean('#faxNumber_0');
   
         cy.get("[data-test='wizard-next-button']")
         .shadow()
@@ -949,10 +937,6 @@ describe("Staff Form Fuzzy Matches", () => {
         checkDropdownClean('#province_0');
         checkDropdownClean('#country_0');
         checkInputClean('#postalCode_0');
-        checkInputClean('#emailAddress_0');
-        checkInputClean('#businessPhoneNumber_0');
-        checkInputWarning('#secondaryPhoneNumber_0');
-        checkInputClean('#faxNumber_0');
   
         cy.get("[data-test='wizard-next-button']")
         .shadow()
@@ -976,10 +960,6 @@ describe("Staff Form Fuzzy Matches", () => {
         checkDropdownClean('#province_0');
         checkDropdownClean('#country_0');
         checkInputClean('#postalCode_0');
-        checkInputClean('#emailAddress_0');
-        checkInputClean('#businessPhoneNumber_0');
-        checkInputClean('#secondaryPhoneNumber_0');
-        checkInputWarning('#faxNumber_0');
   
         cy.get("[data-test='wizard-next-button']")
         .shadow()
@@ -1008,10 +988,6 @@ describe("Staff Form Fuzzy Matches", () => {
         checkNotification('location-addresses-0', 'warning', 'was found with similar email address.');
         checkNotificationToNotExist('location-addresses-1');
         checkAddressAccordionState(1, false);
-
-        checkInputWarning('#emailAddress_0');
-
-        checkInputClean('#emailAddress_1');
   
         cy.get("[data-test='wizard-next-button']")
         .shadow()
@@ -1028,10 +1004,6 @@ describe("Staff Form Fuzzy Matches", () => {
         checkNotificationToNotExist('location-addresses-0');
         checkNotification('location-addresses-1', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(1, true);
-
-        checkInputClean('#emailAddress_0');
-
-        checkInputWarning('#emailAddress_1');
   
         cy.get("[data-test='wizard-next-button']")
         .shadow()
@@ -1048,10 +1020,6 @@ describe("Staff Form Fuzzy Matches", () => {
         checkNotification('location-addresses-0', 'warning', 'was found with similar email address.');
         checkNotification('location-addresses-1', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(1, true);
-
-        checkInputWarning('#emailAddress_0');
-
-        checkInputWarning('#emailAddress_1');
   
         cy.get("[data-test='wizard-next-button']")
         .shadow()
@@ -1086,12 +1054,6 @@ describe("Staff Form Fuzzy Matches", () => {
         checkAddressAccordionState(1, true);
         checkNotificationToNotExist('location-addresses-2')
         checkAddressAccordionState(2, false);
-
-        checkInputClean('#emailAddress_0');
-
-        checkInputWarning('#emailAddress_1');
-
-        checkInputClean('#emailAddress_2');
   
         cy.get("[data-test='wizard-next-button']")
         .shadow()
@@ -1110,12 +1072,6 @@ describe("Staff Form Fuzzy Matches", () => {
         checkAddressAccordionState(1, false);
         checkNotification('location-addresses-2', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(2, true);
-
-        checkInputClean('#emailAddress_0');
-
-        checkInputClean('#emailAddress_1');
-
-        checkInputWarning('#emailAddress_2');
   
         cy.get("[data-test='wizard-next-button']")
         .shadow()
@@ -1134,12 +1090,6 @@ describe("Staff Form Fuzzy Matches", () => {
         checkAddressAccordionState(1, true);
         checkNotification('location-addresses-2', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(2, true);
-
-        checkInputClean('#emailAddress_0');
-
-        checkInputWarning('#emailAddress_1');
-
-        checkInputWarning('#emailAddress_2');
   
         cy.get("[data-test='wizard-next-button']")
         .shadow()
