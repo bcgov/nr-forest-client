@@ -17,6 +17,7 @@
   --light-theme-button-button-primary: #0073e6;
   --light-theme-button-button-secondary: #464648;
   --light-theme-button-button-tertiary: #005cb8;
+  --light-theme-button-danger-secondary: #b32001;
   --light-theme-button-danger-hover: #b32001;
   --cds-focus: #0073e6;
   --light-theme-layer-accent-layer-accent-01: #dfdfe1;
@@ -1894,6 +1895,12 @@ cds-table-header-cell {
   .col-padding-16-px {
     padding: 0;
     width: calc(var(--col-padding-16-px) / 16 * 1rem);
+  }
+}
+
+.svg-danger:not([disabled]) {
+  svg {
+    color: var(--light-theme-button-danger-secondary);
   }
 }
 

@@ -3,7 +3,7 @@ package ca.bc.gov.app.service;
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
-import ca.bc.gov.app.mappers.AbstractForestClientMapper;
+import ca.bc.gov.app.mappers.ForestClientContactMapper;
 import ca.bc.gov.app.repository.ForestClientContactRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.util.Locale;
@@ -24,7 +24,7 @@ public class ClientContactService {
 
   private final R2dbcEntityOperations entityTemplate;
   private final ForestClientContactRepository repository;
-  private final AbstractForestClientMapper<ForestClientContactDto, ForestClientContactEntity> mapper;
+  private final ForestClientContactMapper mapper;
 
   public Mono<String> saveAndGetIndex(ForestClientContactDto dto) {
     log.info("Saving forest client contact {} {}", dto.clientNumber(), dto.contactName());

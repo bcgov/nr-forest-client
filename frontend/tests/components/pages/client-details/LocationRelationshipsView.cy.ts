@@ -170,6 +170,21 @@ describe("<location-relationships-view />", () => {
     cy.get("#relatioships-table").should("be.visible");
   });
 
+  it("links to Google Maps search using the address properly encoded", () => {
+    mount();
+
+    const formattedAddress = formatAddress(currentProps.location);
+    const encodedAddress = encodeURIComponent(formattedAddress);
+
+    cy.get("#location-relationships-00-mailingAddress")
+      .find("a")
+      .should(
+        "have.attr",
+        "href",
+        `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`,
+      );
+  });
+
   it("renders the relationships table contents properly", () => {
     mount();
 
@@ -284,5 +299,77 @@ describe("<location-relationships-view />", () => {
     mount(props);
 
     cy.get("div.grouping-12").should("have.class", "invisible");
+  });
+
+  it("displays the Actions column with buttons", () => {
+    mount();
+
+    cy.get("#relatioships-table").contains("Actions");
+    cy.get("#relatioships-table").find("cds-button").should("be.visible");
+  });
+
+  describe("when user is a CLIENT_VIEWER only", () => {
+    beforeEach(() => {
+      const props = getDefaultProps();
+      props.userRoles = ["CLIENT_VIEWER"];
+      mount(props);
+    });
+
+    it("doesn't display the Actions column", () => {
+      cy.get("#relatioships-table").should("not.contain", "Actions");
+      cy.get("#relatioships-table").find("cds-button").should("not.exist");
+    });
+  });
+
+  describe("when client is the main participant", () => {
+    beforeEach(() => {
+      const props = getDefaultProps();
+      props.data = [props.data[0]];
+      props.data[0].isMainParticipant = true;
+      mount(props);
+    });
+
+    it("displays the primary tag", () => {
+      cy.get("#relatioships-table")
+        .find("cds-table-row")
+        .eq(0)
+        .find("cds-table-cell")
+        .eq(1)
+        .contains("Primary");
+    });
+
+    it("enables the action buttons", () => {
+      cy.get("#location-00-row-0-EditBtn")
+        .should("be.visible")
+        .shadow()
+        .find("button")
+        .should("be.enabled");
+    });
+  });
+
+  describe("when client is not the main participant", () => {
+    beforeEach(() => {
+      const props = getDefaultProps();
+      props.data = [props.data[0]];
+      props.data[0].isMainParticipant = false;
+      mount(props);
+    });
+
+    it("doesn't display the primary tag", () => {
+      cy.get("#relatioships-table")
+        .find("cds-table-row")
+        .eq(0)
+        .find("cds-table-cell")
+        .eq(1)
+        .should("not.contain", "Primary");
+    });
+
+    it("disables the action buttons", () => {
+      cy.get("#location-00-row-0-EditBtn")
+        .should("be.visible")
+        .shadow()
+        .find("button")
+        .should("be.disabled");
+    });
   });
 });
