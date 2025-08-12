@@ -31,7 +31,7 @@ public class ContactEmailValidator implements ForestClientValidator<ClientContac
         Mono
             .justOrEmpty(Optional.ofNullable(target.email()))
             .filter(StringUtils::isNotBlank)
-            .flatMap(value -> ClientValidationUtils.validateEmail(fieldName, value));
+            .flatMap(value -> ClientValidationUtils.validateEmail(value, fieldName));
   }
 
 }
