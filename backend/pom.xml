@@ -45,10 +45,10 @@
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.4.1</nimbus-jose-jwt.version>
         <spring-security-core.version>6.5.2</spring-security-core.version>
-        <micrometer.version>1.15.2</micrometer.version>
-        <micrometer-tracing.version>1.5.2</micrometer-tracing.version>
-        <flyway.version>11.10.5</flyway.version>
-        <opentelemetry.version>1.52.0</opentelemetry.version>
+        <micrometer.version>1.15.3</micrometer.version>
+        <micrometer-tracing.version>1.5.3</micrometer-tracing.version>
+        <flyway.version>11.11.0</flyway.version>
+        <opentelemetry.version>1.53.0</opentelemetry.version>
         <selenium.version>4.34.0</selenium.version>
         <org.junit.version>5.13.4</org.junit.version>
         <junit.version>4.13.2</junit.version>
