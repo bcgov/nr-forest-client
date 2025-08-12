@@ -76,4 +76,5 @@ class ContactEmailValidatorTest {
             Arguments.of("thatsnotme@mail.ca", StringUtils.EMPTY)
         );
   }
+  
 }
