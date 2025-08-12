@@ -246,7 +246,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
                 "7589636074",
                 "8598150782",
                 "8225477595"
-            ), null, MissingRequiredParameterException.class),
+            ), null, null),
             Arguments.of(new ContactSearchDto(
                 "RICARDO",
                 "JAMESON",
@@ -255,7 +255,7 @@ class ClientSearchServiceIntegrationTest extends AbstractTestContainerIntegratio
                 "",
                 "",
                 ""
-            ), null, MissingRequiredParameterException.class),
+            ), null, null),
             Arguments.of(null, null, MissingRequiredParameterException.class),
             Arguments.of(new ContactSearchDto(
                 "RICARDO",

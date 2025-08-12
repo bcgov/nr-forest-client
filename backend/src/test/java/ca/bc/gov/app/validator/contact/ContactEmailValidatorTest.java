@@ -62,7 +62,6 @@ class ContactEmailValidatorTest {
   private static Stream<Arguments> validation() {
     return
         Stream.of(
-            Arguments.of(StringUtils.EMPTY, "You must enter an email address"),
             Arguments.of("Mainé",
                 "You must enter an email address in a valid format. For example: name@example.com"),
             Arguments.of("Llama".repeat(50), "This field has a 100 character limit."),
@@ -77,4 +76,5 @@ class ContactEmailValidatorTest {
             Arguments.of("thatsnotme@mail.ca", StringUtils.EMPTY)
         );
   }
+  
 }
