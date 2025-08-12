@@ -192,7 +192,7 @@ public class ClientService {
    * the given value and maps them to {@link ClientLookUpDto} instances.
    *
    * @param name the client name to search for
-   * @param incorporation The incorporation value
+   * @param incorporation the incorporation number or registration number to search for
    * @return a {@link Flux} of {@link ClientLookUpDto} instances representing matching BC Registry
    * entries
    * @throws NoClientDataFound           if no matching data is found
