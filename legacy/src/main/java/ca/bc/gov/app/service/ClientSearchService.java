@@ -378,8 +378,14 @@ public class ClientSearchService {
     String name = Stream.of(contact.firstName(), contact.middleName(), contact.lastName())
         .filter(StringUtils::isNotBlank).collect(Collectors.joining(" "));
 
-    return contactRepository.matchByExpanded(name, contact.email(), contact.phone(),
-            contact.phone2(), contact.fax()).flatMap(entity -> searchClientByQuery(
+    return contactRepository
+        .matchByExpanded(
+            name,
+            contact.email(),
+            contact.phone(),
+            contact.phone2(),
+            contact.fax()
+        ).flatMap(entity -> searchClientByQuery(
             where(ApplicationConstants.CLIENT_NUMBER_LITERAL).is(entity.getClientNumber()),
             ForestClientEntity.class)).map(forestClientMapper::toDto)
         .distinct(ForestClientDto::clientNumber)

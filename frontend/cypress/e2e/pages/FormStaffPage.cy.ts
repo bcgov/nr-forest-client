@@ -764,7 +764,7 @@ describe("Staff Form", () => {
       cy.get("#notifyClientIndId")
         .should('have.attr', 'checked');
     });
-
+    
   });
 
 });

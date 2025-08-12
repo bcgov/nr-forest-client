@@ -13,7 +13,7 @@ public record ContactSearchDto(
 ) {
 
   public boolean isValid() {
-    return !StringUtils.isAnyBlank(firstName, lastName, email, phone);
+    return !StringUtils.isAnyBlank(firstName, lastName);
   }
 
 }

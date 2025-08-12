@@ -56,9 +56,7 @@ public record ClientContactDto(
   public boolean isValid() {
     return !StringUtils.isAnyBlank(
         firstName,
-        lastName,
-        phoneNumber,
-        email
+        lastName
     );
   }
 }
