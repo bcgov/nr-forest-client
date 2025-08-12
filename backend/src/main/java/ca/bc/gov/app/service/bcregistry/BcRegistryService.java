@@ -188,12 +188,9 @@ public class BcRegistryService {
             .name(ApplicationConstant.REQUEST_BCREGISTRY)
             .tag("kind", "docreq")
             .tap(Micrometer.observation(registry))
-            .doOnNext(entry -> log.info("Document request response for {}: {}", value, entry))
             .flatMapIterable(BcRegistryDocumentRequestResponseDto::documents)
             .doOnNext(entry -> log.info("Found document entry for {}: {}", value, entry))
             .map(BcRegistryDocumentRequestDocumentDto::documentKey)
-            .doOnNext(documentKey -> log.info("Loading document {} for identifier {}", documentKey,
-                value))
             .flatMap(documentKey -> getDocumentData(value, documentKey))
             //This will try to load the standing and business data for entries with no documents
             .onErrorResume(NoClientDataFound.class, exception ->
