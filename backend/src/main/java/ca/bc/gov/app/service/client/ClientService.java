@@ -191,16 +191,17 @@ public class ClientService {
    * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances matching
    * the given value and maps them to {@link ClientLookUpDto} instances.
    *
-   * @param value the value to search for
+   * @param name the client name to search for
+   * @param incorporation the incorporation number or registration number to search for
    * @return a {@link Flux} of {@link ClientLookUpDto} instances representing matching BC Registry
    * entries
    * @throws NoClientDataFound           if no matching data is found
    * @throws InvalidAccessTokenException if the access token is invalid or expired
    */
-  public Flux<ClientLookUpDto> findByClientNameOrIncorporation(String value) {
-    log.info("Searching for {}", value);
+  public Flux<ClientLookUpDto> findByClientNameOrIncorporation(String name, String incorporation) {
+    log.info("Searching for {}", name);
     return bcRegistryService
-        .searchByFacets(value, null)
+        .searchByFacets(name, incorporation)
         .map(entry -> new ClientLookUpDto(
                 entry.identifier(),
                 entry.name(),

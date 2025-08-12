@@ -61,6 +61,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flipkart.zjsonpatch.JsonPatch;
+import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.database.postgresql.TransactionalModel;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
@@ -68,9 +72,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 
 /**
  * <p><b>Global Service Configuration</b></p>
@@ -199,10 +205,19 @@ public class GlobalServiceConfiguration {
       @Qualifier("bcRegistryApiHealthIndicator") ManualHealthIndicator bcRegistryApiHealthIndicator,
       WebClient.Builder webClientBuilder
   ) {
+
+    HttpClient httpClient = HttpClient.create()
+        .responseTimeout(Duration.ofMinutes(2))
+        .doOnConnected(conn -> conn
+            .addHandlerLast(new ReadTimeoutHandler(120))
+            .addHandlerLast(new WriteTimeoutHandler(120)))
+        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) Duration.ofMinutes(2).toMillis());
+
     return webClientBuilder
         .baseUrl(configuration.getBcregistry().getUri())
         .defaultHeader("x-apikey", configuration.getBcregistry().getApiKey())
         .defaultHeader("Account-Id", configuration.getBcregistry().getAccountId())
+        .clientConnector(new ReactorClientHttpConnector(httpClient))
         .build();
   }
 
