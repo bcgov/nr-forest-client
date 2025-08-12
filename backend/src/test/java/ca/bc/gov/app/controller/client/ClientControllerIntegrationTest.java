@@ -308,11 +308,16 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
                 .withRequestBody(equalToJson("""
                         {
-                          "query": { "value": "BC0772006","name": "BC0772006" },
-                          "categories":{ "status":["ACTIVE"] },
-                          "rows": 100,
-                          "start":0
-                        }"""
+                           "query" : {
+                             "value" : "BC0772006",
+                             "identifier" : "BC0772006"
+                           },
+                           "categories" : {
+                             "status" : [ "ACTIVE" ]
+                           },
+                           "rows" : 100,
+                           "start" : 0
+                         }"""
                     )
                 )
                 .willReturn(okJson(TestConstants.ORGBOOK_INCORP_OK))
@@ -345,7 +350,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
                 .withRequestBody(equalToJson("""
                         {
-                          "query": { "value": "BC0000000","name": "BC0000000" },
+                          "query": { "value": "BC0000000","identifier": "BC0000000" },
                           "categories":{ "status":["ACTIVE"] },
                           "rows": 100,
                           "start":0
