@@ -211,7 +211,7 @@ public class GlobalServiceConfiguration {
         .doOnConnected(conn -> conn
             .addHandlerLast(new ReadTimeoutHandler(120))
             .addHandlerLast(new WriteTimeoutHandler(120)))
-        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2 * 1000);
+        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) Duration.ofMinutes(2).toMillis());
 
     return webClientBuilder
         .baseUrl(configuration.getBcregistry().getUri())
