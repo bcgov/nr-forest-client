@@ -191,7 +191,7 @@ public class ClientService {
    * Searches the BC Registry API for {@link BcRegistryFacetSearchResultEntryDto} instances matching
    * the given value and maps them to {@link ClientLookUpDto} instances.
    *
-   * @param name the value to search for
+   * @param name the client name to search for
    * @param incorporation The incorporation value
    * @return a {@link Flux} of {@link ClientLookUpDto} instances representing matching BC Registry
    * entries
