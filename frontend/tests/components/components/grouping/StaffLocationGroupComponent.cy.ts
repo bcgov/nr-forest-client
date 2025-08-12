@@ -176,47 +176,6 @@ describe("<StaffLocationGroupComponent />", () => {
       .and("include.text", "Error");
   });
 
-  const tertiarySelector0 = "#tertiaryPhoneNumber_0";
-
-  it("should render the component without a tertiaryPhoneNumber input field by default", () => {
-    cy.get("@addressFixture").then((address: any) => {
-      cy.get("@countriesFixture").then((countries) => {
-        cy.mount(StaffLocationGroupComponent, {
-          props: {
-            id: 0,
-            modelValue: address,
-            countryList: countries,
-            validations: [],
-          },
-        });
-      });
-    });
-
-    cy.wait("@getProvinces");
-
-    cy.get(tertiarySelector0).should("not.exist");
-  });
-
-  it("should render the component with a tertiaryPhoneNumber input field", () => {
-    cy.get("@addressFixture").then((address: any) => {
-      cy.get("@countriesFixture").then((countries) => {
-        cy.mount(StaffLocationGroupComponent, {
-          props: {
-            id: 0,
-            modelValue: address,
-            countryList: countries,
-            validations: [],
-            includeTertiaryPhoneNumber: true,
-          },
-        });
-      });
-    });
-
-    cy.wait("@getProvinces");
-
-    cy.get(tertiarySelector0).should("be.visible");
-  });
-
   const deleteSelector1 = "#deleteAddress_1";
 
   it("should render the component with a Delete button by default when id > 0", () => {

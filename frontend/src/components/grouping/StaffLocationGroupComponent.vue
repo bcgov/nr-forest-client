@@ -23,7 +23,6 @@ const props = defineProps<{
   countryList: Array<CodeNameType>;
   validations: Array<Function>;
   revalidate?: boolean;
-  includeTertiaryPhoneNumber?: boolean;
   hideDeleteButton?: boolean;
 }>();
 
@@ -101,10 +100,6 @@ const validation = reactive<Record<string, boolean>>({
   province: false,
   city: false,
   postalCode: false,
-  emailAddress: true,
-  primaryPhoneNumber: true,
-  secondaryPhoneNumber: true,
-  tertiaryPhoneNumber: true,
   faxNumber: true,
   notes: true,
 });
