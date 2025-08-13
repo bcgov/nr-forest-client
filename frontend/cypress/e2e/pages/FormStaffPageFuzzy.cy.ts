@@ -1003,7 +1003,7 @@ describe("Staff Form Fuzzy Matches", () => {
 
     describe("when we go back to the previous step", () => {
       beforeEach(function () {
-        interceptFuzzyMatch(2, "Step 2: full address email match");
+        interceptFuzzyMatch(2, "Step 2: full address match");
         fillLocation(0);
         clickNext(2);
         cy.get('#reviewStatement').should('be.visible');
@@ -1016,11 +1016,10 @@ describe("Staff Form Fuzzy Matches", () => {
 
     describe('when we check the Review statement', () => {
       beforeEach(function () {
-        interceptFuzzyMatch(2, "Step 2: full address email match");
+        interceptFuzzyMatch(2, "Step 2: full address match");
         fillLocation(0);
         clickNext(2);
 
-        checkNotification('location-addresses-0', 'warning', 'was found with similar email address.');
         cy.get('#reviewStatement').should('be.visible');
 
         cy.get("[data-test='wizard-next-button']")
@@ -1464,21 +1463,21 @@ describe("Staff Form Fuzzy Matches", () => {
 
       cy.selectAutocompleteEntry("#businessName", data.businessName, data.registrationNumber);
 
-      if(data.birthdateYear){
+      if (data.birthdateYear) {
         cy.fillFormEntry("#birthdateYear", data.birthdateYear);
         cy.fillFormEntry("#birthdateMonth", data.birthdateMonth);
         cy.fillFormEntry("#birthdateDay", data.birthdateDay);
       }
 
-      if(data.doingBusinessAs){
+      if (data.doingBusinessAs) {
         cy.fillFormEntry("#doingBusinessAs", data.doingBusinessAs);
       }
 
-      if(data.workSafeBcNumber){
+      if (data.workSafeBcNumber) {
         cy.fillFormEntry("#workSafeBCNumber", data.workSafeBcNumber);
       }
 
-      if(data.clientAcronym){
+      if (data.clientAcronym) {
         cy.fillFormEntry("#acronym", data.clientAcronym);
       }
     });
@@ -1493,11 +1492,11 @@ describe("Staff Form Fuzzy Matches", () => {
 
       cy.selectAutocompleteEntry("#clientName", data.businessName, data.registrationNumber);
     
-      if(data.workSafeBcNumber){
+      if (data.workSafeBcNumber) {
         cy.fillFormEntry("#workSafeBcNumber", data.workSafeBcNumber);
       }
 
-      if(data.clientAcronym){
+      if (data.clientAcronym) {
         cy.fillFormEntry("#clientAcronym", data.clientAcronym);
       }
     });
@@ -1512,11 +1511,11 @@ describe("Staff Form Fuzzy Matches", () => {
 
       cy.fillFormEntry("#businessName", data.businessName);
     
-      if(data.workSafeBcNumber){
+      if (data.workSafeBcNumber) {
         cy.fillFormEntry("#workSafeBcNumber", data.workSafeBcNumber);
       }
 
-      if(data.clientAcronym){
+      if (data.clientAcronym) {
         cy.fillFormEntry("#clientAcronym", data.clientAcronym);
       }
     });
@@ -1651,7 +1650,7 @@ describe("Staff Form Fuzzy Matches", () => {
 
     const stepMatchFixture = extractStepFixture(fixture, step);
 
-    if(stepMatchFixture){
+    if (stepMatchFixture) {
       cy.fixture(`fuzzy/${stepMatchFixture}`).then((fixtureData: any) => {
         cy.intercept(
           {
