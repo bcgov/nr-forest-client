@@ -212,11 +212,10 @@ describe("Staff Form Fuzzy Matches", () => {
 
       checkTopNotification('error', 'has client number');
 
-      /*
-      The following group of fields has both warning and error.
-      In this case they are displayed as error.
-      They are from both the full and the partial matches.
-      */
+      //The following group of fields has both warning and error.
+      //In this case they are displayed as error.
+      //They are from both the full and the partial matches.
+      
       checkInputError('#firstName');
       checkInputError('#lastName');
       checkInputError('#birthdateYear');
@@ -878,98 +877,6 @@ describe("Staff Form Fuzzy Matches", () => {
         .should('be.visible');
       });
 
-      it('should have location data with fuzzy resulting in Step 2: full address email match', () => {
-        fillLocation(0);
-        clickNext(2);
-  
-        checkNotification('location-addresses-0', 'warning', 'was found with similar email address.');
-  
-        checkInputClean('#name_0');
-        checkInputClean('#complementaryAddressOne_0');
-        checkDropdownClean('#addr_0');
-        checkInputClean('#city_0');
-        checkDropdownClean('#province_0');
-        checkDropdownClean('#country_0');
-        checkInputClean('#postalCode_0');
-  
-        cy.get("[data-test='wizard-next-button']")
-        .shadow()
-        .find("button")
-        .should("be.disabled");
-  
-        cy.get('#reviewStatement')
-        .should('be.visible');
-      });
-
-      it('should have location data with fuzzy resulting in Step 2: full address business phone match', () => {
-        fillLocation(0);
-        clickNext(2);
-  
-        checkNotification('location-addresses-0', 'warning', 'was found with similar primary phone number');
-  
-        checkInputClean('#name_0');
-        checkInputClean('#complementaryAddressOne_0');
-        checkDropdownClean('#addr_0');
-        checkInputClean('#city_0');
-        checkDropdownClean('#province_0');
-        checkDropdownClean('#country_0');
-        checkInputClean('#postalCode_0');
-  
-        cy.get("[data-test='wizard-next-button']")
-        .shadow()
-        .find("button")
-        .should("be.disabled");
-  
-        cy.get('#reviewStatement')
-        .should('be.visible');
-      });
-
-      it('should have location data with fuzzy resulting in Step 2: full address secondary phone match', () => {
-        fillLocation(0);
-        clickNext(2);
-  
-        checkNotification('location-addresses-0', 'warning', 'was found with similar secondary phone number');
-  
-        checkInputClean('#name_0');
-        checkInputClean('#complementaryAddressOne_0');
-        checkDropdownClean('#addr_0');
-        checkInputClean('#city_0');
-        checkDropdownClean('#province_0');
-        checkDropdownClean('#country_0');
-        checkInputClean('#postalCode_0');
-  
-        cy.get("[data-test='wizard-next-button']")
-        .shadow()
-        .find("button")
-        .should("be.disabled");
-  
-        cy.get('#reviewStatement')
-        .should('be.visible');
-      });
-
-      it('should have location data with fuzzy resulting in Step 2: full address fax phone match', () => {
-        fillLocation(0);
-        clickNext(2);
-  
-        checkNotification('location-addresses-0', 'warning', 'was found with similar fax');
-  
-        checkInputClean('#name_0');
-        checkInputClean('#complementaryAddressOne_0');
-        checkDropdownClean('#addr_0');
-        checkInputClean('#city_0');
-        checkDropdownClean('#province_0');
-        checkDropdownClean('#country_0');
-        checkInputClean('#postalCode_0');
-  
-        cy.get("[data-test='wizard-next-button']")
-        .shadow()
-        .find("button")
-        .should("be.disabled");
-  
-        cy.get('#reviewStatement')
-        .should('be.visible');
-      });
-
     });
   
     describe("when there are two locations", () => {
@@ -982,10 +889,9 @@ describe("Staff Form Fuzzy Matches", () => {
         });
       });
 
-      it('should have location at index: 0 with fuzzy resulting in Step 2: full address email 0 match', () => {
+      it('should have location at index: 0 with fuzzy resulting in Step 2: full address 0 match', () => {
         clickNext(2);
 
-        checkNotification('location-addresses-0', 'warning', 'was found with similar email address.');
         checkNotificationToNotExist('location-addresses-1');
         checkAddressAccordionState(1, false);
   
@@ -998,11 +904,10 @@ describe("Staff Form Fuzzy Matches", () => {
         .should('be.visible');
       });
 
-      it('should have location at index: 1 with fuzzy resulting in Step 2: full address email 1 match', () => {
+      it('should have location at index: 1 with fuzzy resulting in Step 2: full address 1 match', () => {
         clickNext(2);
 
         checkNotificationToNotExist('location-addresses-0');
-        checkNotification('location-addresses-1', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(1, true);
   
         cy.get("[data-test='wizard-next-button']")
@@ -1014,11 +919,9 @@ describe("Staff Form Fuzzy Matches", () => {
         .should('be.visible');
       });
 
-      it('should have locations at indexes: 0, 1 with fuzzy resulting in Step 2: full address email 0 and 1 match', () => {
+      it('should have locations at indexes: 0, 1 with fuzzy resulting in Step 2: full address 0 and 1 match', () => {
         clickNext(2);
 
-        checkNotification('location-addresses-0', 'warning', 'was found with similar email address.');
-        checkNotification('location-addresses-1', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(1, true);
   
         cy.get("[data-test='wizard-next-button']")
@@ -1046,11 +949,10 @@ describe("Staff Form Fuzzy Matches", () => {
         });
       });
 
-      it('should have location at index: 1 with fuzzy resulting in Step 2: full address email 1 match', () => {
+      it('should have location at index: 1 with fuzzy resulting in Step 2: full address 1 match', () => {
         clickNext(2);
 
         checkNotificationToNotExist('location-addresses-0');
-        checkNotification('location-addresses-1', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(1, true);
         checkNotificationToNotExist('location-addresses-2')
         checkAddressAccordionState(2, false);
@@ -1064,13 +966,12 @@ describe("Staff Form Fuzzy Matches", () => {
         .should('be.visible');
       });
 
-      it('should have location at index: 2 with fuzzy resulting in Step 2: full address email 2 match', () => {
+      it('should have location at index: 2 with fuzzy resulting in Step 2: full address 2 match', () => {
         clickNext(2);
 
         checkNotificationToNotExist('location-addresses-0');
         checkNotificationToNotExist('location-addresses-1');
         checkAddressAccordionState(1, false);
-        checkNotification('location-addresses-2', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(2, true);
   
         cy.get("[data-test='wizard-next-button']")
@@ -1082,13 +983,11 @@ describe("Staff Form Fuzzy Matches", () => {
         .should('be.visible');
       });
 
-      it('should have locations at indexes: 1, 2 with fuzzy resulting in Step 2: full address email 1 and 2 match', () => {
+      it('should have locations at indexes: 1, 2 with fuzzy resulting in Step 2: full address 1 and 2 match', () => {
         clickNext(2);
 
         checkNotificationToNotExist('location-addresses-0');
-        checkNotification('location-addresses-1', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(1, true);
-        checkNotification('location-addresses-2', 'warning', 'was found with similar email address.');
         checkAddressAccordionState(2, true);
   
         cy.get("[data-test='wizard-next-button']")
@@ -1629,10 +1528,6 @@ describe("Staff Form Fuzzy Matches", () => {
 
       cy.fillFormEntry(`#name_${index}`, data.name);
       cy.selectAutocompleteEntry(`#addr_${index}`, data.addr, data.addressId);
-      cy.fillFormEntry(`#emailAddress_${index}`, data.emailAddress);
-      cy.fillFormEntry(`#businessPhoneNumber_${index}`, data.businessPhoneNumber);
-      cy.fillFormEntry(`#secondaryPhoneNumber_${index}`, data.secondaryPhoneNumber);
-      cy.fillFormEntry(`#faxNumber_${index}`, data.faxNumber);
     });
   };
 
