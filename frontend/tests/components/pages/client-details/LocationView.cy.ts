@@ -252,10 +252,10 @@ describe("<location-view />", () => {
       }
     });
 
-    it("enables the edition of some fields by displaying the staff-location-group-component", () => {
+    it("enables the edition of some fields by displaying the staff-details-location-group-component", () => {
       cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
         const staffCreateComponent = vueWrapper.getComponent({
-          name: "staff-location-group-component",
+          name: "staff-details-location-group-component",
         });
 
         expect(staffCreateComponent.props("id")).to.eq(0);
@@ -385,10 +385,10 @@ describe("<location-view />", () => {
       });
     });
 
-    it("forwards validations to the staff-location-group-component", () => {
+    it("forwards validations to the staff-details-location-group-component", () => {
       cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
         const staffCreateComponent = vueWrapper.getComponent({
-          name: "staff-location-group-component",
+          name: "staff-details-location-group-component",
         });
 
         expect(staffCreateComponent.props("validations")[0]).to.eq(validationWrapper);

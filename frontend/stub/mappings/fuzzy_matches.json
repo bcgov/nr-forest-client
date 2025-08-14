@@ -4,7 +4,7 @@
       "name": "Submission Match Stub - All good",
       "request": {
         "url": "/api/clients/matches",
-        "method": "POST"        
+        "method": "POST"
       },
       "response": {
         "status": 204,
@@ -385,7 +385,7 @@
             "equalTo": "1"
           }
         },
-        "bodyPatterns": [      
+        "bodyPatterns": [
           {
             "matchesJsonPath": {
               "expression": "$.businessInformation.doingBusinessAs",
@@ -413,7 +413,7 @@
             "equalTo": "1"
           }
         },
-        "bodyPatterns": [      
+        "bodyPatterns": [
           {
             "matchesJsonPath": {
               "expression": "$.businessInformation.doingBusinessAs",
@@ -442,7 +442,7 @@
             "equalTo": "1"
           }
         },
-        "bodyPatterns": [      
+        "bodyPatterns": [
           {
             "matchesJsonPath": {
               "expression": "$.businessInformation.clientAcronym",
@@ -555,158 +555,6 @@
         "headers": { "Content-Type": "application/json" }
       }
     },
-
-    {
-      "name": "Submission Match Stub for Location email",
-      "request": {
-        "url": "/api/clients/matches",
-        "method": "POST",
-        "headers": {
-          "Content-Type": {
-            "equalTo": "application/json"
-          },
-          "X-STEP": {
-            "equalTo": "2"
-          }
-        },
-        "bodyPatterns": [
-          {
-            "matchesJsonPath": {
-              "expression": "$.location.addresses[0].emailAddress",
-              "equalTo": "youshallnotpass@mail.ca"
-            }
-          }
-        ]
-      },
-      "response": {
-        "status": 409,
-        "bodyFileName": "fuzzy/full_address_email_match.json",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "name": "Submission Dynamic Match Stub for Location email",
-      "request": {
-        "url": "/api/clients/matches",
-        "method": "POST",
-        "headers": {
-          "Content-Type": {
-            "equalTo": "application/json"
-          },
-          "X-STEP": {
-            "equalTo": "2"
-          }
-        },
-        "bodyPatterns": [
-          {
-            "matchesJsonPath": {
-              "expression": "$.location.addresses..[?(@.emailAddress)]",
-              "contains": "match"
-            }
-          }
-        ]
-      },
-      "response": {
-        "status": 409,
-        "body": "[{{val (array) assign='indexList'}}{{#each (jsonPath request.body '$.location.addresses') as |address|}}{{#if (contains address.emailAddress 'match')}}{{val (arrayAdd indexList @index) assign='indexList'}}{{/if}}{{/each}}{{#arrayJoin ',' indexList as |index|}}{\"field\":\"location.addresses[{{index}}].emailAddress\", \"match\":\"0000000{{index}}\", \"fuzzy\":true, \"partialMatch\":false}{{/arrayJoin}}]",
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "fixedDelayMilliseconds": 500
-      }
-    },
-    {
-      "name": "Submission Match Stub for businessPhoneNumber",
-      "request": {
-        "url": "/api/clients/matches",
-        "method": "POST",
-        "headers": {
-          "Content-Type": {
-            "equalTo": "application/json"
-          },
-          "X-STEP": {
-            "equalTo": "2"
-          }
-        },
-        "bodyPatterns": [
-          {
-            "matchesJsonPath": {
-              "expression": "$.location.addresses[0].businessPhoneNumber",
-              "equalTo": "(222) 222-2222"
-            }
-          }
-        ]
-      },
-      "response": {
-        "status": 409,
-        "bodyFileName": "fuzzy/full_address_business_phone_match.json",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "name": "Submission Match Stub for secondaryPhoneNumber",
-      "request": {
-        "url": "/api/clients/matches",
-        "method": "POST",
-        "headers": {
-          "Content-Type": {
-            "equalTo": "application/json"
-          },
-          "X-STEP": {
-            "equalTo": "2"
-          }
-        },
-        "bodyPatterns": [
-          {
-            "matchesJsonPath": {
-              "expression": "$.location.addresses[0].secondaryPhoneNumber",
-              "equalTo": "(222) 222-2222"
-            }
-          }
-        ]
-      },
-      "response": {
-        "status": 409,
-        "bodyFileName": "fuzzy/full_address_secondary_phone_match.json",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "name": "Submission Match Stub for faxNumber",
-      "request": {
-        "url": "/api/clients/matches",
-        "method": "POST",
-        "headers": {
-          "Content-Type": {
-            "equalTo": "application/json"
-          },
-          "X-STEP": {
-            "equalTo": "2"
-          }
-        },
-        "bodyPatterns": [
-          {
-            "matchesJsonPath": {
-              "expression": "$.location.addresses[0].faxNumber",
-              "equalTo": "(222) 222-2222"
-            }
-          }
-        ]
-      },
-      "response": {
-        "status": 409,
-        "bodyFileName": "fuzzy/full_address_fax_phone_match.json",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
     {
       "name": "Submission Match Stub for street address",
       "request": {
@@ -767,7 +615,6 @@
         }
       }
     },
-
     {
       "name": "Submission Match Stub for Contact email",
       "request": {
@@ -979,6 +826,5 @@
         }
       }
     }
-    
   ]
 }
