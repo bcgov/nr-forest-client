@@ -669,26 +669,8 @@ public class ClientLegacyService {
             .name(REQUEST_LEGACY)
             .tag("kind", "relatedClientList")
             .map(legacyProjection -> new RelatedClientEntryDto(
-                    new RelatedClientDto(
-                        new CodeNameDto(
-                            legacyProjection.clientNumber(),
-                            legacyProjection.clientName()
-                        ),
-                        new CodeNameDto(
-                            legacyProjection.clientLocnCode(),
-                            legacyProjection.clientLocnName()
-                        )
-                    ),
-                    new RelatedClientDto(
-                        new CodeNameDto(
-                            legacyProjection.relatedClntNmbr(),
-                            legacyProjection.relatedClntName()
-                        ),
-                        new CodeNameDto(
-                            legacyProjection.relatedClntLocn(),
-                            legacyProjection.relatedClntLocnName()
-                        )
-                    ),
+                    mapCorrectClient(legacyProjection, true),
+                    mapCorrectClient(legacyProjection, false),
                     new CodeNameDto(
                         legacyProjection.relationshipCode(),
                         legacyProjection.relationshipName()
@@ -778,4 +760,16 @@ public class ClientLegacyService {
             );
   }
 
+  private RelatedClientDto mapCorrectClient(ClientRelatedProjection projection, boolean primary) {
+    if (primary == BooleanUtils.isTrue(projection.primaryClient())) {
+      return new RelatedClientDto(
+          new CodeNameDto(projection.clientNumber(), projection.clientName()),
+          new CodeNameDto(projection.clientLocnCode(), projection.clientLocnName())
+      );
+    }
+    return new RelatedClientDto(
+        new CodeNameDto(projection.relatedClntNmbr(), projection.relatedClntName()),
+        new CodeNameDto(projection.relatedClntLocn(), projection.relatedClntLocnName())
+    );
+  }
 }

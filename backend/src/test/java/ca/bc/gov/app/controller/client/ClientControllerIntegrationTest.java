@@ -776,13 +776,13 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 "Single entry with single location",
                 "00000002",
                 Map.of("00", 1L),
-                "[{\"clientLocnCode\": \"00\",\"primaryClient\": false}]"
+                "[{\"relatedClntLocn\": \"00\",\"primaryClient\": false}]"
             ),
             argumentSet(
                 "Double location",
                 "00000003",
                 Map.of("00", 1L, "01", 1L),
-                "[{\"clientLocnCode\": \"00\",\"primaryClient\": false},{\"clientLocnCode\": \"01\",\"primaryClient\": true}]"
+                "[{\"relatedClntLocn\": \"00\",\"primaryClient\": false},{\"clientLocnCode\": \"01\",\"primaryClient\": true}]"
             )
         );
   }
