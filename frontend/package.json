@@ -113,7 +113,8 @@
     "wiremock": "^3.13.1"
   },
   "overrides": {
-    "follow-redirects@<1.15.6": "1.15.6"
+    "follow-redirects@<1.15.6": "1.15.6",
+    "tmp": "^0.2.4"
   },
   "nyc": {
     "check-coverage": true,
