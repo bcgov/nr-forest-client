@@ -16,9 +16,6 @@ Feature: Client Type Code
     And I fill the "Primary location" address with the following
       | Field name                      | Value           | Type          |      
       | Street address or PO box        | 1015 Johnson    | autocomplete  |
-      | Email address                   | mail4@mail.ca   | text          |
-      | Primary phone number            | 7780000005      | text          |
-      | Secondary phone number          | 7780000006      | text          |
       | Notes                           | This is a test  | textbox       |
     Then I click on next
     And I fill the "Primary contact" information with the following

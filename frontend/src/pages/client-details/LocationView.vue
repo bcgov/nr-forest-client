@@ -351,7 +351,7 @@ const handleRemoveAdditionalDelivery = () => {
       </cds-button>
     </div>
     <div class="tab-form" v-if="isEditing">
-      <staff-location-group-component
+      <staff-details-location-group-component
         :id="index"
         v-bind:model-value="formAddressData"
         :countryList="countryList"

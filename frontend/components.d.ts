@@ -26,6 +26,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SimpleCheckboxInputComponent: typeof import('./src/components/forms/SimpleCheckboxInputComponent.vue')['default']
     StaffContactGroupComponent: typeof import('./src/components/grouping/StaffContactGroupComponent.vue')['default']
+    StaffDetailsLocationGroupComponent: typeof import('./src/components/grouping/StaffDetailsLocationGroupComponent.vue')['default']
     StaffLocationGroupComponent: typeof import('./src/components/grouping/StaffLocationGroupComponent.vue')['default']
     TextareaInputComponent: typeof import('./src/components/forms/TextareaInputComponent.vue')['default']
     TextInputComponent: typeof import('./src/components/forms/TextInputComponent.vue')['default']

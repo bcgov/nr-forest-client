@@ -40,10 +40,6 @@ describe("Staff Form Submission", () => {
       const data = { ...fixtureData, ...extraData };
       
       cy.selectAutocompleteEntry(`#addr_${index}`, data.addr, data.addressId);
-      cy.fillFormEntry(`#emailAddress_${index}`, data.emailAddress);
-      cy.fillFormEntry(`#businessPhoneNumber_${index}`, data.businessPhoneNumber);
-      cy.fillFormEntry(`#secondaryPhoneNumber_${index}`, data.secondaryPhoneNumber);
-      cy.fillFormEntry(`#faxNumber_${index}`, data.faxNumber);
     });
   };
 
