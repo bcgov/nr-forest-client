@@ -364,10 +364,54 @@ export interface RelatedClientEntry extends BaseRelatedClientEntry {
   relatedClient: RelatedClientDto;
 }
 
+export const createRelatedClientEntry = (clientNumber: string): RelatedClientEntry => {
+  const entry: RelatedClientEntry = {
+    client: {
+      client: { code: clientNumber } as CodeNameType,
+      location: null,
+    },
+    relatedClient: {
+      client: null,
+      location: null,
+    },
+    relationship: null,
+    percentageOwnership: null,
+    hasSigningAuthority: null,
+    isMainParticipant: true,
+  };
+  return entry;
+};
+
+export interface IndexedRelatedClientEntry extends RelatedClientEntry {
+  index: number;
+}
+
+export const createIndexedRelatedClientEntry = (
+  clientNumber: string,
+  index: number,
+): IndexedRelatedClientEntry => {
+  const entry: IndexedRelatedClientEntry = {
+    index,
+    client: {
+      client: { code: clientNumber } as CodeNameType,
+      location: null,
+    },
+    relatedClient: {
+      client: null,
+      location: null,
+    },
+    relationship: null,
+    percentageOwnership: null,
+    hasSigningAuthority: null,
+    isMainParticipant: true,
+  };
+  return entry;
+};
+
 export interface OtherRelatedClientEntry extends BaseRelatedClientEntry {
   /**
    * Represents the *other* client - in opposition to the *current* client - in a relationship, be
-   * it the main participant (the `client`) or not (the `relatedClient`).
+   * it the main/primary participant (the `client`) or not (the `relatedClient`).
    */
   otherClient: RelatedClientDto;
 }

@@ -25,7 +25,7 @@ const props = defineProps<{
   createMode?: boolean;
 }>();
 
-const locationIndex = props.location.clientLocnCode;
+const locationIndex = props.location?.clientLocnCode || null;
 
 const sortedData = computed<OtherRelatedClientEntry[]>(() => {
   const normalizedData = props.data.map((entry) => {
@@ -40,10 +40,10 @@ const sortedData = computed<OtherRelatedClientEntry[]>(() => {
 
   const result = normalizedData.toSorted(
     (a, b) =>
-      compareAny(a.relationship.name, b.relationship.name) ||
+      compareAny(a.relationship?.name, b.relationship?.name) ||
       -compareAny(a.isMainParticipant, b.isMainParticipant) ||
-      compareAny(a.otherClient.client.name, b.otherClient.client.name) ||
-      compareAny(a.otherClient.location.name, b.otherClient.location.name),
+      compareAny(a.otherClient.client?.name, b.otherClient.client?.name) ||
+      compareAny(a.otherClient.location?.name, b.otherClient.location?.name),
   );
   return result;
 });

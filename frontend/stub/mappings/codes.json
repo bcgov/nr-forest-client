@@ -261,7 +261,7 @@
     {
       "name": "Get relationship type codes by client type",
       "request": {
-        "urlPattern": "/api/codes/relationship-types/(C|A|P)",
+        "urlPattern": "/api/codes/relationship-types/(C|A|P|I)",
         "method": "GET"
       },
       "response": {

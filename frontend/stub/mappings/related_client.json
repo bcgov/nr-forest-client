@@ -59,11 +59,6 @@
       "request": {
         "urlPathTemplate": "/api/clients/relation/{clientNumber}",
         "method": "GET",
-        "pathParameters" : {
-          "clientNumber" : {
-            "doesNotMatch" : "^000000009$"
-          }
-        },
         "queryParameters" : {
           "value" : {
             "matches" : "^(.*)$"
@@ -78,7 +73,7 @@
         "transformers": [
           "response-template"
         ],
-        "body": "[]"
+        "bodyFileName": "details/related-client-search-{{request.query.value}}.json"
       }
     },
     {
