@@ -709,7 +709,7 @@ export const preserveUnchangedData = <T>(data: T, original: T): T => {
     if ([null, ""].includes(dataClone[key] as any)) {
       dataClone[key] = null; // default empty value
 
-      if ([null, ""].includes(original[key] as any)) {
+      if (original && [null, ""].includes(original[key] as any)) {
         // copy original empty value
         dataClone[key] = original[key];
       }
