@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         name: Start node
         with:
-          node-version: 18
+          node-version: 22
 
       - name: Run Cypress End-to-End
         uses: cypress-io/github-action@v5
