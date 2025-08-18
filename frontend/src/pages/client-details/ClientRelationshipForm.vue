@@ -381,13 +381,13 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
         v-model="formData.hasSigningAuthority"
       />
     </div>
-    rawSearchKeyword: {{ rawSearchKeyword }}
+    <!-- rawSearchKeyword: {{ rawSearchKeyword }}
     <br><br>
     formData.relatedClient?.client?.code: {{ formData.relatedClient?.client?.code }}
     <br><br>
     formData.hasSigningAuthority: {{ formData.hasSigningAuthority }}
     <br><br>
-    validation: {{ validation }}
+    validation: {{ validation }} -->
     <div class="form-group-buttons form-group-buttons--stretched">
       <cds-button
         id="summarySaveBtn"
