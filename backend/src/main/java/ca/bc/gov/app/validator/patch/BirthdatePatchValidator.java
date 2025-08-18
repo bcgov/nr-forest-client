@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -24,9 +25,13 @@ public class BirthdatePatchValidator implements PatchValidator {
     return (node) ->
         Mono
             .just(node)
+            .filter(aNode -> aNode.has("value"))
+            .filter(aNode -> StringUtils.isNotBlank(aNode.get("value").asText()))
             .map(aNode ->
                 ((ObjectNode) node.deepCopy())
                     .put("value", aNode.get("value").asText() + " 00:00:00")
-            );
+            )
+            .map(aNode -> (JsonNode) aNode)
+            .defaultIfEmpty(node);
   }
 }
