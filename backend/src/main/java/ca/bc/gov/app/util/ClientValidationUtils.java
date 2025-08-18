@@ -92,7 +92,7 @@ public class ClientValidationUtils {
       return null;
     }
     return switch (legalType) {
-      case A, B, BC, C, CP, EPR, FOR, LIC, REG -> ClientTypeEnum.C;
+      case A, B, BC, C, CP, EPR, FOR, LIC, REG, ULC -> ClientTypeEnum.C;
       case S, XS -> ClientTypeEnum.S;
       case XCP -> ClientTypeEnum.A;
       case SP -> ClientTypeEnum.RSP;

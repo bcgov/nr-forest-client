@@ -84,6 +84,7 @@ export enum LegalTypeEnum {
   LP,
   XL,
   XP,
+  ULC,
 };
 
 export enum ClientTypeEnum {

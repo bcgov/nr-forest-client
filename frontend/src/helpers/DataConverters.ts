@@ -10,6 +10,7 @@ export const retrieveClientType = (legalType: string): string => {
       case "FOR":
       case "LIC":
       case "REG":
+      case "ULC":
         return "C";
       case "S":
       case "XS":
