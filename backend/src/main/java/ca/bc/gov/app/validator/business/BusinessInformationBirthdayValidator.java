@@ -36,11 +36,11 @@ public class BusinessInformationBirthdayValidator implements
     Set<String> roles = JwtPrincipalUtil.getRoles();
 
     //FSADT-1992 Admins can bypass birthdate mandatory check for individuals
-    if(
+    if (
         roles.contains(ApplicationConstant.ROLE_ADMIN)
         && ClientTypeEnum.I.equals(clientTypeEnum)
         && target.birthdate() == null
-    ){
+    ) {
       return Mono.empty();
     }
 
