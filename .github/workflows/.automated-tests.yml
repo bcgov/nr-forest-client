@@ -16,12 +16,12 @@ jobs:
     environment: tools
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: actions/setup-node@v4
         name: Start node
         with:
-          node-version: 18
+          node-version: 22
 
       - name: Run Cypress End-to-End
         uses: cypress-io/github-action@v5
