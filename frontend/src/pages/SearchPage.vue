@@ -19,6 +19,7 @@ import {
   toTitleCase,
   highlightMatch,
   getTagColorByClientStatus,
+  searchResultToText,
 } from "@/services/ForestClientService";
 
 import summit from "@carbon/pictograms/es/summit";
@@ -130,12 +131,6 @@ const searchResultToCodeNameValue = (
 const searchResultToCodeNameValueList = (list: ClientSearchResult[]) =>
   list?.map(searchResultToCodeNameValue);
 
-const searchResultToText = (searchResult: ClientSearchResult): string => {
-  const { clientNumber, clientFullName, clientType, city } = searchResult;
-  const result = toTitleCase(`${clientNumber}, ${clientFullName}, ${clientType}, ${city}`);
-  return result;
-};
-
 const openClientDetails = (clientCode: string) => {
   if (clientCode) {
     const url = `/clients/details/${clientCode}`;
@@ -223,7 +218,9 @@ onMounted(() => {
           #="{ value }"
         >
           <div class="search-result-item" v-if="value">
-            <span v-dompurify-html="highlightMatch(searchResultToText(value), searchKeyword)"></span>
+            <span
+              v-dompurify-html="highlightMatch(searchResultToText(value), searchKeyword)"
+            ></span>
             <cds-tag :type="getTagColorByClientStatus(value.clientStatus)" title="">
               <span>{{ value.clientStatus }}</span>
             </cds-tag>

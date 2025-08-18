@@ -13,8 +13,8 @@ import {
   getTagColorByClientStatus,
   preserveUnchangedData,
   formatLocation,
-  searchResultToText,
   highlightMatch,
+  searchResultToText,
 } from "@/services/ForestClientService";
 
 import Save16 from "@carbon/icons-vue/es/save/16";
@@ -105,6 +105,7 @@ const validation = reactive<Record<string, boolean>>({
   relationshipType: !!formData.value?.relationship,
   relatedClient: !!formData.value?.relatedClient?.client,
   relatedClientLocation: !!formData.value?.relatedClient?.location,
+  percentageOwnership: true,
 });
 
 const checkValid = () =>
@@ -354,9 +355,35 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
         @error="validation.relatedClientLocation = !$event"
       />
     </data-fetcher>
+    <text-input-component
+      id="percentageOwnership"
+      label="Percentage owned"
+      mask="###"
+      type="tel"
+      placeholder=""
+      tip="For example “50”"
+      autocomplete="off"
+      v-model="formData.percentageOwnership"
+      :validations="[
+        ...getValidations('relatedClients.*.*.percentageOwnership'),
+        submissionValidation(
+          `relatedClients[${formData.client.location?.code}][${index}].percentageOwnership`,
+        ),
+      ]"
+      enabled
+      @empty="validation.percentageOwnership = true"
+      @error="validation.percentageOwnership = !$event"
+    />
+    <toggle-component
+      id="hasSigningAuthority"
+      label="Client has signing authority"
+      v-model="formData.hasSigningAuthority"
+    />
     rawSearchKeyword: {{ rawSearchKeyword }}
     <br><br>
     formData.relatedClient?.client?.code: {{ formData.relatedClient?.client?.code }}
+    <br><br>
+    formData.hasSigningAuthority: {{ formData.hasSigningAuthority }}
     <br><br>
     validation: {{ validation }}
     <div class="form-group-buttons form-group-buttons--stretched">

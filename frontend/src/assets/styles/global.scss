@@ -1482,6 +1482,7 @@ children: Year, Month, Day.
 }
 
 cds-textarea::part(label),
+cds-toggle::part(cds--toggle__label-text),
 .cds-text-input-label {
   color: var(--light-theme-text-text-primary, #131315);
 }

@@ -3,6 +3,7 @@ import type {
   ClientContact,
   ClientDetails,
   ClientLocation,
+  ClientSearchResult,
   CodeDescrType,
   CodeNameType,
   FieldAction,
@@ -761,4 +762,10 @@ export const booleanToYesNo = (
     return "No";
   }
   return options.empty;
+};
+
+export const searchResultToText = (searchResult: ClientSearchResult): string => {
+  const { clientNumber, clientFullName, clientType, city } = searchResult;
+  const result = toTitleCase(`${clientNumber}, ${clientFullName}, ${clientType}, ${city}`);
+  return result;
 };
