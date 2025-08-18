@@ -3,6 +3,7 @@ package ca.bc.gov.app.validator.business;
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
 import static org.junit.jupiter.api.Assertions.*;
 
+import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
 import ca.bc.gov.app.dto.client.ValidationSourceEnum;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.MDC;
 import reactor.test.StepVerifier;
 
 @DisplayName("Unit Tests | BusinessInformationBirthdayValidator")
@@ -33,8 +35,10 @@ class BusinessInformationBirthdayValidatorTest {
   @DisplayName("Should run validate")
   void shouldValidate(
       LocalDate birthdate,
-      String expectedMessage
+      String expectedMessage,
+      String role
   ) {
+    MDC.put(ApplicationConstant.MDC_USERROLES,role);
 
     StepVerifier.FirstStep<ValidationError> validation =
         validator.validate(
@@ -109,9 +113,10 @@ class BusinessInformationBirthdayValidatorTest {
   private static Stream<Arguments> validation() {
     return
         Stream.of(
-            Arguments.of(null, fieldIsMissingErrorMessage("Birthdate")),
-            Arguments.of(LocalDate.now(), "Sole proprietorship must be at least 19 years old"),
-            Arguments.of(LocalDate.now().minusYears(22), StringUtils.EMPTY)
+            Arguments.of(null, fieldIsMissingErrorMessage("Birthdate"), ApplicationConstant.ROLE_EDITOR),
+            Arguments.of(LocalDate.now(), "Sole proprietorship must be at least 19 years old", ApplicationConstant.ROLE_EDITOR),
+            Arguments.of(LocalDate.now().minusYears(22), StringUtils.EMPTY, ApplicationConstant.ROLE_EDITOR),
+            Arguments.of(null, StringUtils.EMPTY, ApplicationConstant.ROLE_ADMIN)
         );
   }
 
