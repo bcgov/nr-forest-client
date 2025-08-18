@@ -52,7 +52,7 @@
         <selenium.version>4.35.0</selenium.version>
         <org.junit.version>5.13.4</org.junit.version>
         <junit.version>4.13.2</junit.version>
-        <mockito.version>5.18.0</mockito.version>
+        <mockito.version>5.19.0</mockito.version>
         <jooq.version>3.20.6</jooq.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
     </properties>
@@ -539,7 +539,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.11.2</version>
+                <version>3.11.3</version>
                 <configuration>
                     <source>8</source>
                     <doctitle>Javadoc Documentation for ${project.name} ${project.version}
