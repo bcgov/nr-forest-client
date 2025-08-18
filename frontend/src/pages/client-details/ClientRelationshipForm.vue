@@ -355,30 +355,32 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
         @error="validation.relatedClientLocation = !$event"
       />
     </data-fetcher>
-    <text-input-component
-      id="percentageOwnership"
-      label="Percentage owned"
-      mask="###"
-      type="tel"
-      placeholder=""
-      tip="For example “50”"
-      autocomplete="off"
-      v-model="formData.percentageOwnership"
-      :validations="[
-        ...getValidations('relatedClients.*.*.percentageOwnership'),
-        submissionValidation(
-          `relatedClients[${formData.client.location?.code}][${index}].percentageOwnership`,
-        ),
-      ]"
-      enabled
-      @empty="validation.percentageOwnership = true"
-      @error="validation.percentageOwnership = !$event"
-    />
-    <toggle-component
-      id="hasSigningAuthority"
-      label="Client has signing authority"
-      v-model="formData.hasSigningAuthority"
-    />
+    <div class="horizontal-input-grouping-1_5">
+      <text-input-component
+        id="percentageOwnership"
+        label="Percentage owned"
+        mask="###"
+        type="tel"
+        placeholder=""
+        tip="For example “50”"
+        autocomplete="off"
+        v-model="formData.percentageOwnership"
+        :validations="[
+          ...getValidations('relatedClients.*.*.percentageOwnership'),
+          submissionValidation(
+            `relatedClients[${formData.client.location?.code}][${index}].percentageOwnership`,
+          ),
+        ]"
+        enabled
+        @empty="validation.percentageOwnership = true"
+        @error="validation.percentageOwnership = !$event"
+      />
+      <toggle-component
+        id="hasSigningAuthority"
+        label="Client has signing authority"
+        v-model="formData.hasSigningAuthority"
+      />
+    </div>
     rawSearchKeyword: {{ rawSearchKeyword }}
     <br><br>
     formData.relatedClient?.client?.code: {{ formData.relatedClient?.client?.code }}
