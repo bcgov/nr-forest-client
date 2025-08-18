@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public enum LegalTypeEnum {
   // Enum constants representing legal entity types
-  A, B, BC, C, CP, EPR, FOR, LIC, REG, S, XS, XCP, SP, GP, LP, XL, XP, LL;
+  A, B, BC, C, CP, EPR, FOR, LIC, REG, S, XS, XCP, SP, GP, LP, XL, XP, LL, ULC;
 
   // A map for reverse lookup of enum constants by their name
   private static final Map<String, LegalTypeEnum> CONSTANTS = new HashMap<>();
