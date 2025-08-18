@@ -3,6 +3,7 @@ package ca.bc.gov.app.util;
 import static ca.bc.gov.app.ApplicationConstant.FIRST_NAME;
 import static ca.bc.gov.app.ApplicationConstant.LAST_NAME;
 
+import ca.bc.gov.app.ApplicationConstant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
@@ -246,6 +248,19 @@ public class JwtPrincipalUtil {
       return Collections.emptySet();
     }
     return getClaimGroups(jwtPrincipal.getClaims());
+  }
+
+  /**
+   * Converts a comma-separated string of roles into a set of roles.
+   *
+   * @return A set of roles.
+   */
+  public static Set<String> getRoles() {
+    String roleCsv = MDC.get(ApplicationConstant.MDC_USERROLES);
+    if (StringUtils.isNotBlank(roleCsv)) {
+      return Set.of(roleCsv.split(","));
+    }
+    return Set.of();
   }
 
   private static Set<String> getClaimGroups(Map<String, Object> tokenAttributes) {
