@@ -353,14 +353,11 @@ export interface RelatedClientDto {
   location: CodeNameType;
 }
 
-export interface BaseRelatedClientEntry {
+export interface RelatedClientEntry {
   relationship: CodeNameType;
   percentageOwnership: number;
   hasSigningAuthority: boolean | null;
   isMainParticipant: boolean;
-}
-
-export interface RelatedClientEntry extends BaseRelatedClientEntry {
   client: RelatedClientDto;
   relatedClient: RelatedClientDto;
 }
