@@ -61,16 +61,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flipkart.zjsonpatch.JsonPatch;
+import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.database.postgresql.TransactionalModel;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 
 /**
  * <p><b>Global Service Configuration</b></p>
@@ -199,10 +206,22 @@ public class GlobalServiceConfiguration {
       @Qualifier("bcRegistryApiHealthIndicator") ManualHealthIndicator bcRegistryApiHealthIndicator,
       WebClient.Builder webClientBuilder
   ) {
+
+    HttpClient httpClient = HttpClient.create()
+        .responseTimeout(Duration.ofMinutes(2))
+        .doOnConnected(conn -> conn
+            .addHandlerLast(new ReadTimeoutHandler(120))
+            .addHandlerLast(new WriteTimeoutHandler(120)))
+        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) Duration.ofMinutes(2).toMillis());
+
     return webClientBuilder
         .baseUrl(configuration.getBcregistry().getUri())
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "identity")
         .defaultHeader("x-apikey", configuration.getBcregistry().getApiKey())
         .defaultHeader("Account-Id", configuration.getBcregistry().getAccountId())
+        .clientConnector(new ReactorClientHttpConnector(httpClient))
         .build();
   }
 
@@ -220,8 +239,9 @@ public class GlobalServiceConfiguration {
   ) {
     return webClientBuilder
         .baseUrl(configuration.getLegacy().getUrl())
-        .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-        .defaultHeader("Accept", MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "identity")
         .build();
   }
 
@@ -236,7 +256,12 @@ public class GlobalServiceConfiguration {
       ForestClientConfiguration configuration,
       WebClient.Builder webClientBuilder
   ) {
-    return webClientBuilder.baseUrl(configuration.getAddressComplete().getUrl()).build();
+    return webClientBuilder
+        .baseUrl(configuration.getAddressComplete().getUrl())
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "identity")
+        .build();
   }
 
   /**
@@ -254,7 +279,11 @@ public class GlobalServiceConfiguration {
       WebClient.Builder webClientBuilder
   ) {
     return webClientBuilder
-        .baseUrl(configuration.getOpenData().getSacBandUrl()).build();
+        .baseUrl(configuration.getOpenData().getSacBandUrl())
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "identity")
+        .build();
   }
 
   /**
@@ -272,7 +301,11 @@ public class GlobalServiceConfiguration {
       WebClient.Builder webClientBuilder
   ) {
     return webClientBuilder
-        .baseUrl(configuration.getOpenData().getSacTribeUrl()).build();
+        .baseUrl(configuration.getOpenData().getSacTribeUrl())
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "identity")
+        .build();
   }
 
   /**
@@ -290,7 +323,12 @@ public class GlobalServiceConfiguration {
       ForestClientConfiguration configuration,
       WebClient.Builder webClientBuilder
   ) {
-    return webClientBuilder.baseUrl(configuration.getOpenData().getOpenMapsBandUrl()).build();
+    return webClientBuilder
+        .baseUrl(configuration.getOpenData().getOpenMapsBandUrl())
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "identity")
+        .build();
   }
 
   /**
@@ -308,7 +346,12 @@ public class GlobalServiceConfiguration {
       ForestClientConfiguration configuration,
       WebClient.Builder webClientBuilder
   ) {
-    return webClientBuilder.baseUrl(configuration.getOpenData().getOpenMapsTribeUrl()).build();
+    return webClientBuilder
+        .baseUrl(configuration.getOpenData().getOpenMapsTribeUrl())
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "identity")
+        .build();
   }
 
   /**
@@ -330,7 +373,12 @@ public class GlobalServiceConfiguration {
       ForestClientConfiguration configuration,
       WebClient.Builder webClientBuilder
   ) {
-    return webClientBuilder.baseUrl(configuration.getProcessor().getUrl()).build();
+    return webClientBuilder
+        .baseUrl(configuration.getProcessor().getUrl())
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "identity")
+        .build();
   }
 
   /**

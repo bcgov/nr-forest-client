@@ -1,0 +1,14 @@
+{
+  "statusCode": 409,
+  "headers": {
+    "content-type": "application/json;charset=UTF-8"
+  },
+  "body": [
+    {
+      "field": "location.addresses[1].streetAddress",
+      "match": "00000001",
+      "fuzzy": true,
+      "partialMatch": false
+    }
+  ]
+}

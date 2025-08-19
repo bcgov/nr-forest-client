@@ -43,17 +43,17 @@
         <testcontainers.version>1.21.3</testcontainers.version>
         <logback.version>1.5.18</logback.version>
         <oci.revision>${project.version}</oci.revision>
-        <nimbus-jose-jwt.version>10.4.1</nimbus-jose-jwt.version>
+        <nimbus-jose-jwt.version>10.4.2</nimbus-jose-jwt.version>
         <spring-security-core.version>6.5.2</spring-security-core.version>
-        <micrometer.version>1.15.2</micrometer.version>
-        <micrometer-tracing.version>1.5.2</micrometer-tracing.version>
-        <flyway.version>11.10.5</flyway.version>
-        <opentelemetry.version>1.52.0</opentelemetry.version>
-        <selenium.version>4.34.0</selenium.version>
+        <micrometer.version>1.15.3</micrometer.version>
+        <micrometer-tracing.version>1.5.3</micrometer-tracing.version>
+        <flyway.version>11.11.1</flyway.version>
+        <opentelemetry.version>1.53.0</opentelemetry.version>
+        <selenium.version>4.35.0</selenium.version>
         <org.junit.version>5.13.4</org.junit.version>
         <junit.version>4.13.2</junit.version>
-        <mockito.version>5.18.0</mockito.version>
-        <jooq.version>3.20.5</jooq.version>
+        <mockito.version>5.19.0</mockito.version>
+        <jooq.version>3.20.6</jooq.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
     </properties>
 
@@ -244,7 +244,7 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
-                <version>6.2.9</version>
+                <version>6.2.10</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -334,7 +334,14 @@
             <dependency>
                 <groupId>io.projectreactor.netty</groupId>
                 <artifactId>reactor-netty-http</artifactId>
-                <version>1.2.8</version>
+                <version>1.2.9</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>4.1.124.Final</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -539,7 +546,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.11.2</version>
+                <version>3.11.3</version>
                 <configuration>
                     <source>8</source>
                     <doctitle>Javadoc Documentation for ${project.name} ${project.version}

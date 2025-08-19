@@ -1,6 +1,7 @@
 package ca.bc.gov.app.converters;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.util.JwtPrincipalUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -85,7 +86,7 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
    * @return The obfuscated value as a string.
    */
   private String obfuscate(String propName, String propType, Object value) {
-    Set<String> roles = toRoles(MDC.get(ApplicationConstant.MDC_USERROLES));
+    Set<String> roles = JwtPrincipalUtil.getRoles();
 
     // Admins can see the BCSC
     if (
@@ -147,19 +148,6 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
     }
 
     return value.charAt(0) + "***" + value.substring(value.length() - 3);
-  }
-
-  /**
-   * Converts a comma-separated string of roles into a set of roles.
-   *
-   * @param roleCsv The comma-separated string of roles.
-   * @return A set of roles.
-   */
-  private Set<String> toRoles(String roleCsv) {
-    if (StringUtils.isNotBlank(roleCsv)) {
-      return Set.of(roleCsv.split(","));
-    }
-    return Set.of();
   }
 
 }

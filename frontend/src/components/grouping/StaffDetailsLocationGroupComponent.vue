@@ -23,6 +23,7 @@ const props = defineProps<{
   countryList: Array<CodeNameType>;
   validations: Array<Function>;
   revalidate?: boolean;
+  includeTertiaryPhoneNumber?: boolean;
   hideDeleteButton?: boolean;
 }>();
 
@@ -100,6 +101,10 @@ const validation = reactive<Record<string, boolean>>({
   province: false,
   city: false,
   postalCode: false,
+  emailAddress: true,
+  primaryPhoneNumber: true,
+  secondaryPhoneNumber: true,
+  tertiaryPhoneNumber: true,
   faxNumber: true,
   notes: true,
 });
@@ -423,6 +428,92 @@ const getLocationDescription = (address: Address, index: number): string =>
       @error="validation.postalCode = !$event"
       @empty="validation.postalCode = !$event"
     />
+
+    <text-input-component
+      :id="'emailAddress_' + id"
+      label="Email address"
+      placeholder=""
+      autocomplete="off"
+      v-model="selectedValue.emailAddress"
+      :validations="[
+        ...getValidations('location.addresses.*.emailAddress'),
+        submissionValidation(`location.addresses[${id}].emailAddress`)
+      ]"
+      :enabled="true"
+      @empty="validation.emailAddress = true"
+      @error="validation.emailAddress = !$event"
+    />
+
+    <div :class="`grid ${includeTertiaryPhoneNumber ? 'grid--2-per-row' : 'grid--3-per-row'}`">
+      <text-input-component
+        :id="'businessPhoneNumber_' + id"
+        label="Primary phone number"
+        type="tel"
+        autocomplete="off"
+        placeholder="( ) ___-____"
+        mask="(###) ###-####"
+        v-model="selectedValue.businessPhoneNumber"
+        :enabled="true"
+        :validations="[
+          ...getValidations('location.addresses.*.businessPhoneNumber'),
+          submissionValidation(`location.addresses[${id}].businessPhoneNumber`)
+        ]"
+        @empty="validation.businessPhoneNumber = true"
+        @error="validation.businessPhoneNumber = !$event"
+      />
+
+      <text-input-component
+        :id="'secondaryPhoneNumber_' + id"
+        label="Secondary phone number"
+        type="tel"
+        autocomplete="off"
+        placeholder="( ) ___-____"
+        mask="(###) ###-####"
+        v-model="selectedValue.secondaryPhoneNumber"
+        :enabled="true"
+        :validations="[
+          ...getValidations('location.addresses.*.secondaryPhoneNumber'),
+          submissionValidation(`location.addresses[${id}].secondaryPhoneNumber`)
+        ]"
+        @empty="validation.secondaryPhoneNumber = true"
+        @error="validation.secondaryPhoneNumber = !$event"
+      />
+
+      <text-input-component
+        v-if="includeTertiaryPhoneNumber"
+        :id="'tertiaryPhoneNumber_' + id"
+        label="Tertiary phone number"
+        type="tel"
+        autocomplete="off"
+        placeholder="( ) ___-____"
+        mask="(###) ###-####"
+        v-model="selectedValue.tertiaryPhoneNumber"
+        :enabled="true"
+        :validations="[
+          ...getValidations('location.addresses.*.tertiaryPhoneNumber'),
+          submissionValidation(`location.addresses[${id}].tertiaryPhoneNumber`)
+        ]"
+        @empty="validation.tertiaryPhoneNumber = true"
+        @error="validation.tertiaryPhoneNumber = !$event"
+      />
+
+      <text-input-component
+        :id="'faxNumber_' + id"
+        label="Fax"
+        type="tel"
+        autocomplete="off"
+        placeholder="( ) ___-____"
+        mask="(###) ###-####"
+        v-model="selectedValue.faxNumber"
+        :enabled="true"
+        :validations="[
+          ...getValidations('location.addresses.*.faxNumber'),
+          submissionValidation(`location.addresses[${id}].faxNumber`)
+        ]"
+        @empty="validation.faxNumber = true"
+        @error="validation.faxNumber = !$event"
+      />
+    </div>
 
     <textarea-input-component
       :id="'notes_' + id"

@@ -118,12 +118,20 @@ public class ClientSubmissionLoadingService {
                                     )
                                 )
                                 .flatMap(districtInfo -> {
-                                  // Exclude client email if notifyClientInd is "N"
-                                  String clientEmail = submission.getNotifyClientInd().equalsIgnoreCase("N")
-                                      ? null
-                                      : submissionContact.getEmailAddress();
+                                  // Exclude client email if notifyClientInd is "N" 
+                                  // and there is an email
+                                  String clientEmail = 
+                                      submission.getNotifyClientInd().equalsIgnoreCase("N")
+                                      && StringUtils.isNotEmpty(
+                                          submissionContact.getEmailAddress()
+                                        )
+                                        ? null
+                                        : submissionContact.getEmailAddress();
 
-                                  String rawEmails = getEmails(message, districtInfo.getLeft(), clientEmail);
+                                  String rawEmails = getEmails(
+                                      message, 
+                                      districtInfo.getLeft(), 
+                                      clientEmail);
 
                                   // Avoid sending an email if no recipient emails exist
                                   if (StringUtils.isBlank(rawEmails)) {

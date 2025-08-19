@@ -101,10 +101,6 @@ describe("<StaffLocationGroupComponent />", () => {
             modelValue: {
               ...address,
               locationName: "Headquarters",
-              businessPhoneNumber: "1114567890",
-              secondaryPhoneNumber: "2224567890",
-              faxNumber: "3334567890",
-              emailAddress: "john@mail.com",
               notes: "Some notes about the location",
             } as Address,
             countryList: countries,
@@ -130,14 +126,6 @@ describe("<StaffLocationGroupComponent />", () => {
     cy.get("#province_0").should("be.visible").and("have.value", "British Columbia");
 
     cy.get("#postalCode_0").should("be.visible").and("have.value", "V8T5J9");
-
-    cy.get("#emailAddress_0").should("be.visible").and("have.value", "john@mail.com");
-
-    cy.get("#businessPhoneNumber_0").should("be.visible").and("have.value", "1114567890");
-
-    cy.get("#secondaryPhoneNumber_0").should("be.visible").and("have.value", "2224567890");
-
-    cy.get("#faxNumber_0").should("be.visible").and("have.value", "3334567890");
 
     /*
     cy.get("#notes_0")
@@ -186,47 +174,6 @@ describe("<StaffLocationGroupComponent />", () => {
       .should("be.visible")
       .find("slot")
       .and("include.text", "Error");
-  });
-
-  const tertiarySelector0 = "#tertiaryPhoneNumber_0";
-
-  it("should render the component without a tertiaryPhoneNumber input field by default", () => {
-    cy.get("@addressFixture").then((address: any) => {
-      cy.get("@countriesFixture").then((countries) => {
-        cy.mount(StaffLocationGroupComponent, {
-          props: {
-            id: 0,
-            modelValue: address,
-            countryList: countries,
-            validations: [],
-          },
-        });
-      });
-    });
-
-    cy.wait("@getProvinces");
-
-    cy.get(tertiarySelector0).should("not.exist");
-  });
-
-  it("should render the component with a tertiaryPhoneNumber input field", () => {
-    cy.get("@addressFixture").then((address: any) => {
-      cy.get("@countriesFixture").then((countries) => {
-        cy.mount(StaffLocationGroupComponent, {
-          props: {
-            id: 0,
-            modelValue: address,
-            countryList: countries,
-            validations: [],
-            includeTertiaryPhoneNumber: true,
-          },
-        });
-      });
-    });
-
-    cy.wait("@getProvinces");
-
-    cy.get(tertiarySelector0).should("be.visible");
   });
 
   const deleteSelector1 = "#deleteAddress_1";

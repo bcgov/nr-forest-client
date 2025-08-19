@@ -189,9 +189,8 @@ public class BcRegistryService {
             .tag("kind", "docreq")
             .tap(Micrometer.observation(registry))
             .flatMapIterable(BcRegistryDocumentRequestResponseDto::documents)
+            .doOnNext(entry -> log.info("Found document entry for {}: {}", value, entry))
             .map(BcRegistryDocumentRequestDocumentDto::documentKey)
-            .doOnNext(documentKey -> log.info("Loading document {} for identifier {}", documentKey,
-                value))
             .flatMap(documentKey -> getDocumentData(value, documentKey))
             //This will try to load the standing and business data for entries with no documents
             .onErrorResume(NoClientDataFound.class, exception ->
@@ -200,6 +199,7 @@ public class BcRegistryService {
   }
 
   private Mono<BcRegistryDocumentDto> getDocumentData(String identifier, String documentKey) {
+    log.info("Requesting document {} for identifier {} for details", documentKey, identifier);
     return
         bcRegistryApi
             .get()
