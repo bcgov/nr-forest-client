@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import {
-  type OtherRelatedClientEntry,
-  type ClientLocation,
-  type RelatedClientEntry,
-  type UserRole,
-} from "@/dto/CommonTypesDto";
+import { type ClientLocation, type RelatedClientEntry, type UserRole } from "@/dto/CommonTypesDto";
 import {
   booleanToYesNo,
   compareAny,
@@ -27,23 +22,13 @@ const props = defineProps<{
 
 const locationIndex = props.location.clientLocnCode;
 
-const sortedData = computed<OtherRelatedClientEntry[]>(() => {
-  const normalizedData = props.data.map((entry) => {
-    const result = {
-      ...entry,
-      otherClient: entry.isMainParticipant ? entry.relatedClient : entry.client,
-    };
-    delete result.client;
-    delete result.relatedClient;
-    return result as OtherRelatedClientEntry;
-  });
-
-  const result = normalizedData.toSorted(
+const sortedData = computed<RelatedClientEntry[]>(() => {
+  const result = props.data.toSorted(
     (a, b) =>
       compareAny(a.relationship.name, b.relationship.name) ||
       -compareAny(a.isMainParticipant, b.isMainParticipant) ||
-      compareAny(a.otherClient.client.name, b.otherClient.client.name) ||
-      compareAny(a.otherClient.location.name, b.otherClient.location.name),
+      compareAny(a.relatedClient.client.name, b.relatedClient.client.name) ||
+      compareAny(a.relatedClient.location.name, b.relatedClient.location.name),
   );
   return result;
 });
@@ -106,19 +91,21 @@ const encodedAddress = computed(() => {
             <cds-table-cell>
               <span>
                 <a
-                  :href="`/clients/details/${row.otherClient.client.code}`"
+                  :href="`/clients/details/${row.relatedClient.client.code}`"
                   target="_blank"
                   rel="noopener"
                 >
-                  {{ row.otherClient.client.code }}
+                  {{ row.relatedClient.client.code }}
                 </a>
-                , {{ toTitleCase(row.otherClient.client.name) }}
+                , {{ toTitleCase(row.relatedClient.client.name) }}
                 <a
-                  :href="`/clients/details/${row.otherClient.client.code}`"
+                  :href="`/clients/details/${row.relatedClient.client.code}`"
                   target="_blank"
                   rel="noopener"
                 >
-                  {{ formatLocation(row.otherClient.location.code, row.otherClient.location.name) }}
+                  {{
+                    formatLocation(row.relatedClient.location.code, row.relatedClient.location.name)
+                  }}
                 </a>
               </span>
             </cds-table-cell>
@@ -139,8 +126,8 @@ const encodedAddress = computed(() => {
                     <Edit16 slot="icon" />
                   </cds-button>
                   <cds-tooltip-content v-show="!row.isMainParticipant" autoalign>
-                    Go to “{{ row.otherClient.client.code }},
-                    {{ toTitleCase(row.otherClient.client.name) }}” client’s page to edit this
+                    Go to “{{ row.relatedClient.client.code }},
+                    {{ toTitleCase(row.relatedClient.client.name) }}” client’s page to edit this
                     relationship
                   </cds-tooltip-content>
                 </cds-tooltip>
@@ -154,8 +141,8 @@ const encodedAddress = computed(() => {
                     <TrashCan16 slot="icon" />
                   </cds-button>
                   <cds-tooltip-content v-show="!row.isMainParticipant">
-                    Go to “{{ row.otherClient.client.code }},
-                    {{ toTitleCase(row.otherClient.client.name) }}” client’s page to delete this
+                    Go to “{{ row.relatedClient.client.code }},
+                    {{ toTitleCase(row.relatedClient.client.name) }}” client’s page to delete this
                     relationship
                   </cds-tooltip-content>
                 </cds-tooltip>
