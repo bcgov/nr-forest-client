@@ -85,22 +85,22 @@ describe("<location-relationships-view />", () => {
       {
         client: {
           client: {
-            code: "00000137",
-            name: "MATELDA LINDHE",
-          },
-          location: {
-            code: "00",
-            name: "MAPLEWOOD HEIGHTS ADDRESS",
-          },
-        },
-        relatedClient: {
-          client: {
             code: "00000001",
             name: "Thiz",
           },
           location: {
             code: "01",
             name: "Accountant address",
+          },
+        },
+        relatedClient: {
+          client: {
+            code: "00000137",
+            name: "MATELDA LINDHE",
+          },
+          location: {
+            code: "00",
+            name: "MAPLEWOOD HEIGHTS ADDRESS",
           },
         },
         relationship: {

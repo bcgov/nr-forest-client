@@ -3,22 +3,22 @@
         {
             "client": {
                 "client": {
-                    "code": "00000158",
-                    "name": "OAK HERITAGE GROUP"
-                },
-                "location": {
-                    "code": "00",
-                    "name": "MR"
-                }
-            },
-            "relatedClient": {
-                "client": {
                     "code": "00000001",
                     "name": "Thiz"
                 },
                 "location": {
                     "code": "00",
                     "name": "Mailing address"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000158",
+                    "name": "OAK HERITAGE GROUP"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "MR"
                 }
             },
             "relationship": {
@@ -92,22 +92,22 @@
         {
             "client": {
                 "client": {
-                    "code": "00000137",
-                    "name": "MATELDA LINDHE"
-                },
-                "location": {
-                    "code": "00",
-                    "name": "MAPLEWOOD HEIGHTS ADDRESS"
-                }
-            },
-            "relatedClient": {
-                "client": {
                     "code": "00000001",
                     "name": "Thiz"
                 },
                 "location": {
                     "code": "01",
                     "name": "Accountant address"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000137",
+                    "name": "MATELDA LINDHE"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "MAPLEWOOD HEIGHTS ADDRESS"
                 }
             },
             "relationship": {
