@@ -365,14 +365,6 @@ export interface RelatedClientEntry extends BaseRelatedClientEntry {
   relatedClient: RelatedClientDto;
 }
 
-export interface OtherRelatedClientEntry extends BaseRelatedClientEntry {
-  /**
-   * Represents the *other* client - in opposition to the *current* client - in a relationship, be
-   * it the main participant (the `client`) or not (the `relatedClient`).
-   */
-  otherClient: RelatedClientDto;
-}
-
 export type RelatedClientList = Record<string, RelatedClientEntry[]>;
 
 export interface ClientInformation {
