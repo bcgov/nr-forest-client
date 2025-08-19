@@ -333,7 +333,6 @@ const newRelationship = ref<RelatedClientEntry>();
 
 const relatedClientsLocations = computed<RelatedClientList>(() => {
   const result = {...data.value?.relatedClients};
-  newRelationship.value = createRelatedClientEntry(clientNumber);
   if (newRelationship.value) {
     result.null = [newRelationship.value];
   }
@@ -342,6 +341,7 @@ const relatedClientsLocations = computed<RelatedClientList>(() => {
 
 const addRelationship = () => {
   newRelationship.value = createRelatedClientEntry(clientNumber);
+  relatedLocationsState.null = createCollapsibleState({ startOpen: true });
 
   const index = "null";
   setScrollPoint(`relationships-location-${index}-heading`, undefined, () => {
@@ -350,6 +350,7 @@ const addRelationship = () => {
 };
 
 const handleRelationshipCanceled = (relationship: RelatedClientEntry) => {
+  console.log(relationship, relationship === newRelationship.value)
   if (relationship === newRelationship.value) {
     newRelationship.value = undefined;
     delete relatedLocationsState.null;

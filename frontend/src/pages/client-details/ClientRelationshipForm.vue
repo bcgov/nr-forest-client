@@ -76,6 +76,10 @@ watch(
   { deep: true },
 );
 
+const cancel = () => {
+  emit("canceled");
+};
+
 const saving = ref(false);
 
 const setSaving = (value: boolean) => {
