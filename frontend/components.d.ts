@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    2: typeof import('./src/components/forms/SimpleCheckboxInputComponent copy 2.vue')['default']
     AddressGroupComponent: typeof import('./src/components/grouping/AddressGroupComponent.vue')['default']
     AutoCompleteInputComponent: typeof import('./src/components/forms/AutoCompleteInputComponent.vue')['default']
     ComboBoxInputComponent: typeof import('./src/components/forms/ComboBoxInputComponent.vue')['default']
@@ -29,6 +30,7 @@ declare module 'vue' {
     StaffLocationGroupComponent: typeof import('./src/components/grouping/StaffLocationGroupComponent.vue')['default']
     TextareaInputComponent: typeof import('./src/components/forms/TextareaInputComponent.vue')['default']
     TextInputComponent: typeof import('./src/components/forms/TextInputComponent.vue')['default']
+    ToggleComponent: typeof import('./src/components/forms/ToggleComponent.vue')['default']
     UserProfileComponent: typeof import('./src/components/UserProfileComponent.vue')['default']
   }
 }
