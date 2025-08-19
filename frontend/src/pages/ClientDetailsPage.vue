@@ -1162,8 +1162,8 @@ const formatRelatedLocation = (locationCode: string) => {
       </div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden>
         <template v-if="$features.RELATED_CLIENTS">
-          <template v-if="countRelatedClients">
-            <div class="tab-header space-between">              
+          <template v-if="!data || Object.entries(relatedClientsLocations).length">
+            <div class="tab-header space-between">
               <h3 class="padding-left-1rem">
                 {{ formatCount(countRelatedClients) }}
                 {{ pluralize("client relationship", countRelatedClients) }}
@@ -1251,8 +1251,8 @@ const formatRelatedLocation = (locationCode: string) => {
                   id="addClientRelationshipBtn"
                   kind="primary"
                   size="md"
-                  @click=""
-                  :disabled="false"
+                  @click="addRelationship"
+                  :disabled="newRelationship"
                 >
                   <span class="width-unset">Add client relationship</span>
                   <Add16 slot="icon" />
