@@ -69,6 +69,8 @@ export const retrieveLegalTypeDesc = (legalType: string): string => {
       return "Extraprovincial Limited Liability Partnership";
     case "XP":
       return "Extraprovincial Limited Partnership";
+    case "ULC":
+      return "Unlimited Liability Company";
     default:
       return legalType + " (Unknown)";
   }
