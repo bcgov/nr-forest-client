@@ -1214,11 +1214,12 @@ const formatRelatedLocation = (locationCode: string) => {
                   </div>
                   <client-relationship-form
                     v-if="newRelationship && curLocationCode === 'null'"
+                    index="null"
+                    location-index="null"
                     :data="newRelationship"
                     :client="data"
-                    :is-reloading="false"
+                    :validations="[]"
                     keep-scroll-bottom-position
-                    :createMode="true"
                     @canceled="handleRelationshipCanceled(newRelationship)"
                   />
                   <location-relationships-view

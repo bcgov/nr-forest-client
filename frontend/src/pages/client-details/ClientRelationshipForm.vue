@@ -39,9 +39,7 @@ const props = defineProps<{
   locationIndex: string;
   client: ClientDetails;
   validations: Array<Function>;
-  isReloading: boolean;
   keepScrollBottomPosition?: boolean;
-  createMode?: boolean;
 }>();
 
 const emit = defineEmits<{
