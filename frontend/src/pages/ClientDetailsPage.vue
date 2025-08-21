@@ -1217,7 +1217,7 @@ const formatRelatedLocation = (locationCode: string) => {
                     location-index="null"
                     index="null"
                     :data="newRelationship"
-                    :client="data"
+                    :clientData="data"
                     :validations="[]"
                     keep-scroll-bottom-position
                     @canceled="handleRelationshipCanceled(newRelationship)"

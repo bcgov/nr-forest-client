@@ -38,7 +38,7 @@ const props = defineProps<{
   locationIndex: string;
   index: string;
   data: RelatedClientEntry;
-  client: ClientDetails;
+  clientData: ClientDetails;
   validations: Array<Function>;
   keepScrollBottomPosition?: boolean;
 }>();
@@ -132,7 +132,6 @@ const updateRelationship = (value: CodeNameType | undefined) => {
 watch(
   () => formData.value.relationship?.code,
   () => {
-    console.log("relationship changed, clearing related client");
     formData.value.relatedClient.client = null;
   },
 );
@@ -140,7 +139,6 @@ watch(
 watch(
   () => formData.value.relatedClient.client?.code,
   (relatedClientNumber) => {
-    console.log("related client changed", relatedClientNumber);
     if (!relatedClientNumber) {
       rawSearchKeyword.value = "";
     }
@@ -160,7 +158,6 @@ const onUpdateModeValueRelatedClient = () => {
 
 const updateRelatedClient = (value: CodeNameValue<ClientSearchResult> | undefined) => {
   if (value) {
-    console.log("updateRelatedClient", value);
     formData.value.relatedClient.client = {
       code: value.value.clientNumber,
       name: value.value.clientFullName, // Note: this should be ignored by the back-end
@@ -170,7 +167,6 @@ const updateRelatedClient = (value: CodeNameValue<ClientSearchResult> | undefine
 
 const updateRelatedClientLocation = (value: CodeNameType | undefined) => {
   if (value) {
-    console.log("updateRelatedClientLocation", value);
     formData.value.relatedClient.location = value;
   }
 };
@@ -186,7 +182,7 @@ watch(
 );
 
 const locationList = computed<CodeNameType[]>(() =>
-  props.client.addresses.map((location) => ({
+  props.clientData.addresses.map((location) => ({
     code: location.clientLocnCode,
     name: formatLocation(location.clientLocnCode, location.clientLocnName),
   })),
@@ -281,7 +277,7 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
       @error="validation.location = !$event"
     />
     <data-fetcher
-      :url="`/api/codes/relationship-types/${props.client.client.clientTypeCode}`"
+      :url="`/api/codes/relationship-types/${props.clientData.client.clientTypeCode}`"
       :min-length="0"
       :init-value="[]"
       :init-fetch="true"
@@ -397,13 +393,6 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
         v-model="formData.hasSigningAuthority"
       />
     </div>
-    <!-- rawSearchKeyword: {{ rawSearchKeyword }}
-    <br><br>
-    formData.relatedClient?.client?.code: {{ formData.relatedClient?.client?.code }}
-    <br><br>
-    formData.hasSigningAuthority: {{ formData.hasSigningAuthority }}
-    <br><br>
-    validation: {{ validation }} -->
     <div class="form-group-buttons form-group-buttons--stretched">
       <cds-button
         :id="`rc-${locationIndex}-${index}-SaveBtn`"

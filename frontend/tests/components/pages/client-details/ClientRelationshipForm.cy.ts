@@ -28,7 +28,7 @@ describe("<client-relationship-form />", () => {
       hasSigningAuthority: null,
       isMainParticipant: true,
     } as RelatedClientEntry,
-    client: clientDetails,
+    clientData: clientDetails,
     validations: [],
   });
 
@@ -83,7 +83,9 @@ describe("<client-relationship-form />", () => {
     cy.wait("@getRelationshipTypes").then(({ request, response }) => {
       // the request contains the clientTypeCode
       expect(request.url).to.match(
-        new RegExp(`/api/codes/relationship-types/${currentProps.client.client.clientTypeCode}`),
+        new RegExp(
+          `/api/codes/relationship-types/${currentProps.clientData.client.clientTypeCode}`,
+        ),
       );
 
       cy.wait(50);

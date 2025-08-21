@@ -7,7 +7,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    2: typeof import('./src/components/forms/SimpleCheckboxInputComponent copy 2.vue')['default']
     AddressGroupComponent: typeof import('./src/components/grouping/AddressGroupComponent.vue')['default']
     AutoCompleteInputComponent: typeof import('./src/components/forms/AutoCompleteInputComponent.vue')['default']
     ComboBoxInputComponent: typeof import('./src/components/forms/ComboBoxInputComponent.vue')['default']
