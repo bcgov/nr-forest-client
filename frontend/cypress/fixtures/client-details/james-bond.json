@@ -1,0 +1,202 @@
+{
+  "client": {
+    "registryCompanyTypeCode": null,
+    "corpRegnNmbr": null,
+    "clientNumber": "00000007",
+    "clientName": "bond",
+    "legalFirstName": "james",
+    "legalMiddleName": "bond",
+    "birthdate": "1962-08-17",
+    "clientIdTypeCode": "BCRE",
+    "clientIdTypeDesc": "BC Registry",
+    "clientIdentification": "FM236478",
+    "clientAcronym": "",
+    "clientTypeCode": "I",
+    "clientTypeDesc": "Individual",
+    "goodStandingInd": "N",
+    "clientStatusCode": "ACT",
+    "clientStatusDesc": "Active",
+    "clientComment": "",
+    "clientCommentUpdateDate": "",
+    "clientCommentUpdateUser": "",
+    "wcbFirmNumber": "989898"
+  },
+  "doingBusinessAs": null,
+  "contacts": [
+    {
+      "contactId": "1",
+      "locationCodes": ["01"],
+      "contactName": "Cheryl Bibby",
+      "contactTypeCode": "BL",
+      "contactTypeDesc": "Billing",
+      "businessPhone": "9181716151",
+      "secondaryPhone": null,
+      "faxNumber": null,
+      "emailAddress": null
+    }
+  ],
+  "addresses": [
+    {
+      "clientLocnName": "MI6 Headquarters",
+      "clientLocnCode": "00",
+      "addressOne": "123 Richmond Ave",
+      "addressTwo": "C/O Tony Pineda",
+      "addressThree": "Sample additional info",
+      "countryCode": "CA",
+      "countryDesc": "Canada",
+      "provinceCode": "SK",
+      "provinceDesc": "Saskatchewan",
+      "city": "Hampton",
+      "postalCode": "A1B2C3",
+      "emailAddress": "contact@mail.com",
+      "businessPhone": "2502863767",
+      "cellPhone": "2505553700",
+      "homePhone": "2505553101",
+      "faxNumber": "2502863768",
+      "cliLocnComment": "Sample location 00 comment",
+      "locnExpiredInd": "N"
+    },
+    {
+      "clientLocnName": "Casino Royale",
+      "clientLocnCode": "01",
+      "addressOne": "234 Oak St",
+      "addressTwo": "C/O Mike Oliveira",
+      "addressThree": "",
+      "countryCode": "CA",
+      "countryDesc": "Canada",
+      "provinceCode": "BC",
+      "provinceDesc": "British Columbia",
+      "city": "Deer Lake",
+      "postalCode": "B1C2D3",
+      "emailAddress": "account@mail.com",
+      "businessPhone": "2502864767",
+      "cellPhone": "2505554700",
+      "homePhone": "2505554101",
+      "faxNumber": "2502864768",
+      "cliLocnComment": "Sample location 01 comment",
+      "locnExpiredInd": "N"
+    }
+  ],
+  "relatedClients": {
+    "00": [
+        {
+            "client": {
+                "client": {
+                    "code": "00000001",
+                    "name": "Thiz"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "Mailing address"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000158",
+                    "name": "OAK HERITAGE GROUP"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "MR"
+                }
+            },
+            "relationship": {
+                "code": "JV",
+                "name": "Joint Venture Participant"
+            },
+            "percentageOwnership": 50.0,
+            "hasSigningAuthority": null,
+            "isMainParticipant": false
+        }
+    ],
+    "01": [
+        {
+            "client": {
+                "client": {
+                    "code": "00000001",
+                    "name": "Thiz"
+                },
+                "location": {
+                    "code": "01",
+                    "name": "Accountant address"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000172",
+                    "name": "NATURE NURTURERS"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "MAIN OFFICE"
+                }
+            },
+            "relationship": {
+                "code": "SH",
+                "name": "Shareholder"
+            },
+            "percentageOwnership": 33.0,
+            "hasSigningAuthority": true,
+            "isMainParticipant": true
+        },
+        {
+            "client": {
+                "client": {
+                    "code": "00000001",
+                    "name": "Thiz"
+                },
+                "location": {
+                    "code": "01",
+                    "name": "Accountant address"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000177",
+                    "name": "GRAND FARM"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "Headquarters"
+                }
+            },
+            "relationship": {
+                "code": "SH",
+                "name": "Shareholder"
+            },
+            "percentageOwnership": 33.0,
+            "hasSigningAuthority": false,
+            "isMainParticipant": true
+        },
+        {
+            "client": {
+                "client": {
+                    "code": "00000001",
+                    "name": "Thiz"
+                },
+                "location": {
+                    "code": "01",
+                    "name": "Accountant address"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000137",
+                    "name": "MATELDA LINDHE"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "MAPLEWOOD HEIGHTS ADDRESS"
+                }
+            },
+            "relationship": {
+                "code": "PA",
+                "name": "General Partner"
+            },
+            "percentageOwnership": null,
+            "hasSigningAuthority": null,
+            "isMainParticipant": false
+        }
+    ]
+  }
+}
