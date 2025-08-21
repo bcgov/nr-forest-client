@@ -32,11 +32,12 @@ import {
   isMinSizeMsg,
   optional,
 } from "@/helpers/validators/GlobalValidators";
+import { useFetchTo } from "@/composables/useFetch";
 
 const props = defineProps<{
-  data: RelatedClientEntry;
-  index: string;
   locationIndex: string;
+  index: string;
+  data: RelatedClientEntry;
   client: ClientDetails;
   validations: Array<Function>;
   keepScrollBottomPosition?: boolean;
@@ -138,13 +139,17 @@ watch(
 
 watch(
   () => formData.value.relatedClient.client?.code,
-  (value) => {
-    console.log("related client changed", value);
-    if (!value) {
+  (relatedClientNumber) => {
+    console.log("related client changed", relatedClientNumber);
+    if (!relatedClientNumber) {
       rawSearchKeyword.value = "";
     }
-    validation.relatedClient = !!value;
+    validation.relatedClient = !!relatedClientNumber;
     formData.value.relatedClient.location = null;
+    relatedClientDetails.value = undefined;
+    if (relatedClientNumber) {
+      fetchRelatedClientDetails();
+    }
   },
 );
 
@@ -195,6 +200,24 @@ const predictiveSearchUri = computed(
     `/api/clients/relation/${props.data.client.client.code}` +
     `?type=${formData.value.relationship?.code || ""}` +
     `&value=${encodeURIComponent(searchKeyword.value)}`,
+);
+
+const relatedClientDetailsUrl = computed(() => {
+  const relatedClientNumber = formData.value.relatedClient.client?.code;
+  if (relatedClientNumber) {
+    return `/api/clients/details/${relatedClientNumber}`;
+  }
+  return "";
+});
+
+const relatedClientDetails = ref<ClientDetails>();
+
+const { fetch: fetchRelatedClientDetails } = useFetchTo(
+  relatedClientDetailsUrl,
+  relatedClientDetails,
+  {
+    skip: !relatedClientDetailsUrl.value,
+  },
 );
 
 const relatedClientLabel = "Related client";
@@ -266,7 +289,7 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
       #="{ content }"
     >
       <dropdown-input-component
-        :id="`rc-${locationIndex}-${index}-relationship-type`"
+        :id="`rc-${locationIndex}-${index}-relationship`"
         label="Relationship type"
         :initial-value="content?.find((item) => item.code === formData.relationship?.code)?.name"
         required
@@ -298,7 +321,7 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
       #="{ content, loading, error }"
     >
       <AutoCompleteInputComponent
-        :id="`rc-${locationIndex}-${index}-related-client`"
+        :id="`rc-${locationIndex}-${index}-relatedClient`"
         :label="relatedClientLabel"
         autocomplete="off"
         tip="Start typing the client’s number or name. You can also create a new client"
@@ -326,40 +349,31 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
         </div>
       </AutoCompleteInputComponent>
     </data-fetcher>
-    <data-fetcher
-      :url="`/api/clients/details/${formData.relatedClient?.client?.code}`"
-      :min-length="3"
-      :init-value="[]"
-      :init-fetch="false"
-      :disabled="!formData.relatedClient?.client?.code"
-      #="{ content, loading, error }"
-    >
-      <dropdown-input-component
-        :id="`rc-${locationIndex}-${index}-related-client-location`"
-        label="Related client's location"
-        tip=""
-        :initial-value="
-          getClientLocationList(content)?.find(
-            (item) => item.code === formData.relatedClient.location?.code,
-          )?.name
-        "
-        :model-value="getClientLocationList(content)"
-        :validations="[
-          ...getValidations('relatedClients.*.*.relatedClient.location'),
-          submissionValidation(
-            `relatedClients[${formData.client.location?.code}][${index}].relatedClient.location`,
-          ),
-        ]"
-        required
-        required-label
-        @update:selected-value="updateRelatedClientLocation($event)"
-        @empty="validation.relatedClientLocation = !$event"
-        @error="validation.relatedClientLocation = !$event"
-      />
-    </data-fetcher>
+    <dropdown-input-component
+      :id="`rc-${locationIndex}-${index}-relatedClient-location`"
+      label="Related client's location"
+      tip=""
+      :initial-value="
+        getClientLocationList(relatedClientDetails)?.find(
+          (item) => item.code === formData.relatedClient.location?.code,
+        )?.name
+      "
+      :model-value="getClientLocationList(relatedClientDetails)"
+      :validations="[
+        ...getValidations('relatedClients.*.*.relatedClient.location'),
+        submissionValidation(
+          `relatedClients[${formData.client.location?.code}][${index}].relatedClient.location`,
+        ),
+      ]"
+      required
+      required-label
+      @update:selected-value="updateRelatedClientLocation($event)"
+      @empty="validation.relatedClientLocation = !$event"
+      @error="validation.relatedClientLocation = !$event"
+    />
     <div class="horizontal-input-grouping-1_5">
       <text-input-component
-        id="percentageOwnership"
+        :id="`rc-${locationIndex}-${index}-percentageOwnership`"
         label="Percentage owned"
         mask="###"
         type="tel"
@@ -378,7 +392,7 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
         @error="validation.percentageOwnership = !$event"
       />
       <toggle-component
-        id="hasSigningAuthority"
+        :id="`rc-${locationIndex}-${index}-hasSigningAuthority`"
         label="Client has signing authority"
         v-model="formData.hasSigningAuthority"
       />
@@ -392,7 +406,7 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
     validation: {{ validation }} -->
     <div class="form-group-buttons form-group-buttons--stretched">
       <cds-button
-        id="summarySaveBtn"
+        :id="`rc-${locationIndex}-${index}-SaveBtn`"
         kind="primary"
         size="md"
         @click="save"
@@ -402,7 +416,7 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
         <Save16 slot="icon" />
       </cds-button>
       <cds-button
-        id="summaryCancelBtn"
+        :id="`rc-${locationIndex}-${index}-CancelBtn`"
         kind="tertiary"
         size="md"
         @click="cancel"

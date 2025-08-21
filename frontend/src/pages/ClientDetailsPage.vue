@@ -1214,8 +1214,8 @@ const formatRelatedLocation = (locationCode: string) => {
                   </div>
                   <client-relationship-form
                     v-if="newRelationship && curLocationCode === 'null'"
-                    index="null"
                     location-index="null"
+                    index="null"
                     :data="newRelationship"
                     :client="data"
                     :validations="[]"
