@@ -20,12 +20,12 @@ const props = defineProps<{
   createMode?: boolean;
 }>();
 
-const locationIndex = props.location.clientLocnCode;
+const locationIndex = props.location?.clientLocnCode || null;
 
 const sortedData = computed<RelatedClientEntry[]>(() => {
   const result = props.data.toSorted(
     (a, b) =>
-      compareAny(a.relationship.name, b.relationship.name) ||
+      compareAny(a.relationship?.name, b.relationship?.name) ||
       -compareAny(a.isMainParticipant, b.isMainParticipant) ||
       compareAny(a.relatedClient.client.name, b.relatedClient.client.name) ||
       compareAny(a.relatedClient.location.name, b.relatedClient.location.name),

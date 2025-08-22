@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, reactive, ref, watch, type ComputedRef } from "vue";
+import { computed, nextTick, reactive, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import type { ClientDetails, CodeNameType, SaveEvent, UserRole } from "@/dto/CommonTypesDto";
 import RegistrationNumber from "@/pages/client-details/RegistrationNumber.vue";

@@ -33,7 +33,7 @@ import Launch16 from "@carbon/icons-vue/es/launch/16";
 import Add16 from "@carbon/icons-vue/es/add/16";
 import Save16 from "@carbon/icons-vue/es/save/16";
 
-import { featureFlags, greenDomain } from "@/CoreConstants";
+import { greenDomain } from "@/CoreConstants";
 import {
   adminEmail,
   extractReasonFields,
@@ -62,6 +62,8 @@ import {
   type ValidationMessageType,
   type ClientInformation,
   type RelatedClientList,
+  type RelatedClientEntry,
+  createRelatedClientEntry,
 } from "@/dto/CommonTypesDto";
 
 // Page components
@@ -69,6 +71,7 @@ import SummaryView from "@/pages/client-details/SummaryView.vue";
 import LocationView from "@/pages/client-details/LocationView.vue";
 import ContactView from "@/pages/client-details/ContactView.vue";
 import LocationRelationshipsView from "@/pages/client-details/LocationRelationshipsView.vue";
+import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
 import HistoryView from "@/pages/client-details/HistoryView.vue";
 import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 
@@ -324,6 +327,34 @@ const handleContactCanceled = (contact: ClientContact) => {
 
 const updateContactName = (contactName: string, contactId: number) => {
   contactsState[contactId].name = contactName;
+};
+
+const newRelationship = ref<RelatedClientEntry>();
+
+const relatedClientsLocations = computed<RelatedClientList>(() => {
+  const result = {...data.value?.relatedClients};
+  if (newRelationship.value) {
+    result.null = [newRelationship.value];
+  }
+  return result;
+});
+
+const addRelationship = () => {
+  newRelationship.value = createRelatedClientEntry(clientNumber);
+  relatedLocationsState.null = createCollapsibleState({ startOpen: true });
+
+  const index = "null";
+  setScrollPoint(`relationships-location-${index}-heading`, undefined, () => {
+    setFocusedComponent(`relationships-location-${index}-heading`);
+  });
+};
+
+const handleRelationshipCanceled = (relationship: RelatedClientEntry) => {
+  console.log(relationship, relationship === newRelationship.value)
+  if (relationship === newRelationship.value) {
+    newRelationship.value = undefined;
+    delete relatedLocationsState.null;
+  }
 };
 
 const openRelatedClientsLegacy = () => {
@@ -819,7 +850,7 @@ const countRelatedClients = computed(() =>
 
 const relatedLocationsState = reactive<Record<string, CollapsibleState>>({});
 
-watch([() => Object.keys(data.value?.relatedClients ?? {}), locationsState], ([relatedLocationCodeList]) => {
+watch([() => Object.keys(relatedClientsLocations.value ?? {}), locationsState], ([relatedLocationCodeList]) => {
   relatedLocationCodeList?.forEach((relatedLocationCode) => {
     if (!relatedLocationsState[relatedLocationCode]) {
       relatedLocationsState[relatedLocationCode] = createCollapsibleState();
@@ -831,7 +862,7 @@ watch([() => Object.keys(data.value?.relatedClients ?? {}), locationsState], ([r
 });
 
 const formatRelatedLocation = (locationCode: string) => {
-  if (locationCode === null) {
+  if (locationCode === "null") {
     return "New client relationship";
   }
   return `Under location “${formatLocation(locationCode, relatedLocationsState[locationCode].name)}”`;
@@ -1131,8 +1162,8 @@ const formatRelatedLocation = (locationCode: string) => {
       </div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden>
         <template v-if="$features.RELATED_CLIENTS">
-          <template v-if="countRelatedClients">
-            <div class="tab-header space-between">              
+          <template v-if="!data || Object.entries(relatedClientsLocations).length">
+            <div class="tab-header space-between">
               <h3 class="padding-left-1rem">
                 {{ formatCount(countRelatedClients) }}
                 {{ pluralize("client relationship", countRelatedClients) }}
@@ -1142,8 +1173,8 @@ const formatRelatedLocation = (locationCode: string) => {
                 id="addClientRelationshipBtn"
                 kind="primary"
                 size="md"
-                @click=""
-                :disabled="false"
+                @click="addRelationship"
+                :disabled="newRelationship"
               >
                 <span class="width-unset">Add client relationship</span>
                 <Add16 slot="icon" />
@@ -1151,29 +1182,29 @@ const formatRelatedLocation = (locationCode: string) => {
             </div>
             <div class="tab-panel tab-panel--populated">
               <cds-accordion
-                v-for="(locationCode, index) in Object.keys(data.relatedClients)"
-                :key="locationCode"
-                :id="`relationships-location-${locationCode}`"
+                v-for="([curLocationCode, curList], index) in Object.entries(relatedClientsLocations)"
+                :key="curLocationCode"
+                :id="`relationships-location-${curLocationCode}`"
               >
-                <div :data-scroll="`relationships-location-${locationCode}-heading`" class="header-tabs-offset"></div>
+                <div :data-scroll="`relationships-location-${curLocationCode}-heading`" class="header-tabs-offset"></div>
                 <cds-accordion-item
                   size="lg"
                   class="grouping-13"
                   v-shadow="1"
-                  :open="relatedLocationsState[locationCode]?.startOpen"
-                  :data-focus="`relationships-location-${locationCode}-heading`"
+                  :open="relatedLocationsState[curLocationCode]?.startOpen"
+                  :data-focus="`relationships-location-${curLocationCode}-heading`"
                 >
                   <div
                     slot="title"
                     class="flex-column-0_25rem"
-                    :class="{ invisible: relatedLocationsState[locationCode]?.isReloading }"
+                    :class="{ invisible: relatedLocationsState[curLocationCode]?.isReloading }"
                   >
                     <span class="label-with-icon">
                       <NetworkEnterprise20 />
-                      {{ formatRelatedLocation(locationCode) }}
+                      {{ formatRelatedLocation(curLocationCode) }}
                       <cds-tag
-                        :id="`relationships-location-${locationCode}-deactivated`"
-                        v-if="findLocation(locationCode)?.locnExpiredInd === 'Y'"
+                        :id="`relationships-location-${curLocationCode}-deactivated`"
+                        v-if="findLocation(curLocationCode)?.locnExpiredInd === 'Y'"
                         type="purple"
                         title=""
                       >
@@ -1181,12 +1212,23 @@ const formatRelatedLocation = (locationCode: string) => {
                       </cds-tag>
                     </span>
                   </div>
+                  <client-relationship-form
+                    v-if="newRelationship && curLocationCode === 'null'"
+                    location-index="null"
+                    index="null"
+                    :data="newRelationship"
+                    :clientData="data"
+                    :validations="[]"
+                    keep-scroll-bottom-position
+                    @canceled="handleRelationshipCanceled(newRelationship)"
+                  />
                   <location-relationships-view
-                    :data="data.relatedClients[locationCode]"
-                    :location="findLocation(locationCode)"
-                    :is-reloading="relatedLocationsState[locationCode]?.isReloading"
+                    v-else
+                    :data="curList"
+                    :location="findLocation(curLocationCode)"
+                    :is-reloading="relatedLocationsState[curLocationCode]?.isReloading"
                     :user-roles="userRoles"
-                    :createMode="locationCode === null"
+                    :createMode="curLocationCode === 'null'"
                   />
                 </cds-accordion-item>
               </cds-accordion>
@@ -1210,8 +1252,8 @@ const formatRelatedLocation = (locationCode: string) => {
                   id="addClientRelationshipBtn"
                   kind="primary"
                   size="md"
-                  @click=""
-                  :disabled="false"
+                  @click="addRelationship"
+                  :disabled="newRelationship"
                 >
                   <span class="width-unset">Add client relationship</span>
                   <Add16 slot="icon" />

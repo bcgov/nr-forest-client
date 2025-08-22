@@ -362,6 +362,24 @@ export interface RelatedClientEntry {
   relatedClient: RelatedClientDto;
 }
 
+export const createRelatedClientEntry = (clientNumber: string): RelatedClientEntry => {
+  const entry: RelatedClientEntry = {
+    client: {
+      client: { code: clientNumber } as CodeNameType,
+      location: null,
+    },
+    relatedClient: {
+      client: null,
+      location: null,
+    },
+    relationship: null,
+    percentageOwnership: null,
+    hasSigningAuthority: null,
+    isMainParticipant: true,
+  };
+  return entry;
+};
+
 export type RelatedClientList = Record<string, RelatedClientEntry[]>;
 
 export interface ClientInformation {

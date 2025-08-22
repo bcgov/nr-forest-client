@@ -339,6 +339,10 @@ fieldValidations["client.clientIdentification-OTHR"] = [isAscii("ID number")];
 
 fieldValidations["client.clientIdentification-nonOTHR"] = [hasOnlyNamingCharacters("ID number")];
 
+fieldValidations["relatedClients.*.*.relatedClient.client"] = [
+  isNotEmpty("You must select a related client"),
+];
+
 // General information
 
 export const addValidation = (key: string, validation: (value: string) => string): void => {

@@ -789,71 +789,93 @@ describe("Reason Fields Handling", () => {
       expect(getActionLabel("UNKNOWN_ACTION")).toEqual("Unknown");
     });
   });
+});
 
-  describe("indexToLocationCode", () => {
-    it("pads with zeros to the left", () => {
-      expect(indexToLocationCode(1)).toEqual("01");
-    });
-    it("returns null when parameter is null", () => {
-      expect(indexToLocationCode(null)).toEqual(null);
+describe("indexToLocationCode", () => {
+  it("pads with zeros to the left", () => {
+    expect(indexToLocationCode(1)).toEqual("01");
+  });
+  it("returns null when parameter is null", () => {
+    expect(indexToLocationCode(null)).toEqual(null);
+  });
+});
+
+describe("formatLocation", () => {
+  it("returns code and name separated by a dash", () => {
+    expect(formatLocation("00", "Name")).toEqual("00 - Name");
+  });
+
+  it("returns only the code when the name is empty", () => {
+    expect(formatLocation("00", "")).toEqual("00");
+  });
+
+  it("returns only the name when the code is empty", () => {
+    expect(formatLocation("", "Name")).toEqual("Name");
+  });
+});
+
+describe("preserveUnchangedData", () => {
+  describe("when data was null", () => {
+    const original = {
+      a: "1",
+      b: null,
+      c: "3",
+    };
+    it("replaces empty string with null", () => {
+      const data = JSON.parse(JSON.stringify(original));
+      data.b = "";
+      const result = preserveUnchangedData(data, original);
+      expect(result.b).toEqual(null);
     });
   });
 
-
-  describe("formatLocation", () => {
-    it("returns code and name separated by a dash", () => {
-      expect(formatLocation("00", "Name")).toEqual("00 - Name");
-    });
-
-    it("returns only the code when the name is empty", () => {
-      expect(formatLocation("00", "")).toEqual("00");
-    });
-
-    it("returns only the name when the code is empty", () => {
-      expect(formatLocation("", "Name")).toEqual("Name");
+  describe("when data was an empty string", () => {
+    const original = {
+      a: "1",
+      b: "",
+      c: "3",
+    };
+    it("replaces null with empty string", () => {
+      const data = JSON.parse(JSON.stringify(original));
+      data.b = null;
+      const result = preserveUnchangedData(data, original);
+      expect(result.b).toEqual("");
     });
   });
 
-  describe("preserveUnchangedData", () => {
-    describe("when data was null", () => {
-      const original = {
-        a: "1",
-        b: null,
-        c: "3",
-      };
-      it("replaces empty string with null", () => {
-        const data = JSON.parse(JSON.stringify(original));
-        data.b = "";
-        const result = preserveUnchangedData(data, original);
-        expect(result.b).toEqual(null);
-      });
+  describe("when data was not null nor an empty string", () => {
+    const original = {
+      a: "1",
+      b: "2",
+      c: "3",
+    };
+    it("replaces empty string with null", () => {
+      const data = JSON.parse(JSON.stringify(original));
+      data.b = "";
+      const result = preserveUnchangedData(data, original);
+      expect(result.b).toEqual(null);
     });
+  });
 
-    describe("when data was an empty string", () => {
-      const original = {
-        a: "1",
-        b: "",
-        c: "3",
-      };
-      it("replaces null with empty string", () => {
+  describe('when a key (`b`) is "empty" in the original data', () => {
+    describe("and the current data contains an object under that key, which in turn has some key with a null value", () => {
+      describe.each([
+        ["missing", {}],
+        ["null", { b: null }],
+        ["an empty string", { b: "" }],
+      ])("(the key is %s in the original data)", (_, mergeParam) => {
+        const original = {
+          a: "1",
+          c: "3",
+          ...mergeParam,
+        };
         const data = JSON.parse(JSON.stringify(original));
-        data.b = null;
-        const result = preserveUnchangedData(data, original);
-        expect(result.b).toEqual("");
-      });
-    });
-
-    describe("when data was not null nor an empty string", () => {
-      const original = {
-        a: "1",
-        b: "2",
-        c: "3",
-      };
-      it("replaces empty string with null", () => {
-        const data = JSON.parse(JSON.stringify(original));
-        data.b = "";
-        const result = preserveUnchangedData(data, original);
-        expect(result.b).toEqual(null);
+        data.b = { nested: null };
+        it("doesn't change the value", () => {
+          const result = preserveUnchangedData(data, original);
+          expect(result.b).toEqual({ nested: null });
+          expect(result).toEqual(data);
+        });
       });
     });
   });

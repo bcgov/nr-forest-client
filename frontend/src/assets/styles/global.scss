@@ -1349,11 +1349,15 @@ cds-accordion-item:not([open]) {
   gap: 0.25rem;
 }
 
-.horizontal-input-grouping {
+.horizontal-input-grouping, .horizontal-input-grouping-1_5 {
   display: flex;
   flex-direction: row;
   gap: 1rem;
   align-items: end;
+}
+
+.horizontal-input-grouping-1_5 {
+  gap: 1.5rem;
 }
 
 .grid {
@@ -1482,6 +1486,7 @@ children: Year, Month, Day.
 }
 
 cds-textarea::part(label),
+cds-toggle::part(cds--toggle__label-text),
 .cds-text-input-label {
   color: var(--light-theme-text-text-primary, #131315);
 }
