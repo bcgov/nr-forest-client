@@ -120,11 +120,12 @@ describe("<client-relationship-form />", () => {
   const searchInput = "james";
 
   const selectRelatedClient = (relatedClientNumber: string) => {
-    cy.fillFormEntry(`cds-combo-box#rc-${locationIndex}-${index}-relatedClient`, searchInput);
-
-    cy.get(`cds-combo-box#rc-${locationIndex}-${index}-relatedClient`)
-      .find(`cds-combo-box-item[data-id="${relatedClientNumber}"]`)
-      .click();
+    cy.selectAutocompleteEntry(
+      `#rc-${locationIndex}-${index}-relatedClient`,
+      searchInput,
+      relatedClientNumber,
+      "@searchClient",
+    );
   };
 
   it("searches for clients filtered by the current client and the selected relationship type", () => {
