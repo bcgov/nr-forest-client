@@ -252,6 +252,8 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
     code: location.clientLocnCode,
     name: formatLocation(location.clientLocnCode, location.clientLocnName),
   }));
+
+const clientLocationList = computed(() => getClientLocationList(relatedClientDetails.value));
 </script>
 
 <template>
@@ -350,11 +352,10 @@ const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[
       label="Related client's location"
       tip=""
       :initial-value="
-        getClientLocationList(relatedClientDetails)?.find(
-          (item) => item.code === formData.relatedClient.location?.code,
-        )?.name
+        clientLocationList?.find((item) => item.code === formData.relatedClient.location?.code)
+          ?.name
       "
-      :model-value="getClientLocationList(relatedClientDetails)"
+      :model-value="clientLocationList"
       :validations="[
         ...getValidations('relatedClients.*.*.relatedClient.location'),
         submissionValidation(
