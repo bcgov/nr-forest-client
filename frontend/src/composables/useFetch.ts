@@ -16,7 +16,7 @@ const notificationBus = useEventBus<ValidationMessageType | undefined>(
  * @returns the data fetched
  */
 export const useFetch = (url: string | Ref, config: any = {}) => {
-  const data: any = ref(config.initialData || {});
+  const data = ref(config.initialData || {});
   const info = useFetchTo(url, data, config);
 
   return info;
@@ -49,11 +49,14 @@ const handleErrorDefault = (error: any) => {
  */
 export const useFetchTo = (
   url: string | Ref<string>,
-  data: any,
+  data: Ref<any>,
   config: any = {}
 ) => {
-  const response = ref<any>({});
-  const error = ref<AxiosError>({});
+  const defaultResponse = {};
+  const defaultError = {};
+
+  const response = ref<any>(defaultResponse);
+  const error = ref<AxiosError>(defaultError);
   const loading = ref<boolean>(false);
 
   const parameters = {
@@ -66,8 +69,11 @@ export const useFetchTo = (
     },
   };
 
+  let hasEverSucceeded = false;
+
   const fetch = () => {
     loading.value = true;
+
     const actualURL = typeof url === "string" ? url : url.value;
     const controller = new AbortController();
     const asyncResponse = axios
@@ -78,10 +84,21 @@ export const useFetchTo = (
         signal: controller.signal,
       })
       .then((result) => {
+        hasEverSucceeded = true;
         response.value = result;
         data.value = result.data;
+
+        // No error - default value
+        error.value = defaultError;
       })
       .catch((ex) => {
+        // Reset response
+        response.value = defaultResponse;
+
+        // Reset data, unless it has never changed. In that case, keep the initial provided data.
+        if (hasEverSucceeded) {
+          data.value = undefined;
+        }
         error.value = ex;
         if (config.skipDefaultErrorHandling) {
           return;
