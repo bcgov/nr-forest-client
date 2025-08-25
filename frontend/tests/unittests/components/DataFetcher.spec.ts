@@ -208,7 +208,7 @@ describe("DataFetcher", () => {
     expect(wrapper.find("div").text()).toBe("slot content is test");
 
     await wrapper.setProps({ url: "/api/data/changed" });
-    
+
     vi.advanceTimersByTime(305);
     await nextTick();
     await wrapper.vm.$nextTick();
@@ -217,7 +217,7 @@ describe("DataFetcher", () => {
     expect(wrapper.find("div").text()).toBe("slot content is Loaded");
   });
 
-  it("should not update the rendered slot if disabled", async () => {
+  it("should not update the rendered slot if disabled (never enabled)", async () => {
     vi.spyOn(fetcher, "useFetchTo").mockImplementation(mockedFetchTo);
 
     const wrapper = mount(DataFetcher, {
@@ -240,10 +240,71 @@ describe("DataFetcher", () => {
 
     vi.advanceTimersByTime(305);
     await nextTick();
+    await nextTick();
 
     // still the same
     expect(wrapper.html()).toBe("<div>slot content is test</div>");
     expect(wrapper.find("div").text()).toBe("slot content is test");
+  });
+
+  describe("when it goes from enabled to disabled", () => {
+    const initTest = async (emptyValue?: any) => {
+      vi.spyOn(fetcher, "useFetchTo").mockImplementation(mockedFetchTo);
+
+      const wrapper = mount(DataFetcher, {
+        props: {
+          url: "/api/data",
+          minLength: 1,
+          initValue: { name: "init" },
+          emptyValue,
+          disabled: false,
+          debounce: 0,
+        },
+        slots: {
+          default: "<div>slot content is {{ content?.name }}</div>",
+        },
+      });
+
+      await wrapper.setProps({ url: "/api/data/changed" });
+
+      vi.advanceTimersByTime(305);
+      await nextTick();
+      await nextTick();
+
+      expect(wrapper.html()).toBe("<div>slot content is Loaded</div>");
+
+      await wrapper.setProps({ disabled: true });
+
+      vi.advanceTimersByTime(305);
+      await nextTick();
+      await nextTick();
+
+      return wrapper;
+    };
+
+    let wrapper: Awaited<ReturnType<typeof initTest>>;
+
+    describe("and no value was provided as emptyValue", async () => {
+      beforeEach(async () => {
+        wrapper = await initTest();
+      });
+
+      it("should update the rendered slot back to the init value", async () => {
+        expect(wrapper.html()).toBe("<div>slot content is init</div>");
+        expect(wrapper.find("div").text()).toBe("slot content is init");
+      });
+    });
+
+    describe("and a value was provided as emptyValue", async () => {
+      beforeEach(async () => {
+        wrapper = await initTest({ name: "empty" });
+      });
+
+      it("should update the rendered slot to the empty value", async () => {
+        expect(wrapper.html()).toBe("<div>slot content is empty</div>");
+        expect(wrapper.find("div").text()).toBe("slot content is empty");
+      });
+    });
   });
 
   it("should render slot with fetched data on enabled", async () => {
