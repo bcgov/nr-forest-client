@@ -429,6 +429,24 @@ export const isLessThan =
     return message;
   };
 
+export const isGreaterThanOrEqualTo =
+  (compareTo: number, message: string = `Value must be greater than or equal to ${compareTo}`) =>
+  (value: string): string => {
+    if (Number(value) >= compareTo) {
+      return "";
+    }
+    return message;
+  };
+
+export const isLessThanOrEqualTo =
+  (compareTo: number, message: string = `Value must be less than or equal to ${compareTo}`) =>
+  (value: string): string => {
+    if (Number(value) <= compareTo) {
+      return "";
+    }
+    return message;
+  };
+
 export const isDateInThePast = (message: string) => (value: string) => {
   const dateValue = parseISO(value);
   if (!isBefore(dateValue, startOfToday())) {
