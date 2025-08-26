@@ -22,6 +22,8 @@ import {
   isMaxSizeMsg,
   isMinSizeMsg,
   isExactSizMsg,
+  isGreaterThanOrEqualTo,
+  isLessThanOrEqualTo,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -339,8 +341,26 @@ fieldValidations["client.clientIdentification-OTHR"] = [isAscii("ID number")];
 
 fieldValidations["client.clientIdentification-nonOTHR"] = [hasOnlyNamingCharacters("ID number")];
 
+// Related clients
+
+fieldValidations["relatedClients.*.*.client.location"] = [isNotEmpty("You must select a location")];
+
+fieldValidations["relatedClients.*.*.client.relationship"] = [
+  isNotEmpty("You must select a relationship type"),
+];
+
 fieldValidations["relatedClients.*.*.relatedClient.client"] = [
   isNotEmpty("You must select a related client"),
+];
+
+fieldValidations["relatedClients.*.*.relatedClient.location"] = [
+  isNotEmpty("You must select the related client's location"),
+];
+
+fieldValidations["relatedClients.*.*.percentageOwnership"] = [
+  optional(isOnlyNumbers("Percentage owned should contain only numbers")),
+  optional(isGreaterThanOrEqualTo(0, "Percentage owned can't be less than 0")),
+  optional(isLessThanOrEqualTo(100, "Percentage owned can't be greater than 100")),
 ];
 
 // General information
