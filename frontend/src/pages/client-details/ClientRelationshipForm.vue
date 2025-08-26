@@ -133,6 +133,7 @@ watch(
   () => formData.value.relationship?.code,
   () => {
     formData.value.relatedClient.client = null;
+    rawSearchKeyword.value = "";
   },
 );
 
@@ -315,7 +316,7 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
       :min-length="3"
       :init-value="[]"
       :init-fetch="false"
-      :disabled="!searchKeyword || !!formData.relatedClient?.client?.code"
+      :disabled="searchKeyword?.length < 3 || !!formData.relatedClient?.client?.code"
       #="{ content, loading, error }"
     >
       <AutoCompleteInputComponent

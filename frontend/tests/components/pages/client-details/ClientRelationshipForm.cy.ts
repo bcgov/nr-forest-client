@@ -224,13 +224,22 @@ describe("<client-relationship-form />", () => {
       beforeEach(() => {
         cy.clearFormEntry(`cds-combo-box#rc-${locationIndex}-${index}-relatedClient`);
       });
-      it("clears the related client's location", () => {
+      it("clears the Related client's location", () => {
         cy.get(`cds-dropdown#rc-${locationIndex}-${index}-relatedClient-location`).should(
           "have.value",
           "",
         );
 
-        // options got cleared
+        // related client options got cleared
+        cy.get(`cds-combo-box#rc-${locationIndex}-${index}-relatedClient`).within(() => {
+          /*
+          Not sure why it just doesn't exist instead of being a single empty option (see the other
+          test where "related client options got cleared").
+          */
+          cy.get("cds-combo-box-item").should("not.exist");
+        });
+
+        // related client's location options got cleared
         cy.get(`cds-dropdown#rc-${locationIndex}-${index}-relatedClient-location`).within(() => {
           cy.get("cds-dropdown-item").should("have.length", 1);
           cy.get("cds-dropdown-item").first().should("have.text", "");
@@ -266,6 +275,12 @@ describe("<client-relationship-form />", () => {
           "have.value",
           "",
         );
+
+        // related client options got cleared
+        cy.get(`cds-combo-box#rc-${locationIndex}-${index}-relatedClient`).within(() => {
+          cy.get("cds-combo-box-item").should("have.length", 1);
+          cy.get("cds-combo-box-item").first().should("have.text", "");
+        });
 
         // related client's location options got cleared
         cy.get(`cds-dropdown#rc-${locationIndex}-${index}-relatedClient-location`).within(() => {
