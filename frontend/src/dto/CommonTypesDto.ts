@@ -362,8 +362,15 @@ export interface RelatedClientEntry {
   relatedClient: RelatedClientDto;
 }
 
-export const createRelatedClientEntry = (clientNumber: string): RelatedClientEntry => {
-  const entry: RelatedClientEntry = {
+export interface IndexedRelatedClient extends RelatedClientEntry {
+  index: number;
+  originalLocation: CodeNameType;
+}
+
+export const createIndexedRelatedClientEntry = (clientNumber: string): IndexedRelatedClient => {
+  const entry: IndexedRelatedClient = {
+    index: null,
+    originalLocation: null,
     client: {
       client: { code: clientNumber } as CodeNameType,
       location: null,
@@ -374,7 +381,7 @@ export const createRelatedClientEntry = (clientNumber: string): RelatedClientEnt
     },
     relationship: null,
     percentageOwnership: null,
-    hasSigningAuthority: null,
+    hasSigningAuthority: false,
     isMainParticipant: true,
   };
   return entry;

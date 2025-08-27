@@ -6,7 +6,7 @@ import type {
   ClientSearchResult,
   CodeNameType,
   CodeNameValue,
-  RelatedClientEntry,
+  IndexedRelatedClient,
   SaveEvent,
 } from "@/dto/CommonTypesDto";
 import {
@@ -33,27 +33,28 @@ import {
   optional,
 } from "@/helpers/validators/GlobalValidators";
 import { useFetchTo } from "@/composables/useFetch";
+import type { SaveableComponent } from "./shared";
 
 const props = defineProps<{
   locationIndex: string;
   index: string;
-  data: RelatedClientEntry;
+  data: IndexedRelatedClient;
   clientData: ClientDetails;
   validations: Array<Function>;
   keepScrollBottomPosition?: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: "save", payload: SaveEvent<RelatedClientEntry>): void;
+  (e: "save", payload: SaveEvent<IndexedRelatedClient>): void;
   (e: "canceled"): void;
 }>();
 
-let originalData: RelatedClientEntry;
-const formData = ref<RelatedClientEntry>();
+let originalData: IndexedRelatedClient;
+const formData = ref<IndexedRelatedClient>();
 
 const hasAnyChange = ref(false);
 
-const formatData = (data: RelatedClientEntry) => {
+const formatData = (data: IndexedRelatedClient) => {
   const formattedData = JSON.parse(JSON.stringify(data));
   return formattedData;
 };
@@ -79,27 +80,40 @@ const cancel = () => {
   emit("canceled");
 };
 
+const lockEditing = () => {};
+
 const saving = ref(false);
 
 const setSaving = (value: boolean) => {
   saving.value = value;
 };
 
-defineExpose({ setSaving });
+defineExpose<SaveableComponent>({ setSaving, lockEditing });
 
 const save = () => {
   const updatedData = preserveUnchangedData(formData.value, originalData);
 
-  const patch = jsonpatch.compare(originalData, updatedData);
+  const patch =
+    props.locationIndex === "null" ? null : jsonpatch.compare(originalData, updatedData);
+
+  const action =
+    props.locationIndex === "null"
+      ? {
+          infinitive: "create",
+          pastParticiple: "created",
+        }
+      : {
+          infinitive: "update",
+          pastParticiple: "updated",
+        };
+
+  const operationType = props.locationIndex === "null" ? "insert" : "update";
 
   emit("save", {
     patch,
     updatedData,
-    action: {
-      infinitive: "update",
-      pastParticiple: "updated",
-    },
-    operationType: "update",
+    action,
+    operationType,
   });
 };
 

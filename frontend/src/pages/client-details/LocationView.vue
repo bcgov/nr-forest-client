@@ -29,6 +29,7 @@ import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
 import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
+import type { SaveableComponent } from "./shared";
 
 const props = defineProps<{
   data: ClientLocation;
@@ -118,7 +119,7 @@ const setSaving = (value: boolean) => {
   saving.value = value;
 };
 
-defineExpose({
+defineExpose<SaveableComponent>({
   lockEditing,
   setSaving,
 });

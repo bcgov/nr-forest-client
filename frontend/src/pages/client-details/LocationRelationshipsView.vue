@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { type ClientLocation, type RelatedClientEntry, type UserRole } from "@/dto/CommonTypesDto";
+import {
+  type ClientLocation,
+  type IndexedRelatedClient,
+  type RelatedClientEntry,
+  type UserRole,
+} from "@/dto/CommonTypesDto";
 import {
   booleanToYesNo,
   compareAny,
@@ -23,7 +28,16 @@ const props = defineProps<{
 const locationIndex = props.location?.clientLocnCode || null;
 
 const sortedData = computed<RelatedClientEntry[]>(() => {
-  const result = props.data.toSorted(
+  const indexedData = props.data.map((entry, index) => {
+    const result: IndexedRelatedClient = {
+      ...entry,
+      index,
+      originalLocation: { ...entry.client.location },
+    };
+    return result;
+  });
+
+  const result = indexedData.toSorted(
     (a, b) =>
       compareAny(a.relationship?.name, b.relationship?.name) ||
       -compareAny(a.isMainParticipant, b.isMainParticipant) ||

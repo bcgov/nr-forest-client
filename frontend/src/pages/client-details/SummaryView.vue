@@ -29,6 +29,7 @@ import {
 } from "@/helpers/validators/SubmissionValidators";
 import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
+import type { SaveableComponent } from "./shared";
 
 const props = defineProps<{
   data: ClientDetails;
@@ -100,7 +101,7 @@ const setSaving = (value: boolean) => {
   saving.value = value;
 };
 
-defineExpose({ lockEditing, setSaving });
+defineExpose<SaveableComponent>({ lockEditing, setSaving });
 
 const fieldIdList = [
   "clientName",

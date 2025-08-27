@@ -151,6 +151,36 @@
       }
     },
     {
+      "name": "Client Details Individual 2 - Some empty fields - Additional related client on 00",
+      "request": {
+        "urlPattern": "/api/clients/details/se?(.*)\\+related-00",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-SE+related-00.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Individual 2 - Some empty fields - Additional related client on 02",
+      "request": {
+        "urlPattern": "/api/clients/details/se?(.*)\\+related-02",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-SE+related-02.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Client Details Individual",
       "request": {
         "urlPattern": "/api/clients/details/i([^/]*)",

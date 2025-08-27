@@ -24,6 +24,7 @@ import {
 } from "@/services/ForestClientService";
 import type { Contact } from "@/dto/ApplyClientNumberDto";
 import { useFetchTo } from "@/composables/useFetch";
+import type { SaveableComponent } from "./shared";
 
 const props = defineProps<{
   data: ClientContact;
@@ -130,7 +131,7 @@ const setSaving = (value: boolean) => {
   saving.value = value;
 };
 
-defineExpose({
+defineExpose<SaveableComponent>({
   lockEditing,
   setSaving,
 });

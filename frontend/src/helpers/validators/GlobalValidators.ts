@@ -228,7 +228,9 @@ export const isOnlyNumbers =
  * isUnique.add('key', 'field')('value'); // false
  * isUnique.remove('key', 'field'); // true
  */
-export const isUniqueDescriptive = (): {
+export const isUniqueDescriptive = (
+  globalMessage = "This value is already in use",
+): {
   add: (key: string, fieldId: string) => (value: string, message?: string) => string;
   remove: (key: string, fieldId: string) => boolean;
   check: (key: string, fieldId: string) => (value: string, message?: string) => string;
@@ -237,10 +239,7 @@ export const isUniqueDescriptive = (): {
 
   const add =
     (key: string, fieldId: string, dryRun = false) =>
-    (
-      value: string,
-      message: string = "This value is already in use"
-    ): string => {
+    (value: string, message = globalMessage): string => {
       // if the record contains the key and the fieldId is not the same as mine, check all the values, except the one if my fieldId to see if it includes my value
       const fieldsToCheck = Object.keys(record[key] || {}).filter(
         (field) => field !== fieldId
