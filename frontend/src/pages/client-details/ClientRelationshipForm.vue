@@ -15,6 +15,8 @@ import {
   formatLocation,
   highlightMatch,
   searchResultToText,
+  buildRelatedClientIndex,
+  buildRelatedClientCombination,
 } from "@/services/ForestClientService";
 
 import Save16 from "@carbon/icons-vue/es/save/16";
@@ -51,6 +53,32 @@ const emit = defineEmits<{
 
 let originalData: IndexedRelatedClient;
 const formData = ref<IndexedRelatedClient>();
+
+const noValidation = () => "";
+
+const validateCombinedData =
+  props.validations.length === 0
+    ? noValidation
+    : props.validations[0](
+        "Combination",
+        buildRelatedClientIndex(props.locationIndex, props.index),
+      );
+const combinationError = ref<string | undefined>("");
+
+const uniquenessValidation = () => {
+  combinationError.value = validateCombinedData(buildRelatedClientCombination(formData.value));
+};
+
+// Watch for changes on the input
+watch(
+  formData,
+  () => {
+    uniquenessValidation();
+  },
+  {
+    deep: true,
+  },
+);
 
 const hasAnyChange = ref(false);
 
@@ -287,6 +315,7 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
           `relatedClients[${formData.client.location?.code}][${index}].client.location`,
         ),
       ]"
+      :error-message="combinationError"
       required
       required-label
       @update:selected-value="updateLocation($event)"
@@ -316,6 +345,7 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
             `relatedClients[${formData.client.location?.code}][${index}].client.relationship`,
           ),
         ]"
+        :error-message="combinationError"
         @update:selected-value="updateRelationship($event)"
         @empty="validation.relationshipType = !$event"
         #="{ option }"
@@ -348,6 +378,7 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
             `relatedClients[${formData.client.location?.code}][${index}].relatedClient.client`,
           ),
         ]"
+        :error-message="combinationError"
         :validations-on-change="validationsOnChange"
         :loading="loading"
         @update:selected-value="updateRelatedClient($event)"
@@ -377,6 +408,7 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
           `relatedClients[${formData.client.location?.code}][${index}].relatedClient.location`,
         ),
       ]"
+      :error-message="combinationError"
       required
       required-label
       @update:selected-value="updateRelatedClientLocation($event)"

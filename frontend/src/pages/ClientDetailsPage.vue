@@ -46,6 +46,8 @@ import {
   extractAddressParts,
   formatAddress,
   compareAny,
+  buildRelatedClientIndex,
+  buildRelatedClientCombination,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -953,16 +955,19 @@ watch([() => Object.keys(relatedClientsLocations.value ?? {}), locationsState], 
   });
 });
 
-// const uniqueRelationships = isUniqueDescriptive("my custom message");
+const uniqueRelationships = isUniqueDescriptive("This combination of location, relationship type, related client and its location already exists");
 
-// watch(sortedLocations, (value) => {
-//   if (value?.length) {
-//     value.forEach((location) => {
-//       const index = location.clientLocnCode;
-//       uniqueLocations.add("Names", index)(location.clientLocnName ?? "");
-//     });
-//   }
-// });
+watch(() => data.value?.relatedClients, (value) => {
+  if (Object.keys(value)) {
+    Object.entries(value).forEach(([curLocationCode, curList]) => {
+      curList.forEach((entry, index) => {
+        const uniqueIndex = buildRelatedClientIndex(curLocationCode, index);
+        const value = buildRelatedClientCombination(entry);
+        uniqueRelationships.add("Combination", uniqueIndex)(value);
+      });
+    });
+  }
+});
 
 const formatRelatedLocation = (locationCode: string) => {
   if (locationCode === "null") {
@@ -1322,7 +1327,7 @@ const formatRelatedLocation = (locationCode: string) => {
                     index="null"
                     :data="newIndexedRelationship"
                     :clientData="data"
-                    :validations="[]"
+                    :validations="[uniqueRelationships.check]"
                     keep-scroll-bottom-position
                     @canceled="handleRelationshipCanceled(newIndexedRelationship)"
                     @save="operateRelatedClient(index)($event)"
