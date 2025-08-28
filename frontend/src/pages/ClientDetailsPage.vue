@@ -114,13 +114,6 @@ const { error: fetchError, fetch: fetchClientData } = useFetchTo(
   data,
 );
 
-// TODO: remove this
-const { fetch: fetchClientData2 } = useFetchTo(
-  `/api/clients/details/${clientNumber}+related-02`,
-  data,
-  { skip: true },
-);
-
 watch(fetchError, (value) => {
   globalError.value = value;
 });
@@ -869,7 +862,7 @@ const operateRelatedClient =
 
       relatedLocationsState[locationId].isReloading = true;
 
-      fetchClientData2().asyncResponse.then(() => {
+      fetchClientData().asyncResponse.then(() => {
         // Checking for existence because it might have just been deleted.
         if (relatedLocationsState[locationId]) {
           relatedLocationsState[locationId].isReloading = false;

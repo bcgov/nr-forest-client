@@ -102,7 +102,7 @@
         {
             "client": {
                 "client": {
-                    "code": "00000001",
+                    "code": "se",
                     "name": "Thiz"
                 },
                 "location": {
@@ -133,7 +133,7 @@
         {
             "client": {
                 "client": {
-                    "code": "00000001",
+                    "code": "se",
                     "name": "Thiz"
                 },
                 "location": {
@@ -162,7 +162,7 @@
         {
             "client": {
                 "client": {
-                    "code": "00000001",
+                    "code": "se",
                     "name": "Thiz"
                 },
                 "location": {
@@ -172,8 +172,8 @@
             },
             "relatedClient": {
                 "client": {
-                    "code": "00000177",
-                    "name": "GRAND FARM"
+                    "code": "00000007",
+                    "name": "james bond bond"
                 },
                 "location": {
                     "code": "00",
@@ -191,7 +191,7 @@
         {
             "client": {
                 "client": {
-                    "code": "00000001",
+                    "code": "se",
                     "name": "Thiz"
                 },
                 "location": {

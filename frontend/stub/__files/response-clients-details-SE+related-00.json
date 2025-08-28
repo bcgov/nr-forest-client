@@ -102,7 +102,7 @@
         {
             "client": {
                 "client": {
-                    "code": "00000001",
+                    "code": "se",
                     "name": "Thiz"
                 },
                 "location": {
@@ -131,7 +131,7 @@
         {
             "client": {
                 "client": {
-                    "code": "00000001",
+                    "code": "se",
                     "name": "Thiz"
                 },
                 "location": {
@@ -141,8 +141,8 @@
             },
             "relatedClient": {
                 "client": {
-                    "code": "00000159",
-                    "name": "GREEN CANOPY"
+                    "code": "00000008",
+                    "name": "james hunt hunt"
                 },
                 "location": {
                     "code": "00",
@@ -150,8 +150,8 @@
                 }
             },
             "relationship": {
-                "code": "JV",
-                "name": "Joint Venture Participant"
+                "code": "SH",
+                "name": "Shareholder"
             },
             "percentageOwnership": 25.0,
             "hasSigningAuthority": null,
@@ -162,7 +162,7 @@
         {
             "client": {
                 "client": {
-                    "code": "00000001",
+                    "code": "se",
                     "name": "Thiz"
                 },
                 "location": {
@@ -191,7 +191,7 @@
         {
             "client": {
                 "client": {
-                    "code": "00000001",
+                    "code": "se",
                     "name": "Thiz"
                 },
                 "location": {
@@ -201,8 +201,8 @@
             },
             "relatedClient": {
                 "client": {
-                    "code": "00000177",
-                    "name": "GRAND FARM"
+                    "code": "00000007",
+                    "name": "james bond bond"
                 },
                 "location": {
                     "code": "00",
@@ -220,7 +220,7 @@
         {
             "client": {
                 "client": {
-                    "code": "00000001",
+                    "code": "se",
                     "name": "Thiz"
                 },
                 "location": {
