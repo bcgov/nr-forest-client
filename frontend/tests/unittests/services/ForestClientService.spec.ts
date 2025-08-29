@@ -26,9 +26,18 @@ import {
   preserveUnchangedData,
   formatAddress,
   compareAny,
+  buildRelatedClientIndex,
+  buildRelatedClientCombination,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
-import type { UserRole, ClientDetails, ClientLocation, ClientContact } from "@/dto/CommonTypesDto";
+import type {
+  UserRole,
+  ClientDetails,
+  ClientLocation,
+  ClientContact,
+  RelatedClientEntry,
+  CodeNameType,
+} from "@/dto/CommonTypesDto";
 import type * as jsonpatch from "fast-json-patch";
 
 describe("ForestClientService.ts", () => {
@@ -957,5 +966,35 @@ describe("compareAny", () => {
     [true, false], // boolean
   ])("returns 1 when the first value is greater than the second one (%s and %s)", (a, b) => {
     expect(compareAny(a, b)).toEqual(1);
+  });
+});
+
+describe("buildRelatedClientIndex", () => {
+  it("returns a string that includes both the location code and the index", () => {
+    const locationCode = "01";
+    const relationshipIndex = 5;
+    const result = buildRelatedClientIndex(locationCode, relationshipIndex);
+    expect(result).toEqual("01,5");
+  });
+});
+
+describe("buildRelatedClientCombination", () => {
+  it("returns a string that combines the client code, the location code, the relationship code, the related client code and its location code, in that order", () => {
+    const entry: RelatedClientEntry = {
+      client: {
+        client: { code: "1" } as CodeNameType,
+        location: { code: "2" } as CodeNameType,
+      },
+      relationship: { code: "3" } as CodeNameType,
+      relatedClient: {
+        client: { code: "4" } as CodeNameType,
+        location: { code: "5" } as CodeNameType,
+      },
+      percentageOwnership: null,
+      hasSigningAuthority: null,
+      isMainParticipant: true,
+    };
+    const result = buildRelatedClientCombination(entry);
+    expect(result).toEqual("1,2,3,4,5");
   });
 });

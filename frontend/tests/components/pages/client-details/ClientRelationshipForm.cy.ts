@@ -220,6 +220,12 @@ describe("<client-relationship-form />", () => {
         .should("be.disabled");
     });
 
+    it("validates against percentage above 100", () => {
+      cy.fillFormEntry(`#rc-${locationIndex}-${index}-percentageOwnership`, "101");
+
+      cy.get(`#rc-${locationIndex}-${index}-percentageOwnership`).should("have.attr", "invalid");
+    });
+
     describe("and the Related client field gets cleared by the user", () => {
       beforeEach(() => {
         cy.clearFormEntry(`cds-combo-box#rc-${locationIndex}-${index}-relatedClient`);

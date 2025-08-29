@@ -385,6 +385,26 @@
         ],
         "fixedDelayMilliseconds": 500
       }
+    },
+    {
+      "name": "PATCH - Client Details - Related Clients Error",
+      "request": {
+        "urlPattern": "/api/clients/details/([^/]*)",
+        "method": "PATCH",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$[0].value.percentageOwnership",
+              "contains": "88"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 500,
+        "body": "Sample error message",
+        "fixedDelayMilliseconds": 500
+      }
     }
   ]
 }

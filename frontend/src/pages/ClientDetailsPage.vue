@@ -951,7 +951,7 @@ watch([() => Object.keys(relatedClientsLocations.value ?? {}), locationsState], 
 const uniqueRelationships = isUniqueDescriptive("This combination of location, relationship type, related client and its location already exists");
 
 watch(() => data.value?.relatedClients, (value) => {
-  if (Object.keys(value)) {
+  if (value) {
     Object.entries(value).forEach(([curLocationCode, curList]) => {
       curList.forEach((entry, index) => {
         const uniqueIndex = buildRelatedClientIndex(curLocationCode, index);

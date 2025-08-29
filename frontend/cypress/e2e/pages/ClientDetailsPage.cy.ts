@@ -1811,7 +1811,7 @@ describe("Client Details Page", () => {
         init.call(this);
         cy.visit("/clients/details/p");
       });
-      
+
       describe("after switching to the Related clients tab", () => {
         beforeEach(function () {
           // Switch to the Related clients tab
@@ -1837,6 +1837,305 @@ describe("Client Details Page", () => {
 
           // Second location is still closed
           cy.get("#relationships-location-01 cds-accordion-item").should("not.have.attr", "open");
+        });
+      });
+    });
+
+    describe("when role:CLIENT_EDITOR", () => {
+      const fillInRequiredFields = (locationText: string) => {
+        cy.selectFormEntry("cds-dropdown#rc-null-null-location", locationText);
+
+        cy.wait("@getRelationshipTypes");
+
+        // For some reason some tests fail without this extra wait time
+        cy.wait(50);
+
+        cy.selectFormEntry("cds-dropdown#rc-null-null-relationship", "Shareholder");
+
+        cy.selectAutocompleteEntry("#rc-null-null-relatedClient", "james", "00000007");
+
+        cy.wait("@getClientDetails");
+
+        cy.selectFormEntry(
+          "cds-dropdown#rc-null-null-relatedClient-location",
+          "00 - Mailing address",
+        );
+      };
+
+      describe("combined data duplication", () => {
+        beforeEach(() => {
+          cy.intercept({
+            method: "GET",
+            pathname: "/api/clients/details/*",
+          }).as("getClientDetails");
+
+          cy.intercept("GET", "/api/codes/relationship-types/*").as("getRelationshipTypes");
+
+          cy.visit("/clients/details/se");
+
+          cy.wait("@getClientDetails");
+
+          // Switch to the Related clients tab
+          cy.get("#tab-related").click();
+
+          cy.get("#addClientRelationshipBtn").click();
+
+          fillInRequiredFields("01");
+        });
+
+        it("shows the error on field Location name", () => {
+          cy.get("#rc-null-null-location").should("have.attr", "invalid");
+          cy.get("#rc-null-null-relationship").should("have.attr", "invalid");
+          cy.get("#rc-null-null-relatedClient").should("have.attr", "invalid");
+          cy.get("#rc-null-null-relatedClient-location").should("have.attr", "invalid");
+
+          cy.get("cds-button#rc-null-null-SaveBtn").shadow().find("button").should("be.disabled");
+        });
+      });
+
+      const scenarios = [{ name: "create" }];
+      scenarios.forEach((scenario) => {
+        const index = scenario.name === "edit" ? 0 : "null";
+        const locationIndex = scenario.name === "edit" ? "00" : "null";
+        const saveButtonSelector = `#rc-${locationIndex}-${index}-SaveBtn`;
+
+        describe(`${scenario.name} - save`, () => {
+          describe("on success", { testIsolation: false }, () => {
+            const getClientDetailsCounter = {
+              count: 0,
+            };
+
+            let patchClientDetailsRequest;
+
+            const registerInterceptors = () => {
+              cy.intercept(
+                {
+                  method: "GET",
+                  pathname: "/api/clients/details/*",
+                },
+                (req) => {
+                  getClientDetailsCounter.count++;
+                  req.continue();
+                },
+              ).as("getClientDetails");
+
+              cy.intercept("GET", "/api/codes/relationship-types/*").as("getRelationshipTypes");
+            };
+
+            before(function () {
+              init.call(this);
+
+              registerInterceptors();
+
+              resumePatch = interruptPatch((req) => {
+                patchClientDetailsRequest = req;
+              });
+
+              cy.visit("/clients/details/p");
+              cy.wait("@getClientDetails");
+
+              // Switch to the Related clients tab
+              cy.get("#tab-related").click();
+
+              // TODO: change every edit-related code when adding the "edit" scenario
+              if (scenario.name === "edit") {
+                // Clicks to expand the accordion
+                cy.get("#location-00 [slot='title']").click();
+
+                cy.get("#location-00-EditBtn").click();
+                cy.clearFormEntry("#emailAddress_0");
+
+                cy.get("#location-00-SaveBtn").click();
+              }
+
+              if (scenario.name === "create") {
+                cy.get("#addClientRelationshipBtn").click();
+
+                cy.get("[data-scroll='relationships-location-null-heading']").then(($el) => {
+                  const element = $el[0];
+                  cy.spy(element, "scrollIntoView").as("scrollToNewRelationship");
+                });
+
+                // test: new collapsible item was added
+                cy.get("cds-accordion[id|='relationships-location']").should("have.length", 3);
+
+                // test: it scrolls down to the new form
+                cy.get("@scrollToNewRelationship").should("be.called");
+
+                /*
+                Wait to have a focused element.
+                Prevents error with focus switching.
+                */
+                // cy.get("[data-focus='relationships-location-null-heading']:focus");
+                cy.wait(1000);
+
+                fillInRequiredFields("01 - Accountant address");
+
+                cy.get("#rc-null-null-SaveBtn").click();
+              }
+            });
+
+            beforeEach(() => {
+              registerInterceptors();
+            });
+
+            it("disables the Save button while waiting for the response", () => {
+              cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+              resumePatch();
+              cy.wait("@getClientDetails");
+            });
+
+            it("prefixes the path with the corresponding location code", () => {
+              if (scenario.name === "edit") {
+                expect(patchClientDetailsRequest.body[0].path).to.eq("/relatedClients/01/00");
+              } else {
+                expect(patchClientDetailsRequest.body[0].path).to.eq("/relatedClients/01/null");
+              }
+            });
+
+            if (scenario.name === "edit") {
+              it("sends one or more 'replace' operations", () => {
+                expect(patchClientDetailsRequest.body[0].op).to.eq("replace");
+              });
+            } else {
+              it("sends an 'add' operation", () => {
+                expect(patchClientDetailsRequest.body[0].op).to.eq("add");
+              });
+            }
+
+            it("shows the success toast", () => {
+              if (scenario.name === "edit") {
+                cy.get("cds-toast-notification[kind='success']")
+                  .should("be.visible")
+                  .contains("00 - Mailing address");
+
+                cy.get("cds-toast-notification[kind='success']").contains("updated");
+              } else {
+                cy.get("cds-toast-notification[kind='success']")
+                  .should("be.visible")
+                  .contains("00000007, James Bond Bond");
+
+                cy.get("cds-toast-notification[kind='success']").contains("created");
+              }
+            });
+
+            it("reloads data", () => {
+              /*
+              Called three times - one for the initial loading, one for the related client and one
+              after saving.
+              */
+              cy.wrap(getClientDetailsCounter).its("count").should("eq", 3);
+            });
+
+            if (scenario.name === "edit") {
+              it("gets back into view mode", () => {
+                // Fields that belong to the form (edit mode)
+                testHidden("#city_0");
+                testHidden("#emailAddress_0");
+                testHidden("[data-id='input-notes_0']");
+
+                cy.get("#location-00-SaveBtn").should("not.exist");
+
+                testReadonly("#location-00-city-province");
+                testReadonly("#location-00-emailAddress");
+                testReadonly("#location-00-notes");
+
+                cy.get("#location-00-EditBtn").should("be.visible");
+              });
+            }
+          });
+
+          describe("on failure", { testIsolation: false }, () => {
+            const registerInterceptors = () => {
+              cy.intercept(
+                {
+                  method: "GET",
+                  pathname: "/api/clients/details/*",
+                },
+                (req) => {
+                  req.continue();
+                },
+              ).as("getClientDetails");
+
+              cy.intercept("GET", "/api/codes/relationship-types/*").as("getRelationshipTypes");
+            };
+
+            before(function () {
+              init.call(this);
+
+              registerInterceptors();
+
+              cy.visit("/clients/details/p");
+              cy.wait("@getClientDetails");
+
+              // Switch to the Related clients tab
+              cy.get("#tab-related").click();
+
+              if (scenario.name === "edit") {
+                // Clicks to expand the accordion
+                cy.get("#location-00 [slot='title']").click();
+
+                cy.get("#location-00-EditBtn").click();
+
+                cy.fillFormEntry("[data-id='input-notes_0']", "error", { area: true });
+              } else {
+                cy.get("#addClientRelationshipBtn").click();
+
+                cy.get("cds-accordion[id|='relationships-location']").should("have.length", 3);
+
+                /*
+                Wait to have a focused element.
+                Prevents error with focus switching.
+                */
+                // cy.get("[data-focus='location-3-heading']:focus");
+                cy.wait(1000);
+
+                fillInRequiredFields("01 - Accountant address");
+
+                // The value "88" triggers the error on the stub server
+                cy.fillFormEntry(`#rc-${locationIndex}-${index}-percentageOwnership`, "88");
+              }
+
+              resumePatch = interruptPatch();
+              if (scenario.name === "edit") {
+                cy.get("#rc-01-0-SaveBtn").click();
+              } else {
+                cy.get("#rc-null-null-SaveBtn").click();
+              }
+            });
+
+            it("disables the Save button while waiting for the response", () => {
+              cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+              resumePatch();
+            });
+
+            it("shows the error toast", () => {
+              cy.get("cds-toast-notification[kind='error']").should("be.visible");
+
+              if (scenario.name === "edit") {
+                cy.get("cds-toast-notification[kind='error']").contains("Failed to update");
+              } else {
+                cy.get("cds-toast-notification[kind='error']").contains("Failed to create");
+              }
+            });
+
+            it("stays in edit mode", () => {
+              cy.get(`#rc-${locationIndex}-${index}-location`).should("be.visible");
+              cy.get(`#rc-${locationIndex}-${index}-relationship`).should("be.visible");
+              cy.get(`#rc-${locationIndex}-${index}-relatedClient`).should("be.visible");
+              cy.get(`#rc-${locationIndex}-${index}-relatedClient-location`).should("be.visible");
+
+              if (scenario.name === "edit") {
+                cy.get("#rc-01-0-SaveBtn").should("be.visible");
+              } else {
+                cy.get("#rc-null-null-SaveBtn").should("be.visible");
+              }
+            });
+
+            it("re-enables the Save button", () => {
+              cy.get(saveButtonSelector).shadow().find("button").should("be.enabled");
+            });
+          });
         });
       });
     });
