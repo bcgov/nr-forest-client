@@ -43,6 +43,8 @@ import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientValueTextDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.MatchResult;
+import ca.bc.gov.app.dto.client.RelatedClientDto;
+import ca.bc.gov.app.dto.client.RelatedClientEntryDto;
 import ca.bc.gov.app.dto.legacy.AddressSearchDto;
 import ca.bc.gov.app.dto.legacy.ClientRelatedProjection;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
@@ -54,7 +56,6 @@ import ca.bc.gov.app.dto.opendata.Feature;
 import ca.bc.gov.app.dto.opendata.FeatureProperties;
 import ca.bc.gov.app.dto.opendata.Geometry;
 import ca.bc.gov.app.dto.opendata.OpenData;
-import ca.bc.gov.app.health.HealthExchangeFilterFunction;
 import ca.bc.gov.app.health.ManualHealthIndicator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -151,7 +152,9 @@ import reactor.netty.http.client.HttpClient;
     JsonNode.class,
     ForestClientContactDetailsDto.class,
     TransactionalModel.class,
-    ClientRelatedProjection.class
+    ClientRelatedProjection.class,
+    RelatedClientEntryDto.class,
+    RelatedClientDto.class
 })
 public class GlobalServiceConfiguration {
 

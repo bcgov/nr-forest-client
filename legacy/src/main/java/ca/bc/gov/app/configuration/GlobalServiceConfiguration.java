@@ -14,7 +14,10 @@ import ca.bc.gov.app.dto.ForestClientInformationDto;
 import ca.bc.gov.app.dto.ForestClientLocationDetailsDto;
 import ca.bc.gov.app.dto.ForestClientLocationDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
+import ca.bc.gov.app.dto.RelatedClientDto;
+import ca.bc.gov.app.dto.RelatedClientEntryDto;
 import ca.bc.gov.app.entity.ClientRelatedProjection;
+import ca.bc.gov.app.entity.RelatedClientEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.zjsonpatch.JsonPatch;
@@ -41,7 +44,10 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
     JsonPatch.class,
     JsonNode.class,
     ForestClientContactDetailsDto.class,
-    ClientRelatedProjection.class
+    ClientRelatedProjection.class,
+    RelatedClientEntryDto.class,
+    RelatedClientDto.class,
+    RelatedClientEntity.class
 })
 public class GlobalServiceConfiguration {
 

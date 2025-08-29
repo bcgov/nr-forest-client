@@ -237,7 +237,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
                 processAdd(
                     clientNumber,
                     mapper,
-                    entry.get("path").asText().replace("/", StringUtils.EMPTY),
+                    entry.get("path").asText().replace("/", StringUtils.EMPTY).replace("null", StringUtils.EMPTY),
                     entry.get("value"),
                     userId
                 )
