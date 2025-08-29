@@ -19,6 +19,8 @@ import {
   isIdCharacters,
   isRegex,
   validateSelection,
+  isGreaterThanOrEqualTo,
+  isLessThanOrEqualTo,
 } from '@/helpers/validators/GlobalValidators'
 
 describe('GlobalValidators', () => {
@@ -355,6 +357,38 @@ describe('GlobalValidators', () => {
     ])("should return an error %s", (_, value) => {
       const result = isRegex(sampleRegex)(value);
       expect(result).not.toBe("");
+    });
+  });
+  describe("isGreaterThanOrEqualTo", () => {
+    it("should return an error when value is less than the minimum allowed value", () => {
+      const result = isGreaterThanOrEqualTo(7)("6");
+      expect(result).not.toBe("");
+    });
+
+    it("should return empty when value is equal to the minimum allowed value", () => {
+      const result = isGreaterThanOrEqualTo(7)("7");
+      expect(result).toBe("");
+    });
+
+    it("should return empty when value is greater than the minimum allowed value", () => {
+      const result = isGreaterThanOrEqualTo(7)("8");
+      expect(result).toBe("");
+    });
+  });
+  describe("isLessThanOrEqualTo", () => {
+    it("should return an error when value is greater than the maximum allowed value", () => {
+      const result = isLessThanOrEqualTo(7)("8");
+      expect(result).not.toBe("");
+    });
+
+    it("should return empty when value is equal to the maximum allowed value", () => {
+      const result = isLessThanOrEqualTo(7)("7");
+      expect(result).toBe("");
+    });
+
+    it("should return empty when value is less than the maximum allowed value", () => {
+      const result = isLessThanOrEqualTo(7)("6");
+      expect(result).toBe("");
     });
   });
   describe("validateSelection", () => {

@@ -127,6 +127,35 @@
             "percentageOwnership": 50.0,
             "hasSigningAuthority": null,
             "isMainParticipant": false
+        },
+        {
+            "client": {
+                "client": {
+                    "code": "se",
+                    "name": "Thiz"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "Mailing address"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000008",
+                    "name": "james hunt hunt"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "HEADQUARTERS"
+                }
+            },
+            "relationship": {
+                "code": "SH",
+                "name": "Shareholder"
+            },
+            "percentageOwnership": 25.0,
+            "hasSigningAuthority": null,
+            "isMainParticipant": true
         }
     ],
     "01": [

@@ -46,6 +46,8 @@ import {
   extractAddressParts,
   formatAddress,
   compareAny,
+  buildRelatedClientIndex,
+  buildRelatedClientCombination,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -63,7 +65,8 @@ import {
   type ClientInformation,
   type RelatedClientList,
   type RelatedClientEntry,
-  createRelatedClientEntry,
+  createIndexedRelatedClientEntry,
+  type IndexedRelatedClient,
 } from "@/dto/CommonTypesDto";
 
 // Page components
@@ -74,6 +77,7 @@ import LocationRelationshipsView from "@/pages/client-details/LocationRelationsh
 import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
 import HistoryView from "@/pages/client-details/HistoryView.vue";
 import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
+import type { SaveableComponent } from "./client-details/shared";
 
 // Route related
 const router = useRouter();
@@ -329,18 +333,18 @@ const updateContactName = (contactName: string, contactId: number) => {
   contactsState[contactId].name = contactName;
 };
 
-const newRelationship = ref<RelatedClientEntry>();
+const newIndexedRelationship = ref<IndexedRelatedClient>();
 
 const relatedClientsLocations = computed<RelatedClientList>(() => {
   const result = {...data.value?.relatedClients};
-  if (newRelationship.value) {
-    result.null = [newRelationship.value];
+  if (newIndexedRelationship.value) {
+    result.null = [newIndexedRelationship.value];
   }
   return result;
 });
 
 const addRelationship = () => {
-  newRelationship.value = createRelatedClientEntry(clientNumber);
+  newIndexedRelationship.value = createIndexedRelatedClientEntry(clientNumber);
   relatedLocationsState.null = createCollapsibleState({ startOpen: true });
 
   const index = "null";
@@ -350,9 +354,9 @@ const addRelationship = () => {
 };
 
 const handleRelationshipCanceled = (relationship: RelatedClientEntry) => {
-  console.log(relationship, relationship === newRelationship.value)
-  if (relationship === newRelationship.value) {
-    newRelationship.value = undefined;
+  console.log(relationship, relationship === newIndexedRelationship.value)
+  if (relationship === newIndexedRelationship.value) {
+    newIndexedRelationship.value = undefined;
     delete relatedLocationsState.null;
   }
 };
@@ -367,7 +371,7 @@ const toolsSvg = useSvg(tools);
 
 const summaryRef = ref<InstanceType<typeof SummaryView> | null>(null);
 
-const saveableComponentRef = ref<InstanceType<typeof SummaryView | typeof LocationView | typeof ContactView> | null>(null);
+const saveableComponentRef = ref<SaveableComponent>(null);
 
 const reasonModalActiveInd = ref(false);
 
@@ -802,6 +806,89 @@ const deleteContact =
     }, { preserveRawPatch: true });
   };
 
+const clientRelationshipFormsRef = ref<InstanceType<typeof ClientRelationshipForm>[]>([]);
+
+const setClientRelationshipFormRef = (index: number) => (el: InstanceType<typeof ClientRelationshipForm>) => {
+  clientRelationshipFormsRef.value[index] = el;
+};
+
+const operateRelatedClient =
+  (index: number | string) =>
+  (payload: SaveEvent<IndexedRelatedClient>, rawOptions?: OperationOptions) => {
+    const {
+      patch: rawPatchData,
+      updatedData: updatedRelatedClient,
+      action,
+    } = payload;
+
+    const { index: relatedClientIndex, originalLocation, ...newRelationshipData } = updatedRelatedClient;
+
+    const options: OperationOptions = rawOptions ?? {};
+    const { preserveRawPatch } = options;
+
+    const isNew = relatedClientIndex === null;
+
+    let patchData: jsonpatch.Operation[];
+
+    if (preserveRawPatch) {
+      patchData = rawPatchData;
+    } else {
+      patchData = isNew
+        ? createAddPatch(newRelationshipData, `/relatedClients/${newRelationshipData.client.location.code}/null`)
+        : adjustPatchPath(rawPatchData, `/relatedClients/${originalLocation.code}/${relatedClientIndex}`);
+    }
+
+    const updatedTitle = `${updatedRelatedClient.relatedClient.client.code}, ${updatedRelatedClient.relatedClient.client.name}`;
+
+    saveableComponentRef.value = clientRelationshipFormsRef.value[index];
+
+    const onSuccess: OnSuccess = () => {
+      const toastNotification: ModalNotification = {
+        kind: "Success",
+        active: true,
+        handler: () => {},
+        message: `Client relationship with <span class="weight-700">“${toTitleCase(updatedTitle)}”</span> was ${action.pastParticiple}`,
+        toastTitle: undefined,
+      };
+      toastBus.emit(toastNotification);
+
+      clientRelationshipFormsRef.value[index].lockEditing();
+
+      const locationId = updatedRelatedClient.client.location.code;
+
+      if (!relatedLocationsState[locationId]) {
+        relatedLocationsState[locationId] = createCollapsibleState();
+      }
+
+      relatedLocationsState[locationId].isReloading = true;
+
+      fetchClientData().asyncResponse.then(() => {
+        // Checking for existence because it might have just been deleted.
+        if (relatedLocationsState[locationId]) {
+          relatedLocationsState[locationId].isReloading = false;
+        }
+        if (isNew) {
+          // Reset the newRelationship variable
+          newIndexedRelationship.value = undefined;
+        }
+      });
+    };
+
+    const onFailure: OnFailure = (error) => {
+      const toastNotification: ModalNotification = {
+        kind: "Error",
+        active: true,
+        handler: () => {},
+        message: `Failed to ${action.infinitive} client relationship`,
+        toastTitle: undefined,
+      };
+      toastBus.emit(toastNotification);
+      globalError.value = error;
+    };
+
+    handlePatch(patchData, onSuccess, onFailure);
+  };
+
 const globalError = ref();
 
 const resetGlobalError = () => {
@@ -859,6 +946,20 @@ watch([() => Object.keys(relatedClientsLocations.value ?? {}), locationsState], 
     // reset location name
     relatedLocationsState[relatedLocationCode].name = locationsState[relatedLocationCode]?.name;
   });
+});
+
+const uniqueRelationships = isUniqueDescriptive("This combination of location, relationship type, related client and its location already exists");
+
+watch(() => data.value?.relatedClients, (value) => {
+  if (value) {
+    Object.entries(value).forEach(([curLocationCode, curList]) => {
+      curList.forEach((entry, index) => {
+        const uniqueIndex = buildRelatedClientIndex(curLocationCode, index);
+        const value = buildRelatedClientCombination(entry);
+        uniqueRelationships.add("Combination", uniqueIndex)(value);
+      });
+    });
+  }
 });
 
 const formatRelatedLocation = (locationCode: string) => {
@@ -1174,7 +1275,7 @@ const formatRelatedLocation = (locationCode: string) => {
                 kind="primary"
                 size="md"
                 @click="addRelationship"
-                :disabled="newRelationship"
+                :disabled="newIndexedRelationship"
               >
                 <span class="width-unset">Add client relationship</span>
                 <Add16 slot="icon" />
@@ -1213,14 +1314,16 @@ const formatRelatedLocation = (locationCode: string) => {
                     </span>
                   </div>
                   <client-relationship-form
-                    v-if="newRelationship && curLocationCode === 'null'"
+                    :ref="setClientRelationshipFormRef(index)"
+                    v-if="newIndexedRelationship && curLocationCode === 'null'"
                     location-index="null"
                     index="null"
-                    :data="newRelationship"
+                    :data="newIndexedRelationship"
                     :clientData="data"
-                    :validations="[]"
+                    :validations="[uniqueRelationships.check]"
                     keep-scroll-bottom-position
-                    @canceled="handleRelationshipCanceled(newRelationship)"
+                    @canceled="handleRelationshipCanceled(newIndexedRelationship)"
+                    @save="operateRelatedClient(index)($event)"
                   />
                   <location-relationships-view
                     v-else
@@ -1253,7 +1356,7 @@ const formatRelatedLocation = (locationCode: string) => {
                   kind="primary"
                   size="md"
                   @click="addRelationship"
-                  :disabled="newRelationship"
+                  :disabled="newIndexedRelationship"
                 >
                   <span class="width-unset">Add client relationship</span>
                   <Add16 slot="icon" />

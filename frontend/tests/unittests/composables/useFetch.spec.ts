@@ -105,7 +105,7 @@ describe('useFetch', () => {
       .mockImplementation(() =>
         Promise.reject(new Error({ response: { status: 500, data: { message: "Error" } } })),
       );
-    const responseData = ref(null);
+    const errorData = ref(null);
 
     let fetchWrapper: ReturnType<typeof useFetch>;
 
@@ -118,12 +118,12 @@ describe('useFetch', () => {
         fetchWrapper = useFetch("/api/data", { skip: true });
         spyHandleErrorDefault = doSpyHandleErrorDefault();
         const { fetch, error } = fetchWrapper;
-        watch(error, (value) => (responseData.value = value));
+        watch(error, (value) => (errorData.value = value));
         fetch();
       },
     };
 
-    watch(responseData, (value) => {
+    watch(errorData, (value) => {
       expect(value).toStrictEqual(
         new Error({ response: { status: 500, data: { message: "Error" } } }),
       );

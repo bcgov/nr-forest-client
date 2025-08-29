@@ -8,6 +8,7 @@ import type {
   CodeNameType,
   FieldAction,
   FieldReason,
+  RelatedClientEntry,
   UserRole,
 } from "@/dto/CommonTypesDto";
 import { isNullOrUndefinedOrBlank } from "@/helpers/validators/GlobalValidators";
@@ -768,4 +769,37 @@ export const searchResultToText = (searchResult: ClientSearchResult): string => 
   const { clientNumber, clientFullName, clientType, city } = searchResult;
   const result = toTitleCase(`${clientNumber}, ${clientFullName}, ${clientType}, ${city}`);
   return result;
+};
+
+/**
+ * Builds a value that works as an index for the related client, by joining the location code and
+ * the index of the relationship within that location.
+ *
+ * @param locationCode - The location's code
+ * @param relationshipIndex - The index of the relationship within that location
+ * @returns an index for the related client.
+ */
+export const buildRelatedClientIndex = (
+  locationCode: string,
+  relationshipIndex: number | string,
+): string => {
+  const uniqueIndex = [locationCode, relationshipIndex].join(",");
+  return uniqueIndex;
+};
+
+/**
+ * Builds a string value that holds the combination of properties that must be unique in a client relationship.
+ * @param entry - The client relationship
+ * @returns a string value that can uniquely identify a relationship.
+ */
+export const buildRelatedClientCombination = (entry: RelatedClientEntry): string => {
+  const value = [
+    entry.client.client?.code,
+    entry.client.location?.code,
+    entry.relationship?.code,
+    entry.relatedClient.client?.code,
+    entry.relatedClient.location?.code,
+  ].join(",");
+
+  return value;
 };

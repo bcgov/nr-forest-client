@@ -3,24 +3,28 @@ import { ref, watch, computed } from "vue";
 // Composables
 import { useFetchTo } from "@/composables/useFetch";
 
-const props = withDefaults(defineProps<{
-  url: string;
-  params?: object;
-  minLength: number;
-  initValue: object;
-  initFetch?: boolean;
-  disabled?: boolean;
-  debounce?: number;
-}>(),
+const props = withDefaults(
+  defineProps<{
+    url: string;
+    params?: object;
+    minLength: number;
+    initValue: object;
+    emptyValue?: any;
+    initFetch?: boolean;
+    disabled?: boolean;
+    debounce?: number;
+  }>(),
   {
     minLength: 3,
     disabled: false,
     debounce: 300,
-  }
+  },
 );
 
 // Set the initial value to the content
 const content = ref<any>(props.initValue);
+
+const emptyValue = computed(() => props.emptyValue || props.initValue);
 
 const response = ref<any>();
 const loading = ref<boolean>();
@@ -63,7 +67,6 @@ const abortOutdatedRequests = () => {
 // Watch for changes in the url, and if the difference is greater than the min length, fetch
 watch([() => props.url, () => props.disabled], () => {
   if (!props.disabled && calculateStringDifference(initialUrlValue, props.url) >= props.minLength) {
-
     // added a manual loading state to set the loading state when the user types
     loading.value = true;
     const curRequestTime = Date.now();
@@ -102,6 +105,16 @@ watch([() => props.url, () => props.disabled], () => {
     }, props.debounce); // Debounce time
   }
 });
+
+watch(
+  () => props.disabled,
+  () => {
+    if (props.disabled) {
+      abortOutdatedRequests();
+      content.value = emptyValue.value;
+    }
+  },
+);
 </script>
 <template>
   <slot :content="content" :loading="loading" :error="error"></slot>

@@ -6,7 +6,7 @@ import type {
   ClientSearchResult,
   CodeNameType,
   CodeNameValue,
-  RelatedClientEntry,
+  IndexedRelatedClient,
   SaveEvent,
 } from "@/dto/CommonTypesDto";
 import {
@@ -15,6 +15,8 @@ import {
   formatLocation,
   highlightMatch,
   searchResultToText,
+  buildRelatedClientIndex,
+  buildRelatedClientCombination,
 } from "@/services/ForestClientService";
 
 import Save16 from "@carbon/icons-vue/es/save/16";
@@ -33,27 +35,54 @@ import {
   optional,
 } from "@/helpers/validators/GlobalValidators";
 import { useFetchTo } from "@/composables/useFetch";
+import type { SaveableComponent } from "./shared";
 
 const props = defineProps<{
   locationIndex: string;
   index: string;
-  data: RelatedClientEntry;
+  data: IndexedRelatedClient;
   clientData: ClientDetails;
   validations: Array<Function>;
   keepScrollBottomPosition?: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: "save", payload: SaveEvent<RelatedClientEntry>): void;
+  (e: "save", payload: SaveEvent<IndexedRelatedClient>): void;
   (e: "canceled"): void;
 }>();
 
-let originalData: RelatedClientEntry;
-const formData = ref<RelatedClientEntry>();
+let originalData: IndexedRelatedClient;
+const formData = ref<IndexedRelatedClient>();
+
+const noValidation = () => "";
+
+const validateCombinedData =
+  props.validations.length === 0
+    ? noValidation
+    : props.validations[0](
+        "Combination",
+        buildRelatedClientIndex(props.locationIndex, props.index),
+      );
+const combinationError = ref<string | undefined>("");
+
+const uniquenessValidation = () => {
+  combinationError.value = validateCombinedData(buildRelatedClientCombination(formData.value));
+};
+
+// Watch for changes on the input
+watch(
+  formData,
+  () => {
+    uniquenessValidation();
+  },
+  {
+    deep: true,
+  },
+);
 
 const hasAnyChange = ref(false);
 
-const formatData = (data: RelatedClientEntry) => {
+const formatData = (data: IndexedRelatedClient) => {
   const formattedData = JSON.parse(JSON.stringify(data));
   return formattedData;
 };
@@ -79,27 +108,40 @@ const cancel = () => {
   emit("canceled");
 };
 
+const lockEditing = () => {};
+
 const saving = ref(false);
 
 const setSaving = (value: boolean) => {
   saving.value = value;
 };
 
-defineExpose({ setSaving });
+defineExpose<SaveableComponent>({ setSaving, lockEditing });
 
 const save = () => {
   const updatedData = preserveUnchangedData(formData.value, originalData);
 
-  const patch = jsonpatch.compare(originalData, updatedData);
+  const patch =
+    props.locationIndex === "null" ? null : jsonpatch.compare(originalData, updatedData);
+
+  const action =
+    props.locationIndex === "null"
+      ? {
+          infinitive: "create",
+          pastParticiple: "created",
+        }
+      : {
+          infinitive: "update",
+          pastParticiple: "updated",
+        };
+
+  const operationType = props.locationIndex === "null" ? "insert" : "update";
 
   emit("save", {
     patch,
     updatedData,
-    action: {
-      infinitive: "update",
-      pastParticiple: "updated",
-    },
-    operationType: "update",
+    action,
+    operationType,
   });
 };
 
@@ -133,6 +175,7 @@ watch(
   () => formData.value.relationship?.code,
   () => {
     formData.value.relatedClient.client = null;
+    rawSearchKeyword.value = "";
   },
 );
 
@@ -272,6 +315,7 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
           `relatedClients[${formData.client.location?.code}][${index}].client.location`,
         ),
       ]"
+      :error-message="combinationError"
       required
       required-label
       @update:selected-value="updateLocation($event)"
@@ -301,6 +345,7 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
             `relatedClients[${formData.client.location?.code}][${index}].client.relationship`,
           ),
         ]"
+        :error-message="combinationError"
         @update:selected-value="updateRelationship($event)"
         @empty="validation.relationshipType = !$event"
         #="{ option }"
@@ -315,7 +360,7 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
       :min-length="3"
       :init-value="[]"
       :init-fetch="false"
-      :disabled="!searchKeyword || !!formData.relatedClient?.client?.code"
+      :disabled="searchKeyword?.length < 3 || !!formData.relatedClient?.client?.code"
       #="{ content, loading, error }"
     >
       <AutoCompleteInputComponent
@@ -333,6 +378,7 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
             `relatedClients[${formData.client.location?.code}][${index}].relatedClient.client`,
           ),
         ]"
+        :error-message="combinationError"
         :validations-on-change="validationsOnChange"
         :loading="loading"
         @update:selected-value="updateRelatedClient($event)"
@@ -362,6 +408,7 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
           `relatedClients[${formData.client.location?.code}][${index}].relatedClient.location`,
         ),
       ]"
+      :error-message="combinationError"
       required
       required-label
       @update:selected-value="updateRelatedClientLocation($event)"

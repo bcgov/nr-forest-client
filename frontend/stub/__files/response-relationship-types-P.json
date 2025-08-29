@@ -2,5 +2,9 @@
   {
     "code": "PA",
     "name": "General Partner"
+  },
+  {
+      "code": "SH",
+      "name": "Shareholder"
   }
 ]
