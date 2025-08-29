@@ -17,6 +17,7 @@ import {
   searchResultToText,
   buildRelatedClientIndex,
   buildRelatedClientCombination,
+  toTitleCase,
 } from "@/services/ForestClientService";
 
 import Save16 from "@carbon/icons-vue/es/save/16";
@@ -280,7 +281,7 @@ const searchResultToCodeNameValue = (
   const { clientNumber, clientFullName } = searchResult;
   const result = {
     code: clientNumber,
-    name: `${clientNumber}, ${clientFullName}`,
+    name: `${clientNumber}, ${toTitleCase(clientFullName)}`,
     value: searchResult,
   };
   return result;
@@ -349,11 +350,7 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
         @update:selected-value="updateRelationship($event)"
         @empty="validation.relationshipType = !$event"
         #="{ option }"
-      >
-        <cds-tag :type="getTagColorByClientStatus(option.name)" title="">
-          <span>{{ option.name }}</span>
-        </cds-tag>
-      </dropdown-input-component>
+      />
     </data-fetcher>
     <data-fetcher
       v-model:url="predictiveSearchUri"
