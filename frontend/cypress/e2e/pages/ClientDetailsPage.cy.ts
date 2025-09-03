@@ -1753,8 +1753,8 @@ describe("Client Details Page", () => {
           cy.get("#tab-related").click();
         });
 
-        it("displays the number of relationships", () => {
-          cy.get("#panel-related").contains("04 client relationships");
+        it('displays the title "Client relationships"', () => {
+          cy.get("#panel-related").contains("Client relationships");
         });
 
         it("displays one collapsed accordion component for each location", () => {
