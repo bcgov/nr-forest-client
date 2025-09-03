@@ -1849,11 +1849,11 @@ cds-table-header-cell {
 
   --padding-fixed-px: 16;
 
-  --col-104-px-raw: 104;
+  --col-104-px: 104;
 
-  --col-310-px: calc(310 - 2 * var(--padding-fixed-px));
-  --col-210-px: calc(210 - 2 * var(--padding-fixed-px));
-  --col-120-px: calc(120 - 2 * var(--padding-fixed-px));
+  --col-310-px: 310;
+  --col-210-px: 210;
+  --col-120-px: 120;
 
   --col-padding-10-px: 10;
   --col-padding-16-px: 16;
@@ -1865,10 +1865,10 @@ cds-table-header-cell {
 
   --total: calc(
     var(--col-padding-10-px)
-    + 2 * (var(--col-310-px) + 2 * var(--padding-fixed-px))
-    + var(--col-210-px) + 2 * var(--padding-fixed-px)
-    + 2 * (var(--col-120-px) + 2 * var(--padding-fixed-px))
-    + var(--amount-actions-column) * var(--col-104-px-raw)
+    + 2 * var(--col-310-px)
+    + var(--col-210-px)
+    + 2 * var(--col-120-px)
+    + var(--amount-actions-column) * var(--col-104-px)
   );
 
   /*
@@ -1885,20 +1885,20 @@ cds-table-header-cell {
   */
 
   .col-210-px {
-    width: calc( 100% * (var(--col-210-px) + 2 * var(--padding-fixed-px)) / var(--total));
+    width: calc( 100% * var(--col-210-px) / var(--total));
   }
   
   .col-310-px {
-    width: calc( 100% * (var(--col-310-px) + 2 * var(--padding-fixed-px)) / var(--total));
+    width: calc( 100% * var(--col-310-px) / var(--total));
   }
 
   .col-120-px {
-    width: calc( 100% * (var(--col-120-px) + 2 * var(--padding-fixed-px)) / var(--total));
+    width: calc( 100% * var(--col-120-px) / var(--total));
   }
 
   .col-104-px-fixed {
     padding: 0;
-    width: calc(var(--col-104-px-raw) * 1rem / 16);
+    width: calc(var(--col-104-px) * 1rem / 16);
   }
 
   .col-padding-10-px {
