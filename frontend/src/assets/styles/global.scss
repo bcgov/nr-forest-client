@@ -1845,6 +1845,8 @@ cds-table-header-cell {
 }
 
 #relatioships-table {
+  min-width: unset;
+
   --padding-fixed-px: 16;
 
   --col-104-px-raw: 104;
