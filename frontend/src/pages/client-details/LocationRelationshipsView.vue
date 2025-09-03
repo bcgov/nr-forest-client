@@ -57,21 +57,20 @@ const canEdit = computed(() =>
       <cds-table id="relatioships-table" :class="{ 'view-only': !canEdit }" use-zebra-styles>
         <cds-table-head>
           <cds-table-header-row>
-            <cds-table-header-cell class="col-padding-8-px" />
-            <cds-table-header-cell class="col-488-px">Primary client</cds-table-header-cell>
-            <cds-table-header-cell class="col-248-px">Relationship type</cds-table-header-cell>
-            <cds-table-header-cell class="col-488-px">Related client</cds-table-header-cell>
-            <cds-table-header-cell class="col-88-px">Percentage owned</cds-table-header-cell>
-            <cds-table-header-cell class="col-88-px">Signing authority</cds-table-header-cell>
-            <cds-table-header-cell v-if="canEdit" class="col-88-px">
+            <cds-table-header-cell class="col-padding-10-px" />
+            <cds-table-header-cell class="col-310-px">Primary client</cds-table-header-cell>
+            <cds-table-header-cell class="col-210-px">Relationship type</cds-table-header-cell>
+            <cds-table-header-cell class="col-310-px">Related client</cds-table-header-cell>
+            <cds-table-header-cell class="col-120-px">Percentage owned</cds-table-header-cell>
+            <cds-table-header-cell class="col-120-px">Signing authority</cds-table-header-cell>
+            <cds-table-header-cell v-if="canEdit" class="col-104-px-no-padding">
               Actions
             </cds-table-header-cell>
-            <cds-table-header-cell class="col-padding-16-px" />
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
           <cds-table-row v-for="(row, rowIndex) in sortedData" :key="row">
-            <cds-table-cell />
+            <cds-table-cell class="no-padding" />
             <cds-table-cell
               v-for="selectedClient in row.isMainParticipant ? [row.client] : [row.relatedClient]"
               :key="selectedClient.client.code"
@@ -135,7 +134,7 @@ const canEdit = computed(() =>
             <cds-table-cell>
               <span>{{ booleanToYesNo(row.hasSigningAuthority) || "-" }}</span>
             </cds-table-cell>
-            <cds-table-cell v-if="canEdit">
+            <cds-table-cell v-if="canEdit" class="no-padding">
               <div class="gap-0_5-rem">
                 <cds-tooltip align="top-right">
                   <cds-button
@@ -168,7 +167,6 @@ const canEdit = computed(() =>
                 </cds-tooltip>
               </div>
             </cds-table-cell>
-            <cds-table-cell />
           </cds-table-row>
         </cds-table-body>
       </cds-table>
