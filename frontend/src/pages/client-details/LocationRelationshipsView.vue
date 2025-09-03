@@ -63,7 +63,7 @@ const canEdit = computed(() =>
             <cds-table-header-cell class="col-310-px">Related client</cds-table-header-cell>
             <cds-table-header-cell class="col-120-px">Percentage owned</cds-table-header-cell>
             <cds-table-header-cell class="col-120-px">Signing authority</cds-table-header-cell>
-            <cds-table-header-cell v-if="canEdit" class="col-104-px-no-padding">
+            <cds-table-header-cell v-if="canEdit" class="col-104-px-fixed">
               Actions
             </cds-table-header-cell>
           </cds-table-header-row>

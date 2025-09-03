@@ -1894,14 +1894,9 @@ cds-table-header-cell {
     width: calc( 100% * (var(--col-120-px) + 2 * var(--padding-fixed-px)) / var(--total));
   }
 
-  .col-104-px-no-padding {
-    padding: 0;
-    width: calc( 100% * (var(--col-104-px-raw)) / var(--total));
-  }
-
   .col-104-px-fixed {
     padding: 0;
-    width: var(--col-104-px-raw);
+    width: calc(var(--col-104-px-raw) * 1rem / 16);
   }
 
   .col-padding-10-px {
