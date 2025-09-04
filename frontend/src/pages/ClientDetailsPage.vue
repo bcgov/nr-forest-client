@@ -1266,8 +1266,7 @@ const formatRelatedLocation = (locationCode: string) => {
           <template v-if="!data || Object.entries(relatedClientsLocations).length">
             <div class="tab-header space-between">
               <h3 class="padding-left-1rem">
-                {{ formatCount(countRelatedClients) }}
-                {{ pluralize("client relationship", countRelatedClients) }}
+                Client relationships
               </h3>
               <cds-button
                 v-if="userHasAuthority"

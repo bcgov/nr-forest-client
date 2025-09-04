@@ -9,7 +9,6 @@ import {
 import {
   booleanToYesNo,
   compareAny,
-  formatAddress,
   formatLocation,
   includesAnyOf,
   toTitleCase,
@@ -50,77 +49,83 @@ const sortedData = computed<RelatedClientEntry[]>(() => {
 const canEdit = computed(() =>
   includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
 );
-
-const formattedAddress = computed(() => {
-  return formatAddress(props.location);
-});
-
-const encodedAddress = computed(() => {
-  return encodeURIComponent(formattedAddress.value);
-});
 </script>
 
 <template>
   <div class="grouping-12" :class="{ invisible: props.isReloading }">
     <template v-if="!props.createMode">
-      <read-only-component
-        label="Mailing address"
-        :id="`location-relationships-${locationIndex}-mailingAddress`"
-      >
-        <a
-          :href="`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`"
-          target="_blank"
-          rel="noopener"
-        >
-          <span class="body-compact-01 colorless">{{ formattedAddress }}</span>
-        </a>
-      </read-only-component>
       <cds-table id="relatioships-table" :class="{ 'view-only': !canEdit }" use-zebra-styles>
         <cds-table-head>
           <cds-table-header-row>
-            <cds-table-header-cell class="col-padding-8-px" />
-            <cds-table-header-cell class="col-248-px">Relationship type</cds-table-header-cell>
-            <cds-table-header-cell class="col-488-px">
-              Related client location
-            </cds-table-header-cell>
-            <cds-table-header-cell class="col-88-px">Percentage owned</cds-table-header-cell>
-            <cds-table-header-cell class="col-88-px">Signing authority</cds-table-header-cell>
-            <cds-table-header-cell v-if="canEdit" class="col-88-px">
+            <cds-table-header-cell class="col-padding-10-px" />
+            <cds-table-header-cell class="col-310-px">Primary client</cds-table-header-cell>
+            <cds-table-header-cell class="col-210-px">Relationship type</cds-table-header-cell>
+            <cds-table-header-cell class="col-310-px">Related client</cds-table-header-cell>
+            <cds-table-header-cell class="col-120-px">Percentage owned</cds-table-header-cell>
+            <cds-table-header-cell class="col-120-px">Signing authority</cds-table-header-cell>
+            <cds-table-header-cell v-if="canEdit" class="col-104-px-fixed">
               Actions
             </cds-table-header-cell>
-            <cds-table-header-cell class="col-padding-16-px" />
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
           <cds-table-row v-for="(row, rowIndex) in sortedData" :key="row">
-            <cds-table-cell />
+            <cds-table-cell class="no-padding" />
+            <cds-table-cell
+              v-for="selectedClient in row.isMainParticipant ? [row.client] : [row.relatedClient]"
+              :key="selectedClient.client.code"
+            >
+              <span>
+                <template v-if="!row.isMainParticipant">
+                  <a
+                    :href="`/clients/details/${selectedClient.client.code}`"
+                    target="_blank"
+                    rel="noopener"
+                    >{{ selectedClient.client.code }}</a
+                  >,
+                </template>
+                {{ toTitleCase(selectedClient.client.name) }}
+                <template v-if="!row.isMainParticipant">
+                  <br />
+                  <a
+                    :href="`/clients/details/${selectedClient.client.code}`"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    {{ formatLocation(selectedClient.location.code, selectedClient.location.name) }}
+                  </a>
+                </template>
+              </span>
+            </cds-table-cell>
             <cds-table-cell>
               <div class="gap-0_5-rem">
                 <span>{{ row.relationship.name }}</span>
-                <cds-tag type="purple" title="" v-if="row.isMainParticipant">
-                  <span>Primary</span>
-                </cds-tag>
               </div>
             </cds-table-cell>
-            <cds-table-cell>
+            <cds-table-cell
+              v-for="selectedClient in row.isMainParticipant ? [row.relatedClient] : [row.client]"
+              :key="selectedClient.client.code"
+            >
               <span>
-                <a
-                  :href="`/clients/details/${row.relatedClient.client.code}`"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  {{ row.relatedClient.client.code }}
-                </a>
-                , {{ toTitleCase(row.relatedClient.client.name) }}
-                <a
-                  :href="`/clients/details/${row.relatedClient.client.code}`"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  {{
-                    formatLocation(row.relatedClient.location.code, row.relatedClient.location.name)
-                  }}
-                </a>
+                <template v-if="row.isMainParticipant">
+                  <a
+                    :href="`/clients/details/${selectedClient.client.code}`"
+                    target="_blank"
+                    rel="noopener"
+                    >{{ selectedClient.client.code }}</a
+                  >,
+                </template>
+                {{ toTitleCase(selectedClient.client.name) }}
+                <template v-if="row.isMainParticipant">
+                  <br />
+                  <a
+                    :href="`/clients/details/${selectedClient.client.code}`"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    {{ formatLocation(selectedClient.location.code, selectedClient.location.name) }}
+                  </a>
+                </template>
               </span>
             </cds-table-cell>
             <cds-table-cell>
@@ -129,7 +134,7 @@ const encodedAddress = computed(() => {
             <cds-table-cell>
               <span>{{ booleanToYesNo(row.hasSigningAuthority) || "-" }}</span>
             </cds-table-cell>
-            <cds-table-cell v-if="canEdit">
+            <cds-table-cell v-if="canEdit" class="no-padding">
               <div class="gap-0_5-rem">
                 <cds-tooltip align="top-right">
                   <cds-button
@@ -162,7 +167,6 @@ const encodedAddress = computed(() => {
                 </cds-tooltip>
               </div>
             </cds-table-cell>
-            <cds-table-cell />
           </cds-table-row>
         </cds-table-body>
       </cds-table>

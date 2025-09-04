@@ -162,27 +162,7 @@ describe("<location-relationships-view />", () => {
   it("renders the LocationRelationships component", () => {
     mount();
 
-    const mailingAddress = formatAddress(currentProps.location);
-    testField("#location-relationships-00-mailingAddress", mailingAddress);
-
-    cy.wrap(currentProps.data).should("have.length", 3);
-
     cy.get("#relatioships-table").should("be.visible");
-  });
-
-  it("links to Google Maps search using the address properly encoded", () => {
-    mount();
-
-    const formattedAddress = formatAddress(currentProps.location);
-    const encodedAddress = encodeURIComponent(formattedAddress);
-
-    cy.get("#location-relationships-00-mailingAddress")
-      .find("a")
-      .should(
-        "have.attr",
-        "href",
-        `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`,
-      );
   });
 
   it("renders the relationships table contents properly", () => {
@@ -198,32 +178,35 @@ describe("<location-relationships-view />", () => {
       .find("cds-table-row")
       .eq(0)
       .within(() => {
-        // Relationship type
-        cy.get("cds-table-cell").eq(1).contains("General Partner");
-        cy.get("cds-table-cell").eq(1).should("not.contain", "Primary");
-
-        // Related client location
+        // Primary client location
         cy.get("cds-table-cell")
-          .eq(2)
+          .eq(1)
           .find("a")
           .should("have.attr", "href", "/clients/details/00000137")
           .should("have.attr", "target", "_blank")
           .contains("00000137");
 
-        cy.get("cds-table-cell").eq(2).contains("Matelda Lindhe");
+        cy.get("cds-table-cell").eq(1).contains("Matelda Lindhe");
 
         cy.get("cds-table-cell")
-          .eq(2)
+          .eq(1)
           .find("a")
           .should("have.attr", "href", "/clients/details/00000137")
           .should("have.attr", "target", "_blank")
           .contains("00 - MAPLEWOOD HEIGHTS ADDRESS");
 
+        // Relationship type
+        cy.get("cds-table-cell").eq(2).contains("General Partner");
+        cy.get("cds-table-cell").eq(2).should("not.contain", "Primary");
+
+        // Related client location
+        cy.get("cds-table-cell").eq(3).contains("Thiz");
+
         // Percentage owned
-        cy.get("cds-table-cell").eq(3).contains("-");
+        cy.get("cds-table-cell").eq(4).contains("-");
 
         // Signing authority
-        cy.get("cds-table-cell").eq(4).contains("-");
+        cy.get("cds-table-cell").eq(5).contains("-");
       });
 
     // Row 1
@@ -231,32 +214,34 @@ describe("<location-relationships-view />", () => {
       .find("cds-table-row")
       .eq(1)
       .within(() => {
+        // Primary client location
+        cy.get("cds-table-cell").eq(1).contains("Thiz");
+
         // Relationship type
-        cy.get("cds-table-cell").eq(1).contains("Shareholder");
-        cy.get("cds-table-cell").eq(1).contains("Primary");
+        cy.get("cds-table-cell").eq(2).contains("Shareholder");
 
         // Related client location
         cy.get("cds-table-cell")
-          .eq(2)
+          .eq(3)
           .find("a")
           .should("have.attr", "href", "/clients/details/00000177")
           .should("have.attr", "target", "_blank")
           .contains("00000177");
 
-        cy.get("cds-table-cell").eq(2).contains("Grand Farm");
+        cy.get("cds-table-cell").eq(3).contains("Grand Farm");
 
         cy.get("cds-table-cell")
-          .eq(2)
+          .eq(3)
           .find("a")
           .should("have.attr", "href", "/clients/details/00000177")
           .should("have.attr", "target", "_blank")
           .contains("00 - Headquarters");
 
         // Percentage owned
-        cy.get("cds-table-cell").eq(3).contains("33%");
+        cy.get("cds-table-cell").eq(4).contains("33%");
 
         // Signing authority
-        cy.get("cds-table-cell").eq(4).contains("No");
+        cy.get("cds-table-cell").eq(5).contains("No");
       });
 
     // Row 2
@@ -264,32 +249,34 @@ describe("<location-relationships-view />", () => {
       .find("cds-table-row")
       .eq(2)
       .within(() => {
+        // Primary client location
+        cy.get("cds-table-cell").eq(1).contains("Thiz");
+
         // Relationship type
-        cy.get("cds-table-cell").eq(1).contains("Shareholder");
-        cy.get("cds-table-cell").eq(1).contains("Primary");
+        cy.get("cds-table-cell").eq(2).contains("Shareholder");
 
         // Related client location
         cy.get("cds-table-cell")
-          .eq(2)
+          .eq(3)
           .find("a")
           .should("have.attr", "href", "/clients/details/00000172")
           .should("have.attr", "target", "_blank")
           .contains("00000172");
 
-        cy.get("cds-table-cell").eq(2).contains("Nature Nurturers");
+        cy.get("cds-table-cell").eq(3).contains("Nature Nurturers");
 
         cy.get("cds-table-cell")
-          .eq(2)
+          .eq(3)
           .find("a")
           .should("have.attr", "href", "/clients/details/00000172")
           .should("have.attr", "target", "_blank")
           .contains("00 - MAIN OFFICE");
 
         // Percentage owned
-        cy.get("cds-table-cell").eq(3).contains("33%");
+        cy.get("cds-table-cell").eq(4).contains("33%");
 
         // Signing authority
-        cy.get("cds-table-cell").eq(4).contains("Yes");
+        cy.get("cds-table-cell").eq(5).contains("Yes");
       });
   });
 
@@ -327,15 +314,6 @@ describe("<location-relationships-view />", () => {
       props.data = [props.data[0]];
       props.data[0].isMainParticipant = true;
       mount(props);
-    });
-
-    it("displays the primary tag", () => {
-      cy.get("#relatioships-table")
-        .find("cds-table-row")
-        .eq(0)
-        .find("cds-table-cell")
-        .eq(1)
-        .contains("Primary");
     });
 
     it("enables the action buttons", () => {
