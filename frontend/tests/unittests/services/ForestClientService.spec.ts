@@ -28,6 +28,7 @@ import {
   compareAny,
   buildRelatedClientIndex,
   buildRelatedClientCombination,
+  isLocationExpired,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type {
@@ -996,5 +997,17 @@ describe("buildRelatedClientCombination", () => {
     };
     const result = buildRelatedClientCombination(entry);
     expect(result).toEqual("1,2,3,4,5");
+  });
+});
+
+describe("isLocationExpired", () => {
+  it("returns true when location is expired", () => {
+    const result = isLocationExpired({ locnExpiredInd: "Y" } as ClientLocation);
+    expect(result).toBe(true);
+  });
+
+  it("returns false when location is not expired", () => {
+    const result = isLocationExpired({ locnExpiredInd: "N" } as ClientLocation);
+    expect(result).toBe(false);
   });
 });
