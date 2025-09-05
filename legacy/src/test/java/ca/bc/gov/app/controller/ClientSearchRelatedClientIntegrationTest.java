@@ -74,7 +74,7 @@ class ClientSearchRelatedClientIntegrationTest extends AbstractTestContainerInte
                     "00000009",
                     "james",
                     null,
-                    List.of("jjamess bbondd bbondd", "JAMES BAXTER (BAXTER'S FAMILY)", "james bond bond (Elaricho)", "james hunt hunt")
+                    List.of("JAMES BAXTER (BAXTER'S FAMILY)", "james bond bond (Elaricho)", "james hunt hunt", "jjamess bbondd bbondd")
                 ),
                 Arguments.argumentSet(
                     "James Hunt looking for other FM James",

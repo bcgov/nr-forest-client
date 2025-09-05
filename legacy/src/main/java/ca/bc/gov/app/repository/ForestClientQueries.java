@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 public final class ForestClientQueries {
 
   public static final String ORACLE_PAGINATION = " OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY";
-  public static final String ORDER_BY_SCORE_DESC = " ORDER BY SCORE DESC ";
+  public static final String ORDER_BY_SCORE_DESC = " ORDER BY SCORE DESC, C.CLIENT_NUMBER ASC ";
   public static final String SELECT_COUNT_C_CLIENT_NUMBER = "SELECT COUNT(C.CLIENT_NUMBER) ";
 
   public static final String CLIENT_INFORMATION_HISTORY = """
