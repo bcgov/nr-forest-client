@@ -93,8 +93,28 @@
       "cellPhone": "2505554700",
       "homePhone": "2505554101",
       "faxNumber": "2502864768",
-      "cliLocnComment": "Sample location 01 comment",
+      "cliLocnComment": "Sample location 02 comment",
       "locnExpiredInd": "N"
+    },
+    {
+      "clientLocnName": null,
+      "clientLocnCode": "03",
+      "addressOne": "456 Iron St",
+      "addressTwo": "",
+      "addressThree": "",
+      "countryCode": "CA",
+      "countryDesc": "Canada",
+      "provinceCode": "BC",
+      "provinceDesc": "British Columbia",
+      "city": "Deer Lake",
+      "postalCode": "D1E2F3",
+      "emailAddress": "",
+      "businessPhone": "",
+      "cellPhone": "",
+      "homePhone": "",
+      "faxNumber": "",
+      "cliLocnComment": "Sample location 03 comment",
+      "locnExpiredInd": "Y"
     }
   ],
   "relatedClients": {

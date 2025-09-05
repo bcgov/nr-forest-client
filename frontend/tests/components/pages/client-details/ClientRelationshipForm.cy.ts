@@ -1,4 +1,9 @@
-import type { ClientDetails, CodeNameType, RelatedClientEntry } from "@/dto/CommonTypesDto";
+import type {
+  ClientDetails,
+  ClientLocation,
+  CodeNameType,
+  RelatedClientEntry,
+} from "@/dto/CommonTypesDto";
 import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
 
 // Carbon
@@ -75,6 +80,42 @@ describe("<client-relationship-form />", () => {
       .shadow()
       .find("button")
       .should("be.disabled");
+  });
+
+  const checkLoadedLocations = (
+    addresses: ClientLocation[],
+    expectedTotal: number,
+    expectedActive: number,
+    chainableDropdownList: Cypress.Chainable<JQuery<HTMLElement>>,
+  ) => {
+    expect(addresses.length).to.eq(expectedTotal);
+    expect(addresses.filter((item) => item.locnExpiredInd === "N")).to.have.length(expectedActive);
+
+    const expectedDeactivated = expectedTotal - expectedActive;
+
+    expect(addresses.filter((item) => item.locnExpiredInd === "Y")).to.have.length(
+      expectedDeactivated,
+    );
+
+    // Display only the active locations
+    chainableDropdownList.should("have.length", expectedActive);
+  };
+
+  it("loads only the active locations from the primary client", () => {
+    mount();
+
+    // options are loaded in the dropdown
+    cy.get(`cds-dropdown#rc-${locationIndex}-${index}-location`).within(() => {
+      cy.get("cds-dropdown-item").each(($el, index) => {
+        const { clientLocnCode, clientLocnName } = clientDetails.addresses[index];
+        expect($el).to.have.attr("data-id", clientLocnCode);
+        expect($el.text()).to.contain(clientLocnCode);
+        expect($el.text()).to.contain(clientLocnName || "");
+      });
+
+      // 4 locations, but only 3 are active
+      checkLoadedLocations(clientDetails.addresses, 4, 3, cy.get("cds-dropdown-item"));
+    });
   });
 
   it("loads the relationship types according to the client type", () => {
@@ -157,7 +198,13 @@ describe("<client-relationship-form />", () => {
     });
   });
 
-  const itLoadsLocationsByRelatedClient = (relatedClientNumber: string) => {
+  const itLoadsLocationsByRelatedClient = (
+    relatedClientNumber: string,
+    cb?: (
+      body: ClientDetails,
+      chainableDropdownList: Cypress.Chainable<JQuery<HTMLElement>>,
+    ) => void,
+  ) => {
     cy.wait("@getClientDetails").then(({ request, response }) => {
       // the request contains the selected clientNumber
       expect(request.url).to.match(new RegExp(`/api/clients/details/${relatedClientNumber}`));
@@ -171,11 +218,13 @@ describe("<client-relationship-form />", () => {
           expect($el).to.have.attr("data-id", clientLocnCode);
           expect($el.text()).to.contain(clientLocnName);
         });
+
+        cb?.(response.body, cy.get("cds-dropdown-item"));
       });
     });
   };
 
-  it("loads the locations from the selected related client", () => {
+  it("loads only the active locations from the selected related client", () => {
     mount();
 
     selectRelationshipType(relationshipTypePA);
@@ -183,7 +232,10 @@ describe("<client-relationship-form />", () => {
     const relatedClientNumber = "00000007";
     selectRelatedClient(relatedClientNumber);
 
-    itLoadsLocationsByRelatedClient(relatedClientNumber);
+    itLoadsLocationsByRelatedClient(relatedClientNumber, (body, chainableDropdownList) => {
+      // 3 locations, but only 2 are active
+      checkLoadedLocations(body.addresses, 3, 2, chainableDropdownList);
+    });
   });
 
   const fillInRequiredFields = () => {

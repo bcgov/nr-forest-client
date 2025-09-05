@@ -803,3 +803,6 @@ export const buildRelatedClientCombination = (entry: RelatedClientEntry): string
 
   return value;
 };
+
+export const isLocationExpired = (location: ClientLocation): boolean =>
+  location.locnExpiredInd === "Y";
