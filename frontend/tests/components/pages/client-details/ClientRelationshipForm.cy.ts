@@ -12,7 +12,7 @@ import "@carbon/web-components/es/components/button/index";
 describe("<client-relationship-form />", () => {
   let clientDetails: ClientDetails;
   before(() => {
-    cy.fixture("client-details/se.json").then((data) => {
+    cy.fixture("client-details/michael-scott.json").then((data) => {
       clientDetails = data;
     });
   });
