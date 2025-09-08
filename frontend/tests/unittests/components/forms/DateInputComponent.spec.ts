@@ -80,11 +80,12 @@ describe("Date Input Component", () => {
     });
     globalWrapper = wrapper;
 
-    await wrapper.find(`#${id}Year`).trigger("input");
-    await wrapper.find(`#${id}Year`).trigger("blur");
+    const inputWrapper = wrapper.find<HTMLInputElement>(`#${id}Year`);
+    await setInputValue(inputWrapper, "1");
+    await inputWrapper.trigger("blur");
 
     expect(wrapper.emitted("error")).toBeTruthy();
-    expect(wrapper.emitted("error")![0][0]).toBe("My date must include a year");
+    expect(wrapper.emitted("error")![0][0]).toBe("Year must have 4 digits");
   });
 
   it("revalidates when changed from outside (i.e. not directly by the user)", async () => {

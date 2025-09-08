@@ -173,8 +173,14 @@ const selectedYear = ref<string>(getDatePart(DatePart.year));
 const selectedMonth = ref<string>(getDatePart(DatePart.month));
 const selectedDay = ref<string>(getDatePart(DatePart.day));
 
-const buildFullDate = () =>
-  `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`;
+const buildFullDate = () => {
+  let result = `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`;
+  if (result === "--") {
+    // empty date
+    result = "";
+  }
+  return result;
+};
 
 // We set it as a separated ref due to props not being updatable
 const selectedValue = ref<string | null>(buildFullDate());
@@ -222,9 +228,29 @@ watch([selectedValue], () => {
   emitValueChange(selectedValue.value);
 });
 
+const clearError = (datePart: DatePart) => {
+  setError("", datePart);
+  validation[datePart] = true;
+};
+
+const clearAllErrors = () => {
+  clearError(DatePart.year);
+  clearError(DatePart.month);
+  clearError(DatePart.day);
+};
+
 // We call all the part validations
 const validatePart = (datePart: DatePart) => {
   const newValue = datePartRefs[datePart].value;
+
+  /*
+  Note: we check both the full value and the current part value due to synchronization issues.
+  */
+  if (!newValue && !selectedValue.value) {
+    clearAllErrors();
+    return true;
+  }
+
   const error = partValidators.value[datePart]
     .map((validation) => validation(newValue))
     .filter((errorMessage) => {
