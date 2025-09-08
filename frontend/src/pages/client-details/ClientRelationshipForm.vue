@@ -3,6 +3,7 @@ import { computed, reactive, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import type {
   ClientDetails,
+  ClientLocation,
   ClientSearchResult,
   CodeNameType,
   CodeNameValue,
@@ -18,6 +19,7 @@ import {
   buildRelatedClientIndex,
   buildRelatedClientCombination,
   toTitleCase,
+  isLocationExpired,
 } from "@/services/ForestClientService";
 
 import Save16 from "@carbon/icons-vue/es/save/16";
@@ -225,11 +227,21 @@ watch(
   },
 );
 
+const getLocationList = (addresses: ClientLocation[], curLocationCode: string) => {
+  const list = addresses
+    ?.filter(
+      (location) => !isLocationExpired(location) || location.clientLocnCode === curLocationCode,
+    )
+    .map((location) => ({
+      code: location.clientLocnCode,
+      name: formatLocation(location.clientLocnCode, location.clientLocnName),
+    }));
+
+  return list;
+};
+
 const locationList = computed<CodeNameType[]>(() =>
-  props.clientData.addresses.map((location) => ({
-    code: location.clientLocnCode,
-    name: formatLocation(location.clientLocnCode, location.clientLocnName),
-  })),
+  getLocationList(props.clientData.addresses, props.data.client.location?.code),
 );
 
 const rawSearchKeyword = ref("");
@@ -291,13 +303,9 @@ const searchResultToCodeNameValueList = (
   list: ClientSearchResult[],
 ): CodeNameValue<ClientSearchResult>[] => list?.map(searchResultToCodeNameValue);
 
-const getClientLocationList = (client: ClientDetails | undefined): CodeNameType[] =>
-  client?.addresses?.map((location) => ({
-    code: location.clientLocnCode,
-    name: formatLocation(location.clientLocnCode, location.clientLocnName),
-  }));
-
-const clientLocationList = computed(() => getClientLocationList(relatedClientDetails.value));
+const relatedClientLocationList = computed(() =>
+  getLocationList(relatedClientDetails.value?.addresses, props.data.relatedClient.location?.code),
+);
 </script>
 
 <template>
@@ -395,10 +403,11 @@ const clientLocationList = computed(() => getClientLocationList(relatedClientDet
       label="Related client's location"
       tip=""
       :initial-value="
-        clientLocationList?.find((item) => item.code === formData.relatedClient.location?.code)
-          ?.name
+        relatedClientLocationList?.find(
+          (item) => item.code === formData.relatedClient.location?.code,
+        )?.name
       "
-      :model-value="clientLocationList"
+      :model-value="relatedClientLocationList"
       :validations="[
         ...getValidations('relatedClients.*.*.relatedClient.location'),
         submissionValidation(
