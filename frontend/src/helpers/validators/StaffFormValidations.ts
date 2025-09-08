@@ -47,6 +47,7 @@ fieldValidations["businessInformation.clientType"] = [
 ];
 
 fieldValidations["businessInformation.birthdate"] = [
+  isNotEmpty("You must enter a date of birth"),
   isDateInThePast("Date of birth must be in the past"),
   isMinimumYearsAgo(19, "The applicant must be at least 19 years old to apply"),
 ];
