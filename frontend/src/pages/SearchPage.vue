@@ -297,6 +297,7 @@ onMounted(() => {
     <div class="paginator" v-if="totalItems && userhasAuthority">
       <cds-pagination
         items-per-page-text="Clients per page"
+        :key="`${totalItems}-${pageSize}`"
         :page="pageNumber"
         :page-size="pageSize"
         :total-items="totalItems"
