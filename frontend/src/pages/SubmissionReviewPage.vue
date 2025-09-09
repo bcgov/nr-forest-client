@@ -333,10 +333,45 @@ const isProcessing = computed(() => {
 
   return processingStatus;
 });
+
+const duplicatedClientCheck = ref(null);
+const duplicatedClientError = ref(null);
+const duplicatedClientNumber = ref(null);
+const duplicatedClientCheckLoading = ref<boolean>(true);
+
+watch(data, () => {
+  if (data.value.business && data.value) {
+    const {
+      error,
+      loading
+    } = useFetchTo(
+      `/api/clients/${data.value.business.registrationNumber}`,
+      duplicatedClientCheck,
+      {
+        skipDefaultErrorHandling: true,
+      }
+    );
+    
+    watch(loading, () => {
+      console.log("duplicatedClientCheckLoading.value: " + loading.value);
+      duplicatedClientCheckLoading.value = loading.value;
+    });
+
+    watch(error, () => {
+      console.log("error.value.response: " + JSON.stringify(error.value.response));
+      if (error.value.response?.status === 409) {
+        duplicatedClientError.value = error.value.response.data;
+        duplicatedClientNumber.value = (error.value.response.data as string).split(
+                "client number"
+              )[1];
+      }
+    });
+  }
+});
+
 </script>
 
 <template>
-  
     <div id="screen" class="submission-content">
       <div class="resource-header">
         <cds-breadcrumb>
@@ -433,6 +468,25 @@ const isProcessing = computed(() => {
         title="Submission approved:"      
       >    
         <div>This new client submission has already been reviewed and approved.</div>    
+      </cds-inline-notification>
+
+      -- {{ duplicatedClientNumber }}
+
+      <cds-inline-notification
+        data-text="Business information"
+
+        hide-close-button="true"
+        low-contrast="true"
+        open="true"
+        kind="error"
+        title="Client already exists"
+      >
+        <p class="cds--inline-notification-content">
+          {{ duplicatedClientError }}
+        </p>
+        <p class="body-compact-02">
+          You must inform the applicant of their number and reject this submission.
+        </p>
       </cds-inline-notification>
 
       <cds-actionable-notification
