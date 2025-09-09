@@ -43,7 +43,6 @@ import {
   getActionLabel,
   updateSelectedReason,
   formatLocation,
-  extractAddressParts,
   formatAddress,
   compareAny,
   buildRelatedClientIndex,
@@ -812,6 +811,14 @@ const setClientRelationshipFormRef = (index: number) => (el: InstanceType<typeof
   clientRelationshipFormsRef.value[index] = el;
 };
 
+const clientRelationshipFormsMapRef = reactive<Record<string, Record<string, InstanceType<typeof ClientRelationshipForm>>>>({});
+
+const setClientRelationshipFormMapRef = (locationIndex: string, cb) => (el: InstanceType<typeof ClientRelationshipForm>) => {
+  if (!clientRelationshipFormsMapRef.locationIndex) {
+    clientRelationshipFormsMapRef.locationIndex = {};
+  }
+};
+
 const operateRelatedClient =
   (index: number | string) =>
   (payload: SaveEvent<IndexedRelatedClient>, rawOptions?: OperationOptions) => {
@@ -1327,6 +1334,7 @@ const formatRelatedLocation = (locationCode: string) => {
                   <location-relationships-view
                     v-else
                     :data="curList"
+                    :client-data="data"
                     :location="findLocation(curLocationCode)"
                     :is-reloading="relatedLocationsState[curLocationCode]?.isReloading"
                     :user-roles="userRoles"

@@ -1910,6 +1910,31 @@ cds-table-header-cell {
     padding: 0;
     width: calc(var(--col-padding-16-px) / 16 * 1rem);
   }
+
+  cds-table-row.edit:hover {
+    cursor: default;
+    color: unset;
+
+    cds-table-cell {
+      background: inherit;
+    }
+  }
+
+  cds-table-row[odd].edit:hover {
+    background: var(--light-theme-layer-layer-02, #fff);
+  }
+
+  cds-table-row[even].edit:hover {
+    background: var(--light-theme-layer-layer-01, #f3f3f5)
+  }
+}
+
+cds-table-row[even] {
+  --cds-field: var(--light-theme-layer-layer-02, #fff);
+}
+
+.table-form-container {
+  padding: 2.875rem 0;
 }
 
 .svg-danger:not([disabled]) {
