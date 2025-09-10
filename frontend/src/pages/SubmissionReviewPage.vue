@@ -526,8 +526,7 @@ watch(data, () => {
           data.submissionType === 'Review new client' && 
           matchingData.length > 0 && 
           data.submissionStatus !== 'Approved' &&
-          userhasAuthority &&
-          duplicatedClientNumbers?.length == 0
+          userhasAuthority
           "
           v-shadow="true"
           low-contrast="true"
