@@ -335,36 +335,43 @@ const isProcessing = computed(() => {
 });
 
 const duplicatedClientCheck = ref(null);
-const duplicatedClientError = ref(null);
-const duplicatedClientNumber = ref(null);
+const duplicatedClientNumbers = ref(null);
 const duplicatedClientCheckLoading = ref<boolean>(true);
+
+const renderDuplicatedClientLabel = (duplicatedClientNumbers: []) => {
+  let finalLabel = "";
+  finalLabel += duplicatedClientNumbers
+                  .map(clientNumber =>
+                    '<a target="_blank" href="' + getUrl(clientNumber, "") + '">' +
+                    clientNumber +
+                    "</a>")
+                  .join(', ');
+  
+  return (
+    finalLabel
+  );
+};
 
 watch(data, () => {
   if (data.value.business && data.value) {
     const {
-      error,
       loading
     } = useFetchTo(
-      `/api/clients/${data.value.business.registrationNumber}`,
+      `/api/clients/details-by-id/${data.value.business.registrationNumber}`,
       duplicatedClientCheck,
       {
         skipDefaultErrorHandling: true,
       }
     );
     
-    watch(loading, () => {
-      console.log("duplicatedClientCheckLoading.value: " + loading.value);
-      duplicatedClientCheckLoading.value = loading.value;
+    watch(duplicatedClientCheck, () => {
+      if (duplicatedClientCheck.value) {
+        duplicatedClientNumbers.value = duplicatedClientCheck.value.map(c => c.clientNumber);
+      }
     });
 
-    watch(error, () => {
-      console.log("error.value.response: " + JSON.stringify(error.value.response));
-      if (error.value.response?.status === 409) {
-        duplicatedClientError.value = error.value.response.data;
-        duplicatedClientNumber.value = (error.value.response.data as string).split(
-                "client number"
-              )[1];
-      }
+    watch(loading, () => {
+      duplicatedClientCheckLoading.value = loading.value;
     });
   }
 });
@@ -470,11 +477,9 @@ watch(data, () => {
         <div>This new client submission has already been reviewed and approved.</div>    
       </cds-inline-notification>
 
-      -- {{ duplicatedClientNumber }}
-
       <cds-inline-notification
         data-text="Business information"
-
+        v-if="!duplicatedClientCheckLoading && duplicatedClientNumbers?.length > 0"
         hide-close-button="true"
         low-contrast="true"
         open="true"
@@ -482,10 +487,13 @@ watch(data, () => {
         title="Client already exists"
       >
         <p class="cds--inline-notification-content">
-          {{ duplicatedClientError }}
+          It looks like {{ data. business.organizationName }} has client number
+          <span v-dompurify-html="renderDuplicatedClientLabel(duplicatedClientNumbers)"></span>
+          <br />
+          <br />
         </p>
         <p class="body-compact-02">
-          You must inform the applicant of their number and reject this submission.
+          Let the applicant know their number and reject this submission.
         </p>
       </cds-inline-notification>
 
@@ -518,7 +526,8 @@ watch(data, () => {
           data.submissionType === 'Review new client' && 
           matchingData.length > 0 && 
           data.submissionStatus !== 'Approved' &&
-          userhasAuthority
+          userhasAuthority &&
+          duplicatedClientNumbers?.length == 0
           "
           v-shadow="true"
           low-contrast="true"
@@ -759,6 +768,7 @@ watch(data, () => {
         </cds-accordion>
 
         <div class="grouping-15" v-if="data.submissionType === 'Review new client' && (data.submissionStatus !== 'Approved' && data.submissionStatus !== 'Rejected')">
+          
           <cds-button kind="danger--tertiary" 
                       @click="rejectModal = !rejectModal" 
                       :disabled="submitDisabled">
@@ -768,7 +778,7 @@ watch(data, () => {
           <span class="spacer" v-if="!isSmallScreen && !isMediumScreen"></span>
           <cds-button kind="primary" 
                       @click="approveModal = !approveModal" 
-                      :disabled="submitDisabled">
+                      :disabled="submitDisabled || duplicatedClientNumbers?.length > 0 || duplicatedClientCheckLoading">
             <span>Approve submission</span>
             <Check16 slot="icon" />
           </cds-button>
