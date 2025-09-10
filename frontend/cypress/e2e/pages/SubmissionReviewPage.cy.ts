@@ -298,7 +298,7 @@ describe("Submission Review Page", () => {
 
       describe("and the action fails", () => {
         
-        describe("and it's not a conflict eror", () => {
+        describe("and it's not a conflict error", () => {
 
           it("should re-enable the buttons by returning 400", () => {
             cy.wait("@action");
@@ -336,7 +336,7 @@ describe("Submission Review Page", () => {
 
         });
 
-        describe("and it is a conflict eror", () => {
+        describe("and it is a conflict error", () => {
 
           it("should not re-enable the buttons by returning 409", () => {
             cy.wait("@action");
