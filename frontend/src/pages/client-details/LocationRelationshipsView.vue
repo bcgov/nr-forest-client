@@ -8,6 +8,7 @@ import {
   type UserRole,
 } from "@/dto/CommonTypesDto";
 import { compareAny, includesAnyOf } from "@/services/ForestClientService";
+import { getRelationshipRefName } from "./shared";
 
 // Page components
 import ClientRelationshipRow from "@/pages/client-details/ClientRelationshipRow.vue";
@@ -68,6 +69,7 @@ const canEdit = computed(() =>
         <cds-table-body>
           <template v-for="(row, rowIndex) in sortedData" :key="row">
             <client-relationship-row
+              :ref="getRelationshipRefName(location.clientLocnCode, row.index)"
               :row
               :client-data="clientData"
               :location-index="locationIndex"

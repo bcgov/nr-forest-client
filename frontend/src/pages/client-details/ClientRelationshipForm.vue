@@ -109,6 +109,7 @@ const cancel = () => {
   emit("canceled");
 };
 
+// This is only to fulfill the SaveableComponent interface.
 const lockEditing = () => {};
 
 const saving = ref(false);

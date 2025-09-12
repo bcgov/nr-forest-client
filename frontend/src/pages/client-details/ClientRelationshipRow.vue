@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import type { ClientDetails, IndexedRelatedClient, UserRole } from "@/dto/CommonTypesDto";
+import { computed, inject, ref } from "vue";
+import type {
+  ClientDetails,
+  IndexedRelatedClient,
+  SaveEvent,
+  UserRole,
+} from "@/dto/CommonTypesDto";
 import {
   booleanToYesNo,
   formatLocation,
@@ -11,7 +16,11 @@ import Edit16 from "@carbon/icons-vue/es/edit/16";
 import TrashCan16 from "@carbon/icons-vue/es/trash-can/16";
 
 import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
-import { CLIENT_RELATIONSHIPS_EDIT_COLUMN_COUNT } from "./shared";
+import {
+  CLIENT_RELATIONSHIPS_EDIT_COLUMN_COUNT,
+  type OperateRelatedClient,
+  type SaveableComponent,
+} from "./shared";
 
 const props = defineProps<{
   row: IndexedRelatedClient;
@@ -21,17 +30,26 @@ const props = defineProps<{
   isReloading: boolean;
 }>();
 
+// const emit = defineEmits<{
+//   (e: "save", payload: SaveEvent<IndexedRelatedClient>): void;
+// }>();
+
+const operateRelatedClient = inject<OperateRelatedClient>("operateRelatedClient");
+
+const save = (payload: SaveEvent<IndexedRelatedClient>) => {
+  operateRelatedClient(payload);
+};
+
 const canEdit = computed(() =>
   includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
 );
 
-const isEditing = ref(false);
+const formRef = ref<InstanceType<typeof ClientRelationshipForm> | null>(null);
 
-const saving = ref(false);
+const isEditing = ref(false);
 
 const edit = () => {
   isEditing.value = true;
-  saving.value = false;
 };
 
 const cancel = () => {
@@ -43,8 +61,10 @@ const lockEditing = () => {
 };
 
 const setSaving = (value: boolean) => {
-  saving.value = value;
+  formRef.value.setSaving(value);
 };
+
+defineExpose<SaveableComponent>({ setSaving, lockEditing });
 </script>
 
 <template>
@@ -151,6 +171,7 @@ const setSaving = (value: boolean) => {
     </template>
     <td v-else class="table-form-container" :colspan="CLIENT_RELATIONSHIPS_EDIT_COLUMN_COUNT">
       <client-relationship-form
+        ref="formRef"
         :location-index="locationIndex"
         :index="String(row.index)"
         :data="row"
@@ -158,6 +179,7 @@ const setSaving = (value: boolean) => {
         :validations="[]"
         keep-scroll-bottom-position
         @canceled="cancel"
+        @save="save"
       />
     </td>
   </cds-table-row>

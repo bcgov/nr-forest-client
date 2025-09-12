@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
+import { computed, nextTick, onMounted, provide, reactive, ref, useTemplateRef, watch } from "vue";
 import { AxiosError } from "axios";
 import * as jsonpatch from "fast-json-patch";
 
@@ -76,7 +76,7 @@ import LocationRelationshipsView from "@/pages/client-details/LocationRelationsh
 import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
 import HistoryView from "@/pages/client-details/HistoryView.vue";
 import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
-import type { SaveableComponent } from "./client-details/shared";
+import { getRelationshipRefName, type OperationOptions, type SaveableComponent } from "./client-details/shared";
 
 // Route related
 const router = useRouter();
@@ -710,10 +710,6 @@ const setContactRef = (index: number) => (el: InstanceType<typeof ContactView>) 
   contactsRef.value[index] = el;
 };
 
-interface OperationOptions {
-  preserveRawPatch?: boolean;
-}
-
 const operateContact =
   (index: number | string) =>
   (payload: SaveEvent<ClientContact>, rawOptions?: OperationOptions) => {
@@ -805,22 +801,7 @@ const deleteContact =
     }, { preserveRawPatch: true });
   };
 
-const clientRelationshipFormsRef = ref<InstanceType<typeof ClientRelationshipForm>[]>([]);
-
-const setClientRelationshipFormRef = (index: number) => (el: InstanceType<typeof ClientRelationshipForm>) => {
-  clientRelationshipFormsRef.value[index] = el;
-};
-
-const clientRelationshipFormsMapRef = reactive<Record<string, Record<string, InstanceType<typeof ClientRelationshipForm>>>>({});
-
-const setClientRelationshipFormMapRef = (locationIndex: string, cb) => (el: InstanceType<typeof ClientRelationshipForm>) => {
-  if (!clientRelationshipFormsMapRef.locationIndex) {
-    clientRelationshipFormsMapRef.locationIndex = {};
-  }
-};
-
 const operateRelatedClient =
-  (index: number | string) =>
   (payload: SaveEvent<IndexedRelatedClient>, rawOptions?: OperationOptions) => {
     const {
       patch: rawPatchData,
@@ -847,7 +828,7 @@ const operateRelatedClient =
 
     const updatedTitle = `${updatedRelatedClient.relatedClient.client.code}, ${updatedRelatedClient.relatedClient.client.name}`;
 
-    saveableComponentRef.value = clientRelationshipFormsRef.value[index];
+    saveableComponentRef.value = useTemplateRef(getRelationshipRefName(originalLocation.code, relatedClientIndex)) as unknown as SaveableComponent;
 
     const onSuccess: OnSuccess = () => {
       const toastNotification: ModalNotification = {
@@ -859,7 +840,7 @@ const operateRelatedClient =
       };
       toastBus.emit(toastNotification);
 
-      clientRelationshipFormsRef.value[index].lockEditing();
+      saveableComponentRef.value.lockEditing();
 
       const locationId = updatedRelatedClient.client.location.code;
 
@@ -895,6 +876,8 @@ const operateRelatedClient =
 
     handlePatch(patchData, onSuccess, onFailure);
   };
+
+provide("operateRelatedClient", operateRelatedClient);
 
 const globalError = ref();
 
@@ -1320,7 +1303,6 @@ const formatRelatedLocation = (locationCode: string) => {
                     </span>
                   </div>
                   <client-relationship-form
-                    :ref="setClientRelationshipFormRef(index)"
                     v-if="newIndexedRelationship && curLocationCode === 'null'"
                     location-index="null"
                     index="null"
@@ -1329,7 +1311,7 @@ const formatRelatedLocation = (locationCode: string) => {
                     :validations="[uniqueRelationships.check]"
                     keep-scroll-bottom-position
                     @canceled="handleRelationshipCanceled(newIndexedRelationship)"
-                    @save="operateRelatedClient(index)($event)"
+                    @save="operateRelatedClient($event)"
                   />
                   <location-relationships-view
                     v-else
