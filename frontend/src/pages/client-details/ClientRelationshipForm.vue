@@ -233,7 +233,16 @@ const locationList = computed<CodeNameType[]>(() =>
   })),
 );
 
-const rawSearchKeyword = ref("");
+const formatRelatedClient = (clientNumber: string, clientName: string) =>
+  `${clientNumber}, ${toTitleCase(clientName)}`;
+
+const getInitialRawSearchKeyword = () => {
+  const relatedClient = props.data.relatedClient.client;
+  const result = relatedClient ? formatRelatedClient(relatedClient.code, relatedClient.name) : "";
+  return result;
+};
+
+const rawSearchKeyword = ref(getInitialRawSearchKeyword());
 const searchKeyword = computed(() => rawSearchKeyword.value.trim());
 
 const predictiveSearchUri = computed(
@@ -282,7 +291,7 @@ const searchResultToCodeNameValue = (
   const { clientNumber, clientFullName } = searchResult;
   const result = {
     code: clientNumber,
-    name: `${clientNumber}, ${toTitleCase(clientFullName)}`,
+    name: formatRelatedClient(clientNumber, clientFullName),
     value: searchResult,
   };
   return result;
