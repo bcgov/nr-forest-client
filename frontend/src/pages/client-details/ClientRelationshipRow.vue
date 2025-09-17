@@ -30,14 +30,12 @@ const props = defineProps<{
   isReloading: boolean;
 }>();
 
-// const emit = defineEmits<{
-//   (e: "save", payload: SaveEvent<IndexedRelatedClient>): void;
-// }>();
-
 const operateRelatedClient = inject<OperateRelatedClient>("operateRelatedClient");
 
 const save = (payload: SaveEvent<IndexedRelatedClient>) => {
-  operateRelatedClient(payload);
+  operateRelatedClient(payload, {
+    saveableComponent: thisSaveableComponent,
+  });
 };
 
 const canEdit = computed(() =>
@@ -64,7 +62,7 @@ const setSaving = (value: boolean) => {
   formRef.value.setSaving(value);
 };
 
-defineExpose<SaveableComponent>({ setSaving, lockEditing });
+const thisSaveableComponent: SaveableComponent = { setSaving, lockEditing };
 </script>
 
 <template>

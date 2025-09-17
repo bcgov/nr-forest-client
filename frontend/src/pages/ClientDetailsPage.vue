@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, provide, reactive, ref, useTemplateRef, watch } from "vue";
+import { computed, nextTick, onMounted, provide, reactive, ref, watch } from "vue";
 import { AxiosError } from "axios";
 import * as jsonpatch from "fast-json-patch";
 
@@ -76,7 +76,7 @@ import LocationRelationshipsView from "@/pages/client-details/LocationRelationsh
 import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
 import HistoryView from "@/pages/client-details/HistoryView.vue";
 import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
-import { getRelationshipRefName, type OperationOptions, type SaveableComponent } from "./client-details/shared";
+import { type OperateRelatedClient, type OperationOptions, type SaveableComponent } from "./client-details/shared";
 
 // Route related
 const router = useRouter();
@@ -801,6 +801,9 @@ const deleteContact =
     }, { preserveRawPatch: true });
   };
 
+// This is an array because the reference is gotten from within a for loop
+const newClientRelationshipFormRef = ref<InstanceType<typeof ClientRelationshipForm>[]>([]);
+
 const operateRelatedClient =
   (payload: SaveEvent<IndexedRelatedClient>, rawOptions?: OperationOptions) => {
     const {
@@ -828,7 +831,7 @@ const operateRelatedClient =
 
     const updatedTitle = `${updatedRelatedClient.relatedClient.client.code}, ${updatedRelatedClient.relatedClient.client.name}`;
 
-    saveableComponentRef.value = useTemplateRef(getRelationshipRefName(originalLocation.code, relatedClientIndex)) as unknown as SaveableComponent;
+    saveableComponentRef.value = options.saveableComponent || newClientRelationshipFormRef.value[0];
 
     const onSuccess: OnSuccess = () => {
       const toastNotification: ModalNotification = {
@@ -877,7 +880,7 @@ const operateRelatedClient =
     handlePatch(patchData, onSuccess, onFailure);
   };
 
-provide("operateRelatedClient", operateRelatedClient);
+provide<OperateRelatedClient>("operateRelatedClient", operateRelatedClient);
 
 const globalError = ref();
 
@@ -1304,6 +1307,7 @@ const formatRelatedLocation = (locationCode: string) => {
                   </div>
                   <client-relationship-form
                     v-if="newIndexedRelationship && curLocationCode === 'null'"
+                    ref="newClientRelationshipFormRef"
                     location-index="null"
                     index="null"
                     :data="newIndexedRelationship"
