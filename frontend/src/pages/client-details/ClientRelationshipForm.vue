@@ -86,7 +86,30 @@ watch(
 const hasAnyChange = ref(false);
 
 const formatData = (data: IndexedRelatedClient) => {
-  const formattedData = JSON.parse(JSON.stringify(data));
+  const formattedData: IndexedRelatedClient = JSON.parse(JSON.stringify(data));
+
+  const {
+    client: { location: clientLocation },
+    relatedClient: { location: relatedClientLocation },
+  } = formattedData;
+
+  if (clientLocation) {
+    clientLocation.name = formatLocation(clientLocation.code, clientLocation.name);
+  }
+  if (relatedClientLocation) {
+    relatedClientLocation.name = formatLocation(
+      relatedClientLocation.code,
+      relatedClientLocation.name,
+    );
+  }
+
+  const stringPercentageOwnership =
+    typeof formattedData.percentageOwnership === "number"
+      ? String(formattedData.percentageOwnership)
+      : "";
+
+  formattedData.percentageOwnership = stringPercentageOwnership as unknown as number;
+
   return formattedData;
 };
 
@@ -367,7 +390,6 @@ const relatedClientLocationList = computed(() =>
         :error-message="combinationError"
         @update:selected-value="updateRelationship($event)"
         @empty="validation.relationshipType = !$event"
-        #="{ option }"
       />
     </data-fetcher>
     <data-fetcher
