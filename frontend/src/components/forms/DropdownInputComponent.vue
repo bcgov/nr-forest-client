@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 import { ref, computed, watch, nextTick } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/dropdown/index";
@@ -6,7 +6,7 @@ import type { CDSDropdown } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
-import type { CodeNameType } from "@/dto/CommonTypesDto";
+import type { CodeNameType, CodeNameValue } from "@/dto/CommonTypesDto";
 import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
@@ -15,7 +15,7 @@ const props = defineProps<{
   label: string;
   placeholder?: string;
   tip: string;
-  modelValue: Array<CodeNameType>;
+  modelValue: Array<CodeNameValue<T>>;
   initialValue: string;
   validations: Array<Function>;
   errorMessage?: string;
@@ -42,10 +42,10 @@ const warning = ref(false);
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue);
 // This is to make the input list contains the selected value to show when component render
-const inputList = computed<Array<CodeNameType>>(() =>
+const inputList = computed<Array<CodeNameValue<T>>>(() =>
   !props.modelValue || props.modelValue.length === 0
-    ? [{ name: props.initialValue, code: "", status: "", legalType: "" }]
-    : props.modelValue
+    ? [{ name: props.initialValue, code: "", status: "", legalType: "", value: undefined }]
+    : props.modelValue,
 );
 
 //We set the value prop as a reference for update reason
