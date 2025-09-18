@@ -6,6 +6,7 @@ import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
 import ca.bc.gov.app.dto.client.RelatedClientEntryDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import ca.bc.gov.app.service.client.ClientService;
@@ -61,6 +62,24 @@ public class ClientController {
     return clientService
         .getClientDetailsByIncorporationNumber(
             clientNumber,
+            JwtPrincipalUtil.getUserId(principal),
+            JwtPrincipalUtil.getBusinessId(principal),
+            JwtPrincipalUtil.getProvider(principal)
+        );
+  }
+  
+  @GetMapping("/details-by-id/{identification}")
+  public Flux<ForestClientDto> getClientDetailsByRegistrationOrIncorporationNumber(
+      @PathVariable String identification,
+      JwtAuthenticationToken principal
+  ) {
+    log.info("Requesting client details for client number {} from the client service. {}",
+        identification,
+        JwtPrincipalUtil.getUserId(principal)
+    );
+    return clientLegacyService
+        .searchLegacy(
+            identification,
             JwtPrincipalUtil.getUserId(principal),
             JwtPrincipalUtil.getBusinessId(principal),
             JwtPrincipalUtil.getProvider(principal)
