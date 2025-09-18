@@ -1930,6 +1930,7 @@ cds-table-header-cell {
 }
 
 cds-table-row[even] {
+  // Input fields on an even row
   --cds-field: var(--light-theme-layer-layer-02, #fff);
 }
 
