@@ -70,6 +70,7 @@ describe("<client-relationships-row />", () => {
     },
     clientData,
     locationIndex: "00",
+    validations: [],
     userRoles: ["CLIENT_EDITOR"],
   });
 

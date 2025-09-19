@@ -132,6 +132,7 @@ describe("<location-relationships-view />", () => {
       cliLocnComment: "Sample location 00 comment",
       locnExpiredInd: "N",
     } as ClientLocation,
+    validations: [],
     userRoles: ["CLIENT_EDITOR"],
     isReloading: false,
   });
