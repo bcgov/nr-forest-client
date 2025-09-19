@@ -1479,7 +1479,7 @@ describe("Client Details Page", () => {
               cy.wait("@getClientDetails");
             });
 
-            it("prefixes the path with the corresponding location code", () => {
+            it("prefixes the path with the corresponding contact code", () => {
               if (scenario.name === "edit") {
                 expect(patchClientDetailsRequest.body[0].path).to.eq("/contacts/10/emailAddress");
               } else {
@@ -1893,10 +1893,10 @@ describe("Client Details Page", () => {
         });
       });
 
-      const scenarios = [{ name: "create" }];
+      const scenarios = [{ name: "create" }, { name: "edit" }];
       scenarios.forEach((scenario) => {
         const index = scenario.name === "edit" ? 0 : "null";
-        const locationIndex = scenario.name === "edit" ? "00" : "null";
+        const locationIndex = scenario.name === "edit" ? "01" : "null";
         const saveButtonSelector = `#rc-${locationIndex}-${index}-SaveBtn`;
 
         describe(`${scenario.name} - save`, () => {
@@ -1937,15 +1937,15 @@ describe("Client Details Page", () => {
               // Switch to the Related clients tab
               cy.get("#tab-related").click();
 
-              // TODO: change every edit-related code when adding the "edit" scenario
               if (scenario.name === "edit") {
                 // Clicks to expand the accordion
-                cy.get("#location-00 [slot='title']").click();
+                cy.get("#relationships-location-01 [slot='title']").click();
 
-                cy.get("#location-00-EditBtn").click();
-                cy.clearFormEntry("#emailAddress_0");
+                // Edit the relationship with index=0
+                cy.get("#location-01-row-0-EditBtn").click();
+                cy.clearFormEntry("#rc-01-0-percentageOwnership");
 
-                cy.get("#location-00-SaveBtn").click();
+                cy.get(saveButtonSelector).click();
               }
 
               if (scenario.name === "create") {
@@ -1985,9 +1985,11 @@ describe("Client Details Page", () => {
               cy.wait("@getClientDetails");
             });
 
-            it("prefixes the path with the corresponding location code", () => {
+            it("prefixes the path with the corresponding location code and relationship index", () => {
               if (scenario.name === "edit") {
-                expect(patchClientDetailsRequest.body[0].path).to.eq("/relatedClients/01/00");
+                expect(patchClientDetailsRequest.body[0].path).to.eq(
+                  "/relatedClients/01/0/percentageOwnership",
+                );
               } else {
                 expect(patchClientDetailsRequest.body[0].path).to.eq("/relatedClients/01/null");
               }
@@ -2007,7 +2009,7 @@ describe("Client Details Page", () => {
               if (scenario.name === "edit") {
                 cy.get("cds-toast-notification[kind='success']")
                   .should("be.visible")
-                  .contains("00 - Mailing address");
+                  .contains("00000172, Nature Nurturers");
 
                 cy.get("cds-toast-notification[kind='success']").contains("updated");
               } else {
@@ -2030,17 +2032,15 @@ describe("Client Details Page", () => {
             if (scenario.name === "edit") {
               it("gets back into view mode", () => {
                 // Fields that belong to the form (edit mode)
-                testHidden("#city_0");
-                testHidden("#emailAddress_0");
-                testHidden("[data-id='input-notes_0']");
+                testHidden(`#rc-${locationIndex}-${index}-location`);
+                testHidden(`#rc-${locationIndex}-${index}-relationship`);
+                testHidden(`#rc-${locationIndex}-${index}-relatedClient`);
+                testHidden(`#rc-${locationIndex}-${index}-relatedClient-location`);
+                testHidden(`#rc-${locationIndex}-${index}-percentageOwnership`);
 
-                cy.get("#location-00-SaveBtn").should("not.exist");
+                cy.get(saveButtonSelector).should("not.exist");
 
-                testReadonly("#location-00-city-province");
-                testReadonly("#location-00-emailAddress");
-                testReadonly("#location-00-notes");
-
-                cy.get("#location-00-EditBtn").should("be.visible");
+                cy.get("#location-01-row-0-EditBtn").should("be.visible");
               });
             }
           });
@@ -2073,11 +2073,15 @@ describe("Client Details Page", () => {
 
               if (scenario.name === "edit") {
                 // Clicks to expand the accordion
-                cy.get("#location-00 [slot='title']").click();
+                cy.get("#relationships-location-01 [slot='title']").click();
 
-                cy.get("#location-00-EditBtn").click();
+                // Edit the relationship with index=0
+                cy.get("#location-01-row-0-EditBtn").click();
 
-                cy.fillFormEntry("[data-id='input-notes_0']", "error", { area: true });
+                cy.clearFormEntry("#rc-01-0-percentageOwnership");
+
+                // The value "88" triggers the error on the stub server
+                cy.fillFormEntry(`#rc-${locationIndex}-${index}-percentageOwnership`, "88");
               } else {
                 cy.get("#addClientRelationshipBtn").click();
 
@@ -2124,6 +2128,7 @@ describe("Client Details Page", () => {
               cy.get(`#rc-${locationIndex}-${index}-relationship`).should("be.visible");
               cy.get(`#rc-${locationIndex}-${index}-relatedClient`).should("be.visible");
               cy.get(`#rc-${locationIndex}-${index}-relatedClient-location`).should("be.visible");
+              cy.get(`#rc-${locationIndex}-${index}-percentageOwnership`).should("be.visible");
 
               if (scenario.name === "edit") {
                 cy.get("#rc-01-0-SaveBtn").should("be.visible");

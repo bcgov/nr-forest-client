@@ -148,7 +148,7 @@
                 },
                 "location": {
                     "code": "00",
-                    "name": "MAIN OFFICE"
+                    "name": "Mailing address"
                 }
             },
             "relationship": {
@@ -177,7 +177,7 @@
                 },
                 "location": {
                     "code": "00",
-                    "name": "Headquarters"
+                    "name": "Mailing address"
                 }
             },
             "relationship": {
