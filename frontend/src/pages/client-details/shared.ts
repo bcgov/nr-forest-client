@@ -9,7 +9,7 @@ export interface SaveableComponent {
  * The number of titled columns displayed in the Client relationships table for users with
  * permission to edit.
  * Note: non-titled, empty columns, which are used for spacing, layout purposes only, are not
- * counted.
+ * included in the count.
  */
 export const CLIENT_RELATIONSHIPS_EDIT_COLUMN_COUNT = 6;
 

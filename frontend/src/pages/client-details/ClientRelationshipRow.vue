@@ -27,7 +27,6 @@ const props = defineProps<{
   clientData: ClientDetails;
   locationIndex: string;
   userRoles: UserRole[];
-  isReloading: boolean;
 }>();
 
 const operateRelatedClient = inject<OperateRelatedClient>("operateRelatedClient");

@@ -1,6 +1,5 @@
-import type { ClientLocation } from "@/dto/CommonTypesDto";
+import type { ClientDetails, ClientLocation } from "@/dto/CommonTypesDto";
 import LocationRelationshipsView from "@/pages/client-details/LocationRelationshipsView.vue";
-import { formatAddress } from "@/services/ForestClientService";
 
 import type { ComponentProps } from "vue-component-type-helpers";
 
@@ -112,6 +111,7 @@ describe("<location-relationships-view />", () => {
         isMainParticipant: false,
       },
     ],
+    clientData: {} as ClientDetails,
     location: {
       clientLocnName: "Mailing address",
       clientLocnCode: "00",

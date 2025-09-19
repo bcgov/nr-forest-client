@@ -880,6 +880,7 @@ const operateRelatedClient =
     handlePatch(patchData, onSuccess, onFailure);
   };
 
+// Makes the function available for descendent components
 provide<OperateRelatedClient>("operateRelatedClient", operateRelatedClient);
 
 const globalError = ref();
@@ -1290,7 +1291,6 @@ const formatRelatedLocation = (locationCode: string) => {
                   <div
                     slot="title"
                     class="flex-column-0_25rem"
-                    :class="{ invisible: relatedLocationsState[curLocationCode]?.isReloading }"
                   >
                     <span class="label-with-icon">
                       <NetworkEnterprise20 />

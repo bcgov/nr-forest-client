@@ -72,7 +72,6 @@ const canEdit = computed(() =>
               :client-data="clientData"
               :location-index="locationIndex"
               :user-roles="props.userRoles"
-              :is-reloading="false"
             />
           </template>
         </cds-table-body>

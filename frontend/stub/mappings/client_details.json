@@ -387,7 +387,7 @@
       }
     },
     {
-      "name": "PATCH - Client Details - Related Clients Error",
+      "name": "PATCH - Client Details - Related Clients Error - new",
       "request": {
         "urlPattern": "/api/clients/details/([^/]*)",
         "method": "PATCH",
@@ -395,6 +395,32 @@
           {
             "matchesJsonPath": {
               "expression": "$[0].value.percentageOwnership",
+              "contains": "88"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 500,
+        "body": "Sample error message",
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "PATCH - Client Details - Related Clients Error - edit",
+      "request": {
+        "urlPattern": "/api/clients/details/([^/]*)",
+        "method": "PATCH",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$[0].path",
+              "contains": "percentageOwnership"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$[0].value",
               "contains": "88"
             }
           }
