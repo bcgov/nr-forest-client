@@ -74,9 +74,7 @@ describe("<client-relationships-row />", () => {
     userRoles: ["CLIENT_EDITOR"],
   });
 
-  const operateRelatedClientStub: OperateRelatedClient = () => {
-    alert("hey");
-  };
+  const operateRelatedClientStub: OperateRelatedClient = () => {};
   const operateRelatedClientWrapper = {
     operateRelatedClient: operateRelatedClientStub,
   };
