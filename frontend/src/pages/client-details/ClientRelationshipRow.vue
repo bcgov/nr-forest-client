@@ -26,6 +26,7 @@ const props = defineProps<{
   row: IndexedRelatedClient;
   clientData: ClientDetails;
   locationIndex: string;
+  validations: Array<Function>;
   userRoles: UserRole[];
 }>();
 
@@ -173,7 +174,7 @@ const thisSaveableComponent: SaveableComponent = { setSaving, lockEditing };
         :index="String(row.index)"
         :data="row"
         :clientData="clientData"
-        :validations="[]"
+        :validations="props.validations"
         keep-scroll-bottom-position
         @canceled="cancel"
         @save="save"

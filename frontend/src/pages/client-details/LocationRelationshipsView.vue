@@ -16,9 +16,9 @@ const props = defineProps<{
   data: RelatedClientEntry[];
   clientData: ClientDetails;
   location: ClientLocation;
+  validations: Array<Function>;
   userRoles: UserRole[];
   isReloading: boolean;
-  createMode?: boolean;
 }>();
 
 const locationIndex = props.location?.clientLocnCode || null;
@@ -50,32 +50,31 @@ const canEdit = computed(() =>
 
 <template>
   <div class="grouping-12" :class="{ invisible: props.isReloading }">
-    <template v-if="!props.createMode">
-      <cds-table id="relatioships-table" :class="{ 'view-only': !canEdit }" use-zebra-styles>
-        <cds-table-head>
-          <cds-table-header-row>
-            <cds-table-header-cell class="col-padding-10-px" />
-            <cds-table-header-cell class="col-310-px">Primary client</cds-table-header-cell>
-            <cds-table-header-cell class="col-210-px">Relationship type</cds-table-header-cell>
-            <cds-table-header-cell class="col-310-px">Related client</cds-table-header-cell>
-            <cds-table-header-cell class="col-120-px">Percentage owned</cds-table-header-cell>
-            <cds-table-header-cell class="col-120-px">Signing authority</cds-table-header-cell>
-            <cds-table-header-cell v-if="canEdit" class="col-104-px-fixed">
-              Actions
-            </cds-table-header-cell>
-          </cds-table-header-row>
-        </cds-table-head>
-        <cds-table-body>
-          <template v-for="row in sortedData" :key="row">
-            <client-relationship-row
-              :row
-              :client-data="clientData"
-              :location-index="locationIndex"
-              :user-roles="props.userRoles"
-            />
-          </template>
-        </cds-table-body>
-      </cds-table>
-    </template>
+    <cds-table id="relatioships-table" :class="{ 'view-only': !canEdit }" use-zebra-styles>
+      <cds-table-head>
+        <cds-table-header-row>
+          <cds-table-header-cell class="col-padding-10-px" />
+          <cds-table-header-cell class="col-310-px">Primary client</cds-table-header-cell>
+          <cds-table-header-cell class="col-210-px">Relationship type</cds-table-header-cell>
+          <cds-table-header-cell class="col-310-px">Related client</cds-table-header-cell>
+          <cds-table-header-cell class="col-120-px">Percentage owned</cds-table-header-cell>
+          <cds-table-header-cell class="col-120-px">Signing authority</cds-table-header-cell>
+          <cds-table-header-cell v-if="canEdit" class="col-104-px-fixed">
+            Actions
+          </cds-table-header-cell>
+        </cds-table-header-row>
+      </cds-table-head>
+      <cds-table-body>
+        <template v-for="row in sortedData" :key="row">
+          <client-relationship-row
+            :row
+            :client-data="props.clientData"
+            :location-index="locationIndex"
+            :validations="props.validations"
+            :user-roles="props.userRoles"
+          />
+        </template>
+      </cds-table-body>
+    </cds-table>
   </div>
 </template>

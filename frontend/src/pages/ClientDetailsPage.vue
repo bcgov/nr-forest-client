@@ -353,7 +353,6 @@ const addRelationship = () => {
 };
 
 const handleRelationshipCanceled = (relationship: RelatedClientEntry) => {
-  console.log(relationship, relationship === newIndexedRelationship.value)
   if (relationship === newIndexedRelationship.value) {
     newIndexedRelationship.value = undefined;
     delete relatedLocationsState.null;
@@ -1322,9 +1321,9 @@ const formatRelatedLocation = (locationCode: string) => {
                     :data="curList"
                     :client-data="data"
                     :location="findLocation(curLocationCode)"
+                    :validations="[uniqueRelationships.check]"
                     :is-reloading="relatedLocationsState[curLocationCode]?.isReloading"
                     :user-roles="userRoles"
-                    :createMode="curLocationCode === 'null'"
                   />
                 </cds-accordion-item>
               </cds-accordion>
