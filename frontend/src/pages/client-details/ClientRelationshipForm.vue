@@ -86,7 +86,30 @@ watch(
 const hasAnyChange = ref(false);
 
 const formatData = (data: IndexedRelatedClient) => {
-  const formattedData = JSON.parse(JSON.stringify(data));
+  const formattedData: IndexedRelatedClient = JSON.parse(JSON.stringify(data));
+
+  const {
+    client: { location: clientLocation },
+    relatedClient: { location: relatedClientLocation },
+  } = formattedData;
+
+  if (clientLocation) {
+    clientLocation.name = formatLocation(clientLocation.code, clientLocation.name);
+  }
+  if (relatedClientLocation) {
+    relatedClientLocation.name = formatLocation(
+      relatedClientLocation.code,
+      relatedClientLocation.name,
+    );
+  }
+
+  const stringPercentageOwnership =
+    typeof formattedData.percentageOwnership === "number"
+      ? String(formattedData.percentageOwnership)
+      : "";
+
+  formattedData.percentageOwnership = stringPercentageOwnership as unknown as number;
+
   return formattedData;
 };
 
@@ -111,6 +134,7 @@ const cancel = () => {
   emit("canceled");
 };
 
+// This is only to fulfill the SaveableComponent interface.
 const lockEditing = () => {};
 
 const saving = ref(false);
@@ -244,7 +268,16 @@ const locationList = computed<CodeNameType[]>(() =>
   getLocationList(props.clientData.addresses, props.data.client.location?.code),
 );
 
-const rawSearchKeyword = ref("");
+const formatRelatedClient = (clientNumber: string, clientName: string) =>
+  `${clientNumber}, ${toTitleCase(clientName)}`;
+
+const getInitialRawSearchKeyword = () => {
+  const relatedClient = props.data.relatedClient.client;
+  const result = relatedClient ? formatRelatedClient(relatedClient.code, relatedClient.name) : "";
+  return result;
+};
+
+const rawSearchKeyword = ref(getInitialRawSearchKeyword());
 const searchKeyword = computed(() => rawSearchKeyword.value.trim());
 
 const predictiveSearchUri = computed(
@@ -293,7 +326,7 @@ const searchResultToCodeNameValue = (
   const { clientNumber, clientFullName } = searchResult;
   const result = {
     code: clientNumber,
-    name: `${clientNumber}, ${toTitleCase(clientFullName)}`,
+    name: formatRelatedClient(clientNumber, clientFullName),
     value: searchResult,
   };
   return result;
@@ -357,7 +390,6 @@ const relatedClientLocationList = computed(() =>
         :error-message="combinationError"
         @update:selected-value="updateRelationship($event)"
         @empty="validation.relationshipType = !$event"
-        #="{ option }"
       />
     </data-fetcher>
     <data-fetcher
