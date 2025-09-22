@@ -239,6 +239,19 @@ const clearAllErrors = () => {
   clearError(DatePart.day);
 };
 
+/**
+ * Turns the other date parts invalid, unless they have a non-empty value.
+ * @param datePart - the date part not to be affected by this call
+ */
+const invalidateOtherMissingParts = (datePart: DatePart) => {
+  const parts = [DatePart.year, DatePart.month, DatePart.day];
+  parts.forEach((curPart) => {
+    if (curPart !== datePart && !datePartRefs[curPart].value) {
+      validation[curPart] = false;
+    }
+  });
+};
+
 // We call all the part validations
 const validatePart = (datePart: DatePart) => {
   const newValue = datePartRefs[datePart].value;
@@ -247,8 +260,12 @@ const validatePart = (datePart: DatePart) => {
   Note: we check both the full value and the current part value due to synchronization issues.
   */
   if (!newValue && !selectedValue.value) {
+    // everything is empty
     clearAllErrors();
     return true;
+  } else {
+    // reset validation for the missing parts
+    invalidateOtherMissingParts(datePart);
   }
 
   const error = partValidators.value[datePart]
