@@ -186,14 +186,13 @@ const buildFullDate = () => {
 const selectedValue = ref<string | null>(buildFullDate());
 
 const areAllPartsValid = () =>
-  validation[DatePart.year] &&
-  validation[DatePart.month] &&
-  validation[DatePart.day];
+  validation[DatePart.year] && validation[DatePart.month] && validation[DatePart.day];
 
 const isAnyPartEmpty = () =>
-  isEmpty(selectedYear.value) ||
-  isEmpty(selectedMonth.value) ||
-  isEmpty(selectedDay.value);
+  isEmpty(selectedYear.value) || isEmpty(selectedMonth.value) || isEmpty(selectedDay.value);
+
+const areAllPartsEmpty = () =>
+  isEmpty(selectedYear.value) && isEmpty(selectedMonth.value) && isEmpty(selectedDay.value);
 
 // We set the value prop as a reference for update reason
 emit("empty", isAnyPartEmpty());
@@ -212,7 +211,9 @@ const emitValueChange = (newValue: string): void => {
   emit("empty", someEmpty);
   if (focusedPart.value !== null) {
     let possiblyValid = false;
-    if (!someEmpty) {
+    if (someEmpty) {
+      possiblyValid = !props.required && areAllPartsEmpty();
+    } else {
       const otherParts = getPartsExcept(focusedPart.value);
       const allOtherAreValid = otherParts.every((part) => validation[part]);
       if (allOtherAreValid) {
