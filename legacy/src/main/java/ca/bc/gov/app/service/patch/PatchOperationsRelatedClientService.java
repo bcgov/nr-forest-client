@@ -1,7 +1,6 @@
 package ca.bc.gov.app.service.patch;
 
 import static java.util.function.Predicate.not;
-
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.RelatedClientEntryDto;
 import ca.bc.gov.app.entity.RelatedClientEntity;
@@ -10,6 +9,7 @@ import ca.bc.gov.app.util.PatchUtils;
 import ca.bc.gov.app.util.ReplacePatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.micrometer.observation.annotation.Observed;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,6 +28,7 @@ import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
 import org.springframework.data.relational.core.query.Update;
+import org.springframework.data.relational.core.sql.SqlIdentifier;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -139,77 +140,80 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       ObjectMapper mapper,
       String userId
   ) {
-    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
-        patch,
-        "replace",
-        getPrefix(),
-        mapper
-    );
+      JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
+          patch,
+          "replace",
+          getPrefix(),
+          mapper
+      );
 
-    if (filteredNodeOps.isEmpty()) {
-      return Mono.empty();
-    }
-    log.info("Applying replace operations for related clients: {}", filteredNodeOps);
+      if (filteredNodeOps.isEmpty()) {
+          return Mono.empty();
+      }
+      log.info("Applying replace operations for related clients: {}", filteredNodeOps);
 
-    return
-        Flux
-            //We will loop through it using a flux from the ids
-            .fromIterable(PatchUtils.loadIdsAndSubIds(filteredNodeOps).entrySet())
-            //For each location that was changed
-            .flatMap(locationEntry ->
-                Flux.fromStream(locationEntry.getValue().stream())
-                    .flatMap(index ->
-                        relatedClientRepository
-                            .findByClientNumberAndClientLocationCode(
-                                clientNumber,
-                                locationEntry.getKey()
-                            )
-                            .elementAt(Integer.parseInt(index), new RelatedClientEntity())
-                            // Only proceed if an entity is valid
-                            .filter(not(RelatedClientEntity::isInvalid))
-                            .flatMap(entity ->
-                                Mono.just(
-                                        PatchUtils.filterOperationsByOp(
-                                            filteredNodeOps,
-                                            "replace",
-                                            String.format("%s/%s", locationEntry.getKey(), index),
-                                            getRestrictedPaths(),
-                                            mapper
-                                        )
-                                    )
-                                    .map(node ->
-                                        ReplacePatchUtils.buildUpdate(
-                                            node,
-                                            fieldToDataField,
-                                            getExtraFields(userId, entity.getRevision() + 1)
-                                        )
-                                    )
-                                    .doOnNext(map -> log.info(
-                                        "Applying replace operations for related client {} {} at location {} {}: {}",
-                                        clientNumber, locationEntry,
-                                        entity.getRelatedClientNumber(),
-                                        entity.getRelatedClientLocationCode(),
-                                        map
-                                    ))
-                                    .map(Update::from)
-                                    //We apply the patch to the entity and save it
-                                    .flatMap(update -> entityTemplate
-                                        .update(
-                                            getCriteria(entity),
-                                            update,
-                                            RelatedClientEntity.class
-                                        )
-                                    )
-                                    .doOnNext(reached -> log.info(
-                                        "Updated {} related client {} at location {} with new values",
-                                        reached,
-                                        entity.getRelatedClientNumber(),
-                                        entity.getRelatedClientLocationCode()
-                                    ))
-                            )
-                    )
-            )
-            .then();
+      return Flux
+          .fromIterable(PatchUtils.loadIdsAndSubIds(filteredNodeOps).entrySet())
+          .flatMap(locationEntry ->
+              Flux.fromStream(locationEntry.getValue().stream())
+                  .flatMap(index ->
+                      relatedClientRepository
+                          .findByClientNumberAndClientLocationCode(
+                              clientNumber,
+                              locationEntry.getKey()
+                          )
+                          .elementAt(Integer.parseInt(index), new RelatedClientEntity())
+                          .filter(not(RelatedClientEntity::isInvalid))
+                          .flatMap(entity -> {
+                              JsonNode nodeOpsForEntity = PatchUtils.filterOperationsByOp(
+                                  filteredNodeOps,
+                                  "replace",
+                                  String.format("%s/%s", locationEntry.getKey(), index),
+                                  getRestrictedPaths(),
+                                  mapper
+                              );
+                              
+                              nodeOpsForEntity.forEach(op -> {
+                                  String path = op.get("path").asText();
+                                  if (path.endsWith("/hasSigningAuthority")) {
+                                      // Replace the value in the JSON node with "Y"/"N"
+                                      ((ObjectNode) op).put(
+                                          "value",
+                                          BooleanUtils.toString(op.get("value").asBoolean(), "Y", "N", null)
+                                      );
+                                  }
+                              });
+
+                              Map<SqlIdentifier, Object> updateMap = ReplacePatchUtils.buildUpdate(
+                                  nodeOpsForEntity,
+                                  fieldToDataField,
+                                  getExtraFields(userId, entity.getRevision() + 1)
+                              );
+
+                              log.info(
+                                  "Applying replace operations for related client {} {} at location {} {}: {}",
+                                  clientNumber, locationEntry,
+                                  entity.getRelatedClientNumber(),
+                                  entity.getRelatedClientLocationCode(),
+                                  updateMap
+                              );
+                              
+                              return entityTemplate
+                                  .update(
+                                      getCriteria(entity),
+                                      Update.from(updateMap),
+                                      RelatedClientEntity.class
+                                  )
+                                  .doOnNext(reached -> log.info(
+                                      "Updated {} related client {} at location {} with new values",
+                                      reached,
+                                      entity.getRelatedClientNumber(),
+                                      entity.getRelatedClientLocationCode()
+                                  ));
+                          })
+                  )
+          )
+          .then();
   }
 
   private Mono<Void> applyAdd(
