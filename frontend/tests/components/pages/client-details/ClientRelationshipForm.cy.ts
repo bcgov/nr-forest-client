@@ -2,12 +2,15 @@ import type {
   ClientDetails,
   ClientLocation,
   CodeNameType,
+  IndexedRelatedClient,
   RelatedClientEntry,
+  SaveEvent,
 } from "@/dto/CommonTypesDto";
 import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
 
 // Carbon
 import "@carbon/web-components/es/components/button/index";
+import type { VueWrapper } from "@vue/test-utils";
 
 describe("<client-relationship-form />", () => {
   let clientDetails: ClientDetails;
@@ -17,8 +20,8 @@ describe("<client-relationship-form />", () => {
     });
   });
   const getDefaultProps = () => ({
-    locationIndex: "null",
-    index: "null",
+    locationIndex: "01",
+    index: "0",
     data: {
       client: {
         client: { code: "1234" } as CodeNameType,
@@ -345,6 +348,52 @@ describe("<client-relationship-form />", () => {
           cy.get("cds-dropdown-item").should("have.length", 1);
           cy.get("cds-dropdown-item").first().should("have.text", "");
         });
+      });
+    });
+
+    it("sends the percentageOwnership as a number", () => {
+      cy.clearFormEntry(`#rc-${locationIndex}-${index}-percentageOwnership`);
+
+      cy.fillFormEntry(`#rc-${locationIndex}-${index}-percentageOwnership`, "44");
+
+      cy.get(`#rc-${locationIndex}-${index}-SaveBtn`).click();
+
+      cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
+        expect(vueWrapper.emitted("save")).to.be.an("array");
+        const { patch, updatedData } =
+          vueWrapper.emitted<SaveEvent<IndexedRelatedClient>>("save")![0][0];
+
+        expect(patch[0].value).to.be.a("number");
+        expect(patch[0].value).to.eq(44);
+
+        expect(updatedData.percentageOwnership).to.be.a("number");
+        expect(updatedData.percentageOwnership).to.eq(44);
+      });
+    });
+  });
+
+  describe("when initial percentageOwnership is not null", () => {
+    beforeEach(() => {
+      const props = getDefaultProps();
+      props.data.percentageOwnership = 55;
+      mount(props);
+
+      fillInRequiredFields();
+    });
+
+    it("sends the percentageOwnership as null", () => {
+      cy.clearFormEntry(`#rc-${locationIndex}-${index}-percentageOwnership`);
+
+      cy.get(`#rc-${locationIndex}-${index}-SaveBtn`).click();
+
+      cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
+        expect(vueWrapper.emitted("save")).to.be.an("array");
+        const { patch, updatedData } =
+          vueWrapper.emitted<SaveEvent<IndexedRelatedClient>>("save")![0][0];
+
+        expect(patch[0].value).to.eq(null);
+
+        expect(updatedData.percentageOwnership).to.eq(null);
       });
     });
   });
