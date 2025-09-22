@@ -194,6 +194,11 @@ describe("<client-relationships-row />", () => {
           `#rc-${currentProps.locationIndex}-${currentProps.row.index}-percentageOwnership`,
         );
 
+        cy.fillFormEntry(
+          `#rc-${currentProps.locationIndex}-${currentProps.row.index}-percentageOwnership`,
+          "44",
+        );
+
         cy.get(`#rc-${currentProps.locationIndex}-${currentProps.row.index}-SaveBtn`).click();
       });
 
@@ -206,6 +211,20 @@ describe("<client-relationships-row />", () => {
         expect(saveableComponent).to.be.an("object");
         expect(saveableComponent.setSaving).to.be.a("function");
         expect(saveableComponent.lockEditing).to.be.a("function");
+      });
+
+      it("sends the percentageOwnership as a number", () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(spyOperateRelatedClient).to.be.called;
+
+        const spyCall = spyOperateRelatedClient.getCall(0);
+        const { patch, updatedData } = spyCall.args[0];
+
+        expect(patch[0].value).to.be.a("number");
+        expect(patch[0].value).to.eq(44);
+
+        expect(updatedData.percentageOwnership).to.be.a("number");
+        expect(updatedData.percentageOwnership).to.eq(44);
       });
     });
   });
