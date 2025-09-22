@@ -54,7 +54,7 @@ const emit = defineEmits<{
   (e: "canceled"): void;
 }>();
 
-let originalData: IndexedRelatedClient;
+let formattedOriginalData: IndexedRelatedClient;
 const formData = ref<IndexedRelatedClient>();
 
 const noValidation = () => "";
@@ -85,7 +85,7 @@ watch(
 
 const hasAnyChange = ref(false);
 
-const formatData = (data: IndexedRelatedClient) => {
+const formatInputData = (data: IndexedRelatedClient) => {
   const formattedData: IndexedRelatedClient = JSON.parse(JSON.stringify(data));
 
   const {
@@ -114,8 +114,8 @@ const formatData = (data: IndexedRelatedClient) => {
 };
 
 const resetFormData = () => {
-  originalData = formatData(props.data);
-  formData.value = formatData(props.data);
+  formattedOriginalData = formatInputData(props.data);
+  formData.value = formatInputData(props.data);
   hasAnyChange.value = false;
 };
 
@@ -124,8 +124,8 @@ resetFormData();
 watch(
   formData,
   () => {
-    const updatedData = preserveUnchangedData(formData.value, originalData);
-    hasAnyChange.value = JSON.stringify(updatedData) !== JSON.stringify(originalData);
+    const updatedData = preserveUnchangedData(formData.value, formattedOriginalData);
+    hasAnyChange.value = JSON.stringify(updatedData) !== JSON.stringify(formattedOriginalData);
   },
   { deep: true },
 );
@@ -145,8 +145,24 @@ const setSaving = (value: boolean) => {
 
 defineExpose<SaveableComponent>({ setSaving, lockEditing });
 
+const formatOutputData = (data: IndexedRelatedClient) => {
+  const formattedData: IndexedRelatedClient = JSON.parse(JSON.stringify(data));
+
+  if (typeof formattedData.percentageOwnership === "string") {
+    formattedData.percentageOwnership = formattedData.percentageOwnership
+      ? Number(formattedData.percentageOwnership)
+      : null;
+  }
+
+  return formattedData;
+};
+
 const save = () => {
-  const updatedData = preserveUnchangedData(formData.value, originalData);
+  const updatedData = formatOutputData(
+    preserveUnchangedData(formData.value, formattedOriginalData),
+  );
+
+  const originalData = props.data;
 
   const patch =
     props.locationIndex === "null" ? null : jsonpatch.compare(originalData, updatedData);
