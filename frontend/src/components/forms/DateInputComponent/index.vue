@@ -521,8 +521,8 @@ const datePartComponentRefs = {
 </style>
 
 <template>
-  <div aria-live="polite">
-    <div class="grouping-02" v-if="enabled" :id="id">
+  <div aria-live="polite" v-if="enabled" :id="id">
+    <div class="grouping-02">
       <date-input-part
         :ref="datePartComponentRefs[DatePart.year]"
         :parent-id="id"
