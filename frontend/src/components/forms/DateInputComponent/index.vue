@@ -186,14 +186,13 @@ const buildFullDate = () => {
 const selectedValue = ref<string | null>(buildFullDate());
 
 const areAllPartsValid = () =>
-  validation[DatePart.year] &&
-  validation[DatePart.month] &&
-  validation[DatePart.day];
+  validation[DatePart.year] && validation[DatePart.month] && validation[DatePart.day];
 
 const isAnyPartEmpty = () =>
-  isEmpty(selectedYear.value) ||
-  isEmpty(selectedMonth.value) ||
-  isEmpty(selectedDay.value);
+  isEmpty(selectedYear.value) || isEmpty(selectedMonth.value) || isEmpty(selectedDay.value);
+
+const areAllPartsEmpty = () =>
+  isEmpty(selectedYear.value) && isEmpty(selectedMonth.value) && isEmpty(selectedDay.value);
 
 // We set the value prop as a reference for update reason
 emit("empty", isAnyPartEmpty());
@@ -212,7 +211,9 @@ const emitValueChange = (newValue: string): void => {
   emit("empty", someEmpty);
   if (focusedPart.value !== null) {
     let possiblyValid = false;
-    if (!someEmpty) {
+    if (someEmpty) {
+      possiblyValid = !props.required && areAllPartsEmpty();
+    } else {
       const otherParts = getPartsExcept(focusedPart.value);
       const allOtherAreValid = otherParts.every((part) => validation[part]);
       if (allOtherAreValid) {
@@ -239,6 +240,19 @@ const clearAllErrors = () => {
   clearError(DatePart.day);
 };
 
+/**
+ * Turns the other date parts invalid, unless they have a non-empty value.
+ * @param datePart - the date part not to be affected by this call
+ */
+const invalidateOtherMissingParts = (datePart: DatePart) => {
+  const parts = [DatePart.year, DatePart.month, DatePart.day];
+  parts.forEach((curPart) => {
+    if (curPart !== datePart && !datePartRefs[curPart].value) {
+      validation[curPart] = false;
+    }
+  });
+};
+
 // We call all the part validations
 const validatePart = (datePart: DatePart) => {
   const newValue = datePartRefs[datePart].value;
@@ -247,8 +261,12 @@ const validatePart = (datePart: DatePart) => {
   Note: we check both the full value and the current part value due to synchronization issues.
   */
   if (!newValue && !selectedValue.value) {
+    // everything is empty
     clearAllErrors();
     return true;
+  } else {
+    // reset validation for the missing parts
+    invalidateOtherMissingParts(datePart);
   }
 
   const error = partValidators.value[datePart]
@@ -503,8 +521,8 @@ const datePartComponentRefs = {
 </style>
 
 <template>
-  <div aria-live="polite">
-    <div class="grouping-02" v-if="enabled" :id="id">
+  <div aria-live="polite" v-if="enabled" :id="id">
+    <div class="grouping-02">
       <date-input-part
         :ref="datePartComponentRefs[DatePart.year]"
         :parent-id="id"

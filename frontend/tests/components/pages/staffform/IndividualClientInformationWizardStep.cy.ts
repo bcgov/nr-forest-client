@@ -38,6 +38,7 @@ describe("<individual-client-information-wizard-step />", () => {
         ],
       },
     } as unknown as FormDataDto,
+    userRoles: ["CLIENT_EDITOR"],
   });
 
   let currentProps = null;
@@ -129,6 +130,31 @@ describe("<individual-client-information-wizard-step />", () => {
   });
 
   describe("validation", () => {
+    describe("Date of birth", () => {
+      beforeEach(() => {
+        mount();
+      });
+
+      it("requires a Date of birth to be entered (by default)", () => {
+        cy.clearFormEntry("#birthdateYear");
+        cy.get("#birthdateYear").should("have.attr", "invalid");
+        cy.get("#birthdate").should("contain", "You must enter a date of birth");
+      });
+
+      describe("when user is admin", () => {
+        beforeEach(() => {
+          const props = getDefaultProps();
+          props.userRoles = ["CLIENT_ADMIN"];
+          mount(props);
+        });
+
+        it("doesn't require a Date of birth to be entered", () => {
+          cy.clearFormEntry("#birthdateYear");
+          cy.get("#birthdateYear").should("not.have.attr", "invalid");
+          cy.get("#birthdate").should("not.contain", "You must enter a date of birth");
+        });
+      });
+    });
     describe("ID number according to the current ID type (and identificationProvince)", () => {
       beforeEach(() => {
         mount();

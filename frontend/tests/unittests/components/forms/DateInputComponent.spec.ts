@@ -225,6 +225,65 @@ describe("Date Input Component", () => {
     expect(wrapper.emitted("possibly-valid")![0][0]).toBe(false);
   });
 
+  describe("when it's not a required field", () => {
+    beforeEach(() => {
+      const wrapper = mount(DateInputComponent, {
+        props: {
+          id,
+          title: "My date",
+          modelValue: "2000--",
+          validations: [],
+          enabled: true,
+          required: false,
+        },
+        directives: {
+          masked: () => {},
+        },
+        attachTo: document.body,
+      });
+      globalWrapper = wrapper;
+    });
+
+    it("emits possibly-valid true when it gets all emptied", async () => {
+      const wrapper = globalWrapper;
+
+      const inputWrapper = wrapper.find<HTMLInputElement>(`#${id}Year`);
+      await setInputValue(inputWrapper, "");
+
+      expect(wrapper.emitted("possibly-valid")).toBeTruthy();
+      expect(wrapper.emitted("possibly-valid")![0][0]).toBe(true);
+    });
+  });
+
+  describe("when it's a required field", () => {
+    beforeEach(() => {
+      const wrapper = mount(DateInputComponent, {
+        props: {
+          id,
+          title: "My date",
+          modelValue: "2000--",
+          validations: [],
+          enabled: true,
+          required: true,
+        },
+        directives: {
+          masked: () => {},
+        },
+        attachTo: document.body,
+      });
+      globalWrapper = wrapper;
+    });
+
+    it("emits possibly-valid false when it gets all emptied", async () => {
+      const wrapper = globalWrapper;
+      const inputWrapper = wrapper.find<HTMLInputElement>(`#${id}Year`);
+      await setInputValue(inputWrapper, "");
+
+      expect(wrapper.emitted("possibly-valid")).toBeTruthy();
+      expect(wrapper.emitted("possibly-valid")![0][0]).toBe(false);
+    });
+  });
+
   describe.each([
     {
       partName: "Year",
