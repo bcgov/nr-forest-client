@@ -948,7 +948,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='location-3-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 cy.fillFormEntry("#name_null", "Beach office");
 
@@ -1055,7 +1055,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='location-3-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 cy.fillFormEntry("#name_null", "Beach office");
 
@@ -1453,7 +1453,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='contact-null-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 cy.fillFormEntry("#fullName_null", "Steve New");
 
@@ -1571,7 +1571,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='contact-null-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 cy.fillFormEntry("#fullName_null", "Steve New");
 
@@ -1681,7 +1681,7 @@ describe("Client Details Page", () => {
           Prevents error with focus switching.
           */
           // cy.get("[data-focus='contact-null-heading']:focus");
-          cy.wait(1000);
+          cy.wait(500);
 
           // Use the same contact name
           cy.fillFormEntry("#fullName_null", contactName);
@@ -1880,10 +1880,17 @@ describe("Client Details Page", () => {
 
           cy.get("#addClientRelationshipBtn").click();
 
+          /*
+          Wait to have a focused element.
+          Prevents error with focus switching.
+          */
+          // cy.get("[data-focus='relationships-location-null-heading']:focus");
+          cy.wait(500);
+
           fillInRequiredFields("01");
         });
 
-        it("shows the error on field Location name", () => {
+        it("shows the errors on the unique validation-related set of fields", () => {
           cy.get("#rc-null-null-location").should("have.attr", "invalid");
           cy.get("#rc-null-null-relationship").should("have.attr", "invalid");
           cy.get("#rc-null-null-relatedClient").should("have.attr", "invalid");
@@ -1967,7 +1974,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='relationships-location-null-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 fillInRequiredFields("01 - Accountant address");
 
@@ -2092,7 +2099,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='location-3-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 fillInRequiredFields("01 - Accountant address");
 
