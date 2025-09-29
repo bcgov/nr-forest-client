@@ -37,7 +37,11 @@ const isAdmin = computed(() => props.userRoles.includes("CLIENT_ADMIN"));
 
 const isBirthdateRequired = computed(() => !isAdmin.value);
 
-const birthdateValidationKey = computed(() =>
+/**
+ * This is the *local* validation key for the birthdate field.
+ * It's *local* only, in the sense of being the key used only by the front-end code.
+ */
+const birthdateLocalValidationKey = computed(() =>
   isAdmin.value ? "businessInformation.birthdate-admin" : "businessInformation.birthdate",
 );
 
@@ -349,8 +353,8 @@ watch(combinedValue, (newValue) => {
         v-model="formData.businessInformation.birthdate"
         :enabled="true"
         :validations="[
-          ...getValidations(birthdateValidationKey),
-          submissionValidation(birthdateValidationKey),
+          ...getValidations(birthdateLocalValidationKey),
+          submissionValidation('businessInformation.birthdate'),
         ]"
         :year-validations="[...getValidations('businessInformation.birthdate.year')]"
         @error="validation.birthdate = !$event"
