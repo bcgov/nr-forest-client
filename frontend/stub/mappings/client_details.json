@@ -181,6 +181,36 @@
       }
     },
     {
+      "name": "Client Details Individual 3 - Related Unique Test",
+      "request": {
+        "urlPattern": "/api/clients/details/rut([^/]*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-RUT.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Individual 3 - Related Unique Test - Moved related client 01/0 to location 00",
+      "request": {
+        "urlPattern": "/api/clients/details/rut?(.*)\\-move-related-01-0-to-00",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-RUT-move-related-01-0-to-00.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Client Details Individual",
       "request": {
         "urlPattern": "/api/clients/details/i([^/]*)",
