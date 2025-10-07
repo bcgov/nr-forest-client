@@ -51,7 +51,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "save", payload: SaveEvent<IndexedRelatedClient>): void;
-  (e: "delete"): void;
+  (e: "handleDelete"): void;
   (e: "canceled"): void;
 }>();
 
@@ -190,7 +190,7 @@ const save = () => {
 };
 
 const handleDelete = () => {
-  emit("delete");
+  emit("handleDelete");
 };
 
 const validation = reactive<Record<string, boolean>>({

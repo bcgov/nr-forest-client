@@ -223,7 +223,7 @@ const confirmDeleteRelatedClient = () => {
         keep-scroll-bottom-position
         @canceled="cancel"
         @save="save"
-        @delete="handleDelete"
+        @handle-delete="handleDelete"
       />
     </td>
   </cds-table-row>
