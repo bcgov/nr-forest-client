@@ -398,14 +398,14 @@ describe("<client-relationship-form />", () => {
     });
   });
 
-  it('emits a "handle-delete" event', () => {
+  it('emits a "delete" event', () => {
     mount();
 
     cy.get(`#rc-${locationIndex}-${index}-DeleteBtn`).click();
 
     cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
-      expect(vueWrapper.emitted("handleDelete")).to.be.an("array");
-      expect(vueWrapper.emitted("handleDelete")).to.have.length(1);
+      expect(vueWrapper.emitted("delete")).to.be.an("array");
+      expect(vueWrapper.emitted("delete")).to.have.length(1);
     });
   });
 });
