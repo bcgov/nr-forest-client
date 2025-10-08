@@ -1999,21 +1999,23 @@ describe("Client Details Page", () => {
 
             // Isolated scope
             {
-              const testDisabledButtons = (test: () => void) => {
+              const testBeforePatchResponse = (test: () => void) => {
                 test();
 
                 resumePatch();
+
+                // Reloading data
                 cy.wait("@getClientDetails");
               };
               if (scenario.name === "create") {
                 it("disables the Save button while waiting for the response", () => {
-                  testDisabledButtons(() => {
+                  testBeforePatchResponse(() => {
                     cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
                   });
                 });
               } else {
                 it("disables the Save and the Delete buttons while waiting for the response", () => {
-                  testDisabledButtons(() => {
+                  testBeforePatchResponse(() => {
                     /*
                     Note: these two assertions need to be in the same test, otherwise there seems
                     to be some kind of sync issue with the intercept.
@@ -2180,23 +2182,24 @@ describe("Client Details Page", () => {
 
             // Isolated scope
             {
-              const testDisabledButtons = (test: () => void) => {
+              const testBeforePatchResponse = (test: () => void) => {
                 test();
 
                 if (scenario.shouldInterruptOnFailure) {
                   resumePatch();
+                } else {
+                  cy.wait("@saveClientDetails");
                 }
-                cy.wait("@saveClientDetails");
               };
               if (scenario.name === "create") {
                 it("disables the Save button while waiting for the response", () => {
-                  testDisabledButtons(() => {
+                  testBeforePatchResponse(() => {
                     cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
                   });
                 });
               } else {
                 it("disables the Save and the Delete buttons while waiting for the response", () => {
-                  testDisabledButtons(() => {
+                  testBeforePatchResponse(() => {
                     /*
                     Note: these two assertions need to be in the same test, otherwise there seems
                     to be some kind of sync issue with the intercept.
