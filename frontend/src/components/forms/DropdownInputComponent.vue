@@ -228,8 +228,6 @@ watch(
 
 // For some reason, if helper-text is empty, invalid-text message doesn't work.
 const safeHelperText = computed(() => props.tip || " ");
-
-const color = "green";
 </script>
 
 <template>
@@ -248,7 +246,6 @@ const color = "green";
         :required="required"
         :data-required-label="requiredLabel"
         filterable
-        :helper-text="safeHelperText"
         :label="placeholder"
         :value="selectedValue"
         :invalid="!warning && error ? true : false"
@@ -279,6 +276,11 @@ const color = "green";
             {{ option.name }}
           </slot>
         </cds-dropdown-item>
+        <div slot="helper-text" v-if="!error" class="display-contents">
+          <slot name="tip">
+            {{ safeHelperText }}
+          </slot>
+        </div>
       </cds-dropdown>
     </div>
   </div>
