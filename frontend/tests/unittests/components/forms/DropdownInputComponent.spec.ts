@@ -105,6 +105,27 @@ describe("ComboBoxInputComponent", () => {
     expect(wrapper.emitted("empty")![1][0]).toBe(false);
   });
 
+  it("renders the helper-text as supplied in the tip slot", async () => {
+    const wrapper = mount(DropdownInputComponent, {
+      props: {
+        id: "test",
+        label: "test",
+        tip: "",
+        modelValue: [
+          { code: "A", name: "Value A" },
+          { code: "B", name: "Value B" },
+        ],
+        initialValue: "",
+        validations: [],
+      },
+      slots: {
+        tip: "Custom message",
+      },
+    });
+
+    expect(wrapper.find("[slot='helper-text']").text()).toContain("Custom message");
+  });
+
   it("should validate and emit error if required", async () => {
     const wrapper = mount(DropdownInputComponent, {
       props: {
