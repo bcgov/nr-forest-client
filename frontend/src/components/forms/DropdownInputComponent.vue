@@ -6,8 +6,8 @@ import type { CDSDropdown } from "@carbon/web-components";
 // Composables
 import { useEventBus } from "@vueuse/core";
 // Types
-import type { CodeNameType, CodeNameValue } from "@/dto/CommonTypesDto";
-import { isEmpty, type ValidationMessageType } from "@/dto/CommonTypesDto";
+import type { CodeNameType, CodeNameValue, ValidationMessageType } from "@/dto/CommonTypesDto";
+import { isEmpty } from "@/dto/CommonTypesDto";
 
 //Define the input properties for this component
 const props = defineProps<{
@@ -26,7 +26,7 @@ const props = defineProps<{
 
 //Events we emit during component lifecycle
 const emit = defineEmits<{
-  (e: "error", value: string | undefined): void;
+  (e: "error", value: string | ValidationMessageType | undefined): void;
   (e: "empty", value: boolean): void;
   (e: "update:modelValue", value: string | undefined): void;
   (e: "update:selectedValue", value: CodeNameType | undefined): void;
@@ -56,7 +56,7 @@ const emitValueChange = (newValue: string): void => {
     ? props.modelValue.find((entry) => entry.name === newValue)
     : { code: "", name: "" };
 
-  emit("update:modelValue", reference?.name);
+  emit("update:modelValue", reference?.code);
   emit("update:selectedValue", reference);
   emit("empty", isEmpty(newValue));
 };
@@ -82,7 +82,7 @@ const setError = (errorObject: string | ValidationMessageType | undefined) => {
   rely on empty(false) to consider a value "valid". In turn we need to emit a new error event after
   an empty one to allow subscribers to know in case the field still has the same error.
   */
-  emit("error", error.value);
+  emit("error", errorObject);
 };
 
 /**
