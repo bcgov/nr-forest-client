@@ -394,7 +394,14 @@ export const routes = [
 export const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior: () => ({ top: 0 }),
+  scrollBehavior: (to) => {
+    if (to.hash) {
+      return {
+        el: to.hash, // scroll to the element with id equal to the hash
+      };
+    }
+    return { top: 0 };
+  },
 });
 
 // If the route requires the idir provider, it automatically requires one of the following roles by default.

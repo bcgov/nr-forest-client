@@ -76,7 +76,7 @@ import LocationRelationshipsView from "@/pages/client-details/LocationRelationsh
 import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
 import HistoryView from "@/pages/client-details/HistoryView.vue";
 import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
-import { type OperateRelatedClient, type OperationOptions, type SaveableComponent } from "./client-details/shared";
+import { type GoToTab, type OperateRelatedClient, type OperationOptions, type SaveableComponent } from "./client-details/shared";
 
 // Route related
 const router = useRouter();
@@ -961,6 +961,16 @@ const formatRelatedLocation = (locationCode: string) => {
   }
   return `Under location “${formatLocation(locationCode, relatedLocationsState[locationCode].name)}”`;
 };
+
+const goToTab: GoToTab = (tabName) => {
+  selectedTab.value = tabName;
+  const tabId = `tab-${tabName}`;
+  setScrollPoint(tabId, undefined, () => {
+    setFocusedComponent(tabId, undefined, undefined, "id");
+  }, "id");
+};
+
+provide("goToTab", goToTab);
 </script>
 
 <template>
