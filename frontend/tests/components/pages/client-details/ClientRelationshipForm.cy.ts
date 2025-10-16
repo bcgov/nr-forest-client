@@ -7,9 +7,11 @@ import type {
   SaveEvent,
 } from "@/dto/CommonTypesDto";
 import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
+import type { GoToTab } from "@/pages/client-details/shared";
 
 // Carbon
 import "@carbon/web-components/es/components/button/index";
+import "@carbon/web-components/es/components/modal/index";
 import type { VueWrapper } from "@vue/test-utils";
 
 describe("<client-relationship-form />", () => {
@@ -42,10 +44,31 @@ describe("<client-relationship-form />", () => {
 
   let currentProps: ReturnType<typeof getDefaultProps> = null;
   let locationIndex: string, index: string;
+
+  const goToTabStub: GoToTab = () => {};
+  const goToTabWrapper = {
+    goToTab: goToTabStub,
+  };
+
+  const setSpyGoToTab = () => cy.spy(goToTabWrapper, "goToTab").as("goToTab");
+
+  let spyGoToTab: ReturnType<typeof setSpyGoToTab>;
+
   const mount = (props = getDefaultProps()) => {
     currentProps = props;
+    spyGoToTab = setSpyGoToTab();
     ({ locationIndex, index } = props);
-    return cy.mount(ClientRelationshipForm, { props }).its("wrapper").as("vueWrapper");
+    return cy
+      .mount(ClientRelationshipForm, {
+        props,
+        global: {
+          provide: {
+            goToTab: goToTabWrapper.goToTab,
+          },
+        },
+      })
+      .its("wrapper")
+      .as("vueWrapper");
   };
 
   beforeEach(() => {
@@ -394,6 +417,55 @@ describe("<client-relationship-form />", () => {
         expect(patch[0].value).to.eq(null);
 
         expect(updatedData.percentageOwnership).to.eq(null);
+      });
+    });
+  });
+
+  describe("when the link to create a new location gets clicked", () => {
+    beforeEach(() => {
+      mount();
+      cy.get("#createLocationLink").click();
+    });
+
+    it("displays a confirmation modal", () => {
+      cy.get("#modal-new-location").should("be.visible");
+    });
+
+    describe("and the Cancel button is clicked", () => {
+      beforeEach(() => {
+        cy.get("#modal-new-location .cds--modal-close-btn").click();
+      });
+
+      it("closes the modal", () => {
+        cy.get("#modal-new-location").should("not.be.visible");
+      });
+      it("doesn't call the injected function 'goToTab'", () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(spyGoToTab).not.to.be.called;
+      });
+      it("doesn't emit any 'canceled' event", () => {
+        cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          expect(vueWrapper.emitted("canceled")).to.be.undefined;
+        });
+      });
+    });
+
+    describe("and the confirmation button is clicked", () => {
+      beforeEach(() => {
+        cy.get("#modal-new-location .cds--modal-submit-btn").click();
+      });
+
+      it("closes the modal", () => {
+        cy.get("#modal-new-location").should("not.be.visible");
+      });
+      it("calls the injected function 'goToTab' with 'locations'", () => {
+        expect(spyGoToTab).to.be.calledWith("locations");
+      });
+      it("emits a 'canceled' event", () => {
+        cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
+          expect(vueWrapper.emitted("canceled")).to.be.an("array").of.length(1);
+        });
       });
     });
   });

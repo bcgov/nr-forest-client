@@ -430,7 +430,9 @@ const confirmNewLocation = () => {
     >
       <template #tip>
         Select the location created for this relationship or
-        <a :href="`javascript:${newLocationFunctionName}()`">create a new location</a>
+        <a id="createLocationLink" :href="`javascript:${newLocationFunctionName}()`">
+          create a new location
+        </a>
       </template>
     </dropdown-input-component>
     <data-fetcher
