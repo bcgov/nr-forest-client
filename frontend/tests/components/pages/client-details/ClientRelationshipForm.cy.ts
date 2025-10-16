@@ -13,6 +13,7 @@ import type { GoToTab } from "@/pages/client-details/shared";
 import "@carbon/web-components/es/components/button/index";
 import "@carbon/web-components/es/components/modal/index";
 import type { VueWrapper } from "@vue/test-utils";
+import * as vueRouter from "vue-router";
 
 describe("<client-relationship-form />", () => {
   let clientDetails: ClientDetails;
@@ -54,14 +55,27 @@ describe("<client-relationship-form />", () => {
 
   let spyGoToTab: ReturnType<typeof setSpyGoToTab>;
 
+  const router = vueRouter.createRouter({
+    history: vueRouter.createMemoryHistory(),
+    routes: [],
+  });
+
+  const setSpyRouterPush = () => cy.spy(router, "push").as("routerPush");
+
+  let spyRouterPush: ReturnType<typeof setSpyRouterPush>;
+
   const mount = (props = getDefaultProps()) => {
     currentProps = props;
+
     spyGoToTab = setSpyGoToTab();
+    spyRouterPush = setSpyRouterPush();
+
     ({ locationIndex, index } = props);
     return cy
       .mount(ClientRelationshipForm, {
         props,
         global: {
+          plugins: [router],
           provide: {
             goToTab: goToTabWrapper.goToTab,
           },
@@ -461,6 +475,55 @@ describe("<client-relationship-form />", () => {
       });
       it("calls the injected function 'goToTab' with 'locations'", () => {
         expect(spyGoToTab).to.be.calledWith("locations");
+      });
+      it("emits a 'canceled' event", () => {
+        cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
+          expect(vueWrapper.emitted("canceled")).to.be.an("array").of.length(1);
+        });
+      });
+    });
+  });
+
+  describe("when the link to create a new client gets clicked", () => {
+    beforeEach(() => {
+      mount();
+      cy.get("#createClientLink").click();
+    });
+
+    it("displays a confirmation modal", () => {
+      cy.get("#modal-new-client").should("be.visible");
+    });
+
+    describe("and the Cancel button is clicked", () => {
+      beforeEach(() => {
+        cy.get("#modal-new-client .cds--modal-close-btn").click();
+      });
+
+      it("closes the modal", () => {
+        cy.get("#modal-new-client").should("not.be.visible");
+      });
+      it("doesn't redirect to the Create client page", () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(spyRouterPush).not.to.be.called;
+      });
+      it("doesn't emit any 'canceled' event", () => {
+        cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          expect(vueWrapper.emitted("canceled")).to.be.undefined;
+        });
+      });
+    });
+
+    describe("and the confirmation button is clicked", () => {
+      beforeEach(() => {
+        cy.get("#modal-new-client .cds--modal-submit-btn").click();
+      });
+
+      it("closes the modal", () => {
+        cy.get("#modal-new-client").should("not.be.visible");
+      });
+      it("redirects to the Create client page", () => {
+        expect(spyRouterPush).to.be.calledWith("/new-client-staff");
       });
       it("emits a 'canceled' event", () => {
         cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
