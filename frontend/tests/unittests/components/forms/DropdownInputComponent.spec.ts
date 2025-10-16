@@ -119,11 +119,11 @@ describe("ComboBoxInputComponent", () => {
         validations: [],
       },
       slots: {
-        tip: "Custom message",
+        tip: "Custom tip text",
       },
     });
 
-    expect(wrapper.find("[slot='helper-text']").text()).toContain("Custom message");
+    expect(wrapper.find("[slot='helper-text']").text()).toContain("Custom tip text");
   });
 
   it("should validate and emit error if required", async () => {

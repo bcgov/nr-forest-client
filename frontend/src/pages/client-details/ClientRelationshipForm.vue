@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, inject, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import type {
   ClientDetails,
@@ -382,18 +382,16 @@ const removeGlobalFunction = (functionName: string) => {
   delete window[functionName];
 };
 
-watch(
-  newLocationFunctionName,
-  (value, oldValue) => {
-    if (oldValue) {
-      removeGlobalFunction(oldValue);
-    }
-    exposeFunctionGlobally(value, handleNewLocation);
-  },
-  {
-    immediate: true,
-  },
-);
+onMounted(() => {
+  exposeFunctionGlobally(newLocationFunctionName.value, handleNewLocation);
+});
+
+watch(newLocationFunctionName, (value, oldValue) => {
+  if (oldValue) {
+    removeGlobalFunction(oldValue);
+  }
+  exposeFunctionGlobally(value, handleNewLocation);
+});
 
 onUnmounted(() => {
   removeGlobalFunction(newLocationFunctionName.value);
@@ -404,6 +402,7 @@ const goToTab = inject<GoToTab>("goToTab");
 const confirmNewLocation = () => {
   goToTab("locations");
   displayNewLocationModal.value = false;
+  emit("canceled");
 };
 </script>
 
