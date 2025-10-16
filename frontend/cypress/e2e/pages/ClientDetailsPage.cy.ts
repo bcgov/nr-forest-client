@@ -1893,6 +1893,49 @@ describe("Client Details Page", () => {
         });
       });
 
+      describe("new location link flow", () => {
+        beforeEach(() => {
+          cy.intercept({
+            method: "GET",
+            pathname: "/api/clients/details/*",
+          }).as("getClientDetails");
+
+          cy.intercept("GET", "/api/codes/relationship-types/*").as("getRelationshipTypes");
+
+          cy.visit("/clients/details/se");
+
+          cy.wait("@getClientDetails");
+
+          // Switch to the Related clients tab
+          cy.get("#tab-related").click();
+
+          cy.get("#addClientRelationshipBtn").click();
+        });
+
+        it("goes to the locations tab", () => {
+          cy.get("#createLocationLink").click();
+
+          cy.get("#modal-new-location .cds--modal-submit-btn").click();
+
+          cy.get("#tab-locations").then(($el) => {
+            const element = $el[0];
+            cy.spy(element, "scrollIntoView").as("scrollToTabLocations");
+          });
+
+          // Switched from the Related clients to the Locations tab
+          cy.get("#panel-related").should("have.attr", "hidden");
+          cy.get("#panel-locations").should("not.have.attr", "hidden");
+
+          // test: it scrolls down to the tab locations
+          cy.get("@scrollToTabLocations").should("be.called");
+
+          /*
+          Wait to have a focused element.
+          */
+          // cy.get("#tab-locations:focus");
+        });
+      });
+
       const scenarios = [{ name: "create" }, { name: "edit" }];
       scenarios.forEach((scenario) => {
         const index = scenario.name === "edit" ? 0 : "null";
