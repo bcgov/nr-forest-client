@@ -211,6 +211,21 @@
       }
     },
     {
+      "name": "Client Details Individual",
+      "request": {
+        "urlPattern": "/api/clients/details/idob([^/]*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-I-no-birthdate.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Client Details Individual - null addresses and contacts",
       "request": {
         "urlPattern": "/api/clients/details/null([^/]*)",

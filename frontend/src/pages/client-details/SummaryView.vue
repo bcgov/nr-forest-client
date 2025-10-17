@@ -259,7 +259,7 @@ const editRoles: Record<FieldId, UserRole[]> = {
   clientType: ["CLIENT_ADMIN"],
   registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
-  birthdate: ["CLIENT_ADMIN"],
+  birthdate: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   clientIdType: ["CLIENT_ADMIN"],
   clientIdentification: ["CLIENT_ADMIN"],
   clientStatus: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
@@ -305,7 +305,9 @@ const isFieldEditable: Record<FieldId, (data: ClientDetails) => boolean> = {
   clientType: () => true,
   registrationNumber: (data) => companyLikeTypes.includes(data.client.clientTypeCode),
   workSafeBCNumber: () => true,
-  birthdate: (data) => data.client.clientTypeCode === "I",
+  birthdate: (data) =>
+    data.client.clientTypeCode === "I" &&
+    (props.userRoles.includes("CLIENT_ADMIN") || !props.data.client.birthdate),
   clientIdType: (data) => data.client.clientTypeCode === "I",
   clientIdentification: (data) => data.client.clientTypeCode === "I",
   clientStatus: canEditClientStatus,
@@ -711,7 +713,6 @@ const clientIdentificationMask = "U".repeat(40);
     <div v-if="displayEditable('birthdate')">
       <div class="label-with-icon line-height-0 parent-label">
         <div class="cds-text-input-label">
-          <span class="cds-text-input-required-label">* </span>
           <span>Date of birth</span>
         </div>
         <cds-tooltip>
@@ -728,13 +729,12 @@ const clientIdentificationMask = "U".repeat(40);
         v-model="formData.client.birthdate"
         :enabled="true"
         :validations="[
-          ...getValidations('businessInformation.birthdate'),
+          ...getValidations('businessInformation.birthdate-optional'),
           submissionValidation('businessInformation.birthdate'),
         ]"
         :year-validations="[...getValidations('businessInformation.birthdate.year')]"
         @error="validation.birthdate = !$event"
         @possibly-valid="validation.birthdate = $event"
-        required
       />
     </div>
     <div

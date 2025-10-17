@@ -1,0 +1,47 @@
+{
+  "client": {
+    "registryCompanyTypeCode": null,
+    "corpRegnNmbr": null,
+    "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
+    "clientName": "Silver",
+    "legalFirstName": "John",
+    "legalMiddleName": "",
+    "birthdate": "",
+    "clientIdTypeCode": "BCDL",
+    "clientIdTypeDesc": "British Columbia Driver's Licence",
+    "clientIdentification": "64242646",
+    "clientAcronym": null,
+    "clientTypeCode": "I",
+    "clientTypeDesc": "Individual",
+    "goodStandingInd": null,
+    "clientStatusCode": "ACT",
+    "clientStatusDesc": "Active",
+    "clientComment": "Sample line 1.\nSample line 2.\nSample line 3.",
+    "clientCommentUpdateDate": "2024-11-07T11:39:46",
+    "clientCommentUpdateUser": "IDIR\\PPEREZ",
+    "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}"
+  },
+  "contacts": [],
+  "addresses": [
+    {
+      "clientLocnName": "Mailing address",
+      "clientLocnCode": "00",
+      "addressOne": "C/O Tony Pineda",
+      "addressTwo": "Sample additional info",
+      "addressThree": "{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
+      "countryCode": "CA",
+      "countryDesc": "Canada",
+      "provinceCode": "SK",
+      "provinceDesc": "Saskatchewan",
+      "city": "Hampton",
+      "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+      "emailAddress": "tony.pineda@mail.com",
+      "businessPhone": "2502863767",
+      "cellPhone": "",
+      "homePhone": "",
+      "faxNumber": "",
+      "cliLocnComment": "Sample location 00 comment",
+      "locnExpiredInd": "N"
+    }
+  ]
+}
