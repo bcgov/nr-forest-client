@@ -305,9 +305,12 @@ const isFieldEditable: Record<FieldId, (data: ClientDetails) => boolean> = {
   clientType: () => true,
   registrationNumber: (data) => companyLikeTypes.includes(data.client.clientTypeCode),
   workSafeBCNumber: () => true,
+
+  // When user is not an Administrator, birthdate will be editable only if it was empty.
   birthdate: (data) =>
     data.client.clientTypeCode === "I" &&
-    (props.userRoles.includes("CLIENT_ADMIN") || !props.data.client.birthdate),
+    (props.userRoles.includes("CLIENT_ADMIN") || !originalData.client.birthdate),
+
   clientIdType: (data) => data.client.clientTypeCode === "I",
   clientIdentification: (data) => data.client.clientTypeCode === "I",
   clientStatus: canEditClientStatus,
