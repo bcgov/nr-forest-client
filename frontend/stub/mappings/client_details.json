@@ -211,7 +211,7 @@
       }
     },
     {
-      "name": "Client Details Individual",
+      "name": "Client Details Individual - No birthdate",
       "request": {
         "urlPattern": "/api/clients/details/idob([^/]*)",
         "method": "GET"
@@ -219,6 +219,36 @@
       "response": {
         "status": 200,
         "bodyFileName": "response-clients-details-I-no-birthdate.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Individual - ID Other",
+      "request": {
+        "urlPattern": "/api/clients/details/io([^/]*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-I-id-other.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Individual - ID Unknown",
+      "request": {
+        "urlPattern": "/api/clients/details/iu([^/]*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-I-id-unknown.json",
         "transformers": [
           "response-template"
         ],
