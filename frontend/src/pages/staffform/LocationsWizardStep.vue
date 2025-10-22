@@ -227,6 +227,16 @@ const updateLocationName = (locationName: string, index: number) => {
   const address = formData.location.addresses[index];
   const addressId = address.index;
   locationNames[addressId] = locationName;
+
+  // Update the location name on the contacts that are associated with it.
+  formData.location.contacts.forEach((contact) => {
+    const indexWithinContact = contact.locationNames.findIndex(
+      (locationName) => locationName.value === String(addressId),
+    );
+    if (indexWithinContact !== -1) {
+      contact.locationNames[indexWithinContact].text = locationName;
+    }
+  });
 };
 
 const cdsAccordionItemBeingtoggled = (event: any, address: Address) => {
@@ -279,6 +289,7 @@ const cdsAccordionItemBeingtoggled = (event: any, address: Address) => {
     @update:model-value="updateAddress($event, 0)"
     @valid="updateValidState(0, $event)"
     @remove-additional-delivery="handleRemoveAdditionalDelivery(0)"
+    @update-location-name="(locationName) => updateLocationName(locationName, 0)"
   />
 
   <hr />
