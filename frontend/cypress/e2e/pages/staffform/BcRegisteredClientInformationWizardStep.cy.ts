@@ -518,6 +518,52 @@ describe("BC Registered Staff Wizard Step", () => {
     });
   });
 
+  /*
+  Although some of the following tests make assertions outside of this component's UI (and after
+  the "Client information" step), the behavior is actually implemented on this component.
+  */
+  describe("API returned location and contacts", () => {
+    beforeEach(() => {
+      loginAndNavigateToStaffForm();
+
+      cy.get("cds-inline-notification#bcRegistrySearchNotification").should("exist");
+
+      const sppSearch = "spp";
+      const sppCode = "FM123123";
+
+      interceptClientsApi(sppSearch, sppCode);
+
+      cy.selectAutocompleteEntry("#businessName", sppSearch, sppCode, `@clientSearch${sppSearch}`);
+
+      // fill required information
+      cy.fillFormEntry("#birthdateYear", "2001");
+      cy.fillFormEntry("#birthdateMonth", "10");
+      cy.fillFormEntry("#birthdateDay", "25");
+    });
+
+    it("should include the returned location data", () => {
+      cy.get("[data-test='wizard-next-button']").click();
+      cy.contains("h2", "Locations");
+
+      cy.get("#name_0").should("have.value", "Custom name");
+      cy.get("#addr_0").should("have.value", "78417 Fulton Place");
+    });
+
+    it("should include the returned contact data already updated with default values", () => {
+      cy.get("[data-test='wizard-next-button']").click();
+      cy.contains("h2", "Locations");
+
+      cy.get("[data-test='wizard-next-button']").click();
+      cy.contains("h2", "Contacts");
+
+      // set to the default role
+      cy.get("#role_0").should("have.value", "Billing");
+
+      // associated to the default location (the first location)
+      cy.get("#addressname_0").should("have.value", "Custom name");
+    });
+  });
+
   describe("Synchronize rendered data with business name input value", () => {
     const scenarios = [
       {

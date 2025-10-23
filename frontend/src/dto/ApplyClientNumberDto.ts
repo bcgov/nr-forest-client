@@ -100,6 +100,11 @@ export const indexedEmptyAddress = (index: number): Address =>
 
 export const defaultLocation = { value: "0", text: "Mailing address" };
 
+export const defaultContactType = {
+  value: "BL",
+  text: "Billing",
+};
+
 export const emptyAddress = (): Address => indexedEmptyAddress(0);
 
 export const formatAddresses = (addresses: Address[]): Address[] => {
