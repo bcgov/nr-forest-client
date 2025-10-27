@@ -51,7 +51,13 @@ describe("Client Details Page", () => {
    *
    * @returns function to resume the Patch request
    */
-  const interruptPatch = (requestCallback?: (req: CyHttpMessages.IncomingHttpRequest) => void) => {
+  const interruptPatch = (
+    options: {
+      requestCallback?: (req: CyHttpMessages.IncomingHttpRequest) => void,
+    } = {},
+  ) => {
+    const { requestCallback } = options;
+
     let resolvePatchIntercepted: () => void;
     const promisePatchIntercepted = new Promise<void>((resolve) => {
       resolvePatchIntercepted = resolve;
@@ -305,36 +311,46 @@ describe("Client Details Page", () => {
         });
       });
 
-      describe("on generic failure", { testIsolation: false }, () => {
-        before(function () {
-          init.call(this);
+      const scenarios = [
+        { name: "on generic failure", value: "error", shouldInterrupt: true },
+        { name: "on network error", value: "enet", shouldInterrupt: false },
+      ];
+      scenarios.forEach((scenario) => {
+        describe.only(scenario.name, { testIsolation: false }, () => {
+          before(function () {
+            init.call(this);
 
-          cy.visit("/clients/details/p");
-          cy.get("#summaryEditBtn").click();
-          cy.fillFormEntry("[data-id='input-input-notes']", "error", { area: true });
-          resumePatch = interruptPatch();
-          cy.get("#summarySaveBtn").click();
-        });
+            cy.visit("/clients/details/p");
+            cy.get("#summaryEditBtn").click();
+            cy.fillFormEntry("[data-id='input-input-notes']", scenario.value, { area: true });
+            if (scenario.shouldInterrupt) {
+              resumePatch = interruptPatch();
+            }
+            cy.get("#summarySaveBtn").click();
+          });
 
-        it("disables the Save button while waiting for the response", () => {
-          cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
-          resumePatch();
-        });
+          it("disables the Save button while waiting for the response", () => {
+            cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+            if (scenario.shouldInterrupt) {
+              resumePatch();
+            }
+          });
 
-        it("shows the error toast", () => {
-          cy.get("cds-toast-notification[kind='error']").should("be.visible");
-        });
+          it("shows the error toast", () => {
+            cy.get("cds-toast-notification[kind='error']").should("be.visible");
+          });
 
-        it("stays in edit mode", () => {
-          cy.get("#input-workSafeBCNumber").should("be.visible");
-          cy.get("#input-clientStatus").should("be.visible");
-          cy.get("[data-id='input-input-notes']").should("be.visible");
+          it("stays in edit mode", () => {
+            cy.get("#input-workSafeBCNumber").should("be.visible");
+            cy.get("#input-clientStatus").should("be.visible");
+            cy.get("[data-id='input-input-notes']").should("be.visible");
 
-          cy.get("#summarySaveBtn").should("be.visible");
-        });
+            cy.get("#summarySaveBtn").should("be.visible");
+          });
 
-        it("re-enables the Save button", () => {
-          cy.get("#summarySaveBtn").shadow().find("button").should("be.enabled");
+          it("re-enables the Save button", () => {
+            cy.get("#summarySaveBtn").shadow().find("button").should("be.enabled");
+          });
         });
       });
 
@@ -913,8 +929,10 @@ describe("Client Details Page", () => {
 
               registerInterceptors();
 
-              resumePatch = interruptPatch((req) => {
-                patchClientDetailsRequest = req;
+              resumePatch = interruptPatch({
+                requestCallback: (req) => {
+                  patchClientDetailsRequest = req;
+                },
               });
 
               cy.visit("/clients/details/p");
@@ -949,7 +967,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='location-3-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 cy.fillFormEntry("#name_null", "Beach office");
 
@@ -1056,7 +1074,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='location-3-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 cy.fillFormEntry("#name_null", "Beach office");
 
@@ -1413,8 +1431,10 @@ describe("Client Details Page", () => {
 
               registerInterceptors();
 
-              resumePatch = interruptPatch((req) => {
-                patchClientDetailsRequest = req;
+              resumePatch = interruptPatch({
+                requestCallback: (req) => {
+                  patchClientDetailsRequest = req;
+                },
               });
 
               cy.visit("/clients/details/p");
@@ -1454,7 +1474,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='contact-null-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 cy.fillFormEntry("#fullName_null", "Steve New");
 
@@ -1572,7 +1592,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='contact-null-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 cy.fillFormEntry("#fullName_null", "Steve New");
 
@@ -1682,7 +1702,7 @@ describe("Client Details Page", () => {
           Prevents error with focus switching.
           */
           // cy.get("[data-focus='contact-null-heading']:focus");
-          cy.wait(1000);
+          cy.wait(500);
 
           // Use the same contact name
           cy.fillFormEntry("#fullName_null", contactName);
@@ -1970,13 +1990,19 @@ describe("Client Details Page", () => {
         });
       });
 
-      const scenarios = [{ name: "create" }, { name: "edit" }];
-      scenarios.forEach((scenario) => {
-        const index = scenario.name === "edit" ? 0 : "null";
-        const locationIndex = scenario.name === "edit" ? "01" : "null";
-        const saveButtonSelector = `#rc-${locationIndex}-${index}-SaveBtn`;
+      const scenarios = [
+        { name: "create", shouldInterruptOnFailure: true },
+        { name: "delete", shouldInterruptOnFailure: false },
+        { name: "edit", shouldInterruptOnFailure: true },
+      ];
 
-        describe(`${scenario.name} - save`, () => {
+      scenarios.forEach((scenario) => {
+        const index = scenario.name === "create" ? "null" : 0;
+        const locationIndex = scenario.name === "create" ? "null" : "01";
+        const saveButtonSelector = `#rc-${locationIndex}-${index}-SaveBtn`;
+        const deleteButtonSelector = `#rc-${locationIndex}-${index}-DeleteBtn`;
+
+        describe(`${scenario.name}`, () => {
           describe("on success", { testIsolation: false }, () => {
             const getClientDetailsCounter = {
               count: 0,
@@ -2004,8 +2030,10 @@ describe("Client Details Page", () => {
 
               registerInterceptors();
 
-              resumePatch = interruptPatch((req) => {
-                patchClientDetailsRequest = req;
+              resumePatch = interruptPatch({
+                requestCallback: (req) => {
+                  patchClientDetailsRequest = req;
+                },
               });
 
               cy.visit("/clients/details/p");
@@ -2023,6 +2051,18 @@ describe("Client Details Page", () => {
                 cy.clearFormEntry("#rc-01-0-percentageOwnership");
 
                 cy.get(saveButtonSelector).click();
+              }
+
+              if (scenario.name === "delete") {
+                // Clicks to expand the accordion
+                cy.get("#relationships-location-01 [slot='title']").click();
+
+                // Edit the relationship with index=0
+                cy.get("#location-01-row-0-EditBtn").click();
+
+                cy.get(deleteButtonSelector).click();
+
+                cy.get("#modal-delete .cds--modal-submit-btn").filter(":visible").click();
               }
 
               if (scenario.name === "create") {
@@ -2044,7 +2084,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='relationships-location-null-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 fillInRequiredFields("01 - Accountant address");
 
@@ -2056,18 +2096,44 @@ describe("Client Details Page", () => {
               registerInterceptors();
             });
 
-            it("disables the Save button while waiting for the response", () => {
-              cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
-              resumePatch();
-              cy.wait("@getClientDetails");
-            });
+            // Isolated scope
+            {
+              const testBeforePatchResponse = (test: () => void) => {
+                test();
+
+                resumePatch();
+
+                // Reloading data
+                cy.wait("@getClientDetails");
+              };
+              if (scenario.name === "create") {
+                it("disables the Save button while waiting for the response", () => {
+                  testBeforePatchResponse(() => {
+                    cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+                  });
+                });
+              } else {
+                it("disables the Save and the Delete buttons while waiting for the response", () => {
+                  testBeforePatchResponse(() => {
+                    /*
+                    Note: these two assertions need to be in the same test, otherwise there seems
+                    to be some kind of sync issue with the intercept.
+                    */
+                    cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+                    cy.get(deleteButtonSelector).shadow().find("button").should("be.disabled");
+                  });
+                });
+              }
+            }
 
             it("prefixes the path with the corresponding location code and relationship index", () => {
               if (scenario.name === "edit") {
                 expect(patchClientDetailsRequest.body[0].path).to.eq(
                   "/relatedClients/01/0/percentageOwnership",
                 );
-              } else {
+              } else if (scenario.name === "delete") {
+                expect(patchClientDetailsRequest.body[0].path).to.eq("/relatedClients/01/0");
+              } else if (scenario.name === "create") {
                 expect(patchClientDetailsRequest.body[0].path).to.eq("/relatedClients/01/null");
               }
             });
@@ -2076,7 +2142,11 @@ describe("Client Details Page", () => {
               it("sends one or more 'replace' operations", () => {
                 expect(patchClientDetailsRequest.body[0].op).to.eq("replace");
               });
-            } else {
+            } else if (scenario.name === "delete") {
+              it("sends a 'remove' operation", () => {
+                expect(patchClientDetailsRequest.body[0].op).to.eq("remove");
+              });
+            } else if (scenario.name === "create") {
               it("sends an 'add' operation", () => {
                 expect(patchClientDetailsRequest.body[0].op).to.eq("add");
               });
@@ -2089,7 +2159,13 @@ describe("Client Details Page", () => {
                   .contains("00000172, Nature Nurturers");
 
                 cy.get("cds-toast-notification[kind='success']").contains("updated");
-              } else {
+              } else if (scenario.name === "delete") {
+                cy.get("cds-toast-notification[kind='success']")
+                  .should("be.visible")
+                  .contains("00000172, Nature Nurturers");
+
+                cy.get("cds-toast-notification[kind='success']").contains("deleted");
+              } else if (scenario.name === "create") {
                 cy.get("cds-toast-notification[kind='success']")
                   .should("be.visible")
                   .contains("00000007, James Bond Bond");
@@ -2106,7 +2182,7 @@ describe("Client Details Page", () => {
               cy.wrap(getClientDetailsCounter).its("count").should("eq", 3);
             });
 
-            if (scenario.name === "edit") {
+            if (["edit", "delete"].includes(scenario.name)) {
               it("gets back into view mode", () => {
                 // Fields that belong to the form (edit mode)
                 testHidden(`#rc-${locationIndex}-${index}-location`);
@@ -2159,7 +2235,20 @@ describe("Client Details Page", () => {
 
                 // The value "88" triggers the error on the stub server
                 cy.fillFormEntry(`#rc-${locationIndex}-${index}-percentageOwnership`, "88");
-              } else {
+              } else if (scenario.name === "delete") {
+                // Clicks to expand the accordion
+                cy.get("#relationships-location-01 [slot='title']").click();
+
+                // Edit the relationship with index=0
+                cy.get("#location-01-row-0-EditBtn").click();
+
+                // Override the API response
+                cy.intercept("PATCH", "/api/clients/details/*", {
+                  statusCode: 500,
+                  body: "Sample error message",
+                  delay: 250,
+                }).as("saveClientDetails");
+              } else if (scenario.name === "create") {
                 cy.get("#addClientRelationshipBtn").click();
 
                 cy.get("cds-accordion[id|='relationships-location']").should("have.length", 3);
@@ -2169,7 +2258,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='location-3-heading']:focus");
-                cy.wait(1000);
+                cy.wait(500);
 
                 fillInRequiredFields("01 - Accountant address");
 
@@ -2177,25 +2266,58 @@ describe("Client Details Page", () => {
                 cy.fillFormEntry(`#rc-${locationIndex}-${index}-percentageOwnership`, "88");
               }
 
-              resumePatch = interruptPatch();
+              if (scenario.shouldInterruptOnFailure) {
+                resumePatch = interruptPatch();
+              }
               if (scenario.name === "edit") {
                 cy.get("#rc-01-0-SaveBtn").click();
-              } else {
+              } else if (scenario.name === "delete") {
+                cy.get(deleteButtonSelector).click();
+                cy.get("#modal-delete .cds--modal-submit-btn").filter(":visible").click();
+              } else if (scenario.name === "create") {
                 cy.get("#rc-null-null-SaveBtn").click();
               }
             });
 
-            it("disables the Save button while waiting for the response", () => {
-              cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
-              resumePatch();
-            });
+            // Isolated scope
+            {
+              const testBeforePatchResponse = (test: () => void) => {
+                test();
+
+                if (scenario.shouldInterruptOnFailure) {
+                  resumePatch();
+                } else {
+                  cy.wait("@saveClientDetails");
+                }
+              };
+              if (scenario.name === "create") {
+                it("disables the Save button while waiting for the response", () => {
+                  testBeforePatchResponse(() => {
+                    cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+                  });
+                });
+              } else {
+                it("disables the Save and the Delete buttons while waiting for the response", () => {
+                  testBeforePatchResponse(() => {
+                    /*
+                    Note: these two assertions need to be in the same test, otherwise there seems
+                    to be some kind of sync issue with the intercept.
+                    */
+                    cy.get(saveButtonSelector).shadow().find("button").should("be.disabled");
+                    cy.get(deleteButtonSelector).shadow().find("button").should("be.disabled");
+                  });
+                });
+              }
+            }
 
             it("shows the error toast", () => {
               cy.get("cds-toast-notification[kind='error']").should("be.visible");
 
               if (scenario.name === "edit") {
                 cy.get("cds-toast-notification[kind='error']").contains("Failed to update");
-              } else {
+              } else if (scenario.name === "delete") {
+                cy.get("cds-toast-notification[kind='error']").contains("Failed to delete");
+              } else if (scenario.name === "create") {
                 cy.get("cds-toast-notification[kind='error']").contains("Failed to create");
               }
             });
@@ -2207,10 +2329,11 @@ describe("Client Details Page", () => {
               cy.get(`#rc-${locationIndex}-${index}-relatedClient-location`).should("be.visible");
               cy.get(`#rc-${locationIndex}-${index}-percentageOwnership`).should("be.visible");
 
-              if (scenario.name === "edit") {
-                cy.get("#rc-01-0-SaveBtn").should("be.visible");
-              } else {
+              if (scenario.name === "create") {
                 cy.get("#rc-null-null-SaveBtn").should("be.visible");
+              } else {
+                cy.get("#rc-01-0-SaveBtn").should("be.visible");
+                cy.get(deleteButtonSelector).should("be.visible");
               }
             });
 
