@@ -46,11 +46,19 @@ fieldValidations["businessInformation.clientType"] = [
   isNotEmpty("You must select a client type."),
 ];
 
-fieldValidations["businessInformation.birthdate"] = [
-  isNotEmpty("You must enter a date of birth"),
+const birthdateBaseValidations = [
   isDateInThePast("Date of birth must be in the past"),
   isMinimumYearsAgo(19, "The applicant must be at least 19 years old to apply"),
 ];
+
+fieldValidations["businessInformation.birthdate"] = [
+  isNotEmpty("You must enter a date of birth"),
+  ...birthdateBaseValidations,
+];
+
+fieldValidations["businessInformation.birthdate-admin"] = birthdateBaseValidations.map(
+  (validation) => optional(validation),
+);
 
 // use the same validations as firstName in contacts
 fieldValidations["businessInformation.firstName"] = [
