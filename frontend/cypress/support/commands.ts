@@ -212,14 +212,29 @@ Cypress.Commands.add("clearFormEntry",(field: string, area: boolean = false) =>{
 });
 
 Cypress.Commands.add("selectFormEntry", (field: string, value: string) => {
+  // expands field options
   cy.get(field).find("[part='trigger-button']").click();
 
   cy.get(field).then(($el) => {
     const tagName = $el.prop("tagName").toLowerCase();
-    cy.get(field).find(`${tagName}-item[data-value="${value}"]`).click();
+
+    const clickItem = () => {
+      cy.get(field).find(`${tagName}-item[data-value="${value}"]`).click();
+    };
 
     if (tagName === "cds-multi-select") {
-      cy.get(field).click();
+      cy.get(field)
+        .find(`${tagName}-item[data-value="${value}"]`)
+        .then(($item) => {
+          // Prevents clicking the item if it's already selected
+          if (!$item.prop("selected")) {
+            clickItem();
+          }
+
+          cy.get(field).click();
+        });
+    } else {
+      clickItem();
     }
   });
 });

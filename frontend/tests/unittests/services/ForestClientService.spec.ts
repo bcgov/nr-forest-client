@@ -29,6 +29,8 @@ import {
   buildRelatedClientIndex,
   buildRelatedClientCombination,
   isLocationExpired,
+  formatRelatedClient,
+  createRemovePatch,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type {
@@ -1009,5 +1011,36 @@ describe("isLocationExpired", () => {
   it("returns false when location is not expired", () => {
     const result = isLocationExpired({ locnExpiredInd: "N" } as ClientLocation);
     expect(result).toBe(false);
+  });
+});
+
+describe("formatRelatedClient", () => {
+  it("joins the clientNumber and clientName into a new string", () => {
+    const result = formatRelatedClient("123", "Client Name");
+    expect(result).toBe("123, Client Name");
+  });
+
+  it("applies title case to the clientName", () => {
+    const result = formatRelatedClient("123", "UPPER CASE");
+    expect(result).toContain("Upper Case");
+  });
+});
+
+describe("createRemovePatch", () => {
+  const path = "/products/456";
+  const result = createRemovePatch(path);
+
+  it("returns an array with a single object", () => {
+    expect(result).toEqual(expect.any(Array));
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual(expect.any(Object));
+  });
+
+  it('has `op` equal to "remove"', () => {
+    expect(result[0].op).toBe("remove");
+  });
+
+  it("has the supplied `path`", () => {
+    expect(result[0].path).toBe(path);
   });
 });
