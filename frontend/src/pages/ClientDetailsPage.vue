@@ -47,6 +47,7 @@ import {
   compareAny,
   buildRelatedClientIndex,
   buildRelatedClientCombination,
+  createRemovePatch,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -624,14 +625,6 @@ const createAddPatch = <T>(value: T, path: string) => {
     op: "add",
     path,
     value,
-  };
-  return [patch];
-};
-
-const createRemovePatch = (path: string) => {
-  const patch: jsonpatch.RemoveOperation = {
-    op: "remove",
-    path,
   };
   return [patch];
 };
