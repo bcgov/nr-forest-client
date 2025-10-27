@@ -493,7 +493,7 @@ const sendPatchRequest = (reasonPatchData: ReasonPatch[]) => {
     if (response.value.status) {
       onSuccessPatch.value(response.value);
     }
-    if (error.value.status) {
+    if (error.value.status || error.value.code) {
       onFailurePatch.value(error.value);
     }
   });
