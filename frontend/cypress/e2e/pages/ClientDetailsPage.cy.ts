@@ -316,7 +316,7 @@ describe("Client Details Page", () => {
         { name: "on network error", value: "enet", shouldInterrupt: false },
       ];
       scenarios.forEach((scenario) => {
-        describe.only(scenario.name, { testIsolation: false }, () => {
+        describe(scenario.name, { testIsolation: false }, () => {
           before(function () {
             init.call(this);
 
