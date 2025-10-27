@@ -62,6 +62,8 @@ describe("<ContactsWizardStep />", () => {
     },
   };
 
+  const getIndividualFormData = () => structuredClone(individualFormData);
+
   const baseData = [
     {
       mail: "contact1@mail.ca",
@@ -133,7 +135,7 @@ describe("<ContactsWizardStep />", () => {
     // render the component
     cy.mount(ContactsWizardStep, {
       props: {
-        data: individualFormData,
+        data: getIndividualFormData(),
         active: true,
       },
     });
@@ -153,7 +155,7 @@ describe("<ContactsWizardStep />", () => {
     // render the component
     cy.mount(ContactsWizardStep, {
       props: {
-        data: individualFormData,
+        data: getIndividualFormData(),
         active: true,
       },
     });
@@ -176,7 +178,7 @@ describe("<ContactsWizardStep />", () => {
     // render the component
     cy.mount(ContactsWizardStep, {
       props: {
-        data: individualFormData,
+        data: getIndividualFormData(),
         active: true,
       },
     });
@@ -199,7 +201,7 @@ describe("<ContactsWizardStep />", () => {
     // render the component
     cy.mount(ContactsWizardStep, {
       props: {
-        data: individualFormData,
+        data: getIndividualFormData(),
         active: true,
         maxContacts,
       },
@@ -232,10 +234,22 @@ describe("<ContactsWizardStep />", () => {
     //Set a maximum of 5 contacts
     const maxContacts = 5;
 
+    const maxContactsFormData = getIndividualFormData();
+
+    // Add contacts until the maximum is reached
+    for (let index = 1; index < maxContacts; index++) {
+      maxContactsFormData.location.contacts.push({
+        firstName: `Temp${index}`,
+        index,
+        locationNames: [{ value: "0", text: "Jhonathan's Office" }],
+        contactType: { value: "", text: "" },
+      } as Contact);
+    }
+
     // render the component
     cy.mount(ContactsWizardStep, {
       props: {
-        data: individualFormData,
+        data: maxContactsFormData,
         active: true,
         maxContacts,
       },
