@@ -18,6 +18,7 @@ import {
   type ValidationMessageType,
   type FuzzyMatcherEvent,
   type FuzzyMatchResult,
+  type UserRole,
 } from "@/dto/CommonTypesDto";
 import {
   emptyContact,
@@ -53,11 +54,9 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
-const isAdminInd = computed(() =>
-  ["CLIENT_ADMIN"].some((authority) =>
-    ForestClientUserSession.authorities.includes(authority)
-  )
-);
+const userRoles = ForestClientUserSession.authorities as UserRole[];
+
+const isAdminInd = computed(() => userRoles.includes("CLIENT_ADMIN"));
 
 const clientTypesList = computed(() => {
   const list: CodeNameType[] = [
@@ -566,6 +565,7 @@ watch(submissionLimitError, () => {
             v-if="clientType?.code === 'I'"
             :active="currentTab == 0"
             :data="formData"
+            :user-roles="userRoles"
             @valid="validateStep"
           />
           

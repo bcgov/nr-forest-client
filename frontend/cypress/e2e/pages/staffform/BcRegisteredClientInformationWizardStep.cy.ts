@@ -701,7 +701,7 @@ describe("BC Registered Staff Wizard Step", () => {
       beforeEach(() => {
         cy.get("#birthdateYear").find("input").focus().blur();
 
-        cy.contains("#birthdate + .field-error", "You must enter a date of birth");
+        cy.contains("#birthdate .field-error", "You must enter a date of birth");
       });
       it("enables the button Next when a new Client name from a different type gets selected", () => {
         cy.clearFormEntry("#businessName");
