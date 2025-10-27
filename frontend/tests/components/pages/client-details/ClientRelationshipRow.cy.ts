@@ -74,9 +74,7 @@ describe("<client-relationships-row />", () => {
     userRoles: ["CLIENT_EDITOR"],
   });
 
-  const operateRelatedClientStub: OperateRelatedClient = () => {
-    alert("hey");
-  };
+  const operateRelatedClientStub: OperateRelatedClient = () => {};
   const operateRelatedClientWrapper = {
     operateRelatedClient: operateRelatedClientStub,
   };
@@ -206,6 +204,42 @@ describe("<client-relationships-row />", () => {
         expect(saveableComponent).to.be.an("object");
         expect(saveableComponent.setSaving).to.be.a("function");
         expect(saveableComponent.lockEditing).to.be.a("function");
+      });
+    });
+
+    describe("and the Delete button is clicked", () => {
+      beforeEach(() => {
+        cy.get(`#rc-${currentProps.locationIndex}-${currentProps.row.index}-DeleteBtn`).click();
+      });
+
+      it("displays a confirmation dialog when Delete is clicked", () => {
+        cy.get("#modal-delete").should("be.visible");
+      });
+
+      describe("and the intention to Delete is confirmed", () => {
+        beforeEach(() => {
+          cy.get("#modal-delete .cds--modal-submit-btn").click();
+        });
+
+        it('calls the injected "operateRelatedClient" with the parameters set to "remove"', () => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          expect(spyOperateRelatedClient).to.be.called;
+
+          const spyCall = spyOperateRelatedClient.getCall(0);
+
+          const { patch } = spyCall.args[0];
+          expect(patch).to.be.an("array");
+          expect(patch).to.have.lengthOf(1);
+          expect(patch[0].op).to.eq("remove");
+
+          const { saveableComponent, preserveRawPatch } = spyCall.args[1];
+
+          expect(saveableComponent).to.be.an("object");
+          expect(saveableComponent.setSaving).to.be.a("function");
+          expect(saveableComponent.lockEditing).to.be.a("function");
+
+          expect(preserveRawPatch).to.eq(true);
+        });
       });
     });
   });
