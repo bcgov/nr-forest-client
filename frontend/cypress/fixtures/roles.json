@@ -1,18 +1,22 @@
 [
   {
+    "code": "BL",
+    "name": "Billing"
+  },
+  {
   "code": "P",
   "name": "Person"
-},
-{
-  "code": "R",
-  "name": "Robot"
-},
-{
-  "code": "A",
-  "name": "Artificial Inteligence"
-},
-{
-  "code": "D",
-  "name": "Dog"
-}
+  },
+  {
+    "code": "R",
+    "name": "Robot"
+  },
+  {
+    "code": "A",
+    "name": "Artificial Inteligence"
+  },
+  {
+    "code": "D",
+    "name": "Dog"
+  }
 ]
