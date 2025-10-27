@@ -50,7 +50,13 @@ describe("Client Details Page", () => {
    *
    * @returns function to resume the Patch request
    */
-  const interruptPatch = (requestCallback?: (req: CyHttpMessages.IncomingHttpRequest) => void) => {
+  const interruptPatch = (
+    options: {
+      requestCallback?: (req: CyHttpMessages.IncomingHttpRequest) => void,
+    } = {},
+  ) => {
+    const { requestCallback } = options;
+
     let resolvePatchIntercepted: () => void;
     const promisePatchIntercepted = new Promise<void>((resolve) => {
       resolvePatchIntercepted = resolve;
@@ -304,36 +310,46 @@ describe("Client Details Page", () => {
         });
       });
 
-      describe("on generic failure", { testIsolation: false }, () => {
-        before(function () {
-          init.call(this);
+      const scenarios = [
+        { name: "on generic failure", value: "error", shouldInterrupt: true },
+        { name: "on network error", value: "enet", shouldInterrupt: false },
+      ];
+      scenarios.forEach((scenario) => {
+        describe.only(scenario.name, { testIsolation: false }, () => {
+          before(function () {
+            init.call(this);
 
-          cy.visit("/clients/details/p");
-          cy.get("#summaryEditBtn").click();
-          cy.fillFormEntry("[data-id='input-input-notes']", "error", { area: true });
-          resumePatch = interruptPatch();
-          cy.get("#summarySaveBtn").click();
-        });
+            cy.visit("/clients/details/p");
+            cy.get("#summaryEditBtn").click();
+            cy.fillFormEntry("[data-id='input-input-notes']", scenario.value, { area: true });
+            if (scenario.shouldInterrupt) {
+              resumePatch = interruptPatch();
+            }
+            cy.get("#summarySaveBtn").click();
+          });
 
-        it("disables the Save button while waiting for the response", () => {
-          cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
-          resumePatch();
-        });
+          it("disables the Save button while waiting for the response", () => {
+            cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+            if (scenario.shouldInterrupt) {
+              resumePatch();
+            }
+          });
 
-        it("shows the error toast", () => {
-          cy.get("cds-toast-notification[kind='error']").should("be.visible");
-        });
+          it("shows the error toast", () => {
+            cy.get("cds-toast-notification[kind='error']").should("be.visible");
+          });
 
-        it("stays in edit mode", () => {
-          cy.get("#input-workSafeBCNumber").should("be.visible");
-          cy.get("#input-clientStatus").should("be.visible");
-          cy.get("[data-id='input-input-notes']").should("be.visible");
+          it("stays in edit mode", () => {
+            cy.get("#input-workSafeBCNumber").should("be.visible");
+            cy.get("#input-clientStatus").should("be.visible");
+            cy.get("[data-id='input-input-notes']").should("be.visible");
 
-          cy.get("#summarySaveBtn").should("be.visible");
-        });
+            cy.get("#summarySaveBtn").should("be.visible");
+          });
 
-        it("re-enables the Save button", () => {
-          cy.get("#summarySaveBtn").shadow().find("button").should("be.enabled");
+          it("re-enables the Save button", () => {
+            cy.get("#summarySaveBtn").shadow().find("button").should("be.enabled");
+          });
         });
       });
 
@@ -912,8 +928,10 @@ describe("Client Details Page", () => {
 
               registerInterceptors();
 
-              resumePatch = interruptPatch((req) => {
-                patchClientDetailsRequest = req;
+              resumePatch = interruptPatch({
+                requestCallback: (req) => {
+                  patchClientDetailsRequest = req;
+                },
               });
 
               cy.visit("/clients/details/p");
@@ -1412,8 +1430,10 @@ describe("Client Details Page", () => {
 
               registerInterceptors();
 
-              resumePatch = interruptPatch((req) => {
-                patchClientDetailsRequest = req;
+              resumePatch = interruptPatch({
+                requestCallback: (req) => {
+                  patchClientDetailsRequest = req;
+                },
               });
 
               cy.visit("/clients/details/p");
@@ -1940,8 +1960,10 @@ describe("Client Details Page", () => {
 
               registerInterceptors();
 
-              resumePatch = interruptPatch((req) => {
-                patchClientDetailsRequest = req;
+              resumePatch = interruptPatch({
+                requestCallback: (req) => {
+                  patchClientDetailsRequest = req;
+                },
               });
 
               cy.visit("/clients/details/p");
