@@ -10,10 +10,7 @@ import { useFocus } from "@/composables/useFocus";
 import { useEventBus } from "@vueuse/core";
 // Importing types
 import type { FormDataDto } from "@/dto/ApplyClientNumberDto";
-import type {
-  CodeNameType,
-  IdentificationCodeNameType,
-} from "@/dto/CommonTypesDto";
+import type { CodeNameType, IdentificationCodeNameType, UserRole } from "@/dto/CommonTypesDto";
 // Importing validators
 import {
   getValidations,
@@ -28,12 +25,25 @@ const props = defineProps<{
   data: FormDataDto;
   active: boolean;
   autoFocus?: boolean;
+  userRoles: UserRole[];
 }>();
 
 const emit = defineEmits<{
   (e: "update:data", value: FormDataDto): void;
   (e: "valid", value: boolean): void;
 }>();
+
+const isAdmin = computed(() => props.userRoles.includes("CLIENT_ADMIN"));
+
+const isBirthdateRequired = computed(() => !isAdmin.value);
+
+/**
+ * This is the *local* validation key for the birthdate field.
+ * It's *local* only, in the sense of being the key used only by the front-end code.
+ */
+const birthdateLocalValidationKey = computed(() =>
+  isAdmin.value ? "businessInformation.birthdate-admin" : "businessInformation.birthdate",
+);
 
 // Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data);
@@ -136,7 +146,7 @@ const validation = reactive<Record<string, boolean>>({
   firstName: false,
   middleName: true,
   lastName: false,
-  birthdate: false,
+  birthdate: !isBirthdateRequired.value,
   identificationType: false,
   identificationProvince: !shouldDisplayProvince.value,
   clientIdentification: false,
@@ -326,7 +336,7 @@ watch(combinedValue, (newValue) => {
     <div>
       <div class="label-with-icon line-height-0 parent-label">
         <div class="cds-text-input-label">
-          <span class="cds-text-input-required-label">* </span>
+          <span class="cds-text-input-required-label" v-if="isBirthdateRequired">* </span>
           <span>Date of birth</span>
         </div>
         <cds-tooltip>
@@ -343,13 +353,13 @@ watch(combinedValue, (newValue) => {
         v-model="formData.businessInformation.birthdate"
         :enabled="true"
         :validations="[
-          ...getValidations('businessInformation.birthdate'),
+          ...getValidations(birthdateLocalValidationKey),
           submissionValidation('businessInformation.birthdate'),
         ]"
         :year-validations="[...getValidations('businessInformation.birthdate.year')]"
         @error="validation.birthdate = !$event"
         @possibly-valid="validation.birthdate = $event"
-        required
+        :required="isBirthdateRequired"
       />
     </div>
 
