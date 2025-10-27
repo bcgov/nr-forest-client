@@ -1938,6 +1938,19 @@ cds-table-row[even] {
   padding: 2.875rem 0;
 }
 
+.link-container {
+  position: relative;
+}
+
+.row-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Ensure link is on top */
+}
+
 .svg-danger:not([disabled]) {
   svg {
     color: var(--light-theme-button-danger-secondary);

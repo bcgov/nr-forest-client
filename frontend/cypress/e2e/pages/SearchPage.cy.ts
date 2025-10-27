@@ -219,17 +219,36 @@ describe("Search Page", () => {
         });
       });
 
+      it("HTML a tag is positioned exactly over the table row", () => {
+        const clientNumber = "00191086";
+        cy.get("cds-table")
+          .contains("cds-table-row", clientNumber)
+          .then(($row) => {
+            cy.get("cds-table")
+              .contains("cds-table-row", clientNumber)
+              .find("a")
+              .then(($a) => {
+                // The rectangle position matches
+                expect($a[0].getBoundingClientRect()).to.deep.eq($row[0].getBoundingClientRect());
+
+                // z-index of the HTML a tag wins
+                expect($a.css("z-index")).to.eq("1");
+                expect($row.css("z-index")).to.eq("auto");
+              });
+          });
+      });
+
       describe("and user clicks a result on the table", () => {
         const clientNumber = "00191086";
         beforeEach(() => {
-          cy.get("cds-table").contains("cds-table-row", clientNumber).click();
+          /*
+          Note: even if we remove `.find("a")`, the click is also captured by the `a` tag, as it's
+          positioned exactly over the table row.
+          */
+          cy.get("cds-table").contains("cds-table-row", clientNumber).find("a").click();
         });
         it("navigates to the client details", () => {
-          cy.get("@windowOpen").should(
-            "be.calledWith",
-            `/clients/details/${clientNumber}`,
-            "_self",
-          );
+          cy.location("pathname").should("eq", `/clients/details/${clientNumber}`);
         });
       });
 

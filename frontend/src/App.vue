@@ -82,7 +82,11 @@ overlayBus.on(openOverlay)
   <div :class="$route.meta.format">
     <div :class="$route.meta.style" aria-live="polite">
       <unauthorized-error-page v-if="$route.meta.showUnauthorized" />
-      <router-view v-else></router-view>
+      <router-view v-else v-slot="{ Component }">
+        <keep-alive include="SearchPage">
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </div>
   </div>
 
