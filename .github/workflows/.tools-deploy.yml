@@ -17,7 +17,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: bcgov/action-builder-ghcr@1a3767a04ade69edf7e4857c44269d1100282581 # v4.1.0
+      - uses: bcgov/action-builder-ghcr@1e4295b9766963ca36612b78560db6235120b80f # 4.1.1
         name: Build (legacydb)
         with:
           package: legacydb
@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Scale down legacy
         continue-on-error: true
-        uses: bcgov/action-oc-runner@10033668ef4374d9bb78149faa73e4ccda0e93dd # v1.2.3
+        uses: bcgov/action-oc-runner@f900830adadd4d9eef3ca6ff80103e839ba8b7c0 # v1.3.0
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
@@ -84,7 +84,7 @@ jobs:
     steps:
       - name: Create the PR database
         continue-on-error: true
-        uses: bcgov/action-oc-runner@10033668ef4374d9bb78149faa73e4ccda0e93dd # v1.2.3
+        uses: bcgov/action-oc-runner@f900830adadd4d9eef3ca6ff80103e839ba8b7c0 # v1.3.0
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -109,7 +109,7 @@ jobs:
 
       - name: Create the PR user
         continue-on-error: true
-        uses: bcgov/action-oc-runner@10033668ef4374d9bb78149faa73e4ccda0e93dd # v1.2.3
+        uses: bcgov/action-oc-runner@f900830adadd4d9eef3ca6ff80103e839ba8b7c0 # v1.3.0
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -134,7 +134,7 @@ jobs:
 
       - name: Migrate the PR database
         continue-on-error: true
-        uses: bcgov/action-oc-runner@10033668ef4374d9bb78149faa73e4ccda0e93dd # v1.2.3
+        uses: bcgov/action-oc-runner@f900830adadd4d9eef3ca6ff80103e839ba8b7c0 # v1.3.0
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -152,7 +152,7 @@ jobs:
     steps:
       - name: Start the Legacy Service
         continue-on-error: true
-        uses: bcgov/action-oc-runner@10033668ef4374d9bb78149faa73e4ccda0e93dd # v1.2.3
+        uses: bcgov/action-oc-runner@f900830adadd4d9eef3ca6ff80103e839ba8b7c0 # v1.3.0
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
