@@ -18,8 +18,8 @@ import {
   searchResultToText,
   buildRelatedClientIndex,
   buildRelatedClientCombination,
-  toTitleCase,
   isLocationExpired,
+  formatRelatedClient,
 } from "@/services/ForestClientService";
 
 import Save16 from "@carbon/icons-vue/es/save/16";
@@ -52,6 +52,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "save", payload: SaveEvent<IndexedRelatedClient>): void;
+  (e: "delete"): void;
   (e: "canceled"): void;
 }>();
 
@@ -191,6 +192,10 @@ const save = () => {
   });
 };
 
+const handleDelete = () => {
+  emit("delete");
+};
+
 const validation = reactive<Record<string, boolean>>({
   location: !!formData.value?.client.location,
   relationshipType: !!formData.value?.relationship,
@@ -286,9 +291,6 @@ const getLocationList = (addresses: ClientLocation[], curLocationCode: string) =
 const locationList = computed<CodeNameType[]>(() =>
   getLocationList(props.clientData.addresses, props.data.client.location?.code),
 );
-
-const formatRelatedClient = (clientNumber: string, clientName: string) =>
-  `${clientNumber}, ${toTitleCase(clientName)}`;
 
 const getInitialRawSearchKeyword = () => {
   const relatedClient = props.data.relatedClient.client;
@@ -603,6 +605,17 @@ const confirmNewClient = () => {
       >
         <span class="width-unset">Cancel</span>
         <Close16 slot="icon" />
+      </cds-button>
+      <cds-button
+        v-if="props.locationIndex !== 'null'"
+        :id="`rc-${locationIndex}-${index}-DeleteBtn`"
+        kind="danger--tertiary"
+        size="md"
+        @click="handleDelete"
+        :disabled="saving"
+      >
+        <span class="width-unset">Delete relationship</span>
+        <Trash16 slot="icon" />
       </cds-button>
     </div>
   </div>

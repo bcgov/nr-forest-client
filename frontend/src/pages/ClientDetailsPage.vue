@@ -47,6 +47,7 @@ import {
   compareAny,
   buildRelatedClientIndex,
   buildRelatedClientCombination,
+  createRemovePatch,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -492,7 +493,7 @@ const sendPatchRequest = (reasonPatchData: ReasonPatch[]) => {
     if (response.value.status) {
       onSuccessPatch.value(response.value);
     }
-    if (error.value.status) {
+    if (error.value.status || error.value.code) {
       onFailurePatch.value(error.value);
     }
   });
@@ -624,14 +625,6 @@ const createAddPatch = <T>(value: T, path: string) => {
     op: "add",
     path,
     value,
-  };
-  return [patch];
-};
-
-const createRemovePatch = (path: string) => {
-  const patch: jsonpatch.RemoveOperation = {
-    op: "remove",
-    path,
   };
   return [patch];
 };
