@@ -451,6 +451,37 @@ watch(submissionLimitError, () => {
   }
   submissionLimitHandleError();
 });
+
+const submissionDuplicationCheck = ref<any[]>([]);
+
+const { error: submissionDuplicationError,
+        handleErrorDefault: submissionDuplicationHandleError 
+      } = useFetchTo(
+  "/api/clients/submissions/duplicate-check/U/NaN",
+  submissionDuplicationCheck,
+  {
+    skipDefaultErrorHandling: true,
+  }
+);
+
+watch(submissionDuplicationError, () => {
+  if (submissionDuplicationError.value.response?.status === 400) {
+    const validationErrors: ValidationMessageType[] =
+      submissionDuplicationError.value.response?.data;
+
+    validationErrors.forEach((errorItem: ValidationMessageType) =>
+      notificationBus.emit({
+        fieldId: "server.validation.error",
+        fieldName: "",
+        errorMsg: errorItem.errorMsg,
+      })
+    );
+
+    submitBtnDisabled.value = true;
+    return;
+  }
+  submissionDuplicationHandleError();
+});
 </script>
 
 <template>
