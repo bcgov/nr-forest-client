@@ -242,8 +242,9 @@ describe("Search Page", () => {
         const clientNumber = "00191086";
         beforeEach(() => {
           /*
-          Note: even if we remove `.find("a")`, the click is also captured by the `a` tag, as it's
-          positioned exactly over the table row.
+          Note: even if we remove `.find("a")`, the click is also captured by the `a` tag, as
+          the Cypress engine clicks whatever is clickable at the xy position of the returned
+          element.
           */
           cy.get("cds-table").contains("cds-table-row", clientNumber).find("a").click();
         });
