@@ -14,15 +14,18 @@ export const useFocus = (): {
     componentName: string,
     time?: number,
     callback?: (refComponent: Ref<OptionalElement>) => void,
+    attribute?: string,
   ) => Ref<OptionalElement>;
   safeSetFocusedComponent: (
     componentName: string,
     time?: number,
+    attribute?: string,
   ) => Ref<OptionalElement>;
   setScrollPoint: (
     componentName: string,
     time?: number,
     callback?: (refComponent: Ref<OptionalElement>) => void,
+    attribute?: string,
   ) => Ref<OptionalElement>;
 } => {
   // setActionOn is a function that execute the action on an a component
@@ -92,10 +95,11 @@ export const useFocus = (): {
     componentName: string,
     time: number = 100,
     callback?: (refComponent: Ref<OptionalElement>) => void,
+    attribute?: string,
   ): Ref<OptionalElement> =>
     execute(
       componentName,
-      'data-focus',
+      attribute || "data-focus",
       (element) => (element instanceof HTMLElement ? element.focus() : undefined),
       time,
       callback,
@@ -112,10 +116,11 @@ export const useFocus = (): {
   const safeSetFocusedComponent = (
     componentName: string,
     time: number = 100,
+    attribute?: string,
   ): Ref<OptionalElement> => {
     return execute(
       componentName,
-      "data-focus",
+      attribute || "data-focus",
       async (element) => {
         if (!(element instanceof HTMLElement) || isTouchScreen.value) {
           return;
@@ -141,10 +146,11 @@ export const useFocus = (): {
     componentName: string,
     time: number = 100,
     callback?: (refComponent: Ref<OptionalElement>) => void,
+    attribute?: string,
   ): Ref<Element | undefined> =>
     execute(
       componentName,
-      'data-scroll',
+      attribute || "data-scroll",
       (element) => {
         if (element?.scrollIntoView) {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });

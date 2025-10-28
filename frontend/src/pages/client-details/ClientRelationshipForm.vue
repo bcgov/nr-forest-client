@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, inject, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import type {
   ClientDetails,
@@ -38,7 +38,8 @@ import {
   optional,
 } from "@/helpers/validators/GlobalValidators";
 import { useFetchTo } from "@/composables/useFetch";
-import type { SaveableComponent } from "./shared";
+import type { GoToTab, SaveableComponent } from "./shared";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
   locationIndex: string;
@@ -54,6 +55,8 @@ const emit = defineEmits<{
   (e: "delete"): void;
   (e: "canceled"): void;
 }>();
+
+const router = useRouter();
 
 let formattedOriginalData: IndexedRelatedClient;
 const formData = ref<IndexedRelatedClient>();
@@ -357,6 +360,77 @@ const searchResultToCodeNameValueList = (
 const relatedClientLocationList = computed(() =>
   getLocationList(relatedClientDetails.value?.addresses, props.data.relatedClient.location?.code),
 );
+
+const displayNewLocationModal = ref(false);
+
+const handleNewLocation = () => {
+  displayNewLocationModal.value = true;
+};
+
+const newLocationFunctionName = ref(`handleNewLocation_${props.locationIndex}_${props.index}`);
+
+const displayNewClientModal = ref(false);
+
+const handleNewClient = () => {
+  displayNewClientModal.value = true;
+};
+
+const newClientFunctionName = ref(`handleNewClient_${props.locationIndex}_${props.index}`);
+
+/**
+ * Exposes the function outside of Vue.
+ * @param functionName - The name of the function exposed globally
+ */
+const exposeFunctionGlobally = (functionName: string, func: () => void) => {
+  /*
+  This allows us to have a javascript:URL link that triggers the execution of Vue code.
+  We want this kind of link to prevent users from trying to open it in a new tab.
+  Either because the href would be just a "#" which doesn't take the user to the intended
+  destination, or because the flow wouldn't work as expected.
+  */
+  window[functionName] = func;
+};
+
+const removeGlobalFunction = (functionName: string) => {
+  delete window[functionName];
+};
+
+onMounted(() => {
+  exposeFunctionGlobally(newLocationFunctionName.value, handleNewLocation);
+  exposeFunctionGlobally(newClientFunctionName.value, handleNewClient);
+});
+
+watch(newLocationFunctionName, (value, oldValue) => {
+  if (oldValue) {
+    removeGlobalFunction(oldValue);
+  }
+  exposeFunctionGlobally(value, handleNewLocation);
+});
+watch(newClientFunctionName, (value, oldValue) => {
+  if (oldValue) {
+    removeGlobalFunction(oldValue);
+  }
+  exposeFunctionGlobally(value, handleNewClient);
+});
+
+onUnmounted(() => {
+  removeGlobalFunction(newLocationFunctionName.value);
+  removeGlobalFunction(newClientFunctionName.value);
+});
+
+const goToTab = inject<GoToTab>("goToTab");
+
+const confirmNewLocation = () => {
+  goToTab("locations");
+  displayNewLocationModal.value = false;
+  emit("canceled");
+};
+
+const confirmNewClient = () => {
+  router.push("/new-client-staff");
+  displayNewClientModal.value = false;
+  emit("canceled");
+};
 </script>
 
 <template>
@@ -364,7 +438,6 @@ const relatedClientLocationList = computed(() =>
     <dropdown-input-component
       :id="`rc-${locationIndex}-${index}-location`"
       label="Location"
-      tip="Select the location created for this relationship or create a new location"
       :initial-value="
         locationList?.find((item) => item.code === formData.client.location?.code)?.name
       "
@@ -381,7 +454,14 @@ const relatedClientLocationList = computed(() =>
       @update:selected-value="updateLocation($event)"
       @empty="validation.location = !$event"
       @error="validation.location = !$event"
-    />
+    >
+      <template #tip>
+        Select the location created for this relationship or
+        <a id="createLocationLink" :href="`javascript:${newLocationFunctionName}()`">
+          create a new location
+        </a>
+      </template>
+    </dropdown-input-component>
     <data-fetcher
       :url="`/api/codes/relationship-types/${props.clientData.client.clientTypeCode}`"
       :min-length="0"
@@ -422,7 +502,6 @@ const relatedClientLocationList = computed(() =>
         :id="`rc-${locationIndex}-${index}-relatedClient`"
         :label="relatedClientLabel"
         autocomplete="off"
-        tip="Start typing the client’s number or name. You can also create a new client"
         required
         required-label
         v-model="rawSearchKeyword"
@@ -438,14 +517,23 @@ const relatedClientLocationList = computed(() =>
         :loading="loading"
         @update:selected-value="updateRelatedClient($event)"
         @update:model-value="onUpdateModeValueRelatedClient"
-        #="{ value }"
       >
-        <div class="search-result-item" v-if="value">
-          <span v-dompurify-html="highlightMatch(searchResultToText(value), searchKeyword)"></span>
-          <cds-tag :type="getTagColorByClientStatus(value.clientStatus)" title="">
-            <span>{{ value.clientStatus }}</span>
-          </cds-tag>
-        </div>
+        <template #default="{ value }">
+          <div class="search-result-item" v-if="value">
+            <span
+              v-dompurify-html="highlightMatch(searchResultToText(value), searchKeyword)"
+            ></span>
+            <cds-tag :type="getTagColorByClientStatus(value.clientStatus)" title="">
+              <span>{{ value.clientStatus }}</span>
+            </cds-tag>
+          </div>
+        </template>
+        <template #tip>
+          Start typing the client’s number or name. You can also
+          <a id="createClientLink" :href="`javascript:${newClientFunctionName}()`">
+            create a new client
+          </a>
+        </template>
       </AutoCompleteInputComponent>
     </data-fetcher>
     <dropdown-input-component
@@ -531,4 +619,108 @@ const relatedClientLocationList = computed(() =>
       </cds-button>
     </div>
   </div>
+  <cds-modal
+    id="modal-new-location"
+    aria-labelledby="modal-new-location-heading"
+    size="sm"
+    :open="displayNewLocationModal"
+    @cds-modal-closed="displayNewLocationModal = false"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading id="modal-new-location-heading">
+        Create a new location for a relationship
+      </cds-modal-heading>
+    </cds-modal-header>
+
+    <cds-modal-body id="modal-new-location-body" class="column-gap-2-rem">
+      <cds-inline-notification
+        v-shadow="2"
+        id="newLocationNotification"
+        low-contrast="true"
+        open="true"
+        kind="warning"
+        hide-close-button="true"
+        title="The relationship will not be saved"
+      >
+        <div class="body-compact-01">Start again once the new location has been created.</div>
+      </cds-inline-notification>
+      <span>You will be redirected to this client's “Client Locations” tab.</span>
+    </cds-modal-body>
+
+    <cds-modal-footer>
+      <cds-modal-footer-button
+        kind="secondary"
+        data-modal-close
+        class="cds--modal-close-btn"
+        :disabled="saving"
+      >
+        Cancel
+      </cds-modal-footer-button>
+
+      <cds-modal-footer-button
+        kind="danger"
+        class="cds--modal-submit-btn"
+        v-on:click="confirmNewLocation"
+        :danger-descriptor="`Discard relationship and redirect`"
+        :disabled="saving"
+      >
+        Discard relationship and redirect
+        <Trash16 slot="icon" />
+      </cds-modal-footer-button>
+    </cds-modal-footer>
+  </cds-modal>
+  <cds-modal
+    id="modal-new-client"
+    aria-labelledby="modal-new-client-heading"
+    size="sm"
+    :open="displayNewClientModal"
+    @cds-modal-closed="displayNewClientModal = false"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading id="modal-new-client-heading">
+        Create a new client for a relationship
+      </cds-modal-heading>
+    </cds-modal-header>
+
+    <cds-modal-body id="modal-new-client-body" class="column-gap-2-rem">
+      <cds-inline-notification
+        v-shadow="2"
+        id="newClientNotification"
+        low-contrast="true"
+        open="true"
+        kind="warning"
+        hide-close-button="true"
+        title="The relationship will not be saved"
+      >
+        <div class="body-compact-01">
+          Start again once the new client has been created and approved.
+        </div>
+      </cds-inline-notification>
+      <span>You will be redirected to the “Create client” page.</span>
+    </cds-modal-body>
+
+    <cds-modal-footer>
+      <cds-modal-footer-button
+        kind="secondary"
+        data-modal-close
+        class="cds--modal-close-btn"
+        :disabled="saving"
+      >
+        Cancel
+      </cds-modal-footer-button>
+
+      <cds-modal-footer-button
+        kind="danger"
+        class="cds--modal-submit-btn"
+        v-on:click="confirmNewClient"
+        :danger-descriptor="`Discard relationship and redirect`"
+        :disabled="saving"
+      >
+        Discard relationship and redirect
+        <Trash16 slot="icon" />
+      </cds-modal-footer-button>
+    </cds-modal-footer>
+  </cds-modal>
 </template>
