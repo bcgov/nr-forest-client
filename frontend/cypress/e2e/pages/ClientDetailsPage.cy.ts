@@ -1,3 +1,4 @@
+import type { ClientDetails } from "@/dto/CommonTypesDto";
 import type { CyHttpMessages } from "cypress/types/net-stubbing";
 
 describe("Client Details Page", () => {
@@ -315,7 +316,7 @@ describe("Client Details Page", () => {
         { name: "on network error", value: "enet", shouldInterrupt: false },
       ];
       scenarios.forEach((scenario) => {
-        describe.only(scenario.name, { testIsolation: false }, () => {
+        describe(scenario.name, { testIsolation: false }, () => {
           before(function () {
             init.call(this);
 
@@ -966,7 +967,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='location-3-heading']:focus");
-                cy.wait(500);
+                cy.wait(1000);
 
                 cy.fillFormEntry("#name_null", "Beach office");
 
@@ -1073,7 +1074,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='location-3-heading']:focus");
-                cy.wait(500);
+                cy.wait(1000);
 
                 cy.fillFormEntry("#name_null", "Beach office");
 
@@ -1473,7 +1474,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='contact-null-heading']:focus");
-                cy.wait(500);
+                cy.wait(1000);
 
                 cy.fillFormEntry("#fullName_null", "Steve New");
 
@@ -1591,7 +1592,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='contact-null-heading']:focus");
-                cy.wait(500);
+                cy.wait(1000);
 
                 cy.fillFormEntry("#fullName_null", "Steve New");
 
@@ -1701,7 +1702,7 @@ describe("Client Details Page", () => {
           Prevents error with focus switching.
           */
           // cy.get("[data-focus='contact-null-heading']:focus");
-          cy.wait(500);
+          cy.wait(1000);
 
           // Use the same contact name
           cy.fillFormEntry("#fullName_null", contactName);
@@ -1883,40 +1884,109 @@ describe("Client Details Page", () => {
       };
 
       describe("combined data duplication", () => {
-        beforeEach(() => {
-          cy.intercept({
-            method: "GET",
-            pathname: "/api/clients/details/*",
-          }).as("getClientDetails");
+        describe("create new relationship", () => {
+          beforeEach(() => {
+            cy.intercept({
+              method: "GET",
+              pathname: "/api/clients/details/*",
+            }).as("getClientDetails");
 
-          cy.intercept("GET", "/api/codes/relationship-types/*").as("getRelationshipTypes");
+            cy.intercept("GET", "/api/codes/relationship-types/*").as("getRelationshipTypes");
 
-          cy.visit("/clients/details/se");
+            cy.visit("/clients/details/se");
 
-          cy.wait("@getClientDetails");
+            cy.wait("@getClientDetails");
 
-          // Switch to the Related clients tab
-          cy.get("#tab-related").click();
+            // Switch to the Related clients tab
+            cy.get("#tab-related").click();
 
-          cy.get("#addClientRelationshipBtn").click();
+            cy.get("#addClientRelationshipBtn").click();
 
-          /*
-          Wait to have a focused element.
-          Prevents error with focus switching.
-          */
-          // cy.get("[data-focus='relationships-location-null-heading']:focus");
-          cy.wait(500);
+            fillInRequiredFields("01");
+          });
 
-          fillInRequiredFields("01");
+          it("shows the error on field Location name", () => {
+            cy.get("#rc-null-null-location").should("have.attr", "invalid");
+            cy.get("#rc-null-null-relationship").should("have.attr", "invalid");
+            cy.get("#rc-null-null-relatedClient").should("have.attr", "invalid");
+            cy.get("#rc-null-null-relatedClient-location").should("have.attr", "invalid");
+
+            cy.get("cds-button#rc-null-null-SaveBtn").shadow().find("button").should("be.disabled");
+          });
         });
 
-        it("shows the errors on the unique validation-related set of fields", () => {
-          cy.get("#rc-null-null-location").should("have.attr", "invalid");
-          cy.get("#rc-null-null-relationship").should("have.attr", "invalid");
-          cy.get("#rc-null-null-relatedClient").should("have.attr", "invalid");
-          cy.get("#rc-null-null-relatedClient-location").should("have.attr", "invalid");
+        describe("edit relationship", () => {
+          beforeEach(() => {
+            const getClientDetailsCounter = {
+              count: 0,
+            };
+            cy.intercept(
+              {
+                method: "GET",
+                pathname: "/api/clients/details/*",
+              },
+              (req) => {
+                getClientDetailsCounter.count++;
+                req.continue((res) => {
+                  if (getClientDetailsCounter.count > 1) {
+                    const jsonBody = JSON.parse(res.body) as ClientDetails;
 
-          cy.get("cds-button#rc-null-null-SaveBtn").shadow().find("button").should("be.disabled");
+                    // move the first relationship from "01" to "00"
+                    const movedRelationship = jsonBody.relatedClients["01"].shift();
+                    movedRelationship.client.location = {
+                      code: "00",
+                      name: "Headquarters",
+                    };
+                    jsonBody.relatedClients["00"].unshift(movedRelationship);
+
+                    res.body = JSON.stringify(jsonBody);
+                  }
+                });
+              },
+            ).as("getClientDetails");
+
+            cy.intercept("GET", "/api/codes/relationship-types/*").as("getRelationshipTypes");
+
+            cy.visit("/clients/details/rut");
+
+            cy.wait("@getClientDetails");
+
+            // Switch to the Related clients tab
+            cy.get("#tab-related").click();
+
+            // Clicks to expand the accordion
+            cy.get("#relationships-location-01 [slot='title']").click();
+
+            // Edit the relationship with index=0
+            cy.get("#location-01-row-0-EditBtn").click();
+
+            // sanity check 1
+            cy.get("#rc-01-0-relatedClient").contains("00000172");
+
+            cy.selectFormEntry("cds-dropdown#rc-01-0-location", "00 - Headquarters");
+
+            cy.get("#rc-01-0-SaveBtn").click();
+
+            cy.wait("@getClientDetails");
+          });
+
+          /**
+           * @see {@link https://apps.nrs.gov.bc.ca/int/jira/browse/FSADT1-2021|FSADT1-2021}
+           */
+          const test = () =>
+            it("has no error on the relationship remaining on the initial location", () => {
+              cy.get("#location-01-row-0-EditBtn").click();
+
+              // sanity check 2 (updated)
+              cy.get("#rc-01-0-relatedClient").contains("00000007");
+
+              cy.get("#rc-01-0-location").should("not.have.attr", "invalid");
+              cy.get("#rc-01-0-relationship").should("not.have.attr", "invalid");
+              cy.get("#rc-01-0-relatedClient").should("not.have.attr", "invalid");
+              cy.get("#rc-01-0-relatedClient-location").should("not.have.attr", "invalid");
+            });
+
+          test();
         });
       });
 
@@ -2057,7 +2127,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='relationships-location-null-heading']:focus");
-                cy.wait(500);
+                cy.wait(1000);
 
                 fillInRequiredFields("01 - Accountant address");
 
@@ -2231,7 +2301,7 @@ describe("Client Details Page", () => {
                 Prevents error with focus switching.
                 */
                 // cy.get("[data-focus='location-3-heading']:focus");
-                cy.wait(500);
+                cy.wait(1000);
 
                 fillInRequiredFields("01 - Accountant address");
 

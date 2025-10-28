@@ -60,3 +60,57 @@ if [ -n "${PDB_TO_REMOVE}" ]; then
      exit;
 EOF
 fi;
+
+# --- Begin: Automated cleanup of leftover temporary/archival files ---
+# This section is intentionally conservative: it uses RMAN to remove obsolete backups
+# and archived logs, then deletes filesystem artifacts older than 1 day in the
+# fast recovery area (FRA) and diagnostic trace directories. Adjust the age or
+# targets if you need more/less aggressive cleanup.
+
+echo "[removeDatabase] Starting post-drop cleanup: RMAN and filesystem tidy"
+
+# 1) Use RMAN to remove obsolete backups and archive logs (if RMAN is available)
+if command -v rman >/dev/null 2>&1; then
+  echo "[removeDatabase] Running RMAN maintenance (delete obsolete, archive logs older than 1 day)"
+  rman target / <<'RMAN' || true
+RUN {
+  CROSSCHECK ARCHIVELOG ALL;
+  DELETE NOPROMPT ARCHIVELOG ALL COMPLETED BEFORE 'SYSDATE-1';
+  CROSSCHECK BACKUP;
+  DELETE NOPROMPT OBSOLETE;
+}
+RMAN
+else
+  echo "[removeDatabase] RMAN not found; skipping RMAN cleanup"
+fi
+
+# 2) Find FRA (fast recovery area) and remove files older than 1 day
+FRA_PATH=""
+FRA_PATH=$(sqlplus -s / as sysdba <<SQL | sed -n '1p' || true
+SET PAGESIZE 0 FEEDBACK OFF VERIFY OFF HEADING OFF ECHO OFF
+SELECT value FROM v\$parameter WHERE name='db_recovery_file_dest';
+exit;
+SQL
+)
+
+if [ -n "${FRA_PATH}" ] && [ -d "${FRA_PATH}" ]; then
+  echo "[removeDatabase] Cleaning FRA at ${FRA_PATH}: removing files older than 1 day"
+  find "${FRA_PATH}" -type f -mtime +1 -print -exec rm -f {} \; || true
+else
+  echo "[removeDatabase] FRA path not set or not a directory (value='${FRA_PATH}'), skipping FRA cleanup"
+fi
+
+# 3) Clean diagnostic trace and alert log files older than 1 day (under ORACLE_BASE/diag)
+ORACLE_BASE_PATH="${ORACLE_BASE:-/opt/oracle}"
+DIAG_DIRS=("${ORACLE_BASE_PATH}/diag" "${ORACLE_BASE_PATH}/trace" "/opt/oracle/diag")
+for d in "${DIAG_DIRS[@]}"; do
+  if [ -d "${d}" ]; then
+    echo "[removeDatabase] Cleaning diagnostic files in ${d} (files older than 1 day)"
+    find "${d}" -type f \( -name '*.trc' -o -name '*.trm' -o -name '*.log' -o -name 'alert*.log' \) -mtime +1 -print -exec rm -f {} \; || true
+  fi
+done
+
+echo "[removeDatabase] Post-drop cleanup complete. Current disk usage:"
+df -h || true
+
+# --- End: Automated cleanup ---
