@@ -43,7 +43,6 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
         app: ${NAME}-${ZONE}
-        appkind: ${NAME}-${COMPONENT}
     spec:
       replicas: 1        
       selector:
