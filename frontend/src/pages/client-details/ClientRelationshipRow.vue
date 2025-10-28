@@ -140,7 +140,7 @@ const confirmDeleteRelatedClient = () => {
         </span>
       </cds-table-cell>
       <cds-table-cell>
-        <div class="gap-0_5-rem">
+        <div>
           <span>{{ row.relationship.name }}</span>
         </div>
       </cds-table-cell>

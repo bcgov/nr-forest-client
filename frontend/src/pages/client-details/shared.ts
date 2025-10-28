@@ -22,3 +22,5 @@ export type OperateRelatedClient = (
   payload: SaveEvent<IndexedRelatedClient>,
   rawOptions?: OperationOptions,
 ) => void;
+
+export type GoToTab = (tabName: string) => void;

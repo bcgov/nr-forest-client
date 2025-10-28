@@ -568,4 +568,21 @@ describe("Auto Complete Input Component", () => {
       });
     });
   });
+
+  it("renders the helper-text as supplied in the tip slot", async () => {
+    const wrapper = mount(AutoCompleteInputComponent, {
+      props: {
+        id,
+        modelValue: "",
+        contents,
+        validations: [],
+        label: id,
+      },
+      slots: {
+        tip: "Custom tip text",
+      },
+    });
+
+    expect(wrapper.find("[slot='helper-text']").text()).toContain("Custom tip text");
+  });
 });

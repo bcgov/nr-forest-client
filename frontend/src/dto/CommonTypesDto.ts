@@ -13,7 +13,7 @@ export interface CodeNameType {
 };
 
 export interface CodeNameValue<T> extends CodeNameType {
-  value: T;
+  value?: T;
 };
 
 export interface BusinessSearchResult {

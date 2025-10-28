@@ -324,7 +324,6 @@ const safeHelperText = computed(() => props.tip || " ");
         :clear-selection-label="`Clear ${label}`"
         :required="required"
         :data-required-label="requiredLabel"
-        :helper-text="safeHelperText"
         :label="placeholder"
         :value="inputValue"
         filterable
@@ -368,6 +367,11 @@ const safeHelperText = computed(() => props.tip || " ");
             </slot>
           </template>
         </cds-combo-box-item>
+        <div slot="helper-text" v-if="!error" class="display-contents">
+          <slot name="tip">
+            {{ safeHelperText }}
+          </slot>
+        </div>
       </cds-combo-box>
     </div>
   </div>
