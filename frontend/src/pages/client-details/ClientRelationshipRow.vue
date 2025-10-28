@@ -8,7 +8,9 @@ import type {
 } from "@/dto/CommonTypesDto";
 import {
   booleanToYesNo,
+  createRemovePatch,
   formatLocation,
+  formatRelatedClient,
   includesAnyOf,
   toTitleCase,
 } from "@/services/ForestClientService";
@@ -19,6 +21,7 @@ import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipFor
 import {
   CLIENT_RELATIONSHIPS_EDIT_COLUMN_COUNT,
   type OperateRelatedClient,
+  type OperationOptions,
   type SaveableComponent,
 } from "./shared";
 
@@ -58,11 +61,52 @@ const lockEditing = () => {
   isEditing.value = false;
 };
 
+const localSaving = ref(false);
+
 const setSaving = (value: boolean) => {
-  formRef.value.setSaving(value);
+  if (formRef.value) {
+    formRef.value.setSaving(value);
+  }
+  localSaving.value = value;
 };
 
 const thisSaveableComponent: SaveableComponent = { setSaving, lockEditing };
+
+const displayDeleteModal = ref(false);
+
+const handleDelete = () => {
+  displayDeleteModal.value = true;
+};
+
+const deleteRelatedClient = (
+  relatedClient: IndexedRelatedClient,
+  rawOptions?: OperationOptions,
+) => {
+  const { index: relatedClientIndex, originalLocation } = relatedClient;
+  const patch = createRemovePatch(`/relatedClients/${originalLocation.code}/${relatedClientIndex}`);
+  operateRelatedClient(
+    {
+      action: {
+        infinitive: "delete",
+        pastParticiple: "deleted",
+      },
+      patch,
+      updatedData: relatedClient,
+      operationType: "delete",
+    },
+    {
+      ...rawOptions,
+      preserveRawPatch: true,
+    },
+  );
+};
+
+const confirmDeleteRelatedClient = () => {
+  deleteRelatedClient(props.row, {
+    saveableComponent: thisSaveableComponent,
+  });
+  displayDeleteModal.value = false;
+};
 </script>
 
 <template>
@@ -154,6 +198,7 @@ const thisSaveableComponent: SaveableComponent = { setSaving, lockEditing };
               :id="`location-${locationIndex}-row-${row.index}-DeleteBtn`"
               kind="ghost"
               class="svg-danger"
+              @click="handleDelete"
               :disabled="!row.isMainParticipant"
             >
               <TrashCan16 slot="icon" />
@@ -178,7 +223,56 @@ const thisSaveableComponent: SaveableComponent = { setSaving, lockEditing };
         keep-scroll-bottom-position
         @canceled="cancel"
         @save="save"
+        @delete="handleDelete"
       />
     </td>
   </cds-table-row>
+  <cds-modal
+    id="modal-delete"
+    aria-labelledby="modal-delete-heading"
+    size="sm"
+    :open="displayDeleteModal"
+    @cds-modal-closed="displayDeleteModal = false"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading id="modal-delete-heading"
+        >Are you sure you want to delete this client relationship with "{{
+          formatRelatedClient(
+            props.row.relatedClient.client.code,
+            props.row.relatedClient.client.name,
+          )
+        }}"?
+      </cds-modal-heading>
+    </cds-modal-header>
+
+    <cds-modal-body id="modal-delete-body"></cds-modal-body>
+
+    <cds-modal-footer>
+      <cds-modal-footer-button
+        kind="secondary"
+        data-modal-close
+        class="cds--modal-close-btn"
+        :disabled="localSaving"
+      >
+        Cancel
+      </cds-modal-footer-button>
+
+      <cds-modal-footer-button
+        kind="danger"
+        class="cds--modal-submit-btn"
+        v-on:click="confirmDeleteRelatedClient"
+        :danger-descriptor="`Delete client relationship with &quot;{{
+          formatRelatedClient(
+            props.row.relatedClient.client.code,
+            props.row.relatedClient.client.name,
+          )
+        }}&quot;`"
+        :disabled="localSaving"
+      >
+        Delete client relationship
+        <Trash16 slot="icon" />
+      </cds-modal-footer-button>
+    </cds-modal-footer>
+  </cds-modal>
 </template>

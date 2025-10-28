@@ -18,6 +18,7 @@ import {
   type ValidationMessageType,
   type FuzzyMatcherEvent,
   type FuzzyMatchResult,
+  type UserRole,
 } from "@/dto/CommonTypesDto";
 import {
   emptyContact,
@@ -25,6 +26,8 @@ import {
   type Contact,
   type Address,
   type FormDataDto,
+  defaultLocation,
+  defaultContactType,
 } from "@/dto/ApplyClientNumberDto";
 import {
   getEnumKeyByEnumValue,
@@ -53,11 +56,9 @@ import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 import ArrowRight16 from "@carbon/icons-vue/es/arrow--right/16";
 import Check16 from "@carbon/icons-vue/es/checkmark/16";
 
-const isAdminInd = computed(() =>
-  ["CLIENT_ADMIN"].some((authority) =>
-    ForestClientUserSession.authorities.includes(authority)
-  )
-);
+const userRoles = ForestClientUserSession.authorities as UserRole[];
+
+const isAdminInd = computed(() => userRoles.includes("CLIENT_ADMIN"));
 
 const clientTypesList = computed(() => {
   const list: CodeNameType[] = [
@@ -323,6 +324,8 @@ const onBack = () => {
 // Initialize the "primary" contact - the individual him/herself
 const applicantContact: Contact = {
   ...emptyContact,
+  locationNames: [{ ...defaultLocation }],
+  contactType: defaultContactType,
 };
 
 const clientType = ref<CodeNameType>();
@@ -566,6 +569,7 @@ watch(submissionLimitError, () => {
             v-if="clientType?.code === 'I'"
             :active="currentTab == 0"
             :data="formData"
+            :user-roles="userRoles"
             @valid="validateStep"
           />
           

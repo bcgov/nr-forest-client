@@ -32,7 +32,7 @@ describe("<ContactsWizardStep />", () => {
     location: {
       addresses: [
         {
-          locationName: "Main Address",
+          locationName: "Jhonathan's Office",
           complementaryAddressOne: "",
           complementaryAddressTwo: null,
           streetAddress: "3925 Dieppe Ave",
@@ -50,7 +50,7 @@ describe("<ContactsWizardStep />", () => {
       ],
       contacts: [
         {
-          locationNames: [{ value: "0", text: "Mailing address" }],
+          locationNames: [{ value: "0", text: "Jhonathan's Office" }],
           contactType: { value: "", text: "" },
           firstName: "Jhonathan",
           lastName: "James Wick",
@@ -61,6 +61,8 @@ describe("<ContactsWizardStep />", () => {
       ],
     },
   };
+
+  const getIndividualFormData = () => structuredClone(individualFormData);
 
   const baseData = [
     {
@@ -133,7 +135,7 @@ describe("<ContactsWizardStep />", () => {
     // render the component
     cy.mount(ContactsWizardStep, {
       props: {
-        data: individualFormData,
+        data: getIndividualFormData(),
         active: true,
       },
     });
@@ -153,7 +155,7 @@ describe("<ContactsWizardStep />", () => {
     // render the component
     cy.mount(ContactsWizardStep, {
       props: {
-        data: individualFormData,
+        data: getIndividualFormData(),
         active: true,
       },
     });
@@ -170,7 +172,26 @@ describe("<ContactsWizardStep />", () => {
     fillFormEntry("#faxNumber_0", baseData[0].fax);
 
     selectFormEntry("#role_0", baseData[0].role, false);
-    selectFormEntry("#addressname_0", baseData[0].address, true);
+  });
+
+  it("adds extra contacts with default values", () => {
+    // render the component
+    cy.mount(ContactsWizardStep, {
+      props: {
+        data: getIndividualFormData(),
+        active: true,
+      },
+    });
+
+    cy.wait("@getContactTypes");
+
+    cy.contains("Add another contact").should("be.visible").click();
+
+    // Default role
+    cy.get("#role_1").should("have.value", "Billing");
+
+    // Default location is the first location, whatever it's called
+    cy.get("#addressname_1").should("have.value", "Jhonathan's Office");
   });
 
   it("add extra contacts until max", () => {
@@ -180,7 +201,7 @@ describe("<ContactsWizardStep />", () => {
     // render the component
     cy.mount(ContactsWizardStep, {
       props: {
-        data: individualFormData,
+        data: getIndividualFormData(),
         active: true,
         maxContacts,
       },
@@ -213,10 +234,22 @@ describe("<ContactsWizardStep />", () => {
     //Set a maximum of 5 contacts
     const maxContacts = 5;
 
+    const maxContactsFormData = getIndividualFormData();
+
+    // Add contacts until the maximum is reached
+    for (let index = 1; index < maxContacts; index++) {
+      maxContactsFormData.location.contacts.push({
+        firstName: `Temp${index}`,
+        index,
+        locationNames: [{ value: "0", text: "Jhonathan's Office" }],
+        contactType: { value: "", text: "" },
+      } as Contact);
+    }
+
     // render the component
     cy.mount(ContactsWizardStep, {
       props: {
-        data: individualFormData,
+        data: maxContactsFormData,
         active: true,
         maxContacts,
       },

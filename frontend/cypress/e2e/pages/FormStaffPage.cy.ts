@@ -625,7 +625,6 @@ describe("Staff Form", () => {
   });
 
   describe("contacts step", () => {
-
     beforeEach(() => {
       cy.login("uattest@gov.bc.ca", "Uat Test", "idir", {
         given_name: "James",
@@ -637,65 +636,98 @@ describe("Staff Form", () => {
       cy.get("#menu-list-staff-form").should("be.visible").click();
 
       cy.get("#clientType")
-          .should("be.visible")
-          .and("have.value", "")
-          .find("[part='trigger-button']")
-          .click();
+        .should("be.visible")
+        .and("have.value", "")
+        .find("[part='trigger-button']")
+        .click();
 
-        cy.get("#clientType")
-          .find('cds-combo-box-item[data-id="I"]')
-          .should("be.visible")
-          .click()
-          .and("have.value", "Individual");
+      cy.get("#clientType")
+        .find('cds-combo-box-item[data-id="I"]')
+        .should("be.visible")
+        .click()
+        .and("have.value", "Individual");
 
-        cy.contains("h2", "Client information");
+      cy.contains("h2", "Client information");
 
-        fillIndividual();
+      fillIndividual();
 
-        cy.get("[data-test='wizard-next-button']").click();
+      cy.get("[data-test='wizard-next-button']").click();
 
-        cy.contains("h2", "Locations");
-        fillLocation();
+      cy.contains("h2", "Locations");
+      fillLocation();
 
-        cy.get("[data-test='wizard-next-button']").click();
-        cy.contains("h2", "Contacts");
-        fillContact();
-      
+      cy.get("[data-test='wizard-next-button']").click();
+      cy.contains("h2", "Contacts");
     });
 
-    it("should display an error message at the top of the page when providing invalid character", () => {
-      cy.fillFormEntry("#emailAddress_0","é");
+    it("should display the contact data, which include some default values", () => {
+      cy.wait("@getContactTypes");
 
-      cy.get("#emailAddress_0")
-      .find("input")
-      .should("have.class", "cds--text-input--invalid");
+      cy.get("#role_0").should("have.value", "Billing");
+      cy.get("#addressname_0").should("have.value", "Mailing address");
+    });
+
+    it("should rename location names on the contact's data in case the location per se is renamed", () => {
+      cy.wait("@getContactTypes");
+
+      cy.contains("Add another contact").should("be.visible").click();
+
+      // Both contacts have the default location
+      cy.get("#addressname_0").should("have.value", "Mailing address");
+      cy.get("#addressname_1").should("have.value", "Mailing address");
 
       cy.get("[data-test='wizard-back-button']").click();
       cy.contains("h2", "Locations");
-      cy.get("[data-test='wizard-back-button']").click();
-      cy.contains("h2", "Client information");
-      cy.get("[data-test='wizard-next-button']").click();
-      cy.contains("h2", "Locations");
+
+      // Renames the location
+      cy.clearFormEntry("#name_0");
+      cy.fillFormEntry("#name_0", "Newy");
+
       cy.get("[data-test='wizard-next-button']").click();
       cy.contains("h2", "Contacts");
-      cy.get("[data-test='wizard-next-button']").click();
 
-      cy.wait(10);
+      // Both contacts have the location name updated
+      cy.get("#addressname_0").should("have.value", "Newy");
+      cy.get("#addressname_1").should("have.value", "Newy");
+    });
 
-      // Check we are still in the same step
-      cy.contains("h2", "Contacts");
+    describe("when all the contact data is filled in", () => {
+      beforeEach(() => {
+        fillContact();
+      });
 
-      // For some reason the top notification is not showing up
-      // cy.get(".top-notification cds-actionable-notification")
-      //   .should("be.visible")
-      //   .and("have.attr", "kind", "error");
-      
-      cy.get("#emailAddress_0")
+      it("should display an error message at the top of the page when providing invalid character", () => {
+        cy.fillFormEntry("#emailAddress_0","é");
+
+        cy.get("#emailAddress_0")
         .find("input")
         .should("have.class", "cds--text-input--invalid");
 
-    });
+        cy.get("[data-test='wizard-back-button']").click();
+        cy.contains("h2", "Locations");
+        cy.get("[data-test='wizard-back-button']").click();
+        cy.contains("h2", "Client information");
+        cy.get("[data-test='wizard-next-button']").click();
+        cy.contains("h2", "Locations");
+        cy.get("[data-test='wizard-next-button']").click();
+        cy.contains("h2", "Contacts");
+        cy.get("[data-test='wizard-next-button']").click();
 
+        cy.wait(10);
+
+        // Check we are still in the same step
+        cy.contains("h2", "Contacts");
+
+        // For some reason the top notification is not showing up
+        // cy.get(".top-notification cds-actionable-notification")
+        //   .should("be.visible")
+        //   .and("have.attr", "kind", "error");
+
+        cy.get("#emailAddress_0")
+          .find("input")
+          .should("have.class", "cds--text-input--invalid");
+      });
+    });
   });
 
   describe("review step", () => {

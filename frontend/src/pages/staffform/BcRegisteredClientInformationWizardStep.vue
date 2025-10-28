@@ -20,6 +20,8 @@ import {
   indexedEmptyAddress,
   indexedEmptyContact,
   newFormDataDto,
+  defaultLocation,
+  defaultContactType,
 } from "@/dto/ApplyClientNumberDto";
 import { adminEmail, getEnumKeyByEnumValue, getObfuscatedEmailLink } from "@/services/ForestClientService";
 import { BusinessTypeEnum } from "@/dto/CommonTypesDto";
@@ -297,17 +299,6 @@ watch([detailsData], () => {
         forestClientDetails.contacts[0]?.lastName;
     }
 
-    const receivedContacts = forestClientDetails.contacts ?? [ indexedEmptyContact(0) ];
-    receivedContacts.forEach((contact) => {
-      contact.locationNames = [];
-    });
-
-    formData.value.location.contacts = receivedContacts;
-
-    if (formData.value.location.contacts.length == 0) {
-      formData.value.location.contacts = [ indexedEmptyContact(0) ];
-    }
-
     const receivedAddresses = forestClientDetails.addresses ?? [ indexedEmptyAddress(0) ];
     receivedAddresses.forEach((address) => {
       address.complementaryAddressOne = null;
@@ -319,7 +310,28 @@ watch([detailsData], () => {
       address.notes = null;
     });
     formData.value.location.addresses = formatAddresses(receivedAddresses);
-    
+
+    const receivedContacts = forestClientDetails.contacts ?? [ indexedEmptyContact(0) ];
+    receivedContacts.forEach((contact) => {
+      contact.locationNames = [];
+    });
+
+    formData.value.location.contacts = receivedContacts;
+
+    if (formData.value.location.contacts.length == 0) {
+      formData.value.location.contacts = [ indexedEmptyContact(0) ];
+    }
+    formData.value.location.contacts.forEach((contact) => {
+      contact.locationNames = [
+        // The default location `value` with the updated name
+        {
+          value: defaultLocation.value,
+          text: formData.value.location.addresses[0].locationName,
+        },
+      ];
+      contact.contactType = defaultContactType;
+    });
+
     formData.value.businessInformation.goodStandingInd = standingValue(
       forestClientDetails.goodStanding
     );
