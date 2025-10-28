@@ -10,6 +10,7 @@ import type { ModalNotification } from '@/dto/CommonTypesDto'
 // @ts-ignore
 import Delete16 from '@carbon/icons-vue/es/trash-can/16'
 import UnauthorizedErrorPage from '@/pages/UnauthorizedErrorPage.vue';
+import SearchPage from "@/pages/SearchPage.vue";
 
 const modalBus = useEventBus<ModalNotification>('modal-notification')
 const toastBus = useEventBus<ModalNotification>('toast-notification')
@@ -73,6 +74,9 @@ const deleteContentModal = () => {
 modalBus.on(openModal)
 toastBus.on(openToast)
 overlayBus.on(openOverlay)
+
+const keepAliveComponents = [SearchPage];
+const keepAliveString = keepAliveComponents.map((item) => item.name || item.__name).join(",");
 </script>
 
 <template>
@@ -83,7 +87,7 @@ overlayBus.on(openOverlay)
     <div :class="$route.meta.style" aria-live="polite">
       <unauthorized-error-page v-if="$route.meta.showUnauthorized" />
       <router-view v-else v-slot="{ Component }">
-        <keep-alive include="SearchPage">
+        <keep-alive :include="keepAliveString">
           <component :is="Component" />
         </keep-alive>
       </router-view>
