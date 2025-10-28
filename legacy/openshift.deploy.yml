@@ -62,7 +62,6 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
-        appkind: ${COMPONENT}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       replicas: 1
