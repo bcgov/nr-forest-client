@@ -45,8 +45,9 @@ Feature: BceID User Tests
       | Year       | 1990                      | text   |
       | Month      | 01                        | text   |
       | Day        | 01                        | text   |
-    Then I click on next    
-    And I click on next
+    Then I click on next
+    And I type "2975 Jutland Rd" and select "2975 Jutland Rd" from the "Street address or PO box" form autocomplete    
+    Then I click on next
     And I type "2255522552" into the "Phone number" form input
     Then I select "Billing" from the "Primary role" form input
     And I fill the "GARY VEITCH" information with the following

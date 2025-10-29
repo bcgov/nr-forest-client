@@ -1,0 +1,15 @@
+{
+  "mappings": [
+    {
+      "name": "Valid Submission Duplication",
+      "request": {
+        "url": "/api/clients/submissions/duplicate-check/R/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "OK"
+      }
+    }
+  ]
+}
