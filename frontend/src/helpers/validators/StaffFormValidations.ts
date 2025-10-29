@@ -56,7 +56,7 @@ fieldValidations["businessInformation.birthdate"] = [
   ...birthdateBaseValidations,
 ];
 
-fieldValidations["businessInformation.birthdate-admin"] = birthdateBaseValidations.map(
+fieldValidations["businessInformation.birthdate-optional"] = birthdateBaseValidations.map(
   (validation) => optional(validation),
 );
 

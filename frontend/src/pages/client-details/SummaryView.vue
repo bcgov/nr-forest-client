@@ -30,6 +30,7 @@ import {
 import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
 import type { SaveableComponent } from "./shared";
+import { optionalArray } from "@/helpers/validators/GlobalValidators";
 
 const props = defineProps<{
   data: ClientDetails;
@@ -259,9 +260,9 @@ const editRoles: Record<FieldId, UserRole[]> = {
   clientType: ["CLIENT_ADMIN"],
   registrationNumber: ["CLIENT_ADMIN"],
   workSafeBCNumber: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
-  birthdate: ["CLIENT_ADMIN"],
-  clientIdType: ["CLIENT_ADMIN"],
-  clientIdentification: ["CLIENT_ADMIN"],
+  birthdate: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
+  clientIdType: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
+  clientIdentification: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   clientStatus: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
   notes: ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"],
 };
@@ -292,6 +293,18 @@ const canEditClientStatus = () => {
   return false;
 };
 
+/*
+When user is not an Administrator, id-related fields will be editable only if either:
+  - clientIdentification is empty;
+  - clientIdType is OTHR;
+  - clientIdType is UNKN.
+*/
+const isIdFieldsEditable = (data: ClientDetails) =>
+  data.client.clientTypeCode === "I" &&
+  (props.userRoles.includes("CLIENT_ADMIN") ||
+    !originalData.client.clientIdentification ||
+    ["OTHR", "UNKN"].includes(originalData.client.clientIdTypeCode));
+
 /**
  * Tells whether the field is editable at all, according to the client's data provided.
  * Note: it doesn't mean the current user should be allowed to do it.
@@ -305,9 +318,14 @@ const isFieldEditable: Record<FieldId, (data: ClientDetails) => boolean> = {
   clientType: () => true,
   registrationNumber: (data) => companyLikeTypes.includes(data.client.clientTypeCode),
   workSafeBCNumber: () => true,
-  birthdate: (data) => data.client.clientTypeCode === "I",
-  clientIdType: (data) => data.client.clientTypeCode === "I",
-  clientIdentification: (data) => data.client.clientTypeCode === "I",
+
+  // When user is not an Administrator, birthdate will be editable only if it was empty.
+  birthdate: (data) =>
+    data.client.clientTypeCode === "I" &&
+    (props.userRoles.includes("CLIENT_ADMIN") || !originalData.client.birthdate),
+
+  clientIdType: isIdFieldsEditable,
+  clientIdentification: isIdFieldsEditable,
   clientStatus: canEditClientStatus,
   notes: () => true,
 };
@@ -440,9 +458,14 @@ watch(goodStandingInd, () => {
   }
 });
 
-const additionalClientIdentificationValidations = computed(() => {
+const clientIdentificationValidations = computed(() => {
   const suffix = formData.value.client.clientIdTypeCode === "OTHR" ? "OTHR" : "nonOTHR";
-  return getValidations(`client.clientIdentification-${suffix}`);
+  const additionalValidations = getValidations(`client.clientIdentification-${suffix}`);
+
+  return optionalArray([
+    ...getValidations("client.clientIdentification"),
+    ...additionalValidations,
+  ]);
 });
 
 watch(
@@ -711,7 +734,6 @@ const clientIdentificationMask = "U".repeat(40);
     <div v-if="displayEditable('birthdate')">
       <div class="label-with-icon line-height-0 parent-label">
         <div class="cds-text-input-label">
-          <span class="cds-text-input-required-label">* </span>
           <span>Date of birth</span>
         </div>
         <cds-tooltip>
@@ -728,13 +750,12 @@ const clientIdentificationMask = "U".repeat(40);
         v-model="formData.client.birthdate"
         :enabled="true"
         :validations="[
-          ...getValidations('businessInformation.birthdate'),
+          ...getValidations('businessInformation.birthdate-optional'),
           submissionValidation('businessInformation.birthdate'),
         ]"
         :year-validations="[...getValidations('businessInformation.birthdate.year')]"
         @error="validation.birthdate = !$event"
         @possibly-valid="validation.birthdate = $event"
-        required
       />
     </div>
     <div
@@ -778,14 +799,11 @@ const clientIdentificationMask = "U".repeat(40);
         v-model="formData.client.clientIdentification"
         :mask="clientIdentificationMask"
         :validations="[
-          ...getValidations('client.clientIdentification'),
-          ...additionalClientIdentificationValidations,
+          ...clientIdentificationValidations,
           submissionValidation('client.clientIdentification'),
         ]"
         enabled
-        required
-        required-label
-        @empty="validation.clientIdentification = !$event"
+        @empty="validation.clientIdentification = true"
         @error="validation.clientIdentification = !$event"
       />
     </div>
