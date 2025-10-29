@@ -1,0 +1,193 @@
+{
+  "client": {
+    "registryCompanyTypeCode": null,
+    "corpRegnNmbr": null,
+    "clientNumber": "{{randomValue length=4 type='NUMERIC'}}",
+    "clientName": "Scott",
+    "legalFirstName": "Michael",
+    "legalMiddleName": "",
+    "birthdate": "1962-08-17",
+    "clientIdTypeCode": "BCRE",
+    "clientIdTypeDesc": "BC Registry",
+    "clientIdentification": "FM236478",
+    "clientAcronym": "",
+    "clientTypeCode": "I",
+    "clientTypeDesc": "Individual",
+    "goodStandingInd": "N",
+    "clientStatusCode": "ACT",
+    "clientStatusDesc": "Active",
+    "clientComment": "",
+    "clientCommentUpdateDate": "",
+    "clientCommentUpdateUser": "",
+    "wcbFirmNumber": "{{randomValue length=6 type='NUMERIC'}}"
+  },
+  "doingBusinessAs": null,
+  "contacts": [
+    {
+      "contactId": "1",
+      "locationCodes": ["01"],
+      "contactName": "Cheryl Bibby",
+      "contactTypeCode": "BL",
+      "contactTypeDesc": "Billing",
+      "businessPhone": "{{randomValue length=10 type='NUMERIC'}}",
+      "secondaryPhone": null,
+      "faxNumber": null,
+      "emailAddress": null
+    }
+  ],
+  "addresses": [
+    {
+      "clientLocnName": "Headquarters",
+      "clientLocnCode": "00",
+      "addressOne": "{{randomValue length=3 type='NUMERIC'}} Richmond Ave",
+      "addressTwo": "C/O Tony Pineda",
+      "addressThree": "Sample additional info",
+      "countryCode": "CA",
+      "countryDesc": "Canada",
+      "provinceCode": "SK",
+      "provinceDesc": "Saskatchewan",
+      "city": "Hampton",
+      "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+      "emailAddress": "contact@mail.com",
+      "businessPhone": "2502863767",
+      "cellPhone": "2505553700",
+      "homePhone": "2505553101",
+      "faxNumber": "2502863768",
+      "cliLocnComment": "Sample location 00 comment",
+      "locnExpiredInd": "N"
+    },
+    {
+      "clientLocnName": null,
+      "clientLocnCode": "01",
+      "addressOne": "{{randomValue length=4 type='NUMERIC'}} Oak St",
+      "addressTwo": "C/O Mike Oliveira",
+      "addressThree": "",
+      "countryCode": "CA",
+      "countryDesc": "Canada",
+      "provinceCode": "BC",
+      "provinceDesc": "British Columbia",
+      "city": "Deer Lake",
+      "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+      "emailAddress": "account@mail.com",
+      "businessPhone": "2502864767",
+      "cellPhone": "2505554700",
+      "homePhone": "2505554101",
+      "faxNumber": "2502864768",
+      "cliLocnComment": "Sample location 01 comment",
+      "locnExpiredInd": "N"
+    },
+    {
+      "clientLocnName": null,
+      "clientLocnCode": "02",
+      "addressOne": "{{randomValue length=4 type='NUMERIC'}} Oak St",
+      "addressTwo": "C/O Mike Oliveira",
+      "addressThree": "",
+      "countryCode": "CA",
+      "countryDesc": "Canada",
+      "provinceCode": "BC",
+      "provinceDesc": "British Columbia",
+      "city": "Deer Lake",
+      "postalCode": "{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}{{randomValue length=1 type='ALPHABETIC' uppercase=true}}{{randomValue length=1 type='NUMERIC'}}",
+      "emailAddress": "account@mail.com",
+      "businessPhone": "2502864767",
+      "cellPhone": "2505554700",
+      "homePhone": "2505554101",
+      "faxNumber": "2502864768",
+      "cliLocnComment": "Sample location 01 comment",
+      "locnExpiredInd": "N"
+    }
+  ],
+  "relatedClients": {
+    "00": [
+        {
+            "client": {
+                "client": {
+                    "code": "rut",
+                    "name": "Thiz"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "Headquarters"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000172",
+                    "name": "NATURE NURTURERS"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "Mailing address"
+                }
+            },
+            "relationship": {
+                "code": "SH",
+                "name": "Shareholder"
+            },
+            "percentageOwnership": 33.0,
+            "hasSigningAuthority": true,
+            "isMainParticipant": true
+        },
+        {
+            "client": {
+                "client": {
+                    "code": "rut",
+                    "name": "Thiz"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "Headquarters"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000158",
+                    "name": "OAK HERITAGE GROUP"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "MR"
+                }
+            },
+            "relationship": {
+                "code": "JV",
+                "name": "Joint Venture Participant"
+            },
+            "percentageOwnership": 50.0,
+            "hasSigningAuthority": null,
+            "isMainParticipant": false
+        }
+    ],
+    "01": [
+        {
+            "client": {
+                "client": {
+                    "code": "rut",
+                    "name": "Thiz"
+                },
+                "location": {
+                    "code": "01",
+                    "name": "Accountant address"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000007",
+                    "name": "james bond bond"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "Mailing address"
+                }
+            },
+            "relationship": {
+                "code": "SH",
+                "name": "Shareholder"
+            },
+            "percentageOwnership": 33.0,
+            "hasSigningAuthority": false,
+            "isMainParticipant": true
+        }
+    ]
+  }
+}

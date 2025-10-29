@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import ComboBoxInputComponent from "@/components/forms/ComboBoxInputComponent.vue";
+import DropdownInputComponent from "@/components/forms/DropdownInputComponent.vue";
 
 describe("ComboBoxInputComponent", () => {
   const validations = [
@@ -25,7 +25,7 @@ describe("ComboBoxInputComponent", () => {
   };
 
   it("should render", () => {
-    const wrapper = mount(ComboBoxInputComponent, {
+    const wrapper = mount(DropdownInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -40,18 +40,18 @@ describe("ComboBoxInputComponent", () => {
     });
 
     expect(
-      wrapper.find('cds-combo-box-item[data-value="Value A"]').exists()
+      wrapper.find('cds-dropdown-item[data-value="Value A"]').exists()
     ).toBe(true);
     expect(
-      wrapper.find('cds-combo-box-item[data-value="Value B"]').exists()
+      wrapper.find('cds-dropdown-item[data-value="Value B"]').exists()
     ).toBe(true);
     expect(
-      wrapper.find('cds-combo-box-item[data-value="Value C"]').exists()
+      wrapper.find('cds-dropdown-item[data-value="Value C"]').exists()
     ).toBe(false);
   });
 
   it("should emit event when changing selection", async () => {
-    const wrapper = mount(ComboBoxInputComponent, {
+    const wrapper = mount(DropdownInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -65,9 +65,9 @@ describe("ComboBoxInputComponent", () => {
       },
     });
 
-    const dropdown = wrapper.find("cds-combo-box");
+    const dropdown = wrapper.find("cds-dropdown");
 
-    await dropdown.trigger("cds-combo-box-selected", eventContent("Value A"));
+    await dropdown.trigger("cds-dropdown-selected", eventContent("Value A"));
 
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
     expect(wrapper.emitted("update:modelValue")![0][0]).toBe("A");
@@ -80,7 +80,7 @@ describe("ComboBoxInputComponent", () => {
   });
 
   it("should emit empty then emit not empty", async () => {
-    const wrapper = mount(ComboBoxInputComponent, {
+    const wrapper = mount(DropdownInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -97,16 +97,37 @@ describe("ComboBoxInputComponent", () => {
     expect(wrapper.emitted("empty")).toBeTruthy();
     expect(wrapper.emitted("empty")![0][0]).toBe(true);
 
-    const dropdown = wrapper.find("cds-combo-box");
+    const dropdown = wrapper.find("cds-dropdown");
 
-    await dropdown.trigger("cds-combo-box-selected", eventContent("Value A"));
+    await dropdown.trigger("cds-dropdown-selected", eventContent("Value A"));
 
     expect(wrapper.emitted("empty")).toBeTruthy();
     expect(wrapper.emitted("empty")![1][0]).toBe(false);
   });
 
+  it("renders the helper-text as supplied in the tip slot", async () => {
+    const wrapper = mount(DropdownInputComponent, {
+      props: {
+        id: "test",
+        label: "test",
+        tip: "",
+        modelValue: [
+          { code: "A", name: "Value A" },
+          { code: "B", name: "Value B" },
+        ],
+        initialValue: "",
+        validations: [],
+      },
+      slots: {
+        tip: "Custom tip text",
+      },
+    });
+
+    expect(wrapper.find("[slot='helper-text']").text()).toContain("Custom tip text");
+  });
+
   it("should validate and emit error if required", async () => {
-    const wrapper = mount(ComboBoxInputComponent, {
+    const wrapper = mount(DropdownInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -120,9 +141,9 @@ describe("ComboBoxInputComponent", () => {
       },
     });
 
-    const dropdown = wrapper.find("cds-combo-box");
+    const dropdown = wrapper.find("cds-dropdown");
 
-    await dropdown.trigger("cds-combo-box-selected", eventContent("Value A"));
+    await dropdown.trigger("cds-dropdown-selected", eventContent("Value A"));
 
     await wrapper.trigger("click");
 
@@ -140,7 +161,7 @@ describe("ComboBoxInputComponent", () => {
   });
 
   it("should not emit error if the change on selected value was not made by the user", async () => {
-    const wrapper = mount(ComboBoxInputComponent, {
+    const wrapper = mount(DropdownInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -169,7 +190,7 @@ describe("ComboBoxInputComponent", () => {
   });
 
   it("should emit error with empty payload (meaning it is valid) even if the change on selected value was not made by the user", async () => {
-    const wrapper = mount(ComboBoxInputComponent, {
+    const wrapper = mount(DropdownInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -203,7 +224,7 @@ describe("ComboBoxInputComponent", () => {
   it.each([[""], [undefined], [null]])(
     "should clear the selected value when initialValue changes to a falsy value (%s)",
     async (value) => {
-      const wrapper = mount(ComboBoxInputComponent, {
+      const wrapper = mount(DropdownInputComponent, {
         props: {
           id: "test",
           label: "test",
@@ -224,7 +245,7 @@ describe("ComboBoxInputComponent", () => {
   );
 
   it("should validate and emit no error if required", async () => {
-    const wrapper = mount(ComboBoxInputComponent, {
+    const wrapper = mount(DropdownInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -238,9 +259,9 @@ describe("ComboBoxInputComponent", () => {
       },
     });
 
-    const dropdown = wrapper.find("cds-combo-box");
+    const dropdown = wrapper.find("cds-dropdown");
 
-    await dropdown.trigger("cds-combo-box-selected", eventContent("Value B"));
+    await dropdown.trigger("cds-dropdown-selected", eventContent("Value B"));
 
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
     expect(wrapper.emitted("update:modelValue")![0][0]).toBe("B");
@@ -256,7 +277,7 @@ describe("ComboBoxInputComponent", () => {
   });
 
   it("should reset selected to initial value when list change", async () => {
-    const wrapper = mount(ComboBoxInputComponent, {
+    const wrapper = mount(DropdownInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -270,9 +291,9 @@ describe("ComboBoxInputComponent", () => {
       },
     });
 
-    const dropdown = wrapper.find("cds-combo-box");
+    const dropdown = wrapper.find("cds-dropdown");
 
-    await dropdown.trigger("cds-combo-box-selected", eventContent("Value A"));
+    await dropdown.trigger("cds-dropdown-selected", eventContent("Value A"));
 
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
     expect(wrapper.emitted("update:modelValue")![0][0]).toBe("A");
@@ -301,7 +322,7 @@ describe("ComboBoxInputComponent", () => {
   });
 
   it("should emit the whole error object when the error returned is an object", async () => {
-    const wrapper = mount(ComboBoxInputComponent, {
+    const wrapper = mount(DropdownInputComponent, {
       props: {
         id: "test",
         label: "test",
@@ -315,9 +336,9 @@ describe("ComboBoxInputComponent", () => {
       },
     });
 
-    const dropdown = wrapper.find("cds-combo-box");
+    const dropdown = wrapper.find("cds-dropdown");
 
-    await dropdown.trigger("cds-combo-box-selected", eventContent("Value A"));
+    await dropdown.trigger("cds-dropdown-selected", eventContent("Value A"));
 
     expect(wrapper.emitted("error")).toBeTruthy();
     expect(wrapper.emitted("error")![0][0]).toBe(objectError);

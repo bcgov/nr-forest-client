@@ -47,6 +47,7 @@ import {
   compareAny,
   buildRelatedClientIndex,
   buildRelatedClientCombination,
+  createRemovePatch,
 } from "@/services/ForestClientService";
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
 
@@ -76,7 +77,7 @@ import LocationRelationshipsView from "@/pages/client-details/LocationRelationsh
 import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
 import HistoryView from "@/pages/client-details/HistoryView.vue";
 import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
-import { type OperateRelatedClient, type OperationOptions, type SaveableComponent } from "./client-details/shared";
+import { type GoToTab, type OperateRelatedClient, type OperationOptions, type SaveableComponent } from "./client-details/shared";
 
 // Route related
 const router = useRouter();
@@ -492,7 +493,7 @@ const sendPatchRequest = (reasonPatchData: ReasonPatch[]) => {
     if (response.value.status) {
       onSuccessPatch.value(response.value);
     }
-    if (error.value.status) {
+    if (error.value.status || error.value.code) {
       onFailurePatch.value(error.value);
     }
   });
@@ -624,14 +625,6 @@ const createAddPatch = <T>(value: T, path: string) => {
     op: "add",
     path,
     value,
-  };
-  return [patch];
-};
-
-const createRemovePatch = (path: string) => {
-  const patch: jsonpatch.RemoveOperation = {
-    op: "remove",
-    path,
   };
   return [patch];
 };
@@ -844,7 +837,7 @@ const operateRelatedClient =
 
       saveableComponentRef.value.lockEditing();
 
-      const locationId = updatedRelatedClient.client.location.code;
+      const locationId = isNew ? updatedRelatedClient.client.location.code : updatedRelatedClient.originalLocation.code;
 
       if (!relatedLocationsState[locationId]) {
         relatedLocationsState[locationId] = createCollapsibleState();
@@ -941,10 +934,15 @@ watch([() => Object.keys(relatedClientsLocations.value ?? {}), locationsState], 
   });
 });
 
-const uniqueRelationships = isUniqueDescriptive("This combination of location, relationship type, related client and its location already exists");
+const buildUniqueValidation = () => isUniqueDescriptive("This combination of location, relationship type, related client and its location already exists");
+
+let uniqueRelationships: ReturnType<typeof buildUniqueValidation>;
 
 watch(() => data.value?.relatedClients, (value) => {
   if (value) {
+    // resets the unique record whenever details are reloaded
+    uniqueRelationships = buildUniqueValidation();
+
     Object.entries(value).forEach(([curLocationCode, curList]) => {
       curList.forEach((entry, index) => {
         const uniqueIndex = buildRelatedClientIndex(curLocationCode, index);
@@ -961,6 +959,16 @@ const formatRelatedLocation = (locationCode: string) => {
   }
   return `Under location “${formatLocation(locationCode, relatedLocationsState[locationCode].name)}”`;
 };
+
+const goToTab: GoToTab = (tabName) => {
+  selectedTab.value = tabName;
+  const tabId = `tab-${tabName}`;
+  setScrollPoint(tabId, undefined, () => {
+    setFocusedComponent(tabId, undefined, undefined, "id");
+  }, "id");
+};
+
+provide("goToTab", goToTab);
 </script>
 
 <template>

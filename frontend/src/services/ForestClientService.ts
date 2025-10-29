@@ -806,3 +806,14 @@ export const buildRelatedClientCombination = (entry: RelatedClientEntry): string
 
 export const isLocationExpired = (location: ClientLocation): boolean =>
   location.locnExpiredInd === "Y";
+
+export const formatRelatedClient = (clientNumber: string, clientName: string): string =>
+  `${clientNumber}, ${toTitleCase(clientName)}`;
+
+export const createRemovePatch = (path: string): [jsonpatch.RemoveOperation] => {
+  const patch: jsonpatch.RemoveOperation = {
+    op: "remove",
+    path,
+  };
+  return [patch];
+};

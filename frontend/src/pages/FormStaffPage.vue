@@ -26,6 +26,8 @@ import {
   type Contact,
   type Address,
   type FormDataDto,
+  defaultLocation,
+  defaultContactType,
 } from "@/dto/ApplyClientNumberDto";
 import {
   getEnumKeyByEnumValue,
@@ -322,6 +324,8 @@ const onBack = () => {
 // Initialize the "primary" contact - the individual him/herself
 const applicantContact: Contact = {
   ...emptyContact,
+  locationNames: [{ ...defaultLocation }],
+  contactType: defaultContactType,
 };
 
 const clientType = ref<CodeNameType>();

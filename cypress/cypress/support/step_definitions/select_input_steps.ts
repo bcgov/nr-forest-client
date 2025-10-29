@@ -39,7 +39,13 @@ Then('I select {string} from the {string} multiselect', (value: string, input: s
   cy.contains('label', input).then(($label) => {
     const parentShadow = $label[0].getRootNode();
     cy.wrap(parentShadow).find("[part='trigger-button']").click();
-    cy.wrap(parentShadow).parent().find(`cds-multi-select-item[data-value="${value}"]`).click();
+    cy.wrap(parentShadow).parent().find(`cds-multi-select-item[data-value="${value}"]`).as("item");
+    cy.get("@item").then(($item) => {
+      // Prevents clicking the item if it's already selected
+      if (!$item.prop("selected")) {
+        cy.get("@item").click();
+      }
+    });
   });
 });
 

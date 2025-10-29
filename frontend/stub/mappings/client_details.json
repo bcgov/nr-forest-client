@@ -181,6 +181,36 @@
       }
     },
     {
+      "name": "Client Details Individual 3 - Related Unique Test",
+      "request": {
+        "urlPattern": "/api/clients/details/rut([^/]*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-RUT.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details Individual 3 - Related Unique Test - Moved related client 01/0 to location 00",
+      "request": {
+        "urlPattern": "/api/clients/details/rut?(.*)\\-move-related-01-0-to-00",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-clients-details-RUT-move-related-01-0-to-00.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "Client Details Individual",
       "request": {
         "urlPattern": "/api/clients/details/i([^/]*)",
@@ -382,6 +412,25 @@
       }
     },
     {
+      "name": "PATCH - Client Details - Network Error",
+      "request": {
+        "urlPattern": "/api/clients/details/([^/]*)",
+        "method": "PATCH",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$[0].value",
+              "contains": "enet"
+            }
+          }
+        ]
+      },
+      "response": {
+        "fault": "MALFORMED_RESPONSE_CHUNK",
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
       "name": "PATCH - Client Details - Duplicate Acronym Error",
       "request": {
         "urlPattern": "/api/clients/details/([^/]*)",
@@ -474,6 +523,31 @@
       "response": {
         "status": 500,
         "body": "Sample error message",
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "PATCH - Client Details - Related Clients - Error Network",
+      "request": {
+        "urlPattern": "/api/clients/details/([^/]*)",
+        "method": "PATCH",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$[0].path",
+              "contains": "percentageOwnership"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$[0].value",
+              "contains": "19"
+            }
+          }
+        ]
+      },
+      "response": {
+        "fault": "MALFORMED_RESPONSE_CHUNK",
         "fixedDelayMilliseconds": 500
       }
     }

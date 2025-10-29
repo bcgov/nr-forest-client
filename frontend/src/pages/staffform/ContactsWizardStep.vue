@@ -11,7 +11,11 @@ import { useFocus } from "@/composables/useFocus";
 import { useFetchTo } from "@/composables/useFetch";
 // Type
 import type { FormDataDto, Contact } from "@/dto/ApplyClientNumberDto";
-import { indexedEmptyContact } from "@/dto/ApplyClientNumberDto";
+import {
+  defaultContactType,
+  defaultLocation,
+  indexedEmptyContact,
+} from "@/dto/ApplyClientNumberDto";
 import type { CodeNameType, ModalNotification } from "@/dto/CommonTypesDto";
 import { isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 import { getContactDescription } from "@/services/ForestClientService";
@@ -117,6 +121,14 @@ const addContact = () => {
     indexedEmptyContact(getNewContactId())
   );
   const contact = formData.location.contacts[newLength - 1];
+  contact.locationNames = [
+    // The default location `value` with the updated name
+    {
+      value: defaultLocation.value,
+      text: formData.location.addresses[0].locationName,
+    },
+  ];
+  contact.contactType = defaultContactType;
 
   setScrollPoint(`contact-${contact.index}-heading`);
   setFocusedComponent(`contact-${contact.index}-heading`);
