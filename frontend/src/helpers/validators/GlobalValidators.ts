@@ -500,6 +500,10 @@ export const optional =
       : validator(value);
   };
 
+export const optionalArray = (
+  validators: ((value: string) => string)[],
+): ((value: string) => string)[] => validators.map((validation) => optional(validation));
+
 export const isMinSizeMsg = (
   fieldName: string,
   minSize: number
