@@ -1,4 +1,5 @@
 import type { ClientSearchResult } from "@/dto/CommonTypesDto";
+import type { Interception } from "cypress/types/net-stubbing";
 
 describe("Search Page", () => {
   const predictiveSearchCounter = {
@@ -189,53 +190,90 @@ describe("Search Page", () => {
     });
 
     describe("and clicks the Search button", () => {
+      let searchInterception: Interception;
       beforeEach(() => {
         cy.wait("@predictiveSearch");
         cy.get("#search-button").click();
+        cy.wait("@fullSearch").then((interception) => {
+          searchInterception = interception;
+        });
       });
       it("makes one API call with the entered keywords", () => {
-        cy.wait("@fullSearch").then((interception) => {
-          const { query } = interception.request;
-          expect(query.keyword).to.eq("car");
-          expect(query.page).to.eq("0");
-        });
+        const { query } = searchInterception.request;
+        expect(query.keyword).to.eq("car");
+        expect(query.page).to.eq("0");
 
         cy.wait(100); // Waits additional time to make sure there's no duplicate API calls.
         cy.wrap(fullSearchCounter).its("count").should("eq", 1);
       });
 
       it("displays the results on the table", () => {
-        cy.wait("@fullSearch").then((interception) => {
-          const data = interception.response.body;
+        const data = searchInterception.response.body;
 
-          cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
+        cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
 
-          cy.get("cds-table")
-            .find("cds-table-row")
-            .should("have.length", data.length)
-            .should("be.visible");
+        cy.get("cds-table")
+          .find("cds-table-row")
+          .should("have.length", data.length)
+          .should("be.visible");
 
-          checkTableResults(data);
-        });
+        checkTableResults(data);
+      });
+
+      it("HTML a tag is positioned exactly over the table row", () => {
+        const clientNumber = "00191086";
+        cy.get("cds-table")
+          .contains("cds-table-row", clientNumber)
+          .then(($row) => {
+            cy.get("cds-table")
+              .contains("cds-table-row", clientNumber)
+              .find("a")
+              .then(($a) => {
+                // The rectangle position matches
+                expect($a[0].getBoundingClientRect()).to.deep.eq($row[0].getBoundingClientRect());
+
+                // z-index of the HTML a tag wins
+                expect($a.css("z-index")).to.eq("1");
+                expect($row.css("z-index")).to.eq("auto");
+              });
+          });
       });
 
       describe("and user clicks a result on the table", () => {
         const clientNumber = "00191086";
         beforeEach(() => {
-          cy.get("cds-table").contains("cds-table-row", clientNumber).click();
+          /*
+          Note: even if we remove `.find("a")`, the click is also captured by the `a` tag, as
+          the Cypress engine clicks whatever is clickable at the xy position of the returned
+          element.
+          */
+          cy.get("cds-table").contains("cds-table-row", clientNumber).find("a").click();
         });
         it("navigates to the client details", () => {
-          cy.get("@windowOpen").should(
-            "be.calledWith",
-            `/clients/details/${clientNumber}`,
-            "_self",
-          );
+          cy.location("pathname").should("eq", `/clients/details/${clientNumber}`);
+        });
+
+        describe("and user clicks the browser's Back button", () => {
+          beforeEach(() => {
+            cy.go("back");
+          });
+          it("still has the results displayed on the table", () => {
+            const data = searchInterception.response.body;
+
+            cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
+
+            cy.get("cds-table")
+              .find("cds-table-row")
+              .should("have.length", data.length)
+              .should("be.visible");
+
+            checkTableResults(data);
+          });
         });
       });
 
       describe("and clicks the Next page button on the table footer", () => {
         beforeEach(() => {
-          cy.wait("@fullSearch");
           cy.get('[tooltip-text="Next page"]').click();
         });
         it("makes an API call for the second page of results", () => {
