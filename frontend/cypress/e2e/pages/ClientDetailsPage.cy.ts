@@ -1902,10 +1902,17 @@ describe("Client Details Page", () => {
 
             cy.get("#addClientRelationshipBtn").click();
 
+            /*
+            Wait to have a focused element.
+            Prevents error with focus switching.
+            */
+            // cy.get("[data-focus='relationships-location-null-heading']:focus");
+            cy.wait(1000);
+
             fillInRequiredFields("01");
           });
 
-          it("shows the error on field Location name", () => {
+          it("shows the errors on the unique validation-related set of fields", () => {
             cy.get("#rc-null-null-location").should("have.attr", "invalid");
             cy.get("#rc-null-null-relationship").should("have.attr", "invalid");
             cy.get("#rc-null-null-relatedClient").should("have.attr", "invalid");

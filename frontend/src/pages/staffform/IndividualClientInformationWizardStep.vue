@@ -42,7 +42,7 @@ const isBirthdateRequired = computed(() => !isAdmin.value);
  * It's *local* only, in the sense of being the key used only by the front-end code.
  */
 const birthdateLocalValidationKey = computed(() =>
-  isAdmin.value ? "businessInformation.birthdate-admin" : "businessInformation.birthdate",
+  isAdmin.value ? "businessInformation.birthdate-optional" : "businessInformation.birthdate",
 );
 
 // Set the prop as a ref, and then emit when it changes

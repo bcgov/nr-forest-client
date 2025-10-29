@@ -149,7 +149,7 @@ describe("<summary-view />", () => {
     testHidden("#goodStanding");
     testHidden("#identification");
     testHidden("#doingBusinessAs");
-    testHidden("#dataOfBirth");
+    testHidden("#dateOfBirth");
     testHidden("#notes");
   });
 
@@ -200,6 +200,111 @@ describe("<summary-view />", () => {
       cy.get("#summaryEditBtn").should("not.exist");
     });
   });
+
+  const testDateOfBirthEmpty = (userRoles: string[]) => {
+    describe("and the Date of birth is empty", () => {
+      const props = getDefaultProps();
+      props.data.client.birthdate = null;
+      props.userRoles = userRoles;
+
+      beforeEach(() => {
+        mount(props);
+        cy.get("#summaryEditBtn").click();
+        cy.wait("@getClientStatuses");
+      });
+
+      it("enables the edition of Date of birth", () => {
+        testTextInput("#input-birthdateYear", "");
+        testTextInput("#input-birthdateMonth", "");
+        testTextInput("#input-birthdateDay", "");
+      });
+
+      it("stops displaying the Date of birth read-only field", () => {
+        testHidden("#dateOfBirth");
+      });
+
+      it("doesn't require a Date of birth as a mandatory field", () => {
+        cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+        cy.clearFormEntry("#input-workSafeBCNumber");
+
+        /*
+        Date of birth is still empty, but the Save button gets enabled after changing something
+        else.
+        */
+        cy.get("#summarySaveBtn").shadow().find("button").should("be.enabled");
+      });
+    });
+  };
+
+  const idScenarios = [
+    {
+      name: "the ID number is empty",
+      data: {
+        clientIdTypeCode: "BCDL",
+        clientIdTypeDesc: "British Columbia Drivers Licence",
+        clientIdentification: "",
+      },
+    },
+    {
+      name: "the ID type is Other",
+      data: {
+        clientIdTypeCode: "OTHR",
+        clientIdTypeDesc: "Other Identification",
+        clientIdentification: "123",
+      },
+    },
+    {
+      name: "the ID type is Unknown",
+      data: {
+        clientIdTypeCode: "UNKN",
+        clientIdTypeDesc: "Unknown",
+        clientIdentification: "456",
+      },
+    },
+  ];
+  const testIdEditable = (userRoles: string[]) => {
+    idScenarios.forEach((scenario) => {
+      describe(`and ${scenario.name}`, () => {
+        const props = getDefaultProps();
+        props.data.client = {
+          ...props.data.client,
+          ...scenario.data,
+        };
+        props.userRoles = userRoles;
+
+        beforeEach(() => {
+          mount(props);
+          cy.get("#summaryEditBtn").click();
+          cy.wait("@getClientStatuses");
+        });
+
+        it("enables the edition of ID type and ID number", () => {
+          testComboBox("#input-clientIdType", props.data.client.clientIdTypeDesc);
+          testTextInput(
+            "#input-clientIdentification",
+            props.data.client.clientIdentification ?? "",
+          );
+        });
+
+        it("stops displaying the Identification read-only field", () => {
+          testHidden("#identification");
+        });
+
+        if (!scenario.data.clientIdentification) {
+          it("doesn't require an ID number as a mandatory field", () => {
+            cy.get("#summarySaveBtn").shadow().find("button").should("be.disabled");
+            cy.clearFormEntry("#input-workSafeBCNumber");
+
+            /*
+            ID number is still empty, but the Save button gets enabled after changing something
+            else.
+            */
+            cy.get("#summarySaveBtn").shadow().find("button").should("be.enabled");
+          });
+        }
+      });
+    });
+  };
 
   describe("when role contains CLIENT_EDITOR", () => {
     const props = getDefaultProps();
@@ -317,6 +422,10 @@ describe("<summary-view />", () => {
       });
     });
 
+    testDateOfBirthEmpty(props.userRoles);
+
+    testIdEditable(props.userRoles);
+
     ["SPN", "REC", "DAC", "DEC"].forEach((clientStatus) => {
       const props = getDefaultProps();
       props.userRoles = ["CLIENT_EDITOR"];
@@ -359,6 +468,10 @@ describe("<summary-view />", () => {
   describe("when role contains CLIENT_SUSPEND", () => {
     const props = getDefaultProps();
     props.userRoles = ["CLIENT_SUSPEND"];
+
+    testDateOfBirthEmpty(props.userRoles);
+
+    testIdEditable(props.userRoles);
 
     ["REC", "DAC", "DEC"].forEach((clientStatus) => {
       const props = getDefaultProps();

@@ -247,11 +247,7 @@ onMounted(() => {
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
-          <cds-table-row
-            v-for="row in tableData"
-            :key="row.clientNumber"
-            @click="openClientDetails(row.clientNumber)"
-          >
+          <cds-table-row class="link-container" v-for="row in tableData" :key="row.clientNumber">
             <cds-table-cell />
             <cds-table-cell><span>{{ row.clientNumber }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientAcronym || "-" }}</span></cds-table-cell>
@@ -265,6 +261,11 @@ onMounted(() => {
                 </cds-tag>
               </div>
             </cds-table-cell>
+            <router-link
+              :to="`/clients/details/${row.clientNumber}`"
+              class="row-link"
+              :aria-label="`View client “${toTitleCase(row.clientFullName)}“`"
+            />
           </cds-table-row>
         </cds-table-body>
       </cds-table>
@@ -328,5 +329,4 @@ onMounted(() => {
       </div>
     </cds-actionable-notification>
   </div>
-
 </template>
