@@ -28,7 +28,7 @@ public class BirthdatePatchValidator implements PatchValidator {
             .filter(aNode -> aNode.has("value"))
             .filter(aNode ->
                 StringUtils.isNotBlank(aNode.get("value").asText())
-                && !aNode.get("value").asText().equals("null")
+                && !"null".equals(aNode.get("value").asText())
             )
             .map(aNode ->
                 ((ObjectNode) node.deepCopy())
