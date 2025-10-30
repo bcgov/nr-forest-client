@@ -218,7 +218,7 @@ public class ClientSubmissionController {
       @PathVariable String registrationNumber,
       JwtAuthenticationToken principal
   ) {
-    log.info("Validating duplicated submissions for bussiness type: {}", businessType);
+    log.info("businessType={}, registrationNumber={}", businessType, registrationNumber);
     if ("U".equals(businessType)) {
       return validator.validateSubmissionDuplicationForUnregiteredBusinesses(principal); 
     }

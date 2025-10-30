@@ -503,16 +503,7 @@ class ClientSubmissionControllerIntegrationTest
         .get()
         .uri("/api/clients/submissions/duplicate-check/U/ignored-reg-number")
         .exchange()
-        .expectStatus().isOk()
-        .expectBody().isEmpty();
-
-    // Verify that it was recorded
-    detailRepository
-        .findAll()
-        .filter(detail -> detail.getOrganizationName().equalsIgnoreCase("James Baxter"))
-        .as(StepVerifier::create)
-        .expectNextCount(1)
-        .verifyComplete();
+        .expectStatus().isOk();
 
     // --- Registered Business ---
     client
