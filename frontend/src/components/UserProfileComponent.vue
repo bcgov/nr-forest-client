@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { buildProviderAuthority } from "@/services/ForestClientService";
 import { computed } from 'vue'
 
 const props = defineProps<{  
@@ -6,6 +7,7 @@ const props = defineProps<{
   identifier: string;
   email: string;
   provider: string;
+  authorities: string[];
 }>();
 
 const initials = computed(() =>
@@ -25,7 +27,8 @@ const initials = computed(() =>
   })
 );
 
-
+const providerAuthority = buildProviderAuthority(props.provider);
+const roles = props.authorities.filter((item) => item !== providerAuthority);
 </script>
 
 <template>
@@ -37,6 +40,7 @@ const initials = computed(() =>
   </div>
   <div class="grouping-20">
     <p class="heading-compact-02 light-theme-text-text-primary">{{name}}</p>
+    <p class="helper-text-01">Role: {{ roles.join(", ") }}</p>
     <p class="helper-text-01">{{provider.toUpperCase()}}: {{identifier}}</p>
     <p class="helper-text-01">{{email}}</p>
   </div>

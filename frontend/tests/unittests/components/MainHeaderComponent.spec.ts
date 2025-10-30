@@ -25,6 +25,16 @@ const session = {
   logOut: vi.fn(),
 };
 
+const idirSession = {
+  user: {
+    provider: "idir",
+    name: "John Smith",
+  },
+  authorities: ["CLIENT_EDITOR", "CLIENT_VIEWER"],
+  isLoggedIn: () => true,
+  logOut: vi.fn(),
+};
+
 vi.mock("vue", async () => {
   const actual = await vi.importActual("vue");
   return {
@@ -120,7 +130,7 @@ describe("MainHeaderComponent.vue", () => {
           wrapper = mount(MainHeaderComponent, {
             global: {
               mocks: {
-                $session: session,
+                $session: idirSession,
                 $route: mockRoute,
               },
             },
@@ -153,6 +163,16 @@ describe("MainHeaderComponent.vue", () => {
         afterEach(() => {
           wrapper.unmount();
         });
+        it("displays the user's roles separated by commas", async () => {
+          /*
+          While it's not expected to have multiple roles, it's definetely possible, so the
+          component is prepared for that.
+          */
+          expect(wrapper.get("#panel-content--user-avatar-desc").text()).toContain(
+            "Role: CLIENT_EDITOR, CLIENT_VIEWER",
+          );
+        });
+
         it("closes the panel when the inner close button is clicked", async () => {
           const button = wrapper.find(".close-panel-button");
           expect(button.exists()).toBe(true);
