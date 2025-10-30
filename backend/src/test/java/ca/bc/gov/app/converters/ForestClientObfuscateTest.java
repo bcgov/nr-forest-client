@@ -14,9 +14,11 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
+@DisplayName("Unit Test | Forest Client Obfuscate Serializer")
 class ForestClientObfuscateTest {
 
   private static final ObjectMapper mapper = new ObjectMapper();
@@ -31,6 +33,7 @@ class ForestClientObfuscateTest {
   }
 
   @Test
+  @DisplayName("should obfuscate identification and birthdate for viewers")
   void shouldObfuscateIdentification() throws Exception {
     MDC.put(ApplicationConstant.MDC_USERROLES, ApplicationConstant.ROLE_VIEWER);
     String json = mapper.writeValueAsString(getDto());
@@ -40,6 +43,7 @@ class ForestClientObfuscateTest {
   }
 
   @Test
+  @DisplayName("should obfuscate BCSC identification completely for viewers")
   void shouldObfuscateBCSC() throws Exception {
     MDC.put(ApplicationConstant.MDC_USERROLES, ApplicationConstant.ROLE_VIEWER);
     String json = mapper.writeValueAsString(getDto().withClient(getDto().client().withClientIdTypeCode("BCSC")));
@@ -49,6 +53,7 @@ class ForestClientObfuscateTest {
   }
 
   @Test
+  @DisplayName("should not obfuscate small identifications for viewers")
   void shouldNotObfuscateSmallIds() throws Exception {
     MDC.put(ApplicationConstant.MDC_USERROLES, ApplicationConstant.ROLE_VIEWER);
     String json = mapper.writeValueAsString(getDto().withClient(getDto().client().withClientIdentification("1234")));
@@ -58,6 +63,7 @@ class ForestClientObfuscateTest {
   }
 
   @Test
+  @DisplayName("should not obfuscate identification and birthdate for non-viewers")
   void shouldNotObfuscateForNonViewers() throws Exception {
     MDC.put(ApplicationConstant.MDC_USERROLES, ApplicationConstant.ROLE_EDITOR);
     String json = mapper.writeValueAsString(getDto());
@@ -67,6 +73,7 @@ class ForestClientObfuscateTest {
   }
 
   @Test
+  @DisplayName("should not obfuscate identification and birthdate for editors with viewer role")
   void shouldNotObfuscateEvenIfHasViewer() throws Exception {
     MDC.put(ApplicationConstant.MDC_USERROLES, String.format("%s,%s", ApplicationConstant.ROLE_EDITOR, ApplicationConstant.ROLE_VIEWER));
     String json = mapper.writeValueAsString(getDto());

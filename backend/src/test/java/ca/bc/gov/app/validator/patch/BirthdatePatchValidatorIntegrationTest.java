@@ -64,6 +64,24 @@ class BirthdatePatchValidatorIntegrationTest extends AbstractTestContainerIntegr
         .verifyComplete();
   }
 
+  @Test
+  @DisplayName("Should proceed with no issues when null")
+  void shouldProceedWithNoIssuesWhenNull() {
+
+    StepVerifier
+        .create(validator.validate("00000001").apply(
+            MAPPER.createObjectNode()
+                .put("op", "replace")
+                .put("path", "/client/birthdate")
+                .put("value", "null")
+        ))
+        .expectNext(MAPPER.createObjectNode()
+            .put("op", "replace")
+            .put("path", "/client/birthdate")
+            .put("value", "null"))
+        .verifyComplete();
+  }
+
   private static Stream<Arguments> validationAllowed() {
     return Stream
         .of(
