@@ -50,12 +50,11 @@ Feature: BceID User Tests
     Then I click on next
     And I type "2255522552" into the "Phone number" form input
     Then I select "Billing" from the "Primary role" form input
-    And I add a new contact called "John Wick"
-    And I fill the "John Wick" information with the following
-      | Field name    | Value                   | Type   |
-      | Email address | jwick@thecontinental.ca | text   |
-      | Phone number  | 2501234568              | text   |
-      | Primary role  | Director                | select |
+    And I fill the "DENICE TOMADA" information with the following
+      | Field name      | Value              | Type          |
+      | Email address   | denicetoma@mail.ca | text          |
+      | Phone number    | 7787787078         | text          |      
+      | Primary role    | Director           | select        |
     And I click on next
     Then I submit
     And I can read "Application submitted!"
