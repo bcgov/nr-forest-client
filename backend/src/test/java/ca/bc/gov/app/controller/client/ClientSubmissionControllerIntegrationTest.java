@@ -490,7 +490,7 @@ class ClientSubmissionControllerIntegrationTest
   @DisplayName("Validate duplication for registered and unregistered businesses")
   @Order(10)
   void shouldValidateSubmissionDuplication() {
-    // --- Unregistered Business ---
+    // --- Duplicated Unregistered Business Submission ---
     client
       .mutateWith(csrf())
       .mutateWith(
@@ -510,7 +510,7 @@ class ClientSubmissionControllerIntegrationTest
           assertThat((String) msg)
               .contains("already has a submission in progress"));
 
-    // --- Registered Business ---
+    // --- Valid Registered Business Submission ---
     client
         .mutateWith(csrf())
         .mutateWith(
@@ -525,6 +525,26 @@ class ClientSubmissionControllerIntegrationTest
         .exchange()
         .expectStatus().isOk()
         .expectBody().isEmpty();
+    
+    // --- Duplicated Registered Business Submission ---
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+        )
+        .get()
+        .uri("/api/clients/submissions/duplicate-check/R/FM0342436")
+        .exchange()
+        .expectStatus().isBadRequest()
+        .expectBody()
+        .jsonPath("$[0].fieldId").isEqualTo("duplicatedSubmission")
+        .jsonPath("$[0].errorMsg").value(msg ->
+            assertThat((String) msg)
+                .contains("already has a submission in progress"));
   }
 
 }
