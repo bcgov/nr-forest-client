@@ -471,7 +471,7 @@ watch(submissionDuplicationError, () => {
 
     validationErrors.forEach((errorItem: ValidationMessageType) =>
       notificationBus.emit({
-        fieldId: "server.validation.error",
+        fieldId: "duplicatedSubmission",
         fieldName: "",
         errorMsg: errorItem.errorMsg,
       })

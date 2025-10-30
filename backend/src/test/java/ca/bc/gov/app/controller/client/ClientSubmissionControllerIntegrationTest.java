@@ -505,8 +505,8 @@ class ClientSubmissionControllerIntegrationTest
       .exchange()
       .expectStatus().isBadRequest()
       .expectBody()
-      .jsonPath("$.errors[0].fieldId").isEqualTo("duplicatedSubmission")
-      .jsonPath("$.errors[0].errorMsg").value(msg ->
+      .jsonPath("$[0].fieldId").isEqualTo("duplicatedSubmission")
+      .jsonPath("$[0].errorMsg").value(msg ->
           assertThat((String) msg)
               .contains("already has a submission in progress"));
 

@@ -512,7 +512,7 @@ watch(
 
           validationErrors.value.forEach((err: ValidationMessageType) =>
             notificationBus.emit({
-              fieldId: "server.validation.error",
+              fieldId: "duplicatedSubmission",
               fieldName: "",
               errorMsg: err.errorMsg,
             })
