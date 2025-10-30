@@ -525,7 +525,7 @@ class ClientSubmissionControllerIntegrationTest
                     "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
-        .uri("/api/clients/submissions/duplicate-check/R/123456789")
+        .uri("/api/clients/submissions/duplicate-check/R/FM00004455")
         .exchange()
         .expectStatus().isOk()
         .expectBody().isEmpty();
