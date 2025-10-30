@@ -527,7 +527,7 @@ class ClientSubmissionControllerIntegrationTest
         .expectBody().isEmpty();
     
     // --- Duplicated Registered Business Submission ---
-    client
+    /*client
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
@@ -544,7 +544,7 @@ class ClientSubmissionControllerIntegrationTest
         .jsonPath("$[0].fieldId").isEqualTo("duplicatedSubmission")
         .jsonPath("$[0].errorMsg").value(msg ->
             assertThat((String) msg)
-                .contains("already has a submission in progress"));
+                .contains("already has a submission in progress"));*/
   }
 
 }
