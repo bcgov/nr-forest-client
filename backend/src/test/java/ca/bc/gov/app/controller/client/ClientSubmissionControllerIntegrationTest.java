@@ -527,7 +527,7 @@ class ClientSubmissionControllerIntegrationTest
         .expectBody().isEmpty();
     
     // --- Duplicated Registered Business Submission ---
-    /*client
+    client
         .mutateWith(csrf())
         .mutateWith(
             mockJwt()
@@ -537,14 +537,14 @@ class ClientSubmissionControllerIntegrationTest
                     "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
         )
         .get()
-        .uri("/api/clients/submissions/duplicate-check/R/FM0342436")
+        .uri("/api/clients/submissions/duplicate-check/R/1234")
         .exchange()
         .expectStatus().isBadRequest()
         .expectBody()
         .jsonPath("$[0].fieldId").isEqualTo("duplicatedSubmission")
         .jsonPath("$[0].errorMsg").value(msg ->
             assertThat((String) msg)
-                .contains("already has a submission in progress"));*/
+                .contains("already has a submission in progress"));
   }
 
 }
