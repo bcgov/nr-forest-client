@@ -492,18 +492,23 @@ class ClientSubmissionControllerIntegrationTest
   void shouldValidateSubmissionDuplication() {
     // --- Unregistered Business ---
     client
-        .mutateWith(csrf())
-        .mutateWith(
-            mockJwt()
-                .jwt(jwt -> jwt.claims(
-                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority(
-                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
-        )
-        .get()
-        .uri("/api/clients/submissions/duplicate-check/U/ignored-reg-number")
-        .exchange()
-        .expectStatus().isOk();
+      .mutateWith(csrf())
+      .mutateWith(
+          mockJwt()
+              .jwt(jwt -> jwt.claims(
+                  claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+              .authorities(new SimpleGrantedAuthority(
+                  "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+      )
+      .get()
+      .uri("/api/clients/submissions/duplicate-check/U/ignored-reg-number")
+      .exchange()
+      .expectStatus().isBadRequest()
+      .expectBody()
+      .jsonPath("$.errors[0].fieldId").isEqualTo("duplicatedSubmission")
+      .jsonPath("$.errors[0].errorMsg").value(msg ->
+          assertThat((String) msg)
+              .contains("already has a submission in progress"));
 
     // --- Registered Business ---
     client
