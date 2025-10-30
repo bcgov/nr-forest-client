@@ -485,5 +485,50 @@ class ClientSubmissionControllerIntegrationTest
     }
     return UnaryOperator.identity();
   }
+  
+  @Test
+  @DisplayName("Validate duplication for registered and unregistered businesses")
+  @Order(10)
+  void shouldValidateSubmissionDuplication() {
+    // --- Unregistered Business ---
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+        )
+        .get()
+        .uri("/api/clients/submissions/duplicate-check/U/ignored-reg-number")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody().isEmpty();
+
+    // Verify that it was recorded
+    detailRepository
+        .findAll()
+        .filter(detail -> detail.getOrganizationName().equalsIgnoreCase("James Baxter"))
+        .as(StepVerifier::create)
+        .expectNextCount(1)
+        .verifyComplete();
+
+    // --- Registered Business ---
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+        )
+        .get()
+        .uri("/api/clients/submissions/duplicate-check/R/123456789")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody().isEmpty();
+  }
 
 }

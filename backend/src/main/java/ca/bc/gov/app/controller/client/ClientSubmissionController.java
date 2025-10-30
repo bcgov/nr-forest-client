@@ -226,4 +226,5 @@ public class ClientSubmissionController {
       return validator.validateSubmissionDuplicationForRegiteredBusinesses(registrationNumber);  
     }
   } 
+  
 }
