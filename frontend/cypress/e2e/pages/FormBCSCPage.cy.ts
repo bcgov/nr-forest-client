@@ -39,8 +39,8 @@ describe("BCSC Form", () => {
     }).as("getCanadaByCode");
 
     cy.intercept("GET", "**/api/clients/submissions/duplicate-check/U/NaN", {
-      fixture: "submissionDuplicationCheckValid.json"
-    }).as("getValidSubmissionDuplicationCheck");
+      fixture: "submissionDuplicationCheckUnregisteredValid.json"
+    }).as("getValidUnregisteredSubmissionDuplicationCheck");
 
     const response = this.currentTest.title.endsWith("failure") ? submitResponse.failure : submitResponse.success;
 

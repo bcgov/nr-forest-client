@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-describe("General Form", () => {
+describe("BCeID Form", () => {
   beforeEach(() => {
     cy.intercept("GET", "**/api/codes/districts?page=0&size=250", {
       fixture: "districts.json",
@@ -17,12 +17,18 @@ describe("General Form", () => {
       statusCode: 200,
       body: {},
     });
+
     cy.intercept("GET", "**/api/codes/countries/CA/provinces?page=0&size=250", {
       fixture: "provinces.json",
     }).as("getProvinces");
+
     cy.intercept("GET", "**/api/codes/countries?page=0&size=250", {
       fixture: "countries.json",
     }).as("getCountries");
+
+    cy.intercept("GET", "**/api/clients/submissions/duplicate-check/R/XX9016140", {
+      fixture: "submissionDuplicationCheckRegisteredValid.json"
+    }).as("getValidRegisteredSubmissionDuplicationCheck");
   });
 
   it("should render the component", () => {
