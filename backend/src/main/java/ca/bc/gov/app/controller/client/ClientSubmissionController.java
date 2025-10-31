@@ -64,7 +64,6 @@ public class ClientSubmissionController {
 
     return clientService
         .listSubmissions(page, size, requestStatus, clientType, district, name, submittedAt)
-        .doOnNext(dto -> log.info("Submission: {}", dto))
         .doOnNext(
             dto ->
                 serverResponse

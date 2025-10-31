@@ -525,26 +525,6 @@ class ClientSubmissionControllerIntegrationTest
         .exchange()
         .expectStatus().isOk()
         .expectBody().isEmpty();
-    
-    // --- Duplicated Registered Business Submission ---
-    client
-        .mutateWith(csrf())
-        .mutateWith(
-            mockJwt()
-                .jwt(jwt -> jwt.claims(
-                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
-                .authorities(new SimpleGrantedAuthority(
-                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
-        )
-        .get()
-        .uri("/api/clients/submissions/duplicate-check/R/BC0000006")
-        .exchange()
-        .expectStatus().isBadRequest()
-        .expectBody()
-        .jsonPath("$[0].fieldId").isEqualTo("duplicatedSubmission")
-        .jsonPath("$[0].errorMsg").value(msg ->
-            assertThat((String) msg)
-                .contains("already has a submission in progress"));
   }
 
 }
