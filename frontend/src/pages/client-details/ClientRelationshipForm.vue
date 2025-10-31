@@ -368,56 +368,11 @@ const handleNewLocation = () => {
   displayNewLocationModal.value = true;
 };
 
-const newLocationFunctionName = ref(`handleNewLocation_${props.locationIndex}_${props.index}`);
-
 const displayNewClientModal = ref(false);
 
 const handleNewClient = () => {
   displayNewClientModal.value = true;
 };
-
-const newClientFunctionName = ref(`handleNewClient_${props.locationIndex}_${props.index}`);
-
-/**
- * Exposes the function outside of Vue.
- * @param functionName - The name of the function exposed globally
- */
-const exposeFunctionGlobally = (functionName: string, func: () => void) => {
-  /*
-  This allows us to have a javascript:URL link that triggers the execution of Vue code.
-  We want this kind of link to prevent users from trying to open it in a new tab.
-  Either because the href would be just a "#" which doesn't take the user to the intended
-  destination, or because the flow wouldn't work as expected.
-  */
-  window[functionName] = func;
-};
-
-const removeGlobalFunction = (functionName: string) => {
-  delete window[functionName];
-};
-
-onMounted(() => {
-  exposeFunctionGlobally(newLocationFunctionName.value, handleNewLocation);
-  exposeFunctionGlobally(newClientFunctionName.value, handleNewClient);
-});
-
-watch(newLocationFunctionName, (value, oldValue) => {
-  if (oldValue) {
-    removeGlobalFunction(oldValue);
-  }
-  exposeFunctionGlobally(value, handleNewLocation);
-});
-watch(newClientFunctionName, (value, oldValue) => {
-  if (oldValue) {
-    removeGlobalFunction(oldValue);
-  }
-  exposeFunctionGlobally(value, handleNewClient);
-});
-
-onUnmounted(() => {
-  removeGlobalFunction(newLocationFunctionName.value);
-  removeGlobalFunction(newClientFunctionName.value);
-});
 
 const goToTab = inject<GoToTab>("goToTab");
 
@@ -458,7 +413,7 @@ const confirmNewClient = () => {
     >
       <template #tip>
         Select the location created for this relationship or
-        <a id="createLocationLink" :href="`javascript:${newLocationFunctionName}()`">
+        <a id="createLocationLink" href="#" @click.prevent="handleNewLocation">
           create a new location
         </a>
       </template>
@@ -531,7 +486,7 @@ const confirmNewClient = () => {
         </template>
         <template #tip>
           Start typing the client’s number or name. You can also
-          <a id="createClientLink" :href="`javascript:${newClientFunctionName}()`">
+          <a id="createClientLink" href="#" @click.prevent="handleNewClient">
             create a new client
           </a>
         </template>
