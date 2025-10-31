@@ -1319,7 +1319,7 @@ provide("goToTab", goToTab);
                     index="null"
                     :data="newIndexedRelationship"
                     :clientData="data"
-                    :validations="[uniqueRelationships.check]"
+                    :validations="uniqueRelationships ? [uniqueRelationships.check] : []"
                     keep-scroll-bottom-position
                     @canceled="handleRelationshipCanceled(newIndexedRelationship)"
                     @save="operateRelatedClient($event)"
@@ -1329,7 +1329,7 @@ provide("goToTab", goToTab);
                     :data="curList"
                     :client-data="data"
                     :location="findLocation(curLocationCode)"
-                    :validations="[uniqueRelationships.check]"
+                    :validations="uniqueRelationships ? [uniqueRelationships.check] : []"
                     :is-reloading="relatedLocationsState[curLocationCode]?.isReloading"
                     :user-roles="userRoles"
                   />
