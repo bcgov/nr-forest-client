@@ -822,3 +822,6 @@ export const createRemovePatch = (path: string): [jsonpatch.RemoveOperation] => 
   };
   return [patch];
 };
+
+export const buildProviderAuthority = (provider: string): string =>
+  `${provider}_USER`.toUpperCase();
