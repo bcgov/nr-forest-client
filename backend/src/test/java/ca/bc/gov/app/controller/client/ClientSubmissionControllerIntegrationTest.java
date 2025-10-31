@@ -485,5 +485,64 @@ class ClientSubmissionControllerIntegrationTest
     }
     return UnaryOperator.identity();
   }
+  
+  @Test
+  @DisplayName("Validate submission limit")
+  @Order(10)
+  void shouldValidateSubmissionLimitSuccessfully() {
+    client
+    .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER)))
+        .get()
+        .uri("/api/submission-limit")
+        .exchange()
+        .expectStatus().isOk();
+  }
+
+  @Test
+  @DisplayName("Validate duplication for registered and unregistered businesses")
+  @Order(11)
+  void shouldValidateSubmissionDuplication() {
+    // --- Duplicated Unregistered Business Submission ---
+    client
+      .mutateWith(csrf())
+      .mutateWith(
+          mockJwt()
+              .jwt(jwt -> jwt.claims(
+                  claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+              .authorities(new SimpleGrantedAuthority(
+                  "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+      )
+      .get()
+      .uri("/api/clients/submissions/duplicate-check/U/ignored-reg-number")
+      .exchange()
+      .expectStatus().isBadRequest()
+      .expectBody()
+      .jsonPath("$[0].fieldId").isEqualTo("duplicatedSubmission")
+      .jsonPath("$[0].errorMsg").value(msg ->
+          assertThat((String) msg)
+              .contains("already has a submission in progress"));
+
+    // --- Valid Registered Business Submission ---
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+        )
+        .get()
+        .uri("/api/clients/submissions/duplicate-check/R/FM00004455")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody().isEmpty();
+  }
 
 }
