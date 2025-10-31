@@ -752,6 +752,11 @@ export const compareAny = <T>(a: T, b: T): number => {
   return 0;
 };
 
+export const sortCodeNameByName = (content: CodeNameType[]): CodeNameType[] => {
+  const result = content?.toSorted((a, b) => compareAny(a.name, b.name));
+  return result;
+};
+
 export const booleanToYesNo = (
   value: boolean,
   options = { empty: "-", defaultToFalse: false },

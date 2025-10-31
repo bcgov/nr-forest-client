@@ -21,6 +21,9 @@
   },
   "homepage": "https://github.com/bcgov/nr-forest-client",
   "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "start": "vite --host --port 3000",
     "build": "vue-tsc --noEmit && vite build",
