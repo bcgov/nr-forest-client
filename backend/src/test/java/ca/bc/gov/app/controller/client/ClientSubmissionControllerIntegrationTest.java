@@ -487,8 +487,26 @@ class ClientSubmissionControllerIntegrationTest
   }
   
   @Test
-  @DisplayName("Validate duplication for registered and unregistered businesses")
+  @DisplayName("Validate submission limit")
   @Order(10)
+  void shouldValidateSubmissionLimitSuccessfully() {
+    client
+    .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER)))
+        .get()
+        .uri("/api/submission-limit")
+        .exchange()
+        .expectStatus().isOk();
+  }
+
+  @Test
+  @DisplayName("Validate duplication for registered and unregistered businesses")
+  @Order(11)
   void shouldValidateSubmissionDuplication() {
     // --- Duplicated Unregistered Business Submission ---
     client
