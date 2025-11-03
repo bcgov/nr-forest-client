@@ -31,6 +31,7 @@ import {
   isLocationExpired,
   formatRelatedClient,
   createRemovePatch,
+  sortCodeNameByName,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type {
@@ -969,6 +970,41 @@ describe("compareAny", () => {
     [true, false], // boolean
   ])("returns 1 when the first value is greater than the second one (%s and %s)", (a, b) => {
     expect(compareAny(a, b)).toEqual(1);
+  });
+});
+
+describe("sortCodeNameByName", () => {
+  const original = [
+    {
+      code: "123",
+      name: "Zyon",
+    },
+    {
+      code: "456",
+      name: "Anyon",
+    },
+  ];
+  const originalClone = structuredClone(original);
+  it("returns the results sorted by name (ascending)", () => {
+    const result = sortCodeNameByName(original);
+    expect(result).toStrictEqual([
+      {
+        code: "456",
+        name: "Anyon",
+      },
+      {
+        code: "123",
+        name: "Zyon",
+      },
+    ]);
+  });
+  it("doesn't change the original value", () => {
+    sortCodeNameByName(original);
+    expect(original).toStrictEqual(originalClone);
+  });
+  it.each([undefined, null])("returns undefined when the parameter is %s", (param) => {
+    const result = sortCodeNameByName(param);
+    expect(result).toBeUndefined();
   });
 });
 
