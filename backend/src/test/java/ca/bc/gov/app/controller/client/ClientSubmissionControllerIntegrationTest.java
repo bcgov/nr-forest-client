@@ -503,10 +503,34 @@ class ClientSubmissionControllerIntegrationTest
         .exchange()
         .expectStatus().isOk();
   }
+  
+  @Test
+  @DisplayName("Validate submission limit - Should handle invalid provider")
+  @Order(11)
+  void shouldReturnBadRequestForInvalidProvider() {
+      client
+          .mutateWith(csrf())
+          .mutateWith(
+              mockJwt()
+                  .jwt(jwt -> jwt.claims(
+                      claims -> claims.putAll(TestConstants.getClaims("fakeprovider"))))
+                  .authorities(new SimpleGrantedAuthority(
+                      "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+          )
+          .get()
+          .uri("/api/submission-limit")
+          .exchange()
+          .expectStatus().isBadRequest()
+          .expectBody(String.class)
+          .consumeWith(result -> 
+              assertThat(result.getResponseBody())
+                  .contains("Invalid provider")
+          );
+  }
 
   @Test
   @DisplayName("Validate duplication for registered and unregistered businesses")
-  @Order(11)
+  @Order(12)
   void shouldValidateSubmissionDuplication() {
     // --- Duplicated Unregistered Business Submission ---
     client
