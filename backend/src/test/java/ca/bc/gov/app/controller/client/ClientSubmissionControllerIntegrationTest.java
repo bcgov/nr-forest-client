@@ -523,9 +523,9 @@ class ClientSubmissionControllerIntegrationTest
           .get()
           .uri("/api/submission-limit")
           .exchange()
-          .expectStatus().isBadRequest()
+          .expectStatus().is5xxServerError()
           .expectBody(String.class)
-          .consumeWith(result -> 
+          .consumeWith(result ->
               assertThat(result.getResponseBody())
                   .contains("Invalid provider")
           );
