@@ -514,7 +514,8 @@ class ClientSubmissionControllerIntegrationTest
               mockJwt()
                   .jwt(jwt -> jwt.claims(claims -> {
                       claims.putAll(TestConstants.getClaims("bceidbusiness"));
-                      claims.put("preferred_username", "FAKE\\user123");
+                      claims.put("custom:idp_name", "FAKE");
+                      claims.put("custom:idp_username", "user123");
                   }))
                   .authorities(new SimpleGrantedAuthority(
                       "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
