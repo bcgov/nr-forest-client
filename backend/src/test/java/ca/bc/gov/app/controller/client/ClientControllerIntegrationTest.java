@@ -848,5 +848,23 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .expectStatus().isOk()
         .expectBody();
   }
+  
+  private static Stream<Arguments> clientDetails() {
+    return Stream.of(
+        Arguments.of(
+            "123456789",
+            """
+            [
+              {"clientName": "Forest Co.", "clientNumber": "C001"},
+              {"clientName": "Timber Group", "clientNumber": "C002"}
+            ]
+            """
+        ),
+        Arguments.of(
+            "000000000",
+            "[]"
+        )
+    );
+  }
 
 }
