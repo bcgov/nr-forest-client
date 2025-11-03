@@ -1,5 +1,5 @@
 import type { SessionProperties, Submitter } from "@/dto/CommonTypesDto";
-import { toTitleCase } from "@/services/ForestClientService";
+import { buildProviderAuthority, toTitleCase } from "@/services/ForestClientService";
 import {
   fetchAuthSession,
   signInWithRedirect,
@@ -91,7 +91,7 @@ class ForestClientUserSession implements SessionProperties {
         ...this.processName(parsedUser, parsedUser["custom:idp_name"]),
       };
       // add the user type to the authorities
-      this.authorities = [`${provider}_USER`.toUpperCase()];
+      this.authorities = [buildProviderAuthority(provider)];
 
       // add the groups to the authorities
       if (parsedUser["cognito:groups"]) {

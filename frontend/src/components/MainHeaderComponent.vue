@@ -212,8 +212,8 @@ const handleLogoutClick = (event) => {
               :email="$session.user?.email || ''"
               :identifier="$session.user?.userId || ''"
               :provider="$session.user?.provider || ''"
-              
-              />
+              :authorities="$session.authorities"
+            />
           </div>
         </div>
         <hr class="divider" />

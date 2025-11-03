@@ -26,7 +26,10 @@ public class BirthdatePatchValidator implements PatchValidator {
         Mono
             .just(node)
             .filter(aNode -> aNode.has("value"))
-            .filter(aNode -> StringUtils.isNotBlank(aNode.get("value").asText()))
+            .filter(aNode ->
+                StringUtils.isNotBlank(aNode.get("value").asText())
+                && !"null".equals(aNode.get("value").asText())
+            )
             .map(aNode ->
                 ((ObjectNode) node.deepCopy())
                     .put("value", aNode.get("value").asText() + " 00:00:00")
