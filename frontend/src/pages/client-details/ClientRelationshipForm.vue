@@ -20,6 +20,7 @@ import {
   buildRelatedClientCombination,
   isLocationExpired,
   formatRelatedClient,
+  sortCodeNameByName,
 } from "@/services/ForestClientService";
 
 import Save16 from "@carbon/icons-vue/es/save/16";
@@ -431,7 +432,7 @@ const confirmNewClient = () => {
         :initial-value="content?.find((item) => item.code === formData.relationship?.code)?.name"
         required
         required-label
-        :model-value="content"
+        :model-value="sortCodeNameByName(content)"
         :enabled="true"
         tip=""
         :validations="[
