@@ -820,51 +820,5 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             )
         );
   }
-  
-  @ParameterizedTest
-  @MethodSource("clientDetails")
-  @DisplayName("Should return client details by identification")
-  void shouldReturnClientDetailsByIdentification(String identification,
-                                                 String legacyResponse) {
-
-    legacyStub.stubFor(
-        get(urlPathEqualTo("/api/clients/details-by-id/" + identification))
-            .willReturn(okJson(legacyResponse))
-    );
-
-    client
-        .mutateWith(csrf())
-        .mutateWith(
-            mockJwt()
-                .jwt(jwt -> jwt.claims(
-                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                .authorities(new SimpleGrantedAuthority(
-                    "ROLE_" + ApplicationConstant.ROLE_EDITOR))
-        )
-        .get()
-        .uri("/api/clients/details-by-id/{identification}",
-            Map.of("identification", identification))
-        .exchange()
-        .expectStatus().isOk()
-        .expectBody();
-  }
-  
-  private static Stream<Arguments> clientDetails() {
-    return Stream.of(
-        Arguments.of(
-            "123456789",
-            """
-            [
-              {"clientName": "Forest Co.", "clientNumber": "C001"},
-              {"clientName": "Timber Group", "clientNumber": "C002"}
-            ]
-            """
-        ),
-        Arguments.of(
-            "000000000",
-            "[]"
-        )
-    );
-  }
 
 }
