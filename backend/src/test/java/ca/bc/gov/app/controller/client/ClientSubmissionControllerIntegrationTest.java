@@ -512,8 +512,9 @@ class ClientSubmissionControllerIntegrationTest
           .mutateWith(csrf())
           .mutateWith(
               mockJwt()
-                  .jwt(jwt -> jwt.claims(
-                      claims -> claims.putAll(TestConstants.getClaims("fakeprovider"))))
+              .jwt(jwt -> jwt.claims(claims -> claims.putAll(
+                      Map.of("userId", "FAKE\\user123")
+                  )))
                   .authorities(new SimpleGrantedAuthority(
                       "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
           )
