@@ -306,7 +306,7 @@ describe("Auto Complete Input Component", () => {
     });
   });
 
-  it('emits the "click:option" event with the code of the clicked option and selects it', async () => {
+  it('emits the "select:item" event with the code of the clicked option and selects it', async () => {
     const wrapper = mount(AutoCompleteInputComponent, {
       props: {
         id,
@@ -324,8 +324,8 @@ describe("Auto Complete Input Component", () => {
     const code = "TB";
     await wrapper.find(`#${id}`).trigger("cds-combo-box-beingselected", eventSelectContent(code));
 
-    expect(wrapper.emitted("click:option")).toBeTruthy();
-    expect(wrapper.emitted("click:option")![0][0]).toEqual(code);
+    expect(wrapper.emitted("select:item")).toBeTruthy();
+    expect(wrapper.emitted("select:item")![0][0]).toEqual(code);
 
     expect(wrapper.emitted("update:selected-value")).toBeTruthy();
 
@@ -349,15 +349,15 @@ describe("Auto Complete Input Component", () => {
       });
     });
 
-    it('emits the "click:option" event with the code of the clicked option and prevents selecting it', async () => {
+    it('emits the "select:item" event with the code of the clicked option and prevents selecting it', async () => {
       await wrapper.setProps({ modelValue: "T" });
       await wrapper.find(`#${id}`).trigger("input");
 
       const code = "TB";
       await wrapper.find(`#${id}`).trigger("cds-combo-box-beingselected", eventSelectContent(code));
 
-      expect(wrapper.emitted("click:option")).toBeTruthy();
-      expect(wrapper.emitted("click:option")![0][0]).toEqual(code);
+      expect(wrapper.emitted("select:item")).toBeTruthy();
+      expect(wrapper.emitted("select:item")![0][0]).toEqual(code);
 
       expect(wrapper.emitted("update:selected-value")).toBeFalsy();
     });
