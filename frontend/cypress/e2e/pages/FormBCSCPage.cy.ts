@@ -42,6 +42,10 @@ describe("BCSC Form", () => {
       fixture: "submissionDuplicationCheckUnregisteredValid.json"
     }).as("getValidUnregisteredSubmissionDuplicationCheck");
 
+    cy.intercept("GET", "**/api/submission-limit", {
+      fixture: "submissionLimitValid.json"
+    }).as("getValidSubmissionLimit");
+
     const response = this.currentTest.title.endsWith("failure") ? submitResponse.failure : submitResponse.success;
 
     cy.intercept("POST", "**/api/clients/submissions",function(req) {

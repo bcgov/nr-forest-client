@@ -29,6 +29,14 @@ describe("BCeID Form", () => {
     cy.intercept("GET", "**/api/clients/submissions/duplicate-check/R/XX9016140", {
       fixture: "submissionDuplicationCheckRegisteredValid.json"
     }).as("getValidRegisteredSubmissionDuplicationCheck");
+
+    cy.intercept("GET", "**/api/clients/submissions/duplicate-check/U/NaN", {
+      fixture: "submissionDuplicationCheckUnregisteredValid.json"
+    }).as("getValidUnregisteredSubmissionDuplicationCheck");
+
+    cy.intercept("GET", "**/api/submission-limit", {
+      fixture: "submissionLimitValid.json"
+    }).as("getValidSubmissionLimit");
   });
 
   it("should render the component", () => {
