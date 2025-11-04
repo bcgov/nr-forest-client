@@ -57,6 +57,8 @@ describe("BCeID Form", () => {
     
     cy.login("uattest@forest.client", "Uat Test", "bceidbusiness");
 
+    cy.wait("@getValidSubmissionLimit");
+
     cy.wait("@getDistricts");
 
     cy.get("#district")
