@@ -1237,4 +1237,11 @@ public final class ForestClientQueries {
       + RELATED_CLIENT_AUTOCOMPLETE_SIMILARITY
       + ORDER_BY_SCORE_DESC
       + ORACLE_PAGINATION;
+
+  public static final String RELATED_EXACT_SEARCH = """
+      SELECT * FROM THE.RELATED_CLIENT WHERE
+      CLIENT_NUMBER = :clientNumber
+      AND CLIENT_LOCN_CODE = :clientLocationCode
+      AND RELATED_CLNT_NMBR = :relatedClientNumber
+      AND RELATED_CLNT_LOCN  = :relatedClientLocationCode""";
 }
