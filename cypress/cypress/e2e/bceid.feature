@@ -39,20 +39,19 @@ Feature: BceID User Tests
     When I can read "New client application"
     And I select "DMH - 100 Mile House Natural Resource District" from the "District" form input
     Then I mark "I have a BC registered business (corporation, sole proprietorship, society, etc.)" on the "Type of business" "radio" input
-    And I type "SOLE TO" and select "SOLE TO SOLE BLENDED REFLEXOLOGY" from the "BC registered business name" form autocomplete
+    And I type "SOLE TO" and select "TONY BHAYANA" from the "BC registered business name" form autocomplete
     And I fill the form as follows
       | Field name | Value                     | Type   |      
       | Year       | 1990                      | text   |
       | Month      | 01                        | text   |
       | Day        | 01                        | text   |
-    Then I click on next
-    And I type "2975 Jutland Rd" and select "2975 Jutland Rd" from the "Street address or PO box" form autocomplete    
-    Then I click on next
+    Then I click on next    
+    And I click on next
     And I type "2255522552" into the "Phone number" form input
     Then I select "Billing" from the "Primary role" form input
-    And I fill the "DENICE TOMADA" information with the following
+    And I fill the "PARMJIT BHAYANA" information with the following
       | Field name      | Value              | Type          |
-      | Email address   | denicetoma@mail.ca | text          |
+      | Email address   | parmjitbha@mail.ca | text          |
       | Phone number    | 7787787078         | text          |      
       | Primary role    | Director           | select        |
     And I click on next
