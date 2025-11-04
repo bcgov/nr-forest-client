@@ -82,8 +82,8 @@ const deleteRelatedClient = (
   relatedClient: IndexedRelatedClient,
   rawOptions?: OperationOptions,
 ) => {
-  const { index: relatedClientIndex, originalLocation } = relatedClient;
-  const patch = createRemovePatch(`/relatedClients/${originalLocation.code}/${relatedClientIndex}`);
+  const { id } = relatedClient;
+  const patch = createRemovePatch(`/relatedClients/${id}`);
   operateRelatedClient(
     {
       action: {

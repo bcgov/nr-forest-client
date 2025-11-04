@@ -804,12 +804,12 @@ const operateRelatedClient =
       action,
     } = payload;
 
-    const { index: relatedClientIndex, originalLocation, ...newRelationshipData } = updatedRelatedClient;
+    const { id, originalLocation, ...newRelationshipData } = updatedRelatedClient;
 
     const options: OperationOptions = rawOptions ?? {};
     const { preserveRawPatch } = options;
 
-    const isNew = relatedClientIndex === null;
+    const isNew = id === null;
 
     let patchData: jsonpatch.Operation[];
 
@@ -817,8 +817,8 @@ const operateRelatedClient =
       patchData = rawPatchData;
     } else {
       patchData = isNew
-        ? createAddPatch(newRelationshipData, `/relatedClients/${newRelationshipData.client.location.code}/null`)
-        : adjustPatchPath(rawPatchData, `/relatedClients/${originalLocation.code}/${relatedClientIndex}`);
+        ? createAddPatch(newRelationshipData, `/relatedClients/null`)
+        : adjustPatchPath(rawPatchData, `/relatedClients/${id}`);
     }
 
     const updatedTitle = `${updatedRelatedClient.relatedClient.client.code}, ${updatedRelatedClient.relatedClient.client.name}`;

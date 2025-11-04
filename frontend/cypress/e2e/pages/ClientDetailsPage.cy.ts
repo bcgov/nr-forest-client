@@ -2075,6 +2075,10 @@ describe("Client Details Page", () => {
               cy.intercept("GET", "/api/codes/relationship-types/*").as("getRelationshipTypes");
             };
 
+            /**
+             * The id of the first relationship on location 01
+             */
+            let id010: string;
             before(function () {
               init.call(this);
 
@@ -2087,7 +2091,12 @@ describe("Client Details Page", () => {
               });
 
               cy.visit("/clients/details/p");
-              cy.wait("@getClientDetails");
+              cy.wait("@getClientDetails").then((interception) => {
+                const responseBody: ClientDetails = JSON.parse(interception.response.body);
+
+                // Gets the id of the first relationship on location 01
+                id010 = responseBody.relatedClients["01"][0].id;
+              });
 
               // Switch to the Related clients tab
               cy.get("#tab-related").click();
@@ -2176,15 +2185,15 @@ describe("Client Details Page", () => {
               }
             }
 
-            it("prefixes the path with the corresponding location code and relationship index", () => {
+            it("prefixes the path with the corresponding id", () => {
               if (scenario.name === "edit") {
                 expect(patchClientDetailsRequest.body[0].path).to.eq(
-                  "/relatedClients/01/0/percentageOwnership",
+                  `/relatedClients/${id010}/percentageOwnership`,
                 );
               } else if (scenario.name === "delete") {
-                expect(patchClientDetailsRequest.body[0].path).to.eq("/relatedClients/01/0");
+                expect(patchClientDetailsRequest.body[0].path).to.eq(`/relatedClients/${id010}`);
               } else if (scenario.name === "create") {
-                expect(patchClientDetailsRequest.body[0].path).to.eq("/relatedClients/01/null");
+                expect(patchClientDetailsRequest.body[0].path).to.eq("/relatedClients/null");
               }
             });
 
