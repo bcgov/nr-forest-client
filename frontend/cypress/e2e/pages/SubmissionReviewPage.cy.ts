@@ -68,8 +68,6 @@ describe("Submission Review Page", () => {
         delay: 500, // allow some time to make some assertions before the response.
       });
     }).as("action");
-
-
   };
 
   describe("when user is reviewing submission",() =>{
