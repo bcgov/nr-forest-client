@@ -39,7 +39,7 @@ Feature: BceID User Tests
     When I can read "New client application"
     And I select "DMH - 100 Mile House Natural Resource District" from the "District" form input
     Then I mark "I have a BC registered business (corporation, sole proprietorship, society, etc.)" on the "Type of business" "radio" input
-    And I type "SOLE TO" and select "TONY BHAYANA" from the "BC registered business name" form autocomplete
+    And I type "TONY BHAY" and select "TONY BHAYANA" from the "BC registered business name" form autocomplete
     And I fill the form as follows
       | Field name | Value                     | Type   |      
       | Year       | 1990                      | text   |
