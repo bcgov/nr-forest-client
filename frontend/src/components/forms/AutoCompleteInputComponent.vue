@@ -44,8 +44,10 @@ const emit = defineEmits<{
   (e: "empty", value: boolean): void;
   (e: "update:model-value", value: string): void;
   (e: "update:selected-value", value: BusinessSearchResult | undefined): void;
-  (e: "click:option", value: string): void;
   (e: "press:enter"): void;
+  (e: "select:item", value: string): void;
+  (e: "click:item", value: string): void;
+  (e: "press:enter:item", value: string): void;
 }>();
 
 //We initialize the error message handling for validation
@@ -203,16 +205,21 @@ const preSelectAutocompleteItem = (event: any) => {
     isKeyboardSelectEvent.value = true;
   }
 
-  // resets the flag
-  isClickSelectEvent.value = false;
-
   if (event?.detail?.item) {
     const newValue = event?.detail?.item?.getAttribute("data-id");
-    emit("click:option", newValue);
+    emit("select:item", newValue);
+    if (isClickSelectEvent.value) {
+      emit("click:item", newValue);
+    } else {
+      emit("press:enter:item", newValue);
+    }
     if (props.preventSelection) {
       event?.preventDefault();
     }
   }
+
+  // resets the flag
+  isClickSelectEvent.value = false;
 };
 
 const onPressEnter = () => {

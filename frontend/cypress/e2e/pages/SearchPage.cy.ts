@@ -108,27 +108,50 @@ describe("Search Page", () => {
     cy.get("#menu-list-search").should("be.visible").click();
 
     cy.get("h1").should("be.visible").should("contain", "Client search");
-
-    cy.window().then((win) => {
-      cy.stub(win, "open").as("windowOpen");
-    });
   });
 
   describe("when user fills in the search box with a valid value", () => {
+    let predictiveSearchInterception: Interception;
     beforeEach(() => {
       cy.fillFormEntry("#search-box", "car", { skipBlur: true });
+      cy.wait("@predictiveSearch").then((interception) => {
+        predictiveSearchInterception = interception;
+      });
     });
 
     it("makes the API call with the entered keywords", () => {
-      cy.wait("@predictiveSearch").then((interception) => {
-        expect(interception.request.query.keyword).to.eq("car");
-      });
+      expect(predictiveSearchInterception.request.query.keyword).to.eq("car");
       cy.wrap(predictiveSearchCounter).its("count").should("eq", 1);
     });
 
     it("displays autocomplete results", () => {
-      cy.wait("@predictiveSearch").then((interception) => {
-        const data = interception.response.body;
+      const data = predictiveSearchInterception.response.body;
+
+      cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
+
+      cy.get("#search-box")
+        .find("cds-combo-box-item")
+        .should("have.length", data.length)
+        .should("be.visible");
+
+      checkAutocompleteResults(data);
+    });
+
+    describe("and types more characters", () => {
+      beforeEach(() => {
+        cy.fillFormEntry("#search-box", "d", { skipBlur: true });
+        cy.wait("@predictiveSearch").then((interception) => {
+          predictiveSearchInterception = interception;
+        });
+      });
+
+      it("makes another API call with the updated keywords", () => {
+        expect(predictiveSearchInterception.request.query.keyword).to.eq("card");
+        cy.wrap(predictiveSearchCounter).its("count").should("eq", 2);
+      });
+
+      it("updates the autocomplete results", () => {
+        const data = predictiveSearchInterception.response.body;
 
         cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
 
@@ -141,35 +164,6 @@ describe("Search Page", () => {
       });
     });
 
-    describe("and types more characters", () => {
-      beforeEach(() => {
-        cy.wait("@predictiveSearch");
-        cy.fillFormEntry("#search-box", "d", { skipBlur: true });
-      });
-
-      it("makes another API call with the updated keywords", () => {
-        cy.wait("@predictiveSearch").then((interception) => {
-          expect(interception.request.query.keyword).to.eq("card");
-        });
-        cy.wrap(predictiveSearchCounter).its("count").should("eq", 2);
-      });
-
-      it("updates the autocomplete results", () => {
-        cy.wait("@predictiveSearch").then((interception) => {
-          const data = interception.response.body;
-
-          cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
-
-          cy.get("#search-box")
-            .find("cds-combo-box-item")
-            .should("have.length", data.length)
-            .should("be.visible");
-
-          checkAutocompleteResults(data);
-        });
-      });
-    });
-
     describe("and user clicks an Autocomplete result", () => {
       const clientNumber = "00054076";
       beforeEach(() => {
@@ -178,21 +172,63 @@ describe("Search Page", () => {
           .should("have.length.greaterThan", 0)
           .should("be.visible");
 
-        cy.get("#search-box").find(`cds-combo-box-item[data-id="${clientNumber}"]`).click();
+        cy.get("#search-box").find(`cds-combo-box-item[data-id="${clientNumber}"] a`).click();
       });
       it("navigates to the client details", () => {
-        cy.get("@windowOpen").should(
-          "be.calledWith",
-          `/clients/details/${clientNumber}`,
-          "_self",
-        );
+        cy.location("pathname").should("eq", `/clients/details/${clientNumber}`);
+      });
+    });
+
+    describe("and user selects an Autocomplete result using the keyboard", () => {
+      const clientNumber = "00054076";
+
+      const eventSelectContent = (value: string) => {
+        return {
+          detail: {
+            item: { "data-id": value, getAttribute: (_key: string) => value },
+          },
+        };
+      };
+
+      beforeEach(() => {
+        cy.get("#search-box")
+          .find("cds-combo-box-item")
+          .should("have.length.greaterThan", 0)
+          .should("be.visible");
+
+        // This custom event does not trigger a mouse click
+        cy.get("#search-box").then(($el) => {
+          $el[0].dispatchEvent(
+            new CustomEvent("cds-combo-box-beingselected", eventSelectContent(clientNumber)),
+          );
+        });
+      });
+      it("navigates to the client details", () => {
+        cy.location("pathname").should("eq", `/clients/details/${clientNumber}`);
+      });
+
+      describe("and user clicks the browser's Back button", () => {
+        beforeEach(() => {
+          cy.go("back");
+        });
+        it("still has the same value on the search box", () => {
+          cy.get("#search-box").should("have.value", "car");
+        });
+        it("still has the autocomplete results on the combo-box", () => {
+          const data = predictiveSearchInterception.response.body;
+
+          cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
+
+          cy.get("#search-box").find("cds-combo-box-item").should("have.length", data.length);
+
+          checkAutocompleteResults(data);
+        });
       });
     });
 
     describe("and clicks the Search button", () => {
       let searchInterception: Interception;
       beforeEach(() => {
-        cy.wait("@predictiveSearch");
         cy.get("#search-button").click();
         cy.wait("@fullSearch").then((interception) => {
           searchInterception = interception;
@@ -256,6 +292,9 @@ describe("Search Page", () => {
         describe("and user clicks the browser's Back button", () => {
           beforeEach(() => {
             cy.go("back");
+          });
+          it("still has the same value on the search box", () => {
+            cy.get("#search-box").should("have.value", "car");
           });
           it("still has the results displayed on the table", () => {
             const data = searchInterception.response.body;
@@ -341,7 +380,6 @@ describe("Search Page", () => {
 
     describe("and hits enter on the search box", () => {
       beforeEach(() => {
-        cy.wait("@predictiveSearch");
         cy.fillFormEntry("#search-box", "{enter}", { skipBlur: true });
       });
       it("makes the API call with the entered keywords", () => {
