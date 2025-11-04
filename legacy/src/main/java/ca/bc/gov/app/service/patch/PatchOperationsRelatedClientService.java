@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.patch;
 
 import static java.util.function.Predicate.not;
+
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.RelatedClientEntryDto;
 import ca.bc.gov.app.entity.RelatedClientEntity;
@@ -16,10 +17,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,6 @@ import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
 import org.springframework.data.relational.core.query.Update;
-import org.springframework.data.relational.core.sql.SqlIdentifier;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -79,6 +78,9 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       "/percentageOwnership", "PERCENT_OWNERSHIP",
       "/hasSigningAuthority", "SIGNING_AUTH_IND"
   );
+
+  private final Pattern identifierPattern = Pattern.compile(
+      "^(\\d{8})(\\d{2})([A-Z]+)(\\d{8})(\\d{2})$");
 
   @Override
   public String getPrefix() {
@@ -130,12 +132,9 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
     log.info("Applying remove operations for related clients: {}", filteredNodeOps);
 
     return Flux
-        .fromStream(StreamSupport.stream(filteredNodeOps.spliterator(), false))
-        .map(entry -> entry.get("path").asText())
-        //Generate a regex that allows me to split a string with the following format and grab both values: /00/1
-        .map(this::extractLocationAndIndex)
+        .fromIterable(PatchUtils.loadNonNumericIds(filteredNodeOps).entrySet())
         .filter(entry -> StringUtils.isNotBlank(entry.getKey()))
-        .flatMap(entry -> processRemove(clientNumber, entry.getKey(), entry.getValue(), userId))
+        .flatMap(entry -> processRemove(clientNumber, entry.getKey(), userId))
         .then();
   }
 
@@ -158,77 +157,77 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
     log.info("Applying replace operations for related clients: {}", filteredNodeOps);
 
     return Flux
-        .fromIterable(PatchUtils.loadIdsAndSubIds(filteredNodeOps).entrySet())
-        .flatMap(locationEntry ->
-            Flux.fromStream(locationEntry.getValue().stream())
-                .flatMap(index ->
-                    clientRelatedService
-                        .getRelatedClientList(clientNumber)
-                        .filter(projection -> projection.clientLocnCode().equalsIgnoreCase(
-                            locationEntry.getKey())
-                        )
-                        .flatMap(projection ->
-                            relatedClientRepository
-                                .findToUpdate(
-                                    clientNumber,
-                                    projection.clientLocnCode(),
-                                    projection.relatedClntNmbr(),
-                                    projection.relatedClntLocn()
-                                )
-                        )
-                        .elementAt(Integer.parseInt(index), new RelatedClientEntity())
-                        .map(entity -> Pair.of(entity, index))
+        .fromIterable(PatchUtils.loadNonNumericIds(filteredNodeOps).entrySet())
+        .doOnNext(dd("1"))
+        .flatMap(locationEntry -> {
+          Matcher matcher = identifierPattern.matcher(locationEntry.getKey());
+          if (matcher.find()) {
+            return
+                relatedClientRepository
+                    .findToUpdate(
+                        clientNumber,
+                        matcher.group(2),
+                        matcher.group(4),
+                        matcher.group(5),
+                        matcher.group(3)
+                    )
+                    .map(entity -> Pair.of(locationEntry, entity));
+          }
+          return Mono.empty();
+        })
+        .doOnNext(dd("0"))
+        .map(pair ->
+            Pair.of(pair.getValue(), PatchUtils.filterOperationsByOp(
+                filteredNodeOps,
+                "replace",
+                pair.getKey().getKey(),
+                getRestrictedPaths(),
+                mapper
+            ))
+        )
+        .doOnNext(dd("A"))
+        .doOnNext(pair ->
+            pair.getValue().forEach(op -> {
+              String path = op.get("path").asText();
+              if (path.endsWith("/hasSigningAuthority")) {
+                // Replace the value in the JSON node with "Y"/"N"
+                ((ObjectNode) op).put(
+                    "value",
+                    BooleanUtils.toString(op.get("value").asBoolean(), "Y", "N", null)
+                );
+              }
+            }))
+        .doOnNext(dd("B"))
+        .map(pair ->
+            Pair.of(
+                pair.getKey(),
+                ReplacePatchUtils.buildUpdate(
+                    pair.getValue(),
+                    fieldToDataField,
+                    getExtraFields(userId, pair.getKey().getRevision() + 1)
                 )
-                .next()
-                .flatMap(entityPair -> {
-                  JsonNode nodeOpsForEntity = PatchUtils.filterOperationsByOp(
-                      filteredNodeOps,
-                      "replace",
-                      String.format("%s/%s", locationEntry.getKey(), entityPair.getValue()),
-                      getRestrictedPaths(),
-                      mapper
-                  );
-
-                  nodeOpsForEntity.forEach(op -> {
-                    String path = op.get("path").asText();
-                    if (path.endsWith("/hasSigningAuthority")) {
-                      // Replace the value in the JSON node with "Y"/"N"
-                      ((ObjectNode) op).put(
-                          "value",
-                          BooleanUtils.toString(op.get("value").asBoolean(), "Y", "N", null)
-                      );
-                    }
-                  });
-
-                  Map<SqlIdentifier, Object> updateMap = ReplacePatchUtils.buildUpdate(
-                      nodeOpsForEntity,
-                      fieldToDataField,
-                      getExtraFields(userId, entityPair.getKey().getRevision() + 1)
-                  );
-
-                  log.info(
-                      "Applying replace operations for related client {} {} at location {} {}: {}",
-                      clientNumber, locationEntry,
-                      entityPair.getKey().getRelatedClientNumber(),
-                      entityPair.getKey().getRelatedClientLocationCode(),
-                      updateMap
-                  );
-
-                  return entityTemplate
-                      .update(
-                          getCriteria(entityPair.getKey()),
-                          Update.from(updateMap),
-                          RelatedClientEntity.class
-                      )
-                      .doOnNext(reached -> log.info(
-                          "Updated {} related client {} at location {} with new values",
-                          reached,
-                          entityPair.getKey().getRelatedClientNumber(),
-                          entityPair.getKey().getRelatedClientLocationCode()
-                      ));
-                })
-          )
-          .then();
+            ))
+        .doOnNext(dd("C"))
+        .doOnNext(entityUpdatePair ->
+            log.info(
+                "Applying replace operations for related client {} {} at location {} {}: {}",
+                clientNumber, entityUpdatePair.getKey().getId(),
+                entityUpdatePair.getKey().getRelatedClientNumber(),
+                entityUpdatePair.getKey().getRelatedClientLocationCode(),
+                entityUpdatePair.getValue()
+            )
+        )
+        .doOnNext(dd("D"))
+        .flatMap(entityUpdatePair ->
+            entityTemplate
+                .update(
+                    getCriteria(entityUpdatePair.getKey()),
+                    Update.from(entityUpdatePair.getValue()),
+                    RelatedClientEntity.class
+                )
+        )
+        .doOnNext(dd("H"))
+        .then();
   }
 
   private Mono<Void> applyAdd(
@@ -256,7 +255,8 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
                 processAdd(
                     clientNumber,
                     mapper,
-                    entry.get("path").asText().replace("/", StringUtils.EMPTY).replace("null", StringUtils.EMPTY),
+                    entry.get("path").asText().replace("/", StringUtils.EMPTY)
+                        .replace("null", StringUtils.EMPTY),
                     entry.get("value"),
                     userId
                 )
@@ -266,35 +266,43 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
 
   private Mono<Void> processRemove(
       String clientNumber,
-      String locationId,
-      int index,
+      String identifier,
       String userId
   ) {
-    return
-        relatedClientRepository
-            .findByClientNumberAndClientLocationCode(clientNumber, locationId)
-            .elementAt(index, new RelatedClientEntity())
-            .filter(not(RelatedClientEntity::isInvalid))
-            .flatMap(entity ->
-                entityTemplate
-                    .delete(RelatedClientEntity.class)
-                    .matching(getCriteria(entity))
-                    .all()
-            )
-            .doOnNext(quantity ->
-                log.info("Removed {} related client entries for client {} at location {}",
-                    quantity, clientNumber, locationId
-                )
-            )
-            .flatMap(quantity ->
-                entityTemplate
-                    .getDatabaseClient()
-                    .sql(UPDATE_DEL_USER)
-                    .bind("userId", userId)
-                    .fetch()
-                    .rowsUpdated()
-                )
-            .then();
+    Matcher matcher = identifierPattern.matcher(identifier);
+    if (matcher.find()) {
+      return
+          relatedClientRepository
+              .findToUpdate(
+                  clientNumber,
+                  matcher.group(2),
+                  matcher.group(4),
+                  matcher.group(5),
+                  matcher.group(3)
+              )
+              .filter(not(RelatedClientEntity::isInvalid))
+              .flatMap(entity ->
+                  entityTemplate
+                      .delete(RelatedClientEntity.class)
+                      .matching(getCriteria(entity))
+                      .all()
+              )
+              .doOnNext(quantity ->
+                  log.info("Removed {} related client entries for client {} with identifier {}",
+                      quantity, clientNumber, identifier
+                  )
+              )
+              .flatMap(quantity ->
+                  entityTemplate
+                      .getDatabaseClient()
+                      .sql(UPDATE_DEL_USER)
+                      .bind("userId", userId)
+                      .fetch()
+                      .rowsUpdated()
+              )
+              .then();
+    }
+    return Mono.empty();
   }
 
   private Mono<Void> processAdd(
@@ -314,7 +322,6 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
                     jsonNode,
                     mapper,
                     clientNumber,
-                    locationId,
                     userId
                 )
             )
@@ -325,7 +332,6 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
             value,
             mapper,
             clientNumber,
-            locationId,
             userId
         )
             .then();
@@ -339,7 +345,6 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       JsonNode value,
       ObjectMapper mapper,
       String clientNumber,
-      String locationId,
       String userId
   ) {
     return Mono
@@ -358,7 +363,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         .filterWhen(dto ->
             hasRelationship(
                 clientNumber,
-                locationId,
+                dto.client().location().code(),
                 dto.relatedClient().client().code(),
                 dto.relatedClient().location().code(),
                 dto.relationship().code()
@@ -372,7 +377,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
             RelatedClientEntity
                 .builder()
                 .clientNumber(clientNumber)
-                .clientLocationCode(locationId)
+                .clientLocationCode(dto.client().location().code())
                 .relatedClientNumber(dto.relatedClient().client().code())
                 .relatedClientLocationCode(dto.relatedClient().location().code())
                 .relationshipType(dto.relationship().code())
@@ -402,7 +407,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         )
         .doOnNext(entity -> log.info(
             "Adding relationship between {} ({}) and {} ({})",
-            clientNumber, locationId, entity.getRelatedClientNumber(),
+            clientNumber, entity.getClientLocationCode(), entity.getRelatedClientNumber(),
             entity.getRelatedClientLocationCode())
         );
   }
@@ -458,5 +463,9 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       return Pair.of(locationId, index);
     }
     return Pair.of(null, null);
+  }
+
+  private <T> Consumer<T> dd(String label) {
+    return v -> log.info("[{}] : {}", label, v);
   }
 }

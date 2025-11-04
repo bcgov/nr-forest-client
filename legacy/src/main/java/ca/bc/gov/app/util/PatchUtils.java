@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.flipkart.zjsonpatch.JsonPatch;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -283,6 +284,31 @@ public class PatchUtils {
           }
         }
     );
+    return subIds;
+  }
+
+  public static Map<String, Set<String>> loadNonNumericIds(JsonNode filteredNode){
+    Map<String, Set<String>> subIds = new LinkedHashMap<>();
+    filteredNode.forEach(node ->{
+      var id = node.get("path").asText().split("/")[1];
+          if (StringUtils.isNotBlank(id)) {
+            subIds.putIfAbsent(id, new HashSet<>());
+            subIds.merge(id,
+                Optional
+                    .ofNullable(node.get("path"))
+                    .map(JsonNode::asText)
+                    .map(value -> value.replace(String.format("/%s/", id), "/"))
+                    .stream()
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.toSet())
+                , (previousSet, nextSet) -> {
+                  previousSet.addAll(nextSet);
+                  return previousSet;
+                });
+          }
+
+    });
+
     return subIds;
   }
 

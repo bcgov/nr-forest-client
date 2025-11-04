@@ -19,7 +19,8 @@ public interface RelatedClientRepository
       String clientNumber,
       String clientLocationCode,
       String relatedClientNumber,
-      String relatedClientLocationCode
+      String relatedClientLocationCode,
+      String relationshipType
   );
 
 }

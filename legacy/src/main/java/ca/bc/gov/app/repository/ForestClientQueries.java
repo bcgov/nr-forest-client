@@ -1243,5 +1243,6 @@ public final class ForestClientQueries {
       CLIENT_NUMBER = :clientNumber
       AND CLIENT_LOCN_CODE = :clientLocationCode
       AND RELATED_CLNT_NMBR = :relatedClientNumber
-      AND RELATED_CLNT_LOCN  = :relatedClientLocationCode""";
+      AND RELATED_CLNT_LOCN  = :relatedClientLocationCode
+      AND RELATIONSHIP_CODE = :relationshipType""";
 }

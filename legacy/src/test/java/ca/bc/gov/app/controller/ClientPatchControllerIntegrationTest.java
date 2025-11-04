@@ -321,7 +321,7 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Remove related client",
             "00000158",
-            "[{ \"op\": \"remove\", \"path\": \"/relatedClients/00/1\" }]",
+            "[{ \"op\": \"remove\", \"path\": \"/relatedClients/0000015800JV0000015900\" }]",
             "$[1].clientNumber",
             "00000158",
             null
@@ -329,7 +329,7 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Update related client",
             "00000172",
-            "[{ \"op\": \"replace\", \"path\": \"/relatedClients/01/0/percentageOwnership\", \"value\": \"15\" }]",
+            "[{ \"op\": \"replace\", \"path\": \"/relatedClients/0000017201JV0000014400/percentageOwnership\", \"value\": \"15\" }]",
             "$[1].percentOwnership",
             null,
             "15.0"
@@ -337,7 +337,7 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Add related client",
             "00000172",
-            "[{ \"op\": \"add\", \"path\": \"/relatedClients/01\", \"value\": [ { \"relatedClient\": { \"client\": { \"code\": \"00000159\" }, \"location\": { \"code\": \"00\" } }, \"relationship\": { \"code\": \"AG\" }, \"percentageOwnership\": null, \"hasSigningAuthority\": false } ] }]",
+            "[{ \"op\": \"add\", \"path\": \"/relatedClients/null\", \"value\": [ { \"relatedClient\": { \"client\": { \"code\": \"00000159\" }, \"location\": { \"code\": \"00\" } }, \"client\": { \"client\": { \"code\": \"00000172\" }, \"location\": { \"code\": \"01\" } }, \"relationship\": { \"code\": \"AG\" }, \"percentageOwnership\": null, \"hasSigningAuthority\": false } ] }]",
             "$.length()",
             "2",
             "3"
