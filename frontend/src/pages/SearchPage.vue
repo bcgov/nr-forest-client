@@ -34,6 +34,7 @@ import {
   isMinSizeMsg,
   optional,
 } from "@/helpers/validators/GlobalValidators";
+import { useRouter } from "vue-router";
 
 const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
@@ -131,10 +132,12 @@ const searchResultToCodeNameValue = (
 const searchResultToCodeNameValueList = (list: ClientSearchResult[]) =>
   list?.map(searchResultToCodeNameValue);
 
+const router = useRouter();
+
 const openClientDetails = (clientCode: string) => {
   if (clientCode) {
     const url = `/clients/details/${clientCode}`;
-    window.open(url, "_self");
+    router.push(url);
   }
 };
 
@@ -211,19 +214,24 @@ onMounted(() => {
           :validations-on-change="validationsOnChange"
           :loading="loading"
           prevent-selection
-          @click:option="openClientDetails"
+          @press:enter:item="openClientDetails"
           @update:model-value="valid = false"
           @error="valid = !$event"
           @press:enter="search()"
           #="{ value }"
         >
-          <div class="search-result-item" v-if="value">
+          <div class="search-result-item link-container" v-if="value">
             <span
               v-dompurify-html="highlightMatch(searchResultToText(value), searchKeyword)"
             ></span>
             <cds-tag :type="getTagColorByClientStatus(value.clientStatus)" title="">
               <span>{{ value.clientStatus }}</span>
             </cds-tag>
+            <router-link
+              :to="`/clients/details/${value.clientNumber}`"
+              class="row-link"
+              :aria-label="`View client “${toTitleCase(value.clientFullName)}“`"
+            />
           </div>
         </AutoCompleteInputComponent>
       </data-fetcher>
