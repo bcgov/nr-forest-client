@@ -17,4 +17,14 @@ public record ClientRelatedProjection(
     String signingAuthInd,
     Float percentOwnership,
     Boolean primaryClient
-) {}
+) {
+  public String id(){
+    return String.format("%s%s%s%s%s",
+        clientNumber,
+        clientLocnCode,
+        relationshipCode,
+        relatedClntNmbr,
+        relatedClntLocn
+        );
+  }
+}

@@ -354,6 +354,7 @@ export interface RelatedClientDto {
 }
 
 export interface RelatedClientEntry {
+  id: string;
   relationship: CodeNameType;
   percentageOwnership: number;
   hasSigningAuthority: boolean | null;
@@ -370,6 +371,7 @@ export interface IndexedRelatedClient extends RelatedClientEntry {
 export const createIndexedRelatedClientEntry = (clientNumber: string): IndexedRelatedClient => {
   const entry: IndexedRelatedClient = {
     index: null,
+    id: null,
     originalLocation: null,
     client: {
       client: { code: clientNumber } as CodeNameType,

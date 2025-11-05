@@ -12,4 +12,14 @@ public record RelatedClientEntryDto(
     boolean isMainParticipant
 ) {
 
+  public String getId(){
+    return String.format("%s%s%s%s%s",
+        client.client().code(),
+        client.location().code(),
+        relationship.code(),
+        relatedClient.client().code(),
+        relatedClient.location().code()
+        );
+  }
+
 }

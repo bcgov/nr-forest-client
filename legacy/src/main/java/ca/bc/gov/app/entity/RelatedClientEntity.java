@@ -90,4 +90,14 @@ public class RelatedClientEntity {
         relationshipType
     );
   }
+
+  public String getId(){
+    return String.format("%s%s%s%s%s",
+        clientNumber,
+        clientLocationCode,
+        relationshipType,
+        relatedClientNumber,
+        relatedClientLocationCode
+        );
+  }
 }
