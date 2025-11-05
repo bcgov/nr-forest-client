@@ -62,6 +62,7 @@
   "relatedClients": {
     "00": [
         {
+            "id": "{{randomValue length=10 type='ALPHANUMERIC' uppercase=true}}",
             "client": {
                 "client": {
                     "code": "00000001",
@@ -93,6 +94,7 @@
     ],
     "01": [
         {
+            "id": "{{randomValue length=10 type='ALPHANUMERIC' uppercase=true}}",
             "client": {
                 "client": {
                     "code": "00000001",
@@ -122,6 +124,7 @@
             "isMainParticipant": true
         },
         {
+            "id": "{{randomValue length=10 type='ALPHANUMERIC' uppercase=true}}",
             "client": {
                 "client": {
                     "code": "00000001",
@@ -151,6 +154,7 @@
             "isMainParticipant": true
         },
         {
+            "id": "{{randomValue length=10 type='ALPHANUMERIC' uppercase=true}}",
             "client": {
                 "client": {
                     "code": "00000001",

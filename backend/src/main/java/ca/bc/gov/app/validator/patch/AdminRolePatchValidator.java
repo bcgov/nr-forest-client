@@ -21,6 +21,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class AdminRolePatchValidator implements PatchValidator {
 
+  // FSADT1-1979 - Allow editor to edit birthdate without admin role
   private final List<String> adminOnlyPaths = List.of(
       "/client/clientName",
       "/client/legalMiddleName",
