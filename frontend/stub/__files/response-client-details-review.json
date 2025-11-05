@@ -1,0 +1,18 @@
+[
+  {
+    "clientNumber": "00140790",
+    "clientName": "Fake Client Name",
+    "legalFirstName": "Fake First Name",
+    "legalMiddleName": null,
+    "clientStatusCode": "ACT",
+    "clientTypeCode": "I",
+    "clientIdTypeCode": "BCRE",
+    "clientIdentification": "GP12345678",
+    "registryCompanyTypeCode": "GP",
+    "corpRegnNmbr": "1008162",
+    "clientAcronym": null,
+    "wcbFirmNumber": null,
+    "ocgSupplierNmbr": null,
+    "clientComment": null
+  }
+]

@@ -70,6 +70,30 @@ describe("Submission Review Page", () => {
     }).as("action");
   };
 
+  
+  describe("when staff is checking a pending submission of an existing client",() => {
+    beforeEach(() => {
+      beforeInit('test-case-review-duplicated');
+    });
+
+    it("Should show notification and prevent approval", () => {
+      cy.wait("@loadSubmission")
+        .its("response.body.submissionStatus")
+        .should("eq", "New");
+
+      cy.get("cds-inline-notification")
+        .should("exist")
+        .should(
+          "contain",
+          "Let the applicant know their number and reject this submission"
+      );
+
+      cy.contains("cds-button", approveLabel)
+        .should("have.attr", "disabled");
+  
+    });
+  });
+
   describe("when user is reviewing submission",() =>{
 
     beforeEach(function() {
