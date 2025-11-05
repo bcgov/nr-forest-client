@@ -463,6 +463,74 @@ watch(submissionLimitError, () => {
   }
   submissionLimitHandleError();
 });
+
+
+const validationErrors = ref<ValidationMessageType[]>([])
+const submissionDuplicationCheck = ref<any[]>([]);
+const submissionDuplicationError = ref<any | null>(null);
+
+const duplicationUrl = computed(() => {
+  const businessType = formData.businessInformation.businessType;
+  if (!businessType) return "";
+
+  if (businessType === "R") {
+    const registrationNumber = formData.businessInformation.registrationNumber;
+    return registrationNumber ? `/api/clients/submissions/duplicate-check/R/${registrationNumber}` : "";
+  }
+
+  return "/api/clients/submissions/duplicate-check/U/NaN";
+});
+
+watch(
+  duplicationUrl,
+  (newUrl, _oldUrl, onInvalidate) => {
+    submissionDuplicationCheck.value = [];
+    submissionDuplicationError.value = null;
+    validationErrors.value = [];
+    nextBtnDisabled.value = false;
+    notificationBus.emit(undefined);
+
+    if (!newUrl) {
+      return;
+    }
+
+    const { error, 
+            handleErrorDefault: submissionDuplicationHandleError  
+          } = useFetchTo(
+      newUrl,
+      submissionDuplicationCheck,
+      { skipDefaultErrorHandling: true }
+    );
+
+    const stop = watch(
+      error,
+      () => {
+        submissionDuplicationError.value = error.value;
+
+        if (error.value?.response?.status === 400) {
+          validationErrors.value = error.value.response?.data ?? [];
+
+          validationErrors.value.forEach((err: ValidationMessageType) =>
+            notificationBus.emit({
+              fieldId: "duplicatedSubmission",
+              fieldName: "",
+              errorMsg: err.errorMsg,
+            })
+          );
+
+          nextBtnDisabled.value = true;
+          return;
+        }
+
+        submissionDuplicationHandleError();
+      },
+      { immediate: true }
+    );
+
+    onInvalidate(() => stop());
+  },
+  { immediate: true }
+);
 </script>
 
 <template>

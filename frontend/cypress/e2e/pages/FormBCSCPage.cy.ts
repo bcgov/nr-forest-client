@@ -20,7 +20,7 @@ describe("BCSC Form", () => {
     },
   };
 
-  beforeEach(function(){    
+  beforeEach(function() {    
 
     cy.intercept("GET", "**/api/codes/districts?page=0&size=250", {
       fixture: "districts.json",
@@ -37,6 +37,14 @@ describe("BCSC Form", () => {
     cy.intercept("GET", "**/api/codes/countries/CA",{
       fixture: "countryCodeCA.json",
     }).as("getCanadaByCode");
+
+    cy.intercept("GET", "**/api/clients/submissions/duplicate-check/U/NaN", {
+      fixture: "submissionDuplicationCheckUnregisteredValid.json"
+    }).as("getValidUnregisteredSubmissionDuplicationCheck");
+
+    cy.intercept("GET", "**/api/submission-limit", {
+      fixture: "submissionLimitValid.json"
+    }).as("getValidSubmissionLimit");
 
     const response = this.currentTest.title.endsWith("failure") ? submitResponse.failure : submitResponse.success;
 

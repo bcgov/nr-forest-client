@@ -1,0 +1,43 @@
+{
+  "mappings": [
+    {
+      "name": "Client Details - Success",
+      "request": {
+        "urlPattern": "/api/clients/details-by-id/(.*)",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-client-details-review.json",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details for GP12345678 - Success",
+      "request": {
+        "url": "/api/clients/details-by-id/GP12345678",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-client-details-GP12345678.json",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 500
+      }
+    },
+    {
+      "name": "Client Details for FM1234567 - Success",
+      "request": {
+        "url": "/api/clients/details-by-id/FM1234567",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-client-details-FM1234567.json",
+        "transformers": ["response-template"],
+        "fixedDelayMilliseconds": 500
+      }
+    }
+  ]
+}

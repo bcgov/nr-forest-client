@@ -820,5 +820,78 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             )
         );
   }
+  
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("clientDetailsByIdProvider")
+  @DisplayName("Client details by identification")
+  void shouldGetClientDetailsByIdentification(
+      String identification,
+      int legacyStatus,
+      String expectedResponse,
+      int responseStatus) {
+
+    reset();
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search/registrationOrName"))
+            .withQueryParam("registrationNumber", equalTo(identification))
+            .willReturn(
+                status(legacyStatus)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(expectedResponse)));
+
+    WebTestClient.BodyContentSpec response =
+        client
+            .mutateWith(csrf())
+            .mutateWith(
+                mockJwt()
+                    .jwt(jwt -> jwt.claims(
+                        claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                    .authorities(
+                        new SimpleGrantedAuthority(
+                            "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER)))
+            .get()
+            .uri(
+                "/api/clients/details-by-id/{identification}",
+                Map.of("identification", identification))
+            .exchange()
+            .expectStatus().isEqualTo(HttpStatus.valueOf(responseStatus))
+            .expectBody()
+            .consumeWith(System.out::println);
+
+    if (HttpStatus.valueOf(responseStatus).is2xxSuccessful()) {
+      response.json(expectedResponse);
+    } else {
+      response.equals(expectedResponse);
+    }
+  }
+
+  private static Stream<Arguments> clientDetailsByIdProvider() {
+    String sampleClientJson = """
+        [
+          {
+            "clientNumber": "AA0000001",
+            "clientName": "SAMPLE COMPANY",
+            "legalFirstName": null,
+            "legalMiddleName": null,
+            "clientStatusCode": "A",
+            "clientTypeCode": "C",
+            "clientIdTypeCode": null,
+            "clientIdentification": "AA0000001",
+            "registryCompanyTypeCode": "BC",
+            "corpRegnNmbr": "C0123456",
+            "clientAcronym": "SC",
+            "wcbFirmNumber": null,
+            "ocgSupplierNmbr": null,
+            "clientComment": "Legacy client"
+          }
+        ]
+        """;
+
+    return Stream.of(
+        Arguments.of("AA0000001", 200, sampleClientJson, 200),
+        Arguments.of("INVALID123", 200, "[]", 200)
+    );
+  }
 
 }

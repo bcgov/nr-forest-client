@@ -122,5 +122,8 @@
   "nyc": {
     "check-coverage": true,
     "lines": 40
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

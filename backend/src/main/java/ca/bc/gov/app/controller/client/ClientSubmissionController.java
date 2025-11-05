@@ -211,5 +211,20 @@ public class ClientSubmissionController {
             request
         );
   }
-
+  
+  @GetMapping("/duplicate-check/{businessType}/{registrationNumber}")
+  public Mono<Void> validateSubmissionDuplication(
+      @PathVariable String businessType,
+      @PathVariable String registrationNumber,
+      JwtAuthenticationToken principal
+  ) {
+    log.info("businessType={}, registrationNumber={}", businessType, registrationNumber);
+    if ("U".equals(businessType)) {
+      return validator.validateSubmissionDuplicationForUnregiteredBusinesses(principal); 
+    }
+    else {
+      return validator.validateSubmissionDuplicationForRegiteredBusinesses(registrationNumber);  
+    }
+  } 
+  
 }

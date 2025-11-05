@@ -39,7 +39,7 @@ Feature: BceID User Tests
     When I can read "New client application"
     And I select "DMH - 100 Mile House Natural Resource District" from the "District" form input
     Then I mark "I have a BC registered business (corporation, sole proprietorship, society, etc.)" on the "Type of business" "radio" input
-    And I type "veitch f" and select "VEITCH FOREST" from the "BC registered business name" form autocomplete
+    And I type "TONY BHAY" and select "TONY BHAYANA" from the "BC registered business name" form autocomplete
     And I fill the form as follows
       | Field name | Value                     | Type   |      
       | Year       | 1990                      | text   |
@@ -49,10 +49,10 @@ Feature: BceID User Tests
     And I click on next
     And I type "2255522552" into the "Phone number" form input
     Then I select "Billing" from the "Primary role" form input
-    And I fill the "GARY VEITCH" information with the following
+    And I fill the "PARMJIT BHAYANA" information with the following
       | Field name      | Value              | Type          |
-      | Email address   | garyveitch@mail.ca | text          |
-      | Phone number    | 7787787778         | text          |      
+      | Email address   | parmjitbha@mail.ca | text          |
+      | Phone number    | 7787787078         | text          |      
       | Primary role    | Director           | select        |
     And I click on next
     Then I submit

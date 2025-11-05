@@ -68,9 +68,31 @@ describe("Submission Review Page", () => {
         delay: 500, // allow some time to make some assertions before the response.
       });
     }).as("action");
-
-
   };
+
+  
+  describe("when staff is checking a pending submission of an existing client",() => {
+    beforeEach(() => {
+      beforeInit('test-case-review-duplicated');
+    });
+
+    it("Should show notification and prevent approval", () => {
+      cy.wait("@loadSubmission")
+        .its("response.body.submissionStatus")
+        .should("eq", "New");
+
+      cy.get("cds-inline-notification")
+        .should("exist")
+        .should(
+          "contain",
+          "Let the applicant know their number and reject this submission"
+      );
+
+      cy.contains("cds-button", approveLabel)
+        .should("have.attr", "disabled");
+  
+    });
+  });
 
   describe("when user is reviewing submission",() =>{
 
@@ -298,7 +320,7 @@ describe("Submission Review Page", () => {
 
       describe("and the action fails", () => {
         
-        describe("and it's not a conflict eror", () => {
+        describe("and it's not a conflict error", () => {
 
           it("should re-enable the buttons by returning 400", () => {
             cy.wait("@action");
@@ -336,7 +358,7 @@ describe("Submission Review Page", () => {
 
         });
 
-        describe("and it is a conflict eror", () => {
+        describe("and it is a conflict error", () => {
 
           it("should not re-enable the buttons by returning 409", () => {
             cy.wait("@action");

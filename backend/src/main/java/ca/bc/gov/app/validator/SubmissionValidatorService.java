@@ -12,7 +12,6 @@ import ca.bc.gov.app.dto.client.ValidationSourceEnum;
 import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
-import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +21,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import io.micrometer.observation.annotation.Observed;
 
 @Service
 @Slf4j
@@ -454,6 +454,58 @@ public class SubmissionValidatorService {
             )
             .collectList()
             .filter(errors -> !errors.isEmpty());
+  }
+  
+  public Mono<Void> validateSubmissionDuplicationForUnregiteredBusinesses(
+      JwtAuthenticationToken principal) {
+    
+    String fullUsername = JwtPrincipalUtil.getUserId(principal);
+
+    return submissionRepository.countSubmissionUnregiteredBusinessesByUsername(fullUsername)
+        .doOnNext(
+            count -> log.info("User {} has {} active submissions", fullUsername, count)
+        ) 
+        .flatMap(count -> {
+          if (count > 0) {
+            return Mono.error(new ValidationException(
+                List.of(
+                    new ValidationError(
+                        "duplicatedSubmission", 
+                        "It looks like the client you're trying to create already has a submission in progress."
+                    )
+                ))
+            );
+          } 
+          else {
+            return Mono.empty();
+          }
+        });
+  
+  }
+
+  public Mono<Void> validateSubmissionDuplicationForRegiteredBusinesses(
+      String registrationNumber) {
+    
+    return submissionRepository.countSubmissionRegiteredBusinessesByRegistrationNumber(registrationNumber)
+        .doOnNext(
+            count -> log.info("There are {} active submissions for {}", count, registrationNumber)
+        ) 
+        .flatMap(count -> {
+          if (count > 0) {
+            return Mono.error(new ValidationException(
+                List.of(
+                    new ValidationError(
+                        "duplicatedSubmission", 
+                        "It looks like the client you're trying to create already has a submission in progress."
+                    )
+                ))
+            );
+          } 
+          else {
+            return Mono.empty();
+          }
+        });
+  
   }
 
 }
