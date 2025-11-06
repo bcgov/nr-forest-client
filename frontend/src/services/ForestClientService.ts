@@ -801,7 +801,6 @@ export const buildRelatedClientCombination = (entry: RelatedClientEntry): string
   const value = [
     entry.client.client?.code,
     entry.client.location?.code,
-    entry.relationship?.code,
     entry.relatedClient.client?.code,
     entry.relatedClient.location?.code,
   ].join(",");

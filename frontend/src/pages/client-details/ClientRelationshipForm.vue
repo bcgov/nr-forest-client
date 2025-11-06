@@ -441,7 +441,6 @@ const confirmNewClient = () => {
             `relatedClients[${formData.client.location?.code}][${index}].client.relationship`,
           ),
         ]"
-        :error-message="combinationError"
         @update:selected-value="updateRelationship($event)"
         @empty="validation.relationshipType = !$event"
       />

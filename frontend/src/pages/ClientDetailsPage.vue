@@ -934,7 +934,7 @@ watch([() => Object.keys(relatedClientsLocations.value ?? {}), locationsState], 
   });
 });
 
-const buildUniqueValidation = () => isUniqueDescriptive("This combination of location, relationship type, related client and its location already exists");
+const buildUniqueValidation = () => isUniqueDescriptive("This combination of Location, Related client and Related client's location already exists");
 
 let uniqueRelationships: ReturnType<typeof buildUniqueValidation>;
 

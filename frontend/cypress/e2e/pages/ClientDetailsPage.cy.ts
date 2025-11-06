@@ -1863,7 +1863,7 @@ describe("Client Details Page", () => {
     });
 
     describe("when role:CLIENT_EDITOR", () => {
-      const fillInRequiredFields = (locationText: string) => {
+      const fillInRequiredFields = (locationText: string, relationshipText = "Shareholder") => {
         cy.selectFormEntry("cds-dropdown#rc-null-null-location", locationText);
 
         cy.wait("@getRelationshipTypes");
@@ -1871,7 +1871,7 @@ describe("Client Details Page", () => {
         // For some reason some tests fail without this extra wait time
         cy.wait(50);
 
-        cy.selectFormEntry("cds-dropdown#rc-null-null-relationship", "Shareholder");
+        cy.selectFormEntry("cds-dropdown#rc-null-null-relationship", relationshipText);
 
         cy.selectAutocompleteEntry("#rc-null-null-relatedClient", "james", "00000007");
 
@@ -1909,14 +1909,24 @@ describe("Client Details Page", () => {
             // cy.get("[data-focus='relationships-location-null-heading']:focus");
             cy.wait(1000);
 
-            fillInRequiredFields("01");
+            /*
+            Using a *different* Relationship type to make sure the duplication error gets triggered
+            regardless of its value being different from the ones in the Client relationships it's
+            being compared to.
+            */
+            fillInRequiredFields("01", "General Partner");
           });
 
-          it("shows the errors on the unique validation-related set of fields", () => {
+          it("shows the errors only on the unique validation-related set of fields", () => {
+            // Combined unique fields
             cy.get("#rc-null-null-location").should("have.attr", "invalid");
-            cy.get("#rc-null-null-relationship").should("have.attr", "invalid");
             cy.get("#rc-null-null-relatedClient").should("have.attr", "invalid");
             cy.get("#rc-null-null-relatedClient-location").should("have.attr", "invalid");
+
+            // Other, unrelated fields, which should NOT be invalid
+            cy.get("#rc-null-null-relationship").should("not.have.attr", "invalid");
+            cy.get("#rc-null-null-percentageOwnership").should("not.have.attr", "invalid");
+            cy.get("#rc-null-null-hasSigningAuthority").should("not.have.attr", "invalid");
 
             cy.get("cds-button#rc-null-null-SaveBtn").shadow().find("button").should("be.disabled");
           });
