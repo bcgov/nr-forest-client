@@ -1018,23 +1018,22 @@ describe("buildRelatedClientIndex", () => {
 });
 
 describe("buildRelatedClientCombination", () => {
-  it("returns a string that combines the client code, the location code, the relationship code, the related client code and its location code, in that order", () => {
+  it("returns a string that combines the client code, the location code, the related client code and its location code, in that order", () => {
     const entry: RelatedClientEntry = {
       client: {
         client: { code: "1" } as CodeNameType,
         location: { code: "2" } as CodeNameType,
       },
-      relationship: { code: "3" } as CodeNameType,
       relatedClient: {
-        client: { code: "4" } as CodeNameType,
-        location: { code: "5" } as CodeNameType,
+        client: { code: "3" } as CodeNameType,
+        location: { code: "4" } as CodeNameType,
       },
       percentageOwnership: null,
       hasSigningAuthority: null,
       isMainParticipant: true,
     };
     const result = buildRelatedClientCombination(entry);
-    expect(result).toEqual("1,2,3,4,5");
+    expect(result).toEqual("1,2,3,4");
   });
 });
 
