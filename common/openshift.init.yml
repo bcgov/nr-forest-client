@@ -58,7 +58,7 @@ parameters:
   - name: COGNITO_CLIENT_ID
     required: true
   - name: COGNITO_DOMAIN
-    value: 'prod-fam-user-pool-domain'
+    value: 'lza-prod-fam-user-pool-domain'
   - name: COGNITO_ENVIRONMENT
     required: true
   - name: COGNITO_USER_POOL
