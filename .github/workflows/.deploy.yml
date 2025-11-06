@@ -86,6 +86,7 @@ jobs:
             -p COGNITO_CLIENT_ID=${{ secrets.COGNITO_CLIENT_ID }}
             -p COGNITO_ENVIRONMENT=${{ inputs.environment || 'dev' }}
             -p COGNITO_USER_POOL=${{ secrets.COGNITO_USER_POOL }}
+            -p COGNITO_DOMAIN="${{ vars.COGNITO_DOMAIN }}"
             -p CHES_MAIL_COPY=${{ secrets.CHES_MAIL_COPY }}
             -p VITE_NODE_ENV=openshift-${{ inputs.target }}
             -p URL_FRONTEND=${{ inputs.url }}
@@ -129,6 +130,7 @@ jobs:
             parameters:
               -p URL=${{ inputs.url }}
               -p CONFIG_MAP="${{ inputs.configmap-frontend }}"
+              -p COGNITO_DOMAIN="${{ vars.COGNITO_DOMAIN }}"
     steps:
       - uses: bcgov/action-deployer-openshift@d972993c70aba88e4f2fe66a66c4b7149fa9fcad # v4.0.0
         id: deploys

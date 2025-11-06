@@ -59,7 +59,7 @@ parameters:
     value: "ca-central-1"
   - name: COGNITO_DOMAIN
     description: Cognito domain
-    value: "prod-fam-user-pool-domain"
+    value: "lza-prod-fam-user-pool-domain"
 objects:
   - kind: Deployment
     apiVersion: apps/v1
