@@ -41,7 +41,7 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <testcontainers.version>1.21.3</testcontainers.version>
-    <org.junit.version>5.14.0</org.junit.version>
+    <org.junit.version>6.0.0</org.junit.version>
     <junit.version>4.13.2</junit.version>
     <assertj.version>3.24.2</assertj.version>
     <logback.version>1.5.20</logback.version>
