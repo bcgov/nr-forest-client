@@ -46,7 +46,7 @@
     <assertj.version>3.24.2</assertj.version>
     <logback.version>1.5.20</logback.version>
     <oci.revision>${project.version}</oci.revision>
-    <flyway.version>11.15.0</flyway.version>
+    <flyway.version>11.11.1</flyway.version>
     <opentelemetry.version>1.55.0</opentelemetry.version>
     <commons-lang3.version>3.19.0</commons-lang3.version>
   </properties>
@@ -240,7 +240,7 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-bom</artifactId>
-        <version>4.2.7.Final</version>
+        <version>4.1.125.Final</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
