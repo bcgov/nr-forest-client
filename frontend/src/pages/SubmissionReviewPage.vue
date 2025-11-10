@@ -476,10 +476,11 @@ watch(data, () => {
       >    
         <div>This new client submission has already been reviewed and approved.</div>    
       </cds-inline-notification>
-
+      
       <cds-inline-notification
         data-text="Business information"
-        v-if="!duplicatedClientCheckLoading && duplicatedClientNumbers?.length > 0"
+        v-if="(!duplicatedClientCheckLoading && duplicatedClientNumbers?.length > 0) 
+              && (data.submissionStatus !== 'Approved' && data.submissionStatus !== 'Rejected')"
         hide-close-button="true"
         low-contrast="true"
         open="true"
