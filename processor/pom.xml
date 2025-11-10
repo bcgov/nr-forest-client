@@ -41,12 +41,12 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <testcontainers.version>1.21.3</testcontainers.version>
-    <org.junit.version>6.0.0</org.junit.version>
+    <org.junit.version>6.0.1</org.junit.version>
     <junit.version>4.13.2</junit.version>
     <assertj.version>3.24.2</assertj.version>
     <logback.version>1.5.20</logback.version>
     <oci.revision>${project.version}</oci.revision>
-    <flyway.version>11.11.1</flyway.version>
+    <flyway.version>11.15.0</flyway.version>
     <opentelemetry.version>1.55.0</opentelemetry.version>
     <commons-lang3.version>3.19.0</commons-lang3.version>
   </properties>
@@ -240,7 +240,7 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-bom</artifactId>
-        <version>4.1.125.Final</version>
+        <version>4.2.7.Final</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
