@@ -567,7 +567,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             "[{\"clientNumber\":\"00000002\"}]",
             "[]",
             true,
-            false
+            true
         ),
         Arguments.of(
             named("fuzzy match",
@@ -601,7 +601,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             "[{\"clientNumber\":\"00000005\"}]",
             "[]",
             true,
-            false
+            true
         ),
         Arguments.of(
             named("all matches",
@@ -750,7 +750,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
             named("no dba fuzzy", "[]"),
             named("no dba full", "[]"),
             true,
-            false
+            true
         ),
 
         Arguments.of(

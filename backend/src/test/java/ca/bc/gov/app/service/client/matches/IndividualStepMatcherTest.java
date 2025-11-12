@@ -167,7 +167,7 @@ class IndividualStepMatcherTest {
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000002")),
             Flux.empty(),
             true,
-            false
+            true
         ),
         Arguments.of(
             ClientMatchDataGenerator.getDto(
@@ -199,7 +199,7 @@ class IndividualStepMatcherTest {
             Flux.just(ClientMatchDataGenerator.getForestClientDto("00000005")),
             Flux.empty(),
             true,
-            false
+            true
         ),
         Arguments.of(
             ClientMatchDataGenerator.getDto(
