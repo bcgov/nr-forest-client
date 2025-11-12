@@ -15,6 +15,23 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * <p>This class implements the StepMatcher interface and provides the functionality for matching
+ * registered steps. It uses the ClientLegacyService to search for registered companies based on the
+ * provided client submission data.</p>
+ *
+ * <p>Change (FSADT1-2043)</p>
+ * The logic for determining the match is changed to be the following:
+ *
+ * <p><b>IF</b> (ID has 100% match) <b>THEN</b></p>
+ * &nbsp;&nbsp;<span>Red banner, cannot proceed. <b>Client Exist</b></span>
+ *
+ * <p><b>ELSE IF</b> (name has 100% match) <b>THEN</b></p>
+ * &nbsp;&nbsp;<span>Yellow warning, <b>can proceed</b></span>
+ *
+ * <p><b>ELSE</b> (name fuzzy matching) <b>THEN</b></p>
+ * &nbsp;&nbsp;<span>Yellow warning, <b>can proceed</b></span>
+ */
 @Component
 @Slf4j
 @Observed
@@ -169,7 +186,7 @@ public class RegisteredStepMatcher implements StepMatcher {
             processResult(
                 clientNameFullMatch,
                 BUSINESS_FIELD_NAME,
-                false,
+                true, //Not actually true, just to force a warning instead
                 false
             ),
 

@@ -194,7 +194,7 @@ class ClientMatchIndividualControllerIntegrationTest extends AbstractTestContain
             "[{\"clientNumber\":\"00000002\"}]",
             "[]",
             true,
-            false
+            true
         ),
         Arguments.of(
             named("fuzzy match",

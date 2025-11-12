@@ -15,9 +15,21 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * This class implements the StepMatcher interface and provides the functionality for matching
+ * <p>This class implements the StepMatcher interface and provides the functionality for matching
  * individual steps. It uses the ClientLegacyService to search for individuals and documents based
- * on the provided client submission data.
+ * on the provided client submission data.</p>
+ *
+ * <p>Change (FSADT1-2043)</p>
+ * The logic for determining the match is changed to be the following:
+ *
+ * <p><b>IF</b> (ID has 100% match) <b>THEN</b></p>
+ * &nbsp;&nbsp;<span>Red banner, cannot proceed. <b>Client Exist</b></span>
+ *
+ * <p><b>ELSE IF</b> (name has 100% match) <b>THEN</b></p>
+ * &nbsp;&nbsp;<span>Yellow warning, <b>can proceed</b></span>
+ *
+ * <p><b>ELSE</b> (name fuzzy matching) <b>THEN</b></p>
+ * &nbsp;&nbsp;<span>Yellow warning, <b>can proceed</b></span>
  */
 @Component
 @Slf4j
@@ -123,7 +135,7 @@ public class IndividualStepMatcher implements StepMatcher {
                         //using this name for reference only to denote that is the individual data
                         //plus the document id that was matched
                         "businessInformation.individualAndDocument",
-                        false,
+                        true, // Not actually fuzzy, but we want to treat it as such
                         false
                     ),
                     processResult(

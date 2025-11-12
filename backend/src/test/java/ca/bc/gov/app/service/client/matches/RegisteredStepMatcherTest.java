@@ -253,7 +253,7 @@ class RegisteredStepMatcherTest {
             named("no dba fuzzy", Flux.empty()),
             named("no dba full", Flux.empty()),
             true,
-            false
+            true
         ),
 
 
