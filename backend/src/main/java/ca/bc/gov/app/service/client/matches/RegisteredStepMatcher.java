@@ -17,11 +17,10 @@ import reactor.core.publisher.Mono;
 
 /**
  * <p>This class implements the StepMatcher interface and provides the functionality for matching
- * registered steps. It uses the ClientLegacyService to search for registered companies based on
- * the provided client submission data.</p>
+ * registered steps. It uses the ClientLegacyService to search for registered companies based on the
+ * provided client submission data.</p>
  *
  * <p>Change (FSADT1-2043)</p>
- *
  * The logic for determining the match is changed to be the following:
  *
  * <p><b>IF</b> (ID has 100% match) <b>THEN</b></p>

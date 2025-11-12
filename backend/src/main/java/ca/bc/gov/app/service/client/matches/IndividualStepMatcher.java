@@ -20,14 +20,13 @@ import reactor.core.publisher.Mono;
  * on the provided client submission data.</p>
  *
  * <p>Change (FSADT1-2043)</p>
- *
  * The logic for determining the match is changed to be the following:
  *
  * <p><b>IF</b> (ID has 100% match) <b>THEN</b></p>
  * &nbsp;&nbsp;<span>Red banner, cannot proceed. <b>Client Exist</b></span>
  *
  * <p><b>ELSE IF</b> (name has 100% match) <b>THEN</b></p>
- * Yellow warning, <b>can proceed</b></span>
+ * &nbsp;&nbsp;<span>Yellow warning, <b>can proceed</b></span>
  *
  * <p><b>ELSE</b> (name fuzzy matching) <b>THEN</b></p>
  * &nbsp;&nbsp;<span>Yellow warning, <b>can proceed</b></span>
