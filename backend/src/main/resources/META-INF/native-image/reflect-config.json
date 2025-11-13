@@ -10,5 +10,10 @@
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
+  },
+  {
+    "name": "io.netty.util.internal.shaded.org.jctools.queues.MpmcArrayQueueProducerIndexField",
+    "allDeclaredFields": true,
+    "allDeclaredConstructors": true
   }
 ]
