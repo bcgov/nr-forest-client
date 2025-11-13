@@ -1,6 +1,9 @@
 package ca.bc.gov.app.controller.client;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -74,6 +77,22 @@ class ClientPatchControllerIntegrationTest
 
     legacyStub
         .stubFor(
+            get(urlEqualTo("/api/search/clientNumber/00123456"))
+                .willReturn(okJson("""
+                      {
+                        "client":{
+                          "clientIdentification":null,
+                          "birthdate":null
+                        },
+                        "addresses":null,
+                        "contacts":null,
+                        "doingBusinessAs":null
+                      }"""))
+                .withHeader("Content-Type", equalTo("application/json"))
+        );
+
+    legacyStub
+        .stubFor(
             patch(urlEqualTo("/api/clients/partial/00123456"))
                 .willReturn(aResponse().withStatus(202))
         );
@@ -98,6 +117,12 @@ class ClientPatchControllerIntegrationTest
   @Test
   @DisplayName("Should fail to patch client when legacy fails")
   void shouldSendNotFoundWhenClientNumberIsNotFound() {
+
+    legacyStub
+        .stubFor(
+            get(urlEqualTo("/api/search/clientNumber/00123456"))
+                .willReturn(aResponse().withStatus(404))
+        );
 
     legacyStub
         .stubFor(
