@@ -139,7 +139,10 @@ public class ClientSearchService {
 
     if (StringUtils.isBlank(identification) && fuzzy) {
       return clientRepository
-          .findByIndividualFuzzy(String.format("%s %s", firstName, lastName), dob)
+          .findByIndividualFuzzy(
+              String.format("%s %s", firstName, lastName),
+              dob != null ? dob.atStartOfDay() : null
+          )
           .map(forestClientMapper::toDto)
           .distinct(ForestClientDto::clientNumber)
           .sort(Comparator.comparing(ForestClientDto::clientNumber))
@@ -164,7 +167,9 @@ public class ClientSearchService {
         .ignoreCase(true);
 
     if( dob != null) {
-      queryCriteria = queryCriteria.and("birthdate").is(dob);
+      queryCriteria = queryCriteria
+          .and("birthdate")
+          .is(dob.atStartOfDay());
     }
 
     if (StringUtils.isNotBlank(identification)) {

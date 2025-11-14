@@ -31,7 +31,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
   );
 
   @Query(ForestClientQueries.FIND_FUZZY_INDIVIDUAL_BY_NAME_AND_DOB)
-  Flux<ForestClientEntity> findByIndividualFuzzy(String name, LocalDate dob);
+  Flux<ForestClientEntity> findByIndividualFuzzy(String name, LocalDateTime dob);
 
   @Query(ForestClientQueries.FIND_FUZZY_CLIENT_BY_NAME)
   Flux<ForestClientEntity> matchBy(String companyName);
