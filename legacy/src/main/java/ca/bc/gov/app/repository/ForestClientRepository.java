@@ -5,6 +5,7 @@ import ca.bc.gov.app.dto.HistoryLogDto;
 import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.entity.ClientRelatedProjection;
 import ca.bc.gov.app.entity.ForestClientEntity;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.repository.Query;
@@ -30,7 +31,7 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
   );
 
   @Query(ForestClientQueries.FIND_FUZZY_INDIVIDUAL_BY_NAME_AND_DOB)
-  Flux<ForestClientEntity> findByIndividualFuzzy(String name, LocalDateTime dob);
+  Flux<ForestClientEntity> findByIndividualFuzzy(String name, LocalDate dob);
 
   @Query(ForestClientQueries.FIND_FUZZY_CLIENT_BY_NAME)
   Flux<ForestClientEntity> matchBy(String companyName);
