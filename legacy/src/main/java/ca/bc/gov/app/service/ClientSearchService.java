@@ -166,7 +166,7 @@ public class ClientSearchService {
         .is("I")
         .ignoreCase(true);
 
-    if( dob != null) {
+    if ( dob != null) {
       queryCriteria = queryCriteria
           .and("birthdate")
           .is(dob.atStartOfDay());
