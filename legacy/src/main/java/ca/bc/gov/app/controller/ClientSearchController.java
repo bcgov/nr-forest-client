@@ -68,7 +68,7 @@ public class ClientSearchController {
   public Flux<ForestClientDto> findIndividuals(
       @RequestParam String firstName,
       @RequestParam String lastName,
-      @RequestParam LocalDate dob,
+      @RequestParam(required = false) LocalDate dob,
       @RequestParam(required = false) String identification
   ) {
     log.info("Receiving request to search by individual {} {} {} {}", firstName, lastName, dob,

@@ -692,7 +692,7 @@ public final class ForestClientQueries {
       SELECT *
       FROM THE.FOREST_CLIENT
       WHERE
-          BIRTHDATE = :dob
+          (:dob IS NULL OR BIRTHDATE = :dob)
           AND CLIENT_TYPE_CODE = 'I'
         AND (
           UTL_MATCH.JARO_WINKLER_SIMILARITY(
