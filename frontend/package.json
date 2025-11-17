@@ -60,7 +60,7 @@
     "@carbon/pictograms": "^12.42.0",
     "@carbon/styles": "^1.67.0",
     "@carbon/web-components": "^2.12.0",
-    "@vueuse/core": "^13.0.0",
+    "@vueuse/core": "^14.0.0",
     "aws-amplify": "^6.15.1",
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
