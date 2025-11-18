@@ -1724,45 +1724,6 @@ describe("Client Details Page", () => {
     });
   });
 
-  describe('related clients tab - "Under construction"', () => {
-    const clientNumber = "12321";
-
-    beforeEach(() => {
-      cy.addToLocalStorage("VITE_FEATURE_FLAGS", { RELATED_CLIENTS: false });
-
-      cy.visit(`/clients/details/${clientNumber}`);
-
-      cy.window().then((win) => {
-        cy.stub(win, "open").as("windowOpen");
-      });
-
-      // Switch to the Related Clients tab
-      cy.get("#tab-related").click();
-
-      // Make sure the current tab panel was effectively switched
-      cy.get("#panel-locations").should("have.attr", "hidden");
-      cy.get("#panel-related").should("not.have.attr", "hidden");
-    });
-
-    after(() => {
-      cy.addToLocalStorage("VITE_FEATURE_FLAGS", { RELATED_CLIENTS: true });
-    });
-
-    it("should display the Under construction message", () => {
-      cy.get("#panel-related").contains("Under construction").should("be.visible");
-    });
-
-    it("should open the Related Client page in the legacy application", () => {
-      cy.get("#open-related-clients-btn").click();
-      cy.get("@windowOpen").should(
-        "be.calledWith",
-        `https://${greenDomain}/int/client/client04RelatedClientListAction.do?bean.clientNumber=${clientNumber}`,
-        "_blank",
-        "noopener",
-      );
-    });
-  });
-
   describe("related clients tab", () => {
     describe("non-user action tests", { testIsolation: false }, () => {
       describe("4 relationships under 2 active locations", () => {

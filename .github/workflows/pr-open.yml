@@ -65,7 +65,7 @@ jobs:
                 idirMaxSubmissions: 65535
                 otherMaxSubmissions: 65535
       configmap-frontend: |-
-        window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{\"RELATED_CLIENTS\":true}');
+        window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{}');
 
   tests:
     name: Tests
