@@ -41,7 +41,7 @@
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <testcontainers.version>1.21.3</testcontainers.version>
-        <logback.version>1.5.20</logback.version>
+        <logback.version>1.5.21</logback.version>
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.6</nimbus-jose-jwt.version>
         <spring-security-core.version>6.5.6</spring-security-core.version>
@@ -53,7 +53,7 @@
         <org.junit.version>6.0.1</org.junit.version>
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.20.0</mockito.version>
-        <jooq.version>3.20.8</jooq.version>
+        <jooq.version>3.20.9</jooq.version>
         <commons-lang3.version>3.19.0</commons-lang3.version>
     </properties>
 
