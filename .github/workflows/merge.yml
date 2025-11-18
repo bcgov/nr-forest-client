@@ -43,7 +43,7 @@ jobs:
           app:
             component: backend
       configmap-frontend: |-
-        window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{\"RELATED_CLIENTS\":true}');
+        window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{}');
 
   deploy-prod:
     name: Deploy (PROD)
