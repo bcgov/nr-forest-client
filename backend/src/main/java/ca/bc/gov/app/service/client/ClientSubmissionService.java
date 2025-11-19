@@ -5,11 +5,11 @@ import static ca.bc.gov.app.util.ClientMapper.mapAllToSubmissionLocationEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionContactEntity;
 import static ca.bc.gov.app.util.ClientMapper.mapToSubmissionDetailEntity;
 import static org.springframework.data.relational.core.query.Query.query;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.client.ClientContactDto;
 import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
+import ca.bc.gov.app.dto.client.ClientSubmissionDistrictListDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.submissions.SubmissionAddressDto;
 import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
@@ -37,7 +37,6 @@ import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.service.ches.ChesService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import ca.bc.gov.app.util.RetryUtil;
-import io.micrometer.observation.annotation.Observed;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,6 +49,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import io.micrometer.observation.annotation.Observed;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -84,7 +84,7 @@ public class ClientSubmissionService {
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
   private final WebClient processorApi;
-
+  
   public ClientSubmissionService(
       ClientCodeService codeService,
       ClientDistrictService districtService,
@@ -113,7 +113,12 @@ public class ClientSubmissionService {
     this.processorApi = processorApi;
   }
 
-
+  public Flux<ClientSubmissionDistrictListDto> pendingSubmissions() {
+    long days = configuration.getSubmissionLimit().toDays();
+    String interval = days + " days";
+    return submissionRepository.retrievePendingSubmissions(interval);
+  }
+  
   public Flux<ClientListSubmissionDto> listSubmissions(
       int page,
       int size,

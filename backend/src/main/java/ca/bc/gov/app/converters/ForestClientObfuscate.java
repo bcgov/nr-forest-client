@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Set;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.MDC;
 
 @Slf4j
 public class ForestClientObfuscate<T> extends JsonSerializer<T> {
