@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -25,7 +26,7 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
   @Autowired
   private SubmissionRepository submissionRepository;
   
-  @Autowired
+  @MockitoBean
   private ForestClientConfiguration configuration;
 
   @Test
@@ -67,9 +68,10 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
             "Test District", 
             "test@example.com");
 
-      when(configuration.getSubmissionLimit()).thenReturn(Duration.ofDays(7));
+      Duration stubDays = Duration.ofDays(7);
+      when(configuration.getSubmissionLimit()).thenReturn(stubDays);
 
-      String expectedInterval = configuration.getSubmissionLimit().toDays() + " days";
+      String expectedInterval = stubDays.toDays() + " days";
 
       when(submissionRepository.retrievePendingSubmissions(expectedInterval))
               .thenReturn(Flux.just(testItem));
