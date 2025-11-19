@@ -47,7 +47,7 @@
         <spring-security-core.version>6.5.6</spring-security-core.version>
         <micrometer.version>1.16.0</micrometer.version>
         <micrometer-tracing.version>1.6.0</micrometer-tracing.version>
-        <flyway.version>11.11.1</flyway.version>
+        <flyway.version>11.17.0</flyway.version>
         <opentelemetry.version>1.56.0</opentelemetry.version>
         <selenium.version>4.38.0</selenium.version>
         <org.junit.version>6.0.1</org.junit.version>
@@ -334,12 +334,12 @@
             <dependency>
                 <groupId>io.projectreactor.netty</groupId>
                 <artifactId>reactor-netty-http</artifactId>
-                <version>1.2.11</version>
+                <version>1.3.0</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
-                <version>4.1.125.Final</version>
+                <version>4.2.7.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
