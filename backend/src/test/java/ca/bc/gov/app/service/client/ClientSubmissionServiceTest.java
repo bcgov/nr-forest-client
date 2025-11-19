@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
@@ -9,10 +10,9 @@ import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -20,14 +20,15 @@ import reactor.test.StepVerifier;
 @DisplayName("Integrated Test | FSA Client Submission Service")
 class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
 
-  @Autowired
+  private SubmissionRepository submissionRepository = mock(SubmissionRepository.class);
+  private ForestClientConfiguration configuration = mock(ForestClientConfiguration.class);
+
   private ClientSubmissionService service;
 
-  @MockitoBean
-  private SubmissionRepository submissionRepository;
-
-  @MockitoBean
-  private ForestClientConfiguration configuration;
+  @BeforeEach
+  void setup() {
+      service = new ClientSubmissionService(submissionRepository, configuration);
+  }
 
   @Test
   @DisplayName("Should return SubmissionDetailsDto when submission id is valid")

@@ -84,7 +84,7 @@ public class ClientSubmissionService {
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
   private final WebClient processorApi;
-
+  
   public ClientSubmissionService(
       ClientCodeService codeService,
       ClientDistrictService districtService,
@@ -111,6 +111,25 @@ public class ClientSubmissionService {
     this.template = template;
     this.configuration = configuration;
     this.processorApi = processorApi;
+  }
+  
+  public ClientSubmissionService(
+      SubmissionRepository submissionRepository,
+      ForestClientConfiguration configuration) {
+    this(
+        null,
+        null,
+        submissionRepository, 
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        configuration, 
+        null
+    );
   }
 
   public Flux<ClientSubmissionDistrictListDto> pendingSubmissions() {
