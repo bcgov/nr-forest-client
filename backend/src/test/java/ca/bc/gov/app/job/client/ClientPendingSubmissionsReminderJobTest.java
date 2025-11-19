@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @DisplayName("Unit Test | ClientPendingSubmissionsReminderJob")
@@ -54,7 +55,7 @@ class ClientPendingSubmissionsReminderJobTest {
                     "interval", interval
                 )),
                 isNull()
-        ));
+        )).thenReturn(Mono.just("EMAIL_OK"));
 
         job.startCheckingPendingSubmissionsJob();
         
