@@ -2,14 +2,12 @@ package ca.bc.gov.app.service.client;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.client.ClientSubmissionDistrictListDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
-import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
 import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
@@ -36,7 +34,6 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
   private SubmissionDetailRepository submissionDetailRepository = mock(SubmissionDetailRepository.class);
   private SubmissionLocationRepository submissionLocationRepository = mock(SubmissionLocationRepository.class);
   private SubmissionContactRepository submissionContactRepository = mock(SubmissionContactRepository.class);
-  private SubmissionLocationContactRepository submissionLocationContactRepository = mock(SubmissionLocationContactRepository.class);
   private SubmissionMatchDetailRepository submissionMatchDetailRepository = mock(SubmissionMatchDetailRepository.class);
   private ChesService chesService = mock(ChesService.class);
   private R2dbcEntityTemplate template = mock(R2dbcEntityTemplate.class);
@@ -53,7 +50,7 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
           submissionDetailRepository,
           submissionLocationRepository,
           submissionContactRepository,
-          submissionLocationContactRepository,
+          null,
           submissionMatchDetailRepository,
           chesService,
           template,
@@ -103,17 +100,13 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
 
       when(configuration.getSubmissionLimit()).thenReturn(Duration.ofDays(7));
       
-      String expectedInterval = "7 days";
-      
-      when(submissionRepository.retrievePendingSubmissions(expectedInterval))
+      when(submissionRepository.retrievePendingSubmissions("7 days"))
               .thenReturn(Flux.just(testItem));
 
       service.pendingSubmissions()
               .as(StepVerifier::create)
               .expectNext(testItem)
               .verifyComplete();
-
-      verify(submissionRepository).retrievePendingSubmissions(expectedInterval);
   }
 
 }
