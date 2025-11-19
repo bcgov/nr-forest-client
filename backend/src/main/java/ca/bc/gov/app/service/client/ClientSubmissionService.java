@@ -112,25 +112,6 @@ public class ClientSubmissionService {
     this.configuration = configuration;
     this.processorApi = processorApi;
   }
-  
-  public ClientSubmissionService(
-      SubmissionRepository submissionRepository,
-      ForestClientConfiguration configuration) {
-    this(
-        null,
-        null,
-        submissionRepository, 
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        configuration, 
-        null
-    );
-  }
 
   public Flux<ClientSubmissionDistrictListDto> pendingSubmissions() {
     long days = configuration.getSubmissionLimit().toDays();

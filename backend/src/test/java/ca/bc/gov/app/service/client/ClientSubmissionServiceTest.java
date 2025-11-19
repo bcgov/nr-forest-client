@@ -7,12 +7,20 @@ import static org.mockito.Mockito.when;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.client.ClientSubmissionDistrictListDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import ca.bc.gov.app.repository.client.SubmissionContactRepository;
+import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.client.SubmissionLocationContactRepository;
+import ca.bc.gov.app.repository.client.SubmissionLocationRepository;
+import ca.bc.gov.app.repository.client.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.client.SubmissionRepository;
+import ca.bc.gov.app.service.ches.ChesService;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -22,12 +30,36 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
 
   private SubmissionRepository submissionRepository = mock(SubmissionRepository.class);
   private ForestClientConfiguration configuration = mock(ForestClientConfiguration.class);
+  
+  private ClientCodeService codeService = mock(ClientCodeService.class);
+  private ClientDistrictService districtService = mock(ClientDistrictService.class);
+  private SubmissionDetailRepository submissionDetailRepository = mock(SubmissionDetailRepository.class);
+  private SubmissionLocationRepository submissionLocationRepository = mock(SubmissionLocationRepository.class);
+  private SubmissionContactRepository submissionContactRepository = mock(SubmissionContactRepository.class);
+  private SubmissionLocationContactRepository submissionLocationContactRepository = mock(SubmissionLocationContactRepository.class);
+  private SubmissionMatchDetailRepository submissionMatchDetailRepository = mock(SubmissionMatchDetailRepository.class);
+  private ChesService chesService = mock(ChesService.class);
+  private R2dbcEntityTemplate template = mock(R2dbcEntityTemplate.class);
+  private WebClient processorApi = mock(WebClient.class);
 
   private ClientSubmissionService service;
 
   @BeforeEach
   void setup() {
-      service = new ClientSubmissionService(submissionRepository, configuration);
+      service = new ClientSubmissionService(
+          codeService,
+          districtService,
+          submissionRepository,
+          submissionDetailRepository,
+          submissionLocationRepository,
+          submissionContactRepository,
+          submissionLocationContactRepository,
+          submissionMatchDetailRepository,
+          chesService,
+          template,
+          configuration,
+          processorApi
+      );
   }
 
   @Test
