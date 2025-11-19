@@ -50,7 +50,6 @@ public class ClientPendingSubmissionsReminderJob implements SchedulingConfigurer
     
     clientSubmissionService.pendingSubmissions()
       .flatMap(item -> {
-          log.info("Sending email for item {}", item);
           return chesService.sendEmail(
               "pendingSubmission", 
               item.emails(),

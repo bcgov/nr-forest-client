@@ -1,12 +1,16 @@
 package ca.bc.gov.app.service.client;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import ca.bc.gov.app.dto.client.ClientSubmissionDistrictListDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
+import ca.bc.gov.app.repository.client.SubmissionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 @Slf4j
@@ -15,6 +19,9 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
 
   @Autowired
   private ClientSubmissionService service;
+  
+  @Autowired
+  private SubmissionRepository submissionRepository;
 
   @Test
   @DisplayName("Should return SubmissionDetailsDto when submission id is valid")
@@ -44,6 +51,27 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
         .getSubmissionDetail(-1L)
         .as(StepVerifier::create)
         .verifyComplete();
+  }
+  
+  @Test
+  @DisplayName("Should return pending submissions")
+  void shouldReturnPendingSubmissions() {
+      ClientSubmissionDistrictListDto testItem =
+        new ClientSubmissionDistrictListDto(
+            123L, 
+            "Test District", 
+            "test@example.com");
+
+      String expectedInterval = "7 days";
+      when(submissionRepository.retrievePendingSubmissions(expectedInterval))
+              .thenReturn(Flux.just(testItem));
+
+      service.pendingSubmissions()
+              .as(StepVerifier::create)
+              .expectNext(testItem)
+              .verifyComplete();
+
+      verify(submissionRepository).retrievePendingSubmissions(expectedInterval);
   }
 
 }
