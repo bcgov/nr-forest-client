@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -22,6 +23,7 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
   private SubmissionRepository submissionRepository = mock(SubmissionRepository.class);
   private ForestClientConfiguration configuration = mock(ForestClientConfiguration.class);
   
+  private R2dbcEntityTemplate template = mock(R2dbcEntityTemplate.class);
   private ClientSubmissionService service;
 
   @BeforeEach
@@ -36,7 +38,7 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
               null,
               null,
               null,
-              null,
+              template,
               configuration,
               null 
       );
