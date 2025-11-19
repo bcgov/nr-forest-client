@@ -1,7 +1,6 @@
 package ca.bc.gov.app.service.client;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
@@ -13,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -22,10 +22,12 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
 
   @Autowired
   private ClientSubmissionService service;
-  
-  private SubmissionRepository submissionRepository = mock(SubmissionRepository.class);
-  
-  private ForestClientConfiguration configuration = mock(ForestClientConfiguration.class);
+
+  @MockitoBean
+  private SubmissionRepository submissionRepository;
+
+  @MockitoBean
+  private ForestClientConfiguration configuration;
 
   @Test
   @DisplayName("Should return SubmissionDetailsDto when submission id is valid")
@@ -68,7 +70,7 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
 
       when(configuration.getSubmissionLimit()).thenReturn(Duration.ofDays(7));
       
-      String expectedInterval = configuration.getSubmissionLimit().toDays() + " days";
+      String expectedInterval = "7 days";
       
       when(submissionRepository.retrievePendingSubmissions(expectedInterval))
               .thenReturn(Flux.just(testItem));
