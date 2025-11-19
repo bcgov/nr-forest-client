@@ -117,13 +117,11 @@
   },
   "overrides": {
     "follow-redirects@<1.15.6": "1.15.6",
-    "tmp": "^0.2.4"
+    "tmp": "^0.2.4",
+    "js-yaml": "^4.1.1"
   },
   "nyc": {
     "check-coverage": true,
     "lines": 40
-  },
-  "engines": {
-    "node": ">=22.12.0"
   }
 }
