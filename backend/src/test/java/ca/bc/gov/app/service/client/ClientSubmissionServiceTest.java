@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -26,7 +25,7 @@ class ClientSubmissionServiceTest extends AbstractTestContainerIntegrationTest {
   @Autowired
   private SubmissionRepository submissionRepository;
   
-  @MockitoBean
+  @Autowired
   private ForestClientConfiguration configuration;
 
   @Test
