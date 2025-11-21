@@ -48,6 +48,7 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
+      address-complete-pem: ${{ secrets.ADDRESS_COMPLETE_PEM }}
       oracledb-port: 1521
       oracledb-servicename: PR_${{ github.event.number }}
       oracledb-username: THE

@@ -42,6 +42,11 @@ on:
         default: ${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca
         required: false
         type: string
+      address-complete-pem:
+        description: Optional Canada Post PEM contents. Pass from calling workflow via secrets.
+        required: false
+        type: string
+        default: ''
 
 permissions: {}
 
@@ -151,7 +156,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Creating Canada Post PEM file from GitHub secret"
-          echo "${{ secrets.ADDRESS_COMPLETE_PEM }}" > canadapost.pem
+          echo "${{ inputs.address-complete-pem }}" > canadapost.pem
           chmod 600 canadapost.pem
           oc login "$OC_SERVER" --token="$OC_TOKEN" --insecure-skip-tls-verify=true
           oc project "$OC_NAMESPACE"
@@ -162,10 +167,12 @@ jobs:
         if: matrix.name == 'backend'
         id: build-params
         run: |
-          if [ "${{ secrets.ADDRESS_COMPLETE_PEM }}" != "" ]; then
-            echo "extra=-p CANADAPOST_CERT_SECRET=${{ github.event.repository.name }}-${{ inputs.target }}-canadapost-cert -p CANADAPOST_CERT_MOUNT_PATH=/etc/ssl/certs/canadapost" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          # Use inputs.address-complete-pem (provided by caller) to decide whether to inject extra params
+          if [ "${{ inputs.address-complete-pem }}" != "" ]; then
+            printf 'extra=-p CANADAPOST_CERT_SECRET=%s-%s-canadapost-cert -p CANADAPOST_CERT_MOUNT_PATH=/etc/ssl/certs/canadapost' "${{ github.event.repository.name }}" "${{ inputs.target }}" >> "$GITHUB_OUTPUT"
           else
-            echo "extra=" >> $GITHUB_OUTPUT
+            printf 'extra=' >> "$GITHUB_OUTPUT"
           fi
 
       # Note: Deployment will be created with the cert mount via the template parameter
