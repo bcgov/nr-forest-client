@@ -13,13 +13,13 @@ ARG SECTIGO_R46_PEM=""
 RUN set -e; \
   CERT_FILE=/tmp/sectigo-r46-root.pem; \
   if [ -n "$SECTIGO_R46_PEM" ]; then \
-    printf '%s\n' "$SECTIGO_R46_PEM" > "$CERT_FILE"; \
+  printf '%s\n' "$SECTIGO_R46_PEM" > "$CERT_FILE"; \
   else \
-    echo "No build arg provided; attempting remote fetch of Sectigo R46 root"; \
-    curl -fsSL 'https://crt.sh/?d=4256644734' -o "$CERT_FILE" || { echo "Remote fetch failed; please supply SECTIGO_R46_PEM."; exit 1; }; \
+  echo "No build arg provided; attempting remote fetch of Sectigo R46 root"; \
+  curl -fsSL 'https://crt.sh/?d=4256644734' -o "$CERT_FILE" || { echo "Remote fetch failed; please supply SECTIGO_R46_PEM."; exit 1; }; \
   fi; \
   keytool -importcert -trustcacerts -noprompt -alias sectigo-r46-root -file "$CERT_FILE" \
-    -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit; \
+  -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit; \
   keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit | grep -i sectigo || echo "Imported but grep did not match (verify manually)"; \
   rm -f "$CERT_FILE"
 

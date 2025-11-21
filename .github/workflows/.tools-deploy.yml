@@ -152,11 +152,11 @@ jobs:
             BRANCH_NAME="${{ github.head_ref }}"
             ESCAPED_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed 's/[\/&]/\\&/g')
             oc create job --from=cronjob/nr-forest-client-tools-migratedb migrate-pr${{ github.event.number }}-${{ github.run_attempt }}-$(date +%s) --dry-run=client -o yaml | sed "s/value: main/value: ${ESCAPED_BRANCH_NAME}/" | sed "s/value: \"0\"/value: \"${{ github.event.number }}\"/" | oc apply -f -
-  
+
   scale-up-legacy:
     name: Scale up legacy
     needs: [deploy-tools]
-    if: always()    
+    if: always()
     runs-on: ubuntu-24.04
     steps:
       - name: Start the Legacy Service
