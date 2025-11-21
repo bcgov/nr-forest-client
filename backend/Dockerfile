@@ -17,6 +17,9 @@ RUN set -e; \
   else \
   echo "No build arg provided; attempting remote fetch of Sectigo R46 root"; \
   curl -fsSL 'https://crt.sh/?d=4256644734' -o "$CERT_FILE" || { echo "Remote fetch failed; please supply SECTIGO_R46_PEM."; exit 1; }; \
+  # Verify SHA-256 hash of the downloaded certificate (expected value from official source) \
+  EXPECTED_SHA256="b0f3e0e0eaa90bf34e66e4a79e927651c01fb9b31c7648206dfa81857232a0b3"; \
+  echo "$EXPECTED_SHA256  $CERT_FILE" | sha256sum -c - || { echo "SHA-256 hash mismatch for downloaded certificate. Aborting."; exit 1; }; \
   fi; \
   keytool -importcert -trustcacerts -noprompt -alias sectigo-r46-root -file "$CERT_FILE" \
   -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit; \
