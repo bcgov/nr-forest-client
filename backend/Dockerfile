@@ -14,16 +14,19 @@ RUN if command -v microdnf > /dev/null; then \
         update-ca-certificates 2>/dev/null || true && \
         yum clean all; \
     elif command -v apt-get > /dev/null; then \
-        apt-get update && apt-get install -y --no-install-recommends ca-certificates && \
+        apt-get update && \
+        apt-get install -y --no-install-recommends ca-certificates && \
         update-ca-certificates && \
-        apt-get clean && rm -rf /var/lib/apt/lists/*; \
-    fi && \
-    # Ensure Java truststore is updated if Java is available (for GraalVM certificate bundling)
-    if [ -f "$JAVA_HOME/lib/security/cacerts" ] && command -v keytool > /dev/null; then \
-        find /etc/ssl/certs -name "*.pem" -o -name "*.crt" | while read cert; do \
+        apt-get clean && \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
+
+# Ensure Java truststore is updated if Java is available (for GraalVM certificate bundling)
+RUN if [ -f "$JAVA_HOME/lib/security/cacerts" ] && command -v keytool > /dev/null; then \
+        find /etc/ssl/certs -name "*.pem" -o -name "*.crt" 2>/dev/null | while read cert; do \
             keytool -import -noprompt -trustcacerts -file "$cert" -alias "$(basename $cert)" \
                 -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>/dev/null || true; \
-        done; \
+        done || true; \
     fi || true
 
 # Copy
