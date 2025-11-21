@@ -1,6 +1,16 @@
 ### Builder
 FROM ghcr.io/graalvm/native-image:22.3.3 AS build
 
+# Update CA certificates in the build image to ensure latest certs are bundled
+# This ensures the native image includes updated certificates for SSL validation
+RUN if command -v microdnf > /dev/null; then \
+        microdnf update -y ca-certificates && microdnf clean all; \
+    elif command -v yum > /dev/null; then \
+        yum update -y ca-certificates && yum clean all; \
+    elif command -v apt-get > /dev/null; then \
+        apt-get update && apt-get install -y --no-install-recommends ca-certificates && apt-get clean && rm -rf /var/lib/apt/lists/*; \
+    fi
+
 # Copy
 WORKDIR /app
 COPY pom.xml mvnw ./
