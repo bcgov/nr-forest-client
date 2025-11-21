@@ -10,13 +10,20 @@ RUN microdnf install -y --refresh ca-certificates && \
     microdnf clean all
 
 # Ensure Java truststore is updated with system CA certificates for GraalVM certificate bundling
-# Spring Boot Native reads from both /etc/ssl/certs and Java's cacerts truststore
+# Spring Boot Native automatically bundles certificates from /etc/ssl/certs and Java's cacerts truststore
+# We update Java's truststore so Spring Boot Native can detect and bundle them during native compilation
 RUN if [ -f "$JAVA_HOME/lib/security/cacerts" ] && command -v keytool > /dev/null; then \
+        echo "Updating Java truststore with system CA certificates..."; \
         find /etc/ssl/certs -name "*.pem" -o -name "*.crt" 2>/dev/null | while read cert; do \
-            keytool -import -noprompt -trustcacerts -file "$cert" -alias "$(basename $cert .pem | basename $cert .crt)" \
+            ALIAS=$(basename "$cert" | sed 's/\.[^.]*$//'); \
+            keytool -import -noprompt -trustcacerts -file "$cert" -alias "$ALIAS" \
                 -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>/dev/null || true; \
         done; \
-        keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit | head -5 || true; \
+        echo "Verifying truststore contains certificates..."; \
+        keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>/dev/null | head -10 || echo "Warning: Could not list truststore"; \
+        echo "Certificate update complete"; \
+    else \
+        echo "Warning: Java truststore or keytool not found, skipping certificate import"; \
     fi
 
 # Copy
