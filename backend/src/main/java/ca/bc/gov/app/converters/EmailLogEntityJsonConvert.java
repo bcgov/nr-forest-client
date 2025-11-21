@@ -97,10 +97,7 @@ public class EmailLogEntityJsonConvert
         Optional
             .ofNullable(entity.getEmailVariables())
             .map(Json::asString)
-            .map(value -> {
-              String str = Objects.toString(value, "{}");
-              return str == null || str.trim().isEmpty() ? "{}" : str;
-            })
+            .map(value -> Objects.toString(value, "{}"))
             .map(value -> {
               try {
                 return mapper.readValue(value, Map.class);
