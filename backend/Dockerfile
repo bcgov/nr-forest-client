@@ -30,6 +30,18 @@ RUN if [ -f "$JAVA_HOME/lib/security/cacerts" ] && command -v keytool > /dev/nul
         done; \
         echo "Verifying truststore contains certificates..."; \
         keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>/dev/null | head -10 || echo "Warning: Could not list truststore"; \
+        echo "Checking for Sectigo CA certificates (Canada Post root CA)..."; \
+        keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>/dev/null | \
+            grep -iE "sectigo" || echo "WARNING: No Sectigo CA certificates found in truststore!"; \
+        echo "Checking for Entrust CA certificates (Canada Post intermediate CA)..."; \
+        keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>/dev/null | \
+            grep -iE "entrust" || echo "WARNING: No Entrust CA certificates found in truststore!"; \
+        echo "Checking system certificate store for Sectigo certificates..."; \
+        find /etc/ssl/certs -iname "*sectigo*" 2>/dev/null | head -5 || echo "No Sectigo certificates found in /etc/ssl/certs"; \
+        echo "Checking system certificate store for Entrust certificates..."; \
+        find /etc/ssl/certs -iname "*entrust*" 2>/dev/null | head -5 || echo "No Entrust certificates found in /etc/ssl/certs"; \
+        echo "Total certificates in truststore:"; \
+        keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>/dev/null | grep -c "Alias name:" || echo "0"; \
         echo "Certificate update complete"; \
     else \
         echo "Warning: Java truststore or keytool not found, skipping certificate import"; \
