@@ -5,21 +5,9 @@ FROM ghcr.io/graalvm/native-image:22.3.3 AS build
 # For GraalVM native images, Spring Boot Native automatically bundles system certificates
 # during compilation, so updating them here ensures the native binary includes the latest certs.
 # The native binary embeds these certificates, so no runtime cert files are needed.
-RUN if command -v microdnf > /dev/null; then \
-        microdnf install -y --refresh ca-certificates && \
-        update-ca-certificates 2>/dev/null || true && \
-        microdnf clean all; \
-    elif command -v yum > /dev/null; then \
-        yum install -y ca-certificates && \
-        update-ca-certificates 2>/dev/null || true && \
-        yum clean all; \
-    elif command -v apt-get > /dev/null; then \
-        apt-get update && \
-        apt-get install -y --no-install-recommends ca-certificates && \
-        update-ca-certificates && \
-        apt-get clean && \
-        rm -rf /var/lib/apt/lists/*; \
-    fi
+RUN microdnf install -y --refresh ca-certificates && \
+    update-ca-certificates 2>/dev/null || true && \
+    microdnf clean all
 
 # Ensure Java truststore is updated if Java is available (for GraalVM certificate bundling)
 RUN if [ -f "$JAVA_HOME/lib/security/cacerts" ] && command -v keytool > /dev/null; then \
