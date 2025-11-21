@@ -26,6 +26,12 @@
   },
   "overrides": {
     "form-data": "4.0.4",
-    "tmp": "^0.2.4"
+    "tmp": "^0.2.4",
+    "shelljs": {
+      "glob": "11.0.0"
+    },
+    "module-lookup-amd": {
+      "glob": "11.0.0"
+    }
   }
 }
