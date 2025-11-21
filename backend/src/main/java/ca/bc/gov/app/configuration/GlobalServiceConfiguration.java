@@ -63,9 +63,17 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flipkart.zjsonpatch.JsonPatch;
 import io.netty.channel.ChannelOption;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import java.io.File;
+import java.io.FileInputStream;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
 import java.time.Duration;
+import javax.net.ssl.TrustManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.database.postgresql.TransactionalModel;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
@@ -81,80 +89,79 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 /**
- * <p><b>Global Service Configuration</b></p>
- * This class is responsible for configuring basic beans to be used by the services. It creates and
- * holds the external API webclients and the cors filter.
+ * <b>Global Service Configuration</b> This class is responsible for configuring basic beans to be
+ * used by the services. It creates and holds the external API webclients and the cors filter.
  */
 @Configuration
 @Slf4j
 @RegisterReflectionForBinding({
-    ValidationError.class,
-    AddressCompleteFindDto.class,
-    AddressCompleteFindListDto.class,
-    AddressCompleteRetrieveDto.class,
-    AddressCompleteRetrieveListDto.class,
-    ClientAddressDto.class,
-    ClientBusinessInformationDto.class,
-    ClientContactDto.class,
-    ClientLocationDto.class,
-    ClientLookUpDto.class,
-    ClientSubmissionDto.class,
-    ClientValueTextDto.class,
-    CodeNameDto.class,
-    BcRegistryAddressDto.class,
-    BcRegistryBusinessAdressesDto.class,
-    BcRegistryBusinessDto.class,
-    BcRegistryFacetResponseDto.class,
-    BcRegistryFacetSearchResultEntryDto.class,
-    BcRegistryFacetSearchResultsDto.class,
-    BcRegistryIdentificationDto.class,
-    BcRegistryExceptionMessageDto.class,
-    ClientDetailsDto.class,
-    CommonExposureJwtDto.class,
-    ChesRequestDto.class,
-    ChesMailRequest.class,
-    ChesMailResponse.class,
-    ChesMailErrorResponse.class,
-    BcRegistryDocumentRequestBodyDto.class,
-    BcRegistryDocumentAccessRequestDto.class,
-    BcRegistryDocumentAccessTypeDto.class,
-    BcRegistryDocumentRequestResponseDto.class,
-    BcRegistryDocumentDto.class,
-    BcRegistryDocumentRequestDocumentDto.class,
-    BcRegistryBusinessDto.class,
-    BcRegistryOfficesDto.class,
-    BcRegistryPartyDto.class,
-    BcRegistryAddressDto.class,
-    BcRegistryBusinessAdressesDto.class,
-    BcRegistryOfficerDto.class,
-    BcRegistryRoleDto.class,
-    ForestClientDto.class,
-    OpenData.class,
-    Feature.class,
-    Crs.class,
-    CrsProperties.class,
-    Geometry.class,
-    FeatureProperties.class,
-    AddressSearchDto.class,
-    ContactSearchDto.class,
-    Crs.class,
-    CrsProperties.class,
-    Feature.class,
-    FeatureProperties.class,
-    Geometry.class,
-    OpenData.class,
-    MatchResult.class,
-    BcRegistryAlternateNameDto.class,
-    BcRegistryFacetPartyDto.class,
-    BcRegistryFacetRequestBodyDto.class,
-    BcRegistryFacetRequestQueryDto.class,
-    JsonPatch.class,
-    JsonNode.class,
-    ForestClientContactDetailsDto.class,
-    TransactionalModel.class,
-    ClientRelatedProjection.class,
-    RelatedClientEntryDto.class,
-    RelatedClientDto.class
+  ValidationError.class,
+  AddressCompleteFindDto.class,
+  AddressCompleteFindListDto.class,
+  AddressCompleteRetrieveDto.class,
+  AddressCompleteRetrieveListDto.class,
+  ClientAddressDto.class,
+  ClientBusinessInformationDto.class,
+  ClientContactDto.class,
+  ClientLocationDto.class,
+  ClientLookUpDto.class,
+  ClientSubmissionDto.class,
+  ClientValueTextDto.class,
+  CodeNameDto.class,
+  BcRegistryAddressDto.class,
+  BcRegistryBusinessAdressesDto.class,
+  BcRegistryBusinessDto.class,
+  BcRegistryFacetResponseDto.class,
+  BcRegistryFacetSearchResultEntryDto.class,
+  BcRegistryFacetSearchResultsDto.class,
+  BcRegistryIdentificationDto.class,
+  BcRegistryExceptionMessageDto.class,
+  ClientDetailsDto.class,
+  CommonExposureJwtDto.class,
+  ChesRequestDto.class,
+  ChesMailRequest.class,
+  ChesMailResponse.class,
+  ChesMailErrorResponse.class,
+  BcRegistryDocumentRequestBodyDto.class,
+  BcRegistryDocumentAccessRequestDto.class,
+  BcRegistryDocumentAccessTypeDto.class,
+  BcRegistryDocumentRequestResponseDto.class,
+  BcRegistryDocumentDto.class,
+  BcRegistryDocumentRequestDocumentDto.class,
+  BcRegistryBusinessDto.class,
+  BcRegistryOfficesDto.class,
+  BcRegistryPartyDto.class,
+  BcRegistryAddressDto.class,
+  BcRegistryBusinessAdressesDto.class,
+  BcRegistryOfficerDto.class,
+  BcRegistryRoleDto.class,
+  ForestClientDto.class,
+  OpenData.class,
+  Feature.class,
+  Crs.class,
+  CrsProperties.class,
+  Geometry.class,
+  FeatureProperties.class,
+  AddressSearchDto.class,
+  ContactSearchDto.class,
+  Crs.class,
+  CrsProperties.class,
+  Feature.class,
+  FeatureProperties.class,
+  Geometry.class,
+  OpenData.class,
+  MatchResult.class,
+  BcRegistryAlternateNameDto.class,
+  BcRegistryFacetPartyDto.class,
+  BcRegistryFacetRequestBodyDto.class,
+  BcRegistryFacetRequestQueryDto.class,
+  JsonPatch.class,
+  JsonNode.class,
+  ForestClientContactDetailsDto.class,
+  TransactionalModel.class,
+  ClientRelatedProjection.class,
+  RelatedClientEntryDto.class,
+  RelatedClientDto.class
 })
 public class GlobalServiceConfiguration {
 
@@ -167,9 +174,7 @@ public class GlobalServiceConfiguration {
    */
   @Bean
   public WebClient chesApi(
-      ForestClientConfiguration configuration,
-      WebClient.Builder webClientBuilder
-  ) {
+      ForestClientConfiguration configuration, WebClient.Builder webClientBuilder) {
     return webClientBuilder.baseUrl(configuration.getChes().getUri()).build();
   }
 
@@ -182,18 +187,12 @@ public class GlobalServiceConfiguration {
    */
   @Bean
   public WebClient authApi(
-      ForestClientConfiguration configuration,
-      WebClient.Builder webClientBuilder
-  ) {
+      ForestClientConfiguration configuration, WebClient.Builder webClientBuilder) {
     return webClientBuilder
         .baseUrl(configuration.getChes().getTokenUrl())
         .filter(
-            ExchangeFilterFunctions
-                .basicAuthentication(
-                    configuration.getChes().getClientId(),
-                    configuration.getChes().getClientSecret()
-                )
-        )
+            ExchangeFilterFunctions.basicAuthentication(
+                configuration.getChes().getClientId(), configuration.getChes().getClientSecret()))
         .build();
   }
 
@@ -207,15 +206,16 @@ public class GlobalServiceConfiguration {
   public WebClient bcRegistryApi(
       ForestClientConfiguration configuration,
       @Qualifier("bcRegistryApiHealthIndicator") ManualHealthIndicator bcRegistryApiHealthIndicator,
-      WebClient.Builder webClientBuilder
-  ) {
+      WebClient.Builder webClientBuilder) {
 
-    HttpClient httpClient = HttpClient.create()
-        .responseTimeout(Duration.ofMinutes(2))
-        .doOnConnected(conn -> conn
-            .addHandlerLast(new ReadTimeoutHandler(120))
-            .addHandlerLast(new WriteTimeoutHandler(120)))
-        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) Duration.ofMinutes(2).toMillis());
+    HttpClient httpClient =
+        HttpClient.create()
+            .responseTimeout(Duration.ofMinutes(2))
+            .doOnConnected(
+                conn ->
+                    conn.addHandlerLast(new ReadTimeoutHandler(120))
+                        .addHandlerLast(new WriteTimeoutHandler(120)))
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) Duration.ofMinutes(2).toMillis());
 
     return webClientBuilder
         .baseUrl(configuration.getBcregistry().getUri())
@@ -237,9 +237,7 @@ public class GlobalServiceConfiguration {
    */
   @Bean
   public WebClient legacyApi(
-      ForestClientConfiguration configuration,
-      WebClient.Builder webClientBuilder
-  ) {
+      ForestClientConfiguration configuration, WebClient.Builder webClientBuilder) {
     return webClientBuilder
         .baseUrl(configuration.getLegacy().getUrl())
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -256,31 +254,70 @@ public class GlobalServiceConfiguration {
    */
   @Bean
   public WebClient addressCompleteApi(
-      ForestClientConfiguration configuration,
-      WebClient.Builder webClientBuilder
-  ) {
+      ForestClientConfiguration configuration, WebClient.Builder webClientBuilder) {
+    HttpClient httpClient =
+        HttpClient.create()
+            .responseTimeout(Duration.ofMinutes(2))
+            .doOnConnected(
+                conn ->
+                    conn.addHandlerLast(new ReadTimeoutHandler(120))
+                        .addHandlerLast(new WriteTimeoutHandler(120)))
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) Duration.ofMinutes(2).toMillis());
+
+    String trustPath = configuration.getAddressComplete().getTrustCertPath();
+    if (trustPath != null && !trustPath.isBlank()) {
+      try {
+        // Load PEM certificate(s) and create a TrustManagerFactory
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        File certFile = new File(trustPath);
+        FileInputStream fis = new FileInputStream(certFile);
+        java.util.Collection<? extends Certificate> certs = cf.generateCertificates(fis);
+        fis.close();
+
+        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+        ks.load(null);
+        int i = 1;
+        for (Certificate cert : certs) {
+          ks.setCertificateEntry("addrcomplete-" + i++, cert);
+        }
+
+        TrustManagerFactory tmf =
+            TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(ks);
+
+        SslContext sslContext = SslContextBuilder.forClient().trustManager(tmf).build();
+
+        httpClient = httpClient.secure(spec -> spec.sslContext(sslContext));
+      } catch (Exception e) {
+        log.warn(
+            "Failed to build custom SSL context for AddressComplete from {} - falling back to"
+                + " default. Error: {}",
+            trustPath,
+            e.toString());
+      }
+    }
+
     return webClientBuilder
         .baseUrl(configuration.getAddressComplete().getUrl())
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
         .defaultHeader(HttpHeaders.ACCEPT_ENCODING, "identity")
+        .clientConnector(new ReactorClientHttpConnector(httpClient))
         .build();
   }
 
   /**
    * Configures and provides a WebClient for accessing the Open Data SAC API. This WebClient is
-   * pre-configured with the base URL for the SAC API, as specified in the provided
-   * {@link ForestClientConfiguration}.
+   * pre-configured with the base URL for the SAC API, as specified in the provided {@link
+   * ForestClientConfiguration}.
    *
-   * @param configuration    The configuration containing the SAC API URL and other settings.
+   * @param configuration The configuration containing the SAC API URL and other settings.
    * @param webClientBuilder A builder for creating WebClient instances.
    * @return A WebClient instance configured for the Open Data SAC API.
    */
   @Bean
   public WebClient openDataSacBandApi(
-      ForestClientConfiguration configuration,
-      WebClient.Builder webClientBuilder
-  ) {
+      ForestClientConfiguration configuration, WebClient.Builder webClientBuilder) {
     return webClientBuilder
         .baseUrl(configuration.getOpenData().getSacBandUrl())
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -291,18 +328,16 @@ public class GlobalServiceConfiguration {
 
   /**
    * Configures and provides a WebClient for accessing the Open Data SAC Tribe API. This WebClient
-   * is pre-configured with the base URL for the SAC Tribe API, as specified in the provided
-   * {@link ForestClientConfiguration}.
+   * is pre-configured with the base URL for the SAC Tribe API, as specified in the provided {@link
+   * ForestClientConfiguration}.
    *
-   * @param configuration    The configuration containing the SAC Tribe API URL and other settings.
+   * @param configuration The configuration containing the SAC Tribe API URL and other settings.
    * @param webClientBuilder A builder for creating WebClient instances.
    * @return A WebClient instance configured for the Open Data SAC Tribe API.
    */
   @Bean
   public WebClient openDataSacTribeApi(
-      ForestClientConfiguration configuration,
-      WebClient.Builder webClientBuilder
-  ) {
+      ForestClientConfiguration configuration, WebClient.Builder webClientBuilder) {
     return webClientBuilder
         .baseUrl(configuration.getOpenData().getSacTribeUrl())
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -316,16 +351,14 @@ public class GlobalServiceConfiguration {
    * API WebClient, this WebClient is configured with the base URL for the BC Maps API, as defined
    * in the {@link ForestClientConfiguration}.
    *
-   * @param configuration    The configuration containing the BC Maps API URL and other necessary
-   *                         settings.
+   * @param configuration The configuration containing the BC Maps API URL and other necessary
+   *     settings.
    * @param webClientBuilder A builder for creating WebClient instances.
    * @return A WebClient instance configured for the Open Data BC Maps API.
    */
   @Bean
   public WebClient openDataBcMapsBandApi(
-      ForestClientConfiguration configuration,
-      WebClient.Builder webClientBuilder
-  ) {
+      ForestClientConfiguration configuration, WebClient.Builder webClientBuilder) {
     return webClientBuilder
         .baseUrl(configuration.getOpenData().getOpenMapsBandUrl())
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -339,16 +372,13 @@ public class GlobalServiceConfiguration {
    * WebClient is pre-configured with the base URL for the BC Maps Tribe API, as specified in the
    * provided {@link ForestClientConfiguration}.
    *
-   * @param configuration    The configuration containing the BC Maps Tribe API URL and other
-   *                         settings.
+   * @param configuration The configuration containing the BC Maps Tribe API URL and other settings.
    * @param webClientBuilder A builder for creating WebClient instances.
    * @return A WebClient instance configured for the Open Data BC Maps Tribe API.
    */
   @Bean
   public WebClient openDataBcMapsTribeApi(
-      ForestClientConfiguration configuration,
-      WebClient.Builder webClientBuilder
-  ) {
+      ForestClientConfiguration configuration, WebClient.Builder webClientBuilder) {
     return webClientBuilder
         .baseUrl(configuration.getOpenData().getOpenMapsTribeUrl())
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -360,22 +390,20 @@ public class GlobalServiceConfiguration {
   /**
    * Configures and provides a {@link WebClient} instance for making HTTP requests to the Processor
    * API. This method utilizes the {@link ForestClientConfiguration} to retrieve the Processor API's
-   * base URL and configures a {@link WebClient.Builder} with this URL. The configured
-   * {@link WebClient} is then built and returned. This WebClient can be used throughout the
-   * application to interact with the Processor API, facilitating operations such as sending
-   * requests and receiving responses.
+   * base URL and configures a {@link WebClient.Builder} with this URL. The configured {@link
+   * WebClient} is then built and returned. This WebClient can be used throughout the application to
+   * interact with the Processor API, facilitating operations such as sending requests and receiving
+   * responses.
    *
-   * @param configuration    The {@link ForestClientConfiguration} containing the Processor API's
-   *                         configuration details.
+   * @param configuration The {@link ForestClientConfiguration} containing the Processor API's
+   *     configuration details.
    * @param webClientBuilder A pre-configured {@link WebClient.Builder} for creating WebClient
-   *                         instances.
+   *     instances.
    * @return A {@link WebClient} instance ready for interacting with the Processor API.
    */
   @Bean
   public WebClient processorApi(
-      ForestClientConfiguration configuration,
-      WebClient.Builder webClientBuilder
-  ) {
+      ForestClientConfiguration configuration, WebClient.Builder webClientBuilder) {
     return webClientBuilder
         .baseUrl(configuration.getProcessor().getUrl())
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -415,5 +443,4 @@ public class GlobalServiceConfiguration {
     module.setSerializerModifier(new ForestClientDetailsSerializerModifier());
     return module;
   }
-
 }

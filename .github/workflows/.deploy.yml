@@ -132,6 +132,49 @@ jobs:
               -p CONFIG_MAP="${{ inputs.configmap-frontend }}"
               -p COGNITO_DOMAIN="${{ vars.COGNITO_DOMAIN }}"
     steps:
+      - name: Install oc (only for backend)
+        if: matrix.name == 'backend'
+        run: |
+          ARCH=amd64
+          mkdir -p $HOME/ocbin
+          curl -sSL -o oc.tar.gz "https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz"
+          tar -xzf oc.tar.gz -C $HOME/ocbin --strip-components=1
+          sudo mv $HOME/ocbin/oc /usr/local/bin/oc
+
+      - name: Create Canada Post cert secret (if provided)
+        if: matrix.name == 'backend' && secrets.ADDRESS_COMPLETE_PEM != ''
+        env:
+          OC_SERVER: ${{ secrets.oc_server }}
+          OC_TOKEN: ${{ secrets.oc_token }}
+          OC_NAMESPACE: ${{ secrets.oc_namespace }}
+        run: |
+          set -euo pipefail
+          echo "Creating Canada Post PEM file from GitHub secret"
+          echo "${{ secrets.ADDRESS_COMPLETE_PEM }}" > canadapost.pem
+          oc login "$OC_SERVER" --token="$OC_TOKEN" --insecure-skip-tls-verify=true
+          oc project "$OC_NAMESPACE"
+          SECRET_NAME="${{ github.event.repository.name }}-${{ inputs.target }}-canadapost-cert"
+          oc create secret generic "$SECRET_NAME" --from-file=canadapost.pem --dry-run=client -o yaml | oc apply -f -
+
+      - name: Patch backend deployment to mount cert and set env var (if secret created)
+        if: matrix.name == 'backend' && secrets.ADDRESS_COMPLETE_PEM != ''
+        env:
+          OC_SERVER: ${{ secrets.oc_server }}
+          OC_TOKEN: ${{ secrets.oc_token }}
+          OC_NAMESPACE: ${{ secrets.oc_namespace }}
+        run: |
+          set -euo pipefail
+          DEPLOYMENT_NAME="${{ github.event.repository.name }}-${{ inputs.target }}-backend"
+          SECRET_NAME="${{ github.event.repository.name }}-${{ inputs.target }}-canadapost-cert"
+          oc login "$OC_SERVER" --token="$OC_TOKEN" --insecure-skip-tls-verify=true
+          oc project "$OC_NAMESPACE"
+          # Add secret as a volume on the Deployment (ignore errors if already present)
+          oc set volume deployment/"$DEPLOYMENT_NAME" --add --name=canadapost-cert --secret-name="$SECRET_NAME" --mount-path=/etc/ssl/certs/canadapost || true
+          # Configure the application env var expected by the code to point to the mounted PEM file
+          oc set env deployment/"$DEPLOYMENT_NAME" CA_BC_GOV_NRS_ADDRESSCOMPLETE_TRUSTCERTPATH=/etc/ssl/certs/canadapost/canadapost.pem
+          # Restart to pick up the changes
+          oc rollout restart deployment/"$DEPLOYMENT_NAME"
+
       - uses: bcgov/action-deployer-openshift@d972993c70aba88e4f2fe66a66c4b7149fa9fcad # v4.0.0
         id: deploys
         with:

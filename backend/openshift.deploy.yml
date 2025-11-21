@@ -53,6 +53,14 @@ parameters:
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
     generate: expression
+  - name: CANADAPOST_CERT_SECRET
+    description: "Optional secret that contains the Canada Post PEM file (key name: canadapost.pem)"
+    required: false
+    value: ""
+  - name: CANADAPOST_CERT_MOUNT_PATH
+    description: Path inside the container where the Canada Post PEM should be mounted
+    required: false
+    value: "/etc/ssl/certs/canadapost"
 objects:
   - kind: Deployment
     apiVersion: apps/v1
@@ -81,6 +89,10 @@ objects:
             - name: ${COMPONENT}-config
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}-config
+            # Optional Canada Post cert secret volume
+            - name: canadapost-cert
+              secret:
+                secretName: ${CANADAPOST_CERT_SECRET}
           containers:
             - image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
               imagePullPolicy: Always
@@ -89,6 +101,10 @@ objects:
                 - name: ${COMPONENT}-config
                   mountPath: /app/application.yml
                   subPath: application.yml
+                # Optional mount for Canada Post PEM
+                - name: canadapost-cert
+                  mountPath: ${CANADAPOST_CERT_MOUNT_PATH}
+                  readOnly: true
               env:
                 - name: FRONTEND_URL
                   value: https://${FRONTEND_URL}
@@ -183,6 +199,9 @@ objects:
                   value: "false"
                 - name: RANDOM_EXPRESSION
                   value: ${RANDOM_EXPRESSION}
+                # Optional env var to point the application at the mounted PEM file
+                - name: CA_BC_GOV_NRS_ADDRESSCOMPLETE_TRUSTCERTPATH
+                  value: ${CANADAPOST_CERT_MOUNT_PATH}/canadapost.pem
               ports:
                 - containerPort: 8080
                   protocol: TCP

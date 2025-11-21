@@ -10,10 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
 
-/**
- * The Forest client configuration.
- * This file is a representation of the yml/properties file
- */
+/** The Forest client configuration. This file is a representation of the yml/properties file */
 @Data
 @Builder
 @NoArgsConstructor
@@ -22,31 +19,21 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("ca.bc.gov.nrs")
 public class ForestClientConfiguration {
 
-  @NestedConfigurationProperty
-  private ChesConfiguration ches;
-  @NestedConfigurationProperty
-  private FrontEndConfiguration frontend;
-  @NestedConfigurationProperty
-  private LegacyConfiguration legacy;
-  @NestedConfigurationProperty
-  private LegacyConfiguration processor;
-  @NestedConfigurationProperty
-  private BcRegistryConfiguration bcregistry;
-  @NestedConfigurationProperty
-  private AddressCompleteConfiguration addressComplete;
-  @NestedConfigurationProperty
-  private SecurityConfiguration security;
+  @NestedConfigurationProperty private ChesConfiguration ches;
+  @NestedConfigurationProperty private FrontEndConfiguration frontend;
+  @NestedConfigurationProperty private LegacyConfiguration legacy;
+  @NestedConfigurationProperty private LegacyConfiguration processor;
+  @NestedConfigurationProperty private BcRegistryConfiguration bcregistry;
+  @NestedConfigurationProperty private AddressCompleteConfiguration addressComplete;
+  @NestedConfigurationProperty private SecurityConfiguration security;
   private Duration submissionLimit;
   private Duration idirSubmissionTimeWindow;
   private int idirMaxSubmissions;
   private Duration otherSubmissionTimeWindow;
   private int otherMaxSubmissions;
-  @NestedConfigurationProperty
-  private OpenDataConfiguration openData;
+  @NestedConfigurationProperty private OpenDataConfiguration openData;
 
-  /**
-   * The Common hosted email service configuration.
-   */
+  /** The Common hosted email service configuration. */
   @Data
   @Builder
   @NoArgsConstructor
@@ -61,9 +48,7 @@ public class ForestClientConfiguration {
     private List<String> copyEmail;
   }
 
-  /**
-   * The Front end configuration.
-   */
+  /** The Front end configuration. */
   @Data
   @Builder
   @NoArgsConstructor
@@ -71,14 +56,10 @@ public class ForestClientConfiguration {
   public static class FrontEndConfiguration {
 
     private String url;
-    @NestedConfigurationProperty
-    private FrontEndCorsConfiguration cors;
-
+    @NestedConfigurationProperty private FrontEndCorsConfiguration cors;
   }
 
-  /**
-   * The Front end cors configuration.
-   */
+  /** The Front end cors configuration. */
   @Data
   @Builder
   @NoArgsConstructor
@@ -90,9 +71,7 @@ public class ForestClientConfiguration {
     private Duration age;
   }
 
-  /**
-   * The BC Registry configuration.
-   */
+  /** The BC Registry configuration. */
   @Data
   @Builder
   @NoArgsConstructor
@@ -104,9 +83,7 @@ public class ForestClientConfiguration {
     private String accountId;
   }
 
-  /**
-   * The Legacy service (AKA Oracle) configuration.
-   */
+  /** The Legacy service (AKA Oracle) configuration. */
   @Data
   @Builder
   @NoArgsConstructor
@@ -116,9 +93,7 @@ public class ForestClientConfiguration {
     private String url;
   }
 
-  /**
-   * The Address Complete service from Canada Post configuration.
-   */
+  /** The Address Complete service from Canada Post configuration. */
   @Data
   @Builder
   @NoArgsConstructor
@@ -127,11 +102,11 @@ public class ForestClientConfiguration {
 
     private String url;
     private String apiKey;
+    // Optional path to a PEM file (or cert chain) that should be trusted for AddressComplete
+    private String trustCertPath;
   }
 
-  /**
-   * The Security / Authentication configuration.
-   */
+  /** The Security / Authentication configuration. */
   @Data
   @Builder
   @NoArgsConstructor
@@ -152,9 +127,7 @@ public class ForestClientConfiguration {
     }
   }
 
-  /**
-   * The Open Data configuration.
-   */
+  /** The Open Data configuration. */
   @Data
   @Builder
   @NoArgsConstructor
