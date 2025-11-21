@@ -14,10 +14,19 @@ RUN microdnf install -y --refresh ca-certificates && \
 # We update Java's truststore so Spring Boot Native can detect and bundle them during native compilation
 RUN if [ -f "$JAVA_HOME/lib/security/cacerts" ] && command -v keytool > /dev/null; then \
         echo "Updating Java truststore with system CA certificates..."; \
-        find /etc/ssl/certs -name "*.pem" -o -name "*.crt" 2>/dev/null | while read cert; do \
+        find /etc/ssl/certs -name "*.pem" -o -name "*.crt" 2>/dev/null | while read -r cert; do \
             ALIAS=$(basename "$cert" | sed 's/\.[^.]*$//'); \
-            keytool -import -noprompt -trustcacerts -file "$cert" -alias "$ALIAS" \
-                -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>/dev/null || true; \
+            ERR_OUTPUT=$(keytool -import -noprompt -trustcacerts -file "$cert" -alias "$ALIAS" \
+                -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>&1); \
+            EXIT_CODE=$?; \
+            if [ $EXIT_CODE -ne 0 ]; then \
+                if echo "$ERR_OUTPUT" | grep -q "already exists"; then \
+                    echo "Info: Certificate $ALIAS already exists in truststore, skipping." >&2; \
+                else \
+                    echo "Warning: Failed to import certificate $cert (alias: $ALIAS):" >&2; \
+                    echo "$ERR_OUTPUT" >&2; \
+                fi; \
+            fi; \
         done; \
         echo "Verifying truststore contains certificates..."; \
         keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>/dev/null | head -10 || echo "Warning: Could not list truststore"; \
