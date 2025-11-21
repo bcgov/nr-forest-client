@@ -23,7 +23,7 @@ RUN set -e; \
   fi; \
   keytool -importcert -trustcacerts -noprompt -alias sectigo-r46-root -file "$CERT_FILE" \
   -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit; \
-  keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit | grep -i sectigo || echo "Imported but grep did not match (verify manually)"; \
+  keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit | grep -i sectigo || { echo "ERROR: Imported but grep did not match (verify manually)"; exit 1; }; \
   rm -f "$CERT_FILE"
 
 # Copy
