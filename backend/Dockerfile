@@ -78,29 +78,36 @@ RUN if [ -f "$JAVA_HOME/lib/security/cacerts" ] && command -v keytool > /dev/nul
             done; \
         fi; \
         echo "Downloading Sectigo Public Server Authentication Root R46 certificate..."; \
-        # Download from Sectigo's certificate repository
-        curl -sL "https://support.sectigo.com/articles/Knowledge/Sectigo-Intermediate-Certificates" 2>/dev/null | \
-            grep -o 'https://[^"]*root[^"]*\.crt' | head -1 | xargs curl -sL 2>/dev/null > /tmp/certs/sectigo-root.crt || \
-        curl -sL "https://www.sectigo.com/uploads/files/SectigoRootCertificates.zip" 2>/dev/null | \
-            unzip -p - 2>/dev/null | grep -B 5 -A 20 "R46" | \
-            sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p' > /tmp/certs/sectigo-root.crt || true; \
-        # If download failed, try to construct from certificate transparency log
+        # Download from crt.sh (Certificate Transparency log) - official source per Sectigo documentation
+        # Reference: https://www.sectigo.com/knowledge-base/detail/Sectigo-Root-Certificates/kA03l000000c4KV
+        curl -sL "https://crt.sh/?d=4256644734" 2>/dev/null | \
+            grep -A 50 "Sectigo Public Server Authentication Root R46" | \
+            sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p' > /tmp/certs/sectigo-root.crt || \
+        # Alternative: Download PEM format directly from crt.sh
+        curl -sL "https://crt.sh/?id=4256644734" 2>/dev/null | \
+            sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p' > /tmp/certs/sectigo-root.crt || \
+        # Fallback: Try to get from crt.sh raw output
+        curl -sL "https://crt.sh/?d=4256644734&output=der" 2>/dev/null | \
+            openssl x509 -inform DER -outform PEM 2>/dev/null > /tmp/certs/sectigo-root.crt || true; \
+        # Verify certificate was downloaded and is valid
         if [ ! -f /tmp/certs/sectigo-root.crt ] || [ ! -s /tmp/certs/sectigo-root.crt ]; then \
-            echo "Attempting alternative method to get Sectigo root certificate..."; \
-            # Use openssl to get certificate by getting the issuer from intermediate
-            if [ -f /tmp/certs/chain.pem ]; then \
-                # Extract issuer info and note that we need Sectigo Public Server Authentication Root R46
-                echo "Note: Sectigo root certificate needs to be added manually if not found in bundle"; \
-            fi; \
+            echo "Warning: Could not download Sectigo root CA certificate from crt.sh"; \
+            echo "Note: Sectigo Public Server Authentication Root R46 needs to be added manually"; \
         else \
-            echo "Importing Sectigo Public Server Authentication Root R46..."; \
-            keytool -import -noprompt -trustcacerts -file /tmp/certs/sectigo-root.crt \
-                -alias "Sectigo_Public_Server_Authentication_Root_R46" \
-                -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>&1 | \
-                grep -v "already exists" || true; \
-            echo "Verifying Sectigo root CA was imported..."; \
-            keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>/dev/null | \
-                grep -iE "sectigo|Sectigo_Public_Server_Authentication_Root_R46" || echo "Warning: Sectigo root CA may not have been imported"; \
+            # Verify it's a valid certificate
+            if openssl x509 -in /tmp/certs/sectigo-root.crt -noout -subject 2>/dev/null | grep -q "Sectigo Public Server Authentication Root R46"; then \
+                echo "Successfully downloaded Sectigo Public Server Authentication Root R46"; \
+                echo "Importing Sectigo Public Server Authentication Root R46..."; \
+                keytool -import -noprompt -trustcacerts -file /tmp/certs/sectigo-root.crt \
+                    -alias "Sectigo_Public_Server_Authentication_Root_R46" \
+                    -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>&1 | \
+                    grep -v "already exists" || true; \
+                echo "Verifying Sectigo root CA was imported..."; \
+                keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit 2>/dev/null | \
+                    grep -iE "sectigo|Sectigo_Public_Server_Authentication_Root_R46" || echo "Warning: Sectigo root CA may not have been imported"; \
+            else \
+                echo "Warning: Downloaded certificate does not appear to be Sectigo Public Server Authentication Root R46"; \
+            fi; \
         fi; \
         rm -rf /tmp/certs; \
     else \
