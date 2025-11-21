@@ -13,7 +13,7 @@ ARG SECTIGO_R46_PEM=""
 RUN set -e; \
   CERT_FILE=/tmp/sectigo-r46-root.pem; \
   if [ -n "$SECTIGO_R46_PEM" ]; then \
-  printf '%s\n' "$SECTIGO_R46_PEM" > "$CERT_FILE"; \
+  printf '%b' "$SECTIGO_R46_PEM" > "$CERT_FILE"; \
   else \
   echo "No build arg provided; attempting remote fetch of Sectigo R46 root"; \
   curl -fsSL 'https://crt.sh/?d=4256644734' -o "$CERT_FILE" || { echo "Remote fetch failed; please supply SECTIGO_R46_PEM."; exit 1; }; \
