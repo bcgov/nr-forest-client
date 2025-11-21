@@ -17,12 +17,21 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: bcgov/action-builder-ghcr@1e4295b9766963ca36612b78560db6235120b80f # 4.1.1
-        name: Build (legacydb)
+      - name: Build (legacydb)
+        uses: bcgov/action-builder-ghcr@1e4295b9766963ca36612b78560db6235120b80f # 4.1.1
         with:
           package: legacydb
           tag_fallback: latest
           triggers: ('legacydb/')
+
+      - name: Build (backend) with Sectigo PEM
+        uses: bcgov/action-builder-ghcr@1e4295b9766963ca36612b78560db6235120b80f # 4.1.1
+        with:
+          package: backend
+          tag_fallback: latest
+          triggers: ('backend/')
+          build_args: |
+            --build-arg SECTIGO_R46_PEM=${{ secrets.SECTIGO_R46_PEM }}
 
   pre-tools:
     name: Pre Deploy Tools
