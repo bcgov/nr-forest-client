@@ -152,6 +152,7 @@ jobs:
           set -euo pipefail
           echo "Creating Canada Post PEM file from GitHub secret"
           echo "${{ secrets.ADDRESS_COMPLETE_PEM }}" > canadapost.pem
+          chmod 600 canadapost.pem
           oc login "$OC_SERVER" --token="$OC_TOKEN" --insecure-skip-tls-verify=true
           oc project "$OC_NAMESPACE"
           SECRET_NAME="${{ github.event.repository.name }}-${{ inputs.target }}-canadapost-cert"
