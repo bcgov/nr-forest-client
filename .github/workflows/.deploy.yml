@@ -151,11 +151,15 @@ jobs:
           set -euo pipefail
           echo "Creating Canada Post PEM file from GitHub secret"
           echo "${{ secrets.ADDRESS_COMPLETE_PEM }}" > canadapost.pem
+          chmod 600 canadapost.pem
           oc login "$OC_SERVER" --token="$OC_TOKEN" --insecure-skip-tls-verify=true
           oc project "$OC_NAMESPACE"
           SECRET_NAME="${{ github.event.repository.name }}-${{ inputs.target }}-canadapost-cert"
           oc create secret generic "$SECRET_NAME" --from-file=canadapost.pem --dry-run=client -o yaml | oc apply -f -
 
+      - name: Cleanup Canada Post PEM file
+        if: always() && matrix.name == 'backend' && secrets.ADDRESS_COMPLETE_PEM != ''
+        run: rm -f canadapost.pem
       - name: Patch backend deployment to mount cert and set env var (if secret created)
         if: matrix.name == 'backend' && secrets.ADDRESS_COMPLETE_PEM != ''
         env:
