@@ -148,7 +148,7 @@ jobs:
           sudo mv $HOME/ocbin/oc /usr/local/bin/oc
 
       - name: Create Canada Post cert secret (if provided)
-        if: matrix.name == 'backend' && secrets.ADDRESS_COMPLETE_PEM != ''
+        if: matrix.name == 'backend' && inputs.address-complete-pem != ''
         env:
           OC_SERVER: ${{ secrets.oc_server }}
           OC_TOKEN: ${{ secrets.oc_token }}
