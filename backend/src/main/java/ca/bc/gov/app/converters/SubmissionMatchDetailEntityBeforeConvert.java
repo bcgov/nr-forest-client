@@ -97,7 +97,10 @@ public class SubmissionMatchDetailEntityBeforeConvert
     return Optional
             .ofNullable(entity.getMatchingField())
             .map(Json::asString)
-            .map(value -> Objects.toString(value, "{}"))
+            .map(value -> {
+              String str = Objects.toString(value, "{}");
+              return str == null || str.trim().isEmpty() ? "{}" : str;
+            })
             .map(value -> {
               try {
                 return mapper.readValue(value, Map.class);
