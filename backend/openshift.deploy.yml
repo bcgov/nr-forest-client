@@ -93,6 +93,7 @@ objects:
             - name: canadapost-cert
               secret:
                 secretName: ${CANADAPOST_CERT_SECRET}
+                optional: true
           containers:
             - image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
               imagePullPolicy: Always
