@@ -11,7 +11,7 @@ spring:
         jwt:
           jwk-set-uri: ${JWK_SET_URI:https://cognito-idp.${ca.bc.gov.nrs.security.region}.amazonaws.com/${ca.bc.gov.nrs.security.user-pool}/.well-known/jwks.json}
   r2dbc:
-    url: r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
+    url: r2dbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}?ssl=${POSTGRES_SSL:true}&sslMode=${POSTGRES_SSLMODE:prefer}
     username: ${ca.bc.gov.nrs.postgres.username}
     password: ${ca.bc.gov.nrs.postgres.password}
     pool:
