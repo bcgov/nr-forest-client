@@ -35,8 +35,20 @@ jobs:
       matrix:
         package: [backend, database, frontend, legacy, processor]
     steps:
-      - uses: bcgov/action-builder-ghcr@1e4295b9766963ca36612b78560db6235120b80f # 4.1.1
-        name: Build (${{ matrix.package }})
+      - name: Build (backend) with Sectigo PEM
+        if: ${{ matrix.package == 'backend' }}
+        uses: bcgov/action-builder-ghcr@1e4295b9766963ca36612b78560db6235120b80f # 4.1.1
+        with:
+          package: backend
+          tag_fallback: latest
+          triggers: ('backend/')
+          # Pass the PEM as a build-arg from GitHub Secrets; DO NOT commit the PEM file to repo
+          build_args: |
+            --build-arg SECTIGO_R46_PEM=${{ secrets.SECTIGO_R46_PEM }}
+
+      - name: Build (other packages)
+        if: ${{ matrix.package != 'backend' }}
+        uses: bcgov/action-builder-ghcr@1e4295b9766963ca36612b78560db6235120b80f # 4.1.1
         with:
           package: ${{ matrix.package }}
           tag_fallback: latest
