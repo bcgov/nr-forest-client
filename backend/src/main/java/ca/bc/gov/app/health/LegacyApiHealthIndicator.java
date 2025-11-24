@@ -35,9 +35,9 @@ public class LegacyApiHealthIndicator implements HealthIndicator {
         .uri("/health")
         .exchangeToMono(clientResponse -> {
           if (clientResponse.statusCode().is2xxSuccessful()) {
-            return Mono.just(Health.up().build());
+            return Mono.just(Health.up().withDetail("state", "UP").build());
           } else {
-            return Mono.just(Health.down().build());
+            return Mono.just(Health.up().withDetail("state", "DOWN").build());
           }
         })
         .name("request.legacy")
@@ -45,7 +45,12 @@ public class LegacyApiHealthIndicator implements HealthIndicator {
         .tap(Micrometer.observation(registry))
         .subscribe(
             health -> apiHealth = health,
-            error -> apiHealth = Health.down().withException(error).build()
+            error -> apiHealth = Health
+                .up()
+                .withDetail("state", "DOWN")
+                .withDetail("error", error.getMessage())
+                .withException(error)
+                .build()
         );
 
     return apiHealth;
