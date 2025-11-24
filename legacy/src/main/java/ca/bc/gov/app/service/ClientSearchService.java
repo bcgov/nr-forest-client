@@ -124,7 +124,7 @@ public class ClientSearchService {
   public Flux<ForestClientDto> findByIndividual(
       String firstName, String lastName, LocalDate dob, String identification, boolean fuzzy) {
 
-    if (StringUtils.isAnyBlank(firstName, lastName) || dob == null) {
+    if (StringUtils.isAnyBlank(firstName, lastName)) {
       log.error("Missing required parameter to search for individual");
       return Flux.error(
           new MissingRequiredParameterException("firstName, lastName, or dob"));
@@ -139,7 +139,10 @@ public class ClientSearchService {
 
     if (StringUtils.isBlank(identification) && fuzzy) {
       return clientRepository
-          .findByIndividualFuzzy(String.format("%s %s", firstName, lastName), dob.atStartOfDay())
+          .findByIndividualFuzzy(
+              String.format("%s %s", firstName, lastName),
+              dob != null ? dob.atStartOfDay() : null
+          )
           .map(forestClientMapper::toDto)
           .distinct(ForestClientDto::clientNumber)
           .sort(Comparator.comparing(ForestClientDto::clientNumber))
@@ -159,11 +162,15 @@ public class ClientSearchService {
         .and(CLIENT_NAME)
         .is(lastName)
         .ignoreCase(true)
-        .and("birthdate")
-        .is(dob.atStartOfDay())
         .and("clientTypeCode")
         .is("I")
         .ignoreCase(true);
+
+    if ( dob != null) {
+      queryCriteria = queryCriteria
+          .and("birthdate")
+          .is(dob.atStartOfDay());
+    }
 
     if (StringUtils.isNotBlank(identification)) {
       queryCriteria = queryCriteria

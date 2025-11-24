@@ -1263,12 +1263,92 @@ provide("goToTab", goToTab);
         </div>
       </div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden>
-        <template v-if="$features.RELATED_CLIENTS">
-          <template v-if="!data || Object.entries(relatedClientsLocations).length">
-            <div class="tab-header space-between">
-              <h3 class="padding-left-1rem">
-                Client relationships
-              </h3>
+        <template v-if="!data || Object.entries(relatedClientsLocations).length">
+          <div class="tab-header space-between">
+            <h3 class="padding-left-1rem">
+              Client relationships
+            </h3>
+            <cds-button
+              v-if="userHasAuthority"
+              id="addClientRelationshipBtn"
+              kind="primary"
+              size="md"
+              @click="addRelationship"
+              :disabled="newIndexedRelationship"
+            >
+              <span class="width-unset">Add client relationship</span>
+              <Add16 slot="icon" />
+            </cds-button>              
+          </div>
+          <div class="tab-panel tab-panel--populated">
+            <cds-accordion
+              v-for="([curLocationCode, curList], index) in Object.entries(relatedClientsLocations)"
+              :key="curLocationCode"
+              :id="`relationships-location-${curLocationCode}`"
+            >
+              <div :data-scroll="`relationships-location-${curLocationCode}-heading`" class="header-tabs-offset"></div>
+              <cds-accordion-item
+                size="lg"
+                class="grouping-13"
+                v-shadow="1"
+                :open="relatedLocationsState[curLocationCode]?.startOpen"
+                :data-focus="`relationships-location-${curLocationCode}-heading`"
+              >
+                <div
+                  slot="title"
+                  class="flex-column-0_25rem"
+                >
+                  <span class="label-with-icon">
+                    <NetworkEnterprise20 />
+                    {{ formatRelatedLocation(curLocationCode) }}
+                    <cds-tag
+                      :id="`relationships-location-${curLocationCode}-deactivated`"
+                      v-if="findLocation(curLocationCode)?.locnExpiredInd === 'Y'"
+                      type="purple"
+                      title=""
+                    >
+                      <span>Deactivated</span>
+                    </cds-tag>
+                  </span>
+                </div>
+                <client-relationship-form
+                  v-if="newIndexedRelationship && curLocationCode === 'null'"
+                  ref="newClientRelationshipFormRef"
+                  location-index="null"
+                  index="null"
+                  :data="newIndexedRelationship"
+                  :clientData="data"
+                  :validations="uniqueRelationships ? [uniqueRelationships.check] : []"
+                  keep-scroll-bottom-position
+                  @canceled="handleRelationshipCanceled(newIndexedRelationship)"
+                  @save="operateRelatedClient($event)"
+                />
+                <location-relationships-view
+                  v-else
+                  :data="curList"
+                  :client-data="data"
+                  :location="findLocation(curLocationCode)"
+                  :validations="uniqueRelationships ? [uniqueRelationships.check] : []"
+                  :is-reloading="relatedLocationsState[curLocationCode]?.isReloading"
+                  :user-roles="userRoles"
+                />
+              </cds-accordion-item>
+            </cds-accordion>
+          </div>
+        </template>
+        <div class="tab-panel tab-panel--empty" v-else>
+          <div class="empty-table-list">
+            <summit-svg alt="Summit pictogram" class="standard-svg" />
+            <div class="description">
+              <div class="inner-description">
+                <p class="heading-02">Nothing to show yet!</p>
+                <p class="body-compact-01" v-if="userHasAuthority">
+                  Click “Add client relationship” button to start
+                </p>
+                <p class="body-compact-01" v-else>
+                  No relationships have been added to this client account
+                </p>
+              </div>
               <cds-button
                 v-if="userHasAuthority"
                 id="addClientRelationshipBtn"
@@ -1279,110 +1359,6 @@ provide("goToTab", goToTab);
               >
                 <span class="width-unset">Add client relationship</span>
                 <Add16 slot="icon" />
-              </cds-button>              
-            </div>
-            <div class="tab-panel tab-panel--populated">
-              <cds-accordion
-                v-for="([curLocationCode, curList], index) in Object.entries(relatedClientsLocations)"
-                :key="curLocationCode"
-                :id="`relationships-location-${curLocationCode}`"
-              >
-                <div :data-scroll="`relationships-location-${curLocationCode}-heading`" class="header-tabs-offset"></div>
-                <cds-accordion-item
-                  size="lg"
-                  class="grouping-13"
-                  v-shadow="1"
-                  :open="relatedLocationsState[curLocationCode]?.startOpen"
-                  :data-focus="`relationships-location-${curLocationCode}-heading`"
-                >
-                  <div
-                    slot="title"
-                    class="flex-column-0_25rem"
-                  >
-                    <span class="label-with-icon">
-                      <NetworkEnterprise20 />
-                      {{ formatRelatedLocation(curLocationCode) }}
-                      <cds-tag
-                        :id="`relationships-location-${curLocationCode}-deactivated`"
-                        v-if="findLocation(curLocationCode)?.locnExpiredInd === 'Y'"
-                        type="purple"
-                        title=""
-                      >
-                        <span>Deactivated</span>
-                      </cds-tag>
-                    </span>
-                  </div>
-                  <client-relationship-form
-                    v-if="newIndexedRelationship && curLocationCode === 'null'"
-                    ref="newClientRelationshipFormRef"
-                    location-index="null"
-                    index="null"
-                    :data="newIndexedRelationship"
-                    :clientData="data"
-                    :validations="uniqueRelationships ? [uniqueRelationships.check] : []"
-                    keep-scroll-bottom-position
-                    @canceled="handleRelationshipCanceled(newIndexedRelationship)"
-                    @save="operateRelatedClient($event)"
-                  />
-                  <location-relationships-view
-                    v-else
-                    :data="curList"
-                    :client-data="data"
-                    :location="findLocation(curLocationCode)"
-                    :validations="uniqueRelationships ? [uniqueRelationships.check] : []"
-                    :is-reloading="relatedLocationsState[curLocationCode]?.isReloading"
-                    :user-roles="userRoles"
-                  />
-                </cds-accordion-item>
-              </cds-accordion>
-            </div>
-          </template>
-          <div class="tab-panel tab-panel--empty" v-else>
-            <div class="empty-table-list">
-              <summit-svg alt="Summit pictogram" class="standard-svg" />
-              <div class="description">
-                <div class="inner-description">
-                  <p class="heading-02">Nothing to show yet!</p>
-                  <p class="body-compact-01" v-if="userHasAuthority">
-                    Click “Add client relationship” button to start
-                  </p>
-                  <p class="body-compact-01" v-else>
-                    No relationships have been added to this client account
-                  </p>
-                </div>
-                <cds-button
-                  v-if="userHasAuthority"
-                  id="addClientRelationshipBtn"
-                  kind="primary"
-                  size="md"
-                  @click="addRelationship"
-                  :disabled="newIndexedRelationship"
-                >
-                  <span class="width-unset">Add client relationship</span>
-                  <Add16 slot="icon" />
-                </cds-button>
-              </div>
-            </div>
-          </div>
-        </template>
-        <div class="tab-panel tab-panel--empty" v-else>
-          <div class="empty-table-list">
-            <tools-svg alt="Tools pictogram" class="standard-svg" />
-            <div class="description">
-              <div class="inner-description">
-                <p class="heading-02">Under construction</p>
-                <p class="body-compact-01">
-                  Check this content in the legacy system. It opens in a new tab.
-                </p>
-              </div>
-              <cds-button
-                id="open-related-clients-btn"
-                kind="tertiary"
-                size="md"
-                @click.prevent="openRelatedClientsLegacy"
-              >
-                <span>Open in legacy system</span>
-                <Launch16 slot="icon" />
               </cds-button>
             </div>
           </div>
