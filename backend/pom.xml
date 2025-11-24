@@ -54,7 +54,7 @@
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.20.0</mockito.version>
         <jooq.version>3.20.9</jooq.version>
-        <commons-lang3.version>3.19.0</commons-lang3.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
     </properties>
 
     <dependencies>
@@ -224,7 +224,7 @@
         <dependency>
             <groupId>org.wiremock</groupId>
             <artifactId>wiremock-standalone</artifactId>
-            <version>3.13.1</version>
+            <version>3.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -244,7 +244,7 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
-                <version>6.2.12</version>
+                <version>6.2.13</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
