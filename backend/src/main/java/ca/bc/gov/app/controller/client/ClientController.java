@@ -69,7 +69,7 @@ public class ClientController {
   }
   
   @GetMapping("/details-by-id/{identification}")
-  public Flux<ForestClientDto> getClientDetailsByRegistrationOrIncorporationNumber(
+  public Flux<ForestClientDto> getClientDetailsByRegistrationOrClientIdentification(
       @PathVariable String identification,
       JwtAuthenticationToken principal
   ) {
