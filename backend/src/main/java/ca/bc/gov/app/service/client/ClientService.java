@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -403,12 +404,12 @@ public class ClientService {
 
   private Predicate<ForestClientDto> isMatchWith(BcRegistryDocumentDto document) {
     return legacy ->
-        StringUtils.equals(
+        Objects.equals(
             StringUtils.defaultString(legacy.registryCompanyTypeCode()) +
             StringUtils.defaultString(legacy.corpRegnNmbr()),
             document.business().identifier()
         ) &&
-        StringUtils.equals(
+        Objects.equals(
             document.business().legalName(),
             legacy.legalName()
         );

@@ -157,7 +157,7 @@ public Mono<Map<String, String>> getClientTypes() {
             entity.getDescription()));
   }
 
-  public Mono<Map<String,String>> fetchContactTypesFromList(Set<String> contactTypes){
+  public Mono<Map<String,String>> fetchContactTypesFromList(Set<String> contactTypes) {
 
     return contactTypeCodeRepository
         .findByContactTypeCodeIn(contactTypes)

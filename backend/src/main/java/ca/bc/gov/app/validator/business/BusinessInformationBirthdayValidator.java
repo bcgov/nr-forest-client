@@ -1,7 +1,6 @@
 package ca.bc.gov.app.validator.business;
 
 import static ca.bc.gov.app.util.ClientValidationUtils.fieldIsMissingErrorMessage;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.ValidationError;
 import ca.bc.gov.app.dto.client.ClientBusinessInformationDto;
@@ -9,11 +8,10 @@ import ca.bc.gov.app.dto.client.ClientTypeEnum;
 import ca.bc.gov.app.dto.client.ValidationSourceEnum;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import ca.bc.gov.app.validator.ForestClientValidator;
-import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.Set;
+import io.micrometer.observation.annotation.Observed;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 

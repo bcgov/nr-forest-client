@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Condition;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -105,7 +106,7 @@ class RegisteredStepMatcherTest {
                   .hasMessage("409 CONFLICT \"Match found on existing data.\"")
                   .extracting("matches")
                   .isInstanceOf(List.class)
-                  .asList()
+                  .asInstanceOf(InstanceOfAssertFactories.list(Object.class))
                   .has(
                       new Condition<>(
                           matchResult ->

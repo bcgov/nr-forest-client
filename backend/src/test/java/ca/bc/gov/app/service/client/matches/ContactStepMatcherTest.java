@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.client.MatchResult;
 import ca.bc.gov.app.dto.legacy.ContactSearchDto;
@@ -17,6 +16,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Condition;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -65,7 +65,7 @@ class ContactStepMatcherTest {
                   .hasMessage("409 CONFLICT \"Match found on existing data.\"")
                   .extracting("matches")
                   .isInstanceOf(List.class)
-                  .asList()
+                  .asInstanceOf(InstanceOfAssertFactories.list(MatchResult.class))
                   .has(
                       new Condition<>(
                           matchResult ->
