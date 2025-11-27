@@ -410,8 +410,8 @@ public class ClientService {
             document.business().identifier()
         ) &&
         Objects.equals(
-            document.business().legalName(),
-            legacy.legalName()
+            StringUtils.defaultString(document.business().legalName()),
+            StringUtils.defaultString(legacy.legalName())
         );
   }
 
