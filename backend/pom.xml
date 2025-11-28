@@ -25,6 +25,38 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>paulushcgcj</id>
+            <name>Paulo Cruz</name>
+            <email>paulo.cruz@gov.bc.ca</email>
+            <url>https://paulushcgcj.github.io</url>
+            <organization>BCGOV</organization>
+            <organizationUrl>https://www2.gov.bc.ca/gov/content/home</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>America/Vancouver</timezone>
+            <properties>
+                <picUrl>https://avatars.githubusercontent.com/u/7342839?v=4</picUrl>
+            </properties>
+        </developer>
+        <developer>
+            <id>mamartinezmejia</id>
+            <name>Maria Martinez</name>
+            <organization>BCGOV</organization>
+            <organizationUrl>https://www2.gov.bc.ca/gov/content/home</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>America/Vancouver</timezone>
+            <properties>
+                <picUrl>https://avatars.githubusercontent.com/u/77364706?v=4</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
