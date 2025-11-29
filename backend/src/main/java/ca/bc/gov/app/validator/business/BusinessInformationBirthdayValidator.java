@@ -13,7 +13,6 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 

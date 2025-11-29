@@ -44,7 +44,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
   @Test
   @DisplayName("Search by incorporation number and fail due to no legal type")
-  void shouldSearchByIncorporationAndFail1(){
+  void shouldSearchByIncorporationAndFail1() {
 
     String corpRegnNmbr = "C00123456";
     String userId = "idir\\jwick";
@@ -126,7 +126,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
   @Test
   @DisplayName("Search by client number and succeed")
-  void shouldSearchByClientNumberAndGetResult(){
+  void shouldSearchByClientNumberAndGetResult() {
 
     String clientNumber = "00123456";
     String corpRegnNmbr = "C00123456";
@@ -176,7 +176,7 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
 
   @Test
   @DisplayName("Search by client number and succeed including dependencies")
-  void shouldSearchByClientNumberAndGetResultWithContactAndLocation(){
+  void shouldSearchByClientNumberAndGetResultWithContactAndLocation() {
 
     String clientNumber = "00123456";
     String corpRegnNmbr = "C00123456";
