@@ -79,7 +79,7 @@
         <spring-security-core.version>6.5.7</spring-security-core.version>
         <micrometer.version>1.16.0</micrometer.version>
         <micrometer-tracing.version>1.6.0</micrometer-tracing.version>
-        <flyway.version>11.17.2</flyway.version>
+        <flyway.version>11.11.1</flyway.version>
         <opentelemetry.version>1.56.0</opentelemetry.version>
         <selenium.version>4.38.0</selenium.version>
         <org.junit.version>6.0.1</org.junit.version>
