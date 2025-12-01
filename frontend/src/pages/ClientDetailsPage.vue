@@ -136,9 +136,18 @@ const buildFullName = (clientInfo: ClientInformation) => {
 
 const clientFullName = computed(() => {
   if (data.value) {
-    return buildFullName(data.value.client);
+    return toTitleCase(buildFullName(data.value.client));
   }
   return "";
+});
+
+watch(clientFullName, (value) => {
+  let newTitle = "Forests Client Management System";
+  if (clientFullName.value) {
+    newTitle += ` - ${clientFullName.value}`;
+  }
+  document.title = newTitle;
+  document.querySelector('meta[property="og:title"]').setAttribute("content", newTitle);
 });
 
 const formatCount = (count = 0) => {
