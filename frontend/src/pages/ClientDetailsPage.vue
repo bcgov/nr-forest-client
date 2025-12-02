@@ -143,11 +143,10 @@ const clientFullName = computed(() => {
 
 watch(clientFullName, (value) => {
   let newTitle = "Forests Client Management System";
-  if (clientFullName.value) {
-    newTitle += ` - ${clientFullName.value}`;
+  if (value) {
+    newTitle += ` - ${value}`;
   }
   document.title = newTitle;
-  document.querySelector('meta[property="og:title"]').setAttribute("content", newTitle);
 });
 
 const formatCount = (count = 0) => {
