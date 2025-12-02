@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Condition;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -65,7 +66,7 @@ class LocationStepMatcherTest {
                   .hasMessage("409 CONFLICT \"Match found on existing data.\"")
                   .extracting("matches")
                   .isInstanceOf(List.class)
-                  .asList()
+                  .asInstanceOf(InstanceOfAssertFactories.list(Object.class))
                   .has(
                       new Condition<>(
                           matchResult ->

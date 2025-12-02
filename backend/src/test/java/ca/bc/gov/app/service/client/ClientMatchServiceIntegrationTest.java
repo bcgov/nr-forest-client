@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Condition;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -129,7 +130,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                   .hasMessage("409 CONFLICT \"Match found on existing data.\"")
                   .extracting("matches")
                   .isInstanceOf(List.class)
-                  .asList()
+                  .asInstanceOf(InstanceOfAssertFactories.list(Object.class))
                   .has(
                       new Condition<>(
                           matchResult ->
@@ -242,7 +243,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                   .hasMessage("409 CONFLICT \"Match found on existing data.\"")
                   .extracting("matches")
                   .isInstanceOf(List.class)
-                  .asList()
+                  .asInstanceOf(InstanceOfAssertFactories.list(Object.class))
                   .has(
                       new Condition<>(
                           matchResult ->
@@ -313,7 +314,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                   .hasMessage("409 CONFLICT \"Match found on existing data.\"")
                   .extracting("matches")
                   .isInstanceOf(List.class)
-                  .asList()
+                  .asInstanceOf(InstanceOfAssertFactories.list(Object.class))
                   .has(
                       new Condition<>(
                           matchResult ->
@@ -393,7 +394,7 @@ class ClientMatchServiceIntegrationTest extends AbstractTestContainerIntegration
                   .hasMessage("409 CONFLICT \"Match found on existing data.\"")
                   .extracting("matches")
                   .isInstanceOf(List.class)
-                  .asList()
+                  .asInstanceOf(InstanceOfAssertFactories.list(Object.class))
                   .has(
                       new Condition<>(
                           matchResult ->

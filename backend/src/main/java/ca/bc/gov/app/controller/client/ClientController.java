@@ -68,8 +68,23 @@ public class ClientController {
         );
   }
   
+  /**
+   * Retrieves legacy client details using either a registration number or an
+   * incorporation number.
+   *
+   * <p>This endpoint queries the legacy client service to return matching client
+   * records. The request is authenticated using a JWT, and user, business, and
+   * provider details are extracted from the token to authorize the search.
+   *
+   * @param identification the registration or incorporation number used to look
+   *                       up the client
+   * @param principal      the JWT authentication token containing user and
+   *                       business information
+   * @return a {@link Flux} emitting one or more {@link ForestClientDto} entries
+   *         that match the provided identifier
+   */
   @GetMapping("/details-by-id/{identification}")
-  public Flux<ForestClientDto> getClientDetailsByRegistrationOrIncorporationNumber(
+  public Flux<ForestClientDto> getClientDetailsByRegistrationOrClientIdentification(
       @PathVariable String identification,
       JwtAuthenticationToken principal
   ) {
