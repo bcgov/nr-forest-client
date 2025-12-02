@@ -1,4 +1,4 @@
-FROM postgres:13
+FROM postgres:13.23
 
 HEALTHCHECK --interval=35s --timeout=4s CMD pg_isready -d db_prod
  
