@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.7</version>
+        <version>3.5.8</version>
         <relativePath />
     </parent>
 
@@ -79,7 +79,7 @@
         <spring-security-core.version>6.5.7</spring-security-core.version>
         <micrometer.version>1.16.0</micrometer.version>
         <micrometer-tracing.version>1.6.0</micrometer-tracing.version>
-        <flyway.version>11.11.1</flyway.version>
+        <flyway.version>11.17.2</flyway.version>
         <opentelemetry.version>1.56.0</opentelemetry.version>
         <selenium.version>4.38.0</selenium.version>
         <org.junit.version>6.0.1</org.junit.version>
@@ -276,7 +276,7 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
-                <version>6.2.13</version>
+                <version>6.2.14</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -366,12 +366,12 @@
             <dependency>
                 <groupId>io.projectreactor.netty</groupId>
                 <artifactId>reactor-netty-http</artifactId>
-                <version>1.2.11</version>
+                <version>1.3.0</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
-                <version>4.1.125.Final</version>
+                <version>4.2.7.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -395,7 +395,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
             </plugin>
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
