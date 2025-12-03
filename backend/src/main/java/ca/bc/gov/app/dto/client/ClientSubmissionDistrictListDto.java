@@ -1,8 +1,9 @@
 package ca.bc.gov.app.dto.client;
 
-public record ClientSubmissionDistrictListDto (
-    long id,
-    String district,
-    String emails
-) {
-}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record ClientSubmissionDistrictListDto(
+    @JsonProperty("id") long id,
+    @JsonProperty("district") String district,
+    @JsonProperty("emails") String emails
+) {}
