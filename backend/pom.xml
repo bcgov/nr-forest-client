@@ -25,6 +25,38 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>paulushcgcj</id>
+            <name>Paulo Cruz</name>
+            <email>paulo.cruz@gov.bc.ca</email>
+            <url>https://paulushcgcj.github.io</url>
+            <organization>BCGOV</organization>
+            <organizationUrl>https://www2.gov.bc.ca/gov/content/home</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>America/Vancouver</timezone>
+            <properties>
+                <picUrl>https://avatars.githubusercontent.com/u/7342839?v=4</picUrl>
+            </properties>
+        </developer>
+        <developer>
+            <id>mamartinezmejia</id>
+            <name>Maria Martinez</name>
+            <organization>BCGOV</organization>
+            <organizationUrl>https://www2.gov.bc.ca/gov/content/home</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>America/Vancouver</timezone>
+            <properties>
+                <picUrl>https://avatars.githubusercontent.com/u/77364706?v=4</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -44,7 +76,7 @@
         <logback.version>1.5.21</logback.version>
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.6</nimbus-jose-jwt.version>
-        <spring-security-core.version>6.5.6</spring-security-core.version>
+        <spring-security-core.version>6.5.7</spring-security-core.version>
         <micrometer.version>1.16.0</micrometer.version>
         <micrometer-tracing.version>1.6.0</micrometer-tracing.version>
         <flyway.version>11.11.1</flyway.version>
@@ -54,7 +86,7 @@
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.20.0</mockito.version>
         <jooq.version>3.20.9</jooq.version>
-        <commons-lang3.version>3.19.0</commons-lang3.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
     </properties>
 
     <dependencies>
@@ -224,7 +256,7 @@
         <dependency>
             <groupId>org.wiremock</groupId>
             <artifactId>wiremock-standalone</artifactId>
-            <version>3.13.1</version>
+            <version>3.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -244,7 +276,7 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
-                <version>6.2.12</version>
+                <version>6.2.13</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>

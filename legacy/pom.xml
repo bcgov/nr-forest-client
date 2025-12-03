@@ -51,7 +51,7 @@
     <opentelemetry.version>1.56.0</opentelemetry.version>
     <selenium.version>4.38.0</selenium.version>
     <mockito.version>5.20.0</mockito.version>
-    <commons-lang3.version>3.19.0</commons-lang3.version>
+    <commons-lang3.version>3.20.0</commons-lang3.version>
   </properties>
 
   <dependencies>
@@ -196,7 +196,7 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
-        <version>6.2.12</version>
+        <version>6.2.13</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>

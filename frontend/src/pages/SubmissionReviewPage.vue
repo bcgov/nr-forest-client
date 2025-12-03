@@ -27,6 +27,7 @@ import {
   convertFieldNameToSentence,
   toTitleCase,
   goodStanding,
+  removePrefix,
 } from "@/services/ForestClientService";
 
 // Imported User session
@@ -353,11 +354,19 @@ const renderDuplicatedClientLabel = (duplicatedClientNumbers: []) => {
 };
 
 watch(data, () => {
-  if (data.value.business && data.value) {
+  const submission = data.value;
+  const registrationNumber = submission?.business?.registrationNumber;
+  const userId = submission.contact?.[0]?.userId
+    ? removePrefix(submission.contact[0].userId)
+    : "";
+
+  const clientId = registrationNumber || userId;
+
+  if (clientId) {
     const {
       loading
     } = useFetchTo(
-      `/api/clients/details-by-id/${data.value.business.registrationNumber}`,
+      `/api/clients/details-by-id/${clientId}`,
       duplicatedClientCheck,
       {
         skipDefaultErrorHandling: true,

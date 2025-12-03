@@ -151,7 +151,7 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
       errorStatus = responseStatusException.getStatusCode();
     }
 
-    if (exception instanceof WebClientResponseException wcre){
+    if (exception instanceof WebClientResponseException wcre) {
       errorMessage = wcre.getResponseBodyAsString();
       errorStatus = wcre.getStatusCode();
 

@@ -32,7 +32,7 @@ public class ValidationError implements Serializable {
   private final String errorMsg;
   private final String match;
 
-  public ValidationError(){
+  public ValidationError() {
     this.fieldId = null;
     this.errorMsg = null;
     this.match = null;
