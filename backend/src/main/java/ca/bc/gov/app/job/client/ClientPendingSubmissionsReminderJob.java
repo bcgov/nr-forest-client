@@ -32,7 +32,7 @@ public class ClientPendingSubmissionsReminderJob implements SchedulingConfigurer
 
   @Override
   public void configureTasks(ScheduledTaskRegistrar registrar) {
-    Duration interval = configuration.getSubmissionLimit();
+    Duration interval = Duration.ofMinutes(1);
 
     PeriodicTrigger trigger = new PeriodicTrigger(interval);
     trigger.setFixedRate(false);
