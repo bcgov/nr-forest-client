@@ -6,7 +6,6 @@ import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.RelatedClientEntryDto;
 import ca.bc.gov.app.entity.RelatedClientEntity;
 import ca.bc.gov.app.repository.RelatedClientRepository;
-import ca.bc.gov.app.service.ClientRelatedService;
 import ca.bc.gov.app.util.PatchUtils;
 import ca.bc.gov.app.util.ReplacePatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,7 +44,6 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
 
   private final R2dbcEntityOperations entityTemplate;
   private final RelatedClientRepository relatedClientRepository;
-  private final ClientRelatedService clientRelatedService;
 
   // This regex pattern is used to extract two segments from a path.
   // It matches a string of the form "/{locationId}/{index}" and captures:
@@ -82,6 +80,8 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   private final Pattern identifierPattern = Pattern.compile(
       "^(\\d{8})(\\d{2})([A-Z]+)(\\d{8})(\\d{2})$");
 
+  private static final String patchValueField = "value";
+  
   @Override
   public String getPrefix() {
     return "relatedClients";
@@ -139,8 +139,8 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   }
 
   private Mono<Void> applyReplace(
-      String clientNumber,
-      JsonNode patch,
+      String clientNumber, 
+      JsonNode patch, 
       ObjectMapper mapper,
       String userId
   ) {
@@ -186,17 +186,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
             ))
         )
         .doOnNext(dd("A"))
-        .doOnNext(pair ->
-            pair.getValue().forEach(op -> {
-              String path = op.get("path").asText();
-              if (path.endsWith("/hasSigningAuthority")) {
-                // Replace the value in the JSON node with "Y"/"N"
-                ((ObjectNode) op).put(
-                    "value",
-                    BooleanUtils.toString(op.get("value").asBoolean(), "Y", "N", null)
-                );
-              }
-            }))
+        .doOnNext(this::convertSigningAuthority)
         .doOnNext(dd("B"))
         .map(pair ->
             Pair.of(
@@ -230,6 +220,22 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         .then();
   }
 
+  private void convertSigningAuthority(Pair<RelatedClientEntity, JsonNode> pair) {
+    pair.getValue().forEach(op -> {
+      String path = op.get("path").asText();
+
+      if (!path.endsWith("/hasSigningAuthority")) {
+        return;
+      }
+
+      JsonNode valueNode = op.get(patchValueField);
+      String convertedValue =
+          (valueNode == null || valueNode.isNull()) ? null : valueNode.asBoolean() ? "Y" : "N";
+
+      ((ObjectNode) op).put(patchValueField, convertedValue);
+    });
+  }
+
   private Mono<Void> applyAdd(
       String clientNumber,
       JsonNode patch,
@@ -257,7 +263,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
                     mapper,
                     entry.get("path").asText().replace("/", StringUtils.EMPTY)
                         .replace("null", StringUtils.EMPTY),
-                    entry.get("value"),
+                    entry.get(patchValueField),
                     userId
                 )
             )
@@ -352,7 +358,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         .map(entry ->
             mapper
                 .createObjectNode()
-                .set("value", entry)
+                .set(patchValueField, entry)
         )
         //Cast because of java type erasure
         .cast(JsonNode.class)

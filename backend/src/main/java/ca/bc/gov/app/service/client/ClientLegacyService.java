@@ -668,19 +668,21 @@ public class ClientLegacyService {
             .exchangeToFlux(response -> response.bodyToFlux(ClientRelatedProjection.class))
             .name(REQUEST_LEGACY)
             .tag("kind", "relatedClientList")
-            .map(legacyProjection -> new RelatedClientEntryDto(
-                    mapCorrectClient(legacyProjection, true),
-                    mapCorrectClient(legacyProjection, false),
-                    new CodeNameDto(
-                        legacyProjection.relationshipCode(),
-                        legacyProjection.relationshipName()
-                    ),
-                    legacyProjection.percentOwnership(),
-                    BooleanUtils.toBoolean(Objects.toString(legacyProjection.signingAuthInd(), "N"),
-                        "Y", "N"),
-                    legacyProjection.primaryClient()
-                )
-            )
+            .map(legacyProjection -> {
+              return new RelatedClientEntryDto(
+                  mapCorrectClient(legacyProjection, true),
+                  mapCorrectClient(legacyProjection, false),
+                  new CodeNameDto(
+                      legacyProjection.relationshipCode(),
+                      legacyProjection.relationshipName()
+                  ),
+                  legacyProjection.percentOwnership(),
+                  BooleanUtils.toBooleanObject(
+                      legacyProjection.signingAuthInd(), "Y", "N", null
+                  ),
+                  legacyProjection.primaryClient()
+              );
+            })
             .collectList()
             .map(list -> list
                 .stream()
