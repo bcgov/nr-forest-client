@@ -669,10 +669,6 @@ public class ClientLegacyService {
             .name(REQUEST_LEGACY)
             .tag("kind", "relatedClientList")
             .map(legacyProjection -> {
-              Boolean signingAuthInd = Optional.ofNullable(legacyProjection.signingAuthInd())
-                  .map(value -> BooleanUtils.toBoolean(value, "Y", "N"))
-                  .orElse(null);
-
               return new RelatedClientEntryDto(
                   mapCorrectClient(legacyProjection, true),
                   mapCorrectClient(legacyProjection, false),
@@ -681,7 +677,9 @@ public class ClientLegacyService {
                       legacyProjection.relationshipName()
                   ),
                   legacyProjection.percentOwnership(),
-                  signingAuthInd,
+                  BooleanUtils.toBooleanObject(
+                      legacyProjection.signingAuthInd(), "Y", "N", null
+                  ),
                   legacyProjection.primaryClient()
               );
             })
