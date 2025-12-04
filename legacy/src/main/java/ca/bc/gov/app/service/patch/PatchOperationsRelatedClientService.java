@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.patch;
 
 import static java.util.function.Predicate.not;
+
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.RelatedClientEntryDto;
 import ca.bc.gov.app.entity.RelatedClientEntity;
@@ -183,24 +184,22 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
             ))
         )
         .doOnNext(dd("A"))
-        .doOnNext(pair -> 
-            pair.getValue().forEach(op -> {
-              String path = op.get("path").asText();
-  
-              if (path.endsWith("/hasSigningAuthority")) {
-                // Replace the value in the JSON node with "Y"/"N"/null
-                  JsonNode valueNode = op.get("value");
-                  String convertedValue;
-                  if (valueNode == null || valueNode.isNull()) {
-                      convertedValue = null;
-                  } else {
-                      convertedValue = valueNode.asBoolean() ? "Y" : "N";
-                  }
-  
-                  ((ObjectNode) op).put("value", convertedValue);
-              }
-        }
-        ))
+        .doOnNext(pair -> pair.getValue().forEach(op -> {
+          String path = op.get("path").asText();
+
+          if (path.endsWith("/hasSigningAuthority")) {
+            // Replace the value in the JSON node with "Y", "N" or null
+            JsonNode valueNode = op.get("value");
+            String convertedValue;
+            if (valueNode == null || valueNode.isNull()) {
+              convertedValue = null;
+            } else {
+              convertedValue = valueNode.asBoolean() ? "Y" : "N";
+            }
+
+            ((ObjectNode) op).put("value", convertedValue);
+          }
+        }))
         .doOnNext(dd("B"))
         .map(pair ->
             Pair.of(
