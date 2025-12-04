@@ -199,7 +199,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   
                   ((ObjectNode) op).put("value", convertedValue);
               }
-            }
+        }
         ))
         .doOnNext(dd("B"))
         .map(pair ->
