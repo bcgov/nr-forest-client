@@ -80,6 +80,8 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   private final Pattern identifierPattern = Pattern.compile(
       "^(\\d{8})(\\d{2})([A-Z]+)(\\d{8})(\\d{2})$");
 
+  private final String VALUE_FIELD = "value";
+  
   @Override
   public String getPrefix() {
     return "relatedClients";
@@ -137,8 +139,8 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   }
 
   private Mono<Void> applyReplace(
-      String clientNumber,
-      JsonNode patch,
+      String clientNumber, 
+      JsonNode patch, 
       ObjectMapper mapper,
       String userId
   ) {
@@ -184,22 +186,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
             ))
         )
         .doOnNext(dd("A"))
-        .doOnNext(pair -> pair.getValue().forEach(op -> {
-          String path = op.get("path").asText();
-
-          if (path.endsWith("/hasSigningAuthority")) {
-            // Replace the value in the JSON node with "Y", "N" or null
-            JsonNode valueNode = op.get("value");
-            String convertedValue;
-            if (valueNode == null || valueNode.isNull()) {
-              convertedValue = null;
-            } else {
-              convertedValue = valueNode.asBoolean() ? "Y" : "N";
-            }
-
-            ((ObjectNode) op).put("value", convertedValue);
-          }
-        }))
+        .doOnNext(this::convertSigningAuthority)
         .doOnNext(dd("B"))
         .map(pair ->
             Pair.of(
@@ -233,6 +220,22 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         .then();
   }
 
+  private void convertSigningAuthority(Pair<RelatedClientEntity, JsonNode> pair) {
+    pair.getValue().forEach(op -> {
+      String path = op.get("path").asText();
+
+      if (!path.endsWith("/hasSigningAuthority")) {
+        return;
+      }
+
+      JsonNode valueNode = op.get(VALUE_FIELD);
+      String convertedValue =
+          (valueNode == null || valueNode.isNull()) ? null : valueNode.asBoolean() ? "Y" : "N";
+
+      ((ObjectNode) op).put(VALUE_FIELD, convertedValue);
+    });
+  }
+
   private Mono<Void> applyAdd(
       String clientNumber,
       JsonNode patch,
@@ -260,7 +263,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
                     mapper,
                     entry.get("path").asText().replace("/", StringUtils.EMPTY)
                         .replace("null", StringUtils.EMPTY),
-                    entry.get("value"),
+                    entry.get(VALUE_FIELD),
                     userId
                 )
             )
@@ -355,7 +358,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         .map(entry ->
             mapper
                 .createObjectNode()
-                .set("value", entry)
+                .set(VALUE_FIELD, entry)
         )
         //Cast because of java type erasure
         .cast(JsonNode.class)
