@@ -190,7 +190,6 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
               if (path.endsWith("/hasSigningAuthority")) {
                 // Replace the value in the JSON node with "Y"/"N"/null
                   JsonNode valueNode = op.get("value");
-  
                   String convertedValue;
                   if (valueNode == null || valueNode.isNull()) {
                       convertedValue = null;
