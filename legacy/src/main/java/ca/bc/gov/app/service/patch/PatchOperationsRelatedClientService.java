@@ -1,12 +1,10 @@
 package ca.bc.gov.app.service.patch;
 
 import static java.util.function.Predicate.not;
-
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.RelatedClientEntryDto;
 import ca.bc.gov.app.entity.RelatedClientEntity;
 import ca.bc.gov.app.repository.RelatedClientRepository;
-import ca.bc.gov.app.service.ClientRelatedService;
 import ca.bc.gov.app.util.PatchUtils;
 import ca.bc.gov.app.util.ReplacePatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,7 +43,6 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
 
   private final R2dbcEntityOperations entityTemplate;
   private final RelatedClientRepository relatedClientRepository;
-  private final ClientRelatedService clientRelatedService;
 
   // This regex pattern is used to extract two segments from a path.
   // It matches a string of the form "/{locationId}/{index}" and captures:
@@ -186,17 +183,25 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
             ))
         )
         .doOnNext(dd("A"))
-        .doOnNext(pair ->
+        .doOnNext(pair -> 
             pair.getValue().forEach(op -> {
               String path = op.get("path").asText();
+  
               if (path.endsWith("/hasSigningAuthority")) {
-                // Replace the value in the JSON node with "Y"/"N"
-                ((ObjectNode) op).put(
-                    "value",
-                    BooleanUtils.toString(op.get("value").asBoolean(), "Y", "N", null)
-                );
+                // Replace the value in the JSON node with "Y"/"N"/null
+                  JsonNode valueNode = op.get("value");
+  
+                  String convertedValue;
+                  if (valueNode == null || valueNode.isNull()) {
+                      convertedValue = null;
+                  } else {
+                      convertedValue = valueNode.asBoolean() ? "Y" : "N";
+                  }
+  
+                  ((ObjectNode) op).put("value", convertedValue);
               }
-            }))
+            }
+        ))
         .doOnNext(dd("B"))
         .map(pair ->
             Pair.of(
