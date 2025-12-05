@@ -647,7 +647,9 @@ const columnNameToLabelMap: Record<string, string> = {
   relatedClient: "Related client",
   relatedClientLocation: "Related client location",
   signingAuthInd: "Signing auth",
-  percentOwnership: "Percent ownership"
+  percentOwnership: "Percent ownership",
+  ocgSupplierNmbr: "OCG supplier number",
+  hdbsCompanyCode: "HDBS company code",
 };
 
 export function getLabelByColumnName(columnName: string): string {

@@ -15,14 +15,14 @@ on:
         description: Configuration map for params.js
         required: true
         type: string
-        default: ''
+        default: ""
       environment:
         description: GitHub/OpenShift environment; usually PR number, test or prod
-        default: ''
+        default: ""
         type: string
       oracledb-port:
         description: Oracle database port
-        default: '1543'
+        default: "1543"
         type: string
       oracledb-servicename:
         description: Oracle service name
@@ -70,8 +70,7 @@ jobs:
           oc_server: ${{ secrets.oc_server }}
           oc_token: ${{ secrets.oc_token }}
           overwrite: true
-          parameters:
-            -p ZONE=${{ inputs.target }}
+          parameters: -p ZONE=${{ inputs.target }}
             -p ORACLEDB_USER=${{ inputs.oracledb-username || secrets.ORACLEDB_USERNAME }}
             -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
             -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
@@ -116,19 +115,16 @@ jobs:
         name: [database, legacy, processor, backend, frontend]
         include:
           - name: database
-            overwrite: false
+            overwrite: true
           - name: legacy
-            parameters:
-              -p ORACLEDB_PORT=${{ inputs.oracledb-port }}
+            parameters: -p ORACLEDB_PORT=${{ inputs.oracledb-port }}
           - name: processor
           - name: backend
-            parameters:
-              -p FRONTEND_URL=${{ inputs.url }}
+            parameters: -p FRONTEND_URL=${{ inputs.url }}
               -p CONFIG_MAP="${{ inputs.configmap-backend }}"
             verification_path: health
           - name: frontend
-            parameters:
-              -p URL=${{ inputs.url }}
+            parameters: -p URL=${{ inputs.url }}
               -p CONFIG_MAP="${{ inputs.configmap-frontend }}"
               -p COGNITO_DOMAIN="${{ vars.COGNITO_DOMAIN }}"
     steps:
@@ -140,8 +136,7 @@ jobs:
           oc_server: ${{ secrets.oc_server }}
           oc_token: ${{ secrets.oc_token }}
           overwrite: ${{ matrix.overwrite }}
-          parameters:
-            -p TAG=${{ needs.vars.outputs.tag }}
+          parameters: -p TAG=${{ needs.vars.outputs.tag }}
             -p ZONE=${{ inputs.target }}
             ${{ matrix.parameters }}
 
