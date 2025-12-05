@@ -992,7 +992,7 @@ provide("goToTab", goToTab);
         <template v-if="!fetchError.code">
           <h1 v-if="clientFullName" class="resource-details--title">
             <span>
-              {{ toTitleCase(clientFullName) }}
+              {{ clientFullName }}
             </span>
           </h1>
           <cds-skeleton-text v-else v-shadow="1" class="heading-03-skeleton" />
