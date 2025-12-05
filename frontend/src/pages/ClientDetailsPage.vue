@@ -136,9 +136,17 @@ const buildFullName = (clientInfo: ClientInformation) => {
 
 const clientFullName = computed(() => {
   if (data.value) {
-    return buildFullName(data.value.client);
+    return toTitleCase(buildFullName(data.value.client));
   }
   return "";
+});
+
+watch(clientFullName, (value) => {
+  let newTitle = "Forests Client Management System";
+  if (value) {
+    newTitle += ` - ${value}`;
+  }
+  document.title = newTitle;
 });
 
 const formatCount = (count = 0) => {
@@ -984,7 +992,7 @@ provide("goToTab", goToTab);
         <template v-if="!fetchError.code">
           <h1 v-if="clientFullName" class="resource-details--title">
             <span>
-              {{ toTitleCase(clientFullName) }}
+              {{ clientFullName }}
             </span>
           </h1>
           <cds-skeleton-text v-else v-shadow="1" class="heading-03-skeleton" />

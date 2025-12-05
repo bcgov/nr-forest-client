@@ -154,6 +154,8 @@ describe("Client Details Page", () => {
   it("renders the page structure", () => {
     cy.visit("/clients/details/0");
 
+    cy.title().should("eq", "Forests Client Management System - Kovacek, Thompson And Boyer");
+
     cy.get("cds-breadcrumb").should("contain", "Client search");
     cy.contains("h2", "Client summary");
     cy.contains("cds-tab", "Client locations");
