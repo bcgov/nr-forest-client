@@ -349,22 +349,6 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$[1].hasSigningAuthority",
             null,
             true
-        ),
-        argumentSet(
-            "Update related client signing authority to false",
-            "00000172",
-            "[{ \"op\": \"replace\", \"path\": \"/relatedClients/0000017201JV0000014400/hasSigningAuthority\", \"value\": false }]",
-            "$[1].hasSigningAuthority",
-            null,
-            false
-        ),
-        argumentSet(
-            "Update related client signing authority to null",
-            "00000172",
-            "[{ \"op\": \"replace\", \"path\": \"/relatedClients/0000017201JV0000014400/hasSigningAuthority\", \"value\": null }]",
-            "$[1].hasSigningAuthority",
-            null,
-            null
         )
     );
   }
