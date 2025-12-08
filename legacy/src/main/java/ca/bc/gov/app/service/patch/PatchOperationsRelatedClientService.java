@@ -80,7 +80,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   private final Pattern identifierPattern = Pattern.compile(
       "^(\\d{8})(\\d{2})([A-Z]+)(\\d{8})(\\d{2})$");
 
-  private static final String patchValueField = "value";
+  private static final String PATCH_VALUE_FIELD = "value";
   
   @Override
   public String getPrefix() {
@@ -228,11 +228,18 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         return;
       }
 
-      JsonNode valueNode = op.get(patchValueField);
-      String convertedValue =
-          (valueNode == null || valueNode.isNull()) ? null : valueNode.asBoolean() ? "Y" : "N";
+      JsonNode valueNode = op.get(PATCH_VALUE_FIELD);
 
-      ((ObjectNode) op).put(patchValueField, convertedValue);
+      String convertedValue;
+      if (valueNode == null || valueNode.isNull()) {
+        convertedValue = null;
+      } else if (valueNode.asBoolean()) {
+        convertedValue = "Y";
+      } else {
+        convertedValue = "N";
+      }
+
+      ((ObjectNode) op).put(PATCH_VALUE_FIELD, convertedValue);
     });
   }
 
@@ -263,7 +270,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
                     mapper,
                     entry.get("path").asText().replace("/", StringUtils.EMPTY)
                         .replace("null", StringUtils.EMPTY),
-                    entry.get(patchValueField),
+                    entry.get(PATCH_VALUE_FIELD),
                     userId
                 )
             )
@@ -358,7 +365,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         .map(entry ->
             mapper
                 .createObjectNode()
-                .set(patchValueField, entry)
+                .set(PATCH_VALUE_FIELD, entry)
         )
         //Cast because of java type erasure
         .cast(JsonNode.class)
