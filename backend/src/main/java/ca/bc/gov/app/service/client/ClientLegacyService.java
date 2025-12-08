@@ -19,7 +19,6 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -668,18 +667,17 @@ public class ClientLegacyService {
             .exchangeToFlux(response -> response.bodyToFlux(ClientRelatedProjection.class))
             .name(REQUEST_LEGACY)
             .tag("kind", "relatedClientList")
-            .map(legacyProjection -> new RelatedClientEntryDto(
-                    mapCorrectClient(legacyProjection, true),
-                    mapCorrectClient(legacyProjection, false),
-                    new CodeNameDto(
-                        legacyProjection.relationshipCode(),
-                        legacyProjection.relationshipName()
-                    ),
-                    legacyProjection.percentOwnership(),
-                    BooleanUtils.toBoolean(Objects.toString(legacyProjection.signingAuthInd(), "N"),
-                        "Y", "N"),
-                    legacyProjection.primaryClient()
-                )
+            .map(legacyProjection -> 
+              new RelatedClientEntryDto(
+                mapCorrectClient(legacyProjection, true), 
+                mapCorrectClient(legacyProjection, false),
+                new CodeNameDto(
+                    legacyProjection.relationshipCode(),
+                    legacyProjection.relationshipName()),
+                legacyProjection.percentOwnership(),
+                BooleanUtils.toBooleanObject(legacyProjection.signingAuthInd(), "Y", "N", null),
+                legacyProjection.primaryClient()
+              )
             )
             .collectList()
             .map(list -> list
