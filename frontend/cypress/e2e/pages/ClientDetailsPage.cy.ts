@@ -182,7 +182,7 @@ describe("Client Details Page", () => {
       type: "individual with middle name",
       expected: "Michael Gary Scott",
       expectedDescription: "First name + Middle name + Last name",
-    },
+    }
   ];
 
   nameScenarios.forEach((scenario) => {
