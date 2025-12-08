@@ -305,7 +305,7 @@ const buildSigningAuthorityOption = (
 const hasSigningAuthorityOptions: CodeNameValue<boolean | null>[] = [
   buildSigningAuthorityOption("Not applicable", null),
   buildSigningAuthorityOption("Yes", true),
-  buildSigningAuthorityOption("No", false),
+  buildSigningAuthorityOption("No", false)
 ];
 
 const updateHasSigningAuthority = (value: CodeNameValue<boolean | null> | undefined) => {
