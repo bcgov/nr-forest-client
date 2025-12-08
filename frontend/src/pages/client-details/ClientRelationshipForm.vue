@@ -223,11 +223,17 @@ const updateRelationship = (value: CodeNameType | undefined) => {
   }
 };
 
+const isJointVenture = () => formData.value.relationship?.code === "JV";
+
 watch(
   () => formData.value.relationship?.code,
   () => {
     formData.value.relatedClient.client = null;
     rawSearchKeyword.value = "";
+    if (isJointVenture()) {
+      formData.value.percentageOwnership = null;
+      formData.value.hasSigningAuthority = null;
+    }
   },
 );
 
@@ -514,7 +520,7 @@ const confirmNewClient = () => {
       @empty="validation.relatedClientLocation = !$event"
       @error="validation.relatedClientLocation = !$event"
     />
-    <div class="horizontal-input-grouping-1_5">
+    <div v-if="formData.id !== null || !isJointVenture()" class="horizontal-input-grouping-1_5">
       <text-input-component
         :id="`rc-${locationIndex}-${index}-percentageOwnership`"
         label="Percentage owned"

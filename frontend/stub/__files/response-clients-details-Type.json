@@ -6,8 +6,23 @@
     "legalMiddleName": null,
     "clientStatusCode": "ACT",
     "clientStatusDesc": "Active",
-    "clientTypeCode": "P",
-    "clientTypeDesc": "General Partnership",
+    {{#assign 'clientTypeCode'}}{{replace request.path.[3] 'type:' ''}}{{/assign}}
+    "clientTypeCode": "{{clientTypeCode}}",
+    {{#parseJson 'clientTypeMapping'}}{
+      "A": "Association",
+      "B": "First Nation Band",
+      "C": "Corporation",
+      "F": "Ministry of Forests and Range",
+      "G": "Government",
+      "I": "Individual",
+      "L": "Limited Partnership",
+      "P": "General Partnership",
+      "R": "First Nation Group",
+      "S": "Society",
+      "T": "First Nation Tribal Council",
+      "U": "Unregistered Company"
+    }{{/parseJson}}
+    "clientTypeDesc": "{{lookup clientTypeMapping clientTypeCode}}",
     "clientIdTypeCode": null,
     "clientIdTypeDesc": null,
     "clientIdentification": null,
