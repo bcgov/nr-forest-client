@@ -226,8 +226,16 @@ describe("<client-relationship-form />", () => {
     });
 
     it("resets both percentageOwnership and hasSigningAuthority to null", () => {
-      fillInRequiredFields();
+      // Fill the remaining required fields
+      cy.selectFormEntry(`cds-dropdown#rc-${locationIndex}-${index}-location`, "00 - Headquarters");
+      selectRelatedClient("00000007");
+      cy.wait("@getClientDetails");
+      cy.selectFormEntry(
+        `cds-dropdown#rc-${locationIndex}-${index}-relatedClient-location`,
+        "00 - MI6 Headquarters",
+      );
 
+      // Hit the Save button
       cy.get(`#rc-${locationIndex}-${index}-SaveBtn`).click();
 
       cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
