@@ -108,7 +108,7 @@ describe("<client-relationship-form />", () => {
     cy.get(`cds-combo-box#rc-${locationIndex}-${index}-relatedClient`);
     cy.get(`cds-dropdown#rc-${locationIndex}-${index}-relatedClient-location`);
     cy.get(`cds-text-input#rc-${locationIndex}-${index}-percentageOwnership`);
-    cy.get(`cds-toggle#rc-${locationIndex}-${index}-hasSigningAuthority`);
+    cy.get(`cds-dropdown#rc-${locationIndex}-${index}-hasSigningAuthority`);
 
     cy.get(`cds-button#rc-${locationIndex}-${index}-SaveBtn`);
     cy.get(`cds-button#rc-${locationIndex}-${index}-CancelBtn`);
@@ -488,6 +488,32 @@ describe("<client-relationship-form />", () => {
 
         expect(updatedData.percentageOwnership).to.be.a("number");
         expect(updatedData.percentageOwnership).to.eq(44);
+      });
+    });
+  });
+
+  describe("when initial hasSigningAuthority is not null", () => {
+    beforeEach(() => {
+      const props = getDefaultProps();
+      props.data.hasSigningAuthority = true;
+      mount(props);
+
+      fillInRequiredFields();
+    });
+
+    it("sends the hasSigningAuthority as null", () => {
+      cy.selectFormEntry(`#rc-${locationIndex}-${index}-hasSigningAuthority`, "Not applicable");
+
+      cy.get(`#rc-${locationIndex}-${index}-SaveBtn`).click();
+
+      cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
+        expect(vueWrapper.emitted("save")).to.be.an("array");
+        const { patch, updatedData } =
+          vueWrapper.emitted<SaveEvent<IndexedRelatedClient>>("save")![0][0];
+
+        expect(patch[0].value).to.eq(null);
+
+        expect(updatedData.hasSigningAuthority).to.eq(null);
       });
     });
   });

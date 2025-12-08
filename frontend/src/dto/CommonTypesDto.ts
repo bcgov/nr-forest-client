@@ -383,7 +383,7 @@ export const createIndexedRelatedClientEntry = (clientNumber: string): IndexedRe
     },
     relationship: null,
     percentageOwnership: null,
-    hasSigningAuthority: false,
+    hasSigningAuthority: null,
     isMainParticipant: true,
   };
   return entry;
