@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, inject, reactive, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import type {
   ClientDetails,
@@ -293,6 +293,27 @@ const locationList = computed<CodeNameType[]>(() =>
   getLocationList(props.clientData.addresses, props.data.client.location?.code),
 );
 
+const buildSigningAuthorityOption = (
+  name: string,
+  value: boolean | null,
+): CodeNameValue<boolean | null> => ({
+  code: name,
+  name,
+  value,
+});
+
+const hasSigningAuthorityOptions: CodeNameValue<boolean | null>[] = [
+  buildSigningAuthorityOption("Not applicable", null),
+  buildSigningAuthorityOption("Yes", true),
+  buildSigningAuthorityOption("No", false)
+];
+
+const updateHasSigningAuthority = (value: CodeNameValue<boolean | null> | undefined) => {
+  if (value) {
+    formData.value.hasSigningAuthority = value.value;
+  }
+};
+
 const getInitialRawSearchKeyword = () => {
   const relatedClient = props.data.relatedClient.client;
   const result = relatedClient ? formatRelatedClient(relatedClient.code, relatedClient.name) : "";
@@ -394,6 +415,7 @@ const confirmNewClient = () => {
     <dropdown-input-component
       :id="`rc-${locationIndex}-${index}-location`"
       label="Location"
+      tip=""
       :initial-value="
         locationList?.find((item) => item.code === formData.client.location?.code)?.name
       "
@@ -534,10 +556,17 @@ const confirmNewClient = () => {
         @empty="validation.percentageOwnership = true"
         @error="validation.percentageOwnership = !$event"
       />
-      <toggle-component
+      <dropdown-input-component
         :id="`rc-${locationIndex}-${index}-hasSigningAuthority`"
         label="Client has signing authority"
-        v-model="formData.hasSigningAuthority"
+        tip=""
+        :initial-value="
+          hasSigningAuthorityOptions?.find((item) => item.value === formData.hasSigningAuthority)
+            ?.name
+        "
+        :model-value="hasSigningAuthorityOptions"
+        :validations="[]"
+        @update:selected-value="updateHasSigningAuthority($event)"
       />
     </div>
     <div class="form-group-buttons form-group-buttons--stretched">
