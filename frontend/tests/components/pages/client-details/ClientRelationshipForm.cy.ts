@@ -26,6 +26,7 @@ describe("<client-relationship-form />", () => {
     locationIndex: "01",
     index: "0",
     data: {
+      id: "1234ASDF",
       client: {
         client: { code: "1234" } as CodeNameType,
         location: null,
@@ -173,9 +174,12 @@ describe("<client-relationship-form />", () => {
 
       // options are loaded in the dropdown
       cy.get(`cds-dropdown#rc-${locationIndex}-${index}-relationship`).within(() => {
-        cy.get("cds-dropdown-item").each(($el, index) => {
-          const { code } = response.body[index];
-          expect($el).to.have.attr("data-id", code);
+        cy.get("cds-dropdown-item").should("have.length.greaterThan", 0);
+        cy.get("cds-dropdown-item").each(($el) => {
+          const code = $el.attr("data-id");
+          const entry = response.body.find((item: CodeNameType) => item.code === code);
+          const expectedText = entry.name;
+          expect($el).to.have.text(expectedText);
         });
       });
     });
@@ -191,12 +195,88 @@ describe("<client-relationship-form />", () => {
     name: "Family Member",
   };
 
+  const relationshipTypeJV = {
+    code: "JV",
+    name: "Joint Venture Participant",
+  };
+
   const selectRelationshipType = (relationshipType: CodeNameType) => {
     cy.selectFormEntry(
       `cds-dropdown#rc-${locationIndex}-${index}-relationship`,
       relationshipType.name,
     );
   };
+
+  describe("when id is null and the user selects Joint Venture as the relationship type", () => {
+    beforeEach(() => {
+      const props = getDefaultProps();
+      props.data.id = null;
+      props.data.percentageOwnership = 50.0;
+      props.data.hasSigningAuthority = true;
+      mount(props);
+
+      cy.wait("@getRelationshipTypes");
+
+      selectRelationshipType(relationshipTypeJV);
+    });
+
+    it("hides the percentageOwnership and the hasSigningAuthority fields", () => {
+      cy.get(`#rc-${locationIndex}-${index}-percentageOwnership`).should("not.exist");
+      cy.get(`#rc-${locationIndex}-${index}-hasSigningAuthority`).should("not.exist");
+    });
+
+    it("resets both percentageOwnership and hasSigningAuthority to null", () => {
+      // Fill the remaining required fields
+      cy.selectFormEntry(`cds-dropdown#rc-${locationIndex}-${index}-location`, "00 - Headquarters");
+      selectRelatedClient("00000007");
+      cy.wait("@getClientDetails");
+      cy.selectFormEntry(
+        `cds-dropdown#rc-${locationIndex}-${index}-relatedClient-location`,
+        "00 - MI6 Headquarters",
+      );
+
+      // Hit the Save button
+      cy.get(`#rc-${locationIndex}-${index}-SaveBtn`).click();
+
+      cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
+        expect(vueWrapper.emitted("save")).to.be.an("array");
+        const { updatedData } = vueWrapper.emitted<SaveEvent<IndexedRelatedClient>>("save")![0][0];
+
+        expect(updatedData.percentageOwnership).to.eq(null);
+        expect(updatedData.hasSigningAuthority).to.eq(null);
+      });
+    });
+  });
+
+  describe("when id is null but relationship type is not JV", () => {
+    beforeEach(() => {
+      const props = getDefaultProps();
+      props.data.id = null;
+      mount(props);
+
+      cy.wait("@getRelationshipTypes");
+    });
+
+    it("doesn't hide the fields percentageOwnership and hasSigningAuthority", () => {
+      cy.get(`#rc-${locationIndex}-${index}-percentageOwnership`).should("be.visible");
+      cy.get(`#rc-${locationIndex}-${index}-hasSigningAuthority`).should("be.visible");
+    });
+  });
+
+  describe("when relationship type is JV but id is not null", () => {
+    beforeEach(() => {
+      const props = getDefaultProps();
+      props.data.relationship = relationshipTypeJV;
+      mount(props);
+
+      cy.wait("@getRelationshipTypes");
+    });
+
+    it("doesn't hide the fields percentageOwnership and hasSigningAuthority", () => {
+      cy.get(`#rc-${locationIndex}-${index}-percentageOwnership`).should("be.visible");
+      cy.get(`#rc-${locationIndex}-${index}-hasSigningAuthority`).should("be.visible");
+    });
+  });
 
   const searchInput = "james";
 
