@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, inject, reactive, ref, watch } from "vue";
 import * as jsonpatch from "fast-json-patch";
 import type {
   ClientDetails,
@@ -223,11 +223,17 @@ const updateRelationship = (value: CodeNameType | undefined) => {
   }
 };
 
+const isJointVenture = () => formData.value.relationship?.code === "JV";
+
 watch(
   () => formData.value.relationship?.code,
   () => {
     formData.value.relatedClient.client = null;
     rawSearchKeyword.value = "";
+    if (isJointVenture()) {
+      formData.value.percentageOwnership = null;
+      formData.value.hasSigningAuthority = null;
+    }
   },
 );
 
@@ -292,6 +298,27 @@ const getLocationList = (addresses: ClientLocation[], curLocationCode: string) =
 const locationList = computed<CodeNameType[]>(() =>
   getLocationList(props.clientData.addresses, props.data.client.location?.code),
 );
+
+const buildSigningAuthorityOption = (
+  name: string,
+  value: boolean | null,
+): CodeNameValue<boolean | null> => ({
+  code: name,
+  name,
+  value,
+});
+
+const hasSigningAuthorityOptions: CodeNameValue<boolean | null>[] = [
+  buildSigningAuthorityOption("Not applicable", null),
+  buildSigningAuthorityOption("Yes", true),
+  buildSigningAuthorityOption("No", false)
+];
+
+const updateHasSigningAuthority = (value: CodeNameValue<boolean | null> | undefined) => {
+  if (value) {
+    formData.value.hasSigningAuthority = value.value;
+  }
+};
 
 const getInitialRawSearchKeyword = () => {
   const relatedClient = props.data.relatedClient.client;
@@ -394,6 +421,7 @@ const confirmNewClient = () => {
     <dropdown-input-component
       :id="`rc-${locationIndex}-${index}-location`"
       label="Location"
+      tip=""
       :initial-value="
         locationList?.find((item) => item.code === formData.client.location?.code)?.name
       "
@@ -514,7 +542,7 @@ const confirmNewClient = () => {
       @empty="validation.relatedClientLocation = !$event"
       @error="validation.relatedClientLocation = !$event"
     />
-    <div class="horizontal-input-grouping-1_5">
+    <div v-if="formData.id !== null || !isJointVenture()" class="horizontal-input-grouping-1_5">
       <text-input-component
         :id="`rc-${locationIndex}-${index}-percentageOwnership`"
         label="Percentage owned"
@@ -534,10 +562,17 @@ const confirmNewClient = () => {
         @empty="validation.percentageOwnership = true"
         @error="validation.percentageOwnership = !$event"
       />
-      <toggle-component
+      <dropdown-input-component
         :id="`rc-${locationIndex}-${index}-hasSigningAuthority`"
         label="Client has signing authority"
-        v-model="formData.hasSigningAuthority"
+        tip=""
+        :initial-value="
+          hasSigningAuthorityOptions?.find((item) => item.value === formData.hasSigningAuthority)
+            ?.name
+        "
+        :model-value="hasSigningAuthorityOptions"
+        :validations="[]"
+        @update:selected-value="updateHasSigningAuthority($event)"
       />
     </div>
     <div class="form-group-buttons form-group-buttons--stretched">

@@ -124,5 +124,39 @@
       "locationCodes": ["02"]
     }
   ],
-  "doingBusinessAs": null
+  "doingBusinessAs": null,
+  "relatedClients": {
+    "00": [
+        {
+            "id": "{{randomValue length=10 type='ALPHANUMERIC' uppercase=true}}",
+            "client": {
+                "client": {
+                    "code": "00000001",
+                    "name": "Thiz"
+                },
+                "location": {
+                    "code": "01",
+                    "name": "Accountant address"
+                }
+            },
+            "relatedClient": {
+                "client": {
+                    "code": "00000177",
+                    "name": "GRAND FARM"
+                },
+                "location": {
+                    "code": "00",
+                    "name": "Headquarters"
+                }
+            },
+            "relationship": {
+                "code": "JV",
+                "name": "Joint Venture Participant"
+            },
+            "percentageOwnership": 33.0,
+            "hasSigningAuthority": false,
+            "isMainParticipant": true
+        }
+    ]
+  }
 }

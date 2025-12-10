@@ -1,10 +1,26 @@
 [
   {
+    "code": "AG",
+    "name": "Agent"
+  },
+  {
     "code": "FM",
     "name": "Family Member"
   },
   {
+    "code": "JV",
+    "name": "Joint Venture Participant"
+  },
+  {
+    "code": "OF",
+    "name": "Officer"
+  },
+  {
     "code": "PA",
     "name": "General Partner"
+  },
+  {
+    "code": "SH",
+    "name": "Shareholder"
   }
 ]
