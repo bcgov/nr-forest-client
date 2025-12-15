@@ -84,6 +84,7 @@ let formData = reactive<FormDataDto>({
   businessInformation: {
     ...formDataDto.value.businessInformation,
     birthdate: "",
+    businessType: "R",
   },
   location: {
     addresses: formDataDto.value.location.addresses,

@@ -83,24 +83,10 @@ const checkValid = () =>
 watch([validation], () => emit("valid", checkValid()));
 emit("valid", checkValid());
 
-// -- Auto completion --
-const selectedOption = computed(() => {
-  switch (formData.value.businessInformation.businessType) {
-    case "R":
-      return BusinessTypeEnum.R;
-    case "U":
-      return BusinessTypeEnum.U;
-    default:
-      return BusinessTypeEnum.Unknow;
-  }
-});
-
 const showBirthDate = computed(
   () =>
     validation.business &&
-    (selectedOption.value === BusinessTypeEnum.U ||
-      formData.value.businessInformation.clientType ===
-        ClientTypeEnum[ClientTypeEnum.RSP])
+    formData.value.businessInformation.clientType === ClientTypeEnum[ClientTypeEnum.RSP],
 );
 
 // validation.birthdate initialization
@@ -112,7 +98,11 @@ const autoCompleteUrl = computed(
     `/api/clients/name/${formData.value.businessInformation.businessName || ""}`
 );
 
-const showAutoCompleteInfo = ref<boolean>(false);
+const hasSelectedBusinessName = computed(
+  () => !!formData.value.businessInformation.registrationNumber,
+);
+
+const showAutoCompleteInfo = ref<boolean>(!hasSelectedBusinessName.value);
 const showGoodStandingError = ref<boolean>(false);
 const showDuplicatedError = ref<boolean>(false);
 const showNonPersonSPError = ref<boolean>(false);
@@ -338,49 +328,11 @@ const individualCheck = computed(() => {
   return showBirthDate.value;
 });
 
-watch([individualCheck, selectedOption, soleProprietorOwner], ([individualCheckValue]) => {
+watch([individualCheck, soleProprietorOwner], ([individualCheckValue]) => {
   if (individualCheckValue) {
     checkForIndividualValid(
       soleProprietorOwner.value || ForestClientUserSession.user?.lastName
     );
-  }
-});
-
-watch([selectedOption], () => {
-  toggleErrorMessages();
-
-  // reset soleProprietorOwner
-  soleProprietorOwner.value = "";
-
-  // Unregistered Proprietorship
-  if (selectedOption.value === BusinessTypeEnum.U) {
-    const fromName = `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}`;
-
-    formData.value.businessInformation.businessType = getEnumKeyByEnumValue(
-      BusinessTypeEnum,
-      BusinessTypeEnum.U
-    );
-    formData.value.businessInformation.clientType = getEnumKeyByEnumValue(
-      ClientTypeEnum,
-      ClientTypeEnum.USP
-    );
-    formData.value.businessInformation.legalType = getEnumKeyByEnumValue(
-      LegalTypeEnum,
-      LegalTypeEnum.SP
-    );
-
-    formData.value.businessInformation.businessName = ForestClientUserSession
-      .user?.businessName
-      ? ForestClientUserSession.user?.businessName
-      : fromName;
-    validation.business = true;
-    formData.value.businessInformation.goodStandingInd = "Y";
-    emit("update:data", formData.value);
-  } else {
-    // Registered business
-    formData.value.businessInformation.businessName = "";
-    validation.business = false;
-    showAutoCompleteInfo.value = true;
   }
 });
 
@@ -464,26 +416,6 @@ onMounted(() => {
   </h2>
 
   <div class="frame-01">
-    <radio-input-component
-      id="businessType"
-      label="Type of business"
-      required
-      required-label
-      :initialValue="formData?.businessInformation?.businessType"
-      :modelValue="[
-        {
-          value: 'R',
-          text: 'I have a BC registered business (corporation, sole proprietorship, society, etc.)'
-        },
-        { value: 'U', text: 'I have an unregistered sole proprietorship' }
-      ]"
-      :validations="[...getValidations('businessInformation.businessType'),submissionValidation('businessInformation.businessType')]"
-      @update:model-value="
-        formData.businessInformation.businessType = $event ?? ''
-      "
-      @empty="validation.businessType = !$event"
-    />
-
     <data-fetcher
       v-model:url="autoCompleteUrl"
       :min-length="3"
@@ -493,7 +425,6 @@ onMounted(() => {
       #="{ content, loading, error }"
     >
       <AutoCompleteInputComponent
-        v-if="selectedOption === BusinessTypeEnum.R"
         id="business"
         label="BC registered business name"
         autocomplete="organization"
@@ -516,7 +447,7 @@ onMounted(() => {
       <div
         class="grouping-02"
         v-if="
-          (showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R) ||
+          showAutoCompleteInfo ||
           showGoodStandingError ||
           showDuplicatedError ||
           showNonPersonSPError ||
@@ -527,7 +458,7 @@ onMounted(() => {
         <cds-inline-notification
           data-text="Business information"
           v-shadow="2"
-          v-if="showAutoCompleteInfo && selectedOption === BusinessTypeEnum.R"
+          v-if="showAutoCompleteInfo"
           low-contrast="true"
           open="true"
           kind="info"
@@ -640,19 +571,8 @@ onMounted(() => {
             <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
           </p>
         </cds-inline-notification>
-        
       </div>
     </data-fetcher>
-
-    <text-input-component
-      v-if="selectedOption === BusinessTypeEnum.U"
-      id="businessName"
-      label="Unregistered sole proprietorship"
-      placeholder=""
-      v-model="formData.businessInformation.businessName"
-      :validations="[]"
-      :enabled="false"
-    />
 
     <div v-if="showBirthDate">
       <p class="body-02 date-label">
