@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import reactor.core.publisher.Mono;
 
 /**
@@ -73,19 +74,41 @@ public interface ClientPatchOperation {
             )
         )
         .filter(client -> !entity.equals(client))
+        .map(this::normalizeNames)
+        //Can only happen if there's a change
         .map(client -> client
-            .withUpdatedBy(userId)
+            .withUpdatedBy(userId) // Is still missing the user org unit
             .withUpdatedAt(LocalDateTime.now())
             .withRevision(client.getRevision() + 1)
-        )
-        //Can only happen if there's a change
-        .map(client ->
-            client
-                .withUpdatedAt(LocalDateTime.now())
-                .withUpdatedBy(userId) // Is still missing the user org unit
-                .withRevision(client.getRevision() + 1)
         );
   }
 
-}
+  /**
+   * Normalizes the name-related fields of a {@link ForestClientEntity} to uppercase.
+   * <p>
+   * This ensures that {@code clientName}, {@code legalFirstName}, and {@code legalMiddleName}
+   * are always stored in uppercase form, regardless of the casing provided in incoming requests.
+   * </p>
+   *
+   * @param entity the entity whose name fields should be normalized
+   * @return a new {@link ForestClientEntity} instance with normalized name fields
+   */
+  default ForestClientEntity normalizeNames(ForestClientEntity entity) {
+    return entity
+        .withClientName(toUpperOrNull(entity.getClientName()))
+        .withLegalFirstName(toUpperOrNull(entity.getLegalFirstName()))
+        .withLegalMiddleName(toUpperOrNull(entity.getLegalMiddleName()));
+  }
 
+  /**
+   * Converts the given string to upper case using {@link Locale#ROOT}, preserving {@code null}
+   * values.
+   *
+   * @param value the input string, may be {@code null}
+   * @return the upper-cased string, or {@code null} if the input was {@code null}
+   */
+  default String toUpperOrNull(String value) {
+    return value == null ? null : value.toUpperCase(Locale.ROOT);
+  }
+
+}
