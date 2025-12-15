@@ -8,13 +8,8 @@ import { useEventBus } from "@vueuse/core";
 import { useFetch, useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
-import {
-  BusinessSearchResult,
-  ClientTypeEnum,
-  LegalTypeEnum,
-  ProgressNotification,
-} from "@/dto/CommonTypesDto";
-import { BusinessTypeEnum, CodeNameType } from "@/dto/CommonTypesDto";
+import { BusinessSearchResult, ClientTypeEnum, ProgressNotification } from "@/dto/CommonTypesDto";
+import { CodeNameType } from "@/dto/CommonTypesDto";
 import { defaultLocation, formatAddresses } from "@/dto/ApplyClientNumberDto";
 import type {
   FormDataDto,
@@ -25,11 +20,7 @@ import { getValidations } from "@/helpers/validators/GlobalValidators";
 import { submissionValidation } from "@/helpers/validators/SubmissionValidators";
 // Importing helper functions
 import { retrieveClientType } from "@/helpers/DataConverters";
-import {
-  getEnumKeyByEnumValue,
-  adminEmail,
-  getObfuscatedEmailLink
-} from "@/services/ForestClientService";
+import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update
 const props = defineProps<{
