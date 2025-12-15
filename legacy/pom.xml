@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.7</version>
+    <version>3.5.8</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
@@ -46,10 +46,10 @@
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.6.3</mapstruct.version>
     <logback.version>1.5.21</logback.version>
-    <flyway.version>11.11.1</flyway.version>
+    <flyway.version>11.19.0</flyway.version>
     <oracle-driver.version>23.26.0.0.0</oracle-driver.version>
-    <opentelemetry.version>1.56.0</opentelemetry.version>
-    <selenium.version>4.38.0</selenium.version>
+    <opentelemetry.version>1.57.0</opentelemetry.version>
+    <selenium.version>4.39.0</selenium.version>
     <mockito.version>5.20.0</mockito.version>
     <commons-lang3.version>3.20.0</commons-lang3.version>
   </properties>
@@ -195,7 +195,7 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
-        <version>6.2.13</version>
+        <version>6.2.14</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -255,12 +255,12 @@
       <dependency>
         <groupId>io.projectreactor.netty</groupId>
         <artifactId>reactor-netty-http</artifactId>
-        <version>1.2.11</version>
+        <version>1.3.0</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-bom</artifactId>
-        <version>4.1.125.Final</version>
+        <version>4.2.7.Final</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
