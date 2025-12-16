@@ -73,16 +73,6 @@ describe("BCeID Form", () => {
       .click()
       .and("have.value", "DCC - Cariboo-Chilcotin Natural Resource District");
 
-    cy.get("#business").should("not.exist");
-
-    cy.get("cds-inline-notification").should("not.exist");
-
-    cy.get(
-      '[label-text="I have a BC registered business (corporation, sole proprietorship, society, etc.)"]'
-    )
-      .should("be.visible")
-      .click();
-
     cy.get("cds-inline-notification").should("be.visible");
 
     cy.get("#business")
