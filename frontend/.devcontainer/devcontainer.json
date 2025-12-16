@@ -2,7 +2,7 @@
 	"name": "Node.js & TypeScript",
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:0-18",
 	"features": {
-		"ghcr.io/devcontainers-contrib/features/vue-cli:2": {
+		"ghcr.io/devcontainers-extra/features/vue-cli:2": {
 			"version": "latest"
 		},
 		"ghcr.io/devcontainers/features/java:1": {
