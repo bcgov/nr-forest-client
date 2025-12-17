@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -93,11 +92,11 @@ public class EmailLogEntityJsonConvert
    */
   @SuppressWarnings("unchecked")
   private Map<String, Object> convertFrom(EmailLogEntity entity) {
-    return
+    return 
         Optional
             .ofNullable(entity.getEmailVariables())
             .map(Json::asString)
-            .map(value -> Objects.toString(value, "{}"))
+            .map(value -> value.isBlank() ? "{}" : value)
             .map(value -> {
               try {
                 return mapper.readValue(value, Map.class);
@@ -109,4 +108,5 @@ public class EmailLogEntityJsonConvert
             .map(value -> (Map<String, Object>) value)
             .orElse(Map.of());
   }
+
 }
