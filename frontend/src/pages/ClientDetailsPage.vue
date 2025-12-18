@@ -19,7 +19,7 @@ import { useFetchTo, useJsonPatch } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 import useSvg from "@/composables/useSvg";
 import { useRouter } from "vue-router";
-import { useEventBus } from "@vueuse/core";
+import { useEventBus, useMediaQuery } from "@vueuse/core";
 
 import Location16 from "@carbon/icons-vue/es/location/16";
 import User16 from "@carbon/icons-vue/es/user/16";
@@ -82,6 +82,8 @@ import { type GoToTab, type OperateRelatedClient, type OperationOptions, type Sa
 // Route related
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id as string;
+
+const isMediaPrint = useMediaQuery("print");
 
 const selectedTab = ref<string>();
 watch(router.currentRoute, ({ hash }) => {
@@ -1126,7 +1128,7 @@ provide("goToTab", goToTab);
               size="lg"
               class="grouping-13"
               v-shadow="1"
-              :open="locationsState[location.clientLocnCode]?.startOpen"
+              :open="locationsState[location.clientLocnCode]?.startOpen || isMediaPrint"
               :data-focus="`location-${index}-heading`"
             >
               <div
@@ -1203,7 +1205,7 @@ provide("goToTab", goToTab);
                 size="lg"
                 class="grouping-13"
                 v-shadow="1"
-                :open="contactsState[contact.contactId]?.startOpen"
+                :open="contactsState[contact.contactId]?.startOpen || isMediaPrint"
                 :data-focus="`contact-${contact.contactId}-heading`"
               >
                 <div
@@ -1299,7 +1301,7 @@ provide("goToTab", goToTab);
                 size="lg"
                 class="grouping-13"
                 v-shadow="1"
-                :open="relatedLocationsState[curLocationCode]?.startOpen"
+                :open="relatedLocationsState[curLocationCode]?.startOpen || isMediaPrint"
                 :data-focus="`relationships-location-${curLocationCode}-heading`"
               >
                 <div

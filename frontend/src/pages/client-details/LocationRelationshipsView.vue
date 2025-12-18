@@ -11,6 +11,7 @@ import { compareAny, includesAnyOf } from "@/services/ForestClientService";
 
 // Page components
 import ClientRelationshipRow from "@/pages/client-details/ClientRelationshipRow.vue";
+import { useMediaQuery } from "@vueuse/core";
 
 const props = defineProps<{
   data: RelatedClientEntry[];
@@ -20,6 +21,8 @@ const props = defineProps<{
   userRoles: UserRole[];
   isReloading: boolean;
 }>();
+
+const isMediaPrint = useMediaQuery("print");
 
 const locationIndex = props.location?.clientLocnCode || null;
 
@@ -46,11 +49,17 @@ const sortedData = computed<IndexedRelatedClient[]>(() => {
 const canEdit = computed(() =>
   includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
 );
+
+const showActionsColumn = computed(() => canEdit.value && !isMediaPrint.value);
 </script>
 
 <template>
   <div class="grouping-12" :class="{ invisible: props.isReloading }">
-    <cds-table id="relatioships-table" :class="{ 'view-only': !canEdit }" use-zebra-styles>
+    <cds-table
+      id="relatioships-table"
+      :class="{ 'view-only': !showActionsColumn }"
+      use-zebra-styles
+    >
       <cds-table-head>
         <cds-table-header-row>
           <cds-table-header-cell class="col-padding-10-px" />
@@ -59,7 +68,7 @@ const canEdit = computed(() =>
           <cds-table-header-cell class="col-310-px">Related client</cds-table-header-cell>
           <cds-table-header-cell class="col-120-px">Percentage owned</cds-table-header-cell>
           <cds-table-header-cell class="col-120-px">Signing authority</cds-table-header-cell>
-          <cds-table-header-cell v-if="canEdit" class="col-104-px-fixed">
+          <cds-table-header-cell v-if="showActionsColumn" class="col-104-px-fixed">
             Actions
           </cds-table-header-cell>
         </cds-table-header-row>

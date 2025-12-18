@@ -1239,6 +1239,10 @@ del {
   border-radius: 0.5rem;
   border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
   background: #fff;
+
+  @media print {
+    padding: unset;
+  }
 }
 
 .grouping-14 {
@@ -1557,6 +1561,14 @@ cds-modal {
 
 cds-header {
   --cds-background: #0073e6;
+
+  @media print {
+    /*
+    Displays the application header only on the first page and by doing that also prevents from
+    covering some client details with the header on the following pages.
+    */
+    position: absolute;
+  }
 }
 
 cds-header-name::part(link) {
@@ -1684,12 +1696,24 @@ cds-side-nav {
   display: flex;
   position: fixed;
   z-index: 10;
+
+  @media print {
+    /*
+    Even though the side nav might already be closed, this is useful for hiding its right border.
+    */
+    display: none;
+  }
 }
 
 .submission-content, .client-details-screen, .client-details-content {
   padding: 2.5rem 2rem;
   gap: 3rem;
   flex: 4;
+
+  @media print {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 .client-details-screen {
@@ -2205,8 +2229,15 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
 }
 
 .tabs-container {
-  position: sticky;
-  top: var(--staff-header-height);
+  @media not print {
+    position: sticky;
+    top: var(--staff-header-height);
+  }
+
+  @media print {
+    // Hides the tabs navigation buttons
+    display: none;
+  }
 }
 
 .tab-panels-container {
@@ -2214,6 +2245,11 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
 
   & > div {
     height: 100%;
+
+    @media print {
+      height: unset;
+      display: block; // turns the target content on every tab visible
+    }
   }
 }
 
@@ -2224,15 +2260,21 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   background: var(--light-theme-layer-layer-01, #f3f3f5);
   padding: var(--p) var(--p) var(--g) var(--p);
 
-  position: sticky;
-  top: calc(var(--staff-header-height) + var(--staff-tabs-height));
-  z-index: 3;
+  @media not print {
+    position: sticky;
+    top: calc(var(--staff-header-height) + var(--staff-tabs-height));
+    z-index: 3;
+  }
 }
 
 .tab-panel {
   height: 100%;
   background: var(--light-theme-layer-layer-01, #f3f3f5);
   box-sizing: border-box;
+
+  @media print {
+    height: unset;
+  }
 
   --p: var(--tab-panel-padding);
 
@@ -2242,6 +2284,11 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
     flex-direction: column;
     gap: var(--tab-panel-gap);
     width: 100%;
+
+    @media print {
+      padding-left: 0;
+      padding-right: 0;
+    }
 
     &[hidden] {
       display: none;
