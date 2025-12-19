@@ -20,9 +20,8 @@ const props = defineProps<{
   validations: Array<Function>;
   userRoles: UserRole[];
   isReloading: boolean;
+  isPrinting: boolean;
 }>();
-
-const isMediaPrint = useMediaQuery("print");
 
 const locationIndex = props.location?.clientLocnCode || null;
 
@@ -50,7 +49,7 @@ const canEdit = computed(() =>
   includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
 );
 
-const showActionsColumn = computed(() => canEdit.value && !isMediaPrint.value);
+const showActionsColumn = computed(() => canEdit.value && !props.isPrinting);
 </script>
 
 <template>
@@ -81,6 +80,7 @@ const showActionsColumn = computed(() => canEdit.value && !isMediaPrint.value);
             :location-index="locationIndex"
             :validations="props.validations"
             :user-roles="props.userRoles"
+            :is-printing="props.isPrinting"
           />
         </template>
       </cds-table-body>

@@ -1340,6 +1340,7 @@ provide("goToTab", goToTab);
                   :location="findLocation(curLocationCode)"
                   :validations="uniqueRelationships ? [uniqueRelationships.check] : []"
                   :is-reloading="relatedLocationsState[curLocationCode]?.isReloading"
+                  :is-printing="isMediaPrint"
                   :user-roles="userRoles"
                 />
               </cds-accordion-item>

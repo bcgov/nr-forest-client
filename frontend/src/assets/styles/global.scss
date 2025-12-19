@@ -1564,8 +1564,8 @@ cds-header {
 
   @media print {
     /*
-    Displays the application header only on the first page and by doing that also prevents from
-    covering some client details with the header on the following pages.
+    Displays the application header only on the first page instead of every page, which also
+    prevents from covering some client details with the header on the following pages.
     */
     position: absolute;
   }
