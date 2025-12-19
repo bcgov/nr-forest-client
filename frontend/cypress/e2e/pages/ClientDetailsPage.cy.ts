@@ -156,6 +156,8 @@ describe("Client Details Page", () => {
 
     cy.title().should("eq", "Forests Client Management System - Kovacek, Thompson And Boyer");
 
+    cy.get("cds-header").should("have.css", "position", "fixed");
+
     cy.get("cds-breadcrumb").should("contain", "Client search");
     cy.contains("h2", "Client summary");
     cy.contains("cds-tab", "Client locations");
@@ -231,6 +233,70 @@ describe("Client Details Page", () => {
 
         // There should be no skeletons on screen after the error
         cy.get("cds-skeleton-text").should("not.exist");
+      });
+    });
+  });
+
+  describe("printing (role:CLIENT_EDITOR)", () => {
+    before(() => {
+      Cypress.automation("remote:debugger:protocol", {
+        command: "Emulation.setEmulatedMedia",
+        params: {
+          media: "print",
+        },
+      });
+    });
+
+    beforeEach(() => {
+      cy.intercept({
+        method: "GET",
+        pathname: "/api/clients/details/*",
+      }).as("getClientDetails");
+
+      cy.visit("/clients/details/0");
+      cy.wait("@getClientDetails");
+    });
+
+    after(() => {
+      Cypress.automation("remote:debugger:protocol", {
+        command: "Emulation.setEmulatedMedia",
+        params: {
+          media: "screen",
+        },
+      });
+    });
+
+    it("turns the header position into absolute, which prevents repeating the header on every printed page", () => {
+      cy.get("cds-header").should("have.css", "position", "absolute");
+    });
+
+    it("hides the tabs navigation buttons", () => {
+      /*
+      For some reason this wait is needed to prevent a false negative, in case the behavior to be
+      asserted gets changed.
+      Do not remove it!
+      */
+      cy.wait(1);
+
+      cy.get(".tabs-container").should("not.be.visible");
+    });
+
+    it("displays the target content of every tab", () => {
+      cy.get("#panel-locations").should("be.visible");
+      cy.get("#panel-contacts").should("be.visible");
+      cy.get("#panel-related").should("be.visible");
+    });
+
+    it("opens up every accordion-item momentaneously", () => {
+      cy.get("cds-accordion-item").each(($el) => {
+        cy.wrap($el).should("have.attr", "open");
+      });
+    });
+
+    it("hides the Actions column on every related clients table", () => {
+      cy.get("#panel-related #relatioships-table").should("have.length.greaterThan", 0);
+      cy.get("#panel-related #relatioships-table").each(($el) => {
+        cy.wrap($el).contains("cds-table-header-cell", "Actions").should("not.exist");
       });
     });
   });
