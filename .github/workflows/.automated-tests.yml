@@ -16,7 +16,7 @@ jobs:
     environment: tools
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         name: Start node
@@ -73,7 +73,7 @@ jobs:
           fi
         id: check_artifacts
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         name: Upload Cypress Screenshots
         if: always()
         with:
@@ -81,7 +81,7 @@ jobs:
           path: cypress/cypress/screenshots
           retention-days: 7
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         name: Upload Cypress Videos
         if: always()
         with:
