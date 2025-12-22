@@ -9,7 +9,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
@@ -19,10 +18,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.MimeType;
 
 @DisplayName("Integrated Test | Patch Client Controller")
@@ -42,9 +39,6 @@ class ClientPatchControllerIntegrationTest
       )
       .configureStaticDsl(true)
       .build();
-
-  @Autowired
-  protected WebTestClient client;
 
   @BeforeEach
   public void setUp() {

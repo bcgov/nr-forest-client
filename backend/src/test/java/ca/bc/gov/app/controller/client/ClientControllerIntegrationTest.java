@@ -14,7 +14,6 @@ import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.BcRegistryTestConstants;
 import ca.bc.gov.app.TestConstants;
@@ -23,8 +22,8 @@ import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -40,9 +38,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 @DisplayName("Integrated Test | FSA Client Controller")
 class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
-
-  @Autowired
-  protected WebTestClient client;
 
   @RegisterExtension
   static WireMockExtension bcRegistryStub = WireMockExtension

@@ -16,7 +16,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.ValidationError;
@@ -35,10 +34,10 @@ import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +57,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ListBodySpec;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
@@ -71,11 +69,11 @@ class ClientSubmissionControllerIntegrationTest
     extends AbstractTestContainerIntegrationTest {
 
   @Autowired
-  protected WebTestClient client;
-  @Autowired
   private SubmissionContactRepository contactRepository;
+  
   @Autowired
   private SubmissionDetailRepository detailRepository;
+  
   private final AtomicLong submissionId = new AtomicLong(0L);
 
   @RegisterExtension

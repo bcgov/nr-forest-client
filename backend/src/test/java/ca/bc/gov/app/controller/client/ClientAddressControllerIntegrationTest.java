@@ -7,7 +7,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
-
 import ca.bc.gov.app.AddressTestConstants;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
@@ -19,13 +18,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
 @DisplayName("Integrated Test | FSA Client Address Controller")
 class ClientAddressControllerIntegrationTest  extends AbstractTestContainerIntegrationTest {
-  @Autowired
-  protected WebTestClient client;
 
   private static final String FIND_URI = "/find/v2.10/json3.ws";
   private static final String RETRIEVE_URI = "/retrieve/v2.11/json3.ws";
