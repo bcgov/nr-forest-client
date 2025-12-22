@@ -261,7 +261,7 @@ describe("Client Details Page", () => {
       Cypress.automation("remote:debugger:protocol", {
         command: "Emulation.setEmulatedMedia",
         params: {
-          media: "screen",
+          media: "",
         },
       });
     });
@@ -297,6 +297,92 @@ describe("Client Details Page", () => {
       cy.get("#panel-related #relatioships-table").should("have.length.greaterThan", 0);
       cy.get("#panel-related #relatioships-table").each(($el) => {
         cy.wrap($el).contains("cds-table-header-cell", "Actions").should("not.exist");
+      });
+    });
+  });
+
+  describe.only("accordion state and printing", { testIsolation: false }, () => {
+    describe("when some accordion items are already open", () => {
+      before(function () {
+        init.call(this);
+
+        cy.intercept({
+          method: "GET",
+          pathname: "/api/clients/details/*",
+        }).as("getClientDetails");
+
+        cy.visit("/clients/details/0");
+        cy.wait("@getClientDetails");
+
+        // Expand first location
+        cy.get("#location-00 [slot='title']").click();
+
+        // Switch to the Contacts tab
+        cy.get("#tab-contacts").click();
+        // Expand first contact
+        cy.get("#panel-contacts cds-accordion-item [slot='title']").first().click();
+
+        // Switch to the Related clients tab
+        cy.get("#tab-related").click();
+        // Expand first related client location
+        cy.get("#relationships-location-00 [slot='title']").click();
+      });
+      describe("and all accordion items get open while printing", () => {
+        before(() => {
+          cy.log("start printing...");
+          Cypress.automation("remote:debugger:protocol", {
+            command: "Emulation.setEmulatedMedia",
+            params: {
+              media: "print",
+            },
+          });
+        });
+        it("opens up every accordion-item momentaneously", () => {
+          cy.get("cds-accordion-item").each(($el) => {
+            cy.wrap($el).should("have.attr", "open");
+          });
+        });
+        describe("and printing is done", () => {
+          before(() => {
+            cy.log("printing is done");
+            Cypress.automation("remote:debugger:protocol", {
+              command: "Emulation.setEmulatedMedia",
+              params: {
+                media: "",
+              },
+            });
+          });
+
+          it("keeps the contents of previously open accordion items visible", () => {
+            const previouslyOpenList = [];
+            [
+              cy.get("#location-00 cds-accordion-item"),
+              cy.get("#panel-contacts cds-accordion-item").first(),
+              cy.get("#relationships-location-00 cds-accordion-item"),
+            ].forEach((chainable) => {
+              chainable.then(($el) => {
+                console.log("aaa", $el[0]);
+                previouslyOpenList.push($el[0]);
+              });
+            });
+
+            cy.get("cds-accordion-item").then(($all) => {
+              expect(previouslyOpenList).to.have.length(3);
+              expect($all).to.have.length.greaterThan(previouslyOpenList.length);
+
+              $all.each((_index, el) => {
+                if (previouslyOpenList.includes(el)) {
+                  const accordionId = el.parentElement.id;
+                  expect(accordionId).to.have.length.greaterThan(0);
+
+                  cy.wrap(el).should("have.attr", "open");
+                } else {
+                  cy.wrap(el).should("not.have.attr", "open");
+                }
+              });
+            });
+          });
+        });
       });
     });
   });
