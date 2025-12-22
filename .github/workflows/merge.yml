@@ -25,7 +25,7 @@ jobs:
       # Get PR number for squash merges to main
       - name: PR Number
         id: pr
-        uses: bcgov/action-get-pr@21f9351425cd55a98e869ee28919a512aa30647d # v0.0.1
+        uses: bcgov/action-get-pr@35514fa1d4765547da319e967b509363598e8b46 # v0.1.0
 
   deploy-test:
     name: Deploy (TEST)
@@ -102,7 +102,7 @@ jobs:
           git-push: "true"
 
       - name: Create Release
-        uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2
         if: steps.changelog.outputs.tag != ''
         continue-on-error: true
         env:
