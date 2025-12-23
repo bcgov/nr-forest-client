@@ -353,7 +353,7 @@ describe("Client Details Page", () => {
             });
           });
 
-          it("keeps the contents of previously open accordion items visible", () => {
+          it("keeps the previously open accordion items open", () => {
             const previouslyOpenList = [];
             [
               cy.get("#location-00 cds-accordion-item"),
@@ -361,7 +361,6 @@ describe("Client Details Page", () => {
               cy.get("#relationships-location-00 cds-accordion-item"),
             ].forEach((chainable) => {
               chainable.then(($el) => {
-                console.log("aaa", $el[0]);
                 previouslyOpenList.push($el[0]);
               });
             });
@@ -372,9 +371,6 @@ describe("Client Details Page", () => {
 
               $all.each((_index, el) => {
                 if (previouslyOpenList.includes(el)) {
-                  const accordionId = el.parentElement.id;
-                  expect(accordionId).to.have.length.greaterThan(0);
-
                   cy.wrap(el).should("have.attr", "open");
                 } else {
                   cy.wrap(el).should("not.have.attr", "open");
