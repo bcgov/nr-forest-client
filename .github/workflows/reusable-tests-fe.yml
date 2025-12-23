@@ -40,7 +40,7 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN_FRONTEND }}
           triggers: ('frontend/')
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         name: Upload Cypress Screenshots with error
         continue-on-error: true
         if: failure()
