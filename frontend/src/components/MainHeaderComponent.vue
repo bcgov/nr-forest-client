@@ -152,7 +152,9 @@ const currentDate = new Date();
       <span class="heading-compact-02" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
       <span class="heading-compact-02" v-else>Forests Client Management System</span>
       <span class="heading-compact-02" v-if="env !== 'Prod' && !isSmallScreen">Env. {{ env }} - Rel. {{appVersion}}</span>
-      <span class="heading-compact-02 print-only">{{ formatDate(currentDate) }}</span>
+      <span id="header-date" class="heading-compact-02 print-only">{{
+        formatDate(currentDate)
+      }}</span>
     </cds-header-name>
     
     <div class="heading-buttons">

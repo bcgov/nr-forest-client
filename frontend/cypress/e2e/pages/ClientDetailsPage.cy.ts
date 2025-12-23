@@ -301,7 +301,7 @@ describe("Client Details Page", () => {
     });
   });
 
-  describe.only("accordion state and printing", { testIsolation: false }, () => {
+  describe("accordion state and printing", { testIsolation: false }, () => {
     describe("when some accordion items are already open", () => {
       before(function () {
         init.call(this);
