@@ -1,5 +1,5 @@
 ### Builder
-FROM ghcr.io/graalvm/native-image:22.3.3 AS build
+FROM ghcr.io/graalvm/native-image-community:25.0.1 AS build
 
 # --- SSL Root CA Refresh (Sectigo R46) ---
 # Canada Post rotated its certificate chain to a root (Sectigo Public Server Authentication Root R46)
@@ -20,7 +20,9 @@ RUN set -e; \
   fi; \
   keytool -importcert -trustcacerts -noprompt -alias sectigo-r46-root -file "$CERT_FILE" \
   -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit; \
-  keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit | grep -i sectigo || { echo "ERROR: Imported but grep did not match (verify manually)"; exit 1; }; \
+  keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit \
+    | grep -i sectigo \
+    || { echo "ERROR: Imported but grep did not match (verify manually)"; exit 1; }; \
   rm -f "$CERT_FILE"
 
 # Copy
