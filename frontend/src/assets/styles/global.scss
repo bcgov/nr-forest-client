@@ -2337,6 +2337,21 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   display: contents;
 }
 
+.print-only {
+  display: none;
+
+  @media print {
+    display: initial;
+  }
+}
+
+@media print {
+  .client-details-screen cds-button {
+    // hides all the buttons
+    display: none;
+  }
+}
+
 /* Small (up to 671px) */
 @media screen and (max-width: 671px) {
   :root {
