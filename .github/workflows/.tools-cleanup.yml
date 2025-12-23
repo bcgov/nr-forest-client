@@ -58,4 +58,3 @@ jobs:
         run: |
           oc delete po --field-selector=status.phase==Succeeded
           oc delete jobs --field-selector status.successful=1
-    
