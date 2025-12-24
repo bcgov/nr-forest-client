@@ -4,17 +4,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.jsonResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-
-import ca.bc.gov.app.extensions.AbstractTestContainer;
-import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import ca.bc.gov.app.extensions.AbstractTestContainer;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @DisplayName("Integrated Test | Processor Controller")
@@ -43,9 +40,6 @@ class ProcessControllerIntegrationTest extends AbstractTestContainer {
       )
       .configureStaticDsl(true)
       .build();
-
-  @Autowired
-  protected WebTestClient client;
 
   @Test
   @DisplayName("Should submit by staff")

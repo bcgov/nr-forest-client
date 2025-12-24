@@ -2,7 +2,6 @@ package ca.bc.gov.app.controller;
 
 import static ca.bc.gov.app.ApplicationConstants.MDC_USERID;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -14,17 +13,12 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.BodyContentSpec;
 
 @Slf4j
 @DisplayName("Integrated Test | Client Patch Controller")
 @TestInstance(Lifecycle.PER_CLASS)
 class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
-
-  @Autowired
-  protected WebTestClient client;
 
   @ParameterizedTest
   @MethodSource("executePatch")

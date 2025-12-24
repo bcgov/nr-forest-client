@@ -23,15 +23,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.util.UriBuilder;
 
 @DisplayName("Integrated Test | FSA Client Codes Controller")
 class ClientCodesControllerIntegrationTest extends AbstractTestContainerIntegrationTest {
-
-  @Autowired
-  protected WebTestClient client;
 
   @BeforeEach
   public void reset() {

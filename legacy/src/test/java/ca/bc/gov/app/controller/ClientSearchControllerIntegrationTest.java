@@ -17,9 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.BodyContentSpec;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -28,9 +26,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 @DisplayName("Integrated Test | Client Search Controller")
 class ClientSearchControllerIntegrationTest extends
     AbstractTestContainerIntegrationTest {
-
-  @Autowired
-  protected WebTestClient client;
 
   @ParameterizedTest
   @MethodSource("byEmail")

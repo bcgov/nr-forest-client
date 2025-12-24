@@ -1,20 +1,27 @@
 package ca.bc.gov.app.extensions;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @ExtendWith({SpringExtension.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
 @ContextConfiguration
 public abstract class AbstractTestContainerIntegrationTest {
 
+  @Autowired
+  protected WebTestClient client;
+  
   static final OracleContainer database;
 
   static {
