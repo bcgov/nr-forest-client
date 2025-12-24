@@ -93,7 +93,6 @@ jobs:
             -p LANDING_URL=${{ inputs.url }}
             -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             -p SPRING_PROFILES_ACTIVE=${{ secrets.OC_NAMESPACE }}
-            -p PEM_VALUE=${{ secrets.SECTIGO_R46_PEM }}
 
       - name: Backup database before update
         continue-on-error: true

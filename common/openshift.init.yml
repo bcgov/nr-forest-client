@@ -89,8 +89,6 @@ parameters:
     required: true
   - name: VITE_NODE_ENV
     required: true
-  - name: PEM_VALUE
-    required: true
 objects:
   - apiVersion: v1
     kind: Secret
@@ -119,7 +117,6 @@ objects:
       processor-service-account-secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
       processor-service-account-name: processor-service-account
       spring-profiles-active: "container,${SPRING_PROFILES_ACTIVE}"
-      pem-value: ${PEM_VALUE}
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
     metadata:
