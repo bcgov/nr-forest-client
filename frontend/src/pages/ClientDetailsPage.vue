@@ -19,7 +19,7 @@ import { useFetchTo, useJsonPatch } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 import useSvg from "@/composables/useSvg";
 import { useRouter } from "vue-router";
-import { useEventBus } from "@vueuse/core";
+import { useEventBus, useMediaQuery } from "@vueuse/core";
 
 import Location16 from "@carbon/icons-vue/es/location/16";
 import User16 from "@carbon/icons-vue/es/user/16";
@@ -82,6 +82,8 @@ import { type GoToTab, type OperateRelatedClient, type OperationOptions, type Sa
 // Route related
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id as string;
+
+const isMediaPrint = useMediaQuery("print");
 
 const selectedTab = ref<string>();
 watch(router.currentRoute, ({ hash }) => {
@@ -175,13 +177,13 @@ const sortedLocations = computed(() => {
 interface CollapsibleState {
   isReloading?: boolean;
   name: string;
-  startOpen?: boolean;
+  open?: boolean;
 }
 
 const createCollapsibleState = (initialState?: Partial<CollapsibleState>): CollapsibleState => ({
   isReloading: false,
   name: "",
-  startOpen: false,
+  open: false,
   ...initialState,
 });
 
@@ -295,7 +297,7 @@ const formatContact = (contact: ClientContact) => {
 const addLocation = () => {
   const codeString = null;
   newLocation.value = createClientLocation(clientNumber, codeString);
-  locationsState[codeString] = createCollapsibleState({ startOpen: true });
+  locationsState[codeString] = createCollapsibleState({ open: true });
 
   const index = sortedLocations.value.length - 1;
   setScrollPoint(`location-${index}-heading`, undefined, () => {
@@ -320,7 +322,7 @@ const updateLocationName = (locationName: string, locationCode: string) => {
 const addContact = () => {
   const contactId = null;
   newContact.value = createClientContact(contactId, clientNumber);
-  contactsState[contactId] = createCollapsibleState({ startOpen: true });
+  contactsState[contactId] = createCollapsibleState({ open: true });
   
   setScrollPoint(`contact-${contactId}-heading`, undefined, () => {
     setFocusedComponent(`contact-${contactId}-heading`);
@@ -353,7 +355,7 @@ const relatedClientsLocations = computed<RelatedClientList>(() => {
 
 const addRelationship = () => {
   newIndexedRelationship.value = createIndexedRelatedClientEntry(clientNumber);
-  relatedLocationsState.null = createCollapsibleState({ startOpen: true });
+  relatedLocationsState.null = createCollapsibleState({ open: true });
 
   const index = "null";
   setScrollPoint(`relationships-location-${index}-heading`, undefined, () => {
@@ -977,6 +979,10 @@ const goToTab: GoToTab = (tabName) => {
 };
 
 provide("goToTab", goToTab);
+
+const createOnToggle = (state: CollapsibleState) => (event: any) => {
+  state.open = event.detail.open;
+};
 </script>
 
 <template>
@@ -1126,7 +1132,8 @@ provide("goToTab", goToTab);
               size="lg"
               class="grouping-13"
               v-shadow="1"
-              :open="locationsState[location.clientLocnCode]?.startOpen"
+              :open="locationsState[location.clientLocnCode]?.open || isMediaPrint"
+              @cds-accordion-item-toggled="createOnToggle(locationsState[location.clientLocnCode])($event)"
               :data-focus="`location-${index}-heading`"
             >
               <div
@@ -1203,7 +1210,8 @@ provide("goToTab", goToTab);
                 size="lg"
                 class="grouping-13"
                 v-shadow="1"
-                :open="contactsState[contact.contactId]?.startOpen"
+                :open="contactsState[contact.contactId]?.open  || isMediaPrint"
+                @cds-accordion-item-toggled="createOnToggle(contactsState[contact.contactId])($event)"
                 :data-focus="`contact-${contact.contactId}-heading`"
               >
                 <div
@@ -1299,7 +1307,8 @@ provide("goToTab", goToTab);
                 size="lg"
                 class="grouping-13"
                 v-shadow="1"
-                :open="relatedLocationsState[curLocationCode]?.startOpen"
+                :open="relatedLocationsState[curLocationCode]?.open  || isMediaPrint"
+                @cds-accordion-item-toggled="createOnToggle(relatedLocationsState[curLocationCode])($event)"
                 :data-focus="`relationships-location-${curLocationCode}-heading`"
               >
                 <div
@@ -1338,6 +1347,7 @@ provide("goToTab", goToTab);
                   :location="findLocation(curLocationCode)"
                   :validations="uniqueRelationships ? [uniqueRelationships.check] : []"
                   :is-reloading="relatedLocationsState[curLocationCode]?.isReloading"
+                  :is-printing="isMediaPrint"
                   :user-roles="userRoles"
                 />
               </cds-accordion-item>

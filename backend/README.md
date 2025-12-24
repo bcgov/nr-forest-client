@@ -135,7 +135,7 @@ and edit the configuration as the following images.
 
 If you're running eclipse, you will need to manually install lombok in order for it to work. 
 The easiest way of doing that is by running any mavem command that would trigger the download of the lib, such as
-`mvn clean compile`.
+`mvn clean compile`. This will force maven to download dependencies, including lombok itself.
 
 Once it's done, navigate to your repository folder (its usually inside your user folder, called *.m2/repository*) 
 and look the latest version of lombok (inside org/projectlombok/lombok/) and run the lombok jar, 

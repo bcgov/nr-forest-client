@@ -229,4 +229,38 @@ describe("MainHeaderComponent.vue", () => {
       expect(wrapper.html()).toContain("Ministry of Forests");
     });
   });
+
+  describe("print date", () => {
+    it("makes the date print-only", () => {
+      const wrapper = mount(MainHeaderComponent, {
+        attachTo: document.body,
+        global: {
+          mocks: {
+            $session: session,
+            $route: mockRoute,
+          },
+        },
+      });
+
+      expect(wrapper.find("#header-date").classes()).toContain("print-only");
+    });
+
+    it("displays the date in format Mon dd, yyyy", () => {
+      const date = new Date(2025, 11, 31);
+
+      vi.setSystemTime(date);
+
+      const wrapper = mount(MainHeaderComponent, {
+        attachTo: document.body,
+        global: {
+          mocks: {
+            $session: session,
+            $route: mockRoute,
+          },
+        },
+      });
+
+      expect(wrapper.find("#header-date").text()).toContain("Dec 31, 2025");
+    });
+  });
 });

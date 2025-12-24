@@ -24,6 +24,7 @@ import {
   type OperationOptions,
   type SaveableComponent,
 } from "./shared";
+import { useMediaQuery } from "@vueuse/core";
 
 const props = defineProps<{
   row: IndexedRelatedClient;
@@ -31,6 +32,7 @@ const props = defineProps<{
   locationIndex: string;
   validations: Array<Function>;
   userRoles: UserRole[];
+  isPrinting: boolean;
 }>();
 
 const operateRelatedClient = inject<OperateRelatedClient>("operateRelatedClient");
@@ -44,6 +46,8 @@ const save = (payload: SaveEvent<IndexedRelatedClient>) => {
 const canEdit = computed(() =>
   includesAnyOf(props.userRoles, ["CLIENT_ADMIN", "CLIENT_SUSPEND", "CLIENT_EDITOR"]),
 );
+
+const showActionsColumn = computed(() => canEdit.value && !props.isPrinting);
 
 const formRef = ref<InstanceType<typeof ClientRelationshipForm> | null>(null);
 
@@ -176,7 +180,7 @@ const confirmDeleteRelatedClient = () => {
       <cds-table-cell>
         <span>{{ booleanToYesNo(row.hasSigningAuthority) || "-" }}</span>
       </cds-table-cell>
-      <cds-table-cell v-if="canEdit" class="no-padding">
+      <cds-table-cell id="actions-column" v-if="showActionsColumn" class="no-padding">
         <div class="gap-0_5-rem">
           <cds-tooltip align="top-right">
             <cds-button

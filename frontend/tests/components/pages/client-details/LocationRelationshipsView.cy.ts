@@ -24,6 +24,7 @@ describe("<location-relationships-view />", () => {
   const getDefaultProps = (): Props => ({
     data: [
       {
+        id: "1111AA",
         client: {
           client: {
             code: "00000001",
@@ -53,6 +54,7 @@ describe("<location-relationships-view />", () => {
         isMainParticipant: true,
       },
       {
+        id: "2222BB",
         client: {
           client: {
             code: "00000001",
@@ -82,6 +84,7 @@ describe("<location-relationships-view />", () => {
         isMainParticipant: true,
       },
       {
+        id: "3333CC",
         client: {
           client: {
             code: "00000001",
@@ -135,6 +138,7 @@ describe("<location-relationships-view />", () => {
     validations: [],
     userRoles: ["CLIENT_EDITOR"],
     isReloading: false,
+    isPrinting: false,
   });
 
   let currentProps: ReturnType<typeof getDefaultProps> = null;
@@ -296,6 +300,12 @@ describe("<location-relationships-view />", () => {
     cy.get("#relatioships-table").find("cds-button").should("be.visible");
   });
 
+  const testIsActionsColumnHidden = () =>
+    it("doesn't display the Actions column", () => {
+      cy.get("#relatioships-table").should("not.contain", "Actions");
+      cy.get("#relatioships-table").find("cds-button").should("not.exist");
+    });
+
   describe("when user is a CLIENT_VIEWER only", () => {
     beforeEach(() => {
       const props = getDefaultProps();
@@ -303,9 +313,28 @@ describe("<location-relationships-view />", () => {
       mount(props);
     });
 
-    it("doesn't display the Actions column", () => {
-      cy.get("#relatioships-table").should("not.contain", "Actions");
-      cy.get("#relatioships-table").find("cds-button").should("not.exist");
+    testIsActionsColumnHidden();
+  });
+
+  describe("when isPrinting is true", () => {
+    beforeEach(() => {
+      const props = getDefaultProps();
+      props.isPrinting = true;
+      mount(props);
+    });
+
+    testIsActionsColumnHidden();
+
+    it("sets isPrinting to true on client-relationship-row components", () => {
+      cy.get<VueWrapper>("@vueWrapper").should((vueWrapper) => {
+        const components = vueWrapper.findAllComponents({
+          name: "client-relationship-row",
+        });
+
+        components.forEach((component) => {
+          expect(component.props("isPrinting")).to.eq(true);
+        });
+      });
     });
   });
 
