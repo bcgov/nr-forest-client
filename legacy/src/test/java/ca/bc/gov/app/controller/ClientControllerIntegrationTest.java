@@ -13,9 +13,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
 @Slf4j
@@ -23,9 +21,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 @TestInstance(Lifecycle.PER_CLASS)
 class ClientControllerIntegrationTest extends
     AbstractTestContainerIntegrationTest {
-
-  @Autowired
-  protected WebTestClient client;
 
   @ParameterizedTest
   @MethodSource("saveClient")

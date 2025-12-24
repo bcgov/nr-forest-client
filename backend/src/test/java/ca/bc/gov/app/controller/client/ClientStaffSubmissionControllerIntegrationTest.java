@@ -10,7 +10,6 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.TestConstants;
 import ca.bc.gov.app.dto.ValidationError;
@@ -41,7 +40,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import reactor.util.retry.Retry;
@@ -53,6 +51,12 @@ import reactor.util.retry.Retry;
 class ClientStaffSubmissionControllerIntegrationTest
     extends AbstractTestContainerIntegrationTest {
 
+  @Autowired
+  private SubmissionDetailRepository repository;
+  
+  @Autowired
+  private ObjectMapper mapper;
+  
   @RegisterExtension
   static WireMockExtension chesStub = WireMockExtension
       .newInstance()
@@ -91,13 +95,6 @@ class ClientStaffSubmissionControllerIntegrationTest
       )
       .configureStaticDsl(true)
       .build();
-
-  @Autowired
-  protected WebTestClient client;
-  @Autowired
-  private SubmissionDetailRepository repository;
-  @Autowired
-  private ObjectMapper mapper;
 
   @BeforeEach
   public void init() {

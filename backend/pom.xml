@@ -87,6 +87,8 @@
         <mockito.version>5.20.0</mockito.version>
         <jooq.version>3.20.10</jooq.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
+        <reactor-netty-http.version>1.2.11</reactor-netty-http.version>
+        <netty-bom.version>4.1.129.Final</netty-bom.version>
     </properties>
 
     <dependencies>
@@ -146,7 +148,6 @@
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core-micrometer</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
@@ -159,7 +160,6 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-jose</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -363,6 +363,18 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.projectreactor.netty</groupId>
+                <artifactId>reactor-netty-http</artifactId>
+                <version>${reactor-netty-http.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -429,6 +441,9 @@
                             <includes>
                                 <include>**/*IntegrationTest.java</include>
                             </includes>
+                            <systemPropertyVariables>
+                                <io.netty.transport.noNative>true</io.netty.transport.noNative>
+                            </systemPropertyVariables>
                         </configuration>
                     </execution>
                 </executions>
@@ -449,6 +464,9 @@
                             cucumber.junit-platform.naming-strategy=long
                         </configurationParameters>
                     </properties>
+                    <systemPropertyVariables>
+                        <io.netty.transport.noNative>true</io.netty.transport.noNative>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
 
