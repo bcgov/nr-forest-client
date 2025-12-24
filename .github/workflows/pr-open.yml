@@ -70,7 +70,6 @@ jobs:
         info:
           app:
             component: backend
-            other: ${{ secrets.SECTIGO_R46_PEM }}
         ca:
           bc:
             gov:
