@@ -156,12 +156,6 @@ objects:
                   value: America/Vancouver
                 - name: RANDOM_EXPRESSION
                   value: ${RANDOM_EXPRESSION}
-                - name: JAVA_TOOL_OPTIONS
-                  value: >
-                    -Dio.netty.noUnsafe=true
-                    -Dio.netty.noKeySetOptimization=true
-                    -Dio.netty.recycler.maxCapacityPerThread=0
-                    -Dio.netty.allocator.numDirectArenas=0
               ports:
                 - containerPort: 9000
                   protocol: TCP
