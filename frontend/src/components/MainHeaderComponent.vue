@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watchEffect, getCurrentInstance, computed } from "vue";
-import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
 
 // Carbon
 import "@carbon/web-components/es/components/button/index";
@@ -32,6 +31,7 @@ import Close16 from "@carbon/icons-vue/es/close/16";
 import TaskAdd16 from "@carbon/icons-vue/es/task--add/16";
 // @ts-ignore
 import Search16 from "@carbon/icons-vue/es/search--locate/16"
+import { formatDate } from "@/services/ForestClientService";
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
@@ -120,6 +120,8 @@ const handleLogoutClick = (event) => {
     logout();
   }
 };
+
+const currentDate = new Date();
 </script>
 
 <template>
@@ -150,6 +152,9 @@ const handleLogoutClick = (event) => {
       <span class="heading-compact-02" v-if="$session?.user?.provider !== 'idir'">Ministry of Forests</span>
       <span class="heading-compact-02" v-else>Forests Client Management System</span>
       <span class="heading-compact-02" v-if="env !== 'Prod' && !isSmallScreen">Env. {{ env }} - Rel. {{appVersion}}</span>
+      <span id="header-date" class="heading-compact-02 print-only">{{
+        formatDate(currentDate)
+      }}</span>
     </cds-header-name>
     
     <div class="heading-buttons">

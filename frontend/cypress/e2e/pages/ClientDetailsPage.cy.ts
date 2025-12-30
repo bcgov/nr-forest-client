@@ -156,6 +156,8 @@ describe("Client Details Page", () => {
 
     cy.title().should("eq", "Forests Client Management System - Kovacek, Thompson And Boyer");
 
+    cy.get("cds-header").should("have.css", "position", "fixed");
+
     cy.get("cds-breadcrumb").should("contain", "Client search");
     cy.contains("h2", "Client summary");
     cy.contains("cds-tab", "Client locations");
@@ -231,6 +233,152 @@ describe("Client Details Page", () => {
 
         // There should be no skeletons on screen after the error
         cy.get("cds-skeleton-text").should("not.exist");
+      });
+    });
+  });
+
+  describe("printing (role:CLIENT_EDITOR)", () => {
+    before(() => {
+      Cypress.automation("remote:debugger:protocol", {
+        command: "Emulation.setEmulatedMedia",
+        params: {
+          media: "print",
+        },
+      });
+    });
+
+    beforeEach(() => {
+      cy.intercept({
+        method: "GET",
+        pathname: "/api/clients/details/*",
+      }).as("getClientDetails");
+
+      cy.visit("/clients/details/0");
+      cy.wait("@getClientDetails");
+    });
+
+    after(() => {
+      Cypress.automation("remote:debugger:protocol", {
+        command: "Emulation.setEmulatedMedia",
+        params: {
+          media: "",
+        },
+      });
+    });
+
+    it("turns the header position into absolute, which prevents repeating the header on every printed page", () => {
+      cy.get("cds-header").should("have.css", "position", "absolute");
+    });
+
+    it("hides the tabs navigation buttons", () => {
+      /*
+      For some reason this wait is needed to prevent a false negative, in case the behavior to be
+      asserted gets changed.
+      Do not remove it!
+      */
+      cy.wait(1);
+
+      cy.get(".tabs-container").should("not.be.visible");
+    });
+
+    it("displays the target content of every tab", () => {
+      cy.get("#panel-locations").should("be.visible");
+      cy.get("#panel-contacts").should("be.visible");
+      cy.get("#panel-related").should("be.visible");
+    });
+
+    it("opens up every accordion-item momentaneously", () => {
+      cy.get("cds-accordion-item").each(($el) => {
+        cy.wrap($el).should("have.attr", "open");
+      });
+    });
+
+    it("hides the Actions column on every related clients table", () => {
+      cy.get("#panel-related #relatioships-table").should("have.length.greaterThan", 0);
+      cy.get("#panel-related #relatioships-table").each(($el) => {
+        cy.wrap($el).contains("cds-table-header-cell", "Actions").should("not.exist");
+      });
+    });
+  });
+
+  describe("accordion state and printing", { testIsolation: false }, () => {
+    describe("when some accordion items are already open", () => {
+      before(function () {
+        init.call(this);
+
+        cy.intercept({
+          method: "GET",
+          pathname: "/api/clients/details/*",
+        }).as("getClientDetails");
+
+        cy.visit("/clients/details/0");
+        cy.wait("@getClientDetails");
+
+        // Expand first location
+        cy.get("#location-00 [slot='title']").click();
+
+        // Switch to the Contacts tab
+        cy.get("#tab-contacts").click();
+        // Expand first contact
+        cy.get("#panel-contacts cds-accordion-item [slot='title']").first().click();
+
+        // Switch to the Related clients tab
+        cy.get("#tab-related").click();
+        // Expand first related client location
+        cy.get("#relationships-location-00 [slot='title']").click();
+      });
+      describe("and all accordion items get open while printing", () => {
+        before(() => {
+          cy.log("start printing...");
+          Cypress.automation("remote:debugger:protocol", {
+            command: "Emulation.setEmulatedMedia",
+            params: {
+              media: "print",
+            },
+          });
+        });
+        it("opens up every accordion-item momentaneously", () => {
+          cy.get("cds-accordion-item").each(($el) => {
+            cy.wrap($el).should("have.attr", "open");
+          });
+        });
+        describe("and printing is done", () => {
+          before(() => {
+            cy.log("printing is done");
+            Cypress.automation("remote:debugger:protocol", {
+              command: "Emulation.setEmulatedMedia",
+              params: {
+                media: "",
+              },
+            });
+          });
+
+          it("keeps the previously open accordion items open", () => {
+            const previouslyOpenList = [];
+            [
+              cy.get("#location-00 cds-accordion-item"),
+              cy.get("#panel-contacts cds-accordion-item").first(),
+              cy.get("#relationships-location-00 cds-accordion-item"),
+            ].forEach((chainable) => {
+              chainable.then(($el) => {
+                previouslyOpenList.push($el[0]);
+              });
+            });
+
+            cy.get("cds-accordion-item").then(($all) => {
+              expect(previouslyOpenList).to.have.length(3);
+              expect($all).to.have.length.greaterThan(previouslyOpenList.length);
+
+              $all.each((_index, el) => {
+                if (previouslyOpenList.includes(el)) {
+                  cy.wrap(el).should("have.attr", "open");
+                } else {
+                  cy.wrap(el).should("not.have.attr", "open");
+                }
+              });
+            });
+          });
+        });
       });
     });
   });

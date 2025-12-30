@@ -35,6 +35,7 @@ describe("<client-relationships-row />", () => {
 
   const getDefaultProps = (): Props => ({
     row: {
+      id: "1111AA",
       client: {
         client: {
           code: "00000001",
@@ -72,6 +73,7 @@ describe("<client-relationships-row />", () => {
     locationIndex: "00",
     validations: [],
     userRoles: ["CLIENT_EDITOR"],
+    isPrinting: false,
   });
 
   const operateRelatedClientStub: OperateRelatedClient = () => {};
@@ -115,6 +117,33 @@ describe("<client-relationships-row />", () => {
     mount();
 
     cy.get("cds-table-row").should("be.visible").should("not.have.class", "edit");
+
+    cy.get("#actions-column").should("be.visible");
+  });
+
+  const testIsActionsColumnHidden = () =>
+    it("doesn't display the Actions column", () => {
+      cy.get("#actions-column").should("not.exist");
+    });
+
+  describe("when user is a CLIENT_VIEWER only", () => {
+    beforeEach(() => {
+      const props = getDefaultProps();
+      props.userRoles = ["CLIENT_VIEWER"];
+      mount(props);
+    });
+
+    testIsActionsColumnHidden();
+  });
+
+  describe("when isPrinting is true", () => {
+    beforeEach(() => {
+      const props = getDefaultProps();
+      props.isPrinting = true;
+      mount(props);
+    });
+
+    testIsActionsColumnHidden();
   });
 
   describe("when the Edit button is clicked", () => {
