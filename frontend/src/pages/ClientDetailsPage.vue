@@ -1104,8 +1104,13 @@ const createOnToggle = (state: CollapsibleState) => (event: any) => {
         <div class="tab-header space-between">
           <template v-if="data">
             <h3 class="padding-left-1rem">
-              {{ formatCount(data.addresses?.length) }}
-              {{ pluralize("location", data.addresses?.length) }}
+              <template v-if="data.addresses?.length">
+                {{ formatCount(data.addresses?.length) }}
+                {{ pluralize("location", data.addresses?.length) }}
+              </template>
+              <template v-else>
+                No locations
+              </template>
             </h3>
             <cds-button
               v-if="userHasAuthority"
@@ -1178,12 +1183,17 @@ const createOnToggle = (state: CollapsibleState) => (event: any) => {
         </div>
       </div>
       <div id="panel-contacts" role="tabpanel" aria-labelledby="tab-contacts" hidden>
-        <template v-if="!data || sortedContacts?.length">
+        <template v-if="!data || sortedContacts?.length || isMediaPrint">
           <div class="tab-header space-between">
             <template v-if="data">
               <h3 class="padding-left-1rem">
-                {{ formatCount(data.contacts?.length) }}
-                {{ pluralize("contact", data.contacts?.length) }}
+                <template v-if="sortedContacts?.length">
+                  {{ formatCount(data.contacts?.length) }}
+                  {{ pluralize("contact", data.contacts?.length) }}
+                </template>
+                <template v-else>
+                  No contacts
+                </template>
               </h3>
               <cds-button
                 v-if="userHasAuthority"
@@ -1279,10 +1289,15 @@ const createOnToggle = (state: CollapsibleState) => (event: any) => {
         </div>
       </div>
       <div id="panel-related" role="tabpanel" aria-labelledby="tab-related" hidden>
-        <template v-if="!data || Object.entries(relatedClientsLocations).length">
+        <template v-if="!data || Object.entries(relatedClientsLocations).length || isMediaPrint">
           <div class="tab-header space-between">
             <h3 class="padding-left-1rem">
-              Client relationships
+              <template v-if="Object.entries(relatedClientsLocations).length">
+                Client relationships
+              </template>
+              <template v-else>
+                No client relationships
+              </template>
             </h3>
             <cds-button
               v-if="userHasAuthority"
