@@ -1748,7 +1748,7 @@ cds-accordion-item::part(cds--accordion__wrapper) {
     /*
     For some reason it was not enough to apply this fix when the tag has the attribute "open", even
     though we already add that attribute when media type is print.
-    Maybe it's due to some kind of synchronization issue while printing.
+    It's probably some kind of synchronization issue with the Vue renderization while printing.
     */
     @include fixAccordionHeight();
   }
