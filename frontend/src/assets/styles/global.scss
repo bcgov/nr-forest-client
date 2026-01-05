@@ -1736,12 +1736,27 @@ cds-accordion-item::part(expando) {
   min-block-size: 3rem;
 }
 
-cds-accordion-item[open]::part(cds--accordion__wrapper) {
+@mixin fixAccordionHeight() {
   /*
   Fixes issue where accordions would not auto-adjust size (height) according to its content, when
   it grows dynamically.
   */
   max-block-size: unset;
+}
+
+cds-accordion-item::part(cds--accordion__wrapper) {
+  @media print {
+    /*
+    For some reason it was not enough to apply this fix when the tag has the attribute "open", even
+    though we already add that attribute when media type is print.
+    It's probably some kind of synchronization issue with the Vue renderization while printing.
+    */
+    @include fixAccordionHeight();
+  }
+}
+
+cds-accordion-item[open]::part(cds--accordion__wrapper) {
+  @include fixAccordionHeight();
 }
 
 cds-accordion-item[open]:not([disabled])::part(content),
