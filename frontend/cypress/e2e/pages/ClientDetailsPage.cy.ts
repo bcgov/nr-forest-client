@@ -301,6 +301,52 @@ describe("Client Details Page", () => {
     });
   });
 
+  describe("printing empty sections", () => {
+    before(() => {
+      Cypress.automation("remote:debugger:protocol", {
+        command: "Emulation.setEmulatedMedia",
+        params: {
+          media: "print",
+        },
+      });
+    });
+
+    beforeEach(() => {
+      cy.intercept({
+        method: "GET",
+        pathname: "/api/clients/details/*",
+      }).as("getClientDetails");
+
+      cy.visit("/clients/details/i");
+      cy.wait("@getClientDetails");
+    });
+
+    after(() => {
+      Cypress.automation("remote:debugger:protocol", {
+        command: "Emulation.setEmulatedMedia",
+        params: {
+          media: "",
+        },
+      });
+    });
+
+    it('displays a "No contacts" title', () => {
+      cy.get("#panel-contacts h3").contains("No contacts");
+    });
+
+    it("hides the contacts tab-panel", () => {
+      cy.get("#panel-contacts .tab-panel").should("not.be.visible");
+    });
+
+    it('displays a "No client relationships" title', () => {
+      cy.get("#panel-related h3").contains("No client relationships");
+    });
+
+    it("hides the Related clients tab-panel", () => {
+      cy.get("#panel-related .tab-panel").should("not.be.visible");
+    });
+  });
+
   describe("accordion state and printing", { testIsolation: false }, () => {
     describe("when some accordion items are already open", () => {
       before(function () {
