@@ -1713,6 +1713,7 @@ cds-side-nav {
   @media print {
     padding-left: 0;
     padding-right: 0;
+    gap: 0;
   }
 }
 
@@ -2258,12 +2259,22 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   --g: var(--tab-panel-gap);
 
   background: var(--light-theme-layer-layer-01, #f3f3f5);
-  padding: var(--p) var(--p) var(--g) var(--p);
 
   @media not print {
+    padding: var(--p) var(--p) var(--g) var(--p);
     position: sticky;
     top: calc(var(--staff-header-height) + var(--staff-tabs-height));
     z-index: 3;
+  }
+
+  @media print {
+    /*
+    This padding compensates for the removal of the padding on the populated tab-panel while
+    printing.
+    It also provides a uniform look for all the tab-headers while printing, including the first one
+    which otherwise would look different from the others.
+    */
+    padding-top: var(--tab-panel-padding);
   }
 }
 
@@ -2286,8 +2297,7 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
     width: 100%;
 
     @media print {
-      padding-left: 0;
-      padding-right: 0;
+      padding: 0;
     }
 
     &[hidden] {
@@ -2342,6 +2352,12 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
 
   @media print {
     display: initial;
+  }
+}
+
+.screen-only {
+  @media print {
+    display: none;
   }
 }
 

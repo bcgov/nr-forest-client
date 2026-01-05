@@ -243,7 +243,7 @@ const valid = ref(false);
         </read-only-component>
       </div>
     </div>
-    <div v-if="canEdit && !isEditing">
+    <div v-if="canEdit && !isEditing" class="screen-only">
       <cds-button :id="`contact-${index}-EditBtn`" kind="tertiary" size="md" @click="edit">
         <span class="width-unset">Edit contact</span>
         <Edit16 slot="icon" />

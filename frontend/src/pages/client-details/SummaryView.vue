@@ -602,7 +602,7 @@ const clientIdentificationMask = "U".repeat(40);
       </span>
     </read-only-component>
   </div>
-  <div class="grouping-10 no-padding" v-if="canEdit && !isEditing">
+  <div class="grouping-10 no-padding screen-only" v-if="canEdit && !isEditing">
     <cds-button id="summaryEditBtn" kind="tertiary" size="md" @click="edit">
       <span class="width-unset">Edit client information</span>
       <Edit16 slot="icon" />

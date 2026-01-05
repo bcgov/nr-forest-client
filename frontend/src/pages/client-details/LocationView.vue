@@ -328,7 +328,7 @@ const handleRemoveAdditionalDelivery = () => {
         </read-only-component>
       </div>
     </div>
-    <div v-if="canEdit && !isEditing">
+    <div v-if="canEdit && !isEditing" class="screen-only">
       <cds-button
         v-if="props.data.locnExpiredInd === 'N'"
         :id="`location-${indexString}-EditBtn`"
