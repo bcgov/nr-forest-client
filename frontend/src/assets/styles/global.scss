@@ -2324,6 +2324,16 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
     padding: 5rem;
     justify-content: center;
 
+    @media print {
+      /*
+      For some reason omitting the renderization of this in the Vue code was not enough, because
+      the browser might still somehow account for the space it would take and add an extra page,
+      though it would be completely blank.
+      It's probably some kind of synchronization issue with the Vue renderization while printing.
+      */
+      display: none;
+    }
+
     .empty-table-list {
       height: 100%;
       gap: 1rem;
