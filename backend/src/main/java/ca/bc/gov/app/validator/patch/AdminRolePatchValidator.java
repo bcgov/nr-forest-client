@@ -28,7 +28,9 @@ public class AdminRolePatchValidator implements PatchValidator {
       "/client/legalFirstName",
       "/client/corpRegnNmbr",
       "/client/registryCompanyTypeCode",
-      "/client/clientIdTypeCode",
+      // clientIdentification and birthdate are governed by ClientIdentificationPatchValidator
+      // and therefore are intentionally excluded here so that EDITORs can update them when empty
+      // while ADMIN can always update via lack of this restriction.
       "/doingBusinessAs",
       "/client/clientTypeCode"
   );
