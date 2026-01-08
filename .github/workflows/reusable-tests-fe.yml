@@ -11,7 +11,7 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-24.04
     steps:
-      - uses: bcgov/action-test-and-analyse@c20d16c26d9b7e6e486f01702880053ed4ebdc91 # v1.5.0
+      - uses: bcgov/action-test-and-analyse@87f88c90526b8b05cea760492ff33db4ba6e271b # v1.6.0
         env:
           VITE_BACKEND_URL: http://localhost:8080
           VITE_FRONTEND_URL: http://localhost:3000
