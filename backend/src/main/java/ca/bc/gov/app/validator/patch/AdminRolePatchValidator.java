@@ -28,7 +28,11 @@ public class AdminRolePatchValidator implements PatchValidator {
       "/client/legalFirstName",
       "/client/corpRegnNmbr",
       "/client/registryCompanyTypeCode",
-      "/client/clientIdTypeCode",
+      // Paths such as /client/clientIdentification and /client/birthdate are governed by
+      // ClientIdentificationPatchValidator and are therefore not added to this admin-only list.
+      // /client/clientIdTypeCode is also intentionally not included here so that EDITORs can
+      // update it (subject to any additional validation enforced outside this validator), while
+      // ADMIN users are not restricted by this list.
       "/doingBusinessAs",
       "/client/clientTypeCode"
   );
