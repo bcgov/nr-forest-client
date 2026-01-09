@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.9</version>
+    <version>3.5.8</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
@@ -40,17 +40,17 @@
     <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-    <testcontainers.version>1.21.4</testcontainers.version>
+    <testcontainers.version>1.21.3</testcontainers.version>
     <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
     <junit-platform.version>1.9.1</junit-platform.version>
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.6.3</mapstruct.version>
-    <logback.version>1.5.23</logback.version>
-    <flyway.version>11.20.0</flyway.version>
+    <logback.version>1.5.21</logback.version>
+    <flyway.version>11.11.1</flyway.version>
     <oracle-driver.version>23.26.0.0.0</oracle-driver.version>
     <opentelemetry.version>1.57.0</opentelemetry.version>
     <selenium.version>4.39.0</selenium.version>
-    <mockito.version>5.21.0</mockito.version>
+    <mockito.version>5.20.0</mockito.version>
     <commons-lang3.version>3.20.0</commons-lang3.version>
   </properties>
 
@@ -195,7 +195,7 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
-        <version>6.2.15</version>
+        <version>6.2.14</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
