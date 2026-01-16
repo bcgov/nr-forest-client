@@ -2203,14 +2203,18 @@ div.internal-grouping-01:has(svg.warning) span.body-compact-01:not(.default-typo
   overflow-x: scroll;
 }
 
-#search-line {
+#search-section {
   --lg-size: 3rem;
   --padding-size: 2.5rem;
 
-  display: flex;
-  align-items: flex-start;
   min-height: calc(var(--lg-size) + var(--padding-size));
   padding: 0 var(--padding-size);
+}
+
+#search-line {
+
+  display: flex;
+  align-items: flex-start;
 
   .grouping-02 {
     flex-grow: 1;

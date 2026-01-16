@@ -20,6 +20,7 @@ import {
   highlightMatch,
   getTagColorByClientStatus,
   searchResultToText,
+  isNumeric,
 } from "@/services/ForestClientService";
 
 import summit from "@carbon/pictograms/es/summit";
@@ -75,6 +76,8 @@ const {
   error: searchError,
 } = useFetchTo(fullSearchUri, tableData, { skip: true });
 
+const noExactMatch = ref<boolean>(null);
+
 const search = (skipResetPage = false) => {
   revalidateBus.emit();
 
@@ -87,15 +90,84 @@ const search = (skipResetPage = false) => {
 
   if (!skipResetPage) {
     pageNumber.value = 1;
+    noExactMatch.value = null;
   }
 
   lastSearchKeyword.value = searchKeyword.value;
   fetchSearch();
 };
 
+const resultsIncludeExactMatch = () => {
+  const wordsSplitter = /[^0-9a-z]/;
+  const searchWordsList = lastSearchKeyword.value.toLowerCase().split(wordsSplitter);
+  const searchFieldsList: (keyof ClientSearchResult)[] = [
+    "clientNumber",
+    "clientAcronym",
+    "clientFullName",
+  ];
+
+  // Search row by row in the returned results
+  const foundExactMatch = tableData.value.find((row) => {
+    for (const field of searchFieldsList) {
+      const fieldValue = row[field];
+      if (fieldValue === null) {
+        continue;
+      }
+      if (typeof fieldValue === "string") {
+        const fieldWordsList = fieldValue.toLowerCase().split(wordsSplitter);
+
+        /*
+        Checking all the words from the search terms are included in the current field value.
+        Which matches the current behavior of the search API, since it doesn't seem to be able to
+        match different words in different fields.
+        i.e. the search API only includes a client in the results when all the search terms match
+        the value in **one** of the search fields.
+        */
+        const isExactMatch = searchWordsList.every((searchWord) =>
+          fieldWordsList.some(
+            (fieldWord) =>
+              isNumeric(searchWord)
+                ? isNumeric(fieldWord) && Number(searchWord) === Number(fieldWord)
+                : fieldWord === searchWord, // like an `includes`
+          ),
+        );
+
+        if (isExactMatch) {
+          return true;
+        }
+      } else if (typeof fieldValue === "number") {
+        if (lastSearchKeyword.value === String(fieldValue)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  });
+  return !!foundExactMatch;
+};
+
 watch(searchResponse, () => {
   const totalCount = parseInt(searchResponse.value.headers["x-total-count"] || "0");
   totalItems.value = totalCount;
+
+  /*
+  noExactMatch null means this is a new search.
+  Otherwise the user is navigating with the pagination buttons.
+
+  Note 1: We also want to re-check it when noExactMatch is true because it could happen that:
+  1. The newly returned page of results has an exact match (even though it's unlike since the first
+  exact match is expected to be found in the first page), or;
+  2. The user navigates back to the first page and there is a newly created client that is an exact
+  match.
+  In both cases we need to remove the No exact match message.
+
+  Note 2: If it was already checked to be false (there is an exact match), we should not re-check
+  it. For example: first page has an exact match. Second page might not have one, but it doesn't
+  matter - there IS an exact match, it's just not in the current page.
+  */
+  if (totalCount > 0 && (noExactMatch.value === null || noExactMatch.value === true)) {
+    noExactMatch.value = !resultsIncludeExactMatch();
+  }
 });
 
 watch([searchError], () => {
@@ -191,55 +263,62 @@ onMounted(() => {
       </div>
     </div>
 
-    <div id="search-line">
-      <data-fetcher
-        v-model:url="predictiveSearchUri"
-        :min-length="3"
-        :init-value="[]"
-        :init-fetch="false"
-        :disabled="!searchKeyword || !valid"
-        #="{ content, loading, error }"
-      >
-        <AutoCompleteInputComponent
-          id="search-box"
-          label=""
-          :aria-label="ariaLabel"
-          autocomplete="off"
-          tip=""
-          placeholder="Search by client number, name, acronym, mailing address, email address and more"
-          size="lg"
-          v-model="rawSearchKeyword"
-          :contents="searchResultToCodeNameValueList(content)"
-          :validations="validations"
-          :validations-on-change="validationsOnChange"
-          :loading="loading"
-          prevent-selection
-          @press:enter:item="openClientDetails"
-          @update:model-value="valid = false"
-          @error="valid = !$event"
-          @press:enter="search()"
-          #="{ value }"
+    <div id="search-section">
+      <div id="search-line">
+        <data-fetcher
+          v-model:url="predictiveSearchUri"
+          :min-length="3"
+          :init-value="[]"
+          :init-fetch="false"
+          :disabled="!searchKeyword || !valid"
+          #="{ content, loading, error }"
         >
-          <div class="search-result-item link-container" v-if="value">
-            <span
-              v-dompurify-html="highlightMatch(searchResultToText(value), searchKeyword)"
-            ></span>
-            <cds-tag :type="getTagColorByClientStatus(value.clientStatus)" title="">
-              <span>{{ value.clientStatus }}</span>
-            </cds-tag>
-            <router-link
-              :to="`/clients/details/${value.clientNumber}`"
-              class="row-link"
-              :aria-label="`View client “${toTitleCase(value.clientFullName)}“`"
-            />
-          </div>
-        </AutoCompleteInputComponent>
-      </data-fetcher>
-      <cds-button kind="primary" @click.prevent="search()" id="search-button">
-        <span>Search</span>
-        <Search16 slot="icon" />
-      </cds-button>
+          <AutoCompleteInputComponent
+            id="search-box"
+            label=""
+            :aria-label="ariaLabel"
+            autocomplete="off"
+            tip=""
+            placeholder="Search by client number, name, acronym, mailing address, email address and more"
+            size="lg"
+            v-model="rawSearchKeyword"
+            :contents="searchResultToCodeNameValueList(content)"
+            :validations="validations"
+            :validations-on-change="validationsOnChange"
+            :loading="loading"
+            prevent-selection
+            @press:enter:item="openClientDetails"
+            @update:model-value="valid = false"
+            @error="valid = !$event"
+            @press:enter="search()"
+            #="{ value }"
+          >
+            <div class="search-result-item link-container" v-if="value">
+              <span
+                v-dompurify-html="highlightMatch(searchResultToText(value), searchKeyword)"
+              ></span>
+              <cds-tag :type="getTagColorByClientStatus(value.clientStatus)" title="">
+                <span>{{ value.clientStatus }}</span>
+              </cds-tag>
+              <router-link
+                :to="`/clients/details/${value.clientNumber}`"
+                class="row-link"
+                :aria-label="`View client “${toTitleCase(value.clientFullName)}“`"
+              />
+            </div>
+          </AutoCompleteInputComponent>
+        </data-fetcher>
+        <cds-button kind="primary" @click.prevent="search()" id="search-button">
+          <span>Search</span>
+          <Search16 slot="icon" />
+        </cds-button>
+      </div>
+
+      <p id="no-exact-match" v-if="noExactMatch" class="body-compact-01">
+        We couldn’t find an exact match. Check these records for what you need.
+      </p>
     </div>
+
     <div id="datatable" v-if="userhasAuthority">
 
       <cds-table id="search-table" use-zebra-styles v-if="!loadingSearch">

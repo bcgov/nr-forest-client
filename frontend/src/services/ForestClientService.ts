@@ -826,3 +826,8 @@ export const createRemovePatch = (path: string): [jsonpatch.RemoveOperation] => 
 
 export const buildProviderAuthority = (provider: string): string =>
   `${provider}_USER`.toUpperCase();
+
+export const isNumeric = (value: string): boolean => {
+  const regex = /^\d+$/;
+  return regex.test(value);
+};

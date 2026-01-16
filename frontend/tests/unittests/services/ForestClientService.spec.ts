@@ -32,6 +32,7 @@ import {
   formatRelatedClient,
   createRemovePatch,
   sortCodeNameByName,
+  isNumeric,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type {
@@ -1078,4 +1079,19 @@ describe("createRemovePatch", () => {
   it("has the supplied `path`", () => {
     expect(result[0].path).toBe(path);
   });
+});
+
+describe("isNumeric", () => {
+  it("returns true when the string is numeric", () => {
+    expect(isNumeric("2426478")).toBe(true);
+  });
+  it("returns true when the string is numeric regardless of starting with zeros", () => {
+    expect(isNumeric("002426478")).toBe(true);
+  });
+  it.each(["abc", "a123b", "123abc", "abc123"])(
+    "returns false when the string is not numeric (%s)",
+    (param) => {
+      expect(isNumeric(param)).toBe(false);
+    },
+  );
 });
