@@ -16,7 +16,6 @@
     "@badeball/cypress-cucumber-preprocessor": "^24.0.0",
     "@bahmutov/cypress-esbuild-preprocessor": "^2.2.8",
     "@cypress/webpack-preprocessor": "^7.0.2",
-    "cypress-on-fix": "^1.1.0",
     "cypress": "^15.9.0",
     "ts-loader": "^9.4.2",
     "typescript": "^5.0.4",
