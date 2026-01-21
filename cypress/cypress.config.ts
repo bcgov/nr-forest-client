@@ -1,14 +1,11 @@
 import { defineConfig } from "cypress";
-import webpack from "@cypress/webpack-preprocessor";
+import * as webpack from "@cypress/webpack-preprocessor";
 import { addCucumberPreprocessorPlugin } from "@badeball/cypress-cucumber-preprocessor";
-import cypressOnFix from "cypress-on-fix";
 
 async function setupNodeEvents(
-  cypressOn: Cypress.PluginEvents,
-  config: Cypress.PluginConfigOptions,
+  on: Cypress.PluginEvents,
+  config: Cypress.PluginConfigOptions
 ): Promise<Cypress.PluginConfigOptions> {
-  const on = cypressOnFix(cypressOn);
-
   // This is required for the preprocessor to be able to generate JSON reports after each run, and more,
   await addCucumberPreprocessorPlugin(on, config);
 
@@ -42,7 +39,7 @@ async function setupNodeEvents(
           ],
         },
       },
-    }),
+    })
   );
 
   // Make sure to return the config object as it might have been modified by the plugin.
@@ -51,8 +48,7 @@ async function setupNodeEvents(
 
 export default defineConfig({
   e2e: {
-    reporter:
-      require.resolve("@badeball/cypress-cucumber-preprocessor/pretty-reporter"),
+    reporter: require.resolve("@badeball/cypress-cucumber-preprocessor/pretty-reporter"),
     specPattern: "**/*.feature",
     setupNodeEvents,
     defaultCommandTimeout: 10000,
@@ -61,7 +57,7 @@ export default defineConfig({
   includeShadowDom: true,
   viewportHeight: 1080,
   viewportWidth: 1920,
-  retries: {
+  retries: {    
     runMode: 3,
     openMode: 0,
   },
