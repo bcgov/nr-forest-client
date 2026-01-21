@@ -1,19 +1,14 @@
 import './commands'
 
 Cypress.on('window:before:load', (win) => {
-  // Listen to browser console logs and pass them to the Cypress console
-  const originalConsoleLog = win.console.log;
+  const originalLog = win.console.log.bind(win.console);
+
   win.console.log = (...args) => {
-    originalConsoleLog(...args);
-    // Pass logs to Cypress terminal
+    originalLog(...args);
+
     Cypress.log({
       name: 'console.log',
-      message: [...args],
+      message: args.map(String),
     });
   };
 });
-
-Cypress.on('uncaught:exception', (err, runnable) => {
-  console.log(err);
-  return false;
-})
