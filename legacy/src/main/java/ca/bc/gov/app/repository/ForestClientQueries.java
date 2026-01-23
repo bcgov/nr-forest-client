@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 public final class ForestClientQueries {
 
   public static final String ORACLE_PAGINATION = " OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY";
-  public static final String ORDER_BY_SCORE_DESC = " ORDER BY SCORE DESC, C.CLIENT_NUMBER ASC ";
+  public static final String ORDER_BY = " ORDER BY SCORE DESC, C.CLIENT_NAME ASC, C.CLIENT_NUMBER ASC ";
   public static final String SELECT_COUNT_C_CLIENT_NUMBER = "SELECT COUNT(C.CLIENT_NUMBER) ";
 
   public static final String CLIENT_INFORMATION_HISTORY = """
@@ -850,7 +850,7 @@ public final class ForestClientQueries {
       LEFT JOIN THE.CLIENT_STATUS_CODE CSC ON C.CLIENT_STATUS_CODE = CSC.CLIENT_STATUS_CODE
       """;
 
-  public static final String FIND_BY_PREDICTIVE_SEARCH_LIKE = """
+  public static final String FIND_BY_PREDICTIVE_SEARCH_LIKE_WHERE = """
       WHERE (
           UPPER(C.CLIENT_NUMBER) LIKE '%' || :value || '%'
           OR UPPER(C.CLIENT_ACRONYM) LIKE '%' || :value || '%'
@@ -892,7 +892,7 @@ public final class ForestClientQueries {
       AND CL.CLIENT_LOCN_CODE = '00'
       """;
 
-  public static final String FIND_BY_PREDICTIVE_SEARCH_SIMILARITY = """
+  public static final String FIND_BY_PREDICTIVE_SEARCH_SIMILARITY_WHERE = """
       WHERE
         (
             C.CLIENT_NUMBER = :value
@@ -943,27 +943,27 @@ public final class ForestClientQueries {
       FIND_BY_PREDICTIVE_SEARCH_SELECT
       + FIND_BY_PREDICTIVE_SEARCH_SCORE_LIKE
       + FIND_BY_PREDICTIVE_SEARCH_FROM
-      + FIND_BY_PREDICTIVE_SEARCH_LIKE
-      + ORDER_BY_SCORE_DESC
+      + FIND_BY_PREDICTIVE_SEARCH_LIKE_WHERE
+      + ORDER_BY
       + ORACLE_PAGINATION;
 
   public static final String COUNT_BY_PREDICTIVE_SEARCH_WITH_LIKE =
       SELECT_COUNT_C_CLIENT_NUMBER
       + FIND_BY_PREDICTIVE_SEARCH_FROM
-      + FIND_BY_PREDICTIVE_SEARCH_LIKE;
+      + FIND_BY_PREDICTIVE_SEARCH_LIKE_WHERE;
 
   public static final String FIND_BY_PREDICTIVE_SEARCH_WITH_SIMILARITY =
       FIND_BY_PREDICTIVE_SEARCH_SELECT
       + FIND_BY_PREDICTIVE_SEARCH_SCORE_SIMILARITY
       + FIND_BY_PREDICTIVE_SEARCH_FROM
-      + FIND_BY_PREDICTIVE_SEARCH_SIMILARITY
-      + ORDER_BY_SCORE_DESC
+      + FIND_BY_PREDICTIVE_SEARCH_SIMILARITY_WHERE
+      + ORDER_BY
       + ORACLE_PAGINATION;
 
   public static final String COUNT_BY_PREDICTIVE_SEARCH_WITH_SIMILARITY =
       SELECT_COUNT_C_CLIENT_NUMBER
       + FIND_BY_PREDICTIVE_SEARCH_FROM
-      + FIND_BY_PREDICTIVE_SEARCH_SIMILARITY;
+      + FIND_BY_PREDICTIVE_SEARCH_SIMILARITY_WHERE;
 
   public static final String FIND_BY_EMPTY_FULL_SEARCH = """
       SELECT
@@ -1225,7 +1225,7 @@ public final class ForestClientQueries {
       + RELATED_CLIENT_AUTOCOMPLETE_LIKE_ORDER
       + RELATED_CLIENT_AUTOCOMPLETE_FROM
       + RELATED_CLIENT_AUTOCOMPLETE_LIKE
-      + ORDER_BY_SCORE_DESC
+      + ORDER_BY
       + ORACLE_PAGINATION;
 
   public static final String RELATED_CLIENT_AUTOCOMPLETE_COUNT_WITH_SIMILARITY =
@@ -1238,7 +1238,7 @@ public final class ForestClientQueries {
       + FIND_BY_PREDICTIVE_SEARCH_SCORE_SIMILARITY
       + RELATED_CLIENT_AUTOCOMPLETE_FROM
       + RELATED_CLIENT_AUTOCOMPLETE_SIMILARITY
-      + ORDER_BY_SCORE_DESC
+      + ORDER_BY
       + ORACLE_PAGINATION;
 
   public static final String RELATED_EXACT_SEARCH = """
