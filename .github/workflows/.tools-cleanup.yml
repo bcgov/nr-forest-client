@@ -39,7 +39,7 @@ jobs:
         uses: bcgov/action-oc-runner@f900830adadd4d9eef3ca6ff80103e839ba8b7c0 # v1.3.0
         with:
           oc_namespace: d2723f-tools
-          oc_token: ${{ secrets.OC_TOKEN_TOOLS }}
+          oc_token: ${{ secrets.oc_token_tools }}
           oc_server: ${{ secrets.oc_server }}
           commands: |
             # This removes a new pluggable database, user and service for the PR
