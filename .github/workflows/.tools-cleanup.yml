@@ -8,22 +8,21 @@ permissions: {}
 jobs:
   tools-cleanup:
     name: Cleanup tools environment
-    environment: tools
     runs-on: ubuntu-24.04
     steps:
       - name: Scale down legacy
         continue-on-error: true
         uses: bcgov/action-oc-runner@f900830adadd4d9eef3ca6ff80103e839ba8b7c0 # v1.3.0
         with:
-          oc_namespace: ${{ secrets.oc_namespace }}
+          oc_namespace: d2723f-dev
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
           commands: |
-            oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=0 -n ${{ secrets.OC_NAMESPACE }}
+            oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=0
             undesired_replicas=0
 
             while true; do
-              available_replicas=$(oc get deployment/nr-forest-client-${{ github.event.number }}-legacy -n ${{ secrets.OC_NAMESPACE }} -o jsonpath='{.status.availableReplicas}')
+              available_replicas=$(oc get deployment/nr-forest-client-${{ github.event.number }}-legacy -o jsonpath='{.status.availableReplicas}')
 
               if [[ "$available_replicas" -ge "$undesired_replicas" ]]; then
                 echo "DeploymentConfig ${{ secrets.OC_NAMESPACE }}-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
@@ -33,26 +32,32 @@ jobs:
               echo "Waiting... ($available_replicas pods available)"
               sleep 5
             done
+            sleep 10
 
       - name: Remove the PR database
         continue-on-error: true
-        run: |
-          # This removes a new pluggable database, user and service for the PR
-          for i in {1..5}; do
-            POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
-            if [ -n "$POD_NAME" ]; then
-              echo "Pod found: $POD_NAME"
-              oc exec $POD_NAME -- /opt/oracle/removeDatabase "THE" "PR_${{ github.event.number }}"
-              break
-            else
-              echo "Pod not found, retrying in 10 seconds... ($i/5)"
-              sleep 10
-            fi
-          done
+        uses: bcgov/action-oc-runner@f900830adadd4d9eef3ca6ff80103e839ba8b7c0 # v1.3.0
+        with:
+          oc_namespace: d2723f-tools
+          oc_token: ${{ secrets.OC_TOKEN_TOOLS }}
+          oc_server: ${{ secrets.oc_server }}
+          commands: |
+            # This removes a new pluggable database, user and service for the PR
+            for i in {1..5}; do
+              POD_NAME=$(oc get pods -l app=nr-forest-client-tools -l deployment=nr-forest-client-tools-legacydb -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+              if [ -n "$POD_NAME" ]; then
+                echo "Pod found: $POD_NAME"
+                oc exec $POD_NAME -- /opt/oracle/removeDatabase "THE" "PR_${{ github.event.number }}"
+                break
+              else
+                echo "Pod not found, retrying in 10 seconds... ($i/5)"
+                sleep 10
+              fi
+            done
 
-          if [ -z "$POD_NAME" ]; then
-            echo "Failed to find the pod after 5 attempts."
-          fi
+            if [ -z "$POD_NAME" ]; then
+              echo "Failed to find the pod after 5 attempts."
+            fi
 
       - name: Remove completed pods and jobs (cronjobs)
         run: |
