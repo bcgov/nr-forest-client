@@ -25,7 +25,7 @@ jobs:
               available_replicas=$(oc get deployment/nr-forest-client-${{ github.event.number }}-legacy -o jsonpath='{.status.availableReplicas}')
 
               if [[ "$available_replicas" -ge "$undesired_replicas" ]]; then
-                echo "DeploymentConfig ${{ secrets.OC_NAMESPACE }}-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
+                echo "DeploymentConfig d2723f-dev-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
                 break
               fi
 
