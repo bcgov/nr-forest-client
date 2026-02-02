@@ -32,6 +32,7 @@ jobs:
               echo "Waiting... ($available_replicas pods available)"
               sleep 5
             done
+            echo "Scaled down the legacy service"
             sleep 10
 
       - name: Remove the PR database
