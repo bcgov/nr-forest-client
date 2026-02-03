@@ -44,7 +44,7 @@
     <org.junit.version>6.0.1</org.junit.version>
     <junit.version>4.13.2</junit.version>
     <assertj.version>3.24.2</assertj.version>
-    <logback.version>1.5.25</logback.version>
+    <logback.version>1.5.26</logback.version>
     <oci.revision>${project.version}</oci.revision>
     <flyway.version>11.11.1</flyway.version>
     <opentelemetry.version>1.57.0</opentelemetry.version>
