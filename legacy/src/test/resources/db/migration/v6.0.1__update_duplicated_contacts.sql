@@ -21,7 +21,7 @@ https://github.com/bcgov/nr-forest-client/blob/main/legacy/src/test/resources/db
  
 3) Verify the query results with expected results detailed in the Excel file  'Results-2026-02-24.xlsx' attached to the parent RFC https://apps.nrs.gov.bc.ca/int/jira/browse/FSADT1-2096
  
-  commit the results if verification OK.
+  Commit the results if verification OK.
 4) Exit SQL*Plus
 EXIT
 
