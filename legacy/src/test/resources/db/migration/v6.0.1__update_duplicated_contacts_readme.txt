@@ -1,0 +1,33 @@
+*****************************************************************************
+* CLIENT -                                                                  *
+* DATAFIX: Update duplicated contacts                                       *
+*                                                                           *
+* DATE CREATED : 2026-02-04                                                 *
+* AUTHOR : Maria Martinez                                                   *
+* System : CLIENT                                                           *
+*                                                                           *
+*****************************************************************************
+INSTRUCTIONS:
+Environments include:  DBQ01, DBP01
+
+1) Log in to database as THE, via SQL*Plus.
+Execute the SET statements before running the scripts
+$ sqlplus username/password@Environment
+SET DEFINE ON;
+SET SQLBL ON;
+2) From the SQL Prompt, run the script
+https://github.com/bcgov/nr-forest-client/blob/main/legacy/src/test/resources/db/migration/v6.0.1__update_duplicated_contacts.sql
+ 
+3) Verify the query results with expected results detailed in the Excel file  'Results-2026-02-24.xlsx' attached to the parent RFC https://apps.nrs.gov.bc.ca/int/jira/browse/FSADT1-2096
+ 
+  Commit the results if verification OK.
+4) Exit SQL*Plus
+EXIT
+
+*****************************************************************************
+****  ROLLBACK - Run this only if necessary                              ****
+****                                                                     ****
+*****************************************************************************
+*
+UPDATE THE.CLIENT_CONTACT c
+SET c.CONTACT_NAME = REGEXP_REPLACE(c.CONTACT_NAME, ' [0-9]+$', '');
