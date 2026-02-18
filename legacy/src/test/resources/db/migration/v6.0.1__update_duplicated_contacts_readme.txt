@@ -30,4 +30,5 @@ EXIT
 *****************************************************************************
 *
 UPDATE THE.CLIENT_CONTACT c
-SET c.CONTACT_NAME = REGEXP_REPLACE(c.CONTACT_NAME, ' [0-9]+$', '');
+SET c.CONTACT_NAME = REGEXP_REPLACE(c.CONTACT_NAME, ' [0-9]+$', '')
+WHERE REGEXP_LIKE(c.CONTACT_NAME, ' [0-9]+$');
