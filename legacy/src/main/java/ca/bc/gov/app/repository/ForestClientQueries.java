@@ -1260,7 +1260,7 @@ public final class ForestClientQueries {
       	SELECT
       		fca.client_number,
       		fca.UPDATE_TIMESTAMP
-      	FROM FOR_CLI_AUDIT fca
+      	FROM THE.FOR_CLI_AUDIT fca
       	WHERE fca.client_number = :client_number
       	AND fca.CLIENT_STATUS_CODE = :client_status
       	ORDER BY fca.FOREST_CLIENT_AUDIT_ID DESC
@@ -1269,7 +1269,7 @@ public final class ForestClientQueries {
       SELECT
       	DISTINCT cla.client_locn_code as code,
         cla.client_locn_name as name
-      FROM cli_locn_audit cla
+      FROM THE.CLI_LOCN_AUDIT cla
       LEFT JOIN ForestClientAudit fca ON fca.client_number = cla.client_number
       WHERE cla.client_number = :client_number
       AND cla.UPDATE_TIMESTAMP = fca.UPDATE_TIMESTAMP""";
