@@ -725,5 +725,72 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .expectNext(expectedDto)
           .verifyComplete();
   }
-  
+
+  @Test
+  @DisplayName("Retrieve all locations updated with client by status code")
+  void testFindAllLocationUpdatedWithClient() {
+      String clientNumber = "00000001";
+      String statusCode = "DAC";
+
+      CodeNameDto expectedLocation1 = new CodeNameDto("00", "Main Office");
+      CodeNameDto expectedLocation2 = new CodeNameDto("01", "Branch Office");
+
+      Logger logger = (Logger) LoggerFactory.getLogger(ClientLegacyService.class);
+
+      ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+      listAppender.start();
+      logger.addAppender(listAppender);
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/locations/" + clientNumber + "/" + statusCode))
+              .willReturn(okJson("["
+                  + "{\"code\":\"00\",\"name\":\"Main Office\"},"
+                  + "{\"code\":\"01\",\"name\":\"Branch Office\"}"
+                  + "]"))
+      );
+
+      service
+          .findAllLocationUpdatedWithClient(clientNumber, statusCode)
+          .as(StepVerifier::create)
+          .assertNext(dto -> {
+              assertEquals(expectedLocation1.code(), dto.code());
+              assertEquals(expectedLocation1.name(), dto.name());
+          })
+          .assertNext(dto -> {
+              assertEquals(expectedLocation2.code(), dto.code());
+              assertEquals(expectedLocation2.name(), dto.name());
+          })
+          .verifyComplete();
+
+      boolean searchLogFound = listAppender.list.stream()
+          .anyMatch(event -> event.getFormattedMessage().contains("Searching for all location updated with client") &&
+                             event.getFormattedMessage().contains(clientNumber) &&
+                             event.getFormattedMessage().contains(statusCode));
+
+      boolean foundLogFound = listAppender.list.stream()
+          .anyMatch(event -> event.getFormattedMessage().contains("Found location") &&
+                             event.getFormattedMessage().contains("updated with client in legacy with status code") &&
+                             event.getFormattedMessage().contains(statusCode));
+
+      assertTrue(searchLogFound, "Expected log message for searching not found.");
+      assertTrue(foundLogFound, "Expected log message for found location not found.");
+  }
+
+  @Test
+  @DisplayName("Retrieve empty list when no locations updated with client")
+  void testFindAllLocationUpdatedWithClientReturnsEmpty() {
+      String clientNumber = "00000001";
+      String statusCode = "DAC";
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/locations/" + clientNumber + "/" + statusCode))
+              .willReturn(okJson("[]"))
+      );
+
+      service
+          .findAllLocationUpdatedWithClient(clientNumber, statusCode)
+          .as(StepVerifier::create)
+          .verifyComplete();
+  }
+
 }

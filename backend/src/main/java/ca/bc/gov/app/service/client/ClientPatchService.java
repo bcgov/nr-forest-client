@@ -57,7 +57,7 @@ public class ClientPatchService {
                     .reduce(PatchUtils.mergeNodes(mapper))
                     .defaultIfEmpty(node)
             )
-            .collect(mapper::createArrayNode, ArrayNode::add)
+            .reduce(PatchUtils.mergeNodes(mapper))
             .doOnNext(x -> log.info("Final merged patch: {}", x))
             .flatMap(node ->
                 legacyService.patchClient(clientNumber, node, userName)
