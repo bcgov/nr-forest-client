@@ -318,7 +318,7 @@ public class ClientLegacyService {
    * @return a {@link Flux} emitting {@link CodeNameDto} objects representing the locations
    *         that were updated with the client status change
    */
-  public Flux<CodeNameDto> findAllLocationUpdatedWithClient(String clientNumber, String statusCode){
+  public Flux<CodeNameDto> findAllLocationUpdatedWithClient(String clientNumber, String statusCode) {
     log.info("Searching for all location updated with client {} and status code {} in legacy",
         clientNumber, statusCode);
 
