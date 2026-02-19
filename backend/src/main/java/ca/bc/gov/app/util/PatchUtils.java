@@ -20,7 +20,11 @@ public class PatchUtils {
       } else {
         arrayNode.add(node1);
       }
-      arrayNode.add(node2);
+      if (node2 instanceof ArrayNode anode2) {
+        arrayNode.addAll(anode2);
+      } else {
+        arrayNode.add(node2);
+      }
       return arrayNode;
     };
   }

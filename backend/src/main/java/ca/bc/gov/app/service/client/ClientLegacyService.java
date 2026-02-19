@@ -306,6 +306,39 @@ public class ClientLegacyService {
   }
 
   /**
+   * Retrieves all locations that were updated along with a client status change.
+   *
+   * <p>This method queries the legacy system to find all location codes that were modified
+   * when a client's status was changed to the specified status code. This is useful for
+   * tracking which locations need to be reactivated when a client is activated, or which
+   * locations were deactivated along with the client.
+   *
+   * @param clientNumber the client number to search for
+   * @param statusCode   the status code to filter locations by (e.g., "DAC" for deactivated)
+   * @return a {@link Flux} emitting {@link CodeNameDto} objects representing the locations
+   *         that were updated with the client status change
+   */
+  public Flux<CodeNameDto> findAllLocationUpdatedWithClient(String clientNumber, String statusCode) {
+    log.info("Searching for all location updated with client {} and status code {} in legacy",
+        clientNumber, statusCode);
+
+    return
+        legacyApi
+            .get()
+            .uri("/api/locations/{clientNumber}/{clientStatus}", clientNumber, statusCode)
+            .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "locationsUpdatedWithClient")
+            // Log the results for debugging purposes
+            .doOnNext(
+                location -> log.info(
+                    "Found location {} updated with client in legacy with status code {}",
+                    location, statusCode
+                )
+            );
+  }
+
+  /**
    * Searches for a list of {@link ForestClientDto} in the legacy API based on the given search type
    * and value. This method constructs a query parameter map using the provided search type and
    * value, sends a GET request to the legacy API, and converts the response into a Flux of
@@ -323,6 +356,17 @@ public class ClientLegacyService {
     return searchGeneric(searchType, searchType, value);
   }
 
+  /**
+   * Searches for a list of {@link ForestClientDto} in the legacy API based on the given search
+   * type, parameter name, and value. This is an overloaded version that allows specifying a
+   * different parameter name than the search type.
+   *
+   * @param searchType The type of search to perform (e.g., "registrationNumber", "companyName").
+   * @param paramName  The name of the query parameter to use.
+   * @param value      The value to search for.
+   * @return A Flux of ForestClientDto objects matching the search criteria, or an empty Flux if
+   *         any parameter is blank.
+   */
   public Flux<ForestClientDto> searchGeneric(
       String searchType,
       String paramName,
@@ -338,6 +382,17 @@ public class ClientLegacyService {
     return searchGeneric(searchType, parameters);
   }
 
+  /**
+   * Searches for a list of {@link ForestClientDto} in the legacy API based on the given search
+   * type and a map of parameters. This is the most flexible version that accepts multiple query
+   * parameters.
+   *
+   * @param searchType The type of search to perform (e.g., "registrationNumber", "companyName").
+   * @param parameters A map of query parameter names to their values.
+   * @return A Flux of ForestClientDto objects matching the search criteria, or an empty Flux if
+   *         the search type is blank, parameters are null/empty, or any parameter key/value is
+   *         blank.
+   */
   public Flux<ForestClientDto> searchGeneric(
       String searchType,
       Map<String, List<String>> parameters
@@ -567,6 +622,18 @@ public class ClientLegacyService {
             );
   }
 
+  /**
+   * Retrieves paginated history logs for a specific client from the legacy system.
+   *
+   * <p>This method queries the legacy API to retrieve audit history logs for the specified client.
+   * The results are paginated and can be filtered by source systems.
+   *
+   * @param clientNumber the client number to retrieve history logs for
+   * @param page         the page number (zero-based) to retrieve
+   * @param size         the number of records per page
+   * @param sources      a list of source system codes to filter the history logs
+   * @return a {@link Flux} emitting pairs of {@link HistoryLogDto} and the total count of records
+   */
   public Flux<Pair<HistoryLogDto, Long>> retrieveHistoryLogs(
       String clientNumber, int page, int size, List<String> sources) {
 
@@ -602,6 +669,16 @@ public class ClientLegacyService {
 	        );
   }
 
+  /**
+   * Retrieves active registry type codes filtered by client type code from the legacy system.
+   *
+   * <p>This method queries the legacy API to find registry types that are valid for the specified
+   * client type code.
+   *
+   * @param clientTypeCode the client type code to filter registry types by
+   * @return a {@link Flux} emitting {@link CodeNameDto} objects representing active registry types
+   *         for the given client type
+   */
   public Flux<CodeNameDto> findActiveRegistryTypeCodesByClientTypeCode(String clientTypeCode) {
     log.info("Searching for active registry types in legacy by client type {}", clientTypeCode);
 
@@ -621,6 +698,14 @@ public class ClientLegacyService {
             );
   }
 
+  /**
+   * Retrieves active client type codes from the legacy system.
+   *
+   * <p>This method queries the legacy API to find all active client type codes available in the
+   * system, such as Corporation, Individual, etc.
+   *
+   * @return a {@link Flux} emitting {@link CodeNameDto} objects representing active client types
+   */
   public Flux<CodeNameDto> findActiveClientTypeCodes() {
     log.info("Searching for active client types in legacy");
 
@@ -639,6 +724,14 @@ public class ClientLegacyService {
             );
   }
 
+  /**
+   * Retrieves active client identification type codes from the legacy system.
+   *
+   * <p>This method queries the legacy API to find all active client identification type codes,
+   * such as driver's license, passport, etc.
+   *
+   * @return a {@link Flux} emitting {@link CodeNameDto} objects representing active client ID types
+   */
   public Flux<CodeNameDto> findActiveIdentificationTypeCodes() {
     log.info("Searching for active client ID types in legacy");
 
@@ -657,6 +750,16 @@ public class ClientLegacyService {
             );
   }
 
+  /**
+   * Retrieves the list of related clients for a given client number from the legacy system.
+   *
+   * <p>This method queries the legacy API to find all clients that have a relationship with the
+   * specified client. The results are grouped by location code.
+   *
+   * @param clientNumber the client number to retrieve related clients for
+   * @return a {@link Mono} emitting a map where keys are location codes and values are lists of
+   *         {@link RelatedClientEntryDto} objects representing the related clients at each location
+   */
   public Mono<Map<String, List<RelatedClientEntryDto>>> getRelatedClientList(String clientNumber) {
     log.info("Searching for related clients for relatedClient number {}", clientNumber);
 
@@ -692,6 +795,18 @@ public class ClientLegacyService {
             );
   }
 
+  /**
+   * Searches for related clients in the legacy system based on the given client number and
+   * optional search criteria.
+   *
+   * <p>This method provides autocomplete functionality for searching related clients. It queries
+   * the legacy API to find clients that can be related to the specified client number.
+   *
+   * @param clientNumber the client number to search related clients for
+   * @param type         the type of search to perform (optional, can be null)
+   * @param value        the search value to filter results
+   * @return a {@link Flux} emitting {@link ClientListDto} objects representing matching clients
+   */
   public Flux<ClientListDto> searchRelatedClients(
       String clientNumber,
       String type,
@@ -739,6 +854,16 @@ public class ClientLegacyService {
     return Set.of("ACT", "SPN", "REC");
   }
 
+  /**
+   * Retrieves active relationship type codes filtered by client type code from the legacy system.
+   *
+   * <p>This method queries the legacy API to find relationship types that are valid for the
+   * specified client type code (e.g., Agent, Partner, etc.).
+   *
+   * @param clientTypeCode the client type code to filter relationship types by
+   * @return a {@link Flux} emitting {@link CodeNameDto} objects representing active relationship
+   *         types for the given client type
+   */
   public Flux<CodeNameDto> findActiveRelationshipCodesByClientTypeCode(String clientTypeCode) {
     log.info("Searching for active relationship types in legacy by client type {}", clientTypeCode);
 
