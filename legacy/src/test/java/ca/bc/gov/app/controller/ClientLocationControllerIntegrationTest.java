@@ -94,8 +94,46 @@ class ClientLocationControllerIntegrationTest extends
         Arguments.of("00000001", "ACT"),
         // Valid case with deactivated status
         Arguments.of("00000002", "DAC"),
+        // Valid case with deceased status
+        Arguments.of("00000001", "DEC"),
+        // Valid case with receivership status
+        Arguments.of("00000001", "REC"),
+        // Valid case with suspended status
+        Arguments.of("00000001", "SPN"),
         // Non-existent client - should return empty list
         Arguments.of("99999999", "ACT")
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("findAllLocationUpdatedWithClientInvalidStatus")
+  @DisplayName("Find all locations updated with client - invalid status")
+  void shouldRejectInvalidClientStatus(
+      String clientNumber,
+      String clientStatus
+  ) {
+    client
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/locations/by-client-status/{clientNumber}/{clientStatus}")
+                .build(clientNumber, clientStatus)
+        )
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().is4xxClientError();
+  }
+
+  private static Stream<Arguments> findAllLocationUpdatedWithClientInvalidStatus() {
+    return Stream.of(
+        // Invalid status code
+        Arguments.of("00000001", "INVALID"),
+        // Empty status code
+        Arguments.of("00000001", ""),
+        // Lowercase valid code - should be rejected
+        Arguments.of("00000001", "act"),
+        // Too long status code
+        Arguments.of("00000001", "ACTIVE")
     );
   }
 
