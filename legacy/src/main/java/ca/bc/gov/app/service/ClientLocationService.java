@@ -131,7 +131,7 @@ public class ClientLocationService {
       String clientNumber,
       String clientStatus
   ) {
-    log.info("Listing locations from client {} that changes status when client went {}",
+    log.info("Listing locations from client {} that changed status when client went {}",
         clientNumber, clientStatus);
     return locationReason.findAllLocationUpdatedWithClient(
         clientNumber,
