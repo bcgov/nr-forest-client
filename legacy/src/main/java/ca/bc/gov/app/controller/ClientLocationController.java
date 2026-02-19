@@ -88,7 +88,7 @@ public class ClientLocationController {
    * @return a {@link Flux} emitting {@link CodeNameDto} objects containing
    *         location codes and names that were updated with the client
    */
-  @GetMapping("/{clientNumber}/{clientStatus}")
+  @GetMapping("/by-client-status/{clientNumber}/{clientStatus}")
   public Flux<CodeNameDto> findAllLocationUpdatedWithClient(
       @PathVariable String clientNumber,
       @PathVariable String clientStatus

@@ -79,7 +79,7 @@ class ClientLocationControllerIntegrationTest extends
         .get()
         .uri(uriBuilder ->
             uriBuilder
-                .path("/api/locations/{clientNumber}/{clientStatus}")
+                .path("/api/locations/by-client-status/{clientNumber}/{clientStatus}")
                 .build(clientNumber, clientStatus)
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
