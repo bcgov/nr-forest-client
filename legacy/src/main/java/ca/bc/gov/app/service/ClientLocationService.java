@@ -2,11 +2,13 @@ package ca.bc.gov.app.service;
 
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ClientNameCodeDto;
+import ca.bc.gov.app.dto.CodeNameDto;
 import ca.bc.gov.app.dto.ForestClientLocationDto;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import ca.bc.gov.app.entity.ForestClientMailingCountryEntity;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientLocationRepository;
+import ca.bc.gov.app.repository.LocationUpdateReasonRepository;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +28,10 @@ public class ClientLocationService {
   private final R2dbcEntityOperations entityTemplate;
   private final AbstractForestClientMapper<ForestClientLocationDto, ForestClientLocationEntity> mapper;
   private final ForestClientLocationRepository repository;
+  private final LocationUpdateReasonRepository locationReason;
 
   public Mono<String> saveAndGetIndex(ForestClientLocationDto dto) {
-      
+
     return
         //Load the country detail from the database
         getCountry(dto.country())
@@ -65,15 +68,24 @@ public class ClientLocationService {
 
   public Flux<ForestClientLocationDto> search(String address, String postalCode) {
     log.info("Searching for forest client location {} {}", address, postalCode);
-		return repository
-				.matchBy(address, postalCode)
-				.doOnNext(forestClientLocation -> log
-						.info("Found forest client location {} {}", 
-							  forestClientLocation.getClientNumber(),
-							  forestClientLocation.getAddressOne(),
-							  forestClientLocation.getPostalCode()))
-						.map(mapper::toDto);
-	}
+    return repository
+        .matchBy(address, postalCode)
+        .doOnNext(forestClientLocation -> log
+            .info("Found forest client location {} {}",
+                forestClientLocation.getClientNumber(),
+                forestClientLocation.getAddressOne(),
+                forestClientLocation.getPostalCode()))
+        .map(mapper::toDto);
+  }
+
+  public Flux<CodeNameDto> findAllLocationUpdatedWithClient(String clientNumber, String clientStatus) {
+    log.info("Listing locations from client {} that changes status when client went {}",
+        clientNumber, clientStatus);
+    return locationReason.findAllLocationUpdatedWithClient(
+        clientNumber,
+        clientStatus
+    );
+  }
 
   private Mono<ForestClientLocationEntity> locateClientLocation(
       String clientNumber,
@@ -105,6 +117,7 @@ public class ClientLocationService {
             ForestClientMailingCountryEntity.class
         )
         .map(entity -> new ClientNameCodeDto(entity.getCode(), entity.getName()))
-        .doOnNext(country -> log.info("Found country {} for code {}", country.name(),country.code()));
+        .doOnNext(
+            country -> log.info("Found country {} for code {}", country.name(), country.code()));
   }
 }
