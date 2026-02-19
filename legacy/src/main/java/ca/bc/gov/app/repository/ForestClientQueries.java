@@ -1272,5 +1272,6 @@ public final class ForestClientQueries {
       FROM cli_locn_audit cla
       LEFT JOIN ForestClientAudit fca ON fca.client_number = cla.client_number
       WHERE cla.client_number = :client_number
-      AND cla.UPDATE_TIMESTAMP = fca.UPDATE_TIMESTAMP""";
+      AND cla.UPDATE_TIMESTAMP BETWEEN fca.UPDATE_TIMESTAMP - INTERVAL '1' SECOND
+                                  AND fca.UPDATE_TIMESTAMP + INTERVAL '1' SECOND""";
 }
