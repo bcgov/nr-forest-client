@@ -87,7 +87,14 @@ public class ClientLocationController {
    * were affected when a client was activated or deactivated.</p>
    *
    * @param clientNumber the unique identifier of the forest client
-   * @param clientStatus the client status code (e.g., "ACT" for active, "DAC" for deactivated)
+   * @param clientStatus the client status code. Valid values are:
+   *                     <ul>
+   *                       <li>{@code ACT} - Active</li>
+   *                       <li>{@code DAC} - Deactivated</li>
+   *                       <li>{@code DEC} - Deceased</li>
+   *                       <li>{@code REC} - Receivership</li>
+   *                       <li>{@code SPN} - Suspended</li>
+   *                     </ul>
    * @return a {@link Flux} emitting {@link CodeNameDto} objects containing
    *         location codes and names that were updated with the client
    */
