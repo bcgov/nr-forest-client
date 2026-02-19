@@ -1,5 +1,6 @@
 package ca.bc.gov.app.controller;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +63,9 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
     if (exception instanceof ResponseStatusException responseStatusException) {
       errorMessage = responseStatusException.getReason();
       errorStatus = responseStatusException.getStatusCode();
+    } else if (exception instanceof ConstraintViolationException constraintViolationException) {
+      errorMessage = constraintViolationException.getMessage();
+      errorStatus = HttpStatus.BAD_REQUEST;
     }
 
     errorMessage =
