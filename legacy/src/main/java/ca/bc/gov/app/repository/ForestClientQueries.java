@@ -1257,21 +1257,20 @@ public final class ForestClientQueries {
 
   public static final String LOCATION_TO_REACTIVATE = """
       WITH ForestClientAudit AS (
-          SELECT
-              fca.client_number,
-              fca.UPDATE_TIMESTAMP
-          FROM FOR_CLI_AUDIT fca
-          WHERE fca.client_number = :client_number
-          AND fca.CLIENT_STATUS_CODE = :client_status
-          ORDER BY fca.FOREST_CLIENT_AUDIT_ID DESC
-          FETCH NEXT 1 ROWS ONLY
+      	SELECT
+      		fca.client_number,
+      		fca.UPDATE_TIMESTAMP
+      	FROM THE.FOR_CLI_AUDIT fca
+      	WHERE fca.client_number = :client_number
+      	AND fca.CLIENT_STATUS_CODE = :client_status
+      	ORDER BY fca.FOREST_CLIENT_AUDIT_ID DESC
+      	FETCH NEXT 1 ROWS ONLY
       )
       SELECT
-          DISTINCT cla.client_locn_code as code,
-          cla.client_locn_name as name
-      FROM cli_locn_audit cla
+      	DISTINCT cla.client_locn_code as code,
+        cla.client_locn_name as name
+      FROM THE.CLI_LOCN_AUDIT cla
       LEFT JOIN ForestClientAudit fca ON fca.client_number = cla.client_number
       WHERE cla.client_number = :client_number
-      AND cla.UPDATE_TIMESTAMP BETWEEN fca.UPDATE_TIMESTAMP - INTERVAL '1' SECOND
-                                  AND fca.UPDATE_TIMESTAMP + INTERVAL '1' SECOND""";
+      AND cla.UPDATE_TIMESTAMP = fca.UPDATE_TIMESTAMP""";
 }
