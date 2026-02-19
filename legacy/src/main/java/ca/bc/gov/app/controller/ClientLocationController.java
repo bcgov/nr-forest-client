@@ -4,10 +4,12 @@ import ca.bc.gov.app.dto.CodeNameDto;
 import ca.bc.gov.app.dto.ForestClientLocationDto;
 import ca.bc.gov.app.service.ClientLocationService;
 import io.micrometer.observation.annotation.Observed;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +37,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/api/locations", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Observed
+@Validated
 public class ClientLocationController {
 
   private final ClientLocationService service;
@@ -91,7 +94,10 @@ public class ClientLocationController {
   @GetMapping("/{clientNumber}/{clientStatus}")
   public Flux<CodeNameDto> findAllLocationUpdatedWithClient(
       @PathVariable String clientNumber,
-      @PathVariable String clientStatus
+      @PathVariable 
+      @Pattern(regexp = "^(ACT|DAC|DEC|REC|SPN)$", 
+               message = "Client status must be one of: ACT, DAC, DEC, REC, SPN")
+      String clientStatus
   ) {
     log.info("Receiving request to find all location updated with client {} and status {}",
         clientNumber, clientStatus
