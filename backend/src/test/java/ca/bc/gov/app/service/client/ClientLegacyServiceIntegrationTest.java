@@ -742,7 +742,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       logger.addAppender(listAppender);
 
       legacyStub.stubFor(
-          get(urlPathEqualTo("/api/locations/" + clientNumber + "/" + statusCode))
+          get(urlPathEqualTo("/api/locations/by-client-status/" + clientNumber + "/" + statusCode))
               .willReturn(okJson("["
                   + "{\"code\":\"00\",\"name\":\"Main Office\"},"
                   + "{\"code\":\"01\",\"name\":\"Branch Office\"}"
@@ -783,7 +783,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
       String statusCode = "DAC";
 
       legacyStub.stubFor(
-          get(urlPathEqualTo("/api/locations/" + clientNumber + "/" + statusCode))
+          get(urlPathEqualTo("/api/locations/by-client-status/" + clientNumber + "/" + statusCode))
               .willReturn(okJson("[]"))
       );
 

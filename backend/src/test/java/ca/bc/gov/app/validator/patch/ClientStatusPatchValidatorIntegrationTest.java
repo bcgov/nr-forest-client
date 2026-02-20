@@ -179,7 +179,7 @@ class ClientStatusPatchValidatorIntegrationTest extends AbstractTestContainerInt
     String clientNumber = "00000001";
 
     legacyStub.stubFor(
-        get(urlPathEqualTo("/api/locations/" + clientNumber + "/DAC"))
+        get(urlPathEqualTo("/api/locations/by-client-status/" + clientNumber + "/DAC"))
             .willReturn(okJson("""
                 [
                   {"code": "00", "name": "Main Office"},
@@ -269,7 +269,7 @@ class ClientStatusPatchValidatorIntegrationTest extends AbstractTestContainerInt
     String clientNumber = "00000001";
 
     legacyStub.stubFor(
-        get(urlPathEqualTo("/api/locations/" + clientNumber + "/DAC"))
+        get(urlPathEqualTo("/api/locations/by-client-status/" + clientNumber + "/DAC"))
             .willReturn(okJson("[]"))
     );
 

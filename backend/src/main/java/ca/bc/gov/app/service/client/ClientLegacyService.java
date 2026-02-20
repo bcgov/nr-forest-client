@@ -325,7 +325,7 @@ public class ClientLegacyService {
     return
         legacyApi
             .get()
-            .uri("/api/locations/{clientNumber}/{clientStatus}", clientNumber, statusCode)
+            .uri("/api/locations/by-client-status/{clientNumber}/{clientStatus}", clientNumber, statusCode)
             .exchangeToFlux(response -> response.bodyToFlux(CodeNameDto.class))
             .name(REQUEST_LEGACY)
             .tag("kind", "locationsUpdatedWithClient")
