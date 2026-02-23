@@ -36,4 +36,4 @@ As the application evolves, so does the data, and to control the evolution of th
 
 We have the database schema documented using [SchemaSpy](https://schemaspy.org/). This is particularly useful tool for database administrators, developers, and analysts who need to understand the structure and relationships within a database. This allow us to automatically generate a visualization of the database schema through Entity-Relationship (ER) diagrams. These diagrams help users quickly grasp the relationships between tables, making it easier to navigate and understand complex databases. 
 
-You can find our database diagram on [this page](https://bcgov.github.io/nr-forest-client/schema/nrfc/relationships.html) and more information about the database on [this page](https://bcgov.github.io/nr-forest-client/schema)
+You can find our database diagram on [this page](https://bcgov.github.io/nr-forest-client/nrfc/relationships.html) and more information about the database on [this page](https://bcgov.github.io/nr-forest-client/)
