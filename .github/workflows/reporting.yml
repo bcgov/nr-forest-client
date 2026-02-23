@@ -32,20 +32,12 @@ jobs:
       PREFIX: ${{ github.event.repository.name }}-test
     permissions:
       issues: write
-    strategy:
-      matrix:
-        name: [backend, frontend]
-        include:
-          - name: backend
-            target: https://nr-forest-client-test-backend.apps.silver.devops.gov.bc.ca
-          - name: frontend
-            target: https://forestclient-tst.nrs.gov.bc.ca
     steps:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c # v0.13.0
         with:
           allow_issue_writing: true
-          artifact_name: "zap_${{ matrix.name }}"
+          artifact_name: "zap_frontend"
           cmd_options: "-a"
-          issue_title: "ZAP: ${{ matrix.name }}"
-          target: ${{ matrix.target }}
+          issue_title: "ZAP: frontend"
+          target: https://forestclient-tst.nrs.gov.bc.ca
