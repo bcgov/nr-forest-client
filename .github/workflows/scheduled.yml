@@ -8,7 +8,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions: {}
+permissions: 
+  pages: write
+  contents: read
 
 jobs:
   # https://github.com/bcgov/quickstart-openshift-helpers
