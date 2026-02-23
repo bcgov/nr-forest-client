@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><database name="default" schema="nrfc" type="PostgreSQL - 16.4 (Debian 16.4-1.pgdg110+2)">
+<?xml version="1.0" encoding="UTF-8"?><database name="default" schema="nrfc" type="PostgreSQL - 17.0 (Debian 17.0-1.pgdg110+1)">
    <sequences>
       <sequence increment="1" name="email_log_id_seq" startValue="1"/>
       <sequence increment="1" name="submission_contact_seq" startValue="1"/>
