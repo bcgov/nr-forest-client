@@ -48,6 +48,10 @@ jobs:
   reporting:
     name: SchemaSpy & ZAP
     needs: [deploy-test]
+    permissions:
+      contents: write
+      pages: write
+      issues: write
     secrets: inherit
     uses: ./.github/workflows/reporting.yml
 
