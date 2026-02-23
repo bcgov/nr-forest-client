@@ -1,16 +1,15 @@
-name: Scheduled
+name: Reporting
 
 on:
   schedule: [cron: "0 11 * * 6"] # 3 AM PST = 12 PM UDT, Saturdays
   workflow_dispatch:
+  workflow_call: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions: 
-  pages: write
-  contents: read
+permissions: {}
 
 jobs:
   # https://github.com/bcgov/quickstart-openshift-helpers

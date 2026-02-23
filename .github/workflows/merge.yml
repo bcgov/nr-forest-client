@@ -45,6 +45,12 @@ jobs:
       configmap-frontend: |-
         window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{}');
 
+  reporting:
+    name: SchemaSpy & ZAP
+    needs: [deploy-test]
+    secrets: inherit
+    uses: ./.github/workflows/reporting.yml
+
   deploy-prod:
     name: Deploy (PROD)
     needs: [deploy-test]
