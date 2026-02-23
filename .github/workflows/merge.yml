@@ -49,7 +49,7 @@ jobs:
     name: SchemaSpy & ZAP
     needs: [deploy-test]
     secrets: inherit
-    uses: ./.github/workflows/scheduled.yml
+    uses: ./.github/workflows/reporting.yml
 
   deploy-prod:
     name: Deploy (PROD)
