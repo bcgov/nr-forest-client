@@ -52,7 +52,6 @@ jobs:
       contents: write
       pages: write
       issues: write
-    secrets: inherit
     uses: ./.github/workflows/reporting.yml
 
   deploy-prod:
