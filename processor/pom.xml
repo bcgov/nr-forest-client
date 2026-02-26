@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.8</version>
+    <version>4.0.3</version>
     <relativePath />
     <!-- lookup parent from repository -->
   </parent>
@@ -181,7 +181,7 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
-        <version>6.2.14</version>
+        <version>7.0.5</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
