@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.3</version>
+        <version>3.5.11</version>
         <relativePath />
     </parent>
 
@@ -76,7 +76,7 @@
         <logback.version>1.5.26</logback.version>
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.6</nimbus-jose-jwt.version>
-        <spring-security-core.version>7.0.3</spring-security-core.version>
+        <spring-security-core.version>6.5.7</spring-security-core.version>
         <micrometer.version>1.16.1</micrometer.version>
         <micrometer-tracing.version>1.6.1</micrometer-tracing.version>
         <flyway.version>11.11.1</flyway.version>
@@ -274,7 +274,7 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
-                <version>7.0.5</version>
+                <version>6.2.14</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
