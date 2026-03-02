@@ -87,6 +87,8 @@
         <mockito.version>5.21.0</mockito.version>
         <jooq.version>3.20.11</jooq.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
+        <tools.jackson.core.version>3.1.0</tools.jackson.core.version>
+    	<jackson-core.version>3.1.0</jackson-core.version>
     </properties>
 
     <dependencies>
