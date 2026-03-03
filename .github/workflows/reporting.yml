@@ -40,4 +40,4 @@ jobs:
           artifact_name: "zap_frontend"
           cmd_options: "-a"
           issue_title: "ZAP: frontend"
-          target: https://forestclient.apps.silver.devops.gov.bc.ca
+          target: https://forestclient-test.apps.silver.devops.gov.bc.ca
