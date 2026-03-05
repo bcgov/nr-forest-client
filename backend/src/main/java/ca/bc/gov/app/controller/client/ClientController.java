@@ -138,7 +138,7 @@ public class ClientController {
   @GetMapping("/search")
   public Flux<ClientListDto> fullSearch(
       @RequestParam(required = false, defaultValue = "0") int page,
-      @RequestParam(required = false, defaultValue = "10") int size,
+      @RequestParam(required = false, defaultValue = "100") int size,
       @RequestParam(required = false, defaultValue = "") String keyword,
       ServerHttpResponse serverResponse
   ) {
