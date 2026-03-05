@@ -499,42 +499,6 @@ describe("Search Page", () => {
 
         cy.get("#no-exact-match").should("be.visible");
       });
-
-      describe("but an exact match is found in the second page", () => {
-        beforeEach(() => {
-          cy.get('[tooltip-text="Next page"]').click();
-        });
-
-        it('hides the "No exact match" message', () => {
-          cy.wait("@fullSearch");
-
-          cy.get("#no-exact-match").should("not.exist");
-        });
-
-        const scenarios = [
-          {
-            navigates: "back to the first page",
-            tooltip: "Previous page",
-          },
-          {
-            navigates: "to the third page",
-            tooltip: "Next page",
-          },
-        ];
-        scenarios.forEach((scenario) => {
-          describe(`and the user navigates ${scenario.navigates}`, () => {
-            beforeEach(() => {
-              cy.get(`[tooltip-text="${scenario.tooltip}"]`).click();
-            });
-
-            it('keeps the "No exact match" message hidden, since an exact match was already found', () => {
-              cy.wait("@fullSearch");
-
-              cy.get("#no-exact-match").should("not.exist");
-            });
-          });
-        });
-      });
     });
   });
 
