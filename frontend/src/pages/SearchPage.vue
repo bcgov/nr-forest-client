@@ -50,7 +50,7 @@ const networkErrorMsg = ref("");
 const tableData = ref<ClientSearchResult[]>();
 const pageNumber = ref(1);
 const totalItems = ref(0);
-const pageSize = ref(10);
+const pageSize = ref(100);
 
 const rawSearchKeyword = ref("");
 
