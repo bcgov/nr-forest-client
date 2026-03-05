@@ -34,7 +34,7 @@ jobs:
     with:
       environment: test
       target: test
-      url: forestclient-tst.nrs.gov.bc.ca
+      url: forestclient-test.apps.silver.devops.gov.bc.ca
       configmap-backend: |-
         features:
           staff:
