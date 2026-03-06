@@ -50,7 +50,7 @@ const networkErrorMsg = ref("");
 const tableData = ref<ClientSearchResult[]>();
 const pageNumber = ref(1);
 const totalItems = ref(0);
-const pageSize = ref(10);
+const pageSize = ref(100);
 
 const rawSearchKeyword = ref("");
 
@@ -399,6 +399,7 @@ onMounted(() => {
         <cds-select-item :value="30">30</cds-select-item>
         <cds-select-item :value="40">40</cds-select-item>
         <cds-select-item :value="50">50</cds-select-item>
+        <cds-select-item :value="100">100</cds-select-item>
       </cds-pagination>
     </div>
 
