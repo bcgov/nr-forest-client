@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Scale down legacy
         continue-on-error: true
-        uses: bcgov/action-oc-runner@57a28c38359c93e43edf609d35b9a3f50a070131 # v1.4.0
+        uses: bcgov/action-oc-runner@d2fc921aaa9d70684c186dbb7754e6985d44d86f # v1.4.1
         with:
           oc_namespace: d2723f-dev
           oc_token: ${{ secrets.oc_token }}
@@ -37,7 +37,7 @@ jobs:
 
       - name: Remove the PR database
         continue-on-error: true
-        uses: bcgov/action-oc-runner@57a28c38359c93e43edf609d35b9a3f50a070131 # v1.4.0
+        uses: bcgov/action-oc-runner@d2fc921aaa9d70684c186dbb7754e6985d44d86f # v1.4.1
         with:
           oc_namespace: d2723f-tools
           oc_token: ${{ secrets.oc_token_tools }}
