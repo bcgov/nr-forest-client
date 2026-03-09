@@ -73,7 +73,7 @@
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <testcontainers.version>1.21.4</testcontainers.version>
-        <logback.version>1.5.32</logback.version>
+        <logback.version>1.5.26</logback.version>
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.8</nimbus-jose-jwt.version>
         <spring-security-core.version>6.5.8</spring-security-core.version>
