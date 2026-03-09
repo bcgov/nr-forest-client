@@ -72,7 +72,7 @@
     "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^3.14.7",
+    "@cypress/code-coverage": "^4.0.1",
     "@rushstack/eslint-patch": "^1.1.0",
     "@types/jsdom": "^27.0.0",
     "@types/node": "^24.0.3",
@@ -113,7 +113,7 @@
     "vue-eslint-parser": "^9.4.3",
     "vue-svg-loader": "^0.16.0",
     "vue-tsc": "^3.0.0",
-    "wiremock": "^3.13.1"
+    "wiremock": "^3.13.2"
   },
   "overrides": {
     "immutable": "5.1.5",
