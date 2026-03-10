@@ -22,25 +22,6 @@ configureVueProject({
   tsSyntaxInTemplates: true,
 })
 
-const sharedIgnores = [
-  'coverage/**',
-  'dist/**',
-  'node_modules/**',
-  'reports/**',
-  'reports-merge/**',
-  '.nyc_output/**',
-  '.nyc_report/**',
-  '.vite_report/**',
-  'cypress/results/**',
-  'cypress/reports/**',
-  'cypress/screenshots/**',
-  'cypress/videos/**',
-  'stub-tests/**',
-  '.cache/**',
-  '.parcel-cache/**',
-  '.vscode/**',
-]
-
 const vueCompilerMacros = {
   defineEmits: 'readonly',
   defineExpose: 'readonly',
