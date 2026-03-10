@@ -25,6 +25,9 @@
     "nonGlobalStepDefinitions": true
   },
   "overrides": {
+    "serialize-javascript": "^6.0.2",
+    "diff": "^8.0.2",
+    "undici": "^6.23.0",
     "lodash@^4.0.0": "^4.17.23",
     "qs": "6.15.0",
     "form-data": "4.0.5",
