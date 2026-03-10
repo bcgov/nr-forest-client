@@ -48,7 +48,7 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
    */
   @Override
   boolean filterByType(String clientTypeCode) {
-    return StringUtils.equalsIgnoreCase(clientTypeCode, "USP");
+    return "USP".equalsIgnoreCase(clientTypeCode);
   }
 
   /**

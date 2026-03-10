@@ -49,7 +49,6 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   // It matches a string of the form "/{locationId}/{index}" and captures:
   // - Group 1: locationId (any sequence of characters except '/')
   // - Group 2: index (any sequence of characters except '/')
-  private final Pattern pattern = Pattern.compile("/([^/]+)/([^/]+)");
   private final String CHECK_RELATION_EXIST = """
       SELECT
         count(1) as count_results
@@ -466,16 +465,6 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
                 .and("RELATED_CLNT_LOCN").is(entity.getRelatedClientLocationCode())
                 .and("RELATIONSHIP_CODE").is(entity.getRelationshipType())
         );
-  }
-
-  private Pair<String, Integer> extractLocationAndIndex(String path) {
-    var matcher = pattern.matcher(path);
-    if (matcher.find()) {
-      String locationId = matcher.group(1);
-      int index = Integer.parseInt(matcher.group(2));
-      return Pair.of(locationId, index);
-    }
-    return Pair.of(null, null);
   }
 
   private <T> Consumer<T> dd(String label) {
