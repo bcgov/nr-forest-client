@@ -2,11 +2,12 @@ package ca.bc.gov.app.converters;
 
 import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
 import org.springframework.data.r2dbc.mapping.event.AfterConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
@@ -53,14 +54,18 @@ public class SubmissionMatchDetailEntityBeforeConvert
   }
 
   private Map<String, Object> convertFrom(SubmissionMatchDetailEntity entity) {
-    String json = StringUtils.defaultString(entity.getMatchingField().asString(), "{}");
+    String json = Objects.requireNonNullElse(
+        entity.getMatchingField() == null ? null : entity.getMatchingField().asString(),
+        "{}"
+    );
 
     try {
-      return builder.build().readValue(json, Map.class);
+      return builder.build().readValue(json, new TypeReference<Map<String, Object>>() {});
     } catch (JsonProcessingException e) {
       log.error("Error while converting matchers to json", e);
     }
 
     return Map.of();
   }
+  
 }

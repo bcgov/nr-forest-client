@@ -11,7 +11,6 @@ import io.micrometer.observation.annotation.Observed;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -71,16 +70,11 @@ public class LocationStepMatcher implements StepMatcher {
     }
 
     // Check if any of the addresses are invalid
-    if (
-        BooleanUtils.isFalse(
-            dto
-                .location()
-                .addresses()
-                .stream()
-                .map(ClientAddressDto::isValid)
-                .reduce(true, Boolean::logicalAnd)
-        )
-    ) {
+    if (!dto
+        .location()
+        .addresses()
+        .stream()
+        .allMatch(ClientAddressDto::isValid)) {
       return Mono.error(new InvalidRequestObjectException("Invalid address information"));
     }
 
