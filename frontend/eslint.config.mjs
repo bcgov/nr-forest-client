@@ -36,6 +36,9 @@ const sharedIgnores = [
   'cypress/screenshots/**',
   'cypress/videos/**',
   'stub-tests/**',
+  '.cache/**',
+  '.parcel-cache/**',
+  '.vscode/**',
 ]
 
 const vueCompilerMacros = {
