@@ -63,9 +63,9 @@ public class SubmissionMatchDetailEntityBeforeConvert
       return builder.build().readValue(json, new TypeReference<Map<String, Object>>() {});
     } catch (JsonProcessingException e) {
       log.error("Error while converting matchers to json", e);
-    }
+      }
 
-    return Map.of();
+      return Map.of();
   }
   
 }
