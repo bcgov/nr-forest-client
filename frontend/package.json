@@ -31,7 +31,7 @@
     "preview:test": "cross-env VITE_NODE_ENV=test VITE_GREEN_DOMAIN=green-domain.com start-server-and-test stub:test http://127.0.0.1:8080 start",
     "preview:app": "cross-env VITE_NODE_ENV=test vite --host --port 3000",
     "typecheck": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "lint": "eslint . --fix",
+    "lint": "eslint . --fix --ignore-path .gitignore",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "stub": "wiremock --enable-stub-cors --global-response-templating --port 8080 --https-port 8081 --root-dir ./stub --verbose",
