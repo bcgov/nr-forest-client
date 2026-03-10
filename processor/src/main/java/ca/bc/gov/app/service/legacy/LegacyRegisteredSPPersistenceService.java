@@ -57,7 +57,7 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
    */
   @Override
   boolean filterByType(String clientTypeCode) {
-    return StringUtils.equalsIgnoreCase(clientTypeCode, "RSP");
+    return "RSP".equalsIgnoreCase(clientTypeCode);
   }
 
   @Override

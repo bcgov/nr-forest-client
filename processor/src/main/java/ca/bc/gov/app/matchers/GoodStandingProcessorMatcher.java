@@ -67,7 +67,7 @@ public class GoodStandingProcessorMatcher implements ProcessorMatcher {
       return Mono.just(new MatcherResult(fieldName(), Set.of("Value not found")));
     }
 
-    if (StringUtils.equalsIgnoreCase("N", submission.goodStanding())) {
+    if ("N".equalsIgnoreCase(submission.goodStanding())) {
       return Mono.just(new MatcherResult(fieldName(), Set.of("Client not in good standing")));
     }
 

@@ -15,7 +15,6 @@ import java.util.Locale;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -48,7 +47,7 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
    */
   @Override
   boolean filterByType(String clientTypeCode) {
-    return StringUtils.equalsIgnoreCase(clientTypeCode, "I");
+    return "I".equalsIgnoreCase(clientTypeCode);
   }
 
   /**
