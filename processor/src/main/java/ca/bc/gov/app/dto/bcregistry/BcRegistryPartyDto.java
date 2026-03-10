@@ -20,5 +20,4 @@ public record BcRegistryPartyDto(
         .filter(BcRegistryRoleDto::active)
         .anyMatch(role -> "Proprietor".equalsIgnoreCase(role.roleType()));
   }
-  
 }
