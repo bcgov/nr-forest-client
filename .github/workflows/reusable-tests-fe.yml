@@ -33,7 +33,7 @@ jobs:
             npm run coverage
           dir: frontend
           sonar_args: >
-            -Dsonar.sources=src,cypress,tests
+            -Dsonar.sources=src
             -Dsonar.tests=tests,cypress
             -Dsonar.exclusions=**/coverage/**,**/dist/**,**/node_modules/**,**/stub/**,**/reports/**,**/.nyc_output/**
             -Dsonar.coverage.exclusions=eslint.config.mjs,vite.config.ts,cypress.config.ts,vitest.setup.ts,stub-tests.ts,components.d.ts,env.d.ts,**/assets/**,**/dto/**,**/CoreConstants.ts,**/src/CoreConstants.ts,**/main.ts,**/routes.ts,**/shims-vue.d.ts,**/styles.ts
