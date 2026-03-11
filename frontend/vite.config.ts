@@ -1,4 +1,4 @@
-import { fileURLToPath, URL } from "url";
+import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import Components from "unplugin-vue-components/vite";
@@ -67,6 +67,10 @@ export default defineConfig(({ command, mode }) => {
           "**/routes.ts",
           "**/shims-vue.d.ts ",
           "vite.config.ts",
+          "eslint.config.mjs",
+          "cypress.config.ts",
+          "vitest.setup.ts",
+          "stub-tests.ts",
           "**/dto/**/*",
           "**/core/**/*",
           "**/CoreConstants.ts",
