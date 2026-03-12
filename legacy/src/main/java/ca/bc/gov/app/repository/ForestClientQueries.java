@@ -811,20 +811,30 @@ public final class ForestClientQueries {
               WHEN UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE '%' || UPPER(:value) || '%' THEN 75
               WHEN UPPER(C.CLIENT_IDENTIFICATION) LIKE '%' || UPPER(:value) || '%' THEN 70
       
-              WHEN (
-                  SELECT COUNT(*)
-                  FROM (
-                      SELECT REGEXP_SUBSTR(UPPER(TRIM(:value)), '[^ ]+', 1, LEVEL) token
-                      FROM dual
-                      CONNECT BY LEVEL <= REGEXP_COUNT(TRIM(:value), ' ') + 1
-                  ) t
-                  WHERE UPPER(
-                          COALESCE(C.CLIENT_NAME,'') || ' ' ||
-                          COALESCE(C.LEGAL_FIRST_NAME,'') || ' ' ||
-                          COALESCE(C.LEGAL_MIDDLE_NAME,'') || ' ' ||
-                          COALESCE(DBA.DOING_BUSINESS_AS_NAME,'')
-                       ) LIKE '%' || token || '%'
-              ) = REGEXP_COUNT(TRIM(:value), ' ') + 1
+              WHEN REGEXP_COUNT(TRIM(:value), ' ') = 0
+                   AND UPPER(
+                           COALESCE(C.CLIENT_NAME,'') || ' ' ||
+                           COALESCE(C.LEGAL_FIRST_NAME,'') || ' ' ||
+                           COALESCE(C.LEGAL_MIDDLE_NAME,'') || ' ' ||
+                           COALESCE(DBA.DOING_BUSINESS_AS_NAME,'')
+                        ) LIKE '%' || UPPER(TRIM(:value)) || '%'
+              THEN 100
+      
+              WHEN REGEXP_COUNT(TRIM(:value), ' ') > 0
+                   AND (
+                       SELECT COUNT(*)
+                       FROM (
+                           SELECT REGEXP_SUBSTR(UPPER(TRIM(:value)), '[^ ]+', 1, LEVEL) token
+                           FROM dual
+                           CONNECT BY LEVEL <= REGEXP_COUNT(TRIM(:value), ' ') + 1
+                       ) t
+                       WHERE UPPER(
+                               COALESCE(C.CLIENT_NAME,'') || ' ' ||
+                               COALESCE(C.LEGAL_FIRST_NAME,'') || ' ' ||
+                               COALESCE(C.LEGAL_MIDDLE_NAME,'') || ' ' ||
+                               COALESCE(DBA.DOING_BUSINESS_AS_NAME,'')
+                            ) LIKE '%' || token || '%'
+                   ) = REGEXP_COUNT(TRIM(:value), ' ') + 1
               THEN 100
       
               WHEN UPPER(C.LEGAL_MIDDLE_NAME) LIKE '%' || UPPER(:value) || '%' THEN 50
