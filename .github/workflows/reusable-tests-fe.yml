@@ -27,13 +27,16 @@ jobs:
           VITE_LOGOUT_BCEIDBUSINESS_URL: http://localhost:3000
           VITE_LOGOUT_IDIR_URL: http://localhost:3000
         with:
-          node_version: 22.12
+          node_version: 22.17.1
           commands: |
             npm ci
             npm run coverage
           dir: frontend
           sonar_args: >
-            -Dsonar.exclusions=**/coverage/**,**/tests/**,**/stub/**,**/reports/**,**/cypress/**,,**/assets/**,,**/dto/**,**/CoreConstants.ts,**/src/CoreConstants.ts,**/main.ts,**/routes.ts,**/sims-vue.d.ts,**/styles.ts,**/components.d.ts
+            -Dsonar.sources=src
+            -Dsonar.tests=tests,cypress
+            -Dsonar.exclusions=**/coverage/**,**/dist/**,**/node_modules/**,**/stub/**,**/reports/**,**/.nyc_output/**
+            -Dsonar.coverage.exclusions=eslint.config.mjs,vite.config.ts,cypress.config.ts,vitest.setup.ts,stub-tests.ts,components.d.ts,env.d.ts,**/assets/**,**/dto/**,**/CoreConstants.ts,**/src/CoreConstants.ts,**/main.ts,**/routes.ts,**/shims-vue.d.ts,**/styles.ts
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info            
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-frontend
