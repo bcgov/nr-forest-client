@@ -880,6 +880,14 @@ public final class ForestClientQueries {
           OR UPPER(CL.ADDRESS_1) LIKE '%' || :value || '%'
           OR UPPER(CL.POSTAL_CODE) LIKE '%' || :value || '%'
           OR UPPER(CL.EMAIL_ADDRESS) LIKE '%' || :value || '%'
+          OR UPPER(
+              COALESCE(C.REGISTRY_COMPANY_TYPE_CODE,'') ||
+              COALESCE(C.CORP_REGN_NMBR,'')
+          ) LIKE '%' || UPPER(:value) || '%'
+          OR UPPER(
+              COALESCE(C.REGISTRY_COMPANY_TYPE_CODE,'') || ' ' ||
+              COALESCE(C.CORP_REGN_NMBR,'')
+          ) LIKE '%' || UPPER(:value) || '%'
           OR (
               SELECT COUNT(*)
               FROM (
