@@ -899,22 +899,25 @@ public final class ForestClientQueries {
               COALESCE(C.CORP_REGN_NMBR,'')
           ) LIKE '%' || UPPER(:value) || '%'
           OR (
-              SELECT COUNT(*)
-              FROM (
-                  SELECT REGEXP_SUBSTR(UPPER(:value), '[^ ]+', 1, LEVEL) token
-                  FROM dual
-                  CONNECT BY LEVEL <= REGEXP_COUNT(:value, ' ') + 1
-              ) t
-              WHERE
-                  UPPER(
-                      COALESCE(C.LEGAL_FIRST_NAME,'') || ' ' ||
-                      COALESCE(C.LEGAL_MIDDLE_NAME,'') || ' ' ||
-                      COALESCE(C.CLIENT_NAME,'') || ' ' ||
-                      COALESCE(DBA.DOING_BUSINESS_AS_NAME,'')
-                  ) LIKE '%' || token || '%'
-          ) =
-          (
-              SELECT REGEXP_COUNT(:value, ' ') + 1 FROM dual
+              REGEXP_COUNT(TRIM(:value), ' ') > 0
+              AND (
+                  SELECT COUNT(*)
+                  FROM (
+                      SELECT REGEXP_SUBSTR(UPPER(:value), '[^ ]+', 1, LEVEL) token
+                      FROM dual
+                      CONNECT BY LEVEL <= REGEXP_COUNT(:value, ' ') + 1
+                  ) t
+                  WHERE
+                      UPPER(
+                          COALESCE(C.LEGAL_FIRST_NAME,'') || ' ' ||
+                          COALESCE(C.LEGAL_MIDDLE_NAME,'') || ' ' ||
+                          COALESCE(C.CLIENT_NAME,'') || ' ' ||
+                          COALESCE(DBA.DOING_BUSINESS_AS_NAME,'')
+                      ) LIKE '%' || token || '%'
+              ) =
+              (
+                  SELECT REGEXP_COUNT(:value, ' ') + 1 FROM dual
+              )
           )
       )
       AND CL.CLIENT_LOCN_CODE = '00'
