@@ -794,42 +794,64 @@ public final class ForestClientQueries {
   public static final String FIND_BY_PREDICTIVE_SEARCH_SCORE_LIKE = """
       (
           CASE
-              WHEN UPPER(C.CLIENT_NUMBER) LIKE UPPER('%' || :value || '%') THEN 100
-              WHEN UPPER(C.CLIENT_ACRONYM) LIKE UPPER('%' || :value || '%') THEN 100
-              WHEN UPPER(C.CLIENT_NAME) LIKE UPPER('%' || :value || '%') THEN 100
-              WHEN UPPER(C.LEGAL_FIRST_NAME) LIKE UPPER('%' || :value || '%') THEN 90
-              WHEN UPPER(C.LEGAL_MIDDLE_NAME) LIKE UPPER('%' || :value || '%') THEN 50
-              WHEN UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE UPPER('%' || :value || '%') THEN 75
-              WHEN UPPER(C.CLIENT_IDENTIFICATION) LIKE UPPER('%' || :value || '%') THEN 70
+              WHEN UPPER(C.CLIENT_NUMBER) LIKE '%' || UPPER(:value) || '%' THEN 100
+              WHEN UPPER(C.CLIENT_ACRONYM) LIKE '%' || UPPER(:value) || '%' THEN 100
+              WHEN UPPER(C.CLIENT_NAME) LIKE '%' || UPPER(:value) || '%' THEN 100
+              WHEN UPPER(C.LEGAL_FIRST_NAME) LIKE '%' || UPPER(:value) || '%' THEN 90
               WHEN UPPER(TRIM(
-                  COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
-                  COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
-                  COALESCE(C.CLIENT_NAME, '')
-              )) LIKE UPPER('%' || :value || '%') THEN 90
+                      COALESCE(C.LEGAL_FIRST_NAME,'') || ' ' ||
+                      COALESCE(C.CLIENT_NAME,'')
+                   )) LIKE '%' || UPPER(:value) || '%' THEN 90
               WHEN UPPER(TRIM(
-                  COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
-                  COALESCE(C.CLIENT_NAME, '')
-              )) LIKE UPPER('%' || :value || '%') THEN 90
+                      COALESCE(C.LEGAL_FIRST_NAME,'') || ' ' ||
+                      COALESCE(C.LEGAL_MIDDLE_NAME,'') || ' ' ||
+                      COALESCE(C.CLIENT_NAME,'')
+                   )) LIKE '%' || UPPER(:value) || '%' THEN 85
+      
+              WHEN UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE '%' || UPPER(:value) || '%' THEN 75
+              WHEN UPPER(C.CLIENT_IDENTIFICATION) LIKE '%' || UPPER(:value) || '%' THEN 70
+      
+              WHEN REGEXP_COUNT(TRIM(:value), ' ') = 0
+                   AND UPPER(
+                           COALESCE(C.CLIENT_NAME,'') || ' ' ||
+                           COALESCE(C.LEGAL_FIRST_NAME,'') || ' ' ||
+                           COALESCE(C.LEGAL_MIDDLE_NAME,'') || ' ' ||
+                           COALESCE(DBA.DOING_BUSINESS_AS_NAME,'')
+                        ) LIKE '%' || UPPER(TRIM(:value)) || '%'
+              THEN 100
+      
+              WHEN REGEXP_COUNT(TRIM(:value), ' ') > 0
+                   AND (
+                       SELECT COUNT(*)
+                       FROM (
+                           SELECT REGEXP_SUBSTR(UPPER(TRIM(:value)), '[^ ]+', 1, LEVEL) token
+                           FROM dual
+                           CONNECT BY LEVEL <= REGEXP_COUNT(TRIM(:value), ' ') + 1
+                       ) t
+                       WHERE UPPER(
+                               COALESCE(C.CLIENT_NAME,'') || ' ' ||
+                               COALESCE(C.LEGAL_FIRST_NAME,'') || ' ' ||
+                               COALESCE(C.LEGAL_MIDDLE_NAME,'') || ' ' ||
+                               COALESCE(DBA.DOING_BUSINESS_AS_NAME,'')
+                            ) LIKE '%' || token || '%'
+                   ) = REGEXP_COUNT(TRIM(:value), ' ') + 1
+              THEN 100
+      
+              WHEN UPPER(C.LEGAL_MIDDLE_NAME) LIKE '%' || UPPER(:value) || '%' THEN 50
+              WHEN UPPER(CL.ADDRESS_1) LIKE '%' || UPPER(:value) || '%' THEN 50
+              WHEN UPPER(CL.POSTAL_CODE) LIKE '%' || UPPER(:value) || '%' THEN 45
+              WHEN UPPER(CL.EMAIL_ADDRESS) LIKE '%' || UPPER(:value) || '%' THEN 40
+      
               WHEN UPPER(TRIM(
-                  COALESCE(C.CLIENT_NAME, '') || ' ' ||
-                  COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
-                  COALESCE(C.LEGAL_FIRST_NAME, '')
-              )) LIKE UPPER('%' || :value || '%') THEN 50
+                      COALESCE(C.REGISTRY_COMPANY_TYPE_CODE,'') ||
+                      COALESCE(C.CORP_REGN_NMBR,'')
+                   )) LIKE '%' || UPPER(:value) || '%' THEN 70
+      
               WHEN UPPER(TRIM(
-                  COALESCE(C.CLIENT_NAME, '') || ' ' ||
-                  COALESCE(C.LEGAL_FIRST_NAME, '')
-              )) LIKE UPPER('%' || :value || '%') THEN 50
-              WHEN UPPER(TRIM(
-                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') ||
-                  COALESCE(C.CORP_REGN_NMBR, '')
-              )) LIKE UPPER('%' || :value || '%') THEN 70
-              WHEN UPPER(TRIM(
-                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
-                  COALESCE(C.CORP_REGN_NMBR, '')
-              )) LIKE UPPER('%' || :value || '%') THEN 40
-              WHEN UPPER(CL.ADDRESS_1) LIKE UPPER('%' || :value || '%') THEN 50
-              WHEN UPPER(CL.POSTAL_CODE) LIKE UPPER('%' || :value || '%') THEN 45
-              WHEN UPPER(CL.EMAIL_ADDRESS) LIKE UPPER('%' || :value || '%') THEN 40
+                      COALESCE(C.REGISTRY_COMPANY_TYPE_CODE,'') || ' ' ||
+                      COALESCE(C.CORP_REGN_NMBR,'')
+                   )) LIKE '%' || UPPER(:value) || '%' THEN 40
+      
               ELSE 0
           END
       ) AS SCORE
@@ -865,35 +887,38 @@ public final class ForestClientQueries {
           OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE '%' || :value || '%'
           OR UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE '%' || :value || '%'
           OR UPPER(C.CLIENT_IDENTIFICATION) LIKE '%' || :value || '%'
-          OR UPPER(TRIM(
-              COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
-              COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
-              COALESCE(C.CLIENT_NAME, '')
-          )) LIKE '%' || :value || '%'
-          OR UPPER(TRIM(
-              COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
-              COALESCE(C.CLIENT_NAME, '')
-          )) LIKE '%' || :value || '%'
-          OR UPPER(TRIM(
-              COALESCE(C.CLIENT_NAME, '') || ' ' ||
-              COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
-              COALESCE(C.LEGAL_FIRST_NAME, '')
-          )) LIKE '%' || :value || '%'
-          OR UPPER(TRIM(
-              COALESCE(C.CLIENT_NAME, '') || ' ' ||
-              COALESCE(C.LEGAL_FIRST_NAME, '')
-          )) LIKE '%' || :value || '%'
-          OR UPPER(TRIM(
-              COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') ||
-              COALESCE(C.CORP_REGN_NMBR, '')
-          )) LIKE '%' || :value || '%'
-          OR UPPER(TRIM(
-                  COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
-                  COALESCE(C.CORP_REGN_NMBR, '')
-          )) LIKE '%' || :value || '%'
           OR UPPER(CL.ADDRESS_1) LIKE '%' || :value || '%'
           OR UPPER(CL.POSTAL_CODE) LIKE '%' || :value || '%'
           OR UPPER(CL.EMAIL_ADDRESS) LIKE '%' || :value || '%'
+          OR UPPER(
+              COALESCE(C.REGISTRY_COMPANY_TYPE_CODE,'') ||
+              COALESCE(C.CORP_REGN_NMBR,'')
+          ) LIKE '%' || UPPER(:value) || '%'
+          OR UPPER(
+              COALESCE(C.REGISTRY_COMPANY_TYPE_CODE,'') || ' ' ||
+              COALESCE(C.CORP_REGN_NMBR,'')
+          ) LIKE '%' || UPPER(:value) || '%'
+          OR (
+              REGEXP_COUNT(TRIM(:value), ' ') > 0
+              AND (
+                  SELECT COUNT(*)
+                  FROM (
+                      SELECT REGEXP_SUBSTR(UPPER(:value), '[^ ]+', 1, LEVEL) token
+                      FROM dual
+                      CONNECT BY LEVEL <= REGEXP_COUNT(:value, ' ') + 1
+                  ) t
+                  WHERE
+                      UPPER(
+                          COALESCE(C.LEGAL_FIRST_NAME,'') || ' ' ||
+                          COALESCE(C.LEGAL_MIDDLE_NAME,'') || ' ' ||
+                          COALESCE(C.CLIENT_NAME,'') || ' ' ||
+                          COALESCE(DBA.DOING_BUSINESS_AS_NAME,'')
+                      ) LIKE '%' || token || '%'
+              ) =
+              (
+                  SELECT REGEXP_COUNT(:value, ' ') + 1 FROM dual
+              )
+          )
       )
       AND CL.CLIENT_LOCN_CODE = '00'
       """;
