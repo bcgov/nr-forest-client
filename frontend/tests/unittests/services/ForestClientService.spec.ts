@@ -33,6 +33,7 @@ import {
   createRemovePatch,
   sortCodeNameByName,
   isNumeric,
+  extractKeywords,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type {
@@ -1094,4 +1095,78 @@ describe("isNumeric", () => {
       expect(isNumeric(param)).toBe(false);
     },
   );
+});
+
+describe("extractKeywords", () => {
+  describe("three keywords separated by white-space", () => {
+    const input = "foo bar1 5ABC";
+    it("returns the three keywords in lowercase", () => {
+      const result = extractKeywords(input);
+      expect(result).toHaveLength(3);
+      expect(result[0]).toEqual("foo");
+      expect(result[1]).toEqual("bar1");
+      expect(result[2]).toEqual("5abc");
+    });
+  });
+
+  describe("when it starts or ends with whitespace", () => {
+    const input = " foo bar1 5ABC ";
+    it("returns the three keywords in lowercase", () => {
+      const result = extractKeywords(input);
+      expect(result).toHaveLength(3);
+      expect(result[0]).toEqual("foo");
+      expect(result[1]).toEqual("bar1");
+      expect(result[2]).toEqual("5abc");
+    });
+  });
+
+  describe("when it contais a sequence of two or more white-spaces", () => {
+    const input = "foo  bar1   5ABC";
+    it("returns the three keywords in lowercase", () => {
+      const result = extractKeywords(input);
+      expect(result).toHaveLength(3);
+      expect(result[0]).toEqual("foo");
+      expect(result[1]).toEqual("bar1");
+      expect(result[2]).toEqual("5abc");
+    });
+  });
+
+  describe("when it contains \"special characters\"", () => {
+    const input = "foo  (bar1)   5ABC, Extra";
+    it("returns the four keywords in lowercase", () => {
+      const result = extractKeywords(input);
+      expect(result).toHaveLength(4);
+      expect(result[0]).toEqual("foo");
+      expect(result[1]).toEqual("bar1");
+      expect(result[2]).toEqual("5abc");
+      expect(result[3]).toEqual("extra");
+    });
+  });
+
+  describe("when it starts or ends with \"special characters\"", () => {
+    const input = "(foo) bar1 5ABC.";
+    it("returns the three keywords in lowercase", () => {
+      const result = extractKeywords(input);
+      expect(result).toHaveLength(3);
+      expect(result[0]).toEqual("foo");
+      expect(result[1]).toEqual("bar1");
+      expect(result[2]).toEqual("5abc");
+    });
+  });
+
+  describe("empty string", () => {
+    const input = "";
+    it("returns an empty array", () => {
+      const result = extractKeywords(input);
+      expect(result).toHaveLength(0);
+    });
+  });
+
+  describe("only white-spaces", () => {
+    const input = "   ";
+    it("returns an empty array", () => {
+      const result = extractKeywords(input);
+      expect(result).toHaveLength(0);
+    });
+  });
 });

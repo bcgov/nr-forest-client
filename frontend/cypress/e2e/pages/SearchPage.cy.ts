@@ -531,4 +531,38 @@ describe("Search Page", () => {
       });
     });
   });
+
+  describe("when empty search results contain only alphanumeric characters and non-repeated white-spaces", () => {
+    beforeEach(() => {
+      /*
+      This is a scenario where FSADT1-2094 could be reproduced.
+      If any row in the results includes a repeated white-space or a "special character" like "("
+      or ",", then the bug could not be reproduced.
+      */
+      cy.intercept(
+      {
+        pathname: "/api/clients/search",
+        query: {
+          keyword: "",
+        },
+      },
+      {
+        statusCode: 200,
+        fixture: "search/no-special-characters.json",
+        headers: {
+          "content-type": "application/json",
+          "x-total-count": "5",
+        },
+      },
+    ).as("emptySearch");
+
+      cy.get("#search-button").click();
+    });
+
+    it('doesn\'t display the "No exact match" message', () => {
+      cy.wait("@emptySearch");
+
+      cy.get("#no-exact-match").should("not.exist");
+    });
+  });
 });
