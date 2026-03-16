@@ -21,6 +21,7 @@ import {
   getTagColorByClientStatus,
   searchResultToText,
   isNumeric,
+  extractKeywords,
 } from "@/services/ForestClientService";
 
 import summit from "@carbon/pictograms/es/summit";
@@ -98,8 +99,7 @@ const search = (skipResetPage = false) => {
 };
 
 const resultsIncludeExactMatch = () => {
-  const wordsSplitter = /[^0-9a-z]/;
-  const searchWordsList = lastSearchKeyword.value.toLowerCase().split(wordsSplitter);
+  const searchWordsList = extractKeywords(lastSearchKeyword.value);
   const searchFieldsList: (keyof ClientSearchResult)[] = [
     "clientNumber",
     "clientAcronym",
@@ -114,7 +114,7 @@ const resultsIncludeExactMatch = () => {
         continue;
       }
       if (typeof fieldValue === "string") {
-        const fieldWordsList = fieldValue.toLowerCase().split(wordsSplitter);
+        const fieldWordsList = extractKeywords(fieldValue);
 
         /*
         Checking all the words from the search terms are included in the current field value.
