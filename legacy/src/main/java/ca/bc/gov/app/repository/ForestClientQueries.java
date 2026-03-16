@@ -794,13 +794,21 @@ public final class ForestClientQueries {
   public static final String FIND_BY_PREDICTIVE_SEARCH_SCORE_LIKE = """
       (
           CASE
-              WHEN UPPER(C.CLIENT_NUMBER) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%') THEN 100
-              WHEN UPPER(C.CLIENT_ACRONYM) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%') THEN 100
-              WHEN UPPER(C.CLIENT_NAME) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%') THEN 100
-              WHEN UPPER(C.LEGAL_FIRST_NAME) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%') THEN 90
-              WHEN UPPER(C.LEGAL_MIDDLE_NAME) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%') THEN 50
-              WHEN UPPER(DBA.DOING_BUSINESS_AS_NAME) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%') THEN 75
-              WHEN UPPER(C.CLIENT_IDENTIFICATION) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%') THEN 70
+              WHEN UPPER(C.CLIENT_NUMBER) LIKE UPPER('%' || :value || '%') THEN 100
+              WHEN UPPER(C.CLIENT_ACRONYM) LIKE UPPER('%' || :value || '%') THEN 100
+              WHEN UPPER(
+                  C.CLIENT_NAME) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%'
+              ) THEN 100
+              WHEN UPPER(
+                  C.LEGAL_FIRST_NAME) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%'
+              ) THEN 90
+              WHEN UPPER(
+                  C.LEGAL_MIDDLE_NAME) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%'
+              ) THEN 50
+              WHEN UPPER(
+                  DBA.DOING_BUSINESS_AS_NAME) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%'
+              ) THEN 75
+              WHEN UPPER(C.CLIENT_IDENTIFICATION) LIKE UPPER('%' || :value || '%') THEN 70
               WHEN UPPER(TRIM(
                   COALESCE(C.LEGAL_FIRST_NAME, '') || ' ' ||
                   COALESCE(C.LEGAL_MIDDLE_NAME, '') || ' ' ||
@@ -827,9 +835,15 @@ public final class ForestClientQueries {
                   COALESCE(C.REGISTRY_COMPANY_TYPE_CODE, '') || ' ' ||
                   COALESCE(C.CORP_REGN_NMBR, '')
               )) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%') THEN 40
-              WHEN UPPER(CL.ADDRESS_1) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%') THEN 50
-              WHEN UPPER(CL.POSTAL_CODE) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%') THEN 45
-              WHEN UPPER(CL.EMAIL_ADDRESS) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%') THEN 40
+              WHEN UPPER(
+                  CL.ADDRESS_1) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%'
+              ) THEN 50
+              WHEN UPPER(
+                  CL.POSTAL_CODE) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%'
+              ) THEN 45
+              WHEN UPPER(
+                  CL.EMAIL_ADDRESS) LIKE UPPER('%' || REPLACE(:value, ' ', '%') || '%'
+              ) THEN 40
               ELSE 0
           END
       ) AS SCORE
