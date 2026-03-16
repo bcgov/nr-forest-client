@@ -45,8 +45,8 @@
     <junit-platform.version>1.9.1</junit-platform.version>
     <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.6.3</mapstruct.version>
-    <logback.version>1.5.32</logback.version>
-    <flyway.version>11.20.3</flyway.version>
+    <logback.version>1.5.26</logback.version>
+    <flyway.version>11.11.0</flyway.version>
     <oracle-driver.version>23.26.1.0.0</oracle-driver.version>
     <opentelemetry.version>1.60.1</opentelemetry.version>
     <selenium.version>4.41.0</selenium.version>
