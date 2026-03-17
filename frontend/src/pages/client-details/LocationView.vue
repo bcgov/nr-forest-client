@@ -365,44 +365,49 @@ const handleRemoveAdditionalDelivery = () => {
         @update:model-value="revalidate = !revalidate"
         @update-location-name="emit('updateLocationName', $event)"
       />
-      <div class="form-group-buttons form-group-buttons--stretched">
-        <cds-button
-          :id="`location-${indexString}-SaveBtn`"
-          kind="primary"
-          size="md"
-          @click="saveForm"
-          :disabled="saving || !hasAnyChange || !valid"
-        >
-          <template v-if="props.createMode">
-            <span class="width-unset">Save location</span>
-            <Check16 slot="icon" />
-          </template>
-          <template v-else>
-            <span class="width-unset">Save changes</span>
-            <Save16 slot="icon" />
-          </template>
-        </cds-button>
-        <cds-button
-          :id="`location-${indexString}-CancelBtn`"
-          kind="tertiary"
-          size="md"
-          @click="cancel"
-          :disabled="saving"
-        >
-          <span class="width-unset">Cancel</span>
-          <Close16 slot="icon" />
-        </cds-button>
-        <cds-button
-          v-if="index > 0 && !props.createMode"
-          :id="`location-${indexString}-DeactivateBtn`"
-          kind="danger--tertiary"
-          size="md"
-          @click="handleDeactivate"
-          :disabled="saving"
-        >
-          <span class="width-unset">Deactivate location</span>
-          <Undefined16 slot="icon" />
-        </cds-button>
+      <div class="form-footer-group-next">
+        <span class="body-compact-01">
+          All required fields must be filled out correctly to enable the "Save" button below
+        </span>
+        <div class="form-group-buttons form-group-buttons--stretched">
+          <cds-button
+            :id="`location-${indexString}-SaveBtn`"
+            kind="primary"
+            size="md"
+            @click="saveForm"
+            :disabled="saving || !hasAnyChange || !valid"
+          >
+            <template v-if="props.createMode">
+              <span class="width-unset">Save location</span>
+              <Check16 slot="icon" />
+            </template>
+            <template v-else>
+              <span class="width-unset">Save changes</span>
+              <Save16 slot="icon" />
+            </template>
+          </cds-button>
+          <cds-button
+            :id="`location-${indexString}-CancelBtn`"
+            kind="tertiary"
+            size="md"
+            @click="cancel"
+            :disabled="saving"
+          >
+            <span class="width-unset">Cancel</span>
+            <Close16 slot="icon" />
+          </cds-button>
+          <cds-button
+            v-if="index > 0 && !props.createMode"
+            :id="`location-${indexString}-DeactivateBtn`"
+            kind="danger--tertiary"
+            size="md"
+            @click="handleDeactivate"
+            :disabled="saving"
+          >
+            <span class="width-unset">Deactivate location</span>
+            <Undefined16 slot="icon" />
+          </cds-button>
+        </div>
       </div>
     </div>
   </div>
