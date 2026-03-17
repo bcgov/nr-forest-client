@@ -531,4 +531,71 @@ describe("Search Page", () => {
       });
     });
   });
+
+  describe("exact match for specific situations", () => {
+    /*
+    These are sample scenarios that could fail before FSADT1-2094, specially crafted to prevent
+    this kind of bug from returning to the code base.
+    */
+    const scenarios = [{
+      description: "contains repeated white-space",
+      input: "MABELINV  LIMITED"
+    }, {
+      description: "contains any two non-alphanumerical characters in sequence (for example: comma and white-space)",
+      input: "MABELINV, LIMITED"
+    }, {
+      description: "starts or ends with white-space",
+      input: " MABELINV LIMITED "
+    }];
+
+    scenarios.forEach(({ description, input }) => {
+      describe(`when search input ${description}`, () => {
+        beforeEach(() => {
+          cy.fillFormEntry("#search-box", input);
+          cy.get("#search-button").click();
+        });
+
+        it('doesn\'t display the "No exact match" message', () => {
+          cy.wait("@fullSearch");
+    
+          cy.get("#no-exact-match").should("not.exist");
+        });
+      });
+    });
+  });
+
+  describe("when empty search results contain only alphanumeric characters and non-repeated white-spaces", () => {
+    beforeEach(() => {
+      /*
+      This is a scenario where FSADT1-2094 could be reproduced.
+      If ANY row in the results includes a repeated white-space or a sequence of two or more
+      non-alphanumerical characters (including white-space), like " (", or ", ", or ",(", then the
+      bug could not be reproduced.
+      */
+      cy.intercept(
+      {
+        pathname: "/api/clients/search",
+        query: {
+          keyword: "",
+        },
+      },
+      {
+        statusCode: 200,
+        fixture: "search/no-special-characters.json",
+        headers: {
+          "content-type": "application/json",
+          "x-total-count": "5",
+        },
+      },
+    ).as("emptySearch");
+
+      cy.get("#search-button").click();
+    });
+
+    it('doesn\'t display the "No exact match" message', () => {
+      cy.wait("@emptySearch");
+
+      cy.get("#no-exact-match").should("not.exist");
+    });
+  });
 });

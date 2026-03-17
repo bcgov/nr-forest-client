@@ -47,7 +47,7 @@
     <logback.version>1.5.26</logback.version>
     <oci.revision>${project.version}</oci.revision>
     <flyway.version>11.11.0</flyway.version>
-    <opentelemetry.version>1.59.0</opentelemetry.version>
+    <opentelemetry.version>1.60.1</opentelemetry.version>
     <commons-lang3.version>3.20.0</commons-lang3.version>
     <jackson.version>2.21.1</jackson.version>
     <jackson-bom.version>2.21.1</jackson-bom.version>
