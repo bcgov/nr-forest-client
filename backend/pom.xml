@@ -77,8 +77,8 @@
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.8</nimbus-jose-jwt.version>
         <spring-security-core.version>6.5.8</spring-security-core.version>
-        <micrometer.version>1.16.3</micrometer.version>
-        <micrometer-tracing.version>1.6.3</micrometer-tracing.version>
+        <micrometer.version>1.16.4</micrometer.version>
+        <micrometer-tracing.version>1.6.4</micrometer-tracing.version>
         <flyway.version>11.11.0</flyway.version>
         <opentelemetry.version>1.60.1</opentelemetry.version>
         <selenium.version>4.41.0</selenium.version>
