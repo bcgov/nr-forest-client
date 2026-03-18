@@ -595,7 +595,7 @@ const clientIdentificationMask = "U".repeat(40);
         <span 
           class="icon-label-inline" 
           v-if="originalClient.clientCommentUpdateUser && originalClient.clientCommentUpdateDate"
-        > | Note by <UserAvatar20 /> 
+        > | Last updated by <UserAvatar20 /> 
           {{ removePrefix(originalClient.clientCommentUpdateUser) }} &middot; 
           {{ formatDate(originalClient.clientCommentUpdateDate) }}
         </span>
