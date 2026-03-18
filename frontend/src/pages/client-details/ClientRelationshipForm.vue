@@ -575,38 +575,43 @@ const confirmNewClient = () => {
         @update:selected-value="updateHasSigningAuthority($event)"
       />
     </div>
-    <div class="form-group-buttons form-group-buttons--stretched">
-      <cds-button
-        :id="`rc-${locationIndex}-${index}-SaveBtn`"
-        kind="primary"
-        size="md"
-        @click="save"
-        :disabled="saving || !hasAnyChange || !checkValid()"
-      >
-        <span class="width-unset">Save changes</span>
-        <Save16 slot="icon" />
-      </cds-button>
-      <cds-button
-        :id="`rc-${locationIndex}-${index}-CancelBtn`"
-        kind="tertiary"
-        size="md"
-        @click="cancel"
-        :disabled="saving"
-      >
-        <span class="width-unset">Cancel</span>
-        <Close16 slot="icon" />
-      </cds-button>
-      <cds-button
-        v-if="props.locationIndex !== 'null'"
-        :id="`rc-${locationIndex}-${index}-DeleteBtn`"
-        kind="danger--tertiary"
-        size="md"
-        @click="handleDelete"
-        :disabled="saving"
-      >
-        <span class="width-unset">Delete relationship</span>
-        <Trash16 slot="icon" />
-      </cds-button>
+    <div class="form-footer-group-next">
+      <span class="body-compact-01">
+        All required fields must be filled out correctly to enable the "Save" button below
+      </span>
+      <div class="form-group-buttons form-group-buttons--stretched">
+        <cds-button
+          :id="`rc-${locationIndex}-${index}-SaveBtn`"
+          kind="primary"
+          size="md"
+          @click="save"
+          :disabled="saving || !hasAnyChange || !checkValid()"
+        >
+          <span class="width-unset">Save changes</span>
+          <Save16 slot="icon" />
+        </cds-button>
+        <cds-button
+          :id="`rc-${locationIndex}-${index}-CancelBtn`"
+          kind="tertiary"
+          size="md"
+          @click="cancel"
+          :disabled="saving"
+        >
+          <span class="width-unset">Cancel</span>
+          <Close16 slot="icon" />
+        </cds-button>
+        <cds-button
+          v-if="props.locationIndex !== 'null'"
+          :id="`rc-${locationIndex}-${index}-DeleteBtn`"
+          kind="danger--tertiary"
+          size="md"
+          @click="handleDelete"
+          :disabled="saving"
+        >
+          <span class="width-unset">Delete relationship</span>
+          <Trash16 slot="icon" />
+        </cds-button>
+      </div>
     </div>
   </div>
   <cds-modal
