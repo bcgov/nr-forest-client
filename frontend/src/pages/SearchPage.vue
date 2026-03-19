@@ -313,11 +313,20 @@ onMounted(() => {
           <Search16 slot="icon" />
         </cds-button>
       </div>
-
-      <p id="no-exact-match" v-if="noExactMatch" class="body-compact-01">
-        We couldn’t find an exact match. Check these records for what you need.
-      </p>
     </div>
+
+    <cds-inline-notification
+      v-shadow="2"
+      id="no-exact-match"
+      class="table-notification"
+      v-if="noExactMatch"
+      low-contrast="true"
+      open="true"
+      kind="info">
+      <div class="cds--inline-notification-content">
+        We couldn’t find an exact match. Check these records for what you need.
+      </div>
+    </cds-inline-notification>
 
     <div id="datatable" v-if="userhasAuthority">
 
