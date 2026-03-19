@@ -884,27 +884,32 @@ const clientIdentificationMask = "U".repeat(40);
         </cds-tooltip>
       </div>
     </textarea-input-component>
-    <div class="form-group-buttons form-group-buttons--stretched">
-      <cds-button
-        id="summarySaveBtn"
-        kind="primary"
-        size="md"
-        @click="save"
-        :disabled="saving || !hasAnyChange || !checkValid()"
-      >
-        <span class="width-unset">Save changes</span>
-        <Save16 slot="icon" />
-      </cds-button>
-      <cds-button
-        id="summaryCancelBtn"
-        kind="tertiary"
-        size="md"
-        @click="cancel"
-        :disabled="saving"
-      >
-        <span class="width-unset">Cancel</span>
-        <Close16 slot="icon" />
-      </cds-button>
+    <div class="form-footer-group-next">
+      <span class="body-compact-01">
+        All required fields must be filled out correctly to enable the "Save" button below
+      </span>
+      <div class="form-group-buttons form-group-buttons--stretched">
+        <cds-button
+          id="summarySaveBtn"
+          kind="primary"
+          size="md"
+          @click="save"
+          :disabled="saving || !hasAnyChange || !checkValid()"
+        >
+          <span class="width-unset">Save changes</span>
+          <Save16 slot="icon" />
+        </cds-button>
+        <cds-button
+          id="summaryCancelBtn"
+          kind="tertiary"
+          size="md"
+          @click="cancel"
+          :disabled="saving"
+        >
+          <span class="width-unset">Cancel</span>
+          <Close16 slot="icon" />
+        </cds-button>
+      </div>
     </div>
   </div>
 </template>
