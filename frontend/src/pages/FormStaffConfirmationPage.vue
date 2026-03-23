@@ -24,7 +24,7 @@ const openClientDetails = (clientNumber: string) => {
     <SVG alt="Badge pictogram" class="submission-badge" role="presentation"></SVG>
     <div class="form-header form-header-application-submitted">
       <h1 class="fluid-heading-04">New client {{ clientNumber }} has been created!</h1>
-      <p class="fluid-paragraph-01" v-if="notifyClientInd === 'Y' && clientEmail.length > 0">
+      <p class="fluid-paragraph-01" v-if="notifyClientInd === 'Y' && clientEmail?.length > 0">
         We’ll send the client number and details submitted to <strong>{{ clientEmail }}</strong>
       </p>
       <div class="form-group-buttons">
