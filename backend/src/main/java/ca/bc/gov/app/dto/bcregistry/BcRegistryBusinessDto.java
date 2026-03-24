@@ -1,6 +1,7 @@
 package ca.bc.gov.app.dto.bcregistry;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import lombok.With;
@@ -18,7 +19,8 @@ public record BcRegistryBusinessDto(
     String identifier,
     String legalName,
     String legalType,
-    String state
+    String state,
+    ZonedDateTime registrationDateTime
 ) {
 
   public String getResolvedLegalName() {

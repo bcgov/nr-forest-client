@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
@@ -119,6 +120,24 @@ public class ClientController {
   public Mono<String> getGoodStanding(@PathVariable String clientNumber) {
     log.info("Requesting good standing indicator for client number {}", clientNumber);
     return clientService.getGoodStandingIndicator(clientNumber);
+  }
+
+  /**
+   * Retrieves BC Registry information for a given registration number.
+   *
+   * <p>This endpoint fetches the document data from BC Registry associated with the
+   * specified registration number, including business details, offices, and parties.
+   *
+   * @param registrationNumber the registration number to look up in BC Registry
+   * @return a {@link Flux} emitting {@link BcRegistryDocumentDto} entries for the
+   *         given registration number
+   */
+  @GetMapping("/{registrationNumber}/bc-registry-information")
+  public Flux<BcRegistryDocumentDto> getBcRegistryInformation(
+      @PathVariable String registrationNumber) {
+    log.info("Requesting BC Registry information for registration number {}",
+        registrationNumber);
+    return clientService.getBcRegistryInformation(registrationNumber);
   }
   
   /**

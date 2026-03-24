@@ -100,7 +100,8 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         corpRegnNmbr,
         "MY COMPANY LTD.",
         "TOTS",
-        "Active");
+        "Active",
+        null);
 
     BcRegistryOfficesDto mockOffices = new BcRegistryOfficesDto(mockBusinessOffice);
 
@@ -305,7 +306,8 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         corpRegnNmbr,
         "MY COMPANY LTD.",
         "LIC",
-        "Active"
+        "Active",
+        null
     );
 
     BcRegistryDocumentDto documentDto = new BcRegistryDocumentDto(

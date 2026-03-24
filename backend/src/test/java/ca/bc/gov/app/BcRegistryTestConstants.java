@@ -119,7 +119,8 @@ public class BcRegistryTestConstants {
           "C0123456",
           "EXAMPLE COMPANY LTD.",
           "C",
-          "ACTIVE"
+          "ACTIVE",
+          null
       ),
       new BcRegistryOfficesDto(
           new BcRegistryBusinessAdressesDto(
@@ -218,7 +219,8 @@ public class BcRegistryTestConstants {
           "FM0123456",
           "EXAMPLE COMPANY LTD.",
           "SP",
-          "ACTIVE"
+          "ACTIVE",
+          null
       ),
       new BcRegistryOfficesDto(null),
       List.of(
@@ -371,7 +373,8 @@ public class BcRegistryTestConstants {
           "FM0123210",
           "JOHNATHAN WICK",
           "SP",
-          "ACTIVE"
+          "ACTIVE",
+          null
       ),
       new BcRegistryOfficesDto(
           new BcRegistryBusinessAdressesDto(
@@ -550,7 +553,8 @@ public class BcRegistryTestConstants {
           "FM0123432",
           "JOHNATHAN VALELONG WICK, MARCEL ST. AMANT",
           "GP",
-          "ACTIVE"
+          "ACTIVE",
+          null
       ),
       new BcRegistryOfficesDto(null),
       List.of(
@@ -637,7 +641,8 @@ public class BcRegistryTestConstants {
           "XP0123456",
           "EXAMPLE FUND",
           "XP",
-          "ACTIVE"
+          "ACTIVE",
+          null
       ),
       new BcRegistryOfficesDto(
           new BcRegistryBusinessAdressesDto(

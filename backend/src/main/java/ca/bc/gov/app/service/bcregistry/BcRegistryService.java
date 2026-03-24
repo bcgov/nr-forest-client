@@ -329,7 +329,8 @@ public class BcRegistryService {
             facet.identifier(),
             facet.name(),
             facet.legalType(),
-            facet.status()
+            facet.status(),
+            null
         );
 
     return

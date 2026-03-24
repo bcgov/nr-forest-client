@@ -159,6 +159,21 @@ public class ClientService {
             );
   }
   
+  /**
+   * Retrieves BC Registry document data for a given registration number.
+   *
+   * <p>This method delegates to the BC Registry service to fetch the document
+   * information associated with the specified registration number.
+   *
+   * @param registrationNumber the registration number to look up in BC Registry
+   * @return a {@link Flux} emitting {@link BcRegistryDocumentDto} entries for the
+   *         given registration number
+   */
+  public Flux<BcRegistryDocumentDto> getBcRegistryInformation(String registrationNumber) {
+    log.info("Requesting BC Registry information for {}", registrationNumber);
+    return bcRegistryService.requestDocumentData(registrationNumber);
+  }
+
   public Mono<String> getGoodStandingIndicator(String clientNumber) {
     return legacyService
         .searchByClientNumber(clientNumber)
