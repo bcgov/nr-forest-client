@@ -73,6 +73,7 @@ public class ClientService {
     return bcRegistryService
         .requestDocumentData(clientNumber)
         .next()
+        .doOnError(e -> log.error("Failed to fetch BC Registry document for {}: {}", clientNumber, e.toString(), e))
         .doOnNext(document ->
             log.info("Searching on Oracle legacy db for {} {}",
                 document.business().identifier(),
@@ -178,11 +179,11 @@ public class ClientService {
                 })
         )
         .onErrorResume(NoClientDataFound.class, ex -> {
-          log.error("No data found on BC Registry for client number: {}", clientNumber);
+          log.error("No data found on BC Registry for client number: {} -- {}", clientNumber, ex.toString());
           return Mono.just(StringUtils.EMPTY);
         })
         .onErrorResume(UnexpectedErrorException.class, ex -> {
-          log.error("Unexpected error occurred while fetching data for client number: {}", clientNumber);
+          log.error("Unexpected error occurred while fetching data for client number: {} -- {}", clientNumber, ex.toString(), ex);
           return Mono.just(StringUtils.EMPTY);
         })
         .switchIfEmpty(Mono.just(StringUtils.EMPTY));

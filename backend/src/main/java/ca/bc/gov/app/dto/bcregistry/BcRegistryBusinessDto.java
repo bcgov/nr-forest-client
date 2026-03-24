@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import lombok.With;
 import org.springframework.util.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @With
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -30,7 +31,11 @@ public record BcRegistryBusinessDto(
     return
         names
             .stream()
-            .sorted(Comparator.comparing(BcRegistryAlternateNameDto::registeredDate))
+            .filter(name -> StringUtils.isNotBlank(name.name()))
+            .sorted(Comparator.comparing(
+                BcRegistryAlternateNameDto::registeredDate,
+                Comparator.nullsLast(Comparator.naturalOrder())
+            ))
             .map(BcRegistryAlternateNameDto::name)
             .findFirst()
             .orElse(legalName);
