@@ -25,6 +25,7 @@ import Location16 from "@carbon/icons-vue/es/location/16";
 import User16 from "@carbon/icons-vue/es/user/16";
 import NetworkEnterprise16 from "@carbon/icons-vue/es/network--enterprise/16";
 import RecentlyViewed16 from "@carbon/icons-vue/es/recently-viewed/16";
+import DocumentSigned16 from "@carbon/icons-vue/es/document--signed/16"
 import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
 import Location20 from "@carbon/icons-vue/es/location/20";
 import User20 from "@carbon/icons-vue/es/user/20";
@@ -76,6 +77,7 @@ import ContactView from "@/pages/client-details/ContactView.vue";
 import LocationRelationshipsView from "@/pages/client-details/LocationRelationshipsView.vue";
 import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
 import HistoryView from "@/pages/client-details/HistoryView.vue";
+import BcRegistryView from "@/pages/client-details/BcRegistryView.vue";
 import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 import { type GoToTab, type OperateRelatedClient, type OperationOptions, type SaveableComponent } from "./client-details/shared";
 
@@ -897,6 +899,8 @@ const isHistoryPanelVisible = ref(false);
 
 const isRelatedClientsPanelVisible = ref(false);
 
+const isBcRegistryPanelVisible = ref(false);
+
 onMounted(async () => {
   await nextTick();
 
@@ -914,6 +918,11 @@ onMounted(async () => {
         const relatedPanel = document.getElementById('panel-related');
         if (relatedPanel) {
           isRelatedClientsPanelVisible.value = !relatedPanel.hasAttribute('hidden');
+        }
+
+        const bcPanel = document.getElementById('panel-bc');
+        if (bcPanel) {
+          isBcRegistryPanelVisible.value = !bcPanel.hasAttribute('hidden');
         }
       }, 0);
     });
@@ -1095,6 +1104,12 @@ const createOnToggle = (state: CollapsibleState) => (event: any) => {
           <div>
             History
             <RecentlyViewed16 />
+          </div>
+        </cds-tab>
+        <cds-tab id="tab-bc" target="panel-bc" value="bc">
+          <div>
+            BC Registry
+            <DocumentSigned16 />
           </div>
         </cds-tab>
       </cds-tabs>
@@ -1404,6 +1419,13 @@ const createOnToggle = (state: CollapsibleState) => (event: any) => {
             <history-view />
           </template>
         </div>
+      </div>
+
+      <div id="panel-bc" role="tabpanel" aria-labelledby="tab-bc" hidden>
+        <bc-registry-view
+          v-if="isBcRegistryPanelVisible"
+          :client-number="clientNumber"
+        />
       </div>
     </div>
   </div>

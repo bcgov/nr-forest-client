@@ -1,0 +1,21 @@
+{
+  "tableName": "ClientInformation",
+  "idx": "1255059",
+  "identifierLabel": "Client summary updated",
+  "updateTimestamp": "2025-05-20T13:44:43",
+  "updateUserid": "IDIR\\MARIAMAR",
+  "changeType": "UPD",
+  "details": [
+    {
+      "columnName": "clientStatusDesc",
+      "oldValue": "Deactivated",
+      "newValue": "Active"
+    }
+  ],
+  "reasons": [
+    {
+      "actionCode": "RACT",
+      "reason": "Obligation Satisfied"
+    }
+  ]
+}

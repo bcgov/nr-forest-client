@@ -1353,6 +1353,12 @@ cds-accordion-item:not([open]) {
   gap: 0.25rem;
 }
 
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .horizontal-input-grouping, .horizontal-input-grouping-1_5 {
   display: flex;
   flex-direction: row;
