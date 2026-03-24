@@ -227,7 +227,7 @@ public class BcRegistryService {
             .tag("kind", "docreq")
             .tap(Micrometer.observation(registry))
             .flatMapIterable(BcRegistryDocumentRequestResponseDto::documents)
-            .doOnNext(entry -> log.info("Found document entry for {}: {}", value, entry))
+            .doOnNext(entry -> log.info("Found document entry for {}", value))
             .map(BcRegistryDocumentRequestDocumentDto::documentKey)
             .flatMap(documentKey -> getDocumentData(value, documentKey))
             //This will try to load the standing and business data for entries with no documents
@@ -237,7 +237,7 @@ public class BcRegistryService {
   }
 
   private Mono<BcRegistryDocumentDto> getDocumentData(String identifier, String documentKey) {
-    log.info("Requesting document {} for identifier {} for details", documentKey, identifier);
+    log.info("Requesting document details for {}", identifier);
     return
         bcRegistryApi
             .get()
@@ -263,10 +263,6 @@ public class BcRegistryService {
             .name(ApplicationConstant.REQUEST_BCREGISTRY)
             .tag("kind", "docget")
             .tap(Micrometer.observation(registry))
-            .doOnNext(json -> log.info(
-                "BC Registry raw JSON doc response for {} / {}: {}",
-                identifier, documentKey, json
-            ))
             .flatMap(json -> {
               try {
                 return Mono.just(OBJECT_MAPPER.readValue(json, BcRegistryDocumentDto.class));
@@ -283,7 +279,7 @@ public class BcRegistryService {
                       .map(BcRegistryDocumentDto::business)
                       .map(BcRegistryBusinessDto::legalName)
                       .orElse("<unknown>");
-                  log.info("Document loaded for {} {} as {}", identifier, documentKey, legalName);
+                  log.info("Document loaded for {} as {}", identifier, legalName);
                 });
   }
 
