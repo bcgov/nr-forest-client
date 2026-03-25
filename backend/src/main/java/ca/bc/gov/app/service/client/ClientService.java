@@ -73,11 +73,8 @@ public class ClientService {
     return bcRegistryService
         .requestDocumentData(clientNumber)
         .next()
-        .doOnError(error -> 
-            log.error("Failed to fetch BC Registry document for {}: {}", 
-                clientNumber, 
-                error.getMessage(),
-                error))
+        .doOnError(error ->
+            log.error("Failed to fetch BC Registry document for {}", clientNumber, error))
         .doOnNext(document ->
             log.info("Searching on Oracle legacy db for {} {}",
                 document.business().identifier(),
