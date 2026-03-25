@@ -287,8 +287,8 @@ public class BcRegistryService {
     
     log.info("buildDocumentData invoked for facet: {}", facet.identifier());
      // We have no address data in the facet, so we'll just create empty address objects
-     BcRegistryAddressDto address =
-         new BcRegistryAddressDto(null, null, null, null, null, null, null, null);
+    BcRegistryAddressDto address =
+        new BcRegistryAddressDto(null, null, null, null, null, null, null, null);
 
     // We build the alternate name that's being used down the line
     BcRegistryAlternateNameDto alternateName =

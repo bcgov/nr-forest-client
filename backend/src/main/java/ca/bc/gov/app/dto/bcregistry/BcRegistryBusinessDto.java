@@ -5,8 +5,8 @@ import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import lombok.With;
-import org.springframework.util.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 @With
 @JsonIgnoreProperties(ignoreUnknown = true)
