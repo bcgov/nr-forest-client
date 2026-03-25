@@ -57,8 +57,7 @@ public class BcRegistryService {
 
   private final WebClient bcRegistryApi;
   private final ObservationRegistry registry;
-
-  // ObjectMapper instance used for logging/parsing raw JSON responses
+  
   private static final ObjectMapper OBJECT_MAPPER =
       new ObjectMapper()
           .registerModule(new JavaTimeModule())
@@ -132,7 +131,6 @@ public class BcRegistryService {
             .name(ApplicationConstant.REQUEST_BCREGISTRY)
             .tag("kind", "facet")
             .tap(Micrometer.observation(registry))
-            .doOnNext(json -> log.info("BC Registry raw JSON response: {}", json))
             .flatMapMany(json -> {
               try {
                 BcRegistryFacetResponseDto dto =
