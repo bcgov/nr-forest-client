@@ -286,7 +286,7 @@ public class BcRegistryService {
       BcRegistryFacetSearchResultEntryDto facet
   ) {
     
-    log.info("buildDocumentData invoked for facet: {}", facet.identifier());
+    log.debug("buildDocumentData invoked for facet: {}", facet.identifier());
      // We have no address data in the facet, so we'll just create empty address objects
     BcRegistryAddressDto address =
         new BcRegistryAddressDto(null, null, null, null, null, null, null, null);
