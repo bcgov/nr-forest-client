@@ -149,7 +149,7 @@ public class BcRegistryService {
                 ));
               }
             })
-            .filter(entry -> entry.status().equalsIgnoreCase("active"))
+            .filter(entry -> "active".equalsIgnoreCase(entry.status()))
             .doOnNext(
                 content ->
                     log.info(
