@@ -186,7 +186,7 @@ public class BcRegistryTestConstants {
           {
             "officer": {
               "email": "",
-              "identifier": "BC0123456",
+              "id": "BC0123456",
               "organizationName": "EXAMPLE COMPANY LTD.",
               "partyType": "organization"
             },
