@@ -650,7 +650,27 @@ public class BcRegistryTestConstants {
               new BcRegistryAddressDto(null, null, null, null, null, null, null, null)
           )
       ),
-      List.of()
+      List.of(
+          new BcRegistryPartyDto(
+              null, null,
+              new BcRegistryOfficerDto(
+                  null,
+                  "EXAMPLE",
+                  "INVESTMENTS INC.",
+                  null,
+                  StringUtils.EMPTY,
+                  StringUtils.EMPTY,
+                  "organization"
+              ),
+              List.of(
+                  new BcRegistryRoleDto(
+                      null,
+                      null,
+                      "Partner"
+                  )
+              )
+          )
+      )
   );
 
 
