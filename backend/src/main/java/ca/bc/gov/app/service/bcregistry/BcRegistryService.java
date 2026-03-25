@@ -266,9 +266,10 @@ public class BcRegistryService {
                 return Mono.just(OBJECT_MAPPER.readValue(json, BcRegistryDocumentDto.class));
               } catch (Exception e) {
                 log.error("Failed to parse BC Registry document JSON for {} / {}: {}", identifier, documentKey, e.toString(), e);
-                // Return empty so the document fetch failure doesn't abort the whole doc request chain.
-                // The outer requestDocumentData will then fall back to facet-based building.
-                return Mono.empty();
+                // Signal NoClientDataFound so the outer requestDocumentData's
+                // onErrorResume(NoClientDataFound.class, ...) fallback kicks in
+                // and builds the document from the facet search instead.
+                return Mono.error(new NoClientDataFound(identifier));
               }
             })
             .doOnNext(
