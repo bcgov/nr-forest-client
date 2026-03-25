@@ -328,4 +328,157 @@ class ClientServiceIntegrationTest extends AbstractTestContainerIntegrationTest 
         .verifyComplete();
   }
 
+  @Test
+  @DisplayName("Get BC Registry information and return document data")
+  void shouldGetBcRegistryInformationSuccessfully() {
+
+    String registrationNumber = "BC0123456";
+
+    BcRegistryBusinessDto mockBusinessDto = new BcRegistryBusinessDto(
+        List.of(),
+        true,
+        false,
+        false,
+        false,
+        registrationNumber,
+        "TEST COMPANY LTD.",
+        "BC",
+        "Active",
+        null
+    );
+
+    BcRegistryAddressDto mockAddress = new BcRegistryAddressDto(
+        "Victoria",
+        "Canada",
+        "BC",
+        "V8V1X4",
+        "501 Belleville Street",
+        "",
+        "",
+        ""
+    );
+
+    BcRegistryBusinessAdressesDto mockBusinessOffice = new BcRegistryBusinessAdressesDto(
+        mockAddress,
+        mockAddress
+    );
+
+    BcRegistryOfficesDto mockOffices = new BcRegistryOfficesDto(mockBusinessOffice);
+
+    BcRegistryOfficerDto mockOfficer = new BcRegistryOfficerDto(
+        "officer@email.com",
+        "John",
+        "Doe",
+        "D",
+        "123456",
+        "Test Company Ltd.",
+        "Person"
+    );
+
+    BcRegistryRoleDto mockRole = new BcRegistryRoleDto(
+        LocalDate.now().minusYears(1),
+        null,
+        "Director"
+    );
+
+    BcRegistryPartyDto mockParty = new BcRegistryPartyDto(
+        mockAddress,
+        mockAddress,
+        mockOfficer,
+        List.of(mockRole)
+    );
+
+    BcRegistryDocumentDto mockDocumentDto = new BcRegistryDocumentDto(
+        mockBusinessDto,
+        mockOffices,
+        List.of(mockParty)
+    );
+
+    Mockito
+        .when(bcRegistryService.requestDocumentData(registrationNumber))
+        .thenReturn(Flux.just(mockDocumentDto));
+
+    service.getBcRegistryInformation(registrationNumber)
+        .as(StepVerifier::create)
+        .expectNext(mockDocumentDto)
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Get BC Registry information with empty result")
+  void shouldGetBcRegistryInformationEmpty() {
+
+    String registrationNumber = "BC9999999";
+
+    Mockito
+        .when(bcRegistryService.requestDocumentData(registrationNumber))
+        .thenReturn(Flux.empty());
+
+    service.getBcRegistryInformation(registrationNumber)
+        .as(StepVerifier::create)
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Get BC Registry information with error from service")
+  void shouldGetBcRegistryInformationError() {
+
+    String registrationNumber = "INVALID";
+
+    Mockito
+        .when(bcRegistryService.requestDocumentData(registrationNumber))
+        .thenReturn(Flux.error(new RuntimeException("BC Registry service unavailable")));
+
+    service.getBcRegistryInformation(registrationNumber)
+        .as(StepVerifier::create)
+        .expectErrorMessage("BC Registry service unavailable")
+        .verify();
+  }
+
+  @Test
+  @DisplayName("Get BC Registry information with multiple documents")
+  void shouldGetBcRegistryInformationMultipleDocuments() {
+
+    String registrationNumber = "FM0012345";
+
+    BcRegistryBusinessDto mockBusinessDto1 = new BcRegistryBusinessDto(
+        List.of(),
+        true,
+        false,
+        false,
+        false,
+        registrationNumber,
+        "FIRST COMPANY LTD.",
+        "SP",
+        "Active",
+        null
+    );
+
+    BcRegistryBusinessDto mockBusinessDto2 = new BcRegistryBusinessDto(
+        List.of(),
+        false,
+        false,
+        false,
+        false,
+        registrationNumber,
+        "SECOND COMPANY LTD.",
+        "GP",
+        "Active",
+        null
+    );
+
+    BcRegistryDocumentDto doc1 = new BcRegistryDocumentDto(mockBusinessDto1, null, List.of());
+    BcRegistryDocumentDto doc2 = new BcRegistryDocumentDto(mockBusinessDto2, null, List.of());
+
+    Mockito
+        .when(bcRegistryService.requestDocumentData(registrationNumber))
+        .thenReturn(Flux.just(doc1, doc2));
+
+    service.getBcRegistryInformation(registrationNumber)
+        .as(StepVerifier::create)
+        .expectNext(doc1)
+        .expectNext(doc2)
+        .verifyComplete();
+  }
+
 }
