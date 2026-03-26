@@ -56,7 +56,7 @@
             <column ascending="true" name="contact_type_code"/>
          </index>
       </table>
-      <table name="country_code" numRows="249" remarks="A list of countries, serving as a reference for country-specific data." schema="nrfc" type="TABLE">
+      <table name="country_code" remarks="A list of countries, serving as a reference for country-specific data." schema="nrfc" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="country_code" nullable="false" remarks="A code representing the code of a country." size="2" type="varchar" typeCode="12">
             <child column="country_code" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="nrfc" table="identification_type_code"/>
             <child column="country_code" foreignKey="province_code_country_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="province_code"/>
@@ -149,7 +149,7 @@
             <column ascending="true" name="identification_type_code"/>
          </index>
       </table>
-      <table name="province_code" numRows="5055" remarks="A list of provinces, states, departments or territories, serving as a reference for province-specific data." schema="nrfc" type="TABLE">
+      <table name="province_code" remarks="A list of provinces, states, departments or territories, serving as a reference for province-specific data." schema="nrfc" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="province_code" nullable="false" remarks="A code representing the code of a province, state, department or territory." size="4" type="varchar" typeCode="12">
             <child column="identification_province_code" foreignKey="province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_detail"/>
             <child column="province_code" foreignKey="submission_location_province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="submission_location"/>
@@ -269,8 +269,8 @@
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="street_address" nullable="false" remarks="The address of a client, including the street number and street name." size="40" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="country_code" nullable="false" remarks="A code representing the code of a country." size="2" type="varchar" typeCode="12">
-            <parent column="country_code" foreignKey="submission_location_country_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="country_code"/>
             <parent column="country_code" foreignKey="submission_location_province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="province_code"/>
+            <parent column="country_code" foreignKey="submission_location_country_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="country_code"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="province_code" nullable="false" remarks="A code representing the code of a province, state, department or territory." size="2" type="varchar" typeCode="12">
             <parent column="province_code" foreignKey="submission_location_province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="province_code"/>
