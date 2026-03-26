@@ -33,10 +33,10 @@ import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.annotation.Observed;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -265,7 +265,8 @@ public class BcRegistryService {
               try {
                 return Mono.just(OBJECT_MAPPER.readValue(json, BcRegistryDocumentDto.class));
               } catch (Exception e) {
-                log.error("Failed to parse BC Registry document JSON for {} / {}: {}", identifier, documentKey, e.toString(), e);
+                log.error("Failed to parse BC Registry document JSON for {} / {}: {}", 
+                    identifier, documentKey, e.toString(), e);
                 // Signal NoClientDataFound so the outer requestDocumentData's
                 // onErrorResume(NoClientDataFound.class, ...) fallback kicks in
                 // and builds the document from the facet search instead.
@@ -287,7 +288,7 @@ public class BcRegistryService {
   ) {
     
     log.debug("buildDocumentData invoked for facet: {}", facet.identifier());
-     // We have no address data in the facet, so we'll just create empty address objects
+    // We have no address data in the facet, so we'll just create empty address objects
     BcRegistryAddressDto address =
         new BcRegistryAddressDto(null, null, null, null, null, null, null, null);
 
@@ -373,7 +374,8 @@ public class BcRegistryService {
 
   private String extractRootCauseOrMessage(String rawBody) {
     try {
-      BcRegistryExceptionMessageDto dto = OBJECT_MAPPER.readValue(rawBody, BcRegistryExceptionMessageDto.class);
+      BcRegistryExceptionMessageDto dto =
+          OBJECT_MAPPER.readValue(rawBody, BcRegistryExceptionMessageDto.class);
       if (StringUtils.isNotBlank(dto.rootCause())) {
         return dto.rootCause();
       }
@@ -388,7 +390,8 @@ public class BcRegistryService {
 
   private String extractErrorMessage(String rawBody) {
     try {
-      BcRegistryExceptionMessageDto dto = OBJECT_MAPPER.readValue(rawBody, BcRegistryExceptionMessageDto.class);
+      BcRegistryExceptionMessageDto dto =
+          OBJECT_MAPPER.readValue(rawBody, BcRegistryExceptionMessageDto.class);
       if (StringUtils.isNotBlank(dto.errorMessage())) {
         return dto.errorMessage();
       }
