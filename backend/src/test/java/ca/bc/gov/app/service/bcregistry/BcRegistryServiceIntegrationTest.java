@@ -378,6 +378,13 @@ class BcRegistryServiceIntegrationTest extends AbstractTestContainerIntegrationT
                 NO_DATA, 200,
                 BCREG_FACET_XP, false,
                 BCREG_DOCOBJ_XP
+            ),
+            Arguments.of(
+                named("Malformed document JSON falls back to facet", "C0123456"),
+                BCREG_DOC_REQ_RES, 201,
+                "this is not valid json {{{", 200,
+                BCREG_FACET_ANY, false,
+                BCREG_DOCOBJ_ANY
             )
         );
 

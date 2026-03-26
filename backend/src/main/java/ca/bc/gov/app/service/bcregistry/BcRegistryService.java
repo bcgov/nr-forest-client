@@ -16,6 +16,7 @@ import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetRequestBodyDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetRequestQueryDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetResponseDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultsDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficerDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryOfficesDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryPartyDto;
@@ -138,7 +139,7 @@ public class BcRegistryService {
                 List<BcRegistryFacetSearchResultEntryDto> results =
                     Optional.ofNullable(dto)
                         .map(BcRegistryFacetResponseDto::searchResults)
-                        .map(searchResults -> searchResults.results())
+                        .map(BcRegistryFacetSearchResultsDto::results)
                         .orElse(List.of());
                 return Flux.fromIterable(results);
               } catch (Exception e) {
