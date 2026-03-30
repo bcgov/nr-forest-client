@@ -42,7 +42,7 @@ jobs:
           CYPRESS_bcsc_username: ${{ secrets.UAT_BCSC_USERNAME }}
 
       - name: Publish Cypress Results
-        uses: mikepenz/action-junit-report@49b2ca06f62aa7ef83ae6769a2179271e160d8e4 # v6
+        uses: mikepenz/action-junit-report@bccf2e31636835cf0874589931c4116687171386 # v6
         continue-on-error: true
         if: always()
         with:
