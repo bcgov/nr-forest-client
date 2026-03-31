@@ -1287,4 +1287,16 @@ public final class ForestClientQueries {
       LEFT JOIN ForestClientAudit fca ON fca.client_number = cla.client_number
       WHERE cla.client_number = :client_number
       AND cla.UPDATE_TIMESTAMP = fca.UPDATE_TIMESTAMP""";
+
+  public static final String CLIENT_IDIR_USERS_AUTOCOMPLETE = """
+      SELECT DISTINCT UPDATE_USERID
+      FROM THE.FOREST_CLIENT
+      WHERE UPDATE_USERID LIKE 'IDIR\\%' 
+        AND UTL_MATCH.JARO_WINKLER_SIMILARITY(
+            REGEXP_SUBSTR(UPPER(UPDATE_USERID), '[^\\\\]+$'), 
+            UPPER(:userId)
+        ) > 90
+      ORDER BY UPDATE_USERID ASC
+      """;
+
 }

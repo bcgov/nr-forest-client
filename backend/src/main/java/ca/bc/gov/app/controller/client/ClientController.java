@@ -250,4 +250,20 @@ public class ClientController {
     return clientLegacyService.searchRelatedClients(clientNumber, type, value);
   }
 
+  /**
+   * Searches for IDIR client users that match the given user ID.
+   *
+   * <p>This endpoint queries the legacy system to find client user records
+   * associated with the provided IDIR user identifier.
+   *
+   * @param userId the IDIR user identifier to search for
+   * @return a {@link Flux} emitting matching client user identifiers as strings
+   */
+  @GetMapping("/client-users")
+  public Flux<String> searchClientIdirUsersByUserId(
+      @RequestParam String userId
+  ) {
+    return clientLegacyService.getClientIdirUsersByUserId(userId);
+  }
+  
 }

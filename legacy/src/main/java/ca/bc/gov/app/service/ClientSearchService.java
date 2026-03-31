@@ -673,4 +673,11 @@ public class ClientSearchService {
         .doOnNext(client -> log.info("Found client for query {}", queryCriteria));
   }
 
+  public Flux<String> getClientIdirUsersByUserId(String userId) {
+    log.info("Searching for IDIR client users that matches for {}",
+        userId
+    );
+    return forestClientRepository.getClientIdirUsers(userId);
+  }
+
 }

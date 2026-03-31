@@ -793,4 +793,38 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .verifyComplete();
   }
 
+  @Test
+  @DisplayName("Search IDIR client users by userId with results")
+  void shouldGetClientIdirUsersByUserId() {
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search/client-users"))
+            .withQueryParam("userId", equalTo("jdoe"))
+            .willReturn(okJson("[\"00000001\",\"00000002\"]"))
+    );
+
+    service
+        .getClientIdirUsersByUserId("jdoe")
+        .as(StepVerifier::create)
+        .assertNext(result -> assertEquals("00000001", result))
+        .assertNext(result -> assertEquals("00000002", result))
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Search IDIR client users by userId with no results")
+  void shouldGetEmptyClientIdirUsersByUserId() {
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search/client-users"))
+            .withQueryParam("userId", equalTo("unknown"))
+            .willReturn(okJson("[]"))
+    );
+
+    service
+        .getClientIdirUsersByUserId("unknown")
+        .as(StepVerifier::create)
+        .verifyComplete();
+  }
+
 }

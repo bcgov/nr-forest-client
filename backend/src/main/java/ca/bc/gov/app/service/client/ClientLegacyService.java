@@ -2,7 +2,6 @@ package ca.bc.gov.app.service.client;
 
 import static ca.bc.gov.app.ApplicationConstant.MDC_USERID;
 import static ca.bc.gov.app.ApplicationConstant.REQUEST_LEGACY;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
@@ -19,8 +18,8 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -895,4 +894,30 @@ public class ClientLegacyService {
         new CodeNameDto(projection.relatedClntLocn(), projection.relatedClntLocnName())
     );
   }
+
+  public Flux<String> getClientIdirUsersByUserId(String userId) {
+    log.info("Searching for IDIR client users that matches for {}",
+        userId
+    );
+
+    return
+        legacyApi
+            .get()
+            .uri(builder ->
+                builder
+                    .path("/api/search/client-users")
+                    .queryParam("userId", "{userId}")
+                    .build(Map.of("userId", userId))
+            )
+            .exchangeToFlux(response -> response.bodyToFlux(String.class))
+            .name(REQUEST_LEGACY)
+            .tag("kind", "clientIdirUsersSearch")
+            .doOnNext(
+                dto -> log.info(
+                    "Found client IDIR users that matches for {}",
+                    userId
+                )
+            );
+  }
+  
 }

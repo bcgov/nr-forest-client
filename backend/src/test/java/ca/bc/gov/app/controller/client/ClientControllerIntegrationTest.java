@@ -889,4 +889,77 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     );
   }
 
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("clientUsersByUserIdProvider")
+  @DisplayName("Search IDIR client users by userId")
+  void shouldSearchClientIdirUsersByUserId(
+      String userId,
+      String legacyResponse,
+      int responseStatus,
+      String expectedResponse
+  ) {
+
+    reset();
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search/client-users"))
+            .withQueryParam("userId", equalTo(userId))
+            .willReturn(
+                status(responseStatus)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(legacyResponse)
+            )
+    );
+
+    var bodyExpectation =
+        client
+            .mutateWith(csrf())
+            .mutateWith(
+                mockJwt()
+                    .jwt(jwt -> jwt.claims(
+                        claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                    .authorities(new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR))
+            )
+            .get()
+            .uri(uriBuilder ->
+                uriBuilder
+                    .path("/api/clients/client-users")
+                    .queryParam("userId", userId)
+                    .build()
+            )
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody()
+            .consumeWith(System.out::println);
+
+    bodyExpectation.json(expectedResponse);
+  }
+
+  private static Stream<Arguments> clientUsersByUserIdProvider() {
+    return Stream.of(
+        argumentSet(
+            "Found matching IDIR users",
+            "jdoe",
+            "[\"00000001\",\"00000002\"]",
+            200,
+            "[\"00000001\",\"00000002\"]"
+        ),
+        argumentSet(
+            "No matching IDIR users",
+            "unknown",
+            "[]",
+            200,
+            "[]"
+        ),
+        argumentSet(
+            "Single matching IDIR user",
+            "singleuser",
+            "[\"00000099\"]",
+            200,
+            "[\"00000099\"]"
+        )
+    );
+  }
+
 }
