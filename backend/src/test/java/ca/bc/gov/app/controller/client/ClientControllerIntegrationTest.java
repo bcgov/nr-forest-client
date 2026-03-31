@@ -941,9 +941,9 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         argumentSet(
             "Found matching IDIR users",
             "jdoe",
-            "[\"00000001\",\"00000002\"]",
+            "[\"IDIR\\\\JDOE\",\"IDIR\\\\ASMITH\"]",
             200,
-            "[\"00000001\",\"00000002\"]"
+            "[\"IDIR\\\\JDOE\",\"IDIR\\\\ASMITH\"]"
         ),
         argumentSet(
             "No matching IDIR users",
@@ -955,7 +955,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         argumentSet(
             "Single matching IDIR user",
             "singleuser",
-            "[\"00000099\"]",
+            "[\"IDIR\\\\singleuser\"]",
             200,
             "[\"00000099\"]"
         )
