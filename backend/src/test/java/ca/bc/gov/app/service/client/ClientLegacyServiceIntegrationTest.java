@@ -800,14 +800,14 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
     legacyStub.stubFor(
         get(urlPathEqualTo("/api/search/client-users"))
             .withQueryParam("userId", equalTo("jdoe"))
-            .willReturn(okJson("[\"00000001\",\"00000002\"]"))
+            .willReturn(okJson("[\"IDIR\\\\JDOE\",\"IDIR\\\\ASMITH\"]"))
     );
 
     service
         .getClientIdirUsersByUserId("jdoe")
         .as(StepVerifier::create)
-        .assertNext(result -> assertEquals("00000001", result))
-        .assertNext(result -> assertEquals("00000002", result))
+        .assertNext(result -> assertEquals("IDIR\\JDOE", result))
+        .assertNext(result -> assertEquals("IDIR\\ASMITH", result))
         .verifyComplete();
   }
 
