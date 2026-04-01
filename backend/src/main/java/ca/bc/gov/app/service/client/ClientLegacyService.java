@@ -896,6 +896,10 @@ public class ClientLegacyService {
   }
 
   public Flux<String> getClientIdirUsersByUserId(String userId) {
+    if (StringUtils.isBlank(userId)) {
+      return Flux.empty();
+    }
+
     log.info("Searching for IDIR client users that matches for {}",
         userId
     );

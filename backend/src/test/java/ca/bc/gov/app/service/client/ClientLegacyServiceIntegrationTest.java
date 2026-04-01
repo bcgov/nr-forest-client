@@ -827,4 +827,18 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
         .verifyComplete();
   }
 
+  @ParameterizedTest
+  @MethodSource("blankUserIds")
+  @DisplayName("Search IDIR client users returns empty for blank userId")
+  void shouldReturnEmptyForBlankUserId(String userId) {
+    service
+        .getClientIdirUsersByUserId(userId)
+        .as(StepVerifier::create)
+        .verifyComplete();
+  }
+
+  private static Stream<String> blankUserIds() {
+    return Stream.of(null, "", " ", "   ");
+  }
+
 }
