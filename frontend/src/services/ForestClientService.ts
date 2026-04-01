@@ -831,3 +831,17 @@ export const isNumeric = (value: string): boolean => {
   const regex = /^\d+$/;
   return regex.test(value);
 };
+
+/**
+ * Splits the input string into lowercase "keywords", being any sequence of letters and/or numbers,
+ * and returns them.
+ * 
+ * @param input - the text where keywords are extract from
+ * @returns array of keywords
+ */
+export const extractKeywords = (input: string): string[] => {
+  const wordsSplitter = /[^0-9a-z]+/;
+  const substrings = input.toLowerCase().split(wordsSplitter);
+  const results = substrings.filter((value) => value.length > 0);
+  return results;
+};

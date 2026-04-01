@@ -27,15 +27,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import reactor.test.StepVerifier;
 
 @DisplayName("Integrated Test | Client Service")
 class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestContainer {
 
-  @SpyBean
+  @MockitoSpyBean
   private SubmissionRepository submissionRepository;
-  @SpyBean
+  @MockitoSpyBean
   private SubmissionMatchDetailRepository submissionMatchDetailRepository;
 
   @Autowired

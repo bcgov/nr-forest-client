@@ -21,6 +21,7 @@ import {
   getTagColorByClientStatus,
   searchResultToText,
   isNumeric,
+  extractKeywords,
 } from "@/services/ForestClientService";
 
 import summit from "@carbon/pictograms/es/summit";
@@ -50,7 +51,7 @@ const networkErrorMsg = ref("");
 const tableData = ref<ClientSearchResult[]>();
 const pageNumber = ref(1);
 const totalItems = ref(0);
-const pageSize = ref(10);
+const pageSize = ref(100);
 
 const rawSearchKeyword = ref("");
 
@@ -98,8 +99,7 @@ const search = (skipResetPage = false) => {
 };
 
 const resultsIncludeExactMatch = () => {
-  const wordsSplitter = /[^0-9a-z]/;
-  const searchWordsList = lastSearchKeyword.value.toLowerCase().split(wordsSplitter);
+  const searchWordsList = extractKeywords(lastSearchKeyword.value);
   const searchFieldsList: (keyof ClientSearchResult)[] = [
     "clientNumber",
     "clientAcronym",
@@ -114,7 +114,7 @@ const resultsIncludeExactMatch = () => {
         continue;
       }
       if (typeof fieldValue === "string") {
-        const fieldWordsList = fieldValue.toLowerCase().split(wordsSplitter);
+        const fieldWordsList = extractKeywords(fieldValue);
 
         /*
         Checking all the words from the search terms are included in the current field value.
@@ -313,11 +313,20 @@ onMounted(() => {
           <Search16 slot="icon" />
         </cds-button>
       </div>
-
-      <p id="no-exact-match" v-if="noExactMatch" class="body-compact-01">
-        We couldn’t find an exact match. Check these records for what you need.
-      </p>
     </div>
+
+    <cds-inline-notification
+      v-shadow="2"
+      id="no-exact-match"
+      class="table-notification"
+      v-if="noExactMatch"
+      low-contrast="true"
+      open="true"
+      kind="info">
+      <div class="cds--inline-notification-content">
+        We couldn’t find an exact match. Check these records for what you need.
+      </div>
+    </cds-inline-notification>
 
     <div id="datatable" v-if="userhasAuthority">
 
@@ -399,6 +408,7 @@ onMounted(() => {
         <cds-select-item :value="30">30</cds-select-item>
         <cds-select-item :value="40">40</cds-select-item>
         <cds-select-item :value="50">50</cds-select-item>
+        <cds-select-item :value="100">100</cds-select-item>
       </cds-pagination>
     </div>
 

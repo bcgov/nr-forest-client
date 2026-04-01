@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.11</version>
+        <version>3.5.12</version>
         <relativePath />
     </parent>
 
@@ -72,23 +72,25 @@
         <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-        <testcontainers.version>1.21.3</testcontainers.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
         <logback.version>1.5.26</logback.version>
         <oci.revision>${project.version}</oci.revision>
-        <nimbus-jose-jwt.version>10.6</nimbus-jose-jwt.version>
-        <spring-security-core.version>6.5.7</spring-security-core.version>
-        <micrometer.version>1.16.1</micrometer.version>
-        <micrometer-tracing.version>1.6.1</micrometer-tracing.version>
-        <flyway.version>11.11.1</flyway.version>
-        <opentelemetry.version>1.57.0</opentelemetry.version>
-        <selenium.version>4.39.0</selenium.version>
-        <org.junit.version>6.0.1</org.junit.version>
+        <nimbus-jose-jwt.version>10.8</nimbus-jose-jwt.version>
+        <spring-security-core.version>6.5.8</spring-security-core.version>
+        <micrometer.version>1.16.4</micrometer.version>
+        <micrometer-tracing.version>1.6.4</micrometer-tracing.version>
+        <flyway.version>11.11.0</flyway.version>
+        <opentelemetry.version>1.60.1</opentelemetry.version>
+        <selenium.version>4.41.0</selenium.version>
+        <org.junit.version>6.0.3</org.junit.version>
         <junit.version>4.13.2</junit.version>
-        <mockito.version>5.21.0</mockito.version>
+        <mockito.version>5.23.0</mockito.version>
         <jooq.version>3.20.11</jooq.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <jackson.version>2.21.1</jackson.version>
         <jackson-bom.version>2.21.1</jackson-bom.version>
+        <spring-security.version>6.5.9</spring-security.version>
+        <netty.version>4.1.132.Final</netty.version>
     </properties>
 
     <dependencies>
@@ -163,7 +165,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.8</version>
+            <version>42.7.10</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -276,7 +278,7 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
-                <version>6.2.14</version>
+                <version>6.2.16</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -383,7 +385,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.5.0</version>
             </plugin>
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
@@ -414,7 +416,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.5.4</version>
+                <version>3.5.5</version>
                 <executions>
                     <execution>
                         <id>integration-tests</id>
@@ -440,7 +442,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.4</version>
+                <version>3.5.5</version>
                 <configuration>
                     <argLine>@{argLine}</argLine>
                     <skipTests>${skip.unit.tests}</skipTests>

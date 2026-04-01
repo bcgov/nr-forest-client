@@ -310,72 +310,6 @@ describe("Search Page", () => {
           });
         });
       });
-
-      describe("and clicks the Next page button on the table footer", () => {
-        beforeEach(() => {
-          cy.get('[tooltip-text="Next page"]').click();
-        });
-        it("makes an API call for the second page of results", () => {
-          cy.wait("@fullSearch").then((interception) => {
-            const { query } = interception.request;
-            expect(query.keyword).to.eq("car");
-            expect(query.page).to.eq("1");
-          });
-          cy.wrap(fullSearchCounter).its("count").should("eq", 2);
-        });
-
-        it("updates the results on the table", () => {
-          cy.wait("@fullSearch").then((interception) => {
-            const data = interception.response.body;
-
-            cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
-
-            cy.get("cds-table")
-              .find("cds-table-row")
-              .should("have.length", data.length)
-              .should("be.visible");
-
-            checkTableResults(data);
-          });
-        });
-
-        describe("and clicks the Search button again", () => {
-          beforeEach(() => {
-            cy.wait("@fullSearch");
-
-            // sanity check
-            cy.get("#pages-select").should("have.value", "2");
-
-            cy.get("#search-button").click();
-          });
-          it("makes a new API call for the first page of results", () => {
-            cy.wait("@fullSearch").then((interception) => {
-              const { query } = interception.request;
-              expect(query.keyword).to.eq("car");
-              expect(query.page).to.eq("0");
-            });
-            cy.wrap(fullSearchCounter).its("count").should("eq", 3);
-          });
-
-          it("updates the results on the table", () => {
-            cy.wait("@fullSearch").then((interception) => {
-              // reset to page 1
-              cy.get("#pages-select").should("have.value", "1");
-
-              const data = interception.response.body;
-
-              cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
-
-              cy.get("cds-table")
-                .find("cds-table-row")
-                .should("have.length", data.length)
-                .should("be.visible");
-
-              checkTableResults(data);
-            });
-          });
-        });
-      });
     });
 
     describe("and hits enter on the search box", () => {
@@ -565,42 +499,6 @@ describe("Search Page", () => {
 
         cy.get("#no-exact-match").should("be.visible");
       });
-
-      describe("but an exact match is found in the second page", () => {
-        beforeEach(() => {
-          cy.get('[tooltip-text="Next page"]').click();
-        });
-
-        it('hides the "No exact match" message', () => {
-          cy.wait("@fullSearch");
-
-          cy.get("#no-exact-match").should("not.exist");
-        });
-
-        const scenarios = [
-          {
-            navigates: "back to the first page",
-            tooltip: "Previous page",
-          },
-          {
-            navigates: "to the third page",
-            tooltip: "Next page",
-          },
-        ];
-        scenarios.forEach((scenario) => {
-          describe(`and the user navigates ${scenario.navigates}`, () => {
-            beforeEach(() => {
-              cy.get(`[tooltip-text="${scenario.tooltip}"]`).click();
-            });
-
-            it('keeps the "No exact match" message hidden, since an exact match was already found', () => {
-              cy.wait("@fullSearch");
-
-              cy.get("#no-exact-match").should("not.exist");
-            });
-          });
-        });
-      });
     });
   });
 
@@ -631,6 +529,73 @@ describe("Search Page", () => {
 
         cy.get("#no-exact-match").should("be.visible");
       });
+    });
+  });
+
+  describe("exact match for specific situations", () => {
+    /*
+    These are sample scenarios that could fail before FSADT1-2094, specially crafted to prevent
+    this kind of bug from returning to the code base.
+    */
+    const scenarios = [{
+      description: "contains repeated white-space",
+      input: "MABELINV  LIMITED"
+    }, {
+      description: "contains any two non-alphanumerical characters in sequence (for example: comma and white-space)",
+      input: "MABELINV, LIMITED"
+    }, {
+      description: "starts or ends with white-space",
+      input: " MABELINV LIMITED "
+    }];
+
+    scenarios.forEach(({ description, input }) => {
+      describe(`when search input ${description}`, () => {
+        beforeEach(() => {
+          cy.fillFormEntry("#search-box", input);
+          cy.get("#search-button").click();
+        });
+
+        it('doesn\'t display the "No exact match" message', () => {
+          cy.wait("@fullSearch");
+    
+          cy.get("#no-exact-match").should("not.exist");
+        });
+      });
+    });
+  });
+
+  describe("when empty search results contain only alphanumeric characters and non-repeated white-spaces", () => {
+    beforeEach(() => {
+      /*
+      This is a scenario where FSADT1-2094 could be reproduced.
+      If ANY row in the results includes a repeated white-space or a sequence of two or more
+      non-alphanumerical characters (including white-space), like " (", or ", ", or ",(", then the
+      bug could not be reproduced.
+      */
+      cy.intercept(
+      {
+        pathname: "/api/clients/search",
+        query: {
+          keyword: "",
+        },
+      },
+      {
+        statusCode: 200,
+        fixture: "search/no-special-characters.json",
+        headers: {
+          "content-type": "application/json",
+          "x-total-count": "5",
+        },
+      },
+    ).as("emptySearch");
+
+      cy.get("#search-button").click();
+    });
+
+    it('doesn\'t display the "No exact match" message', () => {
+      cy.wait("@emptySearch");
+
+      cy.get("#no-exact-match").should("not.exist");
     });
   });
 });

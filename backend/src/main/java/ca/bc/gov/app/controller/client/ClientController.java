@@ -129,7 +129,7 @@ public class ClientController {
    * total count of matching records is included in the response headers.
    *
    * @param page           the page number to retrieve (default is 0)
-   * @param size           the number of records per page (default is 10)
+   * @param size           the number of records per page (default is 100)
    * @param keyword        the keyword to search for (default is an empty string, which returns all
    *                       records)
    * @param serverResponse the HTTP response to include the total count of records in the headers
@@ -138,7 +138,7 @@ public class ClientController {
   @GetMapping("/search")
   public Flux<ClientListDto> fullSearch(
       @RequestParam(required = false, defaultValue = "0") int page,
-      @RequestParam(required = false, defaultValue = "10") int size,
+      @RequestParam(required = false, defaultValue = "100") int size,
       @RequestParam(required = false, defaultValue = "") String keyword,
       ServerHttpResponse serverResponse
   ) {

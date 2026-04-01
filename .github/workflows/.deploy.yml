@@ -55,7 +55,7 @@ jobs:
       # Get PR number for squash merges to main
       - name: PR Number
         id: pr
-        uses: bcgov/action-get-pr@35514fa1d4765547da319e967b509363598e8b46 # v0.1.0
+        uses: bcgov/action-get-pr@bfa713a9ab410c0f0c13126c35983934fc80d15b # v0.1.1
 
   init:
     name: Deploy (init)
@@ -97,7 +97,7 @@ jobs:
       - name: Backup database before update
         continue-on-error: true
         if: github.event_name != 'pull_request'
-        uses: bcgov/action-oc-runner@f900830adadd4d9eef3ca6ff80103e839ba8b7c0 # v1.3.0
+        uses: bcgov/action-oc-runner@d2fc921aaa9d70684c186dbb7754e6985d44d86f # v1.4.1
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
