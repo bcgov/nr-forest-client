@@ -677,6 +677,11 @@ public class ClientSearchService {
     log.info("Searching for IDIR client users that matches for {}",
         userId
     );
+    
+    if (StringUtils.isBlank(userId)) {
+      log.error("Missing required parameter to search for IDIR client users");
+      return Flux.error(new MissingRequiredParameterException("userId"));
+    }
     return forestClientRepository.getClientIdirUsers(userId);
   }
 

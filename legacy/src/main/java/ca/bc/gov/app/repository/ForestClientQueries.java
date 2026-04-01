@@ -1297,6 +1297,7 @@ public final class ForestClientQueries {
             UPPER(:userId)
         ) > 90
       ORDER BY UPDATE_USERID ASC
+      FETCH FIRST 10 ROWS ONLY
       """;
 
 }
