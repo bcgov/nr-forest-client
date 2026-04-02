@@ -519,6 +519,51 @@ public class ClientLegacyService {
           log.info("Found clients by keyword {}, total count: {}", dto.clientNumber(), totalCount);
         });
   }
+  
+  /**
+   * Performs an advanced search for clients in the legacy system based on the provided keyword,
+   * page, and size.
+   *
+   * @param page    The page number to retrieve.
+   * @param size    The number of records per page.
+   * @param keyword The keyword to search for.
+   * @return A Flux of pairs containing ClientListDto objects and the total count of matching
+   * records.
+   */
+  public Flux<Pair<ClientListDto, Long>> advancedSearch(int page, int size, Map<String, String> allParams) {
+    log.info(
+        "Performing Advanced Search of clients with params {} with page {} and size {}",
+        allParams,
+        page,
+        size
+    );
+
+    return legacyApi
+        .get()
+        .uri(builder -> {
+            builder
+                .path("/api/clients/advanced-search")
+                .queryParam("page", page)
+                .queryParam("size", size);
+            allParams.forEach(builder::queryParam);
+            return builder.build(Map.of());
+        })
+        .exchangeToFlux(response -> {
+          List<String> totalCountHeader = response.headers().header("X-Total-Count");
+          Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
+
+          return response
+              .bodyToFlux(ClientListDto.class)
+              .map(dto -> Pair.of(dto, count));
+        })
+        .name(REQUEST_LEGACY)
+        .tag("kind", "advancedSearch")
+        .doOnNext(pair -> {
+          ClientListDto dto = pair.getFirst();
+          Long totalCount = pair.getSecond();
+          log.info("Found clients by advanced search, client number: {}, total count: {}", dto.clientNumber(), totalCount);
+        });
+  }
 
   /**
    * Retrieves active client status codes from the legacy system.

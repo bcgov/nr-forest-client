@@ -266,4 +266,36 @@ public class ClientController {
     return clientLegacyService.getClientIdirUsersByUserId(userId);
   }
   
+  @GetMapping("/advanced-search")
+  public Flux<ClientListDto> advancedSearch(
+      @RequestParam(required = false, defaultValue = "0") int page,
+      @RequestParam(required = false, defaultValue = "100") int size,
+      @RequestParam(required = false) Map<String, String> allParams,
+      ServerHttpResponse serverResponse
+  ) {
+    log.info("Listing clients: page={}, size={}, params={}", page, size, allParams);
+
+    return clientLegacyService
+        .advancedSearch(page, size, allParams)
+        .doOnNext(pair -> {
+          Long count = pair.getSecond();
+
+          serverResponse
+              .getHeaders()
+              .putIfAbsent(
+                  ApplicationConstant.X_TOTAL_COUNT,
+                  List.of(count.toString())
+              );
+        })
+        .map(Pair::getFirst)
+        .doFinally(signalType ->
+            serverResponse
+                .getHeaders()
+                .putIfAbsent(
+                    ApplicationConstant.X_TOTAL_COUNT,
+                    List.of("0")
+                )
+        );
+  }
+  
 }

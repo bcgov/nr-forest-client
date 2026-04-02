@@ -102,5 +102,35 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
 
   @Query(ForestClientQueries.CLIENT_IDIR_USERS_AUTOCOMPLETE)
   Flux<String> getClientIdirUsers(String userId);
+
+  @Query(ForestClientQueries.ADVANCED_SEARCH)
+  Flux<PredictiveSearchResultDto> findByAdvancedSearch(
+      String clientName,
+      String firstName,
+      String middleName,
+      String clientStatus,
+      String clientType,
+      String clientIdType,
+      String clientIdentification,
+      String locationEmail,
+      String contactName,
+      String contactEmail,
+      int limit,
+      long offset
+  );
+
+  @Query(ForestClientQueries.ADVANCED_SEARCH_COUNT)
+  Mono<Long> countByAdvancedSearch(
+      String clientName,
+      String firstName,
+      String middleName,
+      String clientStatus,
+      String clientType,
+      String clientIdType,
+      String clientIdentification,
+      String locationEmail,
+      String contactName,
+      String contactEmail
+  );
   
 }
