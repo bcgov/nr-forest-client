@@ -7,7 +7,6 @@ import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -46,20 +45,20 @@ public class ClientAdvancedSearchService {
       return Flux.error(new MissingRequiredParameterException("searchParams"));
     }
 
-    log.info("Performing advanced search with criteria: {}", criteria);
+    ClientAdvancedSearchCriteriaDto sanitizedCriteria = criteria.sanitized();
+    log.info("Performing advanced search with criteria: {}", sanitizedCriteria);
 
     return forestClientRepository
         .countByAdvancedSearch(
-            blankToNull(criteria.clientName()),
-            blankToNull(criteria.firstName()),
-            blankToNull(criteria.middleName()),
-            blankToNull(criteria.clientStatus()),
-            blankToNull(criteria.clientType()),
-            blankToNull(criteria.clientIdType()),
-            blankToNull(criteria.clientIdentification()),
-            blankToNull(criteria.locationEmail()),
-            blankToNull(criteria.contactName()),
-            blankToNull(criteria.contactEmail())
+            sanitizedCriteria.clientName(), 
+            sanitizedCriteria.firstName(),
+            sanitizedCriteria.middleName(), 
+            sanitizedCriteria.clientStatus(),
+            sanitizedCriteria.clientType(), 
+            sanitizedCriteria.clientIdType(),
+            sanitizedCriteria.clientIdentification(), 
+            sanitizedCriteria.emailAddress(),
+            sanitizedCriteria.contactName()
         )
         .defaultIfEmpty(0L)
         .flatMapMany(count -> {
@@ -68,16 +67,15 @@ public class ClientAdvancedSearchService {
           }
           return forestClientRepository
               .findByAdvancedSearch(
-                  blankToNull(criteria.clientName()),
-                  blankToNull(criteria.firstName()),
-                  blankToNull(criteria.middleName()),
-                  blankToNull(criteria.clientStatus()),
-                  blankToNull(criteria.clientType()),
-                  blankToNull(criteria.clientIdType()),
-                  blankToNull(criteria.clientIdentification()),
-                  blankToNull(criteria.locationEmail()),
-                  blankToNull(criteria.contactName()),
-                  blankToNull(criteria.contactEmail()),
+                  sanitizedCriteria.clientName(), 
+                  sanitizedCriteria.firstName(), 
+                  sanitizedCriteria.middleName(),
+                  sanitizedCriteria.clientStatus(), 
+                  sanitizedCriteria.clientType(), 
+                  sanitizedCriteria.clientIdType(),
+                  sanitizedCriteria.clientIdentification(), 
+                  sanitizedCriteria.emailAddress(),
+                  sanitizedCriteria.contactName(),
                   page.getPageSize(), page.getOffset()
               )
               .doOnNext(dto -> log.info(
@@ -86,9 +84,5 @@ public class ClientAdvancedSearchService {
               )
               .map(dto -> Pair.of(dto, count));
         });
-  }
-
-  private static String blankToNull(String value) {
-    return StringUtils.isBlank(value) ? null : value;
   }
 }

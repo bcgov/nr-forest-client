@@ -11,22 +11,44 @@ public record ClientAdvancedSearchCriteriaDto(
     String clientType, 
     String clientIdType,
     String clientIdentification, 
-    String locationEmail,
-    String contactName, 
-    String contactEmail
+    String emailAddress,
+    String contactName
 ) {
+  
   public boolean hasValidParams() {
+    ClientAdvancedSearchCriteriaDto sanitizedCriteria = sanitized();
     return Stream
-        .of(clientName, 
-            firstName, 
-            middleName, 
-            clientStatus, 
-            clientType, 
-            clientIdType,
-            clientIdentification, 
-            locationEmail, 
-            contactName, 
-            contactEmail)
-        .anyMatch(StringUtils::isNotBlank);
+        .of(sanitizedCriteria.clientName, 
+            sanitizedCriteria.firstName, 
+            sanitizedCriteria.middleName,
+            sanitizedCriteria.clientStatus, 
+            sanitizedCriteria.clientType, 
+            sanitizedCriteria.clientIdType,
+            sanitizedCriteria.clientIdentification, 
+            sanitizedCriteria.emailAddress,
+            sanitizedCriteria.contactName)
+        .anyMatch(java.util.Objects::nonNull);
+  }
+
+  /**
+   * Returns a new instance with all blank/empty values converted to null,
+   * so the SQL query can skip them via {@code :param IS NULL}.
+   */
+  public ClientAdvancedSearchCriteriaDto sanitized() {
+    return new ClientAdvancedSearchCriteriaDto(
+        blankToNull(clientName),
+        blankToNull(firstName),
+        blankToNull(middleName),
+        blankToNull(clientStatus),
+        blankToNull(clientType),
+        blankToNull(clientIdType),
+        blankToNull(clientIdentification),
+        blankToNull(emailAddress),
+        blankToNull(contactName)
+    );
+  }
+
+  private static String blankToNull(String value) {
+    return StringUtils.isBlank(value) ? null : value;
   }
 }
