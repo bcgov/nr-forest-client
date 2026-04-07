@@ -1310,15 +1310,29 @@ public final class ForestClientQueries {
       """;
 
   public static final String ADVANCED_SEARCH_WHERE = """
-      WHERE (:clientName IS NULL OR UPPER(C.CLIENT_NAME) LIKE '%' || UPPER(:clientName) || '%')
-        AND (:firstName IS NULL OR UPPER(C.LEGAL_FIRST_NAME) LIKE '%' || UPPER(:firstName) || '%')
-        AND (:middleName IS NULL OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE '%' || UPPER(:middleName) || '%')
-        AND (:clientStatus IS NULL OR INSTR(',' || UPPER(:clientStatus) || ',', ',' || UPPER(C.CLIENT_STATUS_CODE) || ',') > 0)
-        AND (:clientType IS NULL OR INSTR(',' || UPPER(:clientType) || ',', ',' || UPPER(C.CLIENT_TYPE_CODE) || ',') > 0)
-        AND (:clientIdType IS NULL OR INSTR(',' || UPPER(:clientIdType) || ',', ',' || UPPER(C.CLIENT_ID_TYPE_CODE) || ',') > 0)
-        AND (:clientIdentification IS NULL OR UPPER(C.CLIENT_IDENTIFICATION) LIKE '%' || UPPER(:clientIdentification) || '%')
-        AND (:emailAddress IS NULL OR UPPER(CL.EMAIL_ADDRESS) LIKE '%' || UPPER(:emailAddress) || '%' OR UPPER(CC.EMAIL_ADDRESS) LIKE '%' || UPPER(:emailAddress) || '%')
-        AND (:contactName IS NULL OR UPPER(CC.CONTACT_NAME) LIKE '%' || UPPER(:contactName) || '%')
+      WHERE (:clientName IS NULL
+             OR UPPER(C.CLIENT_NAME) LIKE '%' || UPPER(:clientName) || '%')
+        AND (:firstName IS NULL
+             OR UPPER(C.LEGAL_FIRST_NAME) LIKE '%' || UPPER(:firstName) || '%')
+        AND (:middleName IS NULL
+             OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE '%' || UPPER(:middleName) || '%')
+        AND (:clientStatus IS NULL
+             OR INSTR(',' || UPPER(:clientStatus) || ',',
+                      ',' || UPPER(C.CLIENT_STATUS_CODE) || ',') > 0)
+        AND (:clientType IS NULL
+             OR INSTR(',' || UPPER(:clientType) || ',',
+                      ',' || UPPER(C.CLIENT_TYPE_CODE) || ',') > 0)
+        AND (:clientIdType IS NULL
+             OR INSTR(',' || UPPER(:clientIdType) || ',',
+                      ',' || UPPER(C.CLIENT_ID_TYPE_CODE) || ',') > 0)
+        AND (:clientIdentification IS NULL
+             OR UPPER(C.CLIENT_IDENTIFICATION)
+                LIKE '%' || UPPER(:clientIdentification) || '%')
+        AND (:emailAddress IS NULL
+             OR UPPER(CL.EMAIL_ADDRESS) LIKE '%' || UPPER(:emailAddress) || '%'
+             OR UPPER(CC.EMAIL_ADDRESS) LIKE '%' || UPPER(:emailAddress) || '%')
+        AND (:contactName IS NULL
+             OR UPPER(CC.CONTACT_NAME) LIKE '%' || UPPER(:contactName) || '%')
       """;
 
   public static final String ADVANCED_SEARCH = """
