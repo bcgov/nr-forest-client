@@ -28,6 +28,21 @@ public class ClientAdvancedSearchController {
   private final ClientSearchService searchService;
   private final ClientAdvancedSearchService advancedSearchService;
 
+  /**
+   * Performs an advanced search for clients based on the provided criteria.  
+   * <p>
+   * If the {@code criteria} is null or contains no valid search parameters, the method
+   * returns the latest client entries, paginated according to the {@code page} and {@code size} 
+   * parameters. Otherwise, it performs an advanced search using {@link ClientAdvancedSearchService}.
+   * <p>
+   * The total number of results is included in the {@code X-Total-Count} HTTP header of the response.
+   * 
+   * @param page the page number to retrieve (0-based index), defaults to 0 if not provided
+   * @param size the number of results per page, defaults to 5 if not provided
+   * @param criteria the advanced search criteria; may be null
+   * @param serverResponse the server response used to set the {@code X-Total-Count} header
+   * @return a {@link Flux} of {@link PredictiveSearchResultDto} representing the search results
+   */
   @GetMapping
   public Flux<PredictiveSearchResultDto> findByAdvancedSearch(
       @RequestParam(required = false, defaultValue = "0") Integer page,
