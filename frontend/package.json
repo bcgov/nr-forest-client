@@ -1,6 +1,7 @@
 {
   "name": "forest-client-frontend",
   "version": "0.0.1",
+  "type": "module",
   "description": "Frontend for Forests Client Management System project",
   "repository": {
     "type": "git",
@@ -53,7 +54,7 @@
     "test:build": "cross-env VITE_MODE=test VITE_NODE_ENV=test VITE_GREEN_DOMAIN=green-domain.com start-server-and-test preview http://127.0.0.1:3000 'cypress open'",
     "test:flush": "rm -rf reports && rm -rf .nyc_output && rm -rf coverage && rm -rf reports-merge",
     "posttest:flush": "npm run coverage",
-    "test:unit:devtools": "cross-env VITE_NODE_ENV=test NODE_ENV=test vitest run --inspect-brk --pool threads --poolOptions.threads.singleThread"
+    "test:unit:devtools": "cross-env VITE_NODE_ENV=test NODE_ENV=test vitest run --inspect-brk --maxWorkers 1"
   },
   "dependencies": {
     "@bcgov-nr/nr-fsa-theme": "^1.1.3",
@@ -80,14 +81,15 @@
     "@types/node": "^24.0.3",
     "@typescript-eslint/eslint-plugin": "^8.57.0",
     "@typescript-eslint/parser": "^8.57.0",
-    "@vitejs/plugin-vue": "^5.2.1",
-    "@vitest/coverage-istanbul": "^3.0.5",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@vitest/coverage-istanbul": "^4.1.3",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.7.0",
     "@vue/test-utils": "^2.4.0",
     "@vue/tsconfig": "^0.9.0",
     "cross-env": "^10.0.0",
     "cypress": "^15.11.0",
+    "esbuild": "^0.28.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
@@ -108,9 +110,9 @@
     "typescript": "~5.9.0",
     "unplugin-icons": "^22.1.0",
     "unplugin-vue-components": "^30.0.0",
-    "vite": "^5.4.10",
-    "vite-plugin-istanbul": "^5.0.0",
-    "vitest": "^3.0.5",
+    "vite": "^8.0.7",
+    "vite-plugin-istanbul": "^8.0.0",
+    "vitest": "^4.1.3",
     "vue-component-type-helpers": "^3.0.0",
     "vue-eslint-parser": "^10.4.0",
     "vue-svg-loader": "^0.16.0",

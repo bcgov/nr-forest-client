@@ -12,6 +12,7 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       vue({
         template: {
+          transformAssetUrls: false,
           compilerOptions: {
             isCustomElement: (tag) => tag.includes("cds-"),
           },
@@ -43,6 +44,9 @@ export default defineConfig(({ command, mode }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
+    build: {
+      cssMinify: "esbuild",
+    },
     test: {
       globals: true,
       reporters: ["verbose"],
@@ -50,7 +54,7 @@ export default defineConfig(({ command, mode }) => {
         reportsDirectory: "reports/.vite_report",
         provider: "istanbul",
         reporter: ["text", "json", "lcov"],
-        all: true,
+        include: ["src/**/*.{ts,vue}"],
         clean: true,
         exclude: [
           "**/node_modules/**",
@@ -79,6 +83,13 @@ export default defineConfig(({ command, mode }) => {
           ".eslintrc.js",
         ],
       },
+      exclude: [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/cypress/**",
+        "**/.{idea,git,cache,output,temp}/**",
+        "**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier}.config.*",
+      ],
       environment: "jsdom",
       setupFiles: "vitest.setup.ts",
     },

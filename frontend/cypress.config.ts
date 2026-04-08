@@ -1,4 +1,5 @@
 import { defineConfig } from 'cypress'
+import codeCoverageTask from '@cypress/code-coverage/task.js';
 import 'dotenv/config';
 
 export default defineConfig({
@@ -27,7 +28,7 @@ export default defineConfig({
   e2e: {
     baseUrl: 'http://127.0.0.1:3000/',
     setupNodeEvents: (on, config) => {      
-      require('@cypress/code-coverage/task')(on, config)
+      codeCoverageTask(on, config)
       return config
     }
   },
@@ -38,7 +39,7 @@ export default defineConfig({
       bundler: 'vite'
     },
     setupNodeEvents: (on, config) => {
-      require('@cypress/code-coverage/task')(on, config)
+      codeCoverageTask(on, config)
       on('task', {
         log: message => {
           console.log(message);

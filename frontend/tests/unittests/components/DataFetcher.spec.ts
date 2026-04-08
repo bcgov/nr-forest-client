@@ -10,7 +10,7 @@ vi.useFakeTimers();
 
 describe("DataFetcher", () => {
   vi.spyOn(global, "AbortController").mockImplementation(
-    () => new MockAbortController() as AbortController,
+    function () { return new MockAbortController() as AbortController; },
   );
 
   const mockedFetchTo = (url: Ref<string>, received: Ref<any>, config: any = {}) => ({
