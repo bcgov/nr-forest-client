@@ -939,7 +939,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         argumentSet(
             "Found matching IDIR users",
             "jdoe",
-            "[\"IDIR\\JDOE\",\"IDIR\\ASMITH\"]",
+            "[\"IDIR\\\\JDOE\",\"IDIR\\\\ASMITH\"]",
             200,
             List.of("IDIR\\JDOE", "IDIR\\ASMITH")
         ),
@@ -953,7 +953,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         argumentSet(
             "Single matching IDIR user",
             "singleuser",
-            "[\"IDIR\\singleuser\"]",
+            "[\"IDIR\\\\singleuser\"]",
             200,
             List.of("IDIR\\singleuser")
         )
