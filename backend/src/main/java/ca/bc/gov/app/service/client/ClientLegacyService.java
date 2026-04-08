@@ -54,6 +54,7 @@ import reactor.core.publisher.Mono;
 public class ClientLegacyService {
 
   private final WebClient legacyApi;
+  private final String X_TOTAL_COUNT_HEADER = "X-Total-Count";
 
   public ClientLegacyService(@Qualifier("legacyApi") WebClient legacyApi) {
     this.legacyApi = legacyApi;
@@ -506,7 +507,7 @@ public class ClientLegacyService {
                 .build(Map.of())
         )
         .exchangeToFlux(response -> {
-          List<String> totalCountHeader = response.headers().header("X-Total-Count");
+          List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT_HEADER);
           Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
 
           return response
@@ -523,16 +524,30 @@ public class ClientLegacyService {
   }
   
   /**
-   * Performs an advanced search for clients in the legacy system based on the provided keyword,
-   * page, and size.
+   * Executes an advanced search request against the legacy API for clients.
    *
-   * @param page    The page number to retrieve.
-   * @param size    The number of records per page.
-   * @param keyword The keyword to search for.
-   * @return A Flux of pairs containing ClientListDto objects and the total count of matching
-   * records.
+   * <p>This method builds a dynamic query using the provided pagination parameters
+   * and additional filters, then invokes the legacy endpoint. The response includes
+   * both the client data and the total number of matching records, extracted from
+   * the {@code X_TOTAL_COUNT_HEADER} response header.</p>
+   *
+   * <p>Each emitted element in the resulting {@link Flux} is a {@link Pair} where:
+   * <ul>
+   *   <li>the first value is the {@link ClientListDto} representing a client</li>
+   *   <li>the second value is the total count of matching records</li>
+   * </ul>
+   * The total count is repeated for each emitted element.</p>
+   *
+   * @param page the page index (0-based) to retrieve
+   * @param size the number of records per page
+   * @param allParams a map of additional query parameters used for filtering
+   * @return a {@link Flux} emitting {@link Pair} objects containing client data
+   *         and the total count of matching records
    */
-  public Flux<Pair<ClientListDto, Long>> advancedSearch(int page, int size, Map<String, String> allParams) {
+  public Flux<Pair<ClientListDto, Long>> advancedSearch(
+      int page, 
+      int size,
+      Map<String, String> allParams) {
     log.info(
         "Performing Advanced Search of clients with params {} with page {} and size {}",
         allParams,
@@ -551,7 +566,7 @@ public class ClientLegacyService {
           return builder.build(Map.of());
         })
         .exchangeToFlux(response -> {
-          List<String> totalCountHeader = response.headers().header("X-Total-Count");
+          List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT_HEADER);
           Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
 
           return response
@@ -699,7 +714,7 @@ public class ClientLegacyService {
                     .build()
             )
             .exchangeToFlux(response -> {
-                List<String> totalCountHeader = response.headers().header("X-Total-Count");
+                List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT_HEADER);
                 Long count = totalCountHeader.isEmpty() ? 
                     0L : Long.valueOf(totalCountHeader.get(0));
 
