@@ -26,10 +26,7 @@ import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.exception.UnexpectedErrorException;
 import ca.bc.gov.app.util.ClientMapper;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.annotation.Observed;
 import java.util.ArrayList;
@@ -58,19 +55,16 @@ public class BcRegistryService {
 
   private final WebClient bcRegistryApi;
   private final ObservationRegistry registry;
-  
-  private static final ObjectMapper OBJECT_MAPPER =
-      new ObjectMapper()
-          .registerModule(new JavaTimeModule())
-          .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-          .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+  private final ObjectMapper objectMapper;
 
   public BcRegistryService(
       @Qualifier("bcRegistryApi") WebClient bcRegistryApi,
-      ObservationRegistry registry
+      ObservationRegistry registry,
+      ObjectMapper objectMapper
   ) {
     this.bcRegistryApi = bcRegistryApi;
     this.registry = registry;
+    this.objectMapper = objectMapper;
   }
 
   /**
@@ -135,7 +129,7 @@ public class BcRegistryService {
             .flatMapMany(json -> {
               try {
                 BcRegistryFacetResponseDto dto =
-                    OBJECT_MAPPER.readValue(json, BcRegistryFacetResponseDto.class);
+                    objectMapper.readValue(json, BcRegistryFacetResponseDto.class);
                 List<BcRegistryFacetSearchResultEntryDto> results =
                     Optional.ofNullable(dto)
                         .map(BcRegistryFacetResponseDto::searchResults)
@@ -264,7 +258,7 @@ public class BcRegistryService {
             .tap(Micrometer.observation(registry))
             .flatMap(json -> {
               try {
-                return Mono.just(OBJECT_MAPPER.readValue(json, BcRegistryDocumentDto.class));
+                return Mono.just(objectMapper.readValue(json, BcRegistryDocumentDto.class));
               } catch (Exception e) {
                 log.error("Failed to parse BC Registry document JSON for {} / {}: {}", 
                     identifier, documentKey, e.toString(), e);
@@ -376,7 +370,7 @@ public class BcRegistryService {
   private String extractRootCauseOrMessage(String rawBody) {
     try {
       BcRegistryExceptionMessageDto dto =
-          OBJECT_MAPPER.readValue(rawBody, BcRegistryExceptionMessageDto.class);
+          objectMapper.readValue(rawBody, BcRegistryExceptionMessageDto.class);
       if (StringUtils.isNotBlank(dto.rootCause())) {
         return dto.rootCause();
       }
@@ -392,7 +386,7 @@ public class BcRegistryService {
   private String extractErrorMessage(String rawBody) {
     try {
       BcRegistryExceptionMessageDto dto =
-          OBJECT_MAPPER.readValue(rawBody, BcRegistryExceptionMessageDto.class);
+          objectMapper.readValue(rawBody, BcRegistryExceptionMessageDto.class);
       if (StringUtils.isNotBlank(dto.errorMessage())) {
         return dto.errorMessage();
       }
