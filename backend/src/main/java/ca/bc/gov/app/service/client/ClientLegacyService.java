@@ -714,13 +714,13 @@ public class ClientLegacyService {
                     .build()
             )
             .exchangeToFlux(response -> {
-                List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
-                Long count = totalCountHeader.isEmpty() ? 
-                    0L : Long.valueOf(totalCountHeader.get(0));
+              List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
+              Long count = totalCountHeader.isEmpty() ? 
+                  0L : Long.valueOf(totalCountHeader.get(0));
 
-                return response
-                    .bodyToFlux(HistoryLogDto.class)
-                    .map(dto -> Pair.of(dto, count));
+              return response
+                  .bodyToFlux(HistoryLogDto.class)
+                  .map(dto -> Pair.of(dto, count));
              })
           .name(REQUEST_LEGACY)
           .tag("kind", "historyLog")
@@ -963,27 +963,32 @@ public class ClientLegacyService {
       return Flux.empty();
     }
 
-    log.info("Searching for IDIR client users that matches for {}",
-        userId
-    );
+    log.info("Searching for IDIR client users that matches for {}", userId);
 
     return
-        legacyApi
-            .get()
-            .uri(builder ->
+      legacyApi
+        .get()
+        .uri(
+            builder ->
                 builder
                     .path("/api/search/client-users")
                     .queryParam("userId", "{userId}")
-                    .build(Map.of("userId", userId))
-            )
-            .accept(MediaType.APPLICATION_JSON)
-            .exchangeToMono(response -> response.bodyToMono(new ParameterizedTypeReference<List<String>>() {}))
-            .flatMapMany(Flux::fromIterable)
-            .name(REQUEST_LEGACY)
-            .tag("kind", "clientIdirUsersSearch")
-            .doOnNext(dto ->
-                log.info("Found client IDIR users that matches for {}", userId)
-            );
+                    .build(Map.of("userId", userId)))
+        .accept(MediaType.APPLICATION_JSON)
+        .exchangeToMono(
+            response ->
+                response.bodyToMono(
+                    new ParameterizedTypeReference<List<String>>() {})
+        )
+        .flatMapMany(Flux::fromIterable)
+        .name(REQUEST_LEGACY)
+        .tag("kind", "clientIdirUsersSearch")
+        .doOnNext(
+            dto ->
+                log.info(
+                    "Found client IDIR users that matches for {}",
+                    userId)
+        );
   }
   
 }
