@@ -73,6 +73,8 @@ public class ClientService {
     return bcRegistryService
         .requestDocumentData(clientNumber)
         .next()
+        .doOnError(error ->
+            log.error("Failed to fetch BC Registry document for {}", clientNumber, error))
         .doOnNext(document ->
             log.info("Searching on Oracle legacy db for {} {}",
                 document.business().identifier(),
@@ -158,6 +160,21 @@ public class ClientService {
             );
   }
   
+  /**
+   * Retrieves BC Registry document data for a given registration number.
+   *
+   * <p>This method delegates to the BC Registry service to fetch the document
+   * information associated with the specified registration number.
+   *
+   * @param registrationNumber the registration number to look up in BC Registry
+   * @return a {@link Flux} emitting {@link BcRegistryDocumentDto} entries for the
+   *         given registration number
+   */
+  public Flux<BcRegistryDocumentDto> getBcRegistryInformation(String registrationNumber) {
+    log.info("Requesting BC Registry information for {}", registrationNumber);
+    return bcRegistryService.requestDocumentData(registrationNumber);
+  }
+
   public Mono<String> getGoodStandingIndicator(String clientNumber) {
     return legacyService
         .searchByClientNumber(clientNumber)
@@ -178,11 +195,13 @@ public class ClientService {
                 })
         )
         .onErrorResume(NoClientDataFound.class, ex -> {
-          log.error("No data found on BC Registry for client number: {}", clientNumber);
+          log.error("No data found on BC Registry for client number: {}", clientNumber, ex);
           return Mono.just(StringUtils.EMPTY);
         })
-        .onErrorResume(UnexpectedErrorException.class, ex -> {
-          log.error("Unexpected error occurred while fetching data for client number: {}", clientNumber);
+        .onErrorResume(UnexpectedErrorException.class, error -> {
+          log.error("Unexpected error occurred while fetching data for client number: {}", 
+              clientNumber, 
+              error);
           return Mono.just(StringUtils.EMPTY);
         })
         .switchIfEmpty(Mono.just(StringUtils.EMPTY));
@@ -294,7 +313,8 @@ public class ClientService {
           isOwnedByPerson
       );
     }
-    log.info("Building simple client details for {} with standing {}", businessDto.identifier(),
+    log.info("Building simple client details for {} with standing {}", 
+        businessDto.identifier(),
         businessDto.goodStanding());
     return
         new ClientDetailsDto(

@@ -1,9 +1,11 @@
 package ca.bc.gov.app.dto.bcregistry;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import lombok.With;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 @With
@@ -17,7 +19,8 @@ public record BcRegistryBusinessDto(
     String identifier,
     String legalName,
     String legalType,
-    String state
+    String state,
+    ZonedDateTime registrationDateTime
 ) {
 
   public String getResolvedLegalName() {
@@ -30,7 +33,11 @@ public record BcRegistryBusinessDto(
     return
         names
             .stream()
-            .sorted(Comparator.comparing(BcRegistryAlternateNameDto::registeredDate))
+            .filter(name -> StringUtils.isNotBlank(name.name()))
+            .sorted(Comparator.comparing(
+                BcRegistryAlternateNameDto::registeredDate,
+                Comparator.nullsLast(Comparator.naturalOrder())
+            ))
             .map(BcRegistryAlternateNameDto::name)
             .findFirst()
             .orElse(legalName);

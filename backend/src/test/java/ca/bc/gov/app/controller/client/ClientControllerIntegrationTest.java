@@ -890,27 +890,38 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     );
   }
 
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("clientUsersByUserIdProvider")
-  @DisplayName("Search IDIR client users by userId")
-  void shouldSearchClientIdirUsersByUserId(
-      String userId,
-      String legacyResponse,
-      int responseStatus,
-      List<String> expectedUsers
-  ) {
+  @Test
+  @DisplayName("Get BC Registry information successfully")
+  void shouldGetBcRegistryInformationSuccessfully() {
 
     reset();
 
-    legacyStub.stubFor(
-        get(urlPathEqualTo("/api/search/client-users"))
-            .withQueryParam("userId", equalTo(userId))
+    String registrationNumber = "AA0000001";
+
+    bcRegistryStub
+        .stubFor(post(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + registrationNumber + "/documents/requests"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .withRequestBody(equalToJson(TestConstants.BCREG_DOC_REQ))
             .willReturn(
-                status(responseStatus)
+                status(200)
                     .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(legacyResponse)
+                    .withBody(TestConstants.BCREG_DOC_REQ_RES)
             )
-    );
+        );
+
+    bcRegistryStub
+        .stubFor(get(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + registrationNumber + "/documents/aa0a00a0a"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .willReturn(
+                status(200)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(TestConstants.BCREG_DOC_DATA)
+            )
+        );
 
     client
         .mutateWith(csrf())
@@ -918,46 +929,112 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             mockJwt()
                 .jwt(jwt -> jwt.claims(
                     claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                .authorities(new SimpleGrantedAuthority(
-                    "ROLE_" + ApplicationConstant.ROLE_EDITOR))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
         )
         .get()
-        .uri(uriBuilder ->
-            uriBuilder
-                .path("/api/clients/client-users")
-                .queryParam("userId", userId)
-                .build()
-        )
+        .uri("/api/clients/{registrationNumber}/bc-registry-information",
+            Map.of("registrationNumber", registrationNumber))
         .exchange()
         .expectStatus().isOk()
-        .expectBodyList(String.class)
-        .isEqualTo(expectedUsers);
+        .expectBody()
+        .consumeWith(System.out::println)
+        .jsonPath("$[0].business.identifier").isEqualTo("AA0000001")
+        .jsonPath("$[0].business.legalName").isEqualTo("SAMPLE COMPANY")
+        .jsonPath("$[0].business.goodStanding").isEqualTo(true)
+        .jsonPath("$[0].business.legalType").isEqualTo("SP");
   }
 
-  private static Stream<Arguments> clientUsersByUserIdProvider() {
-    return Stream.of(
-        argumentSet(
-            "Found matching IDIR users",
-            "jdoe",
-            "[\"IDIR\\\\JDOE\",\"IDIR\\\\ASMITH\"]",
-            200,
-            List.of("IDIR\\JDOE", "IDIR\\ASMITH")
-        ),
-        argumentSet(
-            "No matching IDIR users",
-            "unknown",
-            "[]",
-            200,
-            List.of()
-        ),
-        argumentSet(
-            "Single matching IDIR user",
-            "singleuser",
-            "[\"IDIR\\\\singleuser\"]",
-            200,
-            List.of("IDIR\\singleuser")
+  @Test
+  @DisplayName("Get BC Registry information with not found fallback to facet search")
+  void shouldGetBcRegistryInformationNotFound() {
+
+    reset();
+
+    String registrationNumber = "XX9999999";
+
+    bcRegistryStub
+        .stubFor(post(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + registrationNumber + "/documents/requests"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .willReturn(
+                status(404)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(TestConstants.BCREG_NOK)
+            )
+        );
+
+    bcRegistryStub
+        .stubFor(
+            post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
+                .willReturn(okJson(TestConstants.ORGBOOK_INCORP_EMPTY))
+        );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
         )
-    );
+        .get()
+        .uri("/api/clients/{registrationNumber}/bc-registry-information",
+            Map.of("registrationNumber", registrationNumber))
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .consumeWith(System.out::println);
+  }
+
+  @Test
+  @DisplayName("Get BC Registry information with unauthorized error")
+  void shouldGetBcRegistryInformationUnauthorized() {
+
+    reset();
+
+    String registrationNumber = "AA0000001";
+
+    bcRegistryStub
+        .stubFor(post(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + registrationNumber + "/documents/requests"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .willReturn(
+                status(401)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(TestConstants.BCREG_401)
+            )
+        );
+
+    bcRegistryStub
+        .stubFor(
+            post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
+                .willReturn(
+                    status(401)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(TestConstants.BCREG_401)
+                )
+        );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .get()
+        .uri("/api/clients/{registrationNumber}/bc-registry-information",
+            Map.of("registrationNumber", registrationNumber))
+        .exchange()
+        .expectStatus().isUnauthorized()
+        .expectBody()
+        .consumeWith(System.out::println);
   }
 
 }

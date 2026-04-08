@@ -156,7 +156,8 @@ class BusinessInformationBusinessRegisteredNumberValidatorTest {
                                 "XX1234567",
                                 "SAMPLE CORP",
                                 StringUtils.EMPTY,
-                                StringUtils.EMPTY
+                                StringUtils.EMPTY,
+                                null
                             ),
                             null,
                             List.of(
@@ -189,7 +190,8 @@ class BusinessInformationBusinessRegisteredNumberValidatorTest {
                         "XX1234567",
                         "SAMPLE CORP",
                         StringUtils.EMPTY,
-                        StringUtils.EMPTY
+                        StringUtils.EMPTY,
+                        null
                     ),
                     null,
                     List.of(
@@ -221,7 +223,8 @@ class BusinessInformationBusinessRegisteredNumberValidatorTest {
                         "XX1234567",
                         "SAMPLE CORP",
                         StringUtils.EMPTY,
-                        StringUtils.EMPTY
+                        StringUtils.EMPTY,
+                        null
                     ),
                     null,
                     List.of(
