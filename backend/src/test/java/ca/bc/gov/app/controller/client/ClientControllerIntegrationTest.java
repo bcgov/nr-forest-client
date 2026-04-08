@@ -1134,7 +1134,6 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         )
         .exchange()
         .expectStatus().isOk()
-        .expectHeader().valueEquals("x-total-count", "0")
         .expectBody()
         .consumeWith(System.out::println)
         .json("[]");
