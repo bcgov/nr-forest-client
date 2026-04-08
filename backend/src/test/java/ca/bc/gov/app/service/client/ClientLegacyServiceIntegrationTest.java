@@ -800,7 +800,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
     legacyStub.stubFor(
         get(urlPathEqualTo("/api/search/client-users"))
             .withQueryParam("userId", equalTo("jdoe"))
-            .willReturn(okJson("[\"IDIR\\\\JDOE\",\"IDIR\\\\ASMITH\"]"))
+            .willReturn(okJson("[\"IDIR\\JDOE\",\"IDIR\\ASMITH\"]"))
     );
 
     service

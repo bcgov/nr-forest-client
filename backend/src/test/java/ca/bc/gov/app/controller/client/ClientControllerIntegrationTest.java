@@ -21,6 +21,7 @@ import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -896,7 +897,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
       String userId,
       String legacyResponse,
       int responseStatus,
-      String expectedResponse
+      List<String> expectedUsers
   ) {
 
     reset();
@@ -911,29 +912,26 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             )
     );
 
-    var bodyExpectation =
-        client
-            .mutateWith(csrf())
-            .mutateWith(
-                mockJwt()
-                    .jwt(jwt -> jwt.claims(
-                        claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                    .authorities(new SimpleGrantedAuthority(
-                        "ROLE_" + ApplicationConstant.ROLE_EDITOR))
-            )
-            .get()
-            .uri(uriBuilder ->
-                uriBuilder
-                    .path("/api/clients/client-users")
-                    .queryParam("userId", userId)
-                    .build()
-            )
-            .exchange()
-            .expectStatus().isOk()
-            .expectBody()
-            .consumeWith(System.out::println);
-
-    bodyExpectation.json(expectedResponse);
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/clients/client-users")
+                .queryParam("userId", userId)
+                .build()
+        )
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(String.class)
+        .isEqualTo(expectedUsers);
   }
 
   private static Stream<Arguments> clientUsersByUserIdProvider() {
@@ -941,23 +939,23 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         argumentSet(
             "Found matching IDIR users",
             "jdoe",
-            "[\"IDIR\\\\JDOE\",\"IDIR\\\\ASMITH\"]",
+            "[\"IDIR\\JDOE\",\"IDIR\\ASMITH\"]",
             200,
-            "[\"IDIR\\\\JDOE\",\"IDIR\\\\ASMITH\"]"
+            List.of("IDIR\\JDOE", "IDIR\\ASMITH")
         ),
         argumentSet(
             "No matching IDIR users",
             "unknown",
             "[]",
             200,
-            "[]"
+            List.of()
         ),
         argumentSet(
             "Single matching IDIR user",
             "singleuser",
-            "[\"IDIR\\\\singleuser\"]",
+            "[\"IDIR\\singleuser\"]",
             200,
-            "[\"IDIR\\\\singleuser\"]"
+            List.of("IDIR\\singleuser")
         )
     );
   }
