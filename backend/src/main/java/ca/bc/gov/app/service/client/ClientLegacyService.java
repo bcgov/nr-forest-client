@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -686,32 +685,32 @@ public class ClientLegacyService {
         clientNumber, page, size, sources);
 
     return
-	    legacyApi
-	        .get()
-	        .uri(builder ->
-	            builder
-	                .path("/api/clients/history-logs/" + clientNumber)
-	                .queryParam("page", page)
-	                .queryParam("size", size)
-	                .queryParam("sources", sources)
+        legacyApi
+            .get()
+            .uri(builder ->
+                builder
+                    .path("/api/clients/history-logs/" + clientNumber)
+                    .queryParam("page", page)
+                    .queryParam("size", size)
+                    .queryParam("sources", sources)
                     .build()
-	        )
-	        .exchangeToFlux(response -> {
-	            List<String> totalCountHeader = response.headers().header("X-Total-Count");
-	            Long count = totalCountHeader.isEmpty() ? 
-	                0L : Long.valueOf(totalCountHeader.get(0));
+            )
+            .exchangeToFlux(response -> {
+                List<String> totalCountHeader = response.headers().header("X-Total-Count");
+                Long count = totalCountHeader.isEmpty() ? 
+                    0L : Long.valueOf(totalCountHeader.get(0));
 
-	            return response
-	                .bodyToFlux(HistoryLogDto.class)
-	                .map(dto -> Pair.of(dto, count));
-	         })
+                return response
+                    .bodyToFlux(HistoryLogDto.class)
+                    .map(dto -> Pair.of(dto, count));
+             })
           .name(REQUEST_LEGACY)
           .tag("kind", "historyLog")
-	        .doOnNext(
-	            dto -> log.info(
-	                "Found audit data in legacy system for client number {}", clientNumber
-	            )
-	        );
+            .doOnNext(
+                dto -> log.info(
+                    "Found audit data in legacy system for client number {}", clientNumber
+                )
+            );
   }
 
   /**
@@ -959,19 +958,12 @@ public class ClientLegacyService {
                     .queryParam("userId", "{userId}")
                     .build(Map.of("userId", userId))
             )
-            .exchangeToFlux(response ->
-                response
-                    .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
-                    .defaultIfEmpty(List.of())
-                    .flatMapMany(Flux::fromIterable)
-            )
+            .retrieve()
+            .bodyToFlux(String.class)
             .name(REQUEST_LEGACY)
             .tag("kind", "clientIdirUsersSearch")
-            .doOnNext(
-                dto -> log.info(
-                    "Found client IDIR users that matches for {}",
-                    userId
-                )
+            .doOnNext(dto ->
+                log.info("Found client IDIR users that matches for {}", userId)
             );
   }
   
