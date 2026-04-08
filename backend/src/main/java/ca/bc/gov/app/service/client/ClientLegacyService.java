@@ -54,7 +54,7 @@ import reactor.core.publisher.Mono;
 public class ClientLegacyService {
 
   private final WebClient legacyApi;
-  private final String X_TOTAL_COUNT_HEADER = "X-Total-Count";
+  private static final String X_TOTAL_COUNT = "X-Total-Count";
 
   public ClientLegacyService(@Qualifier("legacyApi") WebClient legacyApi) {
     this.legacyApi = legacyApi;
@@ -507,7 +507,7 @@ public class ClientLegacyService {
                 .build(Map.of())
         )
         .exchangeToFlux(response -> {
-          List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT_HEADER);
+          List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
           Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
 
           return response
@@ -566,7 +566,7 @@ public class ClientLegacyService {
           return builder.build(Map.of());
         })
         .exchangeToFlux(response -> {
-          List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT_HEADER);
+          List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
           Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
 
           return response
@@ -714,7 +714,7 @@ public class ClientLegacyService {
                     .build()
             )
             .exchangeToFlux(response -> {
-                List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT_HEADER);
+                List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
                 Long count = totalCountHeader.isEmpty() ? 
                     0L : Long.valueOf(totalCountHeader.get(0));
 

@@ -27,7 +27,7 @@ public class ClientAdvancedSearchController {
   private final ClientSearchService searchService;
   private final ClientAdvancedSearchService advancedSearchService;
   
-  private static final String X_TOTAL_COUNT_HEADER = "X-Total-Count";
+  private static final String X_TOTAL_COUNT = "X-Total-Count";
 
   /**
    * Performs an advanced search for clients based on the provided criteria.  
@@ -62,12 +62,12 @@ public class ClientAdvancedSearchController {
             if (list.isEmpty()) {
               serverResponse
                 .getHeaders()
-                .set(X_TOTAL_COUNT_HEADER, "0");
+                .set(X_TOTAL_COUNT, "0");
               return Flux.empty();
             }
             serverResponse
                 .getHeaders()
-                .set(X_TOTAL_COUNT_HEADER, list.get(0).getValue().toString());
+                .set(X_TOTAL_COUNT, list.get(0).getValue().toString());
             return Flux
                 .fromIterable(list)
                 .map(Pair::getKey);
@@ -82,11 +82,11 @@ public class ClientAdvancedSearchController {
             long total = signal.get() != null ? signal.get().getValue() : 0L;
             serverResponse
               .getHeaders()
-              .set(X_TOTAL_COUNT_HEADER, String.valueOf(total));
+              .set(X_TOTAL_COUNT, String.valueOf(total));
           } else {
             serverResponse
               .getHeaders()
-              .set(X_TOTAL_COUNT_HEADER, "0");
+              .set(X_TOTAL_COUNT, "0");
           }
           return flux.map(Pair::getKey);
         });
