@@ -26,10 +26,12 @@ import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.exception.UnexpectedErrorException;
 import ca.bc.gov.app.util.ClientMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.annotation.Observed;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -53,13 +55,16 @@ public class BcRegistryService {
 
   private final WebClient bcRegistryApi;
   private final ObservationRegistry registry;
+  private final ObjectMapper objectMapper;
 
   public BcRegistryService(
       @Qualifier("bcRegistryApi") WebClient bcRegistryApi,
-      ObservationRegistry registry
+      ObservationRegistry registry,
+      ObjectMapper objectMapper
   ) {
     this.bcRegistryApi = bcRegistryApi;
     this.registry = registry;
+    this.objectMapper = objectMapper;
   }
 
   /**
@@ -97,33 +102,57 @@ public class BcRegistryService {
             )
             .onStatus(
                 statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(400)),
-                exception -> exception
-                    .bodyToMono(BcRegistryExceptionMessageDto.class)
-                    .flatMap(ex -> Mono.error(new BadRequestException(ex.errorMessage())))
+                exception ->
+                    exception
+                        .bodyToMono(String.class)
+                        .defaultIfEmpty(StringUtils.EMPTY)
+                        .flatMap(rawBody -> {
+                          String message = extractErrorMessage(rawBody);
+                          return Mono.error(new BadRequestException(message));
+                        })
             )
             .onStatus(
                 HttpStatusCode::isError,
-                exception -> exception
-                    .bodyToMono(BcRegistryExceptionMessageDto.class)
-                    .flatMap(ex -> Mono.error(
-                            new UnexpectedErrorException(
-                                exception.statusCode().value(),
-                                ex.errorMessage()
-                            )
-                        )
-                    )
+                exception ->
+                    exception
+                        .bodyToMono(String.class)
+                        .defaultIfEmpty(StringUtils.EMPTY)
+                        .flatMap(rawBody -> Mono.error(new UnexpectedErrorException(
+                            exception.statusCode().value(),
+                            buildUnexpectedMessage(exception.statusCode().value(), rawBody)
+                        )))
             )
-            .bodyToMono(BcRegistryFacetResponseDto.class)
+            .bodyToMono(String.class)
             .name(ApplicationConstant.REQUEST_BCREGISTRY)
             .tag("kind", "facet")
             .tap(Micrometer.observation(registry))
-            .map(BcRegistryFacetResponseDto::searchResults)
-            .flatMapIterable(BcRegistryFacetSearchResultsDto::results)
-            .filter(entry -> entry.status().equalsIgnoreCase("active"))
+            .flatMapMany(json -> {
+              try {
+                BcRegistryFacetResponseDto dto =
+                    objectMapper.readValue(json, BcRegistryFacetResponseDto.class);
+                List<BcRegistryFacetSearchResultEntryDto> results =
+                    Optional.ofNullable(dto)
+                        .map(BcRegistryFacetResponseDto::searchResults)
+                        .map(BcRegistryFacetSearchResultsDto::results)
+                        .orElse(List.of());
+                return Flux.fromIterable(results);
+              } catch (Exception e) {
+                log.error("Failed to parse BC Registry facet JSON", e);
+                return Flux.error(new UnexpectedErrorException(
+                    500,
+                    "Failed to parse BC Registry JSON: " + e.getMessage()
+                ));
+              }
+            })
+            .filter(entry -> "active".equalsIgnoreCase(entry.status()))
             .doOnNext(
-                content -> log.info("Found entry on BC Registry [{}] {}",
-                    content.identifier(),
-                    content.name()));
+                content ->
+                    log.info(
+                        "Found entry on BC Registry [{}] {}",
+                        content.identifier(),
+                        content.name()
+                    )
+            );
   }
 
   /**
@@ -161,35 +190,37 @@ public class BcRegistryService {
                 statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(400)),
                 exception ->
                     exception
-                        .bodyToMono(BcRegistryExceptionMessageDto.class)
-                        .map(BcRegistryExceptionMessageDto::rootCause)
-                        .doOnNext(
-                            message -> log.error("Error while requesting data for {} -- {}",
-                                value,
-                                message))
-                        .filter(message -> message.contains("not found"))
-                        .switchIfEmpty(Mono.error(new InvalidAccessTokenException()))
-                        .flatMap(message -> Mono.error(new NoClientDataFound(value)))
+                        .bodyToMono(String.class)
+                        .defaultIfEmpty(StringUtils.EMPTY)
+                        .flatMap(rawBody -> {
+                          String message = extractRootCauseOrMessage(rawBody);
+                          log.error("Error while requesting data for {} -- {}", value, message);
+                          if (StringUtils.defaultString(message)
+                              .toLowerCase(Locale.ROOT)
+                              .contains("not found")) {
+                            return Mono.error(new NoClientDataFound(value));
+                          }
+                          return Mono.error(new InvalidAccessTokenException());
+                        })
 
             )
             .onStatus(
                 HttpStatusCode::isError,
-                exception -> exception
-                    .bodyToMono(BcRegistryExceptionMessageDto.class)
-                    .flatMap(ex -> Mono.error(
-                            new UnexpectedErrorException(
-                                exception.statusCode().value(),
-                                ex.errorMessage()
-                            )
-                        )
-                    )
+                exception ->
+                    exception
+                        .bodyToMono(String.class)
+                        .defaultIfEmpty(StringUtils.EMPTY)
+                        .flatMap(rawBody -> Mono.error(new UnexpectedErrorException(
+                            exception.statusCode().value(),
+                            buildUnexpectedMessage(exception.statusCode().value(), rawBody)
+                        )))
             )
             .bodyToMono(BcRegistryDocumentRequestResponseDto.class)
             .name(ApplicationConstant.REQUEST_BCREGISTRY)
             .tag("kind", "docreq")
             .tap(Micrometer.observation(registry))
             .flatMapIterable(BcRegistryDocumentRequestResponseDto::documents)
-            .doOnNext(entry -> log.info("Found document entry for {}: {}", value, entry))
+            .doOnNext(entry -> log.info("Found document entry for {}", value))
             .map(BcRegistryDocumentRequestDocumentDto::documentKey)
             .flatMap(documentKey -> getDocumentData(value, documentKey))
             //This will try to load the standing and business data for entries with no documents
@@ -199,7 +230,7 @@ public class BcRegistryService {
   }
 
   private Mono<BcRegistryDocumentDto> getDocumentData(String identifier, String documentKey) {
-    log.info("Requesting document {} for identifier {} for details", documentKey, identifier);
+    log.info("Requesting document details for {}", identifier);
     return
         bcRegistryApi
             .get()
@@ -221,18 +252,37 @@ public class BcRegistryService {
                 statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(400)),
                 exception -> Mono.error(new InvalidAccessTokenException())
             )
-            .bodyToMono(BcRegistryDocumentDto.class)
+            .bodyToMono(String.class)
             .name(ApplicationConstant.REQUEST_BCREGISTRY)
             .tag("kind", "docget")
             .tap(Micrometer.observation(registry))
+            .flatMap(json -> {
+              try {
+                return Mono.just(objectMapper.readValue(json, BcRegistryDocumentDto.class));
+              } catch (Exception e) {
+                log.error("Failed to parse BC Registry document JSON for {} / {}: {}", 
+                    identifier, documentKey, e.toString(), e);
+                // Signal NoClientDataFound so the outer requestDocumentData's
+                // onErrorResume(NoClientDataFound.class, ...) fallback kicks in
+                // and builds the document from the facet search instead.
+                return Mono.error(new NoClientDataFound(identifier));
+              }
+            })
             .doOnNext(
-                document -> log.info("Document loaded for {} {} as {}", identifier, documentKey,
-                    document.business().legalName()));
+                document -> {
+                  String legalName = Optional.ofNullable(document)
+                      .map(BcRegistryDocumentDto::business)
+                      .map(BcRegistryBusinessDto::legalName)
+                      .orElse("<unknown>");
+                  log.info("Document loaded for {} as {}", identifier, legalName);
+                });
   }
 
   private BcRegistryDocumentDto buildDocumentData(
       BcRegistryFacetSearchResultEntryDto facet
   ) {
+    
+    log.debug("buildDocumentData invoked for facet: {}", facet.identifier());
     // We have no address data in the facet, so we'll just create empty address objects
     BcRegistryAddressDto address =
         new BcRegistryAddressDto(null, null, null, null, null, null, null, null);
@@ -270,7 +320,8 @@ public class BcRegistryService {
             facet.identifier(),
             facet.name(),
             facet.legalType(),
-            facet.status()
+            facet.status(),
+            null
         );
 
     return
@@ -285,10 +336,6 @@ public class BcRegistryService {
   }
 
   private BcRegistryPartyDto buildBcRegistryPartyDto(BcRegistryFacetPartyDto party) {
-
-    if (StringUtils.isEmpty(party.partyType()) || !party.partyType().equalsIgnoreCase("person")) {
-      return null;
-    }
 
     List<BcRegistryRoleDto> roles =
         Optional
@@ -318,5 +365,44 @@ public class BcRegistryService {
         ),
         roles
     );
+  }
+
+  private String extractRootCauseOrMessage(String rawBody) {
+    try {
+      BcRegistryExceptionMessageDto dto =
+          objectMapper.readValue(rawBody, BcRegistryExceptionMessageDto.class);
+      if (StringUtils.isNotBlank(dto.rootCause())) {
+        return dto.rootCause();
+      }
+      if (StringUtils.isNotBlank(dto.errorMessage())) {
+        return dto.errorMessage();
+      }
+    } catch (Exception ignored) {
+      // Fall through to raw body handling when payload is not JSON.
+    }
+    return StringUtils.defaultIfBlank(rawBody, "Unknown BC Registry error");
+  }
+
+  private String extractErrorMessage(String rawBody) {
+    try {
+      BcRegistryExceptionMessageDto dto =
+          objectMapper.readValue(rawBody, BcRegistryExceptionMessageDto.class);
+      if (StringUtils.isNotBlank(dto.errorMessage())) {
+        return dto.errorMessage();
+      }
+      if (StringUtils.isNotBlank(dto.rootCause())) {
+        return dto.rootCause();
+      }
+    } catch (Exception ignored) {
+      // Fall through to raw body handling when payload is not JSON.
+    }
+    return StringUtils.defaultIfBlank(rawBody, "BC Registry bad request");
+  }
+
+  private String buildUnexpectedMessage(int status, String rawBody) {
+    String message = extractErrorMessage(rawBody);
+    String normalized = StringUtils.normalizeSpace(message);
+    String abbreviated = StringUtils.abbreviate(normalized, 500);
+    return "BC Registry request failed with status " + status + ": " + abbreviated;
   }
 }

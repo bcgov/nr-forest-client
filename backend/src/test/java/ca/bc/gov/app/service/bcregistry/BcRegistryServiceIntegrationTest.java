@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Named.named;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetPartyDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryFacetSearchResultEntryDto;
+import ca.bc.gov.app.exception.UnexpectedErrorException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -41,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -179,6 +181,28 @@ class BcRegistryServiceIntegrationTest extends AbstractTestContainerIntegrationT
     } else {
       step.expectNext(expected).verifyComplete();
     }
+  }
+
+  @Test
+  @DisplayName("should error when facet response is malformed JSON")
+  void shouldErrorWhenFacetResponseIsMalformedJson() {
+
+    bcRegistryStub
+        .stubFor(
+            post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("this is not valid json at all {{{")
+                )
+        );
+
+    service
+        .searchByFacets("C0123456", null)
+        .as(StepVerifier::create)
+        .expectError(UnexpectedErrorException.class)
+        .verify();
   }
 
   private static Stream<Arguments> byFacets() {
@@ -354,6 +378,13 @@ class BcRegistryServiceIntegrationTest extends AbstractTestContainerIntegrationT
                 NO_DATA, 200,
                 BCREG_FACET_XP, false,
                 BCREG_DOCOBJ_XP
+            ),
+            Arguments.of(
+                named("Malformed document JSON falls back to facet", "C0123456"),
+                BCREG_DOC_REQ_RES, 201,
+                "this is not valid json {{{", 200,
+                BCREG_FACET_ANY, false,
+                BCREG_DOCOBJ_ANY
             )
         );
 
