@@ -960,7 +960,8 @@ public class ClientLegacyService {
             )
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
-            .bodyToFlux(String.class)
+            .bodyToMono(String[].class)
+            .flatMapMany(Flux::fromArray)
             .name(REQUEST_LEGACY)
             .tag("kind", "clientIdirUsersSearch")
             .doOnNext(dto ->
