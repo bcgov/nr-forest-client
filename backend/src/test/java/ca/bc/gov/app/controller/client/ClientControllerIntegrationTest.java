@@ -957,7 +957,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
             "singleuser",
             "[\"IDIR\\\\singleuser\"]",
             200,
-            "[\"00000099\"]"
+            "[\"IDIR\\\\singleuser\"]"
         )
     );
   }
