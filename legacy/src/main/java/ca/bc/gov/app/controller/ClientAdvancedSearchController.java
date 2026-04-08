@@ -5,7 +5,6 @@ import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientAdvancedSearchService;
 import ca.bc.gov.app.service.ClientSearchService;
 import io.micrometer.observation.annotation.Observed;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -76,10 +75,19 @@ public class ClientAdvancedSearchController {
     log.info("Receiving request to do an advanced search with criteria: {}", criteria);
     return advancedSearchService
         .advancedSearch(criteria, pageRequest)
-        .doOnNext(pair -> serverResponse.getHeaders()
-            .putIfAbsent("X-Total-Count", List.of(pair.getValue().toString()))
-        )
-        .map(Pair::getKey);
+        .switchOnFirst((signal, flux) -> {
+          if (signal.hasValue()) {
+            long total = signal.get() != null ? signal.get().getValue() : 0L;
+            serverResponse
+              .getHeaders()
+              .set("X-Total-Count", String.valueOf(total));
+          } else {
+            serverResponse
+              .getHeaders()
+              .set("X-Total-Count", "0");
+          }
+          return flux.map(Pair::getKey);
+        });
   }
   
 }
