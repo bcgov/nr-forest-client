@@ -958,6 +958,7 @@ public class ClientLegacyService {
                     .queryParam("userId", "{userId}")
                     .build(Map.of("userId", userId))
             )
+            .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .bodyToFlux(String.class)
             .name(REQUEST_LEGACY)
