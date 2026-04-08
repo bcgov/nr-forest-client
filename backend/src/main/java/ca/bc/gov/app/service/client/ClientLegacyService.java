@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.client;
 
 import static ca.bc.gov.app.ApplicationConstant.MDC_USERID;
 import static ca.bc.gov.app.ApplicationConstant.REQUEST_LEGACY;
+
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
@@ -18,8 +19,8 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -542,12 +543,12 @@ public class ClientLegacyService {
     return legacyApi
         .get()
         .uri(builder -> {
-            builder
-                .path("/api/clients/advanced-search")
-                .queryParam("page", page)
-                .queryParam("size", size);
-            allParams.forEach(builder::queryParam);
-            return builder.build(Map.of());
+          builder
+              .path("/api/clients/advanced-search")
+              .queryParam("page", page)
+              .queryParam("size", size);
+          allParams.forEach(builder::queryParam);
+          return builder.build(Map.of());
         })
         .exchangeToFlux(response -> {
           List<String> totalCountHeader = response.headers().header("X-Total-Count");
@@ -562,7 +563,8 @@ public class ClientLegacyService {
         .doOnNext(pair -> {
           ClientListDto dto = pair.getFirst();
           Long totalCount = pair.getSecond();
-          log.info("Found clients by advanced search, client number: {}, total count: {}", dto.clientNumber(), totalCount);
+          log.info("Found clients by advanced search, client number: {}, total count: {}",
+              dto.clientNumber(), totalCount);
         });
   }
 
