@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'cypress'
+import { mergeConfig, loadConfigFromFile } from 'vite';
 import 'dotenv/config';
 
 export default defineConfig({
@@ -37,16 +38,18 @@ export default defineConfig({
     devServer: {
       framework: 'vue',
       bundler: 'vite',
-      viteConfig: {
-        optimizeDeps: {
-          noDiscovery: true,
-          include: [],
-        },
-        resolve: {
-          alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url)),
+      async viteConfig() {
+        const loaded = await loadConfigFromFile(
+          { command: 'serve', mode: 'test' },
+          undefined,
+          process.cwd(),
+        );
+        return mergeConfig(loaded?.config ?? {}, {
+          optimizeDeps: {
+            noDiscovery: true,
+            include: [],
           },
-        },
+        });
       },
     },
     setupNodeEvents: (on, config) => {
