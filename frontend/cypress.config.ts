@@ -47,7 +47,7 @@ export default defineConfig({
         return mergeConfig(loaded?.config ?? {}, {
           optimizeDeps: {
             noDiscovery: true,
-            include: [],
+            include: ['vue-the-mask'],
           },
         });
       },
