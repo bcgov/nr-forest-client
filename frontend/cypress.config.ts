@@ -1,4 +1,6 @@
+import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'cypress'
+import { mergeConfig, loadConfigFromFile } from 'vite';
 import 'dotenv/config';
 
 export default defineConfig({
@@ -35,7 +37,20 @@ export default defineConfig({
   component: {
     devServer: {
       framework: 'vue',
-      bundler: 'vite'
+      bundler: 'vite',
+      async viteConfig() {
+        const loaded = await loadConfigFromFile(
+          { command: 'serve', mode: 'test' },
+          undefined,
+          process.cwd(),
+        );
+        return mergeConfig(loaded?.config ?? {}, {
+          optimizeDeps: {
+            noDiscovery: true,
+            include: ['vue-the-mask'],
+          },
+        });
+      },
     },
     setupNodeEvents: (on, config) => {
       require('@cypress/code-coverage/task')(on, config)
