@@ -35,7 +35,13 @@ export default defineConfig({
   component: {
     devServer: {
       framework: 'vue',
-      bundler: 'vite'
+      bundler: 'vite',
+      viteConfig: {
+        optimizeDeps: {
+          noDiscovery: true,
+          include: [],
+        },
+      },
     },
     setupNodeEvents: (on, config) => {
       require('@cypress/code-coverage/task')(on, config)
