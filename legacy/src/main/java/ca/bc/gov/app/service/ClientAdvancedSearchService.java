@@ -12,6 +12,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+/**
+ * Service that performs advanced client searches against the
+ * {@link ForestClientRepository}.
+ *
+ * <p>Search criteria are represented by {@link ClientAdvancedSearchCriteriaDto}.
+ * Each non-blank field acts as a filter; blank or {@code null} fields are
+ * ignored by the underlying SQL query. Multiple fields are combined with
+ * AND logic, and the query joins the {@code forest_client},
+ * {@code client_location}, and {@code client_contact} tables so that searches
+ * can span all three entities.
+ *
+ * @see ClientAdvancedSearchCriteriaDto
+ * @see ForestClientRepository
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j

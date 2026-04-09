@@ -17,6 +17,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
+/**
+ * REST controller that exposes the advanced client search endpoint.
+ *
+ * <p>Provides a single {@code GET /api/clients/advanced-search} endpoint that
+ * accepts optional query parameters represented by
+ * {@link ClientAdvancedSearchCriteriaDto}. When no valid criteria are supplied,
+ * the endpoint falls back to returning the most recently created client entries.
+ *
+ * <p>Every response includes an {@code X-Total-Count} header with the total
+ * number of matching records so the caller can implement pagination controls.
+ *
+ * @see ClientAdvancedSearchService
+ * @see ClientSearchService
+ */
 @RestController
 @Slf4j
 @RequestMapping(value = "/api/clients/advanced-search", produces = MediaType.APPLICATION_JSON_VALUE)
