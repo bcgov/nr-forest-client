@@ -958,6 +958,18 @@ public class ClientLegacyService {
     );
   }
 
+  /**
+   * Retrieves a list of IDIR client user identifiers that match the given user ID from the legacy
+   * system.
+   *
+   * <p>This method queries the legacy API to find all IDIR user identifiers associated with the
+   * specified user ID. If the provided user ID is blank, an empty {@link Flux} is returned
+   * immediately without making a request.
+   *
+   * @param userId the user ID to search for matching IDIR client users
+   * @return a {@link Flux} emitting {@link String} values representing the matching IDIR client
+   *         user identifiers, or an empty {@link Flux} if the user ID is blank
+   */
   public Flux<String> getClientIdirUsersByUserId(String userId) {
     if (StringUtils.isBlank(userId)) {
       return Flux.empty();
