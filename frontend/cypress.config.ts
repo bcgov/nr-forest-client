@@ -1,3 +1,4 @@
+import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'cypress'
 import 'dotenv/config';
 
@@ -40,6 +41,11 @@ export default defineConfig({
         optimizeDeps: {
           noDiscovery: true,
           include: [],
+        },
+        resolve: {
+          alias: {
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+          },
         },
       },
     },
