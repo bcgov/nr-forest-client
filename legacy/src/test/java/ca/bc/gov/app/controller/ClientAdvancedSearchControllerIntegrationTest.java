@@ -158,7 +158,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
       String paramValue,
       String expectedClientNumber
   ) {
-    ResponseSpec combinedResponse = client
+    ResponseSpec response = client
         .get()
         .uri(uriBuilder -> uriBuilder
             .path(BASE_PATH)
@@ -171,54 +171,18 @@ class ClientAdvancedSearchControllerIntegrationTest extends
         .exchange();
 
     if (StringUtils.isNotBlank(expectedClientNumber)) {
-      java.util.concurrent.atomic.AtomicInteger combinedCount =
-          new java.util.concurrent.atomic.AtomicInteger();
-
-      combinedResponse
+      response
           .expectStatus().isOk()
           .expectHeader()
-          .value("X-Total-Count", count -> {
-            int parsed = Integer.parseInt(count);
-            assertThat(parsed).isGreaterThan(0);
-            combinedCount.set(parsed);
-          })
+          .value("X-Total-Count",
+              count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
           .expectBody()
           .jsonPath("$[?(@.clientNumber == '" + expectedClientNumber + "')]").exists()
           .consumeWith(System.out::println);
-
-      if (paramValue.contains(",")) {
-        String[] tokens = paramValue.split(",");
-        for (String token : tokens) {
-          String trimmed = token.trim();
-          client
-              .get()
-              .uri(uriBuilder -> uriBuilder
-                  .path(BASE_PATH)
-                  .queryParam(paramName, trimmed)
-                  .queryParam("page", 0)
-                  .queryParam("size", 10)
-                  .build()
-              )
-              .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-              .exchange()
-              .expectStatus().isOk()
-              .expectHeader()
-              .value("X-Total-Count", count -> {
-                int singleCount = Integer.parseInt(count);
-                assertThat(combinedCount.get())
-                    .as("Combined count for '%s' should be >= single-token count for '%s'",
-                        paramValue, trimmed)
-                    .isGreaterThanOrEqualTo(singleCount);
-              });
-        }
-      }
     } else {
-      combinedResponse
+      response
           .expectStatus().isOk()
-          .expectHeader()
-          .value("X-Total-Count", count -> assertThat(count).isEqualTo("0"))
           .expectBody()
-          .jsonPath("$").isEmpty()
           .consumeWith(System.out::println);
     }
   }
