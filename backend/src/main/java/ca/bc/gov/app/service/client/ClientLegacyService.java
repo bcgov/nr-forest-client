@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,7 @@ import reactor.core.publisher.Mono;
 public class ClientLegacyService {
 
   private final WebClient legacyApi;
+  private static final String X_TOTAL_COUNT = "X-Total-Count";
 
   public ClientLegacyService(@Qualifier("legacyApi") WebClient legacyApi) {
     this.legacyApi = legacyApi;
@@ -505,7 +507,7 @@ public class ClientLegacyService {
                 .build(Map.of())
         )
         .exchangeToFlux(response -> {
-          List<String> totalCountHeader = response.headers().header("X-Total-Count");
+          List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
           Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
 
           return response
@@ -518,6 +520,66 @@ public class ClientLegacyService {
           ClientListDto dto = pair.getFirst();
           Long totalCount = pair.getSecond();
           log.info("Found clients by keyword {}, total count: {}", dto.clientNumber(), totalCount);
+        });
+  }
+  
+  /**
+   * Executes an advanced search request against the legacy API for clients.
+   *
+   * <p>This method builds a dynamic query using the provided pagination parameters
+   * and additional filters, then invokes the legacy endpoint. The response includes
+   * both the client data and the total number of matching records, extracted from
+   * the {@code X_TOTAL_COUNT_HEADER} response header.</p>
+   *
+   * <p>Each emitted element in the resulting {@link Flux} is a {@link Pair} where:
+   * <ul>
+   *   <li>the first value is the {@link ClientListDto} representing a client</li>
+   *   <li>the second value is the total count of matching records</li>
+   * </ul>
+   * The total count is repeated for each emitted element.</p>
+   *
+   * @param page the page index (0-based) to retrieve
+   * @param size the number of records per page
+   * @param allParams a map of additional query parameters used for filtering
+   * @return a {@link Flux} emitting {@link Pair} objects containing client data
+   *         and the total count of matching records
+   */
+  public Flux<Pair<ClientListDto, Long>> advancedSearch(
+      int page, 
+      int size,
+      Map<String, String> allParams) {
+    log.info(
+        "Performing Advanced Search of clients with params {} with page {} and size {}",
+        allParams,
+        page,
+        size
+    );
+
+    return legacyApi
+        .get()
+        .uri(builder -> {
+          builder
+              .path("/api/clients/advanced-search")
+              .queryParam("page", page)
+              .queryParam("size", size);
+          allParams.forEach(builder::queryParam);
+          return builder.build(Map.of());
+        })
+        .exchangeToFlux(response -> {
+          List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
+          Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
+
+          return response
+              .bodyToFlux(ClientListDto.class)
+              .map(dto -> Pair.of(dto, count));
+        })
+        .name(REQUEST_LEGACY)
+        .tag("kind", "advancedSearch")
+        .doOnNext(pair -> {
+          ClientListDto dto = pair.getFirst();
+          Long totalCount = pair.getSecond();
+          log.info("Found clients by advanced search, client number: {}, total count: {}",
+              dto.clientNumber(), totalCount);
         });
   }
 
@@ -641,32 +703,32 @@ public class ClientLegacyService {
         clientNumber, page, size, sources);
 
     return
-	    legacyApi
-	        .get()
-	        .uri(builder ->
-	            builder
-	                .path("/api/clients/history-logs/" + clientNumber)
-	                .queryParam("page", page)
-	                .queryParam("size", size)
-	                .queryParam("sources", sources)
+        legacyApi
+            .get()
+            .uri(builder ->
+                builder
+                    .path("/api/clients/history-logs/" + clientNumber)
+                    .queryParam("page", page)
+                    .queryParam("size", size)
+                    .queryParam("sources", sources)
                     .build()
-	        )
-	        .exchangeToFlux(response -> {
-	            List<String> totalCountHeader = response.headers().header("X-Total-Count");
-	            Long count = totalCountHeader.isEmpty() ? 
-	                0L : Long.valueOf(totalCountHeader.get(0));
+            )
+            .exchangeToFlux(response -> {
+              List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
+              Long count = totalCountHeader.isEmpty() ? 
+                  0L : Long.valueOf(totalCountHeader.get(0));
 
-	            return response
-	                .bodyToFlux(HistoryLogDto.class)
-	                .map(dto -> Pair.of(dto, count));
-	         })
+              return response
+                  .bodyToFlux(HistoryLogDto.class)
+                  .map(dto -> Pair.of(dto, count));
+             })
           .name(REQUEST_LEGACY)
           .tag("kind", "historyLog")
-	        .doOnNext(
-	            dto -> log.info(
-	                "Found audit data in legacy system for client number {}", clientNumber
-	            )
-	        );
+            .doOnNext(
+                dto -> log.info(
+                    "Found audit data in legacy system for client number {}", clientNumber
+                )
+            );
   }
 
   /**
@@ -895,4 +957,50 @@ public class ClientLegacyService {
         new CodeNameDto(projection.relatedClntLocn(), projection.relatedClntLocnName())
     );
   }
+
+  /**
+   * Retrieves a list of IDIR client user identifiers that match the given user ID from the legacy
+   * system.
+   *
+   * <p>This method queries the legacy API to find all IDIR user identifiers associated with the
+   * specified user ID. If the provided user ID is blank, an empty {@link Flux} is returned
+   * immediately without making a request.
+   *
+   * @param userId the user ID to search for matching IDIR client users
+   * @return a {@link Flux} emitting {@link String} values representing the matching IDIR client
+   *         user identifiers, or an empty {@link Flux} if the user ID is blank
+   */
+  public Flux<String> getClientIdirUsersByUserId(String userId) {
+    if (StringUtils.isBlank(userId)) {
+      return Flux.empty();
+    }
+
+    log.info("Searching for IDIR client users that matches for {}", userId);
+
+    return
+      legacyApi
+        .get()
+        .uri(
+            builder ->
+                builder
+                    .path("/api/search/client-users")
+                    .queryParam("userId", "{userId}")
+                    .build(Map.of("userId", userId)))
+        .accept(MediaType.APPLICATION_JSON)
+        .exchangeToMono(
+            response ->
+                response.bodyToMono(
+                    new ParameterizedTypeReference<List<String>>() {})
+        )
+        .flatMapMany(Flux::fromIterable)
+        .name(REQUEST_LEGACY)
+        .tag("kind", "clientIdirUsersSearch")
+        .doOnNext(
+            dto ->
+                log.info(
+                    "Found client IDIR users that matches for {}",
+                    userId)
+        );
+  }
+  
 }

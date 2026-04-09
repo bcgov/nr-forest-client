@@ -793,4 +793,52 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .verifyComplete();
   }
 
+  @Test
+  @DisplayName("Search IDIR client users by userId with results")
+  void shouldGetClientIdirUsersByUserId() {
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search/client-users"))
+            .withQueryParam("userId", equalTo("jdoe"))
+            .willReturn(okJson("[\"IDIR\\\\JDOE\",\"IDIR\\\\ASMITH\"]"))
+    );
+
+    service
+        .getClientIdirUsersByUserId("jdoe")
+        .as(StepVerifier::create)
+        .assertNext(result -> assertEquals("IDIR\\JDOE", result))
+        .assertNext(result -> assertEquals("IDIR\\ASMITH", result))
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Search IDIR client users by userId with no results")
+  void shouldGetEmptyClientIdirUsersByUserId() {
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search/client-users"))
+            .withQueryParam("userId", equalTo("unknown"))
+            .willReturn(okJson("[]"))
+    );
+
+    service
+        .getClientIdirUsersByUserId("unknown")
+        .as(StepVerifier::create)
+        .verifyComplete();
+  }
+
+  @ParameterizedTest
+  @MethodSource("blankUserIds")
+  @DisplayName("Search IDIR client users returns empty for blank userId")
+  void shouldReturnEmptyForBlankUserId(String userId) {
+    service
+        .getClientIdirUsersByUserId(userId)
+        .as(StepVerifier::create)
+        .verifyComplete();
+  }
+
+  private static Stream<String> blankUserIds() {
+    return Stream.of(null, "", " ", "   ");
+  }
+
 }
