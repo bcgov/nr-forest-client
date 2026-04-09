@@ -43,6 +43,9 @@ export default defineConfig(({ command, mode }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
+    build: {
+      cssMinify: 'esbuild',
+    },
     test: {
       globals: true,
       reporters: ["verbose"],
