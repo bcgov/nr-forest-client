@@ -91,7 +91,7 @@ const router = useRouter();
 
 const { setScrollPoint } = useFocus();
 
-const formData = reactive<FormDataDto>({ ...newFormDataDto() });
+let formData = reactive<FormDataDto>({ ...newFormDataDto() });
 
 // Tab system
 const progressData = reactive([
