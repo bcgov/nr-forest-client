@@ -1,5 +1,6 @@
 package ca.bc.gov.app.dto;
 
+import java.time.LocalDateTime;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
@@ -31,7 +32,10 @@ public record ClientAdvancedSearchCriteriaDto(
     String clientIdType,
     String clientIdentification, 
     String emailAddress,
-    String contactName
+    String contactName,
+    String userId,
+    LocalDateTime updatedFromDate, 
+    LocalDateTime updatedToDate
 ) {
   
   /**
@@ -55,7 +59,10 @@ public record ClientAdvancedSearchCriteriaDto(
             sanitizedCriteria.clientIdType,
             sanitizedCriteria.clientIdentification, 
             sanitizedCriteria.emailAddress,
-            sanitizedCriteria.contactName)
+            sanitizedCriteria.contactName,
+            sanitizedCriteria.userId,
+            sanitizedCriteria.updatedFromDate,
+            sanitizedCriteria.updatedToDate)
         .anyMatch(java.util.Objects::nonNull);
   }
 
@@ -73,17 +80,31 @@ public record ClientAdvancedSearchCriteriaDto(
         blankToNull(clientIdType),
         blankToNull(clientIdentification),
         blankToNull(emailAddress),
-        blankToNull(contactName)
+        blankToNull(contactName),
+        blankToNull(userId),
+        blankToNull(updatedFromDate),
+        blankToNull(updatedToDate)
     );
   }
 
   /**
-   * Converts a blank or empty string to {@code null}.
+   * Returns {@code null} if the given value is a {@link String} that is blank;
+   * otherwise returns the original value unchanged.
    *
-   * @param value the string to check
-   * @return {@code null} if the value is blank or empty; the original value otherwise
+   * <p>A value is considered blank if it is {@code null}, empty, or contains only
+   * whitespace (as defined by {@code StringUtils.isBlank}).
+   *
+   * <p>For non-{@link String} types (e.g., {@link java.time.LocalDateTime}),
+   * the value is returned as-is.
+   *
+   * @param <T> the type of the input value
+   * @param value the value to check
+   * @return {@code null} if the value is a blank {@link String}; otherwise the original value
    */
-  private static String blankToNull(String value) {
-    return StringUtils.isBlank(value) ? null : value;
+  private static <T> T blankToNull(T value) {
+    if (value instanceof String str) {
+      return StringUtils.isBlank(str) ? null : value;
+    }
+    return value;
   }
 }

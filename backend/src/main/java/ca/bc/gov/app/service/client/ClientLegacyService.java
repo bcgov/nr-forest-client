@@ -54,7 +54,7 @@ import reactor.core.publisher.Mono;
 public class ClientLegacyService {
 
   private final WebClient legacyApi;
-  private static final String X_TOTAL_COUNT = "X-Total-Count";
+  private static final String X_TOTAL_COUNT = "x-total-count";
 
   public ClientLegacyService(@Qualifier("legacyApi") WebClient legacyApi) {
     this.legacyApi = legacyApi;

@@ -114,6 +114,9 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       String clientIdentification,
       String emailAddress,
       String contactName,
+      String userId,
+      LocalDateTime updatedFromDate,
+      LocalDateTime updatedToDate,
       int limit,
       long offset
   );
@@ -128,7 +131,10 @@ public interface ForestClientRepository extends ReactiveCrudRepository<ForestCli
       String clientIdType,
       String clientIdentification,
       String emailAddress,
-      String contactName
+      String contactName,
+      String userId,
+      LocalDateTime updatedFromDate,
+      LocalDateTime updatedToDate
   );
   
 }

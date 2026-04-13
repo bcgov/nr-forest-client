@@ -72,7 +72,10 @@ public class ClientAdvancedSearchService {
             sanitizedCriteria.clientIdType(),
             sanitizedCriteria.clientIdentification(), 
             sanitizedCriteria.emailAddress(),
-            sanitizedCriteria.contactName()
+            sanitizedCriteria.contactName(),
+            sanitizedCriteria.userId(),
+            sanitizedCriteria.updatedFromDate(),
+            sanitizedCriteria.updatedToDate()
         )
         .defaultIfEmpty(0L)
         .flatMapMany(count -> {
@@ -90,7 +93,11 @@ public class ClientAdvancedSearchService {
                   sanitizedCriteria.clientIdentification(), 
                   sanitizedCriteria.emailAddress(),
                   sanitizedCriteria.contactName(),
-                  page.getPageSize(), page.getOffset()
+                  sanitizedCriteria.userId(),
+                  sanitizedCriteria.updatedFromDate(),
+                  sanitizedCriteria.updatedToDate(),
+                  page.getPageSize(), 
+                  page.getOffset()
               )
               .doOnNext(dto -> log.info(
                   "Advanced search matched client {} {}",

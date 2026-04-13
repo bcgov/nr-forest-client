@@ -1340,6 +1340,12 @@ public final class ForestClientQueries {
                 WHERE CC3.CLIENT_NUMBER = C.CLIENT_NUMBER
                   AND UPPER(CC3.CONTACT_NAME) LIKE '%' || UPPER(:contactName) || '%'
              ))
+        AND (:userId IS NULL
+             OR UPPER(C.UPDATE_USERID) LIKE '%' || UPPER(:userId) || '%')
+        AND (:updatedFromDate IS NULL
+             OR C.UPDATE_TIMESTAMP >= :updatedFromDate)
+        AND (:updatedToDate IS NULL
+             OR C.UPDATE_TIMESTAMP <= :updatedToDate)
       """;
 
   public static final String ADVANCED_SEARCH = """
