@@ -555,6 +555,9 @@ public class ClientLegacyService {
         size
     );
 
+    // Filter out reserved pagination keys to avoid duplicates in the legacy request
+    Set<String> reservedKeys = Set.of("page", "size");
+
     return legacyApi
         .get()
         .uri(builder -> {
@@ -562,7 +565,11 @@ public class ClientLegacyService {
               .path("/api/clients/advanced-search")
               .queryParam("page", page)
               .queryParam("size", size);
-          allParams.forEach(builder::queryParam);
+          allParams.forEach((key, value) -> {
+            if (!reservedKeys.contains(key)) {
+              builder.queryParam(key, value);
+            }
+          });
           return builder.build(Map.of());
         })
         .exchangeToFlux(response -> {

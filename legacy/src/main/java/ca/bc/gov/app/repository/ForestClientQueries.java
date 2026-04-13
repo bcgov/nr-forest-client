@@ -1306,7 +1306,6 @@ public final class ForestClientQueries {
           LEFT JOIN THE.CLIENT_LOCATION CL ON C.CLIENT_NUMBER = CL.CLIENT_NUMBER
               AND CL.CLIENT_LOCN_CODE = '00'
           LEFT JOIN THE.CLIENT_STATUS_CODE CSC ON C.CLIENT_STATUS_CODE = CSC.CLIENT_STATUS_CODE
-          LEFT JOIN THE.CLIENT_CONTACT CC ON C.CLIENT_NUMBER = CC.CLIENT_NUMBER
       """;
 
   public static final String ADVANCED_SEARCH_WHERE = """
@@ -1330,9 +1329,17 @@ public final class ForestClientQueries {
                 LIKE '%' || UPPER(:clientIdentification) || '%')
         AND (:emailAddress IS NULL
              OR UPPER(CL.EMAIL_ADDRESS) LIKE '%' || UPPER(:emailAddress) || '%'
-             OR UPPER(CC.EMAIL_ADDRESS) LIKE '%' || UPPER(:emailAddress) || '%')
+             OR EXISTS (
+                SELECT 1 FROM THE.CLIENT_CONTACT CC2
+                WHERE CC2.CLIENT_NUMBER = C.CLIENT_NUMBER
+                  AND UPPER(CC2.EMAIL_ADDRESS) LIKE '%' || UPPER(:emailAddress) || '%'
+             ))
         AND (:contactName IS NULL
-             OR UPPER(CC.CONTACT_NAME) LIKE '%' || UPPER(:contactName) || '%')
+             OR EXISTS (
+                SELECT 1 FROM THE.CLIENT_CONTACT CC3
+                WHERE CC3.CLIENT_NUMBER = C.CLIENT_NUMBER
+                  AND UPPER(CC3.CONTACT_NAME) LIKE '%' || UPPER(:contactName) || '%'
+             ))
       """;
 
   public static final String ADVANCED_SEARCH = """

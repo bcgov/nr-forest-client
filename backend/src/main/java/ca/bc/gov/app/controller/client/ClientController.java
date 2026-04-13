@@ -311,10 +311,14 @@ public class ClientController {
       @RequestParam(required = false) Map<String, String> allParams,
       ServerHttpResponse serverResponse
   ) {
-    log.info("Listing clients: page={}, size={}, params={}", page, size, allParams);
+    Map<String, String> filterParams = new java.util.HashMap<>(allParams);
+    filterParams.remove("page");
+    filterParams.remove("size");
+
+    log.info("Listing clients: page={}, size={}, params={}", page, size, filterParams);
 
     return clientLegacyService
-        .advancedSearch(page, size, allParams)
+        .advancedSearch(page, size, filterParams)
         .doOnNext(pair -> {
           Long count = pair.getSecond();
 
