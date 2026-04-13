@@ -45,7 +45,7 @@ public class ClientAdvancedSearchService {
    * <p>Example usage:
    * <pre>
    *   /api/clients/advanced-search?clientStatus=ACT&amp;firstName=Joe
-   *   /api/clients/advanced-search?contactEmail=john@example.com&amp;clientName=MyCorp
+   *   /api/clients/advanced-search?emailAddress=john@example.com&amp;clientName=MyCorp
    * </pre>
    *
    * @param criteria the search criteria DTO with optional fields
