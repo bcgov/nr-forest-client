@@ -55,7 +55,7 @@ public class ClientController {
     return service
         .findHistoryLogsByClientNumber(clientNumber, PageRequest.of(page, size), sources)
         .doOnNext(pair -> serverResponse.getHeaders()
-            .putIfAbsent("X-Total-Count", List.of(pair.getValue().toString()))
+            .putIfAbsent("x-total-count", List.of(pair.getValue().toString()))
         )
         .map(Pair::getKey);
   }
