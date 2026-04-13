@@ -329,7 +329,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
               .willReturn(
                   aResponse()
                       .withHeader("Content-Type", "application/json")
-                      .withHeader("X-Total-Count", expectedTotalCount.toString())
+                      .withHeader("x-total-count", expectedTotalCount.toString())
                       .withBody("[{"
                           + "\"clientNumber\":\"00000001\","
                           + "\"clientAcronym\":\"ACR\","
@@ -592,7 +592,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
               .willReturn(
                   aResponse()
                       .withHeader("Content-Type", "application/json")
-                      .withHeader("X-Total-Count", expectedTotalCount.toString())
+                      .withHeader("x-total-count", expectedTotalCount.toString())
                       .withBody("[{" 
                           + "\"tableName\":\"ClientInformation\","
                           + "\"idx\":\"123\","

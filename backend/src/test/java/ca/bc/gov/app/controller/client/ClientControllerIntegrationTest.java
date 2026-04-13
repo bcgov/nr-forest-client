@@ -1063,7 +1063,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 .withQueryParam("clientName", equalTo("SAMPLE"))
                 .willReturn(
                     okJson(legacyResponse)
-                        .withHeader("X-Total-Count", "1")
+                        .withHeader("x-total-count", "1")
                 )
         );
 
@@ -1110,7 +1110,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 .withQueryParam("clientName", equalTo("NONEXISTENT"))
                 .willReturn(
                     okJson("[]")
-                        .withHeader("X-Total-Count", "0")
+                        .withHeader("x-total-count", "0")
                 )
         );
 
@@ -1165,7 +1165,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 .withQueryParam("size", equalTo("100"))
                 .willReturn(
                     okJson(legacyResponse)
-                        .withHeader("X-Total-Count", "1")
+                        .withHeader("x-total-count", "1")
                 )
         );
 
