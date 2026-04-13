@@ -329,7 +329,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
               .willReturn(
                   aResponse()
                       .withHeader("Content-Type", "application/json")
-                      .withHeader("X-Total-Count", expectedTotalCount.toString())
+                      .withHeader("x-total-count", expectedTotalCount.toString())
                       .withBody("[{"
                           + "\"clientNumber\":\"00000001\","
                           + "\"clientAcronym\":\"ACR\","
@@ -592,7 +592,7 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
               .willReturn(
                   aResponse()
                       .withHeader("Content-Type", "application/json")
-                      .withHeader("X-Total-Count", expectedTotalCount.toString())
+                      .withHeader("x-total-count", expectedTotalCount.toString())
                       .withBody("[{" 
                           + "\"tableName\":\"ClientInformation\","
                           + "\"idx\":\"123\","
@@ -791,6 +791,54 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .findAllLocationUpdatedWithClient(clientNumber, statusCode)
           .as(StepVerifier::create)
           .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Search IDIR client users by userId with results")
+  void shouldGetClientIdirUsersByUserId() {
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search/client-users"))
+            .withQueryParam("userId", equalTo("jdoe"))
+            .willReturn(okJson("[\"IDIR\\\\JDOE\",\"IDIR\\\\ASMITH\"]"))
+    );
+
+    service
+        .getClientIdirUsersByUserId("jdoe")
+        .as(StepVerifier::create)
+        .assertNext(result -> assertEquals("IDIR\\JDOE", result))
+        .assertNext(result -> assertEquals("IDIR\\ASMITH", result))
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Search IDIR client users by userId with no results")
+  void shouldGetEmptyClientIdirUsersByUserId() {
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search/client-users"))
+            .withQueryParam("userId", equalTo("unknown"))
+            .willReturn(okJson("[]"))
+    );
+
+    service
+        .getClientIdirUsersByUserId("unknown")
+        .as(StepVerifier::create)
+        .verifyComplete();
+  }
+
+  @ParameterizedTest
+  @MethodSource("blankUserIds")
+  @DisplayName("Search IDIR client users returns empty for blank userId")
+  void shouldReturnEmptyForBlankUserId(String userId) {
+    service
+        .getClientIdirUsersByUserId(userId)
+        .as(StepVerifier::create)
+        .verifyComplete();
+  }
+
+  private static Stream<String> blankUserIds() {
+    return Stream.of(null, "", " ", "   ");
   }
 
 }

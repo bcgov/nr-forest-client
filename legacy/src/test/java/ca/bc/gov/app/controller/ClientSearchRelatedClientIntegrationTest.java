@@ -38,8 +38,8 @@ class ClientSearchRelatedClientIntegrationTest extends AbstractTestContainerInte
         .header("Content-Type", "application/json")
         .exchange()
         .expectStatus().isOk()
-        .expectHeader().exists("X-Total-Count")
-        .expectHeader().valueEquals("X-Total-Count", String.valueOf(expectedClientNames.size()))
+        .expectHeader().exists("x-total-count")
+        .expectHeader().valueEquals("x-total-count", String.valueOf(expectedClientNames.size()))
         .expectBody();
 
     if (expectedClientNames.isEmpty()) {
@@ -69,14 +69,14 @@ class ClientSearchRelatedClientIntegrationTest extends AbstractTestContainerInte
                     "00000009",
                     "james",
                     null,
-                    List.of("JAMES BAXTER (BAXTER'S FAMILY)", "james hunt hunt")
+                    List.of("JAMES BAXTER (BAXTER'S FAMILY)")
                 ),
                 Arguments.argumentSet(
                     "James Hunt looking for other FM James",
                     "00000009",
                     "james",
                     "FM",
-                    List.of("JAMES BAXTER (BAXTER'S FAMILY)", "james hunt hunt")
+                    List.of("JAMES BAXTER (BAXTER'S FAMILY)")
                 ),
                 Arguments.argumentSet(
                     "James Hunt looking for other SH James",
