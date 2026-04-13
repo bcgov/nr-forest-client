@@ -64,12 +64,10 @@ const lastSearchKeyword = ref("");
 // empty is valid
 const valid = ref(true);
 
-const basicSearchUri = "/api/clients/search";
-
-const advancedSearchUri = "/api/clients/advanced-search";
+const searchUri = "/api/clients/search";
 
 const predictiveSearchUri = computed(
-  () => `${basicSearchUri}?size=5&keyword=${encodeURIComponent(searchKeyword.value)}`,
+  () => `${searchUri}?size=5&keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
 
 const advancedFilters = reactive<ClientSearchParameters>({});
@@ -77,22 +75,24 @@ const advancedFilters = reactive<ClientSearchParameters>({});
 const commonFetchParams = computed(() => ({
   page: pageNumber.value - 1,
   size: pageSize.value,
+  keyword: encodeURIComponent(searchKeyword.value),
+  ...advancedFilters,
 }));
 
 const basicFetchParams = computed(() => ({
-  ...commonFetchParams.value,
+  ...commonFetchParams,
   keyword: encodeURIComponent(searchKeyword.value),
 }));
 
 const advancedFetchParams = computed(() => ({
-  ...commonFetchParams.value,
+  ...commonFetchParams,
   ...advancedFilters,
 }));
 
-const commonFetchConfig = {
+const commonFetchConfig = computed(() => ({
   skip: true,
   paramsSerializer: (params: Record<string, any>) => new URLSearchParams(params).toString(),
-};
+}));
 
 const basicFetchConfig = computed(() => ({
   ...commonFetchConfig,
@@ -104,22 +104,12 @@ const advancedFetchConfig = computed(() => ({
   params: advancedFetchParams.value,
 }));
 
-const searchType = ref<"basic" | "advanced">("basic");
-
-const fetchConfig = computed(
-  () => searchType.value === "basic" ? basicFetchConfig.value : advancedFetchConfig.value,
-);
-
-const searchUri = computed(
-  () => searchType.value === "basic" ? basicSearchUri : advancedSearchUri,
-);
-
 const {
   response: searchResponse,
-  fetch: fetchSearch,
+  fetch: fetchBasicSearch,
   loading: loadingSearch,
   error: searchError,
-} = useFetchTo(searchUri, tableData, fetchConfig);
+} = useFetchTo(searchUri, tableData, basicFetchConfig);
 
 const noExactMatch = ref<boolean>(null);
 
@@ -139,17 +129,13 @@ const search = (skipResetPage = false) => {
   }
 
   lastSearchKeyword.value = searchKeyword.value;
-  fetchSearch();
+  fetchBasicSearch();
 };
 
-const searchBasic = () => {
-  searchType.value = "basic";
-  search();
-};
+const advancedData = reactive<ClientSearchParameters>({});
 
 const searchAdvanced = () => {
-  searchType.value = "advanced";
-  search();
+
 };
 
 const advancedModalActive = ref(false);
@@ -203,10 +189,6 @@ const resultsIncludeExactMatch = () => {
 };
 
 watch(searchResponse, () => {
-  if (searchType.value !== "basic") {
-    return;
-  }
-
   const totalCount = parseInt(searchResponse.value.headers["x-total-count"] || "0");
   totalItems.value = totalCount;
 
@@ -298,6 +280,7 @@ onMounted(() => {
 
 <template>
   <div id="screen" class="table-list">
+    {{ commonFetchParams }}
     <div id="title" v-if="userhasAuthority">
       <div>
         <div class="form-header-title mg-sd-25">
@@ -350,7 +333,7 @@ onMounted(() => {
             @press:enter:item="openClientDetails"
             @update:model-value="valid = false"
             @error="valid = !$event"
-            @press:enter="searchBasic()"
+            @press:enter="search()"
             #="{ value }"
           >
             <div class="search-result-item link-container" v-if="value">
@@ -371,7 +354,7 @@ onMounted(() => {
         <cds-button kind="tertiary" @click.prevent="advancedModalActive = true" id="advanced-search-button">
           <FilterEdit16 slot="icon" />
         </cds-button>
-        <cds-button kind="primary" @click.prevent="searchBasic()" id="search-button">
+        <cds-button kind="primary" @click.prevent="search()" id="search-button">
           <span>Search</span>
           <Search16 slot="icon" />
         </cds-button>
@@ -450,10 +433,7 @@ onMounted(() => {
       v-if="tableData && totalItems == 0 && userhasAuthority && !loadingSearch"
     >
       <user-search-svg alt="User search pictogram" class="standard-svg" />
-      <p class="heading-02">No results for
-        <template v-if="searchType === 'basic'">“{{ lastSearchKeyword }}”</template>
-        <template v-else>your advanced search</template>
-      </p>
+      <p class="heading-02">No results for “{{ lastSearchKeyword }}”</p>
       <p class="body-compact-01">Consider adjusting your search term(s) and try again.</p>
     </div>
 
