@@ -35,7 +35,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
         .exchange()
         .expectStatus().isOk()
         .expectHeader()
-        .value("X-Total-Count",
+        .value("x-total-count",
             count -> assertThat(Integer.parseInt(count)).isGreaterThanOrEqualTo(0))
         .expectBody()
         .consumeWith(System.out::println);
@@ -58,7 +58,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
         .exchange()
         .expectStatus().isOk()
         .expectHeader()
-        .value("X-Total-Count",
+        .value("x-total-count",
             count -> assertThat(Integer.parseInt(count)).isGreaterThanOrEqualTo(0))
         .expectBody()
         .consumeWith(System.out::println);
@@ -88,7 +88,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
       response
           .expectStatus().isOk()
           .expectHeader()
-          .value("X-Total-Count",
+          .value("x-total-count",
               count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
           .expectBody()
           .jsonPath("$[?(@.clientNumber == '" + expectedClientNumber + "')]").exists()
@@ -134,7 +134,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
       response
           .expectStatus().isOk()
           .expectHeader()
-          .value("X-Total-Count",
+          .value("x-total-count",
               count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
           .expectBody()
           .jsonPath("$[?(@.clientNumber == '" + expectedClientNumber + "')]").exists()
@@ -143,7 +143,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
       response
           .expectStatus().isOk()
           .expectHeader()
-          .value("X-Total-Count", count -> assertThat(count).isEqualTo("0"))
+          .value("x-total-count", count -> assertThat(count).isEqualTo("0"))
           .expectBody()
           .jsonPath("$").isEmpty()
           .consumeWith(System.out::println);
@@ -174,7 +174,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
       response
           .expectStatus().isOk()
           .expectHeader()
-          .value("X-Total-Count",
+          .value("x-total-count",
               count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
           .expectBody()
           .jsonPath("$[?(@.clientNumber == '" + expectedClientNumber + "')]").exists()
@@ -224,7 +224,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
         .exchange()
         .expectStatus().isOk()
         .expectHeader()
-        .value("X-Total-Count",
+        .value("x-total-count",
             count -> assertThat(Integer.parseInt(count)).isGreaterThan(2))
         .expectBody()
         .jsonPath("$.length()").isEqualTo(2)
@@ -248,7 +248,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
         .exchange()
         .expectStatus().isOk()
         .expectHeader()
-        .value("X-Total-Count",
+        .value("x-total-count",
             count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
         .expectBody()
         .jsonPath("$[0].clientNumber").isEqualTo("00000138")
@@ -272,7 +272,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
         .exchange()
         .expectStatus().isOk()
         .expectHeader()
-        .value("X-Total-Count",
+        .value("x-total-count",
             count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
         .expectBody()
         .jsonPath("$[?(@.clientNumber == '00000137')]").exists()

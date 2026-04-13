@@ -38,8 +38,8 @@ class ClientSearchRelatedClientIntegrationTest extends AbstractTestContainerInte
         .header("Content-Type", "application/json")
         .exchange()
         .expectStatus().isOk()
-        .expectHeader().exists("X-Total-Count")
-        .expectHeader().valueEquals("X-Total-Count", String.valueOf(expectedClientNames.size()))
+        .expectHeader().exists("x-total-count")
+        .expectHeader().valueEquals("x-total-count", String.valueOf(expectedClientNames.size()))
         .expectBody();
 
     if (expectedClientNames.isEmpty()) {

@@ -25,7 +25,7 @@ import reactor.core.publisher.Flux;
  * {@link ClientAdvancedSearchCriteriaDto}. When no valid criteria are supplied,
  * the endpoint falls back to returning the most recently created client entries.
  *
- * <p>Every response includes an {@code X-Total-Count} header with the total
+ * <p>Every response includes an {@code x-total-count} header with the total
  * number of matching records so the caller can implement pagination controls.
  *
  * @see ClientAdvancedSearchService
@@ -41,7 +41,7 @@ public class ClientAdvancedSearchController {
   private final ClientSearchService searchService;
   private final ClientAdvancedSearchService advancedSearchService;
   
-  private static final String X_TOTAL_COUNT = "X-Total-Count";
+  private static final String X_TOTAL_COUNT = "x-total-count";
 
   /**
    * Performs an advanced search for clients based on the provided criteria.  
@@ -50,12 +50,12 @@ public class ClientAdvancedSearchController {
    * returns the latest client entries, paginated according to the {@code page} and {@code size} 
    * parameters. Otherwise, it performs an advanced search using {@link ClientAdvancedSearchService}.
    * <p>
-   * The total number of results is included in the {@code X-Total-Count} HTTP header of the response.
+   * The total number of results is included in the {@code x-total-count} HTTP header of the response.
    * 
    * @param page the page number to retrieve (0-based index), defaults to 0 if not provided
    * @param size the number of results per page, defaults to 5 if not provided
    * @param criteria the advanced search criteria; may be null
-   * @param serverResponse the server response used to set the {@code X-Total-Count} header
+   * @param serverResponse the server response used to set the {@code x-total-count} header
    * @return a {@link Flux} of {@link PredictiveSearchResultDto} representing the search results
    */
   @GetMapping
