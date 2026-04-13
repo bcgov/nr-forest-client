@@ -326,5 +326,12 @@ public class ClientSearchController {
           return flux.map(Pair::getKey);
         });
   }
+  
+  @GetMapping("/client-users")
+  public Flux<String> searchClientIdirUsersByUserId(
+      @RequestParam String userId
+  ) {
+    return service.getClientIdirUsersByUserId(userId);
+  }
 
 }

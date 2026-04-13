@@ -269,4 +269,71 @@ public class ClientController {
     return clientLegacyService.searchRelatedClients(clientNumber, type, value);
   }
 
+  /**
+   * Searches for IDIR client users that match the given user ID.
+   *
+   * <p>This endpoint queries the legacy system to find client user records
+   * associated with the provided IDIR user identifier.
+   *
+   * @param userId the IDIR user identifier to search for
+   * @return a {@link Flux} emitting matching client user identifiers as strings
+   */
+  @GetMapping("/client-users")
+  public Flux<String> searchClientIdirUsersByUserId(
+      @RequestParam String userId
+  ) {
+    return clientLegacyService.getClientIdirUsersByUserId(userId);
+  }
+  
+  /**
+   * Performs an advanced search for clients using dynamic query parameters.
+   *
+   * <p>This endpoint supports pagination and flexible filtering through request parameters.
+   * All query parameters provided in the request (except {@code page} and {@code size})
+   * are collected into a map and passed to the service layer for processing.</p>
+   *
+   * <p>The total number of matching records is returned in the response headers under
+   * {@link ApplicationConstant#X_TOTAL_COUNT}. If no results are emitted, a default value
+   * of {@code 0} is set.</p>
+   *
+   * @param page the page index (0-based). Defaults to {@code 0} if not provided.
+   * @param size the number of records per page. Defaults to {@code 100} if not provided.
+   * @param allParams a map containing all query parameters for dynamic filtering
+   *                  (excluding pagination parameters).
+   * @param serverResponse the {@link ServerHttpResponse} used to set response headers
+   * @return a {@link Flux} emitting {@link ClientListDto} objects matching the search criteria
+   */
+
+  @GetMapping("/advanced-search")
+  public Flux<ClientListDto> advancedSearch(
+      @RequestParam(required = false, defaultValue = "0") int page,
+      @RequestParam(required = false, defaultValue = "100") int size,
+      @RequestParam(required = false) Map<String, String> allParams,
+      ServerHttpResponse serverResponse
+  ) {
+    log.info("Listing clients: page={}, size={}, params={}", page, size, allParams);
+
+    return clientLegacyService
+        .advancedSearch(page, size, allParams)
+        .doOnNext(pair -> {
+          Long count = pair.getSecond();
+
+          serverResponse
+              .getHeaders()
+              .putIfAbsent(
+                  ApplicationConstant.X_TOTAL_COUNT,
+                  List.of(count.toString())
+              );
+        })
+        .map(Pair::getFirst)
+        .doFinally(signalType ->
+            serverResponse
+                .getHeaders()
+                .putIfAbsent(
+                    ApplicationConstant.X_TOTAL_COUNT,
+                    List.of("0")
+                )
+        );
+  }
+  
 }

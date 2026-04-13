@@ -1036,4 +1036,157 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .consumeWith(System.out::println);
   }
 
+  @Test
+  @DisplayName("Advanced search with results")
+  void shouldAdvancedSearchWithResults() {
+
+    reset();
+
+    String legacyResponse = """
+        [
+          {
+            "clientNumber": "00000001",
+            "clientAcronym": "SC",
+            "clientFullName": "SAMPLE COMPANY",
+            "clientType": "C",
+            "city": "VICTORIA",
+            "clientStatus": "A"
+          }
+        ]
+        """;
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/clients/advanced-search"))
+                .withQueryParam("page", equalTo("0"))
+                .withQueryParam("size", equalTo("10"))
+                .withQueryParam("clientName", equalTo("SAMPLE"))
+                .willReturn(
+                    okJson(legacyResponse)
+                        .withHeader("X-Total-Count", "1")
+                )
+        );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/clients/advanced-search")
+                .queryParam("page", "0")
+                .queryParam("size", "10")
+                .queryParam("clientName", "SAMPLE")
+                .build()
+        )
+        .exchange()
+        .expectStatus().isOk()
+        .expectHeader().valueEquals("x-total-count", "1")
+        .expectBody()
+        .consumeWith(System.out::println)
+        .jsonPath("$").isArray()
+        .jsonPath("$.length()").isEqualTo(1)
+        .jsonPath("$[0].clientNumber").isEqualTo("00000001")
+        .jsonPath("$[0].clientFullName").isEqualTo("SAMPLE COMPANY");
+  }
+
+  @Test
+  @DisplayName("Advanced search with no results")
+  void shouldAdvancedSearchWithNoResults() {
+
+    reset();
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/clients/advanced-search"))
+                .withQueryParam("page", equalTo("0"))
+                .withQueryParam("size", equalTo("10"))
+                .withQueryParam("clientName", equalTo("NONEXISTENT"))
+                .willReturn(
+                    okJson("[]")
+                        .withHeader("X-Total-Count", "0")
+                )
+        );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/clients/advanced-search")
+                .queryParam("page", "0")
+                .queryParam("size", "10")
+                .queryParam("clientName", "NONEXISTENT")
+                .build()
+        )
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .consumeWith(System.out::println)
+        .json("[]");
+  }
+
+  @Test
+  @DisplayName("Advanced search with default pagination")
+  void shouldAdvancedSearchWithDefaultPagination() {
+
+    reset();
+
+    String legacyResponse = """
+        [
+          {
+            "clientNumber": "00000002",
+            "clientAcronym": "TC",
+            "clientFullName": "TEST COMPANY",
+            "clientType": "C",
+            "city": "VANCOUVER",
+            "clientStatus": "A"
+          }
+        ]
+        """;
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/clients/advanced-search"))
+                .withQueryParam("page", equalTo("0"))
+                .withQueryParam("size", equalTo("100"))
+                .willReturn(
+                    okJson(legacyResponse)
+                        .withHeader("X-Total-Count", "1")
+                )
+        );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .get()
+        .uri("/api/clients/advanced-search")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .consumeWith(System.out::println)
+        .jsonPath("$").isArray()
+        .jsonPath("$.length()").isEqualTo(1)
+        .jsonPath("$[0].clientNumber").isEqualTo("00000002");
+  }
+
 }

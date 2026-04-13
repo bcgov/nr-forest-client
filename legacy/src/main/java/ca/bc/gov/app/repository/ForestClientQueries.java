@@ -1287,4 +1287,75 @@ public final class ForestClientQueries {
       LEFT JOIN ForestClientAudit fca ON fca.client_number = cla.client_number
       WHERE cla.client_number = :client_number
       AND cla.UPDATE_TIMESTAMP = fca.UPDATE_TIMESTAMP""";
+
+  public static final String CLIENT_IDIR_USERS_AUTOCOMPLETE = """
+      SELECT DISTINCT UPDATE_USERID
+      FROM THE.FOREST_CLIENT
+      WHERE UPDATE_USERID LIKE 'IDIR\\%' 
+        AND UTL_MATCH.JARO_WINKLER_SIMILARITY(
+            REGEXP_SUBSTR(UPPER(UPDATE_USERID), '[^\\\\]+$'), 
+            UPPER(:userId)
+        ) > 90
+      ORDER BY UPDATE_USERID ASC
+      FETCH FIRST 10 ROWS ONLY
+      """;
+
+  public static final String ADVANCED_SEARCH_BASE_FROM = """
+      FROM THE.FOREST_CLIENT C
+          LEFT JOIN THE.CLIENT_TYPE_CODE CTC ON C.CLIENT_TYPE_CODE = CTC.CLIENT_TYPE_CODE
+          LEFT JOIN THE.CLIENT_LOCATION CL ON C.CLIENT_NUMBER = CL.CLIENT_NUMBER
+              AND CL.CLIENT_LOCN_CODE = '00'
+          LEFT JOIN THE.CLIENT_STATUS_CODE CSC ON C.CLIENT_STATUS_CODE = CSC.CLIENT_STATUS_CODE
+          LEFT JOIN THE.CLIENT_CONTACT CC ON C.CLIENT_NUMBER = CC.CLIENT_NUMBER
+      """;
+
+  public static final String ADVANCED_SEARCH_WHERE = """
+      WHERE (:clientName IS NULL
+             OR UPPER(C.CLIENT_NAME) LIKE '%' || UPPER(:clientName) || '%')
+        AND (:firstName IS NULL
+             OR UPPER(C.LEGAL_FIRST_NAME) LIKE '%' || UPPER(:firstName) || '%')
+        AND (:middleName IS NULL
+             OR UPPER(C.LEGAL_MIDDLE_NAME) LIKE '%' || UPPER(:middleName) || '%')
+        AND (:clientStatus IS NULL
+             OR INSTR(',' || UPPER(:clientStatus) || ',',
+                      ',' || UPPER(C.CLIENT_STATUS_CODE) || ',') > 0)
+        AND (:clientType IS NULL
+             OR INSTR(',' || UPPER(:clientType) || ',',
+                      ',' || UPPER(C.CLIENT_TYPE_CODE) || ',') > 0)
+        AND (:clientIdType IS NULL
+             OR INSTR(',' || UPPER(:clientIdType) || ',',
+                      ',' || UPPER(C.CLIENT_ID_TYPE_CODE) || ',') > 0)
+        AND (:clientIdentification IS NULL
+             OR UPPER(C.CLIENT_IDENTIFICATION)
+                LIKE '%' || UPPER(:clientIdentification) || '%')
+        AND (:emailAddress IS NULL
+             OR UPPER(CL.EMAIL_ADDRESS) LIKE '%' || UPPER(:emailAddress) || '%'
+             OR UPPER(CC.EMAIL_ADDRESS) LIKE '%' || UPPER(:emailAddress) || '%')
+        AND (:contactName IS NULL
+             OR UPPER(CC.CONTACT_NAME) LIKE '%' || UPPER(:contactName) || '%')
+      """;
+
+  public static final String ADVANCED_SEARCH = """
+      SELECT
+          C.CLIENT_NUMBER,
+          C.CLIENT_ACRONYM AS CLIENT_ACRONYM,
+          C.CLIENT_NAME,
+          C.LEGAL_FIRST_NAME AS CLIENT_FIRST_NAME,
+          C.CLIENT_IDENTIFICATION,
+          C.LEGAL_MIDDLE_NAME AS CLIENT_MIDDLE_NAME,
+          CL.CITY AS CITY,
+          CTC.DESCRIPTION AS CLIENT_TYPE,
+          CSC.DESCRIPTION AS CLIENT_STATUS,
+          0 AS SCORE
+      """
+      + ADVANCED_SEARCH_BASE_FROM
+      + ADVANCED_SEARCH_WHERE
+      + " ORDER BY C.CLIENT_NAME ASC, C.LEGAL_FIRST_NAME ASC, C.CLIENT_NUMBER ASC "
+      + ORACLE_PAGINATION;
+
+  public static final String ADVANCED_SEARCH_COUNT =
+      "SELECT COUNT(DISTINCT C.CLIENT_NUMBER) "
+      + ADVANCED_SEARCH_BASE_FROM
+      + ADVANCED_SEARCH_WHERE;
+
 }
