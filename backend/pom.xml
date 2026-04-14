@@ -75,8 +75,8 @@
         <testcontainers.version>1.21.4</testcontainers.version>
         <logback.version>1.5.26</logback.version>
         <oci.revision>${project.version}</oci.revision>
-        <nimbus-jose-jwt.version>10.8</nimbus-jose-jwt.version>
-        <spring-security-core.version>6.5.8</spring-security-core.version>
+        <nimbus-jose-jwt.version>10.9</nimbus-jose-jwt.version>
+        <spring-security-core.version>6.5.9</spring-security-core.version>
         <micrometer.version>1.16.4</micrometer.version>
         <micrometer-tracing.version>1.6.4</micrometer-tracing.version>
         <flyway.version>11.11.0</flyway.version>
