@@ -75,8 +75,8 @@
         <testcontainers.version>1.21.4</testcontainers.version>
         <logback.version>1.5.26</logback.version>
         <oci.revision>${project.version}</oci.revision>
-        <nimbus-jose-jwt.version>10.8</nimbus-jose-jwt.version>
-        <spring-security-core.version>6.5.8</spring-security-core.version>
+        <nimbus-jose-jwt.version>10.9</nimbus-jose-jwt.version>
+        <spring-security-core.version>6.5.9</spring-security-core.version>
         <micrometer.version>1.16.4</micrometer.version>
         <micrometer-tracing.version>1.6.4</micrometer-tracing.version>
         <flyway.version>11.11.0</flyway.version>
@@ -85,7 +85,7 @@
         <org.junit.version>6.0.3</org.junit.version>
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.23.0</mockito.version>
-        <jooq.version>3.20.11</jooq.version>
+        <jooq.version>3.21.1</jooq.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <jackson.version>2.21.1</jackson.version>
         <jackson-bom.version>2.21.1</jackson-bom.version>

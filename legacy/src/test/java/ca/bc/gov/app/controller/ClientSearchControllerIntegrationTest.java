@@ -305,7 +305,7 @@ class ClientSearchControllerIntegrationTest extends
       response
           .expectStatus().isOk()
           .expectHeader()
-          .value("X-Total-Count", count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
+          .value("x-total-count", count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
           .expectBody()
           .jsonPath("$[0].clientNumber").isNotEmpty()
           .jsonPath("$[0].clientNumber").isEqualTo(expectedClientNumber)
@@ -316,7 +316,7 @@ class ClientSearchControllerIntegrationTest extends
       response
           .expectStatus().isOk()
           .expectHeader()
-          .value("X-Total-Count", count -> assertThat(count).isEqualTo("0"))
+          .value("x-total-count", count -> assertThat(count).isEqualTo("0"))
           .expectBody()
           .consumeWith(System.out::println);
     }
@@ -344,7 +344,7 @@ class ClientSearchControllerIntegrationTest extends
     response
       .expectStatus().isOk()
       .expectHeader()
-      .value("X-Total-Count", count -> assertThat(count).isGreaterThanOrEqualTo("1"))
+      .value("x-total-count", count -> assertThat(count).isGreaterThanOrEqualTo("1"))
       .expectBody()
       .jsonPath("$[0].clientNumber").isNotEmpty()
       .jsonPath("$[0].clientNumber").isEqualTo("00000159");
