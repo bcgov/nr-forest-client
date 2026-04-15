@@ -1021,15 +1021,19 @@ del {
   // Defining as an adjacent class to reach the specificity level needed.
   &.grouping-02 {
     &--width-32rem {
-      width: 32rem;
+      width: 32rem !important;
+    }
+
+    &--width-9_875rem {
+      width: 9.875rem !important;
     }
     
     &--width-9rem {
-      width: 9rem;
+      width: 9rem !important;
     }
 
     &--width-8rem {
-      width: 8rem;
+      width: 8rem !important;
     }
   }
 }
@@ -1043,12 +1047,20 @@ del {
   background-blend-mode: multiply;
 
   &.grouping-03 {
+    &--width-9_875rem {
+      width: 9.875rem !important;
+    }
+
     &--width-20_5rem {
-      width: 20.5rem;;
+      width: 20.5rem !important;
+    }
+
+    &--width-20_75rem {
+      width: 20.75rem !important;
     }
 
     &--width-32rem {
-      width: 32rem;
+      width: 32rem !important;
     }
   }
 }
@@ -1074,21 +1086,6 @@ del {
       width: 100%;
     }
   }
-}
-
-.grouping-03:has(#identificationType) {
-  width: 20.75rem;
-}
-
-.grouping-03:has(#identificationProvince),
-.grouping-02:has(#clientIdentification) {
-  width: 9.875rem;
-}
-.grouping-02:has(#clientTypeOfId) {
-  width: 9.875rem;
-}
-.grouping-02:has(#clientIdNumber) {
-  width: 9.875rem;
 }
 
 .grouping-04 {

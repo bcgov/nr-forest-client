@@ -4,10 +4,6 @@ import type { ClientSearchParameters, CodeNameType } from '@/dto/CommonTypesDto'
 import { hasOnlyNamingCharacters, isAscii, isDateAfter, isDateBefore, isMaxSizeMsg, optional } from '@/helpers/validators/GlobalValidators';
 import { isValid } from 'date-fns/isValid';
 
-const props = defineProps<{
-  please?: boolean;
-}>();
-
 const emit = defineEmits<{
   (e: "search"): void;
 }>();
@@ -15,8 +11,6 @@ const emit = defineEmits<{
 const modelActive = defineModel<boolean>("active", { required: true });
 
 const modelFilters = defineModel<ClientSearchParameters>("filters", { required: true });
-
-// const modelData = reactive<ClientSearchParameters>({});
 
 const typedIDIR = ref<string>();
 
@@ -186,7 +180,7 @@ const search = () => {
             #="{ content, loading }"
           >
             <AutoCompleteInputComponent
-              id="updatedByIDIR"
+              id="userId"
               label="Updated by IDIR"
               autocomplete="off"
               tip=""
@@ -194,7 +188,7 @@ const search = () => {
               :contents="content.map(stringToCodeName)"
               :validations="validations.userId"
               :loading="loading"
-              @update:selected-value="selectCode('updatedByIDIR')($event)"
+              @update:selected-value="selectCode('userId')($event)"
               @update:model-value="validationState.userId = false"
               @empty="validationState.userId = validationState.userId || $event"
             />
@@ -222,7 +216,7 @@ const search = () => {
             />
           </data-fetcher>
           <text-input-component
-            id="identificationNumber"
+            id="clientIdentification"
             label="ID number"
             placeholder=""
             tip=""
@@ -288,7 +282,7 @@ const search = () => {
             @error="validationState.contactName = !$event"
           />
           <text-input-component
-            id="email"
+            id="emailAddress"
             label="Email"
             placeholder=""
             tip=""
@@ -342,6 +336,7 @@ const search = () => {
         Cancel
       </cds-modal-footer-button>
       <cds-modal-footer-button
+        id="search-advanced-btn"
         kind="primary"
         class="cds--modal-submit-btn"
         @click="search"
