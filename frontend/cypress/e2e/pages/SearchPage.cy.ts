@@ -358,7 +358,7 @@ describe("Search Page", () => {
       cy.selectAutocompleteEntry(
         "#userId",
         "jry",
-        "JRYAN",
+        "IDIR\\\\JRYAN",
         "@getClientUsers",
       );
       cy.selectFormEntry("#clientIdType", "British Columbia Drivers Licence");
@@ -400,7 +400,7 @@ describe("Search Page", () => {
           clientName: "sample-clientName",
           firstName: "sample-firstName",
           middleName: "sample-middleName",
-          userId: "JRYAN",
+          userId: "IDIR\\JRYAN",
           clientIdType: "BCDL,BCID",
           clientIdentification: "sample-clientIdentification",
           clientType: "A,C",

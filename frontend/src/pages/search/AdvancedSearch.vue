@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, reactive, watch } from 'vue';
 import type { ClientSearchParameters, CodeNameType } from '@/dto/CommonTypesDto';
 import { hasOnlyNamingCharacters, isAscii, isDateAfter, isDateBefore, isMaxSizeMsg, optional } from '@/helpers/validators/GlobalValidators';
 import { isValid } from 'date-fns/isValid';
@@ -91,7 +91,7 @@ watch([() => modelFilters.value.updatedFromDate, () => modelFilters.value.update
 
 const clientUsersUrl = computed(
   () =>
-    `/api/clients/client-users?userId=${modelTypedUserId.value || ""}`
+    `/api/clients/client-users?userId=${encodeURIComponent(modelTypedUserId.value || "")}`
 );
 
 const stringToCodeName = (value: string): CodeNameType => ({code: value, name: value});
