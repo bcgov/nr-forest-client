@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.ClientLookUpDto;
@@ -119,6 +120,24 @@ public class ClientController {
   public Mono<String> getGoodStanding(@PathVariable String clientNumber) {
     log.info("Requesting good standing indicator for client number {}", clientNumber);
     return clientService.getGoodStandingIndicator(clientNumber);
+  }
+
+  /**
+   * Retrieves BC Registry information for a given registration number.
+   *
+   * <p>This endpoint fetches the document data from BC Registry associated with the
+   * specified registration number, including business details, offices, and parties.
+   *
+   * @param registrationNumber the registration number to look up in BC Registry
+   * @return a {@link Flux} emitting {@link BcRegistryDocumentDto} entries for the
+   *         given registration number
+   */
+  @GetMapping("/{registrationNumber}/bc-registry-information")
+  public Flux<BcRegistryDocumentDto> getBcRegistryInformation(
+      @PathVariable String registrationNumber) {
+    log.info("Requesting BC Registry information for registration number {}",
+        registrationNumber);
+    return clientService.getBcRegistryInformation(registrationNumber);
   }
   
   /**
@@ -250,4 +269,75 @@ public class ClientController {
     return clientLegacyService.searchRelatedClients(clientNumber, type, value);
   }
 
+  /**
+   * Searches for IDIR client users that match the given user ID.
+   *
+   * <p>This endpoint queries the legacy system to find client user records
+   * associated with the provided IDIR user identifier.
+   *
+   * @param userId the IDIR user identifier to search for
+   * @return a {@link Flux} emitting matching client user identifiers as strings
+   */
+  @GetMapping("/client-users")
+  public Mono<List<String>> searchClientIdirUsersByUserId(
+      @RequestParam String userId
+  ) {
+    return clientLegacyService.getClientIdirUsersByUserId(userId).collectList();
+  }
+  
+  /**
+   * Performs an advanced search for clients using dynamic query parameters.
+   *
+   * <p>This endpoint supports pagination and flexible filtering through request parameters.
+   * All query parameters provided in the request (except {@code page} and {@code size})
+   * are collected into a map and passed to the service layer for processing.</p>
+   *
+   * <p>The total number of matching records is returned in the response headers under
+   * {@link ApplicationConstant#X_TOTAL_COUNT}. If no results are emitted, a default value
+   * of {@code 0} is set.</p>
+   *
+   * @param page the page index (0-based). Defaults to {@code 0} if not provided.
+   * @param size the number of records per page. Defaults to {@code 100} if not provided.
+   * @param allParams a map containing all query parameters for dynamic filtering
+   *                  (excluding pagination parameters).
+   * @param serverResponse the {@link ServerHttpResponse} used to set response headers
+   * @return a {@link Flux} emitting {@link ClientListDto} objects matching the search criteria
+   */
+
+  @GetMapping("/advanced-search")
+  public Flux<ClientListDto> advancedSearch(
+      @RequestParam(required = false, defaultValue = "0") int page,
+      @RequestParam(required = false, defaultValue = "100") int size,
+      @RequestParam(required = false) Map<String, String> allParams,
+      ServerHttpResponse serverResponse
+  ) {
+    Map<String, String> filterParams = new java.util.HashMap<>(allParams);
+    filterParams.remove("page");
+    filterParams.remove("size");
+
+    log.info("Listing clients: page={}, size={}, params={}", page, size, filterParams);
+
+    return clientLegacyService
+        .advancedSearch(page, size, filterParams)
+        .doOnNext(pair -> {
+          Long count = pair.getSecond();
+
+          serverResponse
+              .getHeaders()
+              .putIfAbsent(
+                  ApplicationConstant.X_TOTAL_COUNT,
+                  List.of(count.toString())
+              );
+        })
+        .map(Pair::getFirst)
+        .doFinally(signalType ->
+            serverResponse
+                .getHeaders()
+                .putIfAbsent(
+                    ApplicationConstant.X_TOTAL_COUNT,
+                    List.of("0")
+                )
+        );
+  }
+  
 }

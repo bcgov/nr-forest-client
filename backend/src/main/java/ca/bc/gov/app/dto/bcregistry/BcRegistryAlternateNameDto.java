@@ -1,6 +1,5 @@
 package ca.bc.gov.app.dto.bcregistry;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;

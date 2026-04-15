@@ -57,8 +57,10 @@ import ca.bc.gov.app.dto.opendata.FeatureProperties;
 import ca.bc.gov.app.dto.opendata.Geometry;
 import ca.bc.gov.app.dto.opendata.OpenData;
 import ca.bc.gov.app.health.ManualHealthIndicator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flipkart.zjsonpatch.JsonPatch;
@@ -398,6 +400,8 @@ public class GlobalServiceConfiguration {
     ObjectMapper mapper = builder.build();
     mapper.registerModule(new JavaTimeModule());
     mapper.registerModule(forestClientDetailsDtoModule());
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
     return mapper;
   }

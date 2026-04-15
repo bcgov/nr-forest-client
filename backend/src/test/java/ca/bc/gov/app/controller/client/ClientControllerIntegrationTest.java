@@ -889,4 +889,304 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
     );
   }
 
+  @Test
+  @DisplayName("Get BC Registry information successfully")
+  void shouldGetBcRegistryInformationSuccessfully() {
+
+    reset();
+
+    String registrationNumber = "AA0000001";
+
+    bcRegistryStub
+        .stubFor(post(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + registrationNumber + "/documents/requests"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .withRequestBody(equalToJson(TestConstants.BCREG_DOC_REQ))
+            .willReturn(
+                status(200)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(TestConstants.BCREG_DOC_REQ_RES)
+            )
+        );
+
+    bcRegistryStub
+        .stubFor(get(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + registrationNumber + "/documents/aa0a00a0a"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .willReturn(
+                status(200)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(TestConstants.BCREG_DOC_DATA)
+            )
+        );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .get()
+        .uri("/api/clients/{registrationNumber}/bc-registry-information",
+            Map.of("registrationNumber", registrationNumber))
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .consumeWith(System.out::println)
+        .jsonPath("$[0].business.identifier").isEqualTo("AA0000001")
+        .jsonPath("$[0].business.legalName").isEqualTo("SAMPLE COMPANY")
+        .jsonPath("$[0].business.goodStanding").isEqualTo(true)
+        .jsonPath("$[0].business.legalType").isEqualTo("SP");
+  }
+
+  @Test
+  @DisplayName("Get BC Registry information with not found fallback to facet search")
+  void shouldGetBcRegistryInformationNotFound() {
+
+    reset();
+
+    String registrationNumber = "XX9999999";
+
+    bcRegistryStub
+        .stubFor(post(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + registrationNumber + "/documents/requests"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .willReturn(
+                status(404)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(TestConstants.BCREG_NOK)
+            )
+        );
+
+    bcRegistryStub
+        .stubFor(
+            post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
+                .willReturn(okJson(TestConstants.ORGBOOK_INCORP_EMPTY))
+        );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .get()
+        .uri("/api/clients/{registrationNumber}/bc-registry-information",
+            Map.of("registrationNumber", registrationNumber))
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .consumeWith(System.out::println);
+  }
+
+  @Test
+  @DisplayName("Get BC Registry information with unauthorized error")
+  void shouldGetBcRegistryInformationUnauthorized() {
+
+    reset();
+
+    String registrationNumber = "AA0000001";
+
+    bcRegistryStub
+        .stubFor(post(urlPathEqualTo(
+            "/registry-search/api/v1/businesses/" + registrationNumber + "/documents/requests"))
+            .withHeader("x-apikey", equalTo("abc1234"))
+            .withHeader("Account-Id", equalTo("account 0000"))
+            .willReturn(
+                status(401)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(TestConstants.BCREG_401)
+            )
+        );
+
+    bcRegistryStub
+        .stubFor(
+            post(urlPathEqualTo("/registry-search/api/v2/search/businesses"))
+                .willReturn(
+                    status(401)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(TestConstants.BCREG_401)
+                )
+        );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .get()
+        .uri("/api/clients/{registrationNumber}/bc-registry-information",
+            Map.of("registrationNumber", registrationNumber))
+        .exchange()
+        .expectStatus().isUnauthorized()
+        .expectBody()
+        .consumeWith(System.out::println);
+  }
+
+  @Test
+  @DisplayName("Advanced search with results")
+  void shouldAdvancedSearchWithResults() {
+
+    reset();
+
+    String legacyResponse = """
+        [
+          {
+            "clientNumber": "00000001",
+            "clientAcronym": "SC",
+            "clientFullName": "SAMPLE COMPANY",
+            "clientType": "C",
+            "city": "VICTORIA",
+            "clientStatus": "A"
+          }
+        ]
+        """;
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/clients/advanced-search"))
+                .withQueryParam("page", equalTo("0"))
+                .withQueryParam("size", equalTo("10"))
+                .withQueryParam("clientName", equalTo("SAMPLE"))
+                .willReturn(
+                    okJson(legacyResponse)
+                        .withHeader("x-total-count", "1")
+                )
+        );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/clients/advanced-search")
+                .queryParam("page", "0")
+                .queryParam("size", "10")
+                .queryParam("clientName", "SAMPLE")
+                .build()
+        )
+        .exchange()
+        .expectStatus().isOk()
+        .expectHeader().valueEquals("x-total-count", "1")
+        .expectBody()
+        .consumeWith(System.out::println)
+        .jsonPath("$").isArray()
+        .jsonPath("$.length()").isEqualTo(1)
+        .jsonPath("$[0].clientNumber").isEqualTo("00000001")
+        .jsonPath("$[0].clientFullName").isEqualTo("SAMPLE COMPANY");
+  }
+
+  @Test
+  @DisplayName("Advanced search with no results")
+  void shouldAdvancedSearchWithNoResults() {
+
+    reset();
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/clients/advanced-search"))
+                .withQueryParam("page", equalTo("0"))
+                .withQueryParam("size", equalTo("10"))
+                .withQueryParam("clientName", equalTo("NONEXISTENT"))
+                .willReturn(
+                    okJson("[]")
+                        .withHeader("x-total-count", "0")
+                )
+        );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .get()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/clients/advanced-search")
+                .queryParam("page", "0")
+                .queryParam("size", "10")
+                .queryParam("clientName", "NONEXISTENT")
+                .build()
+        )
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .consumeWith(System.out::println)
+        .json("[]");
+  }
+
+  @Test
+  @DisplayName("Advanced search with default pagination")
+  void shouldAdvancedSearchWithDefaultPagination() {
+
+    reset();
+
+    String legacyResponse = """
+        [
+          {
+            "clientNumber": "00000002",
+            "clientAcronym": "TC",
+            "clientFullName": "TEST COMPANY",
+            "clientType": "C",
+            "city": "VANCOUVER",
+            "clientStatus": "A"
+          }
+        ]
+        """;
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/clients/advanced-search"))
+                .withQueryParam("page", equalTo("0"))
+                .withQueryParam("size", equalTo("100"))
+                .willReturn(
+                    okJson(legacyResponse)
+                        .withHeader("x-total-count", "1")
+                )
+        );
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+        )
+        .get()
+        .uri("/api/clients/advanced-search")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .consumeWith(System.out::println)
+        .jsonPath("$").isArray()
+        .jsonPath("$.length()").isEqualTo(1)
+        .jsonPath("$[0].clientNumber").isEqualTo("00000002");
+  }
+
 }
