@@ -203,12 +203,13 @@ const resultsIncludeExactMatch = () => {
 };
 
 watch(searchResponse, () => {
+  const totalCount = parseInt(searchResponse.value.headers["x-total-count"] || "0");
+  totalItems.value = totalCount;
+
+  // Skip the check for exact matches if this is not a basic search
   if (searchType.value !== "basic") {
     return;
   }
-
-  const totalCount = parseInt(searchResponse.value.headers["x-total-count"] || "0");
-  totalItems.value = totalCount;
 
   /*
   noExactMatch null means this is a new search.
@@ -368,7 +369,7 @@ onMounted(() => {
             </div>
           </AutoCompleteInputComponent>
         </data-fetcher>
-        <cds-button kind="tertiary" @click.prevent="advancedModalActive = true" id="advanced-search-button">
+        <cds-button kind="tertiary" @click.prevent="advancedModalActive = true" id="open-advanced-search-button">
           <FilterEdit16 slot="icon" />
         </cds-button>
         <cds-button kind="primary" @click.prevent="searchBasic()" id="search-button">
