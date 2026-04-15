@@ -493,7 +493,7 @@ describe("Search Page", () => {
       it("trims the entered string before making the API call", () => {
         cy.wait("@basicSearch").then((interception) => {
           const { query } = interception.request;
-          expect(query.keyword).to.eq("hello%20world");
+          expect(query.keyword).to.eq("hello world");
         });
       });
     });

@@ -81,7 +81,7 @@ const commonFetchParams = computed(() => ({
 
 const basicFetchParams = computed(() => ({
   ...commonFetchParams.value,
-  keyword: encodeURIComponent(searchKeyword.value),
+  keyword: searchKeyword.value,
 }));
 
 const advancedFetchParams = computed(() => ({
