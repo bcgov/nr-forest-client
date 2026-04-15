@@ -30,10 +30,22 @@ public class CsrfCustomizer implements Customizer<CsrfSpec> {
    *
    * @param csrfSpec The CSRF specification to be customized.
    */
+  // Suppress SonarQube warning about HttpOnly=false for CSRF cookie.
+  // This is intentional: the front-end needs to read the CSRF token from the cookie.
+  @SuppressWarnings("java:S3330")
   @Override
   public void customize(CsrfSpec csrfSpec) {
+    CookieServerCsrfTokenRepository repo = 
+        CookieServerCsrfTokenRepository.withHttpOnlyFalse();
+    
+    repo.setCookieCustomizer(cookie -> {
+      cookie.sameSite("Lax");
+      cookie.secure(true);
+      cookie.path("/");
+    });
+    
     csrfSpec
-        .csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse())
+        .csrfTokenRepository(repo)
         .csrfTokenRequestHandler(cookieCsrfRequestAttributeHandler);
   }
 
