@@ -994,12 +994,8 @@ public class ClientLegacyService {
                     .queryParam("userId", "{userId}")
                     .build(Map.of("userId", userId)))
         .accept(MediaType.APPLICATION_JSON)
-        .exchangeToMono(
-            response ->
-                response.bodyToMono(
-                    new ParameterizedTypeReference<List<String>>() {})
-        )
-        .flatMapMany(Flux::fromIterable)
+        .retrieve()
+        .bodyToFlux(String.class)
         .name(REQUEST_LEGACY)
         .tag("kind", "clientIdirUsersSearch")
         .doOnNext(

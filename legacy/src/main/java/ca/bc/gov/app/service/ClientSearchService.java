@@ -673,16 +673,15 @@ public class ClientSearchService {
         .doOnNext(client -> log.info("Found client for query {}", queryCriteria));
   }
 
-  public Flux<String> getClientIdirUsersByUserId(String userId) {
-    log.info("Searching for IDIR client users that matches for {}",
-        userId
-    );
-    
-    if (StringUtils.isBlank(userId)) {
-      log.error("Missing required parameter to search for IDIR client users");
-      return Flux.error(new MissingRequiredParameterException("userId"));
-    }
-    return forestClientRepository.getClientIdirUsers(userId);
-  }
+ public Mono<List<String>> getClientIdirUsersByUserId(String userId) {
+   log.info("Searching for IDIR client users that matches for {}", userId);
+   
+   if (StringUtils.isBlank(userId)) {
+     log.error("Missing required parameter to search for IDIR client users");
+     return Mono.error(new MissingRequiredParameterException("userId"));
+   }
+   
+   return forestClientRepository.getClientIdirUsers(userId).collectList();
+ }
 
 }
