@@ -2,7 +2,6 @@ package ca.bc.gov.app.service.client;
 
 import static ca.bc.gov.app.ApplicationConstant.MDC_USERID;
 import static ca.bc.gov.app.ApplicationConstant.REQUEST_LEGACY;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
@@ -26,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
