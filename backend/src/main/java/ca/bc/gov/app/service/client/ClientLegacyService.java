@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -993,7 +994,8 @@ public class ClientLegacyService {
                     .build(Map.of("userId", userId)))
         .accept(MediaType.APPLICATION_JSON)
         .retrieve()
-        .bodyToFlux(String.class)
+        .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
+        .flatMapMany(Flux::fromIterable)
         .name(REQUEST_LEGACY)
         .tag("kind", "clientIdirUsersSearch")
         .doOnNext(
