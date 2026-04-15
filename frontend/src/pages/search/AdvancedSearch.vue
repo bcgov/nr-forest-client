@@ -12,7 +12,7 @@ const modelActive = defineModel<boolean>("active", { required: true });
 
 const modelFilters = defineModel<ClientSearchParameters>("filters", { required: true });
 
-const typedIDIR = ref<string>();
+const modelTypedUserId = defineModel<string>("typedUserId");
 
 const getNamingValidations = (fieldName: string, length = 30) => [
   isMaxSizeMsg(fieldName, length),
@@ -54,7 +54,7 @@ const validations = reactive<{ [key in keyof ClientSearchParameters]: ((value: s
   clientName: getNamingValidations("business name / last name"),
   firstName: getNamingValidations("first name"),
   middleName: getNamingValidations("middle name"),
-  userId: [isInvalidSelectedValue("userId")],
+  userId: [optional(isInvalidSelectedValue("userId"))],
   clientIdentification: [
     isMaxSizeMsg("ID number", 40),
     isAscii("ID number"),
@@ -91,7 +91,7 @@ watch([() => modelFilters.value.updatedFromDate, () => modelFilters.value.update
 
 const clientUsersUrl = computed(
   () =>
-    `/api/clients/client-users?userId=${typedIDIR.value || ""}`
+    `/api/clients/client-users?userId=${modelTypedUserId.value || ""}`
 );
 
 const stringToCodeName = (value: string): CodeNameType => ({code: value, name: value});
@@ -134,8 +134,8 @@ const search = () => {
         Advanced search
       </cds-modal-heading>
     </cds-modal-header>
-    <cds-modal-body id="advanced-modal-body" data-modal-primary-focus>
-      <div class="advanced-form">
+    <cds-modal-body id="advanced-modal-body">
+      <div class="advanced-form" data-modal-primary-focus>
         <div class="horizontal-input-grouping-2">
           <text-input-component
             id="clientName"
@@ -176,7 +176,7 @@ const search = () => {
             v-model:url="clientUsersUrl"
             :min-length="3"
             :init-value="[]"
-            :disabled="!typedIDIR"
+            :disabled="!modelTypedUserId"
             #="{ content, loading }"
           >
             <AutoCompleteInputComponent
@@ -184,13 +184,14 @@ const search = () => {
               label="Updated by IDIR"
               autocomplete="off"
               tip=""
-              v-model="typedIDIR"
+              v-model="modelTypedUserId"
               :contents="content.map(stringToCodeName)"
               :validations="validations.userId"
               :loading="loading"
               @update:selected-value="selectCode('userId')($event)"
               @update:model-value="validationState.userId = false"
               @empty="validationState.userId = validationState.userId || $event"
+              @error="validationState.userId = !$event"
             />
           </data-fetcher>
         </div>

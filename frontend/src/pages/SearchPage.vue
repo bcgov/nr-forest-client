@@ -72,7 +72,7 @@ const predictiveSearchUri = computed(
   () => `${basicSearchUri}?size=5&keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
 
-const advancedFilters = reactive<ClientSearchParameters>({});
+const advancedFilters = ref<ClientSearchParameters>({});
 
 const commonFetchParams = computed(() => ({
   page: pageNumber.value - 1,
@@ -86,7 +86,7 @@ const basicFetchParams = computed(() => ({
 
 const advancedFetchParams = computed(() => ({
   ...commonFetchParams.value,
-  ...advancedFilters,
+  ...advancedFilters.value,
 }));
 
 const commonFetchConfig = {
@@ -144,15 +144,25 @@ const search = (skipResetPage = false) => {
 
 const searchBasic = () => {
   searchType.value = "basic";
+
+  // Clears advanced filters
+  advancedFilters.value = {};
+
+  // Clears the current typed userId (even if not selected)
+  advancedTypedUserId.value = "";
+
   search();
 };
 
 const searchAdvanced = () => {
   searchType.value = "advanced";
+  rawSearchKeyword.value = "";
   search();
 };
 
 const advancedModalActive = ref(false);
+
+const advancedTypedUserId = ref("");
 
 const resultsIncludeExactMatch = () => {
   const searchWordsList = extractKeywords(lastSearchKeyword.value);
@@ -496,6 +506,7 @@ onMounted(() => {
   <advanced-search
     v-model:active="advancedModalActive"
     v-model:filters="advancedFilters"
+    v-model:typed-user-id="advancedTypedUserId"
     @search="searchAdvanced"
   />
 </template>

@@ -119,9 +119,21 @@ const selectItems = (event: any) => {
   items.value = contentValue.split(",").filter((value: string) => value);
 };
 
-props.selectedValues?.forEach((value: string) => addFromSelection(value));
+let skipEmitChange = false;
 
-watch([items], () => emitChange());
+watch(() => props.selectedValues, () => {
+  items.value = [];
+  selectedValue.value = props.initialValue;
+  props.selectedValues?.forEach((value: string) => addFromSelection(value));
+  skipEmitChange = true;
+});
+
+watch([items], () => {
+  if (!skipEmitChange) {
+    emitChange();
+  }
+  skipEmitChange = false;
+});
 
 watch(
   () => props.modelValue,
