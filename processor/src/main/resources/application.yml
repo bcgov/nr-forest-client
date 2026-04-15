@@ -42,16 +42,16 @@ management:
     metrics:
       enabled: false
     health:
-      show-details: always
+      show-details: when_authorized
     prometheus:
       enabled: true
   endpoints:
     web:
       path-mapping:
         prometheus: metrics
-      base-path: /
+      base-path: /actuator
       exposure:
-        include: health,info,metrics,otlp,tracing,httptrace,prometheus
+        include: health,prometheus
   httpexchanges:
     recording:
       include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
