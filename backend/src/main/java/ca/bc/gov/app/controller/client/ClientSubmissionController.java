@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.util.CollectionUtils;
@@ -114,12 +113,20 @@ public class ClientSubmissionController {
         .doOnError(e -> log.error("External submission is invalid: {}", e.getMessage()))
         .flatMap(submissionDto -> clientService.submit(submissionDto, principal))
         .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
-        .doOnNext(submissionId -> {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Location", String.format("/api/clients/submissions/%d", submissionId));
-            headers.add("x-sub-id", String.valueOf(submissionId));
-            serverResponse.getHeaders().addAll(headers);
-        })
+        .doOnNext(submissionId ->
+            serverResponse
+                .getHeaders()
+                .addAll(
+                    CollectionUtils
+                        .toMultiValueMap(
+                            Map.of(
+                                "Location",
+                                List.of(String.format("/api/clients/submissions/%d", submissionId)),
+                                "x-sub-id", List.of(String.valueOf(submissionId))
+                            )
+                        )
+                )
+        )
         .then();
   }
 
@@ -163,12 +170,15 @@ public class ClientSubmissionController {
         .doOnError(e -> log.error("Staff submission is invalid: {}", 
                                   e.getMessage()))
         .flatMap(submission -> clientService.staffSubmit(submission, principal))
-        .doOnNext(clientId -> {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Location", String.format("/api/clients/details/%s", clientId));
-            headers.add("x-client-id", String.valueOf(clientId));
-            serverResponse.getHeaders().addAll(headers);
-        })
+        .doOnNext(clientId -> serverResponse
+            .getHeaders()
+            .addAll(CollectionUtils.toMultiValueMap(
+                Map.of(
+                    "Location", List.of(String.format("/api/clients/details/%s", clientId)),
+                    "x-client-id", List.of(String.valueOf(clientId))
+                )
+            ))
+        )
         .then();
 
   }
