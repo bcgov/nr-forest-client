@@ -8,6 +8,7 @@ import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -328,9 +329,7 @@ public class ClientSearchController {
   }
   
   @GetMapping("/client-users")
-  public Flux<String> searchClientIdirUsersByUserId(
-      @RequestParam String userId
-  ) {
+  public Mono<List<String>> searchClientIdirUsersByUserId(@RequestParam String userId) {
     return service.getClientIdirUsersByUserId(userId);
   }
 

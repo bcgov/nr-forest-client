@@ -2,7 +2,6 @@ package ca.bc.gov.app.service.client;
 
 import static ca.bc.gov.app.ApplicationConstant.MDC_USERID;
 import static ca.bc.gov.app.ApplicationConstant.REQUEST_LEGACY;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
@@ -994,11 +993,8 @@ public class ClientLegacyService {
                     .queryParam("userId", "{userId}")
                     .build(Map.of("userId", userId)))
         .accept(MediaType.APPLICATION_JSON)
-        .exchangeToMono(
-            response ->
-                response.bodyToMono(
-                    new ParameterizedTypeReference<List<String>>() {})
-        )
+        .retrieve()
+        .bodyToMono(new ParameterizedTypeReference<List<String>>() {})
         .flatMapMany(Flux::fromIterable)
         .name(REQUEST_LEGACY)
         .tag("kind", "clientIdirUsersSearch")
