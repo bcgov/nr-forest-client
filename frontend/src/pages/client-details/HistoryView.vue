@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CodeNameType, HistoryLogResult } from '@/dto/CommonTypesDto';
 import { useFetchTo } from '@/composables/useFetch';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import {
         getLabelByColumnName, 
@@ -108,7 +108,16 @@ const auditTables: CodeNameType[] = [
   { code: 'RCT', name: 'Related clients' }
 ];
 
-const selectedAuditTables = ref<string[]>();
+const selectedAuditTables = ref<string[]>([]);
+
+const selectedAuditTableNames = computed(() =>
+  selectedAuditTables.value
+    .map(code => {
+      const found = auditTables.find(t => t.code === code);
+      return found ? found.name : undefined;
+    })
+    .filter(Boolean)
+);
 
 watch(selectedAuditTables, (newCodes) => {
   useFetchTo(`/api/clients/history-logs/${clientNumber}?sources=${newCodes}`, historyLogs);
@@ -126,12 +135,12 @@ const userSearchSvg = useSvg(UserSearch);
       tip=""
       initial-value="All activities"
       :model-value="auditTables"
-      :selectedValues="selectedAuditTables"
+      :selectedValues="selectedAuditTableNames"
       required
       required-label
       :validations="[]"
       style="width: 36rem;"
-      @update:selected-value="selectedAuditTables = $event.map(item => item.code)"
+      @update:selected-value="selectedAuditTables = Array.isArray($event) && $event.length ? $event.map(item => item.code) : []"
     />
 
     <div style="height: 2rem;"></div>

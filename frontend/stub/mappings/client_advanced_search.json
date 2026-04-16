@@ -1,0 +1,85 @@
+{
+  "mappings": [
+    {
+      "name": "Full Search pageable (keyword, page and size)",
+      "request": {
+        "urlPath": "/api/clients/advanced-search",
+        "method": "GET",
+        "queryParameters": {
+          "page": {
+            "matches": "^[0-5]$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "30",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "bodyFileName": "response-client-search-page{{request.query.page}}.json",
+        "fixedDelayMilliseconds": 2000
+      }
+    },
+    {
+      "name": "Full Search empty results",
+      "request": {
+        "urlPath": "/api/clients/advanced-search",
+        "method": "GET",
+        "queryParameters": {
+          "clientName": {
+            "matches": ".*empty.*"
+          },
+          "page": {
+            "matches": "^[0-5]$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "x-total-count": "0",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "body": "[]",
+        "fixedDelayMilliseconds": 2000
+      }
+    },
+    {
+      "name": "Full Search error",
+      "request": {
+        "urlPath": "/api/clients/advanced-search",
+        "method": "GET",
+        "queryParameters": {
+          "clientName": {
+            "matches": "error"
+          },
+          "page": {
+            "matches": "^[0-5]$"
+          },
+          "size": {
+            "matches": "^\\d+$"
+          }
+        }
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "x-total-count": "0",
+          "content-type": "application/json;charset=UTF-8",
+          "Access-Control-Expose-Headers": "x-total-count"
+        },
+        "body": "Page not found",
+        "fixedDelayMilliseconds": 500
+      }
+    }
+  ]
+}

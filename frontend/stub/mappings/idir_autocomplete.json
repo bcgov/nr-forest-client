@@ -1,0 +1,24 @@
+{
+  "mappings": [    
+    {
+      "name": "IDIR autocomplete",
+      "request": {
+        "urlPath": "/api/clients/client-users",
+        "method": "GET",
+        "queryParameters": {
+          "userId": {
+            "matches": ".+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "bodyFileName": "response-idir-autocomplete.json",
+        "transformers": [
+          "response-template"
+        ],
+        "fixedDelayMilliseconds": 500
+      }
+    }
+  ]
+}
