@@ -279,10 +279,10 @@ public class ClientController {
    * @return a {@link Flux} emitting matching client user identifiers as strings
    */
   @GetMapping("/client-users")
-  public Flux<String> searchClientIdirUsersByUserId(
+  public Mono<List<String>> searchClientIdirUsersByUserId(
       @RequestParam String userId
   ) {
-    return clientLegacyService.getClientIdirUsersByUserId(userId);
+    return clientLegacyService.getClientIdirUsersByUserId(userId).collectList();
   }
   
   /**
