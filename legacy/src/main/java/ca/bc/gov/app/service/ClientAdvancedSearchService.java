@@ -12,6 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 /**
  * Service that performs advanced client searches against the
  * {@link ForestClientRepository}.
@@ -62,6 +65,13 @@ public class ClientAdvancedSearchService {
     ClientAdvancedSearchCriteriaDto sanitizedCriteria = criteria.sanitized();
     log.info("Performing advanced search with criteria: {}", sanitizedCriteria);
 
+    LocalDateTime updatedFromDateTime = sanitizedCriteria.updatedFromDate() != null
+        ? sanitizedCriteria.updatedFromDate().atStartOfDay()
+        : null;
+    LocalDateTime updatedToDateTime = sanitizedCriteria.updatedToDate() != null
+        ? sanitizedCriteria.updatedToDate().atTime(LocalTime.MAX)
+        : null;
+
     return forestClientRepository
         .countByAdvancedSearch(
             sanitizedCriteria.clientName(), 
@@ -74,8 +84,8 @@ public class ClientAdvancedSearchService {
             sanitizedCriteria.emailAddress(),
             sanitizedCriteria.contactName(),
             sanitizedCriteria.userId(),
-            sanitizedCriteria.updatedFromDate(),
-            sanitizedCriteria.updatedToDate()
+            updatedFromDateTime,
+            updatedToDateTime
         )
         .defaultIfEmpty(0L)
         .flatMapMany(count -> {
@@ -94,16 +104,12 @@ public class ClientAdvancedSearchService {
                   sanitizedCriteria.emailAddress(),
                   sanitizedCriteria.contactName(),
                   sanitizedCriteria.userId(),
-                  sanitizedCriteria.updatedFromDate(),
-                  sanitizedCriteria.updatedToDate(),
+                  updatedFromDateTime,
+                  updatedToDateTime,
                   page.getPageSize(), 
                   page.getOffset()
               )
-              .doOnNext(dto -> log.info(
-                  "Advanced search matched client {} {}",
-                  dto.clientNumber(), dto.clientFullName())
-              )
-              .map(dto -> Pair.of(dto, count));
+              .map(result -> Pair.of(result, count));
         });
   }
   

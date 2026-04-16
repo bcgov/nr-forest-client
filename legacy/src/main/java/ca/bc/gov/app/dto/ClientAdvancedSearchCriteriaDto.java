@@ -1,6 +1,6 @@
 package ca.bc.gov.app.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,8 +34,8 @@ public record ClientAdvancedSearchCriteriaDto(
     String emailAddress,
     String contactName,
     String userId,
-    LocalDateTime updatedFromDate, 
-    LocalDateTime updatedToDate
+    LocalDate updatedFromDate, 
+    LocalDate updatedToDate
 ) {
   
   /**
@@ -51,7 +51,8 @@ public record ClientAdvancedSearchCriteriaDto(
   public boolean hasValidParams() {
     ClientAdvancedSearchCriteriaDto sanitizedCriteria = sanitized();
     return Stream
-        .of(sanitizedCriteria.clientName, 
+        .of(
+            sanitizedCriteria.clientName, 
             sanitizedCriteria.firstName, 
             sanitizedCriteria.middleName,
             sanitizedCriteria.clientStatus, 
@@ -82,8 +83,8 @@ public record ClientAdvancedSearchCriteriaDto(
         blankToNull(emailAddress),
         blankToNull(contactName),
         blankToNull(userId),
-        blankToNull(updatedFromDate),
-        blankToNull(updatedToDate)
+        updatedFromDate,
+        updatedToDate
     );
   }
 
