@@ -122,7 +122,7 @@ jobs:
           - name: backend
             parameters: -p FRONTEND_URL=${{ inputs.url }}
               -p CONFIG_MAP="${{ inputs.configmap-backend }}"
-            verification_path: health
+            verification_path: actuator/health
           - name: frontend
             parameters: -p URL=${{ inputs.url }}
               -p CONFIG_MAP="${{ inputs.configmap-frontend }}"

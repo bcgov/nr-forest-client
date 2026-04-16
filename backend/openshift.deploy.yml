@@ -194,7 +194,7 @@ objects:
                 successThreshold: 1
                 failureThreshold: 15
                 httpGet:
-                  path: /health
+                  path: /actuator/health
                   port: 8080
                   scheme: HTTP
                 initialDelaySeconds: 10

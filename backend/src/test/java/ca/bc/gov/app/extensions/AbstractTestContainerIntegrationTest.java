@@ -11,6 +11,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
@@ -23,15 +24,12 @@ public abstract class AbstractTestContainerIntegrationTest {
   @Autowired
   protected WebTestClient client;
   
-  static final PostgreSQLContainer database;
-
-  static {
-    database = new PostgreSQLContainer("postgres:13")
-        .withDatabaseName("simple")
-        .withUsername("simple")
-        .withPassword(UUID.randomUUID().toString());
-    database.start();
-  }
+  @Container
+  static final PostgreSQLContainer database =
+      new PostgreSQLContainer("postgres:13")
+          .withDatabaseName("simple")
+          .withUsername("simple")
+          .withPassword(UUID.randomUUID().toString());
 
   @DynamicPropertySource
   static void registerDynamicProperties(DynamicPropertyRegistry registry) {

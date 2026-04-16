@@ -185,10 +185,9 @@ class ForestClientUserSession implements SessionProperties {
   };
 
   private getCookie = (name: string): string => {
-    const cookie = document.cookie
-      .split(";")
-      .find((cookie) => cookie.trim().startsWith(name));
-    return cookie ? cookie.split("=")[1] : "";
+    const cookies = document.cookie.split('; ');
+    const match = cookies.find((cookie) => cookie.startsWith(`${name}=`));
+    return match ? (match.split('=')[1] ?? '') : '';
   };
 
   private setUserTokenFromCookie = (): void => {

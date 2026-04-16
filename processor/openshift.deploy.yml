@@ -127,7 +127,7 @@ objects:
                 successThreshold: 1
                 failureThreshold: 15
                 httpGet:
-                  path: /health
+                  path: /actuator/health
                   port: 3100
                   scheme: HTTP
                 initialDelaySeconds: 10

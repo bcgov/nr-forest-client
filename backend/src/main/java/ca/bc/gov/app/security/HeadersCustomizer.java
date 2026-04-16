@@ -66,7 +66,7 @@ public class HeadersCustomizer implements Customizer<HeaderSpec> {
         .contentTypeOptions(Customizer.withDefaults()) // Set the X-Content-Type-Options header to its default value.
         .referrerPolicy(referrerPolicySpec -> referrerPolicySpec.policy(ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)) // Set the Referrer-Policy header.
         .permissionsPolicy(permissionsPolicySpec -> permissionsPolicySpec.policy(
-            "geolocation=(), microphone=(), camera=(), speaker=(), usb=(), bluetooth=(), payment=(), interest-cohort=()")) // Set the Permissions-Policy header.
-    ;
+            "geolocation=(), microphone=(), camera=(), speaker=(), usb=(), bluetooth=(), payment=(), interest-cohort=()"))
+        ;
   }
 }
