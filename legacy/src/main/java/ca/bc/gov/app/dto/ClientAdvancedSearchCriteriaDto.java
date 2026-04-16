@@ -22,6 +22,9 @@ import org.apache.commons.lang3.StringUtils;
  * @param clientIdentification the client identification number
  * @param emailAddress         the email address associated with the client contact or location
  * @param contactName          the name of a contact person associated with the client
+ * @param userId               the user ID performing the search
+ * @param updatedFromDate      the lower bound for the last updated date (inclusive)
+ * @param updatedToDate        the upper bound for the last updated date (inclusive)
  */
 public record ClientAdvancedSearchCriteriaDto(
     String clientName, 
