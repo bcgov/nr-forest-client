@@ -21,7 +21,9 @@ const getNamingValidations = (fieldName: string, length = 30) => [
 
 const validationState = reactive<{ [key in keyof ClientSearchParameters]: boolean}>({});
 
-const isAdvancedDataValid = computed(() => Object.keys(validationState).every((field) => validationState[field]));
+const isAdvancedDataValid = computed(() =>
+  Object.values(validationState).every(Boolean)
+);
 
 const invalidSelectionErrorMessage = "Select a value from the list or clear the input value";
 
