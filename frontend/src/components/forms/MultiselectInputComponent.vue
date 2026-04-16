@@ -34,9 +34,9 @@ const emit = defineEmits<{
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
-
 const warning = ref(false);
+
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue);
