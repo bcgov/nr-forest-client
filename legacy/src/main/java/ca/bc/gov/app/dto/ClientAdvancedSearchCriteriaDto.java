@@ -83,8 +83,8 @@ public record ClientAdvancedSearchCriteriaDto(
         blankToNull(emailAddress),
         blankToNull(contactName),
         blankToNull(userId),
-        updatedFromDate,
-        updatedToDate
+        blankToNull(updatedFromDate),
+        blankToNull(updatedToDate)
     );
   }
 
