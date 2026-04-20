@@ -86,6 +86,14 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
       errorStatus = HttpStatus.BAD_REQUEST;
     }
 
+    if ("Validation failure".equals(errorMessage)) {
+      String query = request.uri().getQuery();
+      if (query != null && (query.contains("updatedFromDate") || query.contains("updatedToDate"))) {
+        errorMessage = "Invalid value for date parameter. Expected format: yyyy-MM-dd.";
+        errorStatus = HttpStatus.BAD_REQUEST;
+      }
+    }
+
     errorMessage =
         BooleanUtils.toString(StringUtils.isBlank(errorMessage), StringUtils.EMPTY, errorMessage);
 
