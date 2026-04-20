@@ -279,27 +279,6 @@ class ClientAdvancedSearchControllerIntegrationTest extends
         .consumeWith(System.out::println);
   }
 
-  @Test
-  @DisplayName("Should return 400 Bad Request for invalid updatedToDate parameter")
-  void shouldReturnBadRequestForInvalidUpdatedToDate() {
-    client
-        .get()
-        .uri(uriBuilder -> uriBuilder
-            .path(BASE_PATH)
-            .queryParam("updatedFromDate", "2026-04-01")
-            .queryParam("updatedToDate", "2026-04-34")
-            .build()
-        )
-        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-        .exchange()
-        .expectStatus().isBadRequest()
-        .expectBody(String.class)
-        .value(msg -> assertThat(msg)
-            .contains("Invalid value")
-            .contains("updatedToDate")
-            .contains("Type mismatch"));
-  }
-
   private static Stream<Arguments> singleFieldSearches() {
     return Stream.of(
         // Search by clientName

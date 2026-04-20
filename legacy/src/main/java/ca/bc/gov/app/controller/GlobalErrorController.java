@@ -1,6 +1,5 @@
 package ca.bc.gov.app.controller;
 
-import java.time.format.DateTimeParseException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -17,7 +16,6 @@ import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -68,30 +66,6 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
     } else if (exception instanceof ConstraintViolationException constraintViolationException) {
       errorMessage = constraintViolationException.getMessage();
       errorStatus = HttpStatus.BAD_REQUEST;
-    } else if (exception instanceof MethodArgumentTypeMismatchException matme) {
-      errorMessage = String.format(
-          "Invalid value '%s' for parameter '%s'. %s", 
-          matme.getValue(), 
-          matme.getName(),
-          matme.getMostSpecificCause() != null ? 
-              matme.getMostSpecificCause().getMessage()
-              : "Type mismatch."
-      );
-      errorStatus = HttpStatus.BAD_REQUEST;
-    } else if (exception instanceof DateTimeParseException dtpe) {
-      errorMessage = String.format(
-        "Invalid date format: %s. Expected format: yyyy-MM-dd.",
-        dtpe.getParsedString()
-      );
-      errorStatus = HttpStatus.BAD_REQUEST;
-    }
-
-    if ("Validation failure".equals(errorMessage)) {
-      String query = request.uri().getQuery();
-      if (query != null && (query.contains("updatedFromDate") || query.contains("updatedToDate"))) {
-        errorMessage = "Invalid value for date parameter. Expected format: yyyy-MM-dd.";
-        errorStatus = HttpStatus.BAD_REQUEST;
-      }
     }
 
     errorMessage =
