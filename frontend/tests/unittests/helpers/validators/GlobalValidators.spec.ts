@@ -21,6 +21,8 @@ import {
   validateSelection,
   isGreaterThanOrEqualTo,
   isLessThanOrEqualTo,
+  isDateBefore,
+  isDateAfter,
 } from '@/helpers/validators/GlobalValidators'
 
 describe('GlobalValidators', () => {
@@ -454,4 +456,36 @@ describe('GlobalValidators', () => {
       });
     });
   });
-})
+  describe("isDateBefore", () => {
+    it("should return an error when value is a date after the date to be compared to", () => {
+      const result = isDateBefore("2026-04-01", "sample error message")("2026-04-02");
+      expect(result).not.toBe("");
+    });
+
+    it("should return an error when value is a date equal to the date to be compared to", () => {
+      const result = isDateBefore("2026-04-01", "sample error message")("2026-04-01");
+      expect(result).not.toBe("");
+    });
+
+    it("should return empty when value is a date before the date to be compared to", () => {
+      const result = isDateBefore("2026-04-01", "sample error message")("2026-03-15");
+      expect(result).toBe("");
+    });
+  });
+  describe("isDateAfter", () => {
+    it("should return an error when value is a date before the date to be compared to", () => {
+      const result = isDateAfter("2026-04-01", "sample error message")("2026-03-15");
+      expect(result).not.toBe("");
+    });
+
+    it("should return an error when value is a date equal to the date to be compared to", () => {
+      const result = isDateAfter("2026-04-01", "sample error message")("2026-04-01");
+      expect(result).not.toBe("");
+    });
+
+    it("should return empty when value is a date after the date to be compared to", () => {
+      const result = isDateAfter("2026-04-01", "sample error message")("2026-04-02");
+      expect(result).toBe("");
+    });
+  });
+});

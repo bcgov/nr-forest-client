@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, reactive } from "vue";
 
 // Carbon
 import "@carbon/web-components/es/components/data-table/index";
@@ -9,10 +9,12 @@ import "@carbon/web-components/es/components/pagination/index";
 import "@carbon/web-components/es/components/select/index";
 import "@carbon/web-components/es/components/tag/index";
 
+import AdvancedSearch from "@/pages/search/AdvancedSearch.vue";
+
 import { useFetchTo } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
 
-import type { ClientSearchResult, CodeNameValue } from "@/dto/CommonTypesDto";
+import type { ClientSearchParameters, ClientSearchResult, CodeNameValue } from "@/dto/CommonTypesDto";
 import {
   adminEmail,
   getObfuscatedEmailLink,
@@ -30,6 +32,7 @@ import useSvg from "@/composables/useSvg";
 
 // @ts-ignore
 import Search16 from "@carbon/icons-vue/es/search/16";
+import FilterEdit16 from "@carbon/icons-vue/es/filter--edit/16";
 import {
   isAscii,
   isMaxSizeMsg,
@@ -61,13 +64,54 @@ const lastSearchKeyword = ref("");
 // empty is valid
 const valid = ref(true);
 
+const basicSearchUri = "/api/clients/search";
+
+const advancedSearchUri = "/api/clients/advanced-search";
+
 const predictiveSearchUri = computed(
-  () => `/api/clients/search?size=5&keyword=${encodeURIComponent(searchKeyword.value)}`,
+  () => `${basicSearchUri}?size=5&keyword=${encodeURIComponent(searchKeyword.value)}`,
 );
 
-const fullSearchUri = computed(
-  () =>
-    `/api/clients/search?page=${pageNumber.value - 1}&size=${pageSize.value}&keyword=${encodeURIComponent(searchKeyword.value)}`,
+const advancedFilters = ref<ClientSearchParameters>({});
+
+const commonFetchParams = computed(() => ({
+  page: pageNumber.value - 1,
+  size: pageSize.value,
+}));
+
+const basicFetchParams = computed(() => ({
+  ...commonFetchParams.value,
+  keyword: searchKeyword.value,
+}));
+
+const advancedFetchParams = computed(() => ({
+  ...commonFetchParams.value,
+  ...advancedFilters.value,
+}));
+
+const commonFetchConfig = {
+  skip: true,
+  paramsSerializer: (params: Record<string, any>) => new URLSearchParams(params).toString(),
+};
+
+const basicFetchConfig = computed(() => ({
+  ...commonFetchConfig,
+  params: basicFetchParams.value,
+}));
+
+const advancedFetchConfig = computed(() => ({
+  ...commonFetchConfig,
+  params: advancedFetchParams.value,
+}));
+
+const searchType = ref<"basic" | "advanced">("basic");
+
+const fetchConfig = computed(
+  () => searchType.value === "basic" ? basicFetchConfig.value : advancedFetchConfig.value,
+);
+
+const searchUri = computed(
+  () => searchType.value === "basic" ? basicSearchUri : advancedSearchUri,
 );
 
 const {
@@ -75,7 +119,7 @@ const {
   fetch: fetchSearch,
   loading: loadingSearch,
   error: searchError,
-} = useFetchTo(fullSearchUri, tableData, { skip: true });
+} = useFetchTo(searchUri, tableData, fetchConfig);
 
 const noExactMatch = ref<boolean>(null);
 
@@ -97,6 +141,28 @@ const search = (skipResetPage = false) => {
   lastSearchKeyword.value = searchKeyword.value;
   fetchSearch();
 };
+
+const searchBasic = () => {
+  searchType.value = "basic";
+
+  // Clears advanced filters
+  advancedFilters.value = {};
+
+  // Clears the current typed userId (even if not selected)
+  advancedTypedUserId.value = "";
+
+  search();
+};
+
+const searchAdvanced = () => {
+  searchType.value = "advanced";
+  rawSearchKeyword.value = "";
+  search();
+};
+
+const advancedModalActive = ref(false);
+
+const advancedTypedUserId = ref("");
 
 const resultsIncludeExactMatch = () => {
   const searchWordsList = extractKeywords(lastSearchKeyword.value);
@@ -149,6 +215,11 @@ const resultsIncludeExactMatch = () => {
 watch(searchResponse, () => {
   const totalCount = parseInt(searchResponse.value.headers["x-total-count"] || "0");
   totalItems.value = totalCount;
+
+  // Skip the check for exact matches if this is not a basic search
+  if (searchType.value !== "basic") {
+    return;
+  }
 
   /*
   noExactMatch null means this is a new search.
@@ -213,13 +284,13 @@ const openClientDetails = (clientCode: string) => {
   }
 };
 
-const ariaLabel = "Search terms";
+const inputAriaLabel = "Search terms";
 
-const lowerCaseLabel = ariaLabel.toLowerCase();
+const lowerCaseInputLabel = inputAriaLabel.toLowerCase();
 
-const validationsOnChange = [isAscii(lowerCaseLabel), isMaxSizeMsg(lowerCaseLabel, 50)];
+const validationsOnChange = [isAscii(lowerCaseInputLabel), isMaxSizeMsg(lowerCaseInputLabel, 50)];
 
-const validations = [optional(isMinSizeMsg(lowerCaseLabel, 3)), ...validationsOnChange];
+const validations = [optional(isMinSizeMsg(lowerCaseInputLabel, 3)), ...validationsOnChange];
 
 const skeletonReference = ref(null);
 
@@ -276,7 +347,7 @@ onMounted(() => {
           <AutoCompleteInputComponent
             id="search-box"
             label=""
-            :aria-label="ariaLabel"
+            :aria-label="inputAriaLabel"
             autocomplete="off"
             tip=""
             placeholder="Search by client number, name, acronym, mailing address, email address and more"
@@ -290,7 +361,7 @@ onMounted(() => {
             @press:enter:item="openClientDetails"
             @update:model-value="valid = false"
             @error="valid = !$event"
-            @press:enter="search()"
+            @press:enter="searchBasic()"
             #="{ value }"
           >
             <div class="search-result-item link-container" v-if="value">
@@ -308,7 +379,10 @@ onMounted(() => {
             </div>
           </AutoCompleteInputComponent>
         </data-fetcher>
-        <cds-button kind="primary" @click.prevent="search()" id="search-button">
+        <cds-button kind="tertiary" @click.prevent="advancedModalActive = true" id="open-advanced-search-button">
+          <FilterEdit16 slot="icon" />
+        </cds-button>
+        <cds-button kind="primary" @click.prevent="searchBasic()" id="search-button">
           <span>Search</span>
           <Search16 slot="icon" />
         </cds-button>
@@ -387,7 +461,10 @@ onMounted(() => {
       v-if="tableData && totalItems == 0 && userhasAuthority && !loadingSearch"
     >
       <user-search-svg alt="User search pictogram" class="standard-svg" />
-      <p class="heading-02">No results for “{{ lastSearchKeyword }}”</p>
+      <p class="heading-02">No results for
+        <template v-if="searchType === 'basic'">“{{ lastSearchKeyword }}”</template>
+        <template v-else>your advanced search</template>
+      </p>
       <p class="body-compact-01">Consider adjusting your search term(s) and try again.</p>
     </div>
 
@@ -426,4 +503,10 @@ onMounted(() => {
       </div>
     </cds-actionable-notification>
   </div>
+  <advanced-search
+    v-model:active="advancedModalActive"
+    v-model:filters="advancedFilters"
+    v-model:typed-user-id="advancedTypedUserId"
+    @search="searchAdvanced"
+  />
 </template>

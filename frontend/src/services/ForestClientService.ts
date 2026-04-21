@@ -55,8 +55,8 @@ export const getContactDescription = (contact: Contact, index: number): string =
     ? `${contact.firstName} ${contact.lastName}`
     : "Contact #" + index;
 
-export const toTitleCase = (inputString: string): string => {
-  if (inputString === undefined) return "";
+export const toTitleCase = (inputString: string | null | undefined): string => {
+  if (!inputString) return "";
 
   const splitMapJoin = (currentString: string, separator: string) =>
     currentString

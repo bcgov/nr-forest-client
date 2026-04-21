@@ -90,7 +90,7 @@ describe("<summary-view />", () => {
     }).as("getClientStatuses");
     cy.intercept("GET", "/api/codes/client-types/legacy", {
       fixture: "legacyClientTypes.json",
-    }).as("getRegistryTypes");
+    }).as("getClientTypes");
     cy.intercept("GET", "/api/codes/registry-types/*", {
       fixture: "registryTypes.json",
     }).as("getRegistryTypes");
