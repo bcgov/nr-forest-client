@@ -235,14 +235,14 @@ const localFormatLocation = (location: CodeDescrType) => {
       tip="A contact can have more than one location"
       :initial-value="selectedValue.locationNames.join(',')"
       :model-value="addressTitleList"
-      :selectedValues="selectedValue.locationNames?.map(localFormatLocation)"
+      :selectedValues="(selectedValue.locationNames ?? []).map(localFormatLocation).filter((v): v is string => typeof v === 'string')"
       :validations="[
         ...getValidations('location.contacts.*.locationNames'),
         submissionValidation(`location.contacts[${id}].locationNames`)
       ]"
       required
       required-label
-      @update:selected-value="selectedValue.locationNames = nameTypesToCodeDescr($event)"
+      @update:selected-values="selectedValue.locationNames = nameTypesToCodeDescr($event)"
       @empty="validation.locationNames = !$event"
       @error="validation.locationNames = !$event"
     />
