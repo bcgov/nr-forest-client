@@ -553,13 +553,6 @@ public class ClientLegacyService {
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(criteria)
         .exchangeToFlux(response -> {
-          if (response.statusCode().isError()) {
-            return response.bodyToMono(String.class)
-                .flatMapMany(errorBody -> {
-                  log.error("Legacy API error: {} - {}", response.statusCode(), errorBody);
-                  return Flux.error(new RuntimeException("Legacy API error: " + response.statusCode() + " - " + errorBody));
-                });
-          }
           List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
           Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));
 
