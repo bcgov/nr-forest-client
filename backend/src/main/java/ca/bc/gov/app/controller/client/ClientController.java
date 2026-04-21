@@ -291,18 +291,22 @@ public class ClientController {
   /**
    * Performs an advanced search for clients using dynamic query parameters.
    *
-   * <p>This endpoint supports pagination and flexible filtering through request body parameters.
-   * All filter parameters provided in the request body are collected into a DTO and passed to the service layer for processing.</p>
+   * <p>This endpoint supports pagination and flexible filtering through request
+   * body parameters. All filter parameters provided in the request body are
+   * collected into a DTO and passed to the service layer for processing.
    *
-   * <p>The total number of matching records is returned in the response headers under
-   * {@link ApplicationConstant#X_TOTAL_COUNT}. If no results are emitted, a default value
-   * of {@code 0} is set.</p>
+   * <p>The total number of matching records is returned in the response headers
+   * under {@link ApplicationConstant#X_TOTAL_COUNT}. If no results are emitted,
+   * a default value of {@code 0} is set.
    *
-   * @param page the page index (0-based). Defaults to {@code 0} if not provided.
-   * @param size the number of records per page. Defaults to {@code 100} if not provided.
+   * @param page the page index (0-based); defaults to {@code 0} if not provided
+   * @param size the number of records per page; defaults to {@code 100} if not
+   *        provided
    * @param criteria the advanced search criteria DTO for dynamic filtering
-   * @param serverResponse the {@link ServerHttpResponse} used to set response headers
-   * @return a {@link Flux} emitting {@link ClientListDto} objects matching the search criteria
+   * @param serverResponse the {@link ServerHttpResponse} used to set response
+   *        headers
+   * @return a {@link Flux} emitting {@link ClientListDto} objects matching the
+   *         search criteria
    */
   @PostMapping("/advanced-search")
   public Flux<ClientListDto> advancedSearch(
