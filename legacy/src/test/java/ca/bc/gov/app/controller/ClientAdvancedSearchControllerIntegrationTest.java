@@ -24,7 +24,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
   @DisplayName("Should return latest entries when no search criteria provided")
   void shouldReturnLatestEntriesWhenNoCriteria() {
     client
-        .get()
+        .post()
         .uri(uriBuilder -> uriBuilder
             .path(BASE_PATH)
             .queryParam("page", 0)
@@ -32,6 +32,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
             .build()
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .bodyValue("{}")
         .exchange()
         .expectStatus().isOk()
         .expectHeader()
@@ -45,16 +46,15 @@ class ClientAdvancedSearchControllerIntegrationTest extends
   @DisplayName("Should return latest entries when only blank criteria provided")
   void shouldReturnLatestEntriesWhenBlankCriteria() {
     client
-        .get()
+        .post()
         .uri(uriBuilder -> uriBuilder
             .path(BASE_PATH)
-            .queryParam("clientName", " ")
-            .queryParam("firstName", "")
             .queryParam("page", 0)
             .queryParam("size", 5)
             .build()
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .bodyValue("{"clientName":" ","firstName":""}")
         .exchange()
         .expectStatus().isOk()
         .expectHeader()
@@ -72,16 +72,17 @@ class ClientAdvancedSearchControllerIntegrationTest extends
       String paramValue,
       String expectedClientNumber
   ) {
+    String body = String.format("{\"%s\":\"%s\"}", paramName, paramValue);
     ResponseSpec response = client
-        .get()
+        .post()
         .uri(uriBuilder -> uriBuilder
             .path(BASE_PATH)
-            .queryParam(paramName, paramValue)
             .queryParam("page", 0)
             .queryParam("size", 10)
             .build()
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .bodyValue(body)
         .exchange();
 
     if (StringUtils.isNotBlank(expectedClientNumber)) {
@@ -113,21 +114,27 @@ class ClientAdvancedSearchControllerIntegrationTest extends
       String contactName,
       String expectedClientNumber
   ) {
+    StringBuilder bodyBuilder = new StringBuilder("{");
+    boolean first = true;
+    if (clientName != null) { bodyBuilder.append("\"clientName\":\"").append(clientName).append("\""); first = false; }
+    if (firstName != null) { if (!first) bodyBuilder.append(","); bodyBuilder.append("\"firstName\":\"").append(firstName).append("\""); first = false; }
+    if (clientStatus != null) { if (!first) bodyBuilder.append(","); bodyBuilder.append("\"clientStatus\":\"").append(clientStatus).append("\""); first = false; }
+    if (clientType != null) { if (!first) bodyBuilder.append(","); bodyBuilder.append("\"clientType\":\"").append(clientType).append("\""); first = false; }
+    if (emailAddress != null) { if (!first) bodyBuilder.append(","); bodyBuilder.append("\"emailAddress\":\"").append(emailAddress).append("\""); first = false; }
+    if (contactName != null) { if (!first) bodyBuilder.append(","); bodyBuilder.append("\"contactName\":\"").append(contactName).append("\""); }
+    bodyBuilder.append("}");
+    String body = bodyBuilder.toString();
+
     ResponseSpec response = client
-        .get()
+        .post()
         .uri(uriBuilder -> {
           uriBuilder.path(BASE_PATH);
-          if (clientName != null) uriBuilder.queryParam("clientName", clientName);
-          if (firstName != null) uriBuilder.queryParam("firstName", firstName);
-          if (clientStatus != null) uriBuilder.queryParam("clientStatus", clientStatus);
-          if (clientType != null) uriBuilder.queryParam("clientType", clientType);
-          if (emailAddress != null) uriBuilder.queryParam("emailAddress", emailAddress);
-          if (contactName != null) uriBuilder.queryParam("contactName", contactName);
           uriBuilder.queryParam("page", 0);
           uriBuilder.queryParam("size", 10);
           return uriBuilder.build();
         })
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .bodyValue(body)
         .exchange();
 
     if (StringUtils.isNotBlank(expectedClientNumber)) {
@@ -158,16 +165,17 @@ class ClientAdvancedSearchControllerIntegrationTest extends
       String paramValue,
       String expectedClientNumber
   ) {
+    String body = String.format("{\"%s\":\"%s\"}", paramName, paramValue);
     ResponseSpec response = client
-        .get()
+        .post()
         .uri(uriBuilder -> uriBuilder
             .path(BASE_PATH)
-            .queryParam(paramName, paramValue)
             .queryParam("page", 0)
             .queryParam("size", 10)
             .build()
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .bodyValue(body)
         .exchange();
 
     if (StringUtils.isNotBlank(expectedClientNumber)) {
@@ -191,15 +199,15 @@ class ClientAdvancedSearchControllerIntegrationTest extends
   @DisplayName("Should return empty result when no clients match the criteria")
   void shouldReturnEmptyWhenNoMatch() {
     client
-        .get()
+        .post()
         .uri(uriBuilder -> uriBuilder
             .path(BASE_PATH)
-            .queryParam("clientName", "ZZZZNONEXISTENT")
             .queryParam("page", 0)
             .queryParam("size", 10)
             .build()
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .bodyValue("{\"clientName\":\"ZZZZNONEXISTENT\"}")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -212,15 +220,16 @@ class ClientAdvancedSearchControllerIntegrationTest extends
   void shouldRespectPagination() {
     // Search for all active clients (many results), but only get 2 per page
     client
-        .get()
+        .post()
         .uri(uriBuilder -> uriBuilder
             .path(BASE_PATH)
-            .queryParam("clientStatus", "ACT")
+            .queryParam("clientStatus", "ACT") // This should be in the body, not as a query param
             .queryParam("page", 0)
             .queryParam("size", 2)
             .build()
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .bodyValue("{\"clientStatus\":\"ACT\"}")
         .exchange()
         .expectStatus().isOk()
         .expectHeader()
@@ -236,15 +245,15 @@ class ClientAdvancedSearchControllerIntegrationTest extends
   void shouldFindByLocationEmail() {
     // 00000138 has location email: egirault0@zdnet.com
     client
-        .get()
+        .post()
         .uri(uriBuilder -> uriBuilder
             .path(BASE_PATH)
-            .queryParam("emailAddress", "egirault0@zdnet.com")
             .queryParam("page", 0)
             .queryParam("size", 10)
             .build()
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .bodyValue("{\"emailAddress\":\"egirault0@zdnet.com\"}")
         .exchange()
         .expectStatus().isOk()
         .expectHeader()
@@ -260,15 +269,15 @@ class ClientAdvancedSearchControllerIntegrationTest extends
   void shouldFindByContactEmail() {
     // 00000137 has contact email: RBRISLEN5@UN.ORG
     client
-        .get()
+        .post()
         .uri(uriBuilder -> uriBuilder
             .path(BASE_PATH)
-            .queryParam("emailAddress", "RBRISLEN5@UN.ORG")
             .queryParam("page", 0)
             .queryParam("size", 10)
             .build()
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .bodyValue("{\"emailAddress\":\"RBRISLEN5@UN.ORG\"}")
         .exchange()
         .expectStatus().isOk()
         .expectHeader()

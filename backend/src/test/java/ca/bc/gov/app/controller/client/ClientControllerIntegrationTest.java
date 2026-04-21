@@ -17,6 +17,7 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.BcRegistryTestConstants;
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.ClientAdvancedSearchCriteriaDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -1057,10 +1058,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     legacyStub
         .stubFor(
-            get(urlPathEqualTo("/api/clients/advanced-search"))
+            post(urlPathEqualTo("/api/clients/advanced-search"))
                 .withQueryParam("page", equalTo("0"))
                 .withQueryParam("size", equalTo("10"))
-                .withQueryParam("clientName", equalTo("SAMPLE"))
+                .withRequestBody(equalToJson("{\"clientName\":\"SAMPLE\"}"))
                 .willReturn(
                     okJson(legacyResponse)
                         .withHeader("x-total-count", "1")
@@ -1076,15 +1077,16 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 .authorities(
                     new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
         )
-        .get()
+        .post()
         .uri(uriBuilder ->
             uriBuilder
                 .path("/api/clients/advanced-search")
                 .queryParam("page", "0")
                 .queryParam("size", "10")
-                .queryParam("clientName", "SAMPLE")
                 .build()
         )
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(new ClientAdvancedSearchCriteriaDto("SAMPLE", null, null, null, null, null, null, null, null, null, null, null))
         .exchange()
         .expectStatus().isOk()
         .expectHeader().valueEquals("x-total-count", "1")
@@ -1104,10 +1106,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     legacyStub
         .stubFor(
-            get(urlPathEqualTo("/api/clients/advanced-search"))
+            post(urlPathEqualTo("/api/clients/advanced-search"))
                 .withQueryParam("page", equalTo("0"))
                 .withQueryParam("size", equalTo("10"))
-                .withQueryParam("clientName", equalTo("NONEXISTENT"))
+                .withRequestBody(equalToJson("{\"clientName\":\"NONEXISTENT\"}"))
                 .willReturn(
                     okJson("[]")
                         .withHeader("x-total-count", "0")
@@ -1123,15 +1125,16 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 .authorities(
                     new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
         )
-        .get()
+        .post()
         .uri(uriBuilder ->
             uriBuilder
                 .path("/api/clients/advanced-search")
                 .queryParam("page", "0")
                 .queryParam("size", "10")
-                .queryParam("clientName", "NONEXISTENT")
                 .build()
         )
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(new ClientAdvancedSearchCriteriaDto("NONEXISTENT", null, null, null, null, null, null, null, null, null, null, null))
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -1160,9 +1163,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     legacyStub
         .stubFor(
-            get(urlPathEqualTo("/api/clients/advanced-search"))
+            post(urlPathEqualTo("/api/clients/advanced-search"))
                 .withQueryParam("page", equalTo("0"))
                 .withQueryParam("size", equalTo("100"))
+                .withRequestBody(equalToJson("{}"))
                 .willReturn(
                     okJson(legacyResponse)
                         .withHeader("x-total-count", "1")
@@ -1178,8 +1182,16 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 .authorities(
                     new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
         )
-        .get()
-        .uri("/api/clients/advanced-search")
+        .post()
+        .uri(uriBuilder ->
+            uriBuilder
+                .path("/api/clients/advanced-search")
+                .queryParam("page", "0")
+                .queryParam("size", "100")
+                .build()
+        )
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(new ClientAdvancedSearchCriteriaDto(null, null, null, null, null, null, null, null, null, null, null, null))
         .exchange()
         .expectStatus().isOk()
         .expectBody()
