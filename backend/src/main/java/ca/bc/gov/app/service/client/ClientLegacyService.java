@@ -3,6 +3,7 @@ package ca.bc.gov.app.service.client;
 import static ca.bc.gov.app.ApplicationConstant.MDC_USERID;
 import static ca.bc.gov.app.ApplicationConstant.REQUEST_LEGACY;
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.ClientAdvancedSearchCriteriaDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
 import ca.bc.gov.app.dto.client.CodeNameDto;
 import ca.bc.gov.app.dto.client.RelatedClientDto;
@@ -523,54 +524,34 @@ public class ClientLegacyService {
   }
   
   /**
-   * Executes an advanced search request against the legacy API for clients.
+   * Performs an advanced search for clients using the provided criteria DTO.
    *
-   * <p>This method builds a dynamic query using the provided pagination parameters
-   * and additional filters, then invokes the legacy endpoint. The response includes
-   * both the client data and the total number of matching records, extracted from
-   * the {@code X_TOTAL_COUNT_HEADER} response header.</p>
-   *
-   * <p>Each emitted element in the resulting {@link Flux} is a {@link Pair} where:
-   * <ul>
-   *   <li>the first value is the {@link ClientListDto} representing a client</li>
-   *   <li>the second value is the total count of matching records</li>
-   * </ul>
-   * The total count is repeated for each emitted element.</p>
-   *
-   * @param page the page index (0-based) to retrieve
+   * @param page the page index (0-based)
    * @param size the number of records per page
-   * @param allParams a map of additional query parameters used for filtering
-   * @return a {@link Flux} emitting {@link Pair} objects containing client data
-   *         and the total count of matching records
+   * @param criteria the advanced search criteria DTO
+   * @return a {@link Flux} emitting {@link Pair} objects containing client data and the total count
    */
   public Flux<Pair<ClientListDto, Long>> advancedSearch(
-      int page, 
+      int page,
       int size,
-      Map<String, String> allParams) {
+      ClientAdvancedSearchCriteriaDto criteria
+  ) {
     log.info(
-        "Performing Advanced Search of clients with params {} with page {} and size {}",
-        allParams,
+        "Performing Advanced Search of clients with criteria {} with page {} and size {}",
+        criteria,
         page,
         size
     );
 
-    // Filter out reserved pagination keys to avoid duplicates in the legacy request
-    Set<String> reservedKeys = Set.of("page", "size");
-
     return legacyApi
-        .get()
-        .uri(builder -> {
-          builder
-              .path("/api/clients/advanced-search")
-              .queryParam("page", page)
-              .queryParam("size", size);
-          allParams.forEach((key, value) -> {
-            if (!reservedKeys.contains(key)) {
-              builder.queryParam(key, value);
-            }
-          });
-          return builder.build(Map.of());
-        })
+        .post()
+        .uri(builder -> builder
+            .path("/api/clients/advanced-search")
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .build())
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(criteria)
         .exchangeToFlux(response -> {
           List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
           Long count = totalCountHeader.isEmpty() ? 0L : Long.valueOf(totalCountHeader.get(0));

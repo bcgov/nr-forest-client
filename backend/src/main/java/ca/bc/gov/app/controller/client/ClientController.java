@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.ClientAdvancedSearchCriteriaDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
@@ -24,6 +25,8 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -288,9 +291,8 @@ public class ClientController {
   /**
    * Performs an advanced search for clients using dynamic query parameters.
    *
-   * <p>This endpoint supports pagination and flexible filtering through request parameters.
-   * All query parameters provided in the request (except {@code page} and {@code size})
-   * are collected into a map and passed to the service layer for processing.</p>
+   * <p>This endpoint supports pagination and flexible filtering through request body parameters.
+   * All filter parameters provided in the request body are collected into a DTO and passed to the service layer for processing.</p>
    *
    * <p>The total number of matching records is returned in the response headers under
    * {@link ApplicationConstant#X_TOTAL_COUNT}. If no results are emitted, a default value
@@ -298,27 +300,24 @@ public class ClientController {
    *
    * @param page the page index (0-based). Defaults to {@code 0} if not provided.
    * @param size the number of records per page. Defaults to {@code 100} if not provided.
-   * @param allParams a map containing all query parameters for dynamic filtering
-   *                  (excluding pagination parameters).
+   * @param criteria the advanced search criteria DTO for dynamic filtering
    * @param serverResponse the {@link ServerHttpResponse} used to set response headers
    * @return a {@link Flux} emitting {@link ClientListDto} objects matching the search criteria
    */
-
-  @GetMapping("/advanced-search")
+  @PostMapping("/advanced-search")
   public Flux<ClientListDto> advancedSearch(
       @RequestParam(required = false, defaultValue = "0") int page,
       @RequestParam(required = false, defaultValue = "100") int size,
-      @RequestParam(required = false) Map<String, String> allParams,
+      @RequestBody(required = false) ClientAdvancedSearchCriteriaDto criteria,
       ServerHttpResponse serverResponse
   ) {
-    Map<String, String> filterParams = new java.util.HashMap<>(allParams);
-    filterParams.remove("page");
-    filterParams.remove("size");
-
-    log.info("Listing clients: page={}, size={}, params={}", page, size, filterParams);
+    if (criteria == null) {
+      criteria = new ClientAdvancedSearchCriteriaDto(null, null, null, null, null, null, null, null, null, null, null, null);
+    }
+    log.info("Listing clients: page={}, size={}, criteria={}", page, size, criteria);
 
     return clientLegacyService
-        .advancedSearch(page, size, filterParams)
+        .advancedSearch(page, size, criteria)
         .doOnNext(pair -> {
           Long count = pair.getSecond();
 

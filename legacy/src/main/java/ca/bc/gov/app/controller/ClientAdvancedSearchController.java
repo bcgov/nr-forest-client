@@ -11,7 +11,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,9 +21,9 @@ import reactor.core.publisher.Flux;
 /**
  * REST controller that exposes the advanced client search endpoint.
  *
- * <p>Provides a single {@code GET /api/clients/advanced-search} endpoint that
- * accepts optional query parameters represented by
- * {@link ClientAdvancedSearchCriteriaDto}. When no valid criteria are supplied,
+ * <p>Provides a single {@code POST /api/clients/advanced-search} endpoint that
+ * accepts optional query parameters {@code page} and {@code size}, and a JSON request body
+ * represented by {@link ClientAdvancedSearchCriteriaDto}. When no valid criteria are supplied,
  * the endpoint falls back to returning the most recently created client entries.
  *
  * <p>Every response includes an {@code x-total-count} header with the total
@@ -44,25 +45,29 @@ public class ClientAdvancedSearchController {
   private static final String X_TOTAL_COUNT = "x-total-count";
 
   /**
-   * Performs an advanced search for clients based on the provided criteria.  
+   * Performs an advanced search for clients based on the provided criteria.
+   * <p>
+   * This endpoint is available at {@code POST /api/clients/advanced-search}.
+   * The search criteria are provided in the request body as a {@link ClientAdvancedSearchCriteriaDto}.
+   * Optional pagination parameters {@code page} and {@code size} can be supplied as query parameters.
    * <p>
    * If the {@code criteria} is null or contains no valid search parameters, the method
-   * returns the latest client entries, paginated according to the {@code page} and {@code size} 
+   * returns the latest client entries, paginated according to the {@code page} and {@code size}
    * parameters. Otherwise, it performs an advanced search using {@link ClientAdvancedSearchService}.
    * <p>
    * The total number of results is included in the {@code x-total-count} HTTP header of the response.
-   * 
-   * @param page the page number to retrieve (0-based index), defaults to 0 if not provided
-   * @param size the number of results per page, defaults to 5 if not provided
-   * @param criteria the advanced search criteria; may be null
+   *
+   * @param page the page number to retrieve (0-based index), defaults to 0 if not provided (query parameter)
+   * @param size the number of results per page, defaults to 5 if not provided (query parameter)
+   * @param criteria the advanced search criteria provided in the request body; may be null
    * @param serverResponse the server response used to set the {@code x-total-count} header
    * @return a {@link Flux} of {@link PredictiveSearchResultDto} representing the search results
    */
-  @GetMapping
+  @PostMapping
   public Flux<PredictiveSearchResultDto> findByAdvancedSearch(
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "5") Integer size,
-      ClientAdvancedSearchCriteriaDto criteria,
+      @RequestBody ClientAdvancedSearchCriteriaDto criteria,
       ServerHttpResponse serverResponse) {
 
     PageRequest pageRequest = PageRequest.of(page, size);
