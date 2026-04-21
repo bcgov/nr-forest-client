@@ -329,20 +329,25 @@ public class ClientController {
         .advancedSearch(page, size, criteria)
         .collectList()
         .flatMapMany(list -> {
-
           Long count = list.isEmpty()
               ? 0L
               : list.get(0).getSecond();
 
-          serverResponse.beforeCommit(() -> {
-            serverResponse.getHeaders().set(
-                ApplicationConstant.X_TOTAL_COUNT,
-                String.valueOf(count));
-            return Mono.empty();
-          });
+          String countStr = String.valueOf(count);
+
+          List.of(ApplicationConstant.X_TOTAL_COUNT, "x-total-count")
+              .forEach(h -> serverResponse.getHeaders().set(h, countStr));
 
           return Flux.fromIterable(list)
               .map(Pair::getFirst);
+        })
+        .onErrorResume(e -> {
+          log.error("Error in advancedSearch endpoint", e);
+
+          List.of(ApplicationConstant.X_TOTAL_COUNT, "x-total-count")
+              .forEach(h -> serverResponse.getHeaders().set(h, "0"));
+
+          return Flux.empty();
         });
   }
   
