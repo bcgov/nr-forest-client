@@ -256,14 +256,16 @@ const contactName = (contact: Contact, contactId: number) => {
       tip="A contact can have more than one address"
       :initial-value="''"
       :model-value="addressList"
-      :selectedValues="(selectedValue.locationNames ?? []).map((location: CodeDescrType) => location?.text).filter((v): v is string => typeof v === 'string')"
+      :selectedValues="selectedValue.locationNames?.map((location:CodeDescrType) => location?.text)"
       :validations="[
         ...getValidations('location.contacts.*.locationNames'),
         submissionValidation(`location.contacts[${id}].locationNames`)
       ]"
       required
       :requiredLabel="requiredLabel"
-      @update:selected-values="selectedValue.locationNames = nameTypesToCodeDescr($event)"
+      @update:selected-value="
+        selectedValue.locationNames = nameTypesToCodeDescr($event)
+      "
       @empty="validation.locationNames = !$event"
       @error="validation.locationNames = !$event"
     />
