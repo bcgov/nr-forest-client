@@ -309,34 +309,41 @@ public class ClientController {
       @RequestParam(required = false, defaultValue = "0") int page,
       @RequestParam(required = false, defaultValue = "100") int size,
       @RequestBody(required = false) ClientAdvancedSearchCriteriaDto criteria,
-      ServerHttpResponse serverResponse
-  ) {
+      ServerHttpResponse serverResponse) {
+
     if (criteria == null) {
-      criteria = new ClientAdvancedSearchCriteriaDto(null, null, null, null, null, null, null, null, null, null, null, null);
+      criteria =
+          new ClientAdvancedSearchCriteriaDto(
+              null, null, null, null, null,
+              null, null, null, null, null,
+              null, null);
     }
-    log.info("Listing clients: page={}, size={}, criteria={}", page, size, criteria);
+
+    log.info(
+        "Listing clients: page={}, size={}, criteria={}",
+        page,
+        size,
+        criteria);
 
     return clientLegacyService
         .advancedSearch(page, size, criteria)
-        .doOnNext(pair -> {
-          Long count = pair.getSecond();
+        .collectList()
+        .flatMapMany(list -> {
 
-          serverResponse
-              .getHeaders()
-              .putIfAbsent(
-                  ApplicationConstant.X_TOTAL_COUNT,
-                  List.of(count.toString())
-              );
-        })
-        .map(Pair::getFirst)
-        .doFinally(signalType ->
-            serverResponse
-                .getHeaders()
-                .putIfAbsent(
-                    ApplicationConstant.X_TOTAL_COUNT,
-                    List.of("0")
-                )
-        );
+          Long count = list.isEmpty()
+              ? 0L
+              : list.get(0).getSecond();
+
+          serverResponse.beforeCommit(() -> {
+            serverResponse.getHeaders().set(
+                ApplicationConstant.X_TOTAL_COUNT,
+                String.valueOf(count));
+            return Mono.empty();
+          });
+
+          return Flux.fromIterable(list)
+              .map(Pair::getFirst);
+        });
   }
   
 }
