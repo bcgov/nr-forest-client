@@ -54,7 +54,7 @@ class ClientAdvancedSearchControllerIntegrationTest extends
             .build()
         )
         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-        .bodyValue("{"clientName":" ","firstName":""}")
+        .bodyValue("{\"clientName\":\" \" , \"firstName\":\"\"}")
         .exchange()
         .expectStatus().isOk()
         .expectHeader()
