@@ -46,22 +46,30 @@ public class ClientAdvancedSearchController {
 
   /**
    * Performs an advanced search for clients based on the provided criteria.
-   * <p>
-   * This endpoint is available at {@code POST /api/clients/advanced-search}.
-   * The search criteria are provided in the request body as a {@link ClientAdvancedSearchCriteriaDto}.
-   * Optional pagination parameters {@code page} and {@code size} can be supplied as query parameters.
-   * <p>
-   * If the {@code criteria} is null or contains no valid search parameters, the method
-   * returns the latest client entries, paginated according to the {@code page} and {@code size}
-   * parameters. Otherwise, it performs an advanced search using {@link ClientAdvancedSearchService}.
-   * <p>
-   * The total number of results is included in the {@code x-total-count} HTTP header of the response.
    *
-   * @param page the page number to retrieve (0-based index), defaults to 0 if not provided (query parameter)
-   * @param size the number of results per page, defaults to 5 if not provided (query parameter)
-   * @param criteria the advanced search criteria provided in the request body; may be null
-   * @param serverResponse the server response used to set the {@code x-total-count} header
-   * @return a {@link Flux} of {@link PredictiveSearchResultDto} representing the search results
+   * <p>This endpoint is available at {@code POST /api/clients/advanced-search}.
+   * The search criteria are provided in the request body as a
+   * {@link ClientAdvancedSearchCriteriaDto}. Optional pagination parameters
+   * {@code page} and {@code size} can be supplied as query parameters.
+   *
+   * <p>If the {@code criteria} is null or contains no valid search parameters,
+   * the method returns the latest client entries, paginated according to the
+   * {@code page} and {@code size} parameters. Otherwise, it performs an advanced
+   * search using {@link ClientAdvancedSearchService}.
+   *
+   * <p>The total number of results is included in the {@code x-total-count} HTTP
+   * header of the response.
+   *
+   * @param page the page number to retrieve (0-based index); defaults to 0 if not
+   *        provided (query parameter)
+   * @param size the number of results per page; defaults to 5 if not provided
+   *        (query parameter)
+   * @param criteria the advanced search criteria provided in the request body;
+   *        may be null
+   * @param serverResponse the server response used to set the
+   *       {@code x-total-count} header
+   * @return a {@link Flux} of {@link PredictiveSearchResultDto} representing the
+   *         search results
    */
   @PostMapping
   public Flux<PredictiveSearchResultDto> findByAdvancedSearch(
