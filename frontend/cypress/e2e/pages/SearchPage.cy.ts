@@ -392,11 +392,12 @@ describe("Search Page", () => {
           searchInterception = interception;
         });
       });
-      it("makes one API call with the entered filter values", () => {
-        const { query } = searchInterception.request;
 
-        // filters
-        expect(query).to.include({
+      it("makes one API call with the entered filter values as CSV in the POST body", () => {
+        const { body, method } = searchInterception.request;
+        expect(method).to.eq("POST");
+        // filters in body
+        expect(body).to.include({
           clientName: "sample-clientName",
           firstName: "sample-firstName",
           middleName: "sample-middleName",
@@ -410,9 +411,6 @@ describe("Search Page", () => {
           updatedFromDate: "2025-04-15",
           updatedToDate: "2026-04-15",
         });
-
-        expect(query.page).to.eq("0");
-
         cy.wait(100); // Waits additional time to make sure there's no duplicate API calls.
         cy.wrap(advancedSearchCounter).its("count").should("eq", 1);
       });
