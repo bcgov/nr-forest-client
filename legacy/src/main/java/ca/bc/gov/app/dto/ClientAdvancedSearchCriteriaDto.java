@@ -111,4 +111,5 @@ public record ClientAdvancedSearchCriteriaDto(
     }
     return value;
   }
+  
 }
