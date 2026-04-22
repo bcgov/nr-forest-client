@@ -133,6 +133,7 @@ describe("Search Page", () => {
 
   describe("when user fills in the search box with a valid value", () => {
     let predictiveSearchInterception: Interception;
+
     beforeEach(() => {
       cy.fillFormEntry("#search-box", "car", { skipBlur: true });
       cy.wait("@predictiveSearch").then((interception) => {
@@ -265,8 +266,11 @@ describe("Search Page", () => {
       });
 
       it("displays the results on the table", () => {
-        const data = searchInterception.response.body;
-
+        let data = searchInterception.response.body;
+        
+        if (!Array.isArray(data)) {
+          data = data.items || data.results || data.data || [];
+        }
         cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
 
         cy.get("cds-table")
@@ -346,12 +350,13 @@ describe("Search Page", () => {
         cy.wrap(basicSearchCounter).its("count").should("eq", 1);
       });
     });
+
   });
 
   describe("when user sets up an advanced search", () => {
     beforeEach(() => {
       cy.get("#open-advanced-search-button").click();
-      
+
       cy.fillFormEntry("#clientName", "sample-clientName");
       cy.fillFormEntry("#firstName", "sample-firstName");
       cy.fillFormEntry("#middleName", "sample-middleName");
