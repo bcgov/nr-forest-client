@@ -19,7 +19,6 @@ RUN set -e; \
     curl --retry 5 \
          --retry-delay 5 \
          --retry-connrefused \
-         --retry-all-errors \
          -fsSL 'https://crt.sh/?d=4256644734' \
          -o "$CERT_FILE" \
       || { \
