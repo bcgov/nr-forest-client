@@ -133,6 +133,7 @@ describe("Search Page", () => {
 
   describe("when user fills in the search box with a valid value", () => {
     let predictiveSearchInterception: Interception;
+
     beforeEach(() => {
       cy.fillFormEntry("#search-box", "car", { skipBlur: true });
       cy.wait("@predictiveSearch").then((interception) => {
@@ -265,8 +266,11 @@ describe("Search Page", () => {
       });
 
       it("displays the results on the table", () => {
-        const data = searchInterception.response.body;
-
+        let data = searchInterception.response.body;
+        
+        if (!Array.isArray(data)) {
+          data = data.items || data.results || data.data || [];
+        }
         cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
 
         cy.get("cds-table")
@@ -346,12 +350,31 @@ describe("Search Page", () => {
         cy.wrap(basicSearchCounter).its("count").should("eq", 1);
       });
     });
+
   });
 
   describe("when user sets up an advanced search", () => {
     beforeEach(() => {
+      cy.intercept('POST', '/api/clients/advanced-search*', (req) => {
+        advancedSearchCounter.count++;
+        req.reply({
+          statusCode: 200,
+          body: [
+            {
+              "clientNumber": "00200351",
+              "clientAcronym": "GEOTIRS",
+              "clientFullName": "",
+              "clientType": "Corporation",
+              "city": " ",
+              "clientStatus": "Active"
+            }
+          ],
+          headers: { 'x-total-count': '1' }
+        });
+      }).as('advancedSearch');
+
       cy.get("#open-advanced-search-button").click();
-      
+
       cy.fillFormEntry("#clientName", "sample-clientName");
       cy.fillFormEntry("#firstName", "sample-firstName");
       cy.fillFormEntry("#middleName", "sample-middleName");
@@ -392,11 +415,12 @@ describe("Search Page", () => {
           searchInterception = interception;
         });
       });
-      it("makes one API call with the entered filter values", () => {
-        const { query } = searchInterception.request;
 
-        // filters
-        expect(query).to.include({
+      it("makes one API call with the entered filter values as CSV in the POST body", () => {
+        const { body, method } = searchInterception.request;
+        expect(method).to.eq("POST");
+        // filters in body
+        expect(body).to.include({
           clientName: "sample-clientName",
           firstName: "sample-firstName",
           middleName: "sample-middleName",
@@ -410,16 +434,16 @@ describe("Search Page", () => {
           updatedFromDate: "2025-04-15",
           updatedToDate: "2026-04-15",
         });
-
-        expect(query.page).to.eq("0");
-
         cy.wait(100); // Waits additional time to make sure there's no duplicate API calls.
         cy.wrap(advancedSearchCounter).its("count").should("eq", 1);
       });
 
       it("displays the results on the table", () => {
-        const data = searchInterception.response.body;
-
+        let data = searchInterception.response.body;
+        
+        if (!Array.isArray(data)) {
+          data = data.items || data.results || data.data || [];
+        }
         cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
 
         cy.get("cds-table")

@@ -1,5 +1,7 @@
 package ca.bc.gov.app.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
  * @param updatedFromDate      the lower bound for the last updated date (inclusive)
  * @param updatedToDate        the upper bound for the last updated date (inclusive)
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record ClientAdvancedSearchCriteriaDto(
     String clientName, 
     String firstName, 
@@ -37,8 +40,8 @@ public record ClientAdvancedSearchCriteriaDto(
     String emailAddress,
     String contactName,
     String userId,
-    LocalDate updatedFromDate, 
-    LocalDate updatedToDate
+    @JsonFormat(pattern = "yyyy-MM-dd") LocalDate updatedFromDate, 
+    @JsonFormat(pattern = "yyyy-MM-dd") LocalDate updatedToDate
 ) {
   
   /**
@@ -111,5 +114,4 @@ public record ClientAdvancedSearchCriteriaDto(
     }
     return value;
   }
-  
 }

@@ -17,6 +17,7 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.BcRegistryTestConstants;
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.ClientAdvancedSearchCriteriaDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -1035,7 +1036,7 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .expectBody()
         .consumeWith(System.out::println);
   }
-
+  
   @Test
   @DisplayName("Advanced search with results")
   void shouldAdvancedSearchWithResults() {
@@ -1055,17 +1056,14 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         ]
         """;
 
-    legacyStub
-        .stubFor(
-            get(urlPathEqualTo("/api/clients/advanced-search"))
-                .withQueryParam("page", equalTo("0"))
-                .withQueryParam("size", equalTo("10"))
-                .withQueryParam("clientName", equalTo("SAMPLE"))
-                .willReturn(
-                    okJson(legacyResponse)
-                        .withHeader("x-total-count", "1")
-                )
-        );
+    legacyStub.stubFor(
+        post(urlPathEqualTo("/api/clients/advanced-search"))
+            .withQueryParam("page", equalTo("0"))
+            .withQueryParam("size", equalTo("10"))
+            .withRequestBody(equalToJson("{\"clientName\":\"SAMPLE\"}"))
+            .willReturn(
+                okJson(legacyResponse)
+                    .withHeader("x-total-count", "1")));
 
     client
         .mutateWith(csrf())
@@ -1074,16 +1072,30 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 .jwt(jwt -> jwt.claims(
                     claims -> claims.putAll(TestConstants.getClaims("idir"))))
                 .authorities(
-                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
-        )
-        .get()
-        .uri(uriBuilder ->
-            uriBuilder
-                .path("/api/clients/advanced-search")
-                .queryParam("page", "0")
-                .queryParam("size", "10")
-                .queryParam("clientName", "SAMPLE")
-                .build()
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR)))
+        .post()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/advanced-search")
+            .queryParam("page", "0")
+            .queryParam("size", "10")
+            .build())
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(
+            new ClientAdvancedSearchCriteriaDto(
+                "SAMPLE", 
+                null, 
+                null, 
+                null, 
+                null,
+                null, 
+                null, 
+                null, 
+                null, 
+                null,
+                null, 
+                null
+            )
         )
         .exchange()
         .expectStatus().isOk()
@@ -1102,17 +1114,14 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
 
     reset();
 
-    legacyStub
-        .stubFor(
-            get(urlPathEqualTo("/api/clients/advanced-search"))
-                .withQueryParam("page", equalTo("0"))
-                .withQueryParam("size", equalTo("10"))
-                .withQueryParam("clientName", equalTo("NONEXISTENT"))
-                .willReturn(
-                    okJson("[]")
-                        .withHeader("x-total-count", "0")
-                )
-        );
+    legacyStub.stubFor(
+        post(urlPathEqualTo("/api/clients/advanced-search"))
+            .withQueryParam("page", equalTo("0"))
+            .withQueryParam("size", equalTo("10"))
+            .withRequestBody(equalToJson("{\"clientName\":\"NONEXISTENT\"}"))
+            .willReturn(
+                okJson("[]")
+                    .withHeader("x-total-count", "0")));
 
     client
         .mutateWith(csrf())
@@ -1121,16 +1130,30 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 .jwt(jwt -> jwt.claims(
                     claims -> claims.putAll(TestConstants.getClaims("idir"))))
                 .authorities(
-                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
-        )
-        .get()
-        .uri(uriBuilder ->
-            uriBuilder
-                .path("/api/clients/advanced-search")
-                .queryParam("page", "0")
-                .queryParam("size", "10")
-                .queryParam("clientName", "NONEXISTENT")
-                .build()
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR)))
+        .post()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/advanced-search")
+            .queryParam("page", "0")
+            .queryParam("size", "10")
+            .build())
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(
+            new ClientAdvancedSearchCriteriaDto(
+                "NONEXISTENT", 
+                null, 
+                null, 
+                null, 
+                null,
+                null, 
+                null, 
+                null,
+                null, 
+                null,
+                null, 
+                null
+            )
         )
         .exchange()
         .expectStatus().isOk()
@@ -1158,16 +1181,14 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         ]
         """;
 
-    legacyStub
-        .stubFor(
-            get(urlPathEqualTo("/api/clients/advanced-search"))
-                .withQueryParam("page", equalTo("0"))
-                .withQueryParam("size", equalTo("100"))
-                .willReturn(
-                    okJson(legacyResponse)
-                        .withHeader("x-total-count", "1")
-                )
-        );
+    legacyStub.stubFor(
+        post(urlPathEqualTo("/api/clients/advanced-search"))
+            .withQueryParam("page", equalTo("0"))
+            .withQueryParam("size", equalTo("100"))
+            .withRequestBody(equalToJson("{}"))
+            .willReturn(
+                okJson(legacyResponse)
+                    .withHeader("x-total-count", "1")));
 
     client
         .mutateWith(csrf())
@@ -1176,10 +1197,31 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 .jwt(jwt -> jwt.claims(
                     claims -> claims.putAll(TestConstants.getClaims("idir"))))
                 .authorities(
-                    new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR)))
+        .post()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/advanced-search")
+            .queryParam("page", "0")
+            .queryParam("size", "100")
+            .build())
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(
+            new ClientAdvancedSearchCriteriaDto(
+                null, 
+                null, 
+                null, 
+                null, 
+                null,
+                null, 
+                null, 
+                null, 
+                null, 
+                null,
+                null, 
+                null
+            )
         )
-        .get()
-        .uri("/api/clients/advanced-search")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
@@ -1188,5 +1230,5 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .jsonPath("$.length()").isEqualTo(1)
         .jsonPath("$[0].clientNumber").isEqualTo("00000002");
   }
-
+  
 }

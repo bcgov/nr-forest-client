@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
-import { ref, computed, watch, onMounted, reactive } from "vue";
+import { ref, unref, computed, watch, onMounted } from "vue";
 
 // Carbon
 import "@carbon/web-components/es/components/data-table/index";
@@ -11,7 +11,7 @@ import "@carbon/web-components/es/components/tag/index";
 
 import AdvancedSearch from "@/pages/search/AdvancedSearch.vue";
 
-import { useFetchTo } from "@/composables/useFetch";
+import { useFetchTo, usePost } from "@/composables/useFetch";
 import { useEventBus } from "@vueuse/core";
 
 import type { ClientSearchParameters, ClientSearchResult, CodeNameValue } from "@/dto/CommonTypesDto";
@@ -99,29 +99,56 @@ const basicFetchConfig = computed(() => ({
   params: basicFetchParams.value,
 }));
 
+// For POST, page and size must be in the URL, not in the body
+const advancedSearchQuery = computed(() => {
+  const params = new URLSearchParams({
+    page: String(pageNumber.value - 1),
+    size: String(pageSize.value),
+  });
+  return `${advancedSearchUri}?${params.toString()}`;
+});
+
 const advancedFetchConfig = computed(() => ({
   ...commonFetchConfig,
-  params: advancedFetchParams.value,
+  skip: true,
 }));
 
 const searchType = ref<"basic" | "advanced">("basic");
 
-const fetchConfig = computed(
-  () => searchType.value === "basic" ? basicFetchConfig.value : advancedFetchConfig.value,
-);
+// Make fetch logic reactive to searchType
+function toCsvFilters(filters) {
+  const csvFields = ["clientIdType", "clientType", "clientStatus"];
+  const result = { ...filters };
+  for (const key of csvFields) {
+    if (Array.isArray(result[key])) {
+      result[key] = result[key].join(",");
+    }
+  }
+  return result;
+}
 
-const searchUri = computed(
-  () => searchType.value === "basic" ? basicSearchUri : advancedSearchUri,
-);
+const fetchHandlers = computed(() => {
+  if (searchType.value === "advanced") {
+    // Use POST, with page/size in URL, filters in body (CSV for specific fields)
+    return usePost(advancedSearchQuery.value, toCsvFilters(advancedFilters.value), advancedFetchConfig.value);
+  } else {
+    return useFetchTo(basicSearchUri, tableData, basicFetchConfig.value);
+  }
+});
 
-const {
-  response: searchResponse,
-  fetch: fetchSearch,
-  loading: loadingSearch,
-  error: searchError,
-} = useFetchTo(searchUri, tableData, fetchConfig);
+const searchResponse = computed(() => unref(fetchHandlers.value.response));
+const fetchSearch = async () => {
+  const handler = fetchHandlers.value;
+  await handler.fetch();
+  // For advanced search (POST), update tableData manually
+  if (searchType.value === "advanced" && handler.response && handler.response.value && handler.response.value.data) {
+    tableData.value = handler.response.value.data;
+  }
+};
+const loadingSearch = computed(() => unref(fetchHandlers.value.loading));
+const searchError = computed(() => unref(fetchHandlers.value.error));
 
-const noExactMatch = ref<boolean>(null);
+const noExactMatch = ref<boolean|null>(null);
 
 const search = (skipResetPage = false) => {
   revalidateBus.emit();
@@ -173,7 +200,7 @@ const resultsIncludeExactMatch = () => {
   ];
 
   // Search row by row in the returned results
-  const foundExactMatch = tableData.value.find((row) => {
+  const foundExactMatch = (tableData.value ?? []).find((row) => {
     for (const field of searchFieldsList) {
       const fieldValue = row[field];
       if (fieldValue === null) {
@@ -213,7 +240,8 @@ const resultsIncludeExactMatch = () => {
 };
 
 watch(searchResponse, () => {
-  const totalCount = parseInt(searchResponse.value.headers["x-total-count"] || "0");
+  const headers = searchResponse.value && searchResponse.value.headers ? searchResponse.value.headers : {};
+  const totalCount = Number.parseInt(headers["x-total-count"] || "0");
   totalItems.value = totalCount;
 
   // Skip the check for exact matches if this is not a basic search
@@ -241,9 +269,9 @@ watch(searchResponse, () => {
   }
 });
 
-watch([searchError], () => {
-  if (searchError.value.message) {
-    networkErrorMsg.value = searchError.value.message;
+watch(searchError, (err) => {
+  if (err && err.message) {
+    networkErrorMsg.value = err.message;
   }
 });
 
