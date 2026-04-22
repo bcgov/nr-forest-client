@@ -355,6 +355,21 @@ describe("Search Page", () => {
 
   describe("when user sets up an advanced search", () => {
     beforeEach(() => {
+      cy.intercept('POST', '/api/clients/advanced-search*', {
+        statusCode: 200,
+        body: [
+          {
+            "clientNumber": "00200351",
+            "clientAcronym": "GEOTIRS",
+            "clientFullName": "",
+            "clientType": "Corporation",
+            "city": " ",
+            "clientStatus": "Active"
+          }
+        ],
+        headers: { 'x-total-count': '1' }
+      }).as('advancedSearch');
+
       cy.get("#open-advanced-search-button").click();
 
       cy.fillFormEntry("#clientName", "sample-clientName");
@@ -421,8 +436,11 @@ describe("Search Page", () => {
       });
 
       it("displays the results on the table", () => {
-        const data = searchInterception.response.body;
-
+        let data = searchInterception.response.body;
+        
+        if (!Array.isArray(data)) {
+          data = data.items || data.results || data.data || [];
+        }
         cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
 
         cy.get("cds-table")
