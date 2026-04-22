@@ -182,6 +182,21 @@ export interface SubmissionList {
   district: string;
 };
 
+export interface ClientSearchParameters {
+  clientName?: string;
+  firstName?: string;
+  middleName?: string;
+  userId?: string;
+  clientIdType?: string[];
+  clientIdentification?: string;
+  clientType?: string[];
+  clientStatus?: string[];
+  contactName?: string;
+  emailAddress?: string;
+  updatedFromDate?: string;
+  updatedToDate?: string;
+};
+
 export interface ClientSearchResult {
   clientNumber: string;
   clientAcronym: string;

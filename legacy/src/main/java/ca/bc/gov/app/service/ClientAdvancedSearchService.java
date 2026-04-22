@@ -5,6 +5,8 @@ import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.repository.ForestClientRepository;
 import io.micrometer.observation.annotation.Observed;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -62,6 +64,13 @@ public class ClientAdvancedSearchService {
     ClientAdvancedSearchCriteriaDto sanitizedCriteria = criteria.sanitized();
     log.info("Performing advanced search with criteria: {}", sanitizedCriteria);
 
+    LocalDateTime updatedFromDateTime = sanitizedCriteria.updatedFromDate() != null
+        ? sanitizedCriteria.updatedFromDate().atStartOfDay()
+        : null;
+    LocalDateTime updatedToDateTime = sanitizedCriteria.updatedToDate() != null
+        ? sanitizedCriteria.updatedToDate().atTime(LocalTime.MAX)
+        : null;
+
     return forestClientRepository
         .countByAdvancedSearch(
             sanitizedCriteria.clientName(), 
@@ -74,8 +83,8 @@ public class ClientAdvancedSearchService {
             sanitizedCriteria.emailAddress(),
             sanitizedCriteria.contactName(),
             sanitizedCriteria.userId(),
-            sanitizedCriteria.updatedFromDate(),
-            sanitizedCriteria.updatedToDate()
+            updatedFromDateTime,
+            updatedToDateTime
         )
         .defaultIfEmpty(0L)
         .flatMapMany(count -> {
@@ -94,16 +103,12 @@ public class ClientAdvancedSearchService {
                   sanitizedCriteria.emailAddress(),
                   sanitizedCriteria.contactName(),
                   sanitizedCriteria.userId(),
-                  sanitizedCriteria.updatedFromDate(),
-                  sanitizedCriteria.updatedToDate(),
+                  updatedFromDateTime,
+                  updatedToDateTime,
                   page.getPageSize(), 
                   page.getOffset()
               )
-              .doOnNext(dto -> log.info(
-                  "Advanced search matched client {} {}",
-                  dto.clientNumber(), dto.clientFullName())
-              )
-              .map(dto -> Pair.of(dto, count));
+              .map(result -> Pair.of(result, count));
         });
   }
   

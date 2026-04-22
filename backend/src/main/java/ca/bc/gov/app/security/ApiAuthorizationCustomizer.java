@@ -191,7 +191,7 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
 
     // Viewer, editor, suspend and admin users can GET from the clients advanced search endpoint
     authorize
-        .pathMatchers(HttpMethod.GET, "/api/clients/advanced-search/**")
+        .pathMatchers(HttpMethod.POST, "/api/clients/advanced-search/**")
         .hasAnyRole(
             ApplicationConstant.ROLE_VIEWER,
             ApplicationConstant.ROLE_EDITOR,

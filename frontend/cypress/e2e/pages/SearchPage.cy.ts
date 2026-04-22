@@ -6,7 +6,11 @@ describe("Search Page", () => {
     count: 0,
   };
 
-  const fullSearchCounter = {
+  const basicSearchCounter = {
+    count: 0,
+  };
+
+  const advancedSearchCounter = {
     count: 0,
   };
 
@@ -63,7 +67,8 @@ describe("Search Page", () => {
   beforeEach(function () {
     // reset counters
     predictiveSearchCounter.count = 0;
-    fullSearchCounter.count = 0;
+    basicSearchCounter.count = 0;
+    advancedSearchCounter.count = 0;
 
     cy.intercept(
       {
@@ -88,10 +93,26 @@ describe("Search Page", () => {
         },
       },
       (req) => {
-        fullSearchCounter.count++;
+        basicSearchCounter.count++;
         req.continue();
       },
-    ).as("fullSearch");
+    ).as("basicSearch");
+
+    cy.intercept(
+      {
+        pathname: "/api/clients/advanced-search",
+        query: {
+          page: "*",
+          size: "*",
+        },
+      },
+      (req) => {
+        advancedSearchCounter.count++;
+        req.continue();
+      },
+    ).as("advancedSearch");
+
+    cy.intercept("GET", "/api/clients/client-users?userId=*").as("getClientUsers");
 
     setupFeatureFlag(this);
 
@@ -112,6 +133,7 @@ describe("Search Page", () => {
 
   describe("when user fills in the search box with a valid value", () => {
     let predictiveSearchInterception: Interception;
+
     beforeEach(() => {
       cy.fillFormEntry("#search-box", "car", { skipBlur: true });
       cy.wait("@predictiveSearch").then((interception) => {
@@ -230,7 +252,7 @@ describe("Search Page", () => {
       let searchInterception: Interception;
       beforeEach(() => {
         cy.get("#search-button").click();
-        cy.wait("@fullSearch").then((interception) => {
+        cy.wait("@basicSearch").then((interception) => {
           searchInterception = interception;
         });
       });
@@ -240,12 +262,15 @@ describe("Search Page", () => {
         expect(query.page).to.eq("0");
 
         cy.wait(100); // Waits additional time to make sure there's no duplicate API calls.
-        cy.wrap(fullSearchCounter).its("count").should("eq", 1);
+        cy.wrap(basicSearchCounter).its("count").should("eq", 1);
       });
 
       it("displays the results on the table", () => {
-        const data = searchInterception.response.body;
-
+        let data = searchInterception.response.body;
+        
+        if (!Array.isArray(data)) {
+          data = data.items || data.results || data.data || [];
+        }
         cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
 
         cy.get("cds-table")
@@ -317,12 +342,116 @@ describe("Search Page", () => {
         cy.fillFormEntry("#search-box", "{enter}", { skipBlur: true });
       });
       it("makes the API call with the entered keywords", () => {
-        cy.wait("@fullSearch").then((interception) => {
+        cy.wait("@basicSearch").then((interception) => {
           const { query } = interception.request;
           expect(query.keyword).to.eq("car");
           expect(query.page).to.eq("0");
         });
-        cy.wrap(fullSearchCounter).its("count").should("eq", 1);
+        cy.wrap(basicSearchCounter).its("count").should("eq", 1);
+      });
+    });
+
+  });
+
+  describe("when user sets up an advanced search", () => {
+    beforeEach(() => {
+      cy.intercept('POST', '/api/clients/advanced-search*', (req) => {
+        advancedSearchCounter.count++;
+        req.reply({
+          statusCode: 200,
+          body: [
+            {
+              "clientNumber": "00200351",
+              "clientAcronym": "GEOTIRS",
+              "clientFullName": "",
+              "clientType": "Corporation",
+              "city": " ",
+              "clientStatus": "Active"
+            }
+          ],
+          headers: { 'x-total-count': '1' }
+        });
+      }).as('advancedSearch');
+
+      cy.get("#open-advanced-search-button").click();
+
+      cy.fillFormEntry("#clientName", "sample-clientName");
+      cy.fillFormEntry("#firstName", "sample-firstName");
+      cy.fillFormEntry("#middleName", "sample-middleName");
+      cy.selectAutocompleteEntry(
+        "#userId",
+        "jry",
+        "IDIR\\\\JRYAN",
+        "@getClientUsers",
+      );
+      cy.selectFormEntry("#clientIdType", "British Columbia Drivers Licence");
+      cy.selectFormEntry("#clientIdType", "British Columbia Identification");
+
+      cy.fillFormEntry("#clientIdentification", "sample-clientIdentification");
+
+      cy.selectFormEntry("#clientType", "Corporation");
+      cy.selectFormEntry("#clientType", "Association");
+
+      cy.selectFormEntry("#clientStatus", "Suspended");
+      cy.selectFormEntry("#clientStatus", "Deactivated");
+
+      cy.fillFormEntry("#contactName", "sample-contactName");
+      cy.fillFormEntry("#emailAddress", "sample-emailAddress");
+
+      cy.fillFormEntry("#updatedFromDateYear", "2025");
+      cy.fillFormEntry("#updatedFromDateMonth", "04");
+      cy.fillFormEntry("#updatedFromDateDay", "15");
+
+      cy.fillFormEntry("#updatedToDateYear", "2026");
+      cy.fillFormEntry("#updatedToDateMonth", "04");
+      cy.fillFormEntry("#updatedToDateDay", "15");
+    });
+
+    describe("and clicks the Search button", () => {
+      let searchInterception: Interception;
+      beforeEach(() => {
+        cy.get("#search-advanced-btn").click();
+        cy.wait("@advancedSearch").then((interception) => {
+          searchInterception = interception;
+        });
+      });
+
+      it("makes one API call with the entered filter values as CSV in the POST body", () => {
+        const { body, method } = searchInterception.request;
+        expect(method).to.eq("POST");
+        // filters in body
+        expect(body).to.include({
+          clientName: "sample-clientName",
+          firstName: "sample-firstName",
+          middleName: "sample-middleName",
+          userId: "IDIR\\JRYAN",
+          clientIdType: "BCDL,BCID",
+          clientIdentification: "sample-clientIdentification",
+          clientType: "A,C",
+          clientStatus: "DAC,SPN",
+          contactName: "sample-contactName",
+          emailAddress: "sample-emailAddress",
+          updatedFromDate: "2025-04-15",
+          updatedToDate: "2026-04-15",
+        });
+        cy.wait(100); // Waits additional time to make sure there's no duplicate API calls.
+        cy.wrap(advancedSearchCounter).its("count").should("eq", 1);
+      });
+
+      it("displays the results on the table", () => {
+        let data = searchInterception.response.body;
+        
+        if (!Array.isArray(data)) {
+          data = data.items || data.results || data.data || [];
+        }
+        cy.wrap(data).should("be.an", "array").and("have.length.greaterThan", 0);
+
+        cy.get("cds-table")
+          .find("cds-table-row")
+          .should("have.length", data.length)
+          .should("be.visible");
+
+        checkTableResults(data);
       });
     });
   });
@@ -346,7 +475,7 @@ describe("Search Page", () => {
       });
       it("makes no API call", () => {
         cy.wait(500); // This time has to be greater than the debouncing time
-        cy.wrap(fullSearchCounter).its("count").should("eq", 0);
+        cy.wrap(basicSearchCounter).its("count").should("eq", 0);
       });
     });
   });
@@ -364,7 +493,7 @@ describe("Search Page", () => {
         cy.contains("The search terms must contain at least 3 characters");
 
         cy.wait(500); // This time has to be greater than the debouncing time
-        cy.wrap(fullSearchCounter).its("count").should("eq", 0);
+        cy.wrap(basicSearchCounter).its("count").should("eq", 0);
       });
     });
   });
@@ -386,7 +515,7 @@ describe("Search Page", () => {
         cy.get("#search-button").click();
       });
       it("trims the entered string before making the API call", () => {
-        cy.wait("@fullSearch").then((interception) => {
+        cy.wait("@basicSearch").then((interception) => {
           const { query } = interception.request;
           expect(query.keyword).to.eq("hello world");
         });
@@ -399,7 +528,7 @@ describe("Search Page", () => {
       cy.get("#search-button").click();
     });
     it("makes an API call even without any keywords", () => {
-      cy.wait("@fullSearch").then((interception) => {
+      cy.wait("@basicSearch").then((interception) => {
         const { query } = interception.request;
         expect(query.keyword).to.eq("");
         expect(query.page).to.eq("0");
@@ -418,7 +547,7 @@ describe("Search Page", () => {
       });
 
       it("displays an error notification", () => {
-        cy.wait("@fullSearch");
+        cy.wait("@basicSearch");
 
         cy.get("cds-actionable-notification")
           .shadow()
@@ -428,7 +557,7 @@ describe("Search Page", () => {
 
       describe("and the API stops returning errors", () => {
         beforeEach(() => {
-          cy.wait("@fullSearch");
+          cy.wait("@basicSearch");
 
           // Replacing the "error" value actually triggers a successful response
           cy.fillFormEntry("#search-box", "okay");
@@ -439,7 +568,7 @@ describe("Search Page", () => {
           });
 
           it("hides the error notification", () => {
-            cy.wait("@fullSearch");
+            cy.wait("@basicSearch");
 
             cy.get("cds-actionable-notification").should("not.exist");
           });
@@ -459,14 +588,14 @@ describe("Search Page", () => {
       });
 
       it('displays a "No results" message that includes the submitted search value', () => {
-        cy.wait("@fullSearch");
+        cy.wait("@basicSearch");
 
         cy.contains("No results for “empty”");
       });
 
       describe("and the user types something else in the search box but does not re-submit the full search", () => {
         beforeEach(() => {
-          cy.wait("@fullSearch");
+          cy.wait("@basicSearch");
 
           cy.fillFormEntry("#search-box", "other");
         });
@@ -495,7 +624,7 @@ describe("Search Page", () => {
       });
 
       it('displays a "No exact match" message', () => {
-        cy.wait("@fullSearch");
+        cy.wait("@basicSearch");
 
         cy.get("#no-exact-match").should("be.visible");
       });
@@ -512,7 +641,7 @@ describe("Search Page", () => {
       });
 
       it('doesn\'t show the "No exact match" message', () => {
-        cy.wait("@fullSearch");
+        cy.wait("@basicSearch");
 
         cy.get("#no-exact-match").should("not.exist");
       });
@@ -525,7 +654,7 @@ describe("Search Page", () => {
       });
 
       it('shows the "No exact match" message', () => {
-        cy.wait("@fullSearch");
+        cy.wait("@basicSearch");
 
         cy.get("#no-exact-match").should("be.visible");
       });
@@ -556,7 +685,7 @@ describe("Search Page", () => {
         });
 
         it('doesn\'t display the "No exact match" message', () => {
-          cy.wait("@fullSearch");
+          cy.wait("@basicSearch");
     
           cy.get("#no-exact-match").should("not.exist");
         });

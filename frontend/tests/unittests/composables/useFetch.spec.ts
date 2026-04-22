@@ -56,7 +56,7 @@ describe('useFetch', () => {
       skip: true,
       url: '/api/data'
     })
-  })
+  });
 
   it('should make a POST request using Axios', async () => {
     axiosMock = vi
@@ -97,7 +97,7 @@ describe('useFetch', () => {
       method: 'POST',
       data: { name: 'test' }
     })
-  })
+  });
 
   it("should make a GET request using Axios and get an error", async () => {
     axiosMock = vi
@@ -373,6 +373,7 @@ describe('useFetch', () => {
       url: "/api/data",
     });
 
+    // Application arbitrarily aborts the request
     fetchReturn.controller.abort();
 
     await vi.waitUntil(() => testError);
@@ -421,6 +422,62 @@ describe('useFetch', () => {
         method: "PATCH",
         data: { name: "test" },
       });
+    });
+  });
+
+  describe("when config is a ref", () => {
+    it('should use the current config value in the request', async () => {
+      axiosMock = vi
+        .spyOn(axios, 'request')
+        .mockImplementation(() => Promise.resolve({ data: 'Mock data' }));
+
+      const responseData = ref('');
+
+      const config = ref({
+        skip: true,
+        params: {
+          sample: 'old-value'
+        },
+      });
+
+      let fetchWrapper: ReturnType<typeof useFetch>;
+
+      const TestComponent = {
+        template: '<div></div>',
+        setup: () => {
+          fetchWrapper = useFetch('/api/data', config);
+          const { data } = fetchWrapper;
+          watch(data, (value) => (responseData.value = value));
+        },
+      };
+
+      watch(responseData, (value) => {
+        expect(value).toEqual('Mock data')
+      });
+
+      const wrapper = mount(TestComponent);
+
+      await wrapper.vm.$nextTick();
+
+      const { fetch } = fetchWrapper;
+
+      // Change the config
+      config.value = {
+        skip: true,
+        params: {
+          sample: "new-value"
+        },
+      };
+
+      fetch();
+
+      expect(axiosMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: {
+            sample: "new-value",
+          },
+        }),
+      );
     });
   });
 });
