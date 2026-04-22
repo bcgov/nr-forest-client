@@ -8,19 +8,39 @@ FROM ghcr.io/graalvm/native-image:22.3.3 AS build
 # Policy: do NOT commit the PEM. Approaches supported:
 #  1. Provide the PEM via build arg SECTIGO_R46_PEM (recommended; store content in GitHub/OpenShift secret).
 #  2. Fallback: attempt network fetch from crt.sh (public CT log) if build arg not supplied.
-# If neither succeeds, build continues (native image created) but import step will fail -> non-zero exit to surface issue.
 ARG SECTIGO_R46_PEM=""
+
 RUN set -e; \
   CERT_FILE=/tmp/sectigo-r46-root.pem; \
   if [ -n "$SECTIGO_R46_PEM" ]; then \
-  printf '%b' "$SECTIGO_R46_PEM" > "$CERT_FILE"; \
+    printf '%b' "$SECTIGO_R46_PEM" > "$CERT_FILE"; \
   else \
-  echo "No build arg provided; attempting remote fetch of Sectigo R46 root"; \
-  curl -fsSL 'https://crt.sh/?d=4256644734' -o "$CERT_FILE" || { echo "Remote fetch failed; please supply SECTIGO_R46_PEM."; exit 1; }; \
+    echo "No build arg provided; attempting remote fetch of Sectigo R46 root with retries"; \
+    curl --retry 5 \
+         --retry-delay 5 \
+         --retry-connrefused \
+         --retry-all-errors \
+         -fsSL 'https://crt.sh/?d=4256644734' \
+         -o "$CERT_FILE" \
+      || { \
+        echo "Remote fetch failed after retries; please supply SECTIGO_R46_PEM."; \
+        exit 1; \
+      }; \
   fi; \
-  keytool -importcert -trustcacerts -noprompt -alias sectigo-r46-root -file "$CERT_FILE" \
-  -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit; \
-  keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit | grep -i sectigo || { echo "ERROR: Imported but grep did not match (verify manually)"; exit 1; }; \
+  \
+  keytool -importcert \
+    -trustcacerts \
+    -noprompt \
+    -alias sectigo-r46-root \
+    -file "$CERT_FILE" \
+    -keystore "$JAVA_HOME/lib/security/cacerts" \
+    -storepass changeit; \
+  \
+  keytool -list \
+    -keystore "$JAVA_HOME/lib/security/cacerts" \
+    -storepass changeit \
+    -alias sectigo-r46-root; \
+  \
   rm -f "$CERT_FILE"
 
 # Copy
