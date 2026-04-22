@@ -47,8 +47,6 @@ management:
       enabled: true
   endpoints:
     web:
-      path-mapping:
-        prometheus: metrics
       base-path: /actuator
       exposure:
         include: health,prometheus
