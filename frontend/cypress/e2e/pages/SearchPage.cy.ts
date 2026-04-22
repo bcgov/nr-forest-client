@@ -355,19 +355,22 @@ describe("Search Page", () => {
 
   describe("when user sets up an advanced search", () => {
     beforeEach(() => {
-      cy.intercept('POST', '/api/clients/advanced-search*', {
-        statusCode: 200,
-        body: [
-          {
-            "clientNumber": "00200351",
-            "clientAcronym": "GEOTIRS",
-            "clientFullName": "",
-            "clientType": "Corporation",
-            "city": " ",
-            "clientStatus": "Active"
-          }
-        ],
-        headers: { 'x-total-count': '1' }
+      cy.intercept('POST', '/api/clients/advanced-search*', (req) => {
+        advancedSearchCounter.count++;
+        req.reply({
+          statusCode: 200,
+          body: [
+            {
+              "clientNumber": "00200351",
+              "clientAcronym": "GEOTIRS",
+              "clientFullName": "",
+              "clientType": "Corporation",
+              "city": " ",
+              "clientStatus": "Active"
+            }
+          ],
+          headers: { 'x-total-count': '1' }
+        });
       }).as('advancedSearch');
 
       cy.get("#open-advanced-search-button").click();
