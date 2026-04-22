@@ -12,35 +12,50 @@ ARG SECTIGO_R46_PEM=""
 
 RUN set -e; \
   CERT_FILE=/tmp/sectigo-r46-root.pem; \
+  echo "--- Starting Sectigo CA Import ---"; \
   if [ -n "$SECTIGO_R46_PEM" ]; then \
+    echo "Using provided SECTIGO_R46_PEM build argument."; \
     printf '%b' "$SECTIGO_R46_PEM" > "$CERT_FILE"; \
   else \
-    echo "No build arg provided; attempting remote fetch of Sectigo R46 root with retries"; \
-    curl --retry 5 \
+    echo "Attempting remote fetch of Sectigo R46 root..."; \
+    curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
+         --retry 5 \
          --retry-delay 5 \
          --retry-connrefused \
          -fsSL 'https://crt.sh/?d=4256644734' \
          -o "$CERT_FILE" \
-      || { \
-        echo "Remote fetch failed after retries; please supply SECTIGO_R46_PEM."; \
-        exit 1; \
-      }; \
+      || { echo "ERROR: Curl failed to connect to crt.sh."; exit 1; }; \
+    \
+    echo "Verifying downloaded file format..."; \
+    grep -q "BEGIN CERTIFICATE" "$CERT_FILE" || { \
+      echo "ERROR: Downloaded file is not a valid PEM. crt.sh likely returned an HTML error page. File content:"; \
+      cat "$CERT_FILE"; \
+      exit 1; \
+    }; \
   fi; \
   \
-  keytool -importcert \
-    -trustcacerts \
-    -noprompt \
-    -alias sectigo-r46-root \
-    -file "$CERT_FILE" \
-    -keystore "$JAVA_HOME/lib/security/cacerts" \
-    -storepass changeit; \
+  echo "Checking if alias already exists in trust store..."; \
+  if keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit -alias sectigo-r46-root >/dev/null 2>&1; then \
+    echo "Alias sectigo-r46-root already exists, skipping import."; \
+  else \
+    echo "Importing certificate..."; \
+    keytool -importcert \
+      -trustcacerts \
+      -noprompt \
+      -alias sectigo-r46-root \
+      -file "$CERT_FILE" \
+      -keystore "$JAVA_HOME/lib/security/cacerts" \
+      -storepass changeit; \
+  fi; \
   \
+  echo "Verifying successful installation..."; \
   keytool -list \
     -keystore "$JAVA_HOME/lib/security/cacerts" \
     -storepass changeit \
-    -alias sectigo-r46-root; \
+    -alias sectigo-r46-root >/dev/null; \
   \
-  rm -f "$CERT_FILE"
+  rm -f "$CERT_FILE"; \
+  echo "--- Sectigo CA Import Successful ---"
 
 # Copy
 WORKDIR /app
