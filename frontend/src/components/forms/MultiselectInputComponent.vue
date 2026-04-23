@@ -34,9 +34,9 @@ const emit = defineEmits<{
 //We initialize the error message handling for validation
 const error = ref<string | undefined>(props.errorMessage ?? "");
 
-const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
-
 const warning = ref(false);
+
+const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue);
@@ -47,11 +47,30 @@ const inputList = computed<Array<CodeNameType>>(() =>
     : props.modelValue
 );
 
-//We set the value prop as a reference for update reason
-emit("empty", props.selectedValues ? props.selectedValues.length === 0 : true);
-
 //Controls the selected values
 const items = ref<string[]>([]);
+
+watch(
+  () => props.selectedValues,
+  (newVal) => {
+    const newItems: string[] = [];
+
+    if (newVal && newVal.length > 0) {
+      newVal.forEach((val) => {
+        const match = props.modelValue.find(
+          (entry) => entry.name === val
+        );
+        if (match) newItems.push(match.name);
+      });
+    }
+
+    items.value = newItems;
+    selectedValue.value = newItems.join(",");
+
+    emit("empty", newItems.length === 0);
+  },
+  { immediate: true }
+);
 
 /**
  * Sets the error and emits an error event.
@@ -98,30 +117,47 @@ const emitChange = () => {
   const reference = props.modelValue.filter((entry) =>
     items.value.includes(entry.name)
   );
-  emit("update:modelValue", items.value);
+  emit("update:modelValue", [...items.value]);
   emit("update:selectedValue", reference);
   emit("empty", reference.length === 0);
 };
 
 const addFromSelection = (itemCode: string) => {
   const reference = props.modelValue.find((entry) => entry.name === itemCode);
-  if (reference) {
+  if (reference && !items.value.includes(reference.name)) {
     items.value.push(reference.name);
     selectedValue.value = items.value.join(",");
   }
 };
 
 const selectItems = (event: any) => {
-  // Why this undefined data check is here you might ask? Well, it's because I can't emit the event with value on target
-  const contentValue =
-    event?.data !== undefined ? event?.data : event.target.value;
-  selectedValue.value = contentValue;
-  items.value = contentValue.split(",").filter((value: string) => value);
+  let contentValue = event?.data !== undefined ? event?.data : event.target.value;
+  if (Array.isArray(contentValue)) {
+    items.value = contentValue;
+    selectedValue.value = contentValue.join(",");
+  } else {
+    selectedValue.value = contentValue;
+    items.value = contentValue.split(",").filter((value: string) => value);
+  }
 };
 
-props.selectedValues?.forEach((value: string) => addFromSelection(value));
+let skipEmitChange = false;
 
-watch([items], () => emitChange());
+watch(() => props.selectedValues, () => {
+  items.value = [];
+  selectedValue.value = props.initialValue;
+  if (props.selectedValues && props.selectedValues.length > 0) {
+    props.selectedValues.forEach((value: string) => addFromSelection(value));
+  }
+  skipEmitChange = true;
+});
+
+watch([items], () => {
+  if (!skipEmitChange) {
+    emitChange();
+  }
+  skipEmitChange = false;
+});
 
 watch(
   () => props.modelValue,

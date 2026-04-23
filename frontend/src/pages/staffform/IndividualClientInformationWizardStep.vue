@@ -366,6 +366,7 @@ watch(combinedValue, (newValue) => {
     <div class="horizontal-input-grouping">
       <combo-box-input-component
         id="identificationType"
+        class="grouping-03--width-20_75rem"
         label="ID type"
         :initial-value="formData.businessInformation.identificationType?.text"
         required
@@ -384,6 +385,7 @@ watch(combinedValue, (newValue) => {
       <combo-box-input-component
         v-if="shouldDisplayProvince"
         id="identificationProvince"
+        class="grouping-03--width-9_875rem"
         :label="identificationProvinceLabel"
         required
         required-label
@@ -402,6 +404,7 @@ watch(combinedValue, (newValue) => {
       <text-input-component
         v-if="!isOtherIdentificationType"
         id="clientIdentification"
+        class="grouping-02--width-9_875rem"
         label="ID number"
         placeholder=""
         autocomplete="off"
@@ -421,6 +424,7 @@ watch(combinedValue, (newValue) => {
       <text-input-component
         v-if="isOtherIdentificationType"
         id="clientTypeOfId"
+        class="grouping-02--width-9_875rem"
         label="Type of ID"
         placeholder=""
         autocomplete="off"
@@ -438,6 +442,7 @@ watch(combinedValue, (newValue) => {
       <text-input-component
         v-if="isOtherIdentificationType"
         id="clientIdNumber"
+        class="grouping-02--width-9_875rem"
         label="ID number"
         placeholder=""
         autocomplete="off"

@@ -2,5 +2,5 @@
 # unless a later match takes precedence, and will be requested for
 # review when someone opens a pull request.
 *       @paulushcgcj @mamartinezmejia
-/frontend                 @fterra-encora
-/cypress                  @fterra-encora
+/frontend                 @mamartinezmejia
+/cypress                  @mamartinezmejia
