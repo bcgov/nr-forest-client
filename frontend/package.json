@@ -74,7 +74,7 @@
     "vue-the-mask": "^0.11.1"
   },
   "devDependencies": {
-    "@cypress/code-coverage": "^4.0.1",
+    "@cypress/code-coverage": "^4.0.3",
     "@eslint/js": "^9.39.4",
     "@types/jsdom": "^28.0.0",
     "@types/node": "^24.0.3",
@@ -119,6 +119,7 @@
   },
   "overrides": {
     "dompurify": "^3.4.0",
+    "uuid@^8.3.2": "^14.0.0",
     "picomatch@^4.0.0": "^4.0.4",
     "flatted": "^3.4.2",
     "yaml": "^2.8.3",
