@@ -1570,6 +1570,24 @@ cds-modal {
   cds-modal-body {
     padding-block-end: 0;
   }
+
+  cds-modal-heading {
+    position: relative; 
+  }
+
+  #clear-filters-id {
+    position: absolute; 
+    top: 45%; 
+    right: 0; 
+    transform: translateY(-50%); 
+    margin: 0; 
+    color: var(--light-theme-link-link-primary, #005CB8);
+    font-family: BC Sans;
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 0.01rem;
+  }
 }
 
 .paginator {

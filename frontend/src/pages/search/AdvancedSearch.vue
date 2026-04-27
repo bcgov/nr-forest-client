@@ -10,7 +10,7 @@ const emit = defineEmits<{
 
 const modelActive = defineModel<boolean>("active", { required: true });
 
-const modelFilters = defineModel<ClientSearchParameters>("filters", { required: true });
+const modalFilters = defineModel<ClientSearchParameters>("filters", { required: true });
 
 const modelTypedUserId = defineModel<string>("typedUserId");
 
@@ -70,12 +70,12 @@ const validations = reactive<{ [key in keyof ClientSearchParameters]: ((value: s
   updatedToDate: [],
 });
 
-watch([() => modelFilters.value.updatedFromDate, () => modelFilters.value.updatedToDate], ([newFrom, newTo], [oldFrom, oldTo]) => {
+watch([() => modalFilters.value.updatedFromDate, () => modalFilters.value.updatedToDate], ([newFrom, newTo], [oldFrom, oldTo]) => {
   if (newTo !== oldTo) {
     const isDateValid = isValid(new Date(newTo));
     validations.updatedFromDate = isDateValid ? [
       optional(isDateBefore(
-        modelFilters.value.updatedToDate,
+        modalFilters.value.updatedToDate,
         "The “update from date” must be before the “update to date” (or empty)",
       )),
     ] : [];
@@ -84,7 +84,7 @@ watch([() => modelFilters.value.updatedFromDate, () => modelFilters.value.update
     const isDateValid = isValid(new Date(newFrom));
     validations.updatedToDate = isDateValid ? [
       optional(isDateAfter(
-        modelFilters.value.updatedFromDate,
+        modalFilters.value.updatedFromDate,
         "The “update to date” must be after the “update from date” (or empty)",
       )),
     ] : [];
@@ -99,7 +99,7 @@ const clientUsersUrl = computed(
 const stringToCodeName = (value: string): CodeNameType => ({code: value, name: value});
 
 const selectCode = (key: string) => (value: CodeNameType | undefined) => {
-  modelFilters.value[key] = value ? value.code : undefined;
+  modalFilters.value[key] = value ? value.code : undefined;
   if (value) {
     validationState[key] = true;
   }
@@ -120,6 +120,10 @@ const search = () => {
   emit("search");
   modelActive.value = false;
 };
+
+const clearFilters = () => {
+  modalFilters.value = {};
+};
 </script>
 <template>
   <cds-modal
@@ -133,7 +137,10 @@ const search = () => {
     <cds-modal-header>
       <cds-modal-close-button></cds-modal-close-button>
       <cds-modal-heading id="advanced-modal-heading">
-        Advanced search
+        <span>Advanced search</span>
+        <a id="clear-filters-id" href="#" @click.prevent="clearFilters()">
+            Clear filters
+        </a>
       </cds-modal-heading>
     </cds-modal-header>
     <cds-modal-body id="advanced-modal-body">
@@ -145,7 +152,7 @@ const search = () => {
             placeholder=""
             tip=""
             autocomplete="off"
-            v-model="modelFilters.clientName"
+            v-model="modalFilters.clientName"
             :validations="validations.clientName"
             @empty="validationState.clientName = true"
             @error="validationState.clientName = !$event"
@@ -156,7 +163,7 @@ const search = () => {
             placeholder=""
             tip=""
             autocomplete="off"
-            v-model="modelFilters.firstName"
+            v-model="modalFilters.firstName"
             :validations="validations.firstName"
             @empty="validationState.firstName = true"
             @error="validationState.firstName = !$event"
@@ -169,7 +176,7 @@ const search = () => {
             placeholder=""
             tip=""
             autocomplete="off"
-            v-model="modelFilters.middleName"
+            v-model="modalFilters.middleName"
             :validations="validations.middleName"
             @empty="validationState.middleName = true"
             @error="validationState.middleName = !$event"
@@ -213,9 +220,9 @@ const search = () => {
               tip=""
               initial-value=""
               :model-value="content"
-              :selectedValues="modelFilters.clientIdType?.map(getNameFrom(content))"
+              :selectedValues="modalFilters.clientIdType?.map(getNameFrom(content))"
               :validations="[]"
-              @update:selected-value="modelFilters.clientIdType = codeNamesToCodes($event)"
+              @update:selected-value="modalFilters.clientIdType = codeNamesToCodes($event)"
             />
           </data-fetcher>
           <text-input-component
@@ -224,7 +231,7 @@ const search = () => {
             placeholder=""
             tip=""
             autocomplete="off"
-            v-model="modelFilters.clientIdentification"
+            v-model="modalFilters.clientIdentification"
             :validations="validations.clientIdentification"
             @empty="validationState.clientIdentification = true"
             @error="validationState.clientIdentification = !$event"
@@ -246,9 +253,9 @@ const search = () => {
               tip=""
               initial-value=""
               :model-value="content"
-              :selectedValues="modelFilters.clientType?.map(getNameFrom(content))"
+              :selectedValues="modalFilters.clientType?.map(getNameFrom(content))"
               :validations="[]"
-              @update:selected-value="modelFilters.clientType = codeNamesToCodes($event)"
+              @update:selected-value="modalFilters.clientType = codeNamesToCodes($event)"
             />
           </data-fetcher>
           <data-fetcher
@@ -266,9 +273,9 @@ const search = () => {
               tip=""
               initial-value=""
               :model-value="content"
-              :selectedValues="modelFilters.clientStatus?.map(getNameFrom(content))"
+              :selectedValues="modalFilters.clientStatus?.map(getNameFrom(content))"
               :validations="[]"
-              @update:selected-value="modelFilters.clientStatus = codeNamesToCodes($event)"
+              @update:selected-value="modalFilters.clientStatus = codeNamesToCodes($event)"
             />
           </data-fetcher>
         </div>
@@ -279,7 +286,7 @@ const search = () => {
             placeholder=""
             tip=""
             autocomplete="off"
-            v-model="modelFilters.contactName"
+            v-model="modalFilters.contactName"
             :validations="validations.contactName"
             @empty="validationState.contactName = true"
             @error="validationState.contactName = !$event"
@@ -290,7 +297,7 @@ const search = () => {
             placeholder=""
             tip=""
             autocomplete="off"
-            v-model="modelFilters.emailAddress"
+            v-model="modalFilters.emailAddress"
             :validations="validations.emailAddress"
             @empty="validationState.emailAddress = true"
             @error="validationState.emailAddress = !$event"
@@ -305,7 +312,7 @@ const search = () => {
               id="updatedFromDate"
               title="Update from date"
               :autocomplete="['off', 'off', 'off']"
-              v-model="modelFilters.updatedFromDate"
+              v-model="modalFilters.updatedFromDate"
               :enabled="true"
               :validations="validations.updatedFromDate"
               @error="validationState.updatedFromDate = !$event"
@@ -320,7 +327,7 @@ const search = () => {
               id="updatedToDate"
               title="Update to date"
               :autocomplete="['off', 'off', 'off']"
-              v-model="modelFilters.updatedToDate"
+              v-model="modalFilters.updatedToDate"
               :enabled="true"
               :validations="validations.updatedToDate"
               @error="validationState.updatedToDate = !$event"
