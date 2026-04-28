@@ -216,7 +216,7 @@ const clearFilters = () => {
             <multiselect-input-component
               v-if="content?.length"
               id="clientIdType"
-              label="ID type"
+              label="ID type/Registration number"
               tip=""
               initial-value=""
               :model-value="content"
