@@ -1326,7 +1326,10 @@ public final class ForestClientQueries {
                       ',' || UPPER(C.CLIENT_ID_TYPE_CODE) || ',') > 0)
         AND (:clientIdentification IS NULL
              OR UPPER(C.CLIENT_IDENTIFICATION)
-                LIKE '%' || UPPER(:clientIdentification) || '%')
+                LIKE '%' || UPPER(:clientIdentification) || '%'
+             OR UPPER(C.REGISTRY_COMPANY_TYPE_CODE || C.CORP_REGN_NMBR)
+                LIKE '%' || UPPER(:clientIdentification) || '%'
+             )
         AND (:emailAddress IS NULL
              OR UPPER(CL.EMAIL_ADDRESS) LIKE '%' || UPPER(:emailAddress) || '%'
              OR EXISTS (
