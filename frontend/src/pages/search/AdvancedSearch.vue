@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue';
+import { computed, reactive, watch, ref } from 'vue';
 import type { ClientSearchParameters, CodeNameType } from '@/dto/CommonTypesDto';
 import { hasOnlyNamingCharacters, isAscii, isDateAfter, isDateBefore, isMaxSizeMsg, optional } from '@/helpers/validators/GlobalValidators';
 import { isValid } from 'date-fns/isValid';
+
+const modalKey = ref(0);
 
 const emit = defineEmits<{
   (e: "search"): void;
@@ -122,11 +124,32 @@ const search = () => {
 };
 
 const clearFilters = () => {
-  modalFilters.value = {};
+  modalFilters.value = {
+    clientName: undefined,
+    firstName: undefined,
+    middleName: undefined,
+    userId: undefined,
+    clientIdentification: undefined,
+    contactName: undefined,
+    emailAddress: undefined,
+    updatedFromDate: undefined,
+    updatedToDate: undefined,
+  };
+
+  (Object.keys(validationState) as (keyof ClientSearchParameters)[])
+    .forEach((key) => {
+      validationState[key] = true;
+  });
+
+  validations.updatedFromDate = [];
+  validations.updatedToDate = [];
+
+  modalKey.value++;
 };
 </script>
 <template>
   <cds-modal
+    :key="modalKey"
     id="advanced-modal"
     aria-labelledby="advanced-modal-heading"
     aria-describedby="advanced-modal-body"
