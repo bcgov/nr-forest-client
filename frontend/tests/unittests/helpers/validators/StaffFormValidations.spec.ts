@@ -244,9 +244,9 @@ describe("validations", () => {
         ["1234ABC!", false, "contains special character"],
         ["1234ABCa", false, "contains lower-case letter"],
         ["1234 ABC", false, "contains space"],
-        ["1234567", false, "less than 8 digits"],
-        ["1234ABCD", true],
-        ["1234ABCD9", false, "more than 8 digits"],
+        ["1234567", false, "less than 9 digits"],
+        ["1234ABCD9", true],
+        ["1234ABCD90", false, "more than 9 digits"],
       ]).forEach((scenario) => {
         test(data, key, setter, scenario);
       });
