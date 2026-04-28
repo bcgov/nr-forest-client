@@ -161,8 +161,8 @@ describe("<individual-client-information-wizard-step />", () => {
       });
       const valueNumeric13 = "1234567890123";
       const valueAlphanumeric13 = "1234567890ABC";
-      const valueNumeric9 = "123456789";
-      const valueAlphanumeric9 = "123456ABC";
+      const valueNumeric8 = "12345678";
+      const valueAlphanumeric8 = "12345ABC";
 
       const isValid = () => {
         cy.get("#clientIdentification").shadow().find("[name='invalid-text']").should("not.exist");
@@ -219,7 +219,7 @@ describe("<individual-client-information-wizard-step />", () => {
             .should("be.visible")
             .click();
         });
-        it("displays error message if the value has more than 8 digits", () => {
+        it("displays error message if the value has more than 9 digits", () => {
           cy.get("#clientIdentification").shadow().find("input").type(valueNumeric13);
 
           cy.get("#clientIdentification").shadow().find("input").blur();
@@ -228,7 +228,7 @@ describe("<individual-client-information-wizard-step />", () => {
           isInvalid();
         });
         it("allows numbers and letters", () => {
-          cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric9);
+          cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric8);
 
           cy.get("#clientIdentification").shadow().find("input").blur();
           cy.wait(1);
@@ -259,7 +259,7 @@ describe("<individual-client-information-wizard-step />", () => {
             isInvalid();
           });
           it("displays error message if the value contains letters", () => {
-            cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric9);
+            cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric8);
 
             cy.get("#clientIdentification").shadow().find("input").blur();
             cy.wait(1);
@@ -267,7 +267,7 @@ describe("<individual-client-information-wizard-step />", () => {
             isInvalid();
           });
           it("allows 8-digit numeric value", () => {
-            cy.get("#clientIdentification").shadow().find("input").type(valueNumeric9);
+            cy.get("#clientIdentification").shadow().find("input").type(valueNumeric8);
 
             cy.get("#clientIdentification").shadow().find("input").blur();
             cy.wait(1);
@@ -297,7 +297,7 @@ describe("<individual-client-information-wizard-step />", () => {
             isValid();
           });
           it("allows numbers and letters", () => {
-            cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric9);
+            cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric8);
 
             cy.get("#clientIdentification").shadow().find("input").blur();
             cy.wait(1);
@@ -475,7 +475,7 @@ describe("<individual-client-information-wizard-step />", () => {
           describe("and the ID number is properly filled in", () => {
             beforeEach(() => {
               cy.clearFormEntry("#clientIdentification");
-              cy.get("#clientIdentification").shadow().find("input").type("12345678");
+              cy.get("#clientIdentification").shadow().find("input").type("123456789");
 
               cy.get("#clientIdentification").shadow().find("input").blur();
               cy.wait(1);
