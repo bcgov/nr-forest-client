@@ -130,7 +130,7 @@ class BusinessInformationIdentificationDocumentValidatorTest {
             Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"!A1","clientIdentification","The passport must be 9 characters and contain only letters and numbers"),
             Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"12345678901234","clientIdentification","The passport must be 9 characters and contain only letters and numbers"),
             Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"potato","clientIdentification","The passport must be 9 characters and contain only letters and numbers"),
-            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"XX123456",StringUtils.EMPTY,StringUtils.EMPTY),
+            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"XX1234567",StringUtils.EMPTY,StringUtils.EMPTY),
 
             Arguments.of("CITZ",StringUtils.EMPTY,StringUtils.EMPTY,"A1","clientIdentification","The Canadian Citizenship must be a 8-digit number"),
             Arguments.of("CITZ",StringUtils.EMPTY,StringUtils.EMPTY,"12345678901234","clientIdentification","The Canadian Citizenship must be a 8-digit number"),
