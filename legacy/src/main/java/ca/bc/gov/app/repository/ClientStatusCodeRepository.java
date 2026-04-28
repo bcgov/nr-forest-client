@@ -9,40 +9,33 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 /**
- * Repository interface for managing client status codes.
+ * Reactive repository for managing {@link ClientStatusCodeEntity} entities.
  * <p>
- * This repository provides reactive CRUD operations for {@link ClientStatusCodeEntity} 
- * and includes a custom query method to retrieve active client status codes.
- * </p>
- * <p>
- * The repository uses {@link ReactiveCrudRepository}, making it suitable for 
- * non-blocking, reactive database interactions.
+ * Provides CRUD operations and a custom query to retrieve active client status codes using
+ * non-blocking, reactive database access.
  * </p>
  */
 @Repository
 public interface ClientStatusCodeRepository
-    extends ReactiveCrudRepository<ClientStatusCodeEntity, String> {
+  extends ReactiveCrudRepository<ClientStatusCodeEntity, String> {
 
   /**
-   * Retrieves active client status codes based on the given active date.
+   * Finds all active client status codes for the specified date.
    * <p>
-   * A client status code is considered active if:
-   * <ul>
-   *   <li>Its expiry date is either null or greater than the provided {@code activeDate}.</li>
-   *   <li>Its effective date is less than or equal to the provided {@code activeDate}.</li>
-   * </ul>
+   * A status code is active if its expiry date is null or after {@code activeDate}, and its
+   * effective date is on or before {@code activeDate}.
    * </p>
    *
-   * @param activeDate The date used to filter active client status codes.
-   * @return A {@link Flux} containing {@link CodeNameDto} objects representing 
-   *         active client status codes.
+   * @param activeDate the date to check for active status codes
+   * @return a {@link Flux} of {@link CodeNameDto} representing active client status codes
    */
   @Query("""
-      SELECT CLIENT_STATUS_CODE, DESCRIPTION AS NAME
-      FROM THE.CLIENT_STATUS_CODE
-      WHERE (EXPIRY_DATE IS NULL OR EXPIRY_DATE > :activeDate)
-      AND EFFECTIVE_DATE <= :activeDate
-      """)
+    SELECT CLIENT_STATUS_CODE, DESCRIPTION AS NAME
+    FROM THE.CLIENT_STATUS_CODE
+    WHERE (EXPIRY_DATE IS NULL OR EXPIRY_DATE > :activeDate)
+    AND EFFECTIVE_DATE <= :activeDate
+    ORDER BY DESCRIPTION
+    """)
   Flux<CodeNameDto> findActiveClientStatusCodes(LocalDate activeDate);
-  
+
 }
