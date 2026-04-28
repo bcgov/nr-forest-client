@@ -19,7 +19,6 @@ package ca.bc.gov.app.dto;
  */
 public record CodeNameDto(
     String code,
-
     String name
 ) {
 
