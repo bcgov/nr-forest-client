@@ -61,11 +61,11 @@ public class BusinessInformationBirthdayValidator implements
       );
     }
 
-    LocalDate minAgeDate = LocalDate.now().minusYears(19);
+    LocalDate minAgeDate = LocalDate.now().minusYears(12);
     if (target.birthdate().isAfter(minAgeDate)) {
       return Mono.just(
           new ValidationError(BIRTHDATE,
-              "Sole proprietorship must be at least 19 years old")
+              "Sole proprietorship must be at least 12 years old")
       );
     }
     return Mono.empty();

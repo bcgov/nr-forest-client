@@ -15,6 +15,7 @@ import {
   isGreaterThan,
   hasOnlyNamingCharacters,
   isAscii,
+  MINIMUM_BUSINESS_APPLICANT_AGE,
 } from "@/helpers/validators/GlobalValidators";
 
 const isMaxSizeMsg = (fieldName: string, maxSize: number) =>
@@ -30,7 +31,10 @@ formFieldValidations["businessInformation.businessName"] = [
 formFieldValidations["businessInformation.birthdate"] = [
   isNotEmpty("You must enter a date of birth"),
   isDateInThePast("Date of birth must be in the past"),
-  isMinimumYearsAgo(19, "You must be at least 19 years old to apply"),
+  isMinimumYearsAgo(
+    MINIMUM_BUSINESS_APPLICANT_AGE,
+    `You must be at least ${MINIMUM_BUSINESS_APPLICANT_AGE} years old to apply`
+  ),
 ];
 
 formFieldValidations["businessInformation.birthdate.year"] = [
