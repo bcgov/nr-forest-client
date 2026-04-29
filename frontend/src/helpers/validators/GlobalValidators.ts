@@ -19,6 +19,9 @@ const nameRegex: RegExp = /^[a-zA-Z0-9\s'-]*$/;
 const ascii: RegExp = /^[\x20-\x7e]*$/;
 const asciiLineBreak: RegExp = /^[\n\x20-\x7e]*$/;
 
+// Centralized minimum age for business applicants
+export const MINIMUM_BUSINESS_APPLICANT_AGE = 12;
+
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
 );

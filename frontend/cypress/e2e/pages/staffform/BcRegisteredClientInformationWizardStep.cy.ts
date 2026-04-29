@@ -293,7 +293,7 @@ describe("BC Registered Staff Wizard Step", () => {
       cy.get("#birthdateMonth").should("exist").and("have.value", "");
       cy.get("#birthdateDay").should("exist").and("have.value", "");
 
-      cy.fillFormEntry("#birthdateYear", "2021");
+      cy.fillFormEntry("#birthdateYear", "2014");
       cy.fillFormEntry("#birthdateMonth", "12");
       cy.fillFormEntry("#birthdateDay", "12");
 
@@ -302,7 +302,7 @@ describe("BC Registered Staff Wizard Step", () => {
         .and("have.class", "field-error")
         .and(
           "include.text",
-          "The applicant must be at least 19 years old to apply"
+          "The applicant must be at least 12 years old to apply"
         );
 
       cy.wait(15);
