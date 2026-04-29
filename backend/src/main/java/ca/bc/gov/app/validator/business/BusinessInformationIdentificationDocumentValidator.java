@@ -91,9 +91,9 @@ public class BusinessInformationIdentificationDocumentValidator implements
   }
 
   private Mono<ValidationError> validatePassport(String fieldName, String value) {
-    if (!StringUtils.isAlphanumeric(value) || (StringUtils.length(value) != 8)) {
+    if (!StringUtils.isAlphanumeric(value) || (StringUtils.length(value) != 9)) {
       return Mono.just(new ValidationError(fieldName,
-          "The passport must be 8 characters and contain only letters and numbers"));
+          "The passport must be 9 characters and contain only letters and numbers"));
     }
     return Mono.empty();
   }

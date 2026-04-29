@@ -35,4 +35,5 @@ public interface ClientUpdateReasonRepository extends
         AND ROWNUM = 1"""
   )
   Mono<ClientUpdateReasonEntity> findUndefinedByNumberWithFilteredActions(String number);
+  
 }

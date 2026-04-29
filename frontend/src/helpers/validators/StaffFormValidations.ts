@@ -134,7 +134,7 @@ export const clientIdentificationMaskParams = (() => {
       onlyNumbers: true,
     },
     PASS: {
-      maxSize: 8,
+      maxSize: 9,
     },
     CITZ: {
       maxSize: 8,
