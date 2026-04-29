@@ -163,6 +163,7 @@ describe("<individual-client-information-wizard-step />", () => {
       const valueAlphanumeric13 = "1234567890ABC";
       const valueNumeric8 = "12345678";
       const valueAlphanumeric8 = "12345ABC";
+      const valueAlphanumeric9 = "123456ABC";
 
       const isValid = () => {
         cy.get("#clientIdentification").shadow().find("[name='invalid-text']").should("not.exist");
@@ -228,7 +229,7 @@ describe("<individual-client-information-wizard-step />", () => {
           isInvalid();
         });
         it("allows numbers and letters", () => {
-          cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric8);
+          cy.get("#clientIdentification").shadow().find("input").type(valueAlphanumeric9);
 
           cy.get("#clientIdentification").shadow().find("input").blur();
           cy.wait(1);
