@@ -253,7 +253,7 @@ describe("Staff Form Submission", () => {
     fillIndividual({
       identificationTypeValue: "Canadian passport",
       identificationProvinceValue: undefined,
-      clientIdentification: "AB345678",
+      clientIdentification: "AB3456789",
     });
     clickNext();
     cy.contains("h2", "Locations");
