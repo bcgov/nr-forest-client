@@ -13,4 +13,5 @@ public interface LocationUpdateReasonRepository extends
 
   @Query(ForestClientQueries.LOCATION_TO_REACTIVATE)
   Flux<CodeNameDto> findAllLocationUpdatedWithClient(String clientNumber, String clientStatus);
+  
 }

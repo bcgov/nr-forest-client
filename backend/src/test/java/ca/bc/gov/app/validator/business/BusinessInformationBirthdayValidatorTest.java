@@ -114,7 +114,7 @@ class BusinessInformationBirthdayValidatorTest {
     return
         Stream.of(
             Arguments.of(null, fieldIsMissingErrorMessage("Birthdate"), ApplicationConstant.ROLE_EDITOR),
-            Arguments.of(LocalDate.now(), "Sole proprietorship must be at least 19 years old", ApplicationConstant.ROLE_EDITOR),
+            Arguments.of(LocalDate.now(), "Sole proprietorship must be at least 12 years old", ApplicationConstant.ROLE_EDITOR),
             Arguments.of(LocalDate.now().minusYears(22), StringUtils.EMPTY, ApplicationConstant.ROLE_EDITOR),
             Arguments.of(null, StringUtils.EMPTY, ApplicationConstant.ROLE_ADMIN)
         );
