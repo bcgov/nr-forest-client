@@ -12,6 +12,7 @@ import ca.bc.gov.app.repository.SubmissionRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,17 @@ public class ClientSubmissionAutoProcessingService {
             .doOnNext(id -> log.info("Request {} was approved", id))
             .flatMap(this::loadFirstOrNew)
             .doOnNext(entity -> entity.setStatus("Y"))
-            .doOnNext(entity -> entity.setMatchers(Map.of()))
+            // Preserve existing MATCHING_INFO when approving; clear other matcher entries
+            .doOnNext(entity -> {
+              Map<String, Object> existing = entity.getMatchers() == null
+                  ? new HashMap<>()
+                  : new HashMap<>(entity.getMatchers());
+              Map<String, Object> keep = new HashMap<>();
+              if (existing.containsKey(ApplicationConstant.MATCHING_INFO)) {
+                keep.put(ApplicationConstant.MATCHING_INFO, existing.get(ApplicationConstant.MATCHING_INFO));
+              }
+              entity.setMatchers(keep);
+            })
             .flatMap(submissionMatchDetailRepository::save)
             .thenReturn(new MessagingWrapper<>(submissionId, Map.of()));
   }
@@ -143,13 +154,25 @@ public class ClientSubmissionAutoProcessingService {
       SubmissionMatchDetailEntity entity,
       MessagingWrapper<List<MatcherResult>> message
   ) {
-    entity.setMatchers(
-        message
-            .payload()
-            .stream()
-            .filter(MatcherResult::hasMatch)
-            .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value))
-    );
+    // Preserve existing matcher info coming from the backend (ApplicationConstant.MATCHING_INFO key)
+    Map<String, Object> existing = entity.getMatchers() == null
+        ? new HashMap<>()
+        : new HashMap<>(entity.getMatchers());
+
+    Map<String, Object> incoming = message
+        .payload()
+        .stream()
+        .filter(MatcherResult::hasMatch)
+        .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value));
+
+    // Merge incoming into existing but do NOT overwrite the MATCHING_INFO key
+    incoming.forEach((k, v) -> {
+      if (!ApplicationConstant.MATCHING_INFO.equals(k)) {
+        existing.put(k, v);
+      }
+    });
+
+    entity.setMatchers(existing);
   }
 
   private MessagingWrapper<Integer> createMessagingWrapper(SubmissionMatchDetailEntity entity,

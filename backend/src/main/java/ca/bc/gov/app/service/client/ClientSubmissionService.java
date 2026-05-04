@@ -427,10 +427,11 @@ public class ClientSubmissionService {
       SubmissionTypeCodeEnum submissionType
   ) {
 
-    log.info("Saving submission from user {} with email {} and name {} with type {}",
+    log.info("Saving submission from user {} with email {} and name {} with type {} and business name {}",
         JwtPrincipalUtil.getUserId(principal),
         JwtPrincipalUtil.getEmail(principal),
         JwtPrincipalUtil.getName(principal),
+        JwtPrincipalUtil.getBusinessName(principal),
         submissionType
     );
 
