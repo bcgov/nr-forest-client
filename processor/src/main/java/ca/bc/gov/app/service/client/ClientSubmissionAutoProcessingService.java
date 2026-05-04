@@ -10,9 +10,9 @@ import ca.bc.gov.app.entity.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.repository.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,31 +33,37 @@ public class ClientSubmissionAutoProcessingService {
   private final SubmissionMatchDetailRepository submissionMatchDetailRepository;
 
   /**
-   * This method is responsible for marking the submission as approved and sending to the nexty
+   * This method is responsible for marking the submission as approved and sending it to the next
    * step.
    */
-  public Mono<MessagingWrapper<Integer>> approved(MessagingWrapper<List<MatcherResult>> message) {
+  public Mono<MessagingWrapper<Integer>> approved(
+      MessagingWrapper<List<MatcherResult>> message) {
+
     int submissionId =
-        (int) message.parameters()
-            .get(ApplicationConstant.SUBMISSION_ID);
-    return
-        persistData(submissionId, SubmissionTypeCodeEnum.AAC)
-            .doOnNext(id -> log.info("Request {} was approved", id))
-            .flatMap(this::loadFirstOrNew)
-            .doOnNext(entity -> entity.setStatus("Y"))
-            // Preserve existing MATCHING_INFO when approving; clear other matcher entries
-            .doOnNext(entity -> {
-              Map<String, Object> existing = entity.getMatchers() == null
+        (int) message.parameters().get(ApplicationConstant.SUBMISSION_ID);
+
+    return persistData(submissionId, SubmissionTypeCodeEnum.AAC)
+        .doOnNext(id -> log.info("Request {} was approved", id))
+        .flatMap(this::loadFirstOrNew)
+        .doOnNext(entity -> entity.setStatus("Y"))
+        // Preserve existing MATCHING_INFO when approving; clear other matcher entries
+        .doOnNext(entity -> {
+          Map<String, Object> existing =
+              entity.getMatchers() == null
                   ? new HashMap<>()
                   : new HashMap<>(entity.getMatchers());
-              Map<String, Object> keep = new HashMap<>();
-              if (existing.containsKey(ApplicationConstant.MATCHING_INFO)) {
-                keep.put(ApplicationConstant.MATCHING_INFO, existing.get(ApplicationConstant.MATCHING_INFO));
-              }
-              entity.setMatchers(keep);
-            })
-            .flatMap(submissionMatchDetailRepository::save)
-            .thenReturn(new MessagingWrapper<>(submissionId, Map.of()));
+
+          Map<String, Object> keep = new HashMap<>();
+          if (existing.containsKey(ApplicationConstant.MATCHING_INFO)) {
+            keep.put(
+                ApplicationConstant.MATCHING_INFO,
+                existing.get(ApplicationConstant.MATCHING_INFO)
+            );
+          }
+          entity.setMatchers(keep);
+        })
+        .flatMap(submissionMatchDetailRepository::save)
+        .thenReturn(new MessagingWrapper<>(submissionId, Map.of()));
   }
 
   /**
@@ -152,20 +158,23 @@ public class ClientSubmissionAutoProcessingService {
 
   private void updateEntityMatchers(
       SubmissionMatchDetailEntity entity,
-      MessagingWrapper<List<MatcherResult>> message
-  ) {
-    // Preserve existing matcher info coming from the backend (ApplicationConstant.MATCHING_INFO key)
-    Map<String, Object> existing = entity.getMatchers() == null
-        ? new HashMap<>()
-        : new HashMap<>(entity.getMatchers());
+      MessagingWrapper<List<MatcherResult>> message) {
 
-    Map<String, Object> incoming = message
-        .payload()
-        .stream()
-        .filter(MatcherResult::hasMatch)
-        .collect(Collectors.toMap(MatcherResult::fieldName, MatcherResult::value));
+    Map<String, Object> existing =
+        entity.getMatchers() == null
+            ? new HashMap<>()
+            : new HashMap<>(entity.getMatchers());
 
-    // Merge incoming into existing but do NOT overwrite the MATCHING_INFO key
+    Map<String, Object> incoming =
+        message.payload()
+            .stream()
+            .filter(MatcherResult::hasMatch)
+            .collect(Collectors.toMap(
+                MatcherResult::fieldName,
+                MatcherResult::value
+            ));
+
+    // Merge incoming into existing but do NOT overwrite MATCHING_INFO
     incoming.forEach((k, v) -> {
       if (!ApplicationConstant.MATCHING_INFO.equals(k)) {
         existing.put(k, v);
