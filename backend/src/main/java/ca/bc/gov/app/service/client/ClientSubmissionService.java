@@ -431,8 +431,8 @@ public class ClientSubmissionService {
         JwtPrincipalUtil.getUserId(principal),
         JwtPrincipalUtil.getEmail(principal),
         JwtPrincipalUtil.getName(principal),
-        JwtPrincipalUtil.getBusinessName(principal),
-        submissionType
+        submissionType,
+        JwtPrincipalUtil.getBusinessName(principal)
     );
 
     return
