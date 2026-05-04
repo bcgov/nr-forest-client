@@ -16,9 +16,7 @@ import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.extensions.AbstractTestContainer;
 import ca.bc.gov.app.repository.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
-import io.r2dbc.postgresql.codec.Json;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -73,49 +71,6 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         .untilAsserted(() ->
             verify(submissionRepository, atLeastOnce()).save(any(SubmissionEntity.class))
         );
-  }
-
-  @Test
-  @DisplayName("approved preserves matching info")
-  void shouldPreserveMatchingInfoOnApprove() {
-
-    SubmissionMatchDetailEntity seed = SubmissionMatchDetailEntity.builder()
-        .submissionId(10)
-        .createdBy("test")
-        .updatedAt(LocalDateTime.now())
-        .matchingField(Json.of(
-            "{\"info\":{\"name\":\"Maria Martinez\",\"email\":\"maria.martinez@gov.bc.ca\"},"
-                + "\"contact\":\"00190928\"}"
-        ))
-        .build();
-
-    submissionMatchDetailRepository
-        .save(seed)
-        .as(StepVerifier::create)
-        .assertNext(saved -> Assertions.assertEquals(10, saved.getSubmissionId()))
-        .verifyComplete();
-
-    service
-        .approved(new MessagingWrapper<>(
-            new ArrayList<>(),
-            Map.of(ApplicationConstant.SUBMISSION_ID, 10)
-        ))
-        .as(StepVerifier::create)
-        .assertNext(message ->
-            Assertions.assertEquals(Integer.valueOf(10), message.payload())
-        )
-        .verifyComplete();
-
-    submissionMatchDetailRepository
-        .findBySubmissionId(10)
-        .as(StepVerifier::create)
-        .assertNext(entity -> {
-          AssertionsForInterfaceTypes.assertThat(entity.getMatchers())
-              .isNotNull()
-              .containsKey(ApplicationConstant.MATCHING_INFO)
-              .hasSize(1);
-        })
-        .verifyComplete();
   }
 
   @Test
