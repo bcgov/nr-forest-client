@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
-
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.MessagingWrapper;
@@ -16,7 +15,9 @@ import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.extensions.AbstractTestContainer;
 import ca.bc.gov.app.repository.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
+import io.r2dbc.postgresql.codec.Json;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,61 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         .untilAsserted(() ->
             verify(submissionRepository, atLeastOnce()).save(any(SubmissionEntity.class))
         );
+  }
+
+  @Test
+  @DisplayName("approved preserves matching info")
+  void shouldPreserveMatchingInfoOnApprove() {
+
+    // Use an existing seeded submission (id=368 has a matching_detail row with {"info":{}})
+    final int submissionId = 368;
+
+    SubmissionMatchDetailEntity seed = SubmissionMatchDetailEntity.builder()
+        .submissionId(submissionId)
+        .createdBy("test")
+        .updatedAt(LocalDateTime.now())
+        .matchingField(Json.of(
+            "{\"info\":{\"name\":\"John Doe\",\"email\":\"john.doe@gov.bc.ca\"},"
+                + "\"contact\":\"00190928\"}"
+        ))
+        .build();
+
+    // Upsert: if a matching detail already exists for the submission, update it; otherwise insert.
+    submissionMatchDetailRepository
+        .findBySubmissionId(submissionId)
+        .flatMap(existing -> {
+          SubmissionMatchDetailEntity updated = existing
+              .withMatchingField(seed.getMatchingField())
+              .withUpdatedAt(LocalDateTime.now())
+              .withCreatedBy(existing.getCreatedBy() == null ? "test" : existing.getCreatedBy());
+          return submissionMatchDetailRepository.save(updated);
+        })
+        .switchIfEmpty(submissionMatchDetailRepository.save(seed))
+        .as(StepVerifier::create)
+        .assertNext(saved -> Assertions.assertEquals(submissionId, saved.getSubmissionId()))
+        .verifyComplete();
+
+    service
+        .approved(new MessagingWrapper<>(
+            new ArrayList<>(),
+            Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+        ))
+        .as(StepVerifier::create)
+        .assertNext(message ->
+            Assertions.assertEquals(Integer.valueOf(submissionId), message.payload())
+        )
+        .verifyComplete();
+
+    submissionMatchDetailRepository
+        .findBySubmissionId(submissionId)
+        .as(StepVerifier::create)
+        .assertNext(entity -> {
+          AssertionsForInterfaceTypes.assertThat(entity.getMatchers())
+              .isNotNull()
+              .containsKey(ApplicationConstant.MATCHING_INFO)
+              .hasSize(1);
+        })
+        .verifyComplete();
   }
 
   @Test
