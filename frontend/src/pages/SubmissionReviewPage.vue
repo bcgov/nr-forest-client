@@ -354,6 +354,9 @@ const renderDuplicatedClientLabel = (duplicatedClientNumbers: []) => {
 };
 
 watch(data, () => {
+  if (data.value?.matchers && 'info' in data.value.matchers) {
+    delete data.value.matchers.info;
+  }
   const submission = data.value;
   const registrationNumber = submission?.business?.registrationNumber;
   const userId = submission.contact?.[0]?.userId
