@@ -1,25 +1,11 @@
 [
   {
     "business": {
-      "alternateNames": [
-        {
-          "entityType": "BC",
-          "identifier": "BC1234567",
-          "name": "ACME LOGGING LTD",
-          "registeredDate": null,
-          "startDate": null
-        }
-      ],
-      "goodStanding": null,
-      "hasCorrections": false,
-      "hasCourtOrders": false,
-      "hasRestrictions": false,
       "identifier": "FM0467837",
       "legalName": "ACME LOGGING LTD",
       "legalType": "BC",
       "state": "ACTIVE",
-      "registrationDateTime": null,
-      "resolvedLegalName": "ACME LOGGING LTD"
+      "registrationDateTime": null
     },
     "offices": {
       "businessOffice": {
@@ -29,10 +15,7 @@
           "addressRegion": null,
           "deliveryInstructions": null,
           "postalCode": null,
-          "streetAddress": null,
-          "streetAddressAdditional": null,
-          "addressType": null,
-          "valid": false
+          "streetAddress": null
         },
         "deliveryAddress": {
           "addressCity": null,
@@ -40,14 +23,9 @@
           "addressRegion": null,
           "deliveryInstructions": null,
           "postalCode": null,
-          "streetAddress": null,
-          "streetAddressAdditional": null,
-          "addressType": null,
-          "valid": false
-        },
-        "valid": true
-      },
-      "valid": true
+          "streetAddress": null
+        }
+      }
     },
     "parties": [
       {
@@ -60,20 +38,14 @@
           "middleInitial": null,
           "id": "",
           "organizationName": "",
-          "partyType": "person",
-          "person": true
+          "partyType": "person"
         },
         "roles": [
           {
-            "appointmentDate": null,
-            "cessationDate": null,
             "roleType": "Proprietor"
           }
-        ],
-        "valid": false,
-        "person": true
+        ]
       }
-    ],
-    "ownedByPerson": true
+    ]
   }
 ]
