@@ -1429,7 +1429,7 @@ const registrationNumber = computed(
 
       <div id="panel-bc-registry" role="tabpanel" aria-labelledby="tab-bc-registry" hidden>
         <bc-registry-view
-          v-if="isBcRegistryPanelVisible"
+          v-if="isBcRegistryPanelVisible && registrationNumber"
           :registration-number="registrationNumber"
         />
       </div>

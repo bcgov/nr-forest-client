@@ -23,7 +23,8 @@ const { loading, error } = useFetchTo(
 
 const bcRegistryInfo = computed<BcRegistryInformation | null>(() => {
   if (!data.value) return null;
-  return Array.isArray(data.value) && data.value.length ? data.value[0] : data.value as BcRegistryInformation;
+  if (Array.isArray(data.value)) return data.value[0] ?? null;
+  return data.value;
 });
 
 const hasParties = computed(
