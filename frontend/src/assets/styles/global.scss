@@ -2019,8 +2019,9 @@ cds-table-header-cell {
   --amount-actions-column: 1;
 
   --total: calc(
-    2 * var(--col-280-px)
+    3 * var(--col-280-px)
     + var(--col-500-px)
+    + var(--col-padding-10-px)
   );
 
   /*
