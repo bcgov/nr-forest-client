@@ -32,7 +32,8 @@ const hasParties = computed(
 
 // --- Helpers ---
 const officerName = (party: BcRegistryParty): string => {
-  const officer = party.officer ?? {};
+  const officer = party.officer;
+  if (!officer) return '—';
   const org = officer.organizationName?.trim();
   if (org) return org;
   return [officer.firstName, officer.middleInitial, officer.lastName]
@@ -42,7 +43,8 @@ const officerName = (party: BcRegistryParty): string => {
 };
 
 const partyAddress = (party: BcRegistryParty): string => {
-  const addr = party.mailingAddress ?? {};
+  const addr = party.mailingAddress;
+  if (!addr) return '—';
   const street = addr.streetAddress?.trim() ?? '';
   const line2 = [addr.addressCity, addr.addressRegion, addr.postalCode]
     .filter((p): p is string => !!p && p.trim().length > 0)
