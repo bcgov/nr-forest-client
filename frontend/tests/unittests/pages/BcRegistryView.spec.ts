@@ -61,8 +61,8 @@ const sampleDataWithParties: BcRegistryInformation[] = [
     ...sampleBcRegistryData[0],
     parties: [
       {
-        id: "P001",
         officer: {
+          id: "P001",
           firstName: "Jane",
           middleInitial: "A",
           lastName: "Smith",
@@ -76,8 +76,8 @@ const sampleDataWithParties: BcRegistryInformation[] = [
         roles: [{ roleType: "Partner" }],
       },
       {
-        id: "P002",
         officer: {
+          id: "P002",
           organizationName: "Partner Co Ltd",
         },
         mailingAddress: {
