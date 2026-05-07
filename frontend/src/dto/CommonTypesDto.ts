@@ -353,6 +353,53 @@ export const createClientContact = (contactId: number, clientNumber: string): Cl
   return contact;
 };
 
+interface BcRegistryAddress {
+  streetAddress?: string;
+  addressCity?: string;
+  addressRegion?: string;
+  postalCode?: string;
+  addressCountry?: string;
+}
+
+interface BcRegistryOfficer {
+  organizationName?: string;
+  firstName?: string;
+  middleInitial?: string;
+  lastName?: string;
+}
+
+interface BcRegistryRole {
+  roleType?: string;
+}
+
+interface BcRegistryParty {
+  id?: string;
+  officer?: BcRegistryOfficer;
+  mailingAddress?: BcRegistryAddress;
+  roles?: BcRegistryRole[];
+}
+
+interface BcRegistryBusinessOffice {
+  mailingAddress?: BcRegistryAddress;
+  deliveryAddress?: BcRegistryAddress;
+}
+
+export interface BcRegistryDto {
+  business?: {
+    legalName?: string;
+    resolvedLegalName?: string;
+    state?: string;
+    legalType?: string;
+    identifier?: string;
+    registrationDateTime?: string;
+  };
+  offices?: {
+    businessOffice?: BcRegistryBusinessOffice;
+  };
+  parties?: BcRegistryParty[];
+  ownedByPerson?: boolean;
+}
+
 export interface FieldReason {
   field: string;
   reason: string;

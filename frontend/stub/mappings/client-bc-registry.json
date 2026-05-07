@@ -5,7 +5,7 @@
       "priority": 1,
       "request": {
         "method": "GET",
-        "urlPattern": "/api/clients/bc-registry/[^/]+"
+        "urlPattern": "/api/clients/[^/]+/bc-registry-information"
       },
       "response": {
         "status": 200,
@@ -21,7 +21,7 @@
       "priority": 1,
       "request": {
         "method": "GET",
-        "urlPattern": "/api/clients/bc-registry/empty"
+        "urlPattern": "/api/clients/empty/bc-registry-information"
       },
       "response": {
         "status": 404,

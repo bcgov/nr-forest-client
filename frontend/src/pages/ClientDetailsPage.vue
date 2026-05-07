@@ -920,9 +920,9 @@ onMounted(async () => {
           isRelatedClientsPanelVisible.value = !relatedPanel.hasAttribute('hidden');
         }
 
-        const bcPanel = document.getElementById('panel-bc');
-        if (bcPanel) {
-          isBcRegistryPanelVisible.value = !bcPanel.hasAttribute('hidden');
+        const bcRegistryPanel = document.getElementById('panel-bc-registry');
+        if (bcRegistryPanel) {
+          isBcRegistryPanelVisible.value = !bcRegistryPanel.hasAttribute('hidden');
         }
       }, 0);
     });
@@ -992,6 +992,12 @@ provide("goToTab", goToTab);
 const createOnToggle = (state: CollapsibleState) => (event: any) => {
   state.open = event.detail.open;
 };
+
+const registrationNumber = computed(
+  () =>
+    `${data.value?.client?.registryCompanyTypeCode ?? ""}${data.value?.client?.corpRegnNmbr ?? ""}`.trim() ||
+    null,
+);
 </script>
 
 <template>
@@ -1106,7 +1112,8 @@ const createOnToggle = (state: CollapsibleState) => (event: any) => {
             <RecentlyViewed16 />
           </div>
         </cds-tab>
-        <cds-tab id="tab-bc" target="panel-bc" value="bc">
+        <cds-tab id="tab-bc-registry" target="panel-bc-registry" value="bc-registry" 
+          v-show="registrationNumber !== null && data?.client?.clientTypeCode !== 'B'">
           <div>
             BC Registry
             <DocumentSigned16 />
@@ -1421,10 +1428,10 @@ const createOnToggle = (state: CollapsibleState) => (event: any) => {
         </div>
       </div>
 
-      <div id="panel-bc" role="tabpanel" aria-labelledby="tab-bc" hidden>
+      <div id="panel-bc-registry" role="tabpanel" aria-labelledby="tab-bc-registry" v-if="registrationNumber !== null">
         <bc-registry-view
           v-if="isBcRegistryPanelVisible"
-          :client-number="clientNumber"
+          :registration-number="registrationNumber"
         />
       </div>
     </div>
