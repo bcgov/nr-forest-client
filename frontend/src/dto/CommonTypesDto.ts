@@ -354,22 +354,23 @@ export const createClientContact = (contactId: number, clientNumber: string): Cl
 };
 
 interface BcRegistryAddress {
-  streetAddress?: string;
-  addressCity?: string;
-  addressRegion?: string;
-  postalCode?: string;
-  addressCountry?: string;
+  streetAddress?: string | null;
+  addressCity?: string | null;
+  addressRegion?: string | null;
+  postalCode?: string | null;
+  addressCountry?: string | null;
 }
 
 interface BcRegistryOfficer {
-  organizationName?: string;
-  firstName?: string;
-  middleInitial?: string;
-  lastName?: string;
+  id?: string | null;
+  organizationName?: string | null;
+  firstName?: string | null;
+  middleInitial?: string | null;
+  lastName?: string | null;
 }
 
 interface BcRegistryRole {
-  roleType?: string;
+  roleType?: string | null;
 }
 
 export interface BcRegistryParty {
@@ -386,12 +387,12 @@ interface BcRegistryBusinessOffice {
 
 export interface BcRegistryInformation {
   business?: {
-    legalName?: string;
-    resolvedLegalName?: string;
-    state?: string;
-    legalType?: string;
-    identifier?: string;
-    registrationDateTime?: string;
+    legalName?: string | null;
+    resolvedLegalName?: string | null;
+    state?: string | null;
+    legalType?: string | null;
+    identifier?: string | null;
+    registrationDateTime?: string | null;
   };
   offices?: {
     businessOffice?: BcRegistryBusinessOffice;

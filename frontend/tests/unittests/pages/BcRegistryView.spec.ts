@@ -156,13 +156,14 @@ describe("BcRegistryView.vue", () => {
       expect(wrapper.text()).toContain("BC Registry information not available.");
     });
 
-    it("renders populated state with fallbacks when data is an empty array", () => {
+    it("shows not available message when data is an empty array", () => {
       (useFetchTo as any).mockImplementation(mockFetchTo([]));
 
       const wrapper = createComponent();
 
-      // Empty array is truthy so component treats it as valid data and shows populated state
-      expect(wrapper.find("#bc-business-information").exists()).toBe(true);
+      // Component treats empty array as no data and shows not available message
+      expect(wrapper.text()).toContain("BC Registry information not available.");
+      expect(wrapper.find("#bc-business-information").exists()).toBe(false);
     });
   });
 
