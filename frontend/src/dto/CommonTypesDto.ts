@@ -374,7 +374,6 @@ interface BcRegistryRole {
 }
 
 export interface BcRegistryParty {
-  id?: string;
   officer?: BcRegistryOfficer;
   mailingAddress?: BcRegistryAddress;
   roles?: BcRegistryRole[];

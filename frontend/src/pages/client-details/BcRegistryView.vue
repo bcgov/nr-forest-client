@@ -170,12 +170,12 @@ const partyAddress = (party: BcRegistryParty): string => {
               <cds-table-body>
                 <cds-table-row
                   v-for="(party, idx) in bcRegistryInfo.parties"
-                  :key="party.id ?? idx"
+                  :key="party.officer?.id ?? idx"
                 >
                   <cds-table-cell class="no-padding" />
                   <cds-table-cell>{{ officerName(party) }}</cds-table-cell>
                   <cds-table-cell>{{ partyAddress(party) }}</cds-table-cell>
-                  <cds-table-cell>{{ party.id || '—' }}</cds-table-cell>
+                  <cds-table-cell>{{ party.officer?.id || '—' }}</cds-table-cell>
                   <cds-table-cell>{{ party.roles?.[0]?.roleType || '—' }}</cds-table-cell>
                 </cds-table-row>
               </cds-table-body>
