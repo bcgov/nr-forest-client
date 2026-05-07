@@ -372,7 +372,7 @@ interface BcRegistryRole {
   roleType?: string;
 }
 
-interface BcRegistryParty {
+export interface BcRegistryParty {
   id?: string;
   officer?: BcRegistryOfficer;
   mailingAddress?: BcRegistryAddress;
@@ -384,7 +384,7 @@ interface BcRegistryBusinessOffice {
   deliveryAddress?: BcRegistryAddress;
 }
 
-export interface BcRegistryDto {
+export interface BcRegistryInformation {
   business?: {
     legalName?: string;
     resolvedLegalName?: string;

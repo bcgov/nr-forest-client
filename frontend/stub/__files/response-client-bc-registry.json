@@ -1,21 +1,79 @@
-{
-  "tableName": "ClientInformation",
-  "idx": "1255059",
-  "identifierLabel": "Client summary updated",
-  "updateTimestamp": "2025-05-20T13:44:43",
-  "updateUserid": "IDIR\\MARIAMAR",
-  "changeType": "UPD",
-  "details": [
-    {
-      "columnName": "clientStatusDesc",
-      "oldValue": "Deactivated",
-      "newValue": "Active"
-    }
-  ],
-  "reasons": [
-    {
-      "actionCode": "RACT",
-      "reason": "Obligation Satisfied"
-    }
-  ]
-}
+[
+  {
+    "business": {
+      "alternateNames": [
+        {
+          "entityType": "BC",
+          "identifier": "BC1234567",
+          "name": "ACME LOGGING LTD",
+          "registeredDate": null,
+          "startDate": null
+        }
+      ],
+      "goodStanding": null,
+      "hasCorrections": false,
+      "hasCourtOrders": false,
+      "hasRestrictions": false,
+      "identifier": "FM0467837",
+      "legalName": "ACME LOGGING LTD",
+      "legalType": "BC",
+      "state": "ACTIVE",
+      "registrationDateTime": null,
+      "resolvedLegalName": "ACME LOGGING LTD"
+    },
+    "offices": {
+      "businessOffice": {
+        "mailingAddress": {
+          "addressCity": null,
+          "addressCountry": null,
+          "addressRegion": null,
+          "deliveryInstructions": null,
+          "postalCode": null,
+          "streetAddress": null,
+          "streetAddressAdditional": null,
+          "addressType": null,
+          "valid": false
+        },
+        "deliveryAddress": {
+          "addressCity": null,
+          "addressCountry": null,
+          "addressRegion": null,
+          "deliveryInstructions": null,
+          "postalCode": null,
+          "streetAddress": null,
+          "streetAddressAdditional": null,
+          "addressType": null,
+          "valid": false
+        },
+        "valid": true
+      },
+      "valid": true
+    },
+    "parties": [
+      {
+        "deliveryAddress": null,
+        "mailingAddress": null,
+        "officer": {
+          "email": null,
+          "firstName": "CASSIO",
+          "lastName": "THIEVES",
+          "middleInitial": null,
+          "id": "",
+          "organizationName": "",
+          "partyType": "person",
+          "person": true
+        },
+        "roles": [
+          {
+            "appointmentDate": null,
+            "cessationDate": null,
+            "roleType": "Proprietor"
+          }
+        ],
+        "valid": false,
+        "person": true
+      }
+    ],
+    "ownedByPerson": true
+  }
+]

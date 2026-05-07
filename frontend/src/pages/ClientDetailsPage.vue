@@ -25,12 +25,11 @@ import Location16 from "@carbon/icons-vue/es/location/16";
 import User16 from "@carbon/icons-vue/es/user/16";
 import NetworkEnterprise16 from "@carbon/icons-vue/es/network--enterprise/16";
 import RecentlyViewed16 from "@carbon/icons-vue/es/recently-viewed/16";
-import DocumentSigned16 from "@carbon/icons-vue/es/document--signed/16"
+import DocumentSigned16 from "@carbon/icons-vue/es/document--signed/16";
 import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
 import Location20 from "@carbon/icons-vue/es/location/20";
 import User20 from "@carbon/icons-vue/es/user/20";
 import NetworkEnterprise20 from "@carbon/icons-vue/es/network--enterprise/20";
-import Launch16 from "@carbon/icons-vue/es/launch/16";
 import Add16 from "@carbon/icons-vue/es/add/16";
 import Save16 from "@carbon/icons-vue/es/save/16";
 
@@ -1428,7 +1427,7 @@ const registrationNumber = computed(
         </div>
       </div>
 
-      <div id="panel-bc-registry" role="tabpanel" aria-labelledby="tab-bc-registry" v-if="registrationNumber !== null">
+      <div id="panel-bc-registry" role="tabpanel" aria-labelledby="tab-bc-registry" hidden>
         <bc-registry-view
           v-if="isBcRegistryPanelVisible"
           :registration-number="registrationNumber"

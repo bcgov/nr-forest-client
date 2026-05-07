@@ -8,22 +8,22 @@ import {
   formatDate,
 } from "@/services/ForestClientService";
 import { retrieveLegalTypeDesc } from "@/helpers/DataConverters";
-import type { BcRegistryDto } from '@/dto/CommonTypesDto';
+import type { BcRegistryInformation, BcRegistryParty } from '@/dto/CommonTypesDto';
 
 const props = defineProps<{
   registrationNumber: string;
 }>();
 
 // --- Data fetching ---
-const data = ref<BcRegistryDto[] | null>(null);
+const data = ref<BcRegistryInformation[] | null>(null);
 const { loading, error } = useFetchTo(
   `/api/clients/${props.registrationNumber}/bc-registry-information`,
   data
 );
 
-const bcRegistryInfo = computed<BcRegistryDto | null>(() => {
+const bcRegistryInfo = computed<BcRegistryInformation | null>(() => {
   if (!data.value) return null;
-  return Array.isArray(data.value) && data.value.length ? data.value[0] : data.value as BcRegistryDto;
+  return Array.isArray(data.value) && data.value.length ? data.value[0] : data.value as BcRegistryInformation;
 });
 
 const hasParties = computed(
@@ -31,7 +31,7 @@ const hasParties = computed(
 );
 
 // --- Helpers ---
-const officerName = (party: Party): string => {
+const officerName = (party: BcRegistryParty): string => {
   const officer = party.officer ?? {};
   const org = officer.organizationName?.trim();
   if (org) return org;
@@ -41,7 +41,7 @@ const officerName = (party: Party): string => {
     .join(' ') || '—';
 };
 
-const partyAddress = (party: Party): string => {
+const partyAddress = (party: BcRegistryParty): string => {
   const addr = party.mailingAddress ?? {};
   const street = addr.streetAddress?.trim() ?? '';
   const line2 = [addr.addressCity, addr.addressRegion, addr.postalCode]
