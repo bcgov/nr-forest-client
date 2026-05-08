@@ -18,7 +18,8 @@ const props = defineProps<{
 const data = ref<BcRegistryInformation[] | null>(null);
 const { loading, error } = useFetchTo(
   `/api/clients/${props.registrationNumber}/bc-registry-information`,
-  data
+  data,
+  { skipDefaultErrorHandling: true }
 );
 
 const bcRegistryInfo = computed<BcRegistryInformation | null>(() => {
