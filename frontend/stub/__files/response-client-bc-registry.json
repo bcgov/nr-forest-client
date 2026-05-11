@@ -1,0 +1,51 @@
+[
+  {
+    "business": {
+      "identifier": "FM0467837",
+      "legalName": "ACME LOGGING LTD",
+      "legalType": "BC",
+      "state": "ACTIVE",
+      "registrationDateTime": null
+    },
+    "offices": {
+      "businessOffice": {
+        "mailingAddress": {
+          "addressCity": null,
+          "addressCountry": null,
+          "addressRegion": null,
+          "deliveryInstructions": null,
+          "postalCode": null,
+          "streetAddress": null
+        },
+        "deliveryAddress": {
+          "addressCity": null,
+          "addressCountry": null,
+          "addressRegion": null,
+          "deliveryInstructions": null,
+          "postalCode": null,
+          "streetAddress": null
+        }
+      }
+    },
+    "parties": [
+      {
+        "deliveryAddress": null,
+        "mailingAddress": null,
+        "officer": {
+          "email": null,
+          "firstName": "CASSIO",
+          "lastName": "THIEVES",
+          "middleInitial": null,
+          "id": "",
+          "organizationName": "",
+          "partyType": "person"
+        },
+        "roles": [
+          {
+            "roleType": "Proprietor"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "mappings": [
+    {
+      "name": "Client BC Registry",
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPattern": "/api/clients/[^/]+/bc-registry-information"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyFileName": "response-client-bc-registry.json",
+        "fixedDelayMilliseconds": 2000
+      }
+    },
+    {
+      "name": "Client BC Registry - empty",
+      "priority": 0,
+      "request": {
+        "method": "GET",
+        "urlPath": "/api/clients/empty/bc-registry-information"
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "fixedDelayMilliseconds": 2000
+      }
+    }
+  ]
+}
