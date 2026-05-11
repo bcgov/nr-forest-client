@@ -321,6 +321,26 @@ describe("BcRegistryView.vue", () => {
       expect(wrapper.find("#businessNameId").text()).toContain("Resolved Corp");
     });
 
+    it("shows '(Unknown)' for missing legal type", () => {
+      (useFetchTo as any).mockImplementation(
+        mockFetchTo([{ business: {} }]),
+      );
+
+      const wrapper = createComponent();
+
+      expect(wrapper.find("#businessTypeId").text()).toContain("(Unknown)");
+    });
+
+    it("shows '(Unknown)' for an unrecognised legal type code", () => {
+      (useFetchTo as any).mockImplementation(
+        mockFetchTo([{ business: { legalType: "ZZZ" } }]),
+      );
+
+      const wrapper = createComponent();
+
+      expect(wrapper.find("#businessTypeId").text()).toContain("ZZZ (Unknown)");
+    });
+
     it("shows '—' for missing registration number", () => {
       (useFetchTo as any).mockImplementation(
         mockFetchTo([{ business: {} }]),

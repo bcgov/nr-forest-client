@@ -14,7 +14,6 @@ const props = defineProps<{
   registrationNumber: string;
 }>();
 
-// --- Data fetching ---
 const data = ref<BcRegistryInformation[] | null>(null);
 const { loading, error } = useFetchTo(
   `/api/clients/${props.registrationNumber}/bc-registry-information`,
@@ -32,7 +31,6 @@ const hasParties = computed(
   () => (bcRegistryInfo.value?.parties?.length ?? 0) > 0
 );
 
-// --- Helpers ---
 const officerName = (party: BcRegistryParty): string => {
   const officer = party.officer;
   if (!officer) return '—';
@@ -56,7 +54,6 @@ const partyAddress = (party: BcRegistryParty): string => {
 </script>
 
 <template>
-  <!-- Loading state -->
   <div class="tab-panel tab-panel--empty" v-if="loading">
     <div class="skeleton-group">
       <cds-skeleton-text v-shadow="1" class="heading-03-skeleton" />
@@ -64,8 +61,7 @@ const partyAddress = (party: BcRegistryParty): string => {
       <div></div>
     </div>
   </div>
-
-  <!-- Error / no data state -->
+  
   <div
     class="tab-panel tab-panel--empty"
     v-else-if="error?.message || !bcRegistryInfo"
