@@ -37,10 +37,10 @@
     "@babel/plugin-transform-modules-systemjs@<7.29.3": "7.29.4",
     "fast-uri@<3.1.0": "3.1.2",
     "shelljs": {
-      "glob": "11.1.0"
+      "glob": "13.0.6"
     },
     "module-lookup-amd": {
-      "glob": "11.1.0"
+      "glob": "13.0.6"
     }
   }
 }
