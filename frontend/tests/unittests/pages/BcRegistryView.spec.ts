@@ -311,6 +311,16 @@ describe("BcRegistryView.vue", () => {
       expect(wrapper.find("#businessNameId").text()).toContain("—");
     });
 
+    it("uses resolvedLegalName when legalName is absent", () => {
+      (useFetchTo as any).mockImplementation(
+        mockFetchTo([{ business: { resolvedLegalName: "Resolved Corp" } }]),
+      );
+
+      const wrapper = createComponent();
+
+      expect(wrapper.find("#businessNameId").text()).toContain("Resolved Corp");
+    });
+
     it("shows '—' for missing registration number", () => {
       (useFetchTo as any).mockImplementation(
         mockFetchTo([{ business: {} }]),
@@ -319,6 +329,16 @@ describe("BcRegistryView.vue", () => {
       const wrapper = createComponent();
 
       expect(wrapper.find("#registrationNumberId").text()).toContain("—");
+    });
+
+    it("shows '—' for missing registration date", () => {
+      (useFetchTo as any).mockImplementation(
+        mockFetchTo([{ business: {} }]),
+      );
+
+      const wrapper = createComponent();
+
+      expect(wrapper.find("#registrationDateId").text()).toContain("—");
     });
 
     it("shows '—' for missing mailing address street", () => {
@@ -339,6 +359,139 @@ describe("BcRegistryView.vue", () => {
       const wrapper = createComponent();
 
       expect(wrapper.find("#deliveryStreetAddressId").text()).toContain("—");
+    });
+
+    it("renders delivery address city, region and postal code", () => {
+      (useFetchTo as any).mockImplementation(
+        mockFetchTo(sampleBcRegistryData),
+      );
+
+      const wrapper = createComponent();
+
+      const cityEl = wrapper.find("#deliveryCityId");
+      expect(cityEl.text()).toContain("Victoria");
+      expect(cityEl.text()).toContain("BC");
+      expect(cityEl.text()).toContain("V8V 2B2");
+    });
+  });
+
+  describe("officerName helper", () => {
+    it("shows '—' when party has no officer", () => {
+      (useFetchTo as any).mockImplementation(
+        mockFetchTo([{
+          ...sampleBcRegistryData[0],
+          parties: [
+            {
+              mailingAddress: { streetAddress: "1 Any St", addressCity: "Victoria", addressRegion: "BC", postalCode: "V8V 1A1" },
+              roles: [{ roleType: "Director" }],
+            },
+          ],
+        }]),
+      );
+
+      const wrapper = createComponent();
+
+      // Name column has no officer → falls back to '—'
+      expect(wrapper.find("#partners-table").text()).toContain("—");
+    });
+
+    it("shows '—' when officer has no name parts and no organization name", () => {
+      (useFetchTo as any).mockImplementation(
+        mockFetchTo([{
+          ...sampleBcRegistryData[0],
+          parties: [
+            {
+              officer: { id: "P001" },
+              mailingAddress: { streetAddress: "1 Any St", addressCity: "Victoria", addressRegion: "BC", postalCode: "V8V 1A1" },
+              roles: [{ roleType: "Director" }],
+            },
+          ],
+        }]),
+      );
+
+      const wrapper = createComponent();
+
+      // All name parts undefined → join produces '' → || '—'
+      expect(wrapper.find("#partners-table").text()).toContain("—");
+    });
+
+    it("renders individual name without middle initial", () => {
+      (useFetchTo as any).mockImplementation(
+        mockFetchTo([{
+          ...sampleBcRegistryData[0],
+          parties: [
+            {
+              officer: { id: "P001", firstName: "John", lastName: "Doe" },
+              mailingAddress: { streetAddress: "1 Any St", addressCity: "Victoria", addressRegion: "BC", postalCode: "V8V 1A1" },
+              roles: [{ roleType: "Director" }],
+            },
+          ],
+        }]),
+      );
+
+      const wrapper = createComponent();
+
+      expect(wrapper.find("#partners-table").text()).toContain("John Doe");
+    });
+  });
+
+  describe("partyAddress helper", () => {
+    it("shows '—' when party has no mailing address", () => {
+      (useFetchTo as any).mockImplementation(
+        mockFetchTo([{
+          ...sampleBcRegistryData[0],
+          parties: [
+            {
+              officer: { id: "P001", firstName: "Bob" },
+              roles: [{ roleType: "Director" }],
+            },
+          ],
+        }]),
+      );
+
+      const wrapper = createComponent();
+
+      // Address column has no mailingAddress → '—'
+      expect(wrapper.find("#partners-table").text()).toContain("—");
+    });
+
+    it("shows '—' when all address fields are empty", () => {
+      (useFetchTo as any).mockImplementation(
+        mockFetchTo([{
+          ...sampleBcRegistryData[0],
+          parties: [
+            {
+              officer: { id: "P001", firstName: "Bob" },
+              mailingAddress: { streetAddress: "", addressCity: "", addressRegion: "", postalCode: "" },
+              roles: [{ roleType: "Director" }],
+            },
+          ],
+        }]),
+      );
+
+      const wrapper = createComponent();
+
+      // street + line2 are both empty → [].filter(Boolean).join(' ') is '' → || '—'
+      expect(wrapper.find("#partners-table").text()).toContain("—");
+    });
+
+    it("renders street-only address when city/region/postal are absent", () => {
+      (useFetchTo as any).mockImplementation(
+        mockFetchTo([{
+          ...sampleBcRegistryData[0],
+          parties: [
+            {
+              officer: { id: "P001", firstName: "Bob" },
+              mailingAddress: { streetAddress: "99 Oak Lane" },
+              roles: [{ roleType: "Director" }],
+            },
+          ],
+        }]),
+      );
+
+      const wrapper = createComponent();
+
+      expect(wrapper.find("#partners-table").text()).toContain("99 Oak Lane");
     });
   });
 });
