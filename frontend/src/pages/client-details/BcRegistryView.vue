@@ -61,7 +61,7 @@ const partyAddress = (party: BcRegistryParty): string => {
       <div></div>
     </div>
   </div>
-  
+
   <div
     class="tab-panel tab-panel--empty"
     v-else-if="error?.message || !bcRegistryInfo"
@@ -71,8 +71,13 @@ const partyAddress = (party: BcRegistryParty): string => {
 
   <!-- Populated state -->
   <div v-else>
-    <div class="tab-header space-between">
-      <h3 class="padding-left-1rem">BC Registry information</h3>
+    <div class="tab-header">
+      <div class="flex-column-0_25rem padding-left-1rem">
+        <h3>BC Registry information</h3>
+        <span class="body-compact-01">
+          <br />Some information, such as addresses, partners, dates, etc., may not be available. Please verify details directly with BC Registries.
+        </span>
+      </div>
     </div>
 
     <div class="tab-panel tab-panel--populated">
