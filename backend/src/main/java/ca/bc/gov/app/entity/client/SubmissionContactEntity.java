@@ -55,7 +55,6 @@ public class SubmissionContactEntity {
   private String faxNumber;
 
   @Column("email_address")
-  @NotNull
   @Size(min = 5, max = 100)
   private String emailAddress;
 
