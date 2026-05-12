@@ -75,7 +75,7 @@ const partyAddress = (party: BcRegistryParty): string => {
       <div class="flex-column-0_25rem padding-left-1rem">
         <h3>BC Registry information</h3>
         <p class="body-compact-01">
-          Some information, such as addresses, partners, dates, etc., may not be available. Please verify details directly with BC Registries
+          <br />Some information such as addresses, partners, dates, etc., may not be available. Please verify the details with BC Registries.
         </p>
       </div>
     </div>
