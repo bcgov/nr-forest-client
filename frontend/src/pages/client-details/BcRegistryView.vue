@@ -74,13 +74,22 @@ const partyAddress = (party: BcRegistryParty): string => {
     <div class="tab-header">
       <div class="flex-column-0_25rem padding-left-1rem">
         <h3>BC Registry information</h3>
-        <p class="body-compact-01">
-          <br />Some information such as addresses, partners, dates, etc., may not be available. Please verify the details with BC Registries.
-        </p>
       </div>
     </div>
 
     <div class="tab-panel tab-panel--populated">
+      <cds-inline-notification
+        data-text="Client information"
+        v-shadow="2"
+        id="bcRegistryDownNotification"
+        low-contrast="true"
+        open="true"
+        kind="warning"
+        hide-close-button="true">
+        <span class="body-compact-01">
+          Some information such as addresses, partners, dates, etc., may not be available. Please verify the details with BC Registries.
+        </span>
+      </cds-inline-notification>
 
       <!-- Business information accordion -->
       <cds-accordion id="bc-business-information">
