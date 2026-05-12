@@ -210,7 +210,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="first_name" nullable="true" remarks="The first name of the client's contact." size="30" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="last_name" nullable="true" remarks="The last name of the client's contact." size="30" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="business_phone_number" nullable="false" remarks="The phone number of the client's contact." size="14" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="email_address" nullable="false" remarks="The email address of the client's contact." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="email_address" nullable="true" remarks="The email address of the client's contact." size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="idp_user_id" nullable="true" remarks="The unique identifier assigned to a user by the Identity Provider." size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="secondary_phone_number" nullable="true" remarks="A secondary phone number of the client's contact." size="14" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="fax_number" nullable="true" remarks="The fax number of the client's contact." size="14" type="varchar" typeCode="12"/>
@@ -269,8 +269,8 @@
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="street_address" nullable="false" remarks="The address of a client, including the street number and street name." size="40" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="country_code" nullable="false" remarks="A code representing the code of a country." size="2" type="varchar" typeCode="12">
-            <parent column="country_code" foreignKey="submission_location_country_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="country_code"/>
             <parent column="country_code" foreignKey="submission_location_province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="province_code"/>
+            <parent column="country_code" foreignKey="submission_location_country_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="country_code"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="province_code" nullable="false" remarks="A code representing the code of a province, state, department or territory." size="2" type="varchar" typeCode="12">
             <parent column="province_code" foreignKey="submission_location_province_code_fk" implied="false" onDeleteCascade="false" schema="nrfc" table="province_code"/>
