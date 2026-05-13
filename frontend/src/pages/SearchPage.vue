@@ -19,6 +19,7 @@ import {
   adminEmail,
   getObfuscatedEmailLink,
   toTitleCase,
+  toUpperCase,
   highlightMatch,
   getTagColorByClientStatus,
   searchResultToText,
@@ -402,7 +403,7 @@ onMounted(() => {
               <router-link
                 :to="`/clients/details/${value.clientNumber}`"
                 class="row-link"
-                :aria-label="`View client “${toTitleCase(value.clientFullName)}“`"
+                :aria-label="`View client “${toUpperCase(value.clientFullName)}“`"
               />
             </div>
           </AutoCompleteInputComponent>
@@ -449,7 +450,7 @@ onMounted(() => {
             <cds-table-cell />
             <cds-table-cell><span>{{ row.clientNumber }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientAcronym || "-" }}</span></cds-table-cell>
-            <cds-table-cell><span>{{ toTitleCase(row.clientFullName) }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ toUpperCase(row.clientFullName) }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientType }}</span></cds-table-cell>
             <cds-table-cell><span>{{ toTitleCase(row.city) }}</span></cds-table-cell>
             <cds-table-cell>
@@ -462,7 +463,7 @@ onMounted(() => {
             <router-link
               :to="`/clients/details/${row.clientNumber}`"
               class="row-link"
-              :aria-label="`View client “${toTitleCase(row.clientFullName)}“`"
+              :aria-label="`View client “${toUpperCase(row.clientFullName)}“`"
             />
           </cds-table-row>
         </cds-table-body>

@@ -154,7 +154,7 @@ describe("Client Details Page", () => {
   it("renders the page structure", () => {
     cy.visit("/clients/details/0");
 
-    cy.title().should("eq", "Forests Client Management System - Kovacek, Thompson And Boyer");
+    cy.title().should("eq", "Forests Client Management System - KOVACEK, THOMPSON AND BOYER");
 
     cy.get("cds-header").should("have.css", "position", "fixed");
 
@@ -170,19 +170,19 @@ describe("Client Details Page", () => {
     {
       id: "g",
       type: "corporation",
-      expected: "Kovacek, Thompson And Boyer",
+      expected: "KOVACEK, THOMPSON AND BOYER",
       expectedDescription: "Client name",
     },
     {
       id: "i",
       type: "individual without middle name",
-      expected: "John Silver",
+      expected: "JOHN SILVER",
       expectedDescription: "First name + Last name",
     },
     {
       id: "s",
       type: "individual with middle name",
-      expected: "Michael Gary Scott",
+      expected: "MICHAEL GARY SCOTT",
       expectedDescription: "First name + Middle name + Last name",
     }
   ];
@@ -2382,19 +2382,19 @@ describe("Client Details Page", () => {
               if (scenario.name === "edit") {
                 cy.get("cds-toast-notification[kind='success']")
                   .should("be.visible")
-                  .contains("00000172, Nature Nurturers");
+                  .contains("00000172, NATURE NURTURERS");
 
                 cy.get("cds-toast-notification[kind='success']").contains("updated");
               } else if (scenario.name === "delete") {
                 cy.get("cds-toast-notification[kind='success']")
                   .should("be.visible")
-                  .contains("00000172, Nature Nurturers");
+                  .contains("00000172, NATURE NURTURERS");
 
                 cy.get("cds-toast-notification[kind='success']").contains("deleted");
               } else if (scenario.name === "create") {
                 cy.get("cds-toast-notification[kind='success']")
                   .should("be.visible")
-                  .contains("00000007, James Bond Bond");
+                  .contains("00000007, JAMES BOND BOND");
 
                 cy.get("cds-toast-notification[kind='success']").contains("created");
               }

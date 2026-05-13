@@ -26,6 +26,7 @@ import {
   getObfuscatedEmailLink,
   convertFieldNameToSentence,
   toTitleCase,
+  toUpperCase,
   goodStanding,
   removePrefix,
 } from "@/services/ForestClientService";
@@ -184,13 +185,13 @@ const submit = (approved: boolean) => {
         handler: () => {},
         ...(approved
           ? {
-              message: `New client number has been created for “${toTitleCase(
+              message: `New client number has been created for “${toUpperCase(
                 data.value.business.organizationName
               )}”`,
               toastTitle: "Submission approved",
             }
           : {
-              message: `New client number has been rejected for “${toTitleCase(
+              message: `New client number has been rejected for “${toUpperCase(
                 data.value.business.organizationName
               )}”`,
               toastTitle: "Submission rejected",
@@ -402,7 +403,7 @@ watch(data, () => {
 
         <h1 class="resource-details--title" v-if="userhasAuthority">
           <span>
-            {{ toTitleCase(data.business.organizationName) }}
+            {{ toUpperCase(data.business.organizationName) }}
           </span>
         </h1>
         <div v-if="userhasAuthority">
@@ -603,7 +604,7 @@ watch(data, () => {
 
             <div class="grouping-10">
               <read-only-component label="Name">
-                <span class="body-compact-01">{{ toTitleCase(data.business.organizationName) }}</span>
+                <span class="body-compact-01">{{ toUpperCase(data.business.organizationName) }}</span>
               </read-only-component>
               
               <read-only-component label="Client number" v-if="data.business.clientNumber">

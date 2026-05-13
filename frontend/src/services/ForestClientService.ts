@@ -71,6 +71,11 @@ export const toTitleCase = (inputString: string | null | undefined): string => {
   return result;
 };
 
+export const toUpperCase = (inputString: string | null | undefined): string => {
+  if (!inputString) return "";
+  return inputString.toUpperCase();
+};
+
 export const toSentenceCase = (inputString: string | null): string => {
   if (!inputString) return "";
   return inputString.charAt(0).toUpperCase() + inputString.slice(1).toLowerCase();
@@ -774,7 +779,7 @@ export const booleanToYesNo = (
 
 export const searchResultToText = (searchResult: ClientSearchResult): string => {
   const { clientNumber, clientFullName, clientType, city } = searchResult;
-  const result = toTitleCase(`${clientNumber}, ${clientFullName}, ${clientType}, ${city}`);
+  const result = `${clientNumber}, ${toUpperCase(clientFullName)}, ${toTitleCase(clientType)}, ${toTitleCase(city)}`;
   return result;
 };
 
@@ -814,7 +819,7 @@ export const isLocationExpired = (location: ClientLocation): boolean =>
   location.locnExpiredInd === "Y";
 
 export const formatRelatedClient = (clientNumber: string, clientName: string): string =>
-  `${clientNumber}, ${toTitleCase(clientName)}`;
+  `${clientNumber}, ${toUpperCase(clientName)}`;
 
 export const createRemovePatch = (path: string): [jsonpatch.RemoveOperation] => {
   const patch: jsonpatch.RemoveOperation = {
