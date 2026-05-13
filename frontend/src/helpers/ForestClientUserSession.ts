@@ -1,5 +1,5 @@
 import type { SessionProperties, Submitter } from "@/dto/CommonTypesDto";
-import { buildProviderAuthority, toTitleCase, toUpperCase } from "@/services/ForestClientService";
+import { buildProviderAuthority, toTitleCase } from "@/services/ForestClientService";
 import {
   fetchAuthSession,
   signInWithRedirect,
