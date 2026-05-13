@@ -205,7 +205,7 @@ describe("<location-relationships-view />", () => {
         cy.get("cds-table-cell").eq(2).should("not.contain", "Primary");
 
         // Related client location
-        cy.get("cds-table-cell").eq(3).contains("Thiz");
+        cy.get("cds-table-cell").eq(3).contains("THIZ");
 
         // Percentage owned
         cy.get("cds-table-cell").eq(4).contains("-");
@@ -220,7 +220,7 @@ describe("<location-relationships-view />", () => {
       .eq(1)
       .within(() => {
         // Primary client location
-        cy.get("cds-table-cell").eq(1).contains("Thiz");
+        cy.get("cds-table-cell").eq(1).contains("THIZ");
 
         // Relationship type
         cy.get("cds-table-cell").eq(2).contains("Shareholder");
@@ -233,7 +233,7 @@ describe("<location-relationships-view />", () => {
           .should("have.attr", "target", "_blank")
           .contains("00000177");
 
-        cy.get("cds-table-cell").eq(3).contains("Grand Farm");
+        cy.get("cds-table-cell").eq(3).contains("GRAND FARM");
 
         cy.get("cds-table-cell")
           .eq(3)
@@ -255,7 +255,7 @@ describe("<location-relationships-view />", () => {
       .eq(2)
       .within(() => {
         // Primary client location
-        cy.get("cds-table-cell").eq(1).contains("Thiz");
+        cy.get("cds-table-cell").eq(1).contains("THIZ");
 
         // Relationship type
         cy.get("cds-table-cell").eq(2).contains("Shareholder");
