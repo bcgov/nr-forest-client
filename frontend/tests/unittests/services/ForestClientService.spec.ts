@@ -5,6 +5,7 @@ import {
   getContactDescription,
   getAddressDescription,
   toTitleCase,
+  toUpperCase,
   getTagColorByClientStatus,
   goodStanding,
   formatPhoneNumber,
@@ -174,6 +175,28 @@ describe("ForestClientService.ts", () => {
 
     it("returns empty string when input is undefined", () => {
       expect(toTitleCase(undefined as unknown as string)).toEqual("");
+    });
+  });
+
+  describe("toUpperCase", () => {
+    it.each([
+      ["two words", "TWO WORDS"],
+      ["Mixed Case", "MIXED CASE"],
+      ["ALREADY UPPER", "ALREADY UPPER"],
+    ])("converts '%s' to '%s'", (input, expectedOutput) => {
+      expect(toUpperCase(input)).toEqual(expectedOutput);
+    });
+
+    it("returns empty string when input is undefined", () => {
+      expect(toUpperCase(undefined)).toEqual("");
+    });
+
+    it("returns empty string when input is null", () => {
+      expect(toUpperCase(null)).toEqual("");
+    });
+
+    it("returns empty string when input is an empty string", () => {
+      expect(toUpperCase("")).toEqual("");
     });
   });
 
@@ -1053,13 +1076,13 @@ describe("isLocationExpired", () => {
 
 describe("formatRelatedClient", () => {
   it("joins the clientNumber and clientName into a new string", () => {
-    const result = formatRelatedClient("123", "Client Name");
-    expect(result).toBe("123, Client Name");
+    const result = formatRelatedClient("123", "client name");
+    expect(result).toBe("123, CLIENT NAME");
   });
 
-  it("applies title case to the clientName", () => {
-    const result = formatRelatedClient("123", "UPPER CASE");
-    expect(result).toContain("Upper Case");
+  it("applies uppercase to the clientName", () => {
+    const result = formatRelatedClient("123", "lower case");
+    expect(result).toContain("LOWER CASE");
   });
 });
 
