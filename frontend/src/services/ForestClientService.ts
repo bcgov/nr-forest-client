@@ -779,7 +779,7 @@ export const booleanToYesNo = (
 
 export const searchResultToText = (searchResult: ClientSearchResult): string => {
   const { clientNumber, clientFullName, clientType, city } = searchResult;
-  const result = toTitleCase(`${clientNumber}, ${clientFullName}, ${clientType}, ${city}`);
+  const result = `${clientNumber}, ${toUpperCase(clientFullName)}, ${toTitleCase(clientType)}, ${toTitleCase(city)}`;
   return result;
 };
 
