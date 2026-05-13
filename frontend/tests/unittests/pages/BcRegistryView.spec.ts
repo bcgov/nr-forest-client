@@ -189,7 +189,7 @@ describe("BcRegistryView.vue", () => {
     it("renders the business name", () => {
       const wrapper = createComponent();
 
-      expect(wrapper.find("#businessNameId").text()).toContain("Acme Corp");
+      expect(wrapper.find("#businessNameId").text()).toContain("ACME CORP");
     });
 
     it("renders the business status in title case", () => {
