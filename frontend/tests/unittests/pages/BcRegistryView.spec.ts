@@ -189,7 +189,7 @@ describe("BcRegistryView.vue", () => {
     it("renders the business name", () => {
       const wrapper = createComponent();
 
-      expect(wrapper.find("#businessNameId").text()).toContain("Acme Corp");
+      expect(wrapper.find("#businessNameId").text()).toContain("ACME CORP");
     });
 
     it("renders the business status in title case", () => {
@@ -313,12 +313,12 @@ describe("BcRegistryView.vue", () => {
 
     it("uses resolvedLegalName when legalName is absent", () => {
       (useFetchTo as any).mockImplementation(
-        mockFetchTo([{ business: { resolvedLegalName: "Resolved Corp" } }]),
+        mockFetchTo([{ business: { resolvedLegalName: "RESOLVED CORP" } }]),
       );
 
       const wrapper = createComponent();
 
-      expect(wrapper.find("#businessNameId").text()).toContain("Resolved Corp");
+      expect(wrapper.find("#businessNameId").text()).toContain("RESOLVED CORP");
     });
 
     it("shows '(Unknown)' for missing legal type", () => {

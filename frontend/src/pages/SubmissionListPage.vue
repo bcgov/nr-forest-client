@@ -16,8 +16,8 @@ import { useEventBus } from "@vueuse/core";
 import useSvg from "@/composables/useSvg";
 // Types
 import type { SubmissionList } from "@/dto/CommonTypesDto";
-import { formatDistanceToNow, format } from "date-fns";
-import { toTitleCase } from "@/services/ForestClientService";
+import { format } from "date-fns";
+import { toUpperCase } from "@/services/ForestClientService";
 import { adminEmail, getObfuscatedEmailLink } from "@/services/ForestClientService";
 // Session
 import ForestClientUserSession from "@/helpers/ForestClientUserSession";
@@ -155,7 +155,7 @@ const summitSvg = useSvg(summit);
         <cds-table-body>
           <cds-table-row v-for="row in tableData" :key="row.name" @click="selectEntry(row)">
             <cds-table-cell />
-            <cds-table-cell><span>{{ toTitleCase(row.name) }}</span></cds-table-cell>
+            <cds-table-cell><span>{{ toUpperCase(row.name) }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientType }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.district }}</span></cds-table-cell>
             <cds-table-cell><span>{{ formattedDate(row.submittedAt) }}</span></cds-table-cell>
