@@ -66,7 +66,7 @@ class ForestClientUserSession implements SessionProperties {
         : parsedUser["custom:idp_name"];
 
       this.user = {
-        name: toUpperCase(parsedUser["custom:idp_display_name"]),
+        name: toTitleCase(parsedUser["custom:idp_display_name"]),
         provider: provider,
         userId: `${provider}\\${
           parsedUser["custom:idp_username"] ?? parsedUser["custom:idp_user_id"]
