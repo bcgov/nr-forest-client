@@ -25,11 +25,11 @@ import Location16 from "@carbon/icons-vue/es/location/16";
 import User16 from "@carbon/icons-vue/es/user/16";
 import NetworkEnterprise16 from "@carbon/icons-vue/es/network--enterprise/16";
 import RecentlyViewed16 from "@carbon/icons-vue/es/recently-viewed/16";
+import DocumentSigned16 from "@carbon/icons-vue/es/document--signed/16";
 import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
 import Location20 from "@carbon/icons-vue/es/location/20";
 import User20 from "@carbon/icons-vue/es/user/20";
 import NetworkEnterprise20 from "@carbon/icons-vue/es/network--enterprise/20";
-import Launch16 from "@carbon/icons-vue/es/launch/16";
 import Add16 from "@carbon/icons-vue/es/add/16";
 import Save16 from "@carbon/icons-vue/es/save/16";
 
@@ -39,7 +39,7 @@ import {
   extractReasonFields,
   getObfuscatedEmailLink,
   includesAnyOf,
-  toTitleCase,
+  toUpperCase,
   getActionLabel,
   updateSelectedReason,
   formatLocation,
@@ -76,6 +76,7 @@ import ContactView from "@/pages/client-details/ContactView.vue";
 import LocationRelationshipsView from "@/pages/client-details/LocationRelationshipsView.vue";
 import ClientRelationshipForm from "@/pages/client-details/ClientRelationshipForm.vue";
 import HistoryView from "@/pages/client-details/HistoryView.vue";
+import BcRegistryView from "@/pages/client-details/BcRegistryView.vue";
 import { isNotEmpty, isUniqueDescriptive } from "@/helpers/validators/GlobalValidators";
 import { type GoToTab, type OperateRelatedClient, type OperationOptions, type SaveableComponent } from "./client-details/shared";
 
@@ -138,7 +139,7 @@ const buildFullName = (clientInfo: ClientInformation) => {
 
 const clientFullName = computed(() => {
   if (data.value) {
-    return toTitleCase(buildFullName(data.value.client));
+    return toUpperCase(buildFullName(data.value.client));
   }
   return "";
 });
@@ -840,7 +841,7 @@ const operateRelatedClient =
         kind: "Success",
         active: true,
         handler: () => {},
-        message: `Client relationship with <span class="weight-700">“${toTitleCase(updatedTitle)}”</span> was ${action.pastParticiple}`,
+        message: `Client relationship with <span class="weight-700">“${toUpperCase(updatedTitle)}”</span> was ${action.pastParticiple}`,
         toastTitle: undefined,
       };
       toastBus.emit(toastNotification);
@@ -897,6 +898,8 @@ const isHistoryPanelVisible = ref(false);
 
 const isRelatedClientsPanelVisible = ref(false);
 
+const isBcRegistryPanelVisible = ref(false);
+
 onMounted(async () => {
   await nextTick();
 
@@ -914,6 +917,11 @@ onMounted(async () => {
         const relatedPanel = document.getElementById('panel-related');
         if (relatedPanel) {
           isRelatedClientsPanelVisible.value = !relatedPanel.hasAttribute('hidden');
+        }
+
+        const bcRegistryPanel = document.getElementById('panel-bc-registry');
+        if (bcRegistryPanel) {
+          isBcRegistryPanelVisible.value = !bcRegistryPanel.hasAttribute('hidden');
         }
       }, 0);
     });
@@ -983,6 +991,12 @@ provide("goToTab", goToTab);
 const createOnToggle = (state: CollapsibleState) => (event: any) => {
   state.open = event.detail.open;
 };
+
+const registrationNumber = computed(
+  () =>
+    `${data.value?.client?.registryCompanyTypeCode ?? ""}${data.value?.client?.corpRegnNmbr ?? ""}`.trim() ||
+    null,
+);
 </script>
 
 <template>
@@ -1095,6 +1109,13 @@ const createOnToggle = (state: CollapsibleState) => (event: any) => {
           <div>
             History
             <RecentlyViewed16 />
+          </div>
+        </cds-tab>
+        <cds-tab id="tab-bc-registry" target="panel-bc-registry" value="bc-registry" 
+          v-show="registrationNumber !== null && data?.client?.clientTypeCode !== 'B'">
+          <div>
+            BC Registry
+            <DocumentSigned16 />
           </div>
         </cds-tab>
       </cds-tabs>
@@ -1405,6 +1426,13 @@ const createOnToggle = (state: CollapsibleState) => (event: any) => {
           </template>
         </div>
       </div>
+
+      <div id="panel-bc-registry" role="tabpanel" aria-labelledby="tab-bc-registry" hidden>
+        <bc-registry-view
+          v-if="isBcRegistryPanelVisible && registrationNumber"
+          :registration-number="registrationNumber"
+        />
+      </div>
     </div>
   </div>
 
@@ -1425,7 +1453,8 @@ const createOnToggle = (state: CollapsibleState) => (event: any) => {
     </cds-modal-header>
   
     <cds-modal-body id="reason-modal-body">
-      <div class="modal-dropdown-container" v-if="reasonPatchData && reasonPatchData.length > 0">
+      <div class="modal-dropdown-container" 
+        v-if="reasonPatchData && reasonPatchData.length > 0">
 
         <p class="body-compact-01">
           Select a reason for the following 

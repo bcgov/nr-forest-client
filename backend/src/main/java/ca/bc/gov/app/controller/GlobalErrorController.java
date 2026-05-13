@@ -203,4 +203,5 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
             .put(CsrfRequestDataValueProcessor.DEFAULT_CSRF_ATTR_NAME, token))
         .then();
   }
+  
 }

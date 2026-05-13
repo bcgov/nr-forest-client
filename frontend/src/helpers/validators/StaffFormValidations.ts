@@ -24,6 +24,7 @@ import {
   isExactSizMsg,
   isGreaterThanOrEqualTo,
   isLessThanOrEqualTo,
+  MINIMUM_BUSINESS_APPLICANT_AGE,
 } from "@/helpers/validators/GlobalValidators";
 
 // Allow externalFormFieldValidations to get populated
@@ -48,7 +49,10 @@ fieldValidations["businessInformation.clientType"] = [
 
 const birthdateBaseValidations = [
   isDateInThePast("Date of birth must be in the past"),
-  isMinimumYearsAgo(19, "The applicant must be at least 19 years old to apply"),
+  isMinimumYearsAgo(
+    MINIMUM_BUSINESS_APPLICANT_AGE,
+    `The applicant must be at least ${MINIMUM_BUSINESS_APPLICANT_AGE} years old to apply`
+  ),
 ];
 
 fieldValidations["businessInformation.birthdate"] = [
@@ -134,7 +138,7 @@ export const clientIdentificationMaskParams = (() => {
       onlyNumbers: true,
     },
     PASS: {
-      maxSize: 8,
+      maxSize: 9,
     },
     CITZ: {
       maxSize: 8,

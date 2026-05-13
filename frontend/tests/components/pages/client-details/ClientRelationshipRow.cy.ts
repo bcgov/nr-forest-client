@@ -10,7 +10,7 @@ import type { ComponentProps } from "vue-component-type-helpers";
 // Carbon
 import "@carbon/web-components/es/components/button/index";
 
-describe("<client-relationships-row />", () => {
+describe("<client-relationship-row />", () => {
   type RawProps = ComponentProps<typeof ClientRelationshipRow>;
 
   type IfEquals<X, Y, A = X, B = never> =

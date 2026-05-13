@@ -17,6 +17,7 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.BcRegistryTestConstants;
 import ca.bc.gov.app.TestConstants;
+import ca.bc.gov.app.dto.ClientAdvancedSearchCriteriaDto;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -1035,5 +1036,199 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .expectBody()
         .consumeWith(System.out::println);
   }
+  
+  @Test
+  @DisplayName("Advanced search with results")
+  void shouldAdvancedSearchWithResults() {
 
+    reset();
+
+    String legacyResponse = """
+        [
+          {
+            "clientNumber": "00000001",
+            "clientAcronym": "SC",
+            "clientFullName": "SAMPLE COMPANY",
+            "clientType": "C",
+            "city": "VICTORIA",
+            "clientStatus": "A"
+          }
+        ]
+        """;
+
+    legacyStub.stubFor(
+        post(urlPathEqualTo("/api/clients/advanced-search"))
+            .withQueryParam("page", equalTo("0"))
+            .withQueryParam("size", equalTo("10"))
+            .withRequestBody(equalToJson("{\"clientName\":\"SAMPLE\"}"))
+            .willReturn(
+                okJson(legacyResponse)
+                    .withHeader("x-total-count", "1")));
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR)))
+        .post()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/advanced-search")
+            .queryParam("page", "0")
+            .queryParam("size", "10")
+            .build())
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(
+            new ClientAdvancedSearchCriteriaDto(
+                "SAMPLE", 
+                null, 
+                null, 
+                null, 
+                null,
+                null, 
+                null, 
+                null, 
+                null, 
+                null,
+                null, 
+                null
+            )
+        )
+        .exchange()
+        .expectStatus().isOk()
+        .expectHeader().valueEquals("x-total-count", "1")
+        .expectBody()
+        .consumeWith(System.out::println)
+        .jsonPath("$").isArray()
+        .jsonPath("$.length()").isEqualTo(1)
+        .jsonPath("$[0].clientNumber").isEqualTo("00000001")
+        .jsonPath("$[0].clientFullName").isEqualTo("SAMPLE COMPANY");
+  }
+
+  @Test
+  @DisplayName("Advanced search with no results")
+  void shouldAdvancedSearchWithNoResults() {
+
+    reset();
+
+    legacyStub.stubFor(
+        post(urlPathEqualTo("/api/clients/advanced-search"))
+            .withQueryParam("page", equalTo("0"))
+            .withQueryParam("size", equalTo("10"))
+            .withRequestBody(equalToJson("{\"clientName\":\"NONEXISTENT\"}"))
+            .willReturn(
+                okJson("[]")
+                    .withHeader("x-total-count", "0")));
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR)))
+        .post()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/advanced-search")
+            .queryParam("page", "0")
+            .queryParam("size", "10")
+            .build())
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(
+            new ClientAdvancedSearchCriteriaDto(
+                "NONEXISTENT", 
+                null, 
+                null, 
+                null, 
+                null,
+                null, 
+                null, 
+                null,
+                null, 
+                null,
+                null, 
+                null
+            )
+        )
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .consumeWith(System.out::println)
+        .json("[]");
+  }
+
+  @Test
+  @DisplayName("Advanced search with default pagination")
+  void shouldAdvancedSearchWithDefaultPagination() {
+
+    reset();
+
+    String legacyResponse = """
+        [
+          {
+            "clientNumber": "00000002",
+            "clientAcronym": "TC",
+            "clientFullName": "TEST COMPANY",
+            "clientType": "C",
+            "city": "VANCOUVER",
+            "clientStatus": "A"
+          }
+        ]
+        """;
+
+    legacyStub.stubFor(
+        post(urlPathEqualTo("/api/clients/advanced-search"))
+            .withQueryParam("page", equalTo("0"))
+            .withQueryParam("size", equalTo("100"))
+            .withRequestBody(equalToJson("{}"))
+            .willReturn(
+                okJson(legacyResponse)
+                    .withHeader("x-total-count", "1")));
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR)))
+        .post()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/advanced-search")
+            .queryParam("page", "0")
+            .queryParam("size", "100")
+            .build())
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(
+            new ClientAdvancedSearchCriteriaDto(
+                null, 
+                null, 
+                null, 
+                null, 
+                null,
+                null, 
+                null, 
+                null, 
+                null, 
+                null,
+                null, 
+                null
+            )
+        )
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .consumeWith(System.out::println)
+        .jsonPath("$").isArray()
+        .jsonPath("$.length()").isEqualTo(1)
+        .jsonPath("$[0].clientNumber").isEqualTo("00000002");
+  }
+  
 }

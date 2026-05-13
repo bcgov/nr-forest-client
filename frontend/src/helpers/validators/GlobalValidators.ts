@@ -2,8 +2,9 @@ import type { Ref } from "vue";
 import { useEventBus } from "@vueuse/core";
 import subYears from "date-fns/subYears";
 import startOfToday from "date-fns/startOfToday";
-import isBefore from "date-fns/isBefore";
-import parseISO from "date-fns/parseISO";
+import { isAfter } from "date-fns/isAfter";
+import { isBefore } from "date-fns/isBefore";
+import { parseISO } from "date-fns/parseISO";
 import type { ValidationMessageType } from "@/dto/CommonTypesDto";
 
 // Defines the used regular expressions
@@ -17,6 +18,9 @@ const usZipCodeRegex: RegExp = /^\d{5}(?:[-\s]\d{4})?$/;
 const nameRegex: RegExp = /^[a-zA-Z0-9\s'-]*$/;
 const ascii: RegExp = /^[\x20-\x7e]*$/;
 const asciiLineBreak: RegExp = /^[\n\x20-\x7e]*$/;
+
+// Centralized minimum age for business applicants
+export const MINIMUM_BUSINESS_APPLICANT_AGE = 12;
 
 const notificationBus = useEventBus<ValidationMessageType | undefined>(
   "error-notification"
@@ -449,6 +453,24 @@ export const isLessThanOrEqualTo =
 export const isDateInThePast = (message: string) => (value: string) => {
   const dateValue = parseISO(value);
   if (!isBefore(dateValue, startOfToday())) {
+    return message;
+  }
+  return "";
+};
+
+export const isDateBefore = (compareTo: string, message: string) => (value: string) => {
+  const dateValue = parseISO(value);
+  const compareToDate = parseISO(compareTo);
+  if (!isBefore(dateValue, compareToDate)) {
+    return message;
+  }
+  return "";
+};
+
+export const isDateAfter = (compareTo: string, message: string) => (value: string) => {
+  const dateValue = parseISO(value);
+  const compareToDate = parseISO(compareTo);
+  if (!isAfter(dateValue, compareToDate)) {
     return message;
   }
   return "";

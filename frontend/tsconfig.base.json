@@ -16,5 +16,7 @@
     },
     "composite": true,
     "downlevelIteration": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
   }
 }

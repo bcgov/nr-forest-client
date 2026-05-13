@@ -25,19 +25,22 @@
     "nonGlobalStepDefinitions": true
   },
   "overrides": {
+    "uuid": "^14.0.0",
     "picomatch@^2.3.0": "4.0.4",
     "serialize-javascript": "^7.0.0",
-    "diff": "^8.0.2",
+    "diff": "^9.0.0",
     "undici": "^8.0.0",
     "lodash@^4.0.0": "4.18.1",
     "qs": "6.15.1",
     "form-data": "4.0.5",
     "tmp": "^0.2.4",
+    "@babel/plugin-transform-modules-systemjs@<7.29.3": "7.29.4",
+    "fast-uri@<3.1.0": "3.1.2",
     "shelljs": {
-      "glob": "11.1.0"
+      "glob": "13.0.6"
     },
     "module-lookup-amd": {
-      "glob": "11.1.0"
+      "glob": "13.0.6"
     }
   }
 }

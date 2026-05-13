@@ -662,6 +662,7 @@ const clientIdentificationMask = "U".repeat(40);
       v-if="displayEditable('acronym')"
       label="Acronym"
       placeholder=""
+      :mask="'U'.repeat(8)"
       autocomplete="off"
       v-model="formData.client.clientAcronym"
       :validations="[

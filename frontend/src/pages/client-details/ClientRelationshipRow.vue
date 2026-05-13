@@ -12,7 +12,7 @@ import {
   formatLocation,
   formatRelatedClient,
   includesAnyOf,
-  toTitleCase,
+  toUpperCase,
 } from "@/services/ForestClientService";
 import Edit16 from "@carbon/icons-vue/es/edit/16";
 import TrashCan16 from "@carbon/icons-vue/es/trash-can/16";
@@ -130,7 +130,7 @@ const confirmDeleteRelatedClient = () => {
               >{{ selectedClient.client.code }}</a
             >,
           </template>
-          {{ toTitleCase(selectedClient.client.name) }}
+          {{ toUpperCase(selectedClient.client.name) }}
           <template v-if="!row.isMainParticipant">
             <br />
             <a
@@ -161,7 +161,7 @@ const confirmDeleteRelatedClient = () => {
               >{{ selectedClient.client.code }}</a
             >,
           </template>
-          {{ toTitleCase(selectedClient.client.name) }}
+          {{ toUpperCase(selectedClient.client.name) }}
           <template v-if="row.isMainParticipant">
             <br />
             <a
@@ -193,7 +193,7 @@ const confirmDeleteRelatedClient = () => {
             </cds-button>
             <cds-tooltip-content v-show="!row.isMainParticipant" autoalign>
               Go to “{{ row.relatedClient.client.code }},
-              {{ toTitleCase(row.relatedClient.client.name) }}” client’s page to edit this
+              {{ toUpperCase(row.relatedClient.client.name) }}” client’s page to edit this
               relationship
             </cds-tooltip-content>
           </cds-tooltip>
@@ -209,7 +209,7 @@ const confirmDeleteRelatedClient = () => {
             </cds-button>
             <cds-tooltip-content v-show="!row.isMainParticipant">
               Go to “{{ row.relatedClient.client.code }},
-              {{ toTitleCase(row.relatedClient.client.name) }}” client’s page to delete this
+              {{ toUpperCase(row.relatedClient.client.name) }}” client’s page to delete this
               relationship
             </cds-tooltip-content>
           </cds-tooltip>

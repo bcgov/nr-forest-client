@@ -8,6 +8,7 @@ import ca.bc.gov.app.dto.PredictiveSearchResultDto;
 import ca.bc.gov.app.service.ClientSearchService;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -263,12 +264,12 @@ public class ClientSearchController {
           .collectList()
           .flatMapMany(list -> {
             if (list.isEmpty()) {
-              serverResponse.getHeaders().set("X-Total-Count", "0");
+              serverResponse.getHeaders().set("x-total-count", "0");
               return Flux.empty();
             }
             serverResponse
                 .getHeaders()
-                .set("X-Total-Count", list.get(0).getValue().toString());
+                .set("x-total-count", list.get(0).getValue().toString());
             return Flux.fromIterable(list).map(Pair::getKey);
           });
 
@@ -281,12 +282,12 @@ public class ClientSearchController {
             if (list.isEmpty()) {
               serverResponse
                 .getHeaders()
-                .set("X-Total-Count", "0");
+                .set("x-total-count", "0");
               return Flux.empty();
             }
             serverResponse
                 .getHeaders()
-                .set("X-Total-Count", list.get(0).getValue().toString());
+                .set("x-total-count", list.get(0).getValue().toString());
             return Flux
                 .fromIterable(list)
                 .map(Pair::getKey);
@@ -319,12 +320,17 @@ public class ClientSearchController {
         .switchOnFirst((signal, flux) -> {
           if (signal.hasValue()) {
             long total = Optional.ofNullable(signal.get()).map(Pair::getValue).orElse(0L);
-            serverResponse.getHeaders().add("X-Total-Count", String.valueOf(total));
+            serverResponse.getHeaders().add("x-total-count", String.valueOf(total));
           } else {
-            serverResponse.getHeaders().add("X-Total-Count", "0");
+            serverResponse.getHeaders().add("x-total-count", "0");
           }
           return flux.map(Pair::getKey);
         });
+  }
+  
+  @GetMapping("/client-users")
+  public Mono<List<String>> searchClientIdirUsersByUserId(@RequestParam String userId) {
+    return service.getClientIdirUsersByUserId(userId);
   }
 
 }

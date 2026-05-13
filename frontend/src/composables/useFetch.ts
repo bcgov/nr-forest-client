@@ -1,4 +1,4 @@
-import { ref, type Ref } from "vue";
+import { ref, unref, type Ref } from "vue";
 import axios, { type AxiosError } from "axios";
 import { backendUrl, frontendUrl } from "@/CoreConstants";
 import { useEventBus } from "@vueuse/core";
@@ -50,7 +50,7 @@ const handleErrorDefault = (error: any) => {
 export const useFetchTo = (
   url: string | Ref<string>,
   data: Ref<any>,
-  config: any = {}
+  config: any | Ref<any> = {}
 ) => {
   const defaultResponse = {};
   const defaultError = {};
@@ -59,20 +59,24 @@ export const useFetchTo = (
   const error = ref<AxiosError>(defaultError);
   const loading = ref<boolean>(false);
 
-  const parameters = {
-    ...config,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": frontendUrl,
-      ...config.headers,
-      "Authorization": `Bearer ${ForestClientUserSession.token}`,
-    },
-  };
-
   let hasEverSucceeded = false;
+
+  const getActualConfig = () => unref(config);
 
   const fetch = () => {
     loading.value = true;
+
+    const actualConfig = getActualConfig();
+
+    const parameters = {
+    ...actualConfig,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": frontendUrl,
+      ...actualConfig.headers,
+      "Authorization": `Bearer ${ForestClientUserSession.token}`,
+    },
+  };
 
     const actualURL = typeof url === "string" ? url : url.value;
     const controller = new AbortController();
@@ -100,7 +104,7 @@ export const useFetchTo = (
           data.value = undefined;
         }
         error.value = ex;
-        if (config.skipDefaultErrorHandling) {
+        if (actualConfig.skipDefaultErrorHandling) {
           return;
         }
         apiDataHandler.handleErrorDefault();
@@ -115,7 +119,7 @@ export const useFetchTo = (
     };
   };
 
-  !config.skip && fetch();
+  !getActualConfig().skip && fetch();
 
   const apiDataHandler = {
     response,

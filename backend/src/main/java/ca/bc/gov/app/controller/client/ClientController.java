@@ -1,6 +1,7 @@
 package ca.bc.gov.app.controller.client;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.dto.ClientAdvancedSearchCriteriaDto;
 import ca.bc.gov.app.dto.bcregistry.BcRegistryDocumentDto;
 import ca.bc.gov.app.dto.bcregistry.ClientDetailsDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
@@ -24,6 +25,8 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -269,4 +272,87 @@ public class ClientController {
     return clientLegacyService.searchRelatedClients(clientNumber, type, value);
   }
 
+  /**
+   * Searches for IDIR client users that match the given user ID.
+   *
+   * <p>This endpoint queries the legacy system to find client user records
+   * associated with the provided IDIR user identifier.
+   *
+   * @param userId the IDIR user identifier to search for
+   * @return a {@link Flux} emitting matching client user identifiers as strings
+   */
+  @GetMapping("/client-users")
+  public Mono<List<String>> searchClientIdirUsersByUserId(
+      @RequestParam String userId
+  ) {
+    return clientLegacyService.getClientIdirUsersByUserId(userId).collectList();
+  }
+  
+  /**
+   * Performs an advanced search for clients using dynamic query parameters.
+   *
+   * <p>This endpoint supports pagination and flexible filtering through request
+   * body parameters. All filter parameters provided in the request body are
+   * collected into a DTO and passed to the service layer for processing.
+   *
+   * <p>The total number of matching records is returned in the response headers
+   * under {@link ApplicationConstant#X_TOTAL_COUNT}. If no results are emitted,
+   * a default value of {@code 0} is set.
+   *
+   * @param page the page index (0-based); defaults to {@code 0} if not provided
+   * @param size the number of records per page; defaults to {@code 100} if not
+   *        provided
+   * @param criteria the advanced search criteria DTO for dynamic filtering
+   * @param serverResponse the {@link ServerHttpResponse} used to set response
+   *        headers
+   * @return a {@link Flux} emitting {@link ClientListDto} objects matching the
+   *         search criteria
+   */
+  @PostMapping("/advanced-search")
+  public Flux<ClientListDto> advancedSearch(
+      @RequestParam(required = false, defaultValue = "0") int page,
+      @RequestParam(required = false, defaultValue = "100") int size,
+      @RequestBody(required = false) ClientAdvancedSearchCriteriaDto criteria,
+      ServerHttpResponse serverResponse) {
+
+    if (criteria == null) {
+      criteria =
+          new ClientAdvancedSearchCriteriaDto(
+              null, null, null, null, null,
+              null, null, null, null, null,
+              null, null);
+    }
+
+    log.info(
+        "Listing clients: page={}, size={}, criteria={}",
+        page,
+        size,
+        criteria);
+
+    return clientLegacyService
+        .advancedSearch(page, size, criteria)
+        .collectList()
+        .flatMapMany(list -> {
+          Long count = list.isEmpty()
+              ? 0L
+              : list.get(0).getSecond();
+
+          String countStr = String.valueOf(count);
+
+          List.of(ApplicationConstant.X_TOTAL_COUNT, "x-total-count")
+              .forEach(h -> serverResponse.getHeaders().set(h, countStr));
+
+          return Flux.fromIterable(list)
+              .map(Pair::getFirst);
+        })
+        .onErrorResume(e -> {
+          log.error("Error in advancedSearch endpoint", e);
+
+          List.of(ApplicationConstant.X_TOTAL_COUNT, "x-total-count")
+              .forEach(h -> serverResponse.getHeaders().set(h, "0"));
+
+          return Flux.empty();
+        });
+  }
+  
 }

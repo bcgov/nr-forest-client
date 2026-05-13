@@ -77,4 +77,5 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
         .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromValue(errorMessage));
   }
+  
 }

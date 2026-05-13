@@ -183,6 +183,15 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.ROLE_SUSPEND
         );
 
+    // Viewer, editor, suspend and admin users can GET from the clients advanced search endpoint
+    authorize
+        .pathMatchers(HttpMethod.POST, "/api/clients/advanced-search/**")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
+    
     // BCeIDBusiness, BCSC, viewer, editor, suspend and admin users 
     // can GET from the clients endpoint
     authorize

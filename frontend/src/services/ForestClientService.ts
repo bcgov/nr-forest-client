@@ -55,8 +55,8 @@ export const getContactDescription = (contact: Contact, index: number): string =
     ? `${contact.firstName} ${contact.lastName}`
     : "Contact #" + index;
 
-export const toTitleCase = (inputString: string): string => {
-  if (inputString === undefined) return "";
+export const toTitleCase = (inputString: string | null | undefined): string => {
+  if (!inputString) return "";
 
   const splitMapJoin = (currentString: string, separator: string) =>
     currentString
@@ -69,6 +69,11 @@ export const toTitleCase = (inputString: string): string => {
   result = splitMapJoin(result, "(");
   result = splitMapJoin(result, ".");
   return result;
+};
+
+export const toUpperCase = (inputString: string | null | undefined): string => {
+  if (!inputString) return "";
+  return inputString.toUpperCase();
 };
 
 export const toSentenceCase = (inputString: string | null): string => {
@@ -774,7 +779,7 @@ export const booleanToYesNo = (
 
 export const searchResultToText = (searchResult: ClientSearchResult): string => {
   const { clientNumber, clientFullName, clientType, city } = searchResult;
-  const result = toTitleCase(`${clientNumber}, ${clientFullName}, ${clientType}, ${city}`);
+  const result = `${clientNumber}, ${toUpperCase(clientFullName)}, ${toTitleCase(clientType)}, ${toTitleCase(city)}`;
   return result;
 };
 
@@ -814,7 +819,7 @@ export const isLocationExpired = (location: ClientLocation): boolean =>
   location.locnExpiredInd === "Y";
 
 export const formatRelatedClient = (clientNumber: string, clientName: string): string =>
-  `${clientNumber}, ${toTitleCase(clientName)}`;
+  `${clientNumber}, ${toUpperCase(clientName)}`;
 
 export const createRemovePatch = (path: string): [jsonpatch.RemoveOperation] => {
   const patch: jsonpatch.RemoveOperation = {
