@@ -39,7 +39,7 @@ import {
   extractReasonFields,
   getObfuscatedEmailLink,
   includesAnyOf,
-  toTitleCase,
+  toUpperCase,
   getActionLabel,
   updateSelectedReason,
   formatLocation,
@@ -139,7 +139,7 @@ const buildFullName = (clientInfo: ClientInformation) => {
 
 const clientFullName = computed(() => {
   if (data.value) {
-    return toTitleCase(buildFullName(data.value.client));
+    return toUpperCase(buildFullName(data.value.client));
   }
   return "";
 });
@@ -841,7 +841,7 @@ const operateRelatedClient =
         kind: "Success",
         active: true,
         handler: () => {},
-        message: `Client relationship with <span class="weight-700">“${toTitleCase(updatedTitle)}”</span> was ${action.pastParticiple}`,
+        message: `Client relationship with <span class="weight-700">“${toUpperCase(updatedTitle)}”</span> was ${action.pastParticiple}`,
         toastTitle: undefined,
       };
       toastBus.emit(toastNotification);

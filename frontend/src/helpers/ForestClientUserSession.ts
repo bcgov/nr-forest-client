@@ -1,5 +1,5 @@
 import type { SessionProperties, Submitter } from "@/dto/CommonTypesDto";
-import { buildProviderAuthority, toTitleCase } from "@/services/ForestClientService";
+import { buildProviderAuthority, toTitleCase, toUpperCase } from "@/services/ForestClientService";
 import {
   fetchAuthSession,
   signInWithRedirect,
@@ -66,7 +66,7 @@ class ForestClientUserSession implements SessionProperties {
         : parsedUser["custom:idp_name"];
 
       this.user = {
-        name: toTitleCase(parsedUser["custom:idp_display_name"]),
+        name: toUpperCase(parsedUser["custom:idp_display_name"]),
         provider: provider,
         userId: `${provider}\\${
           parsedUser["custom:idp_username"] ?? parsedUser["custom:idp_user_id"]
