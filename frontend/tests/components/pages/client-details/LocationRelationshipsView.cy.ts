@@ -191,7 +191,7 @@ describe("<location-relationships-view />", () => {
           .should("have.attr", "target", "_blank")
           .contains("00000137");
 
-        cy.get("cds-table-cell").eq(1).contains("Matelda Lindhe");
+        cy.get("cds-table-cell").eq(1).contains("MATELDA LINDHE");
 
         cy.get("cds-table-cell")
           .eq(1)
@@ -268,7 +268,7 @@ describe("<location-relationships-view />", () => {
           .should("have.attr", "target", "_blank")
           .contains("00000172");
 
-        cy.get("cds-table-cell").eq(3).contains("Nature Nurturers");
+        cy.get("cds-table-cell").eq(3).contains("NATURE NURTURERS");
 
         cy.get("cds-table-cell")
           .eq(3)
