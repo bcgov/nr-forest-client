@@ -105,7 +105,7 @@ const partyAddress = (party: BcRegistryParty): string => {
             <div class="flex-column-1_5rem">
               <read-only-component label="Business name" id="businessNameId">
                 <span class="body-compact-01">
-                  {{ toUpperCase(bcRegistryInfo.business?.legalName) || toUpperCase(bcRegistryInfo.business?.resolvedLegalName) || '—' }}
+                  {{ toUpperCase(bcRegistryInfo.business?.legalName || bcRegistryInfo.business?.resolvedLegalName) || '—' }}
                 </span>
               </read-only-component>
               <read-only-component label="Business status" id="businessStatusId">
