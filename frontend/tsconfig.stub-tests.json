@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": ["stub-tests.ts"],
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node16",
+    "noImplicitAny": false,
+    "types": ["node"]
+  }
+}

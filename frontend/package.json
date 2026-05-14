@@ -35,7 +35,7 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "stub": "wiremock --enable-stub-cors --global-response-templating --port 8080 --https-port 8081 --root-dir ./stub --verbose",
-    "generate:stub:test": "ts-node -O '{\"module\":\"commonjs\"}' stub-tests.ts",
+    "generate:stub:test": "ts-node -P tsconfig.stub-tests.json stub-tests.ts",
     "prestub:test": "npm run generate:stub:test",
     "stub:test": "wiremock --enable-stub-cors --global-response-templating --port 8080 --https-port 8081 --root-dir ./stub-tests --verbose",
     "precoverage": "npm run test:report:clean",
