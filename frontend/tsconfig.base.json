@@ -3,6 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "ignoreDeprecations": "5.0",
     "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,
