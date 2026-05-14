@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -15,7 +15,6 @@
       ]
     },
     "composite": true,
-    "downlevelIteration": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   }
