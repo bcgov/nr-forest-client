@@ -55,7 +55,7 @@ jobs:
       # Get PR number for squash merges to main
       - name: PR Number
         id: pr
-        uses: bcgov/action-get-pr@bfa713a9ab410c0f0c13126c35983934fc80d15b # v0.1.1
+        uses: bcgov/action-get-pr@bf6c85d0ed23a151f2829956c140fde87979bbf2 # v0.2.0
 
   init:
     name: Deploy (init)
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Deployment Init
-        uses: bcgov/action-deployer-openshift@565e315dfddb8aee08fcfd885a27407dde9a2775 # v4.0.1
+        uses: bcgov/action-deployer-openshift@f7bd61ec357fb1dfd1d43f1287bcd21382d06348 # v4.1.0
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -97,7 +97,7 @@ jobs:
       - name: Backup database before update
         continue-on-error: true
         if: github.event_name != 'pull_request'
-        uses: bcgov/action-oc-runner@d2fc921aaa9d70684c186dbb7754e6985d44d86f # v1.4.1
+        uses: bcgov/action-oc-runner@1815ce17a815c71e9078851a2e3da84d191ea6c3 # v1.5.0
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
@@ -128,7 +128,7 @@ jobs:
               -p CONFIG_MAP="${{ inputs.configmap-frontend }}"
               -p COGNITO_DOMAIN="${{ vars.COGNITO_DOMAIN }}"
     steps:
-      - uses: bcgov/action-deployer-openshift@565e315dfddb8aee08fcfd885a27407dde9a2775 # v4.0.1
+      - uses: bcgov/action-deployer-openshift@f7bd61ec357fb1dfd1d43f1287bcd21382d06348 # v4.1.0
         id: deploys
         with:
           file: ${{ matrix.name }}/openshift.deploy.yml
@@ -147,7 +147,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Database Dev settings
-        uses: bcgov/action-deployer-openshift@565e315dfddb8aee08fcfd885a27407dde9a2775 # v4.0.1
+        uses: bcgov/action-deployer-openshift@f7bd61ec357fb1dfd1d43f1287bcd21382d06348 # v4.1.0
         with:
           file: database/openshift.dev.yml
           oc_namespace: ${{ secrets.oc_namespace }}
