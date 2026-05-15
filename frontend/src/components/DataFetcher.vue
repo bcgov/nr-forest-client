@@ -116,6 +116,7 @@ watch(
   },
 );
 </script>
+
 <template>
   <slot :content="content" :loading="loading" :error="error"></slot>
 </template>

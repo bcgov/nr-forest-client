@@ -26,6 +26,6 @@
     "types": [
       "unplugin-icons/types/vue"
     ],
-    "ignoreDeprecations": "5.0" // To silence the deprecation warning
+    "ignoreDeprecations": "6.0" // To silence the deprecation warning
   }
 }
