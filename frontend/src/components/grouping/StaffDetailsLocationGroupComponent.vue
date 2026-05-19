@@ -245,7 +245,7 @@ const getLocationDescription = (address: Address, index: number): string =>
       required
       required-label
       placeholder=""
-      tip='For example, "Headquarters", "Campbell River Region" or "Castlegar Woods Division"'
+      tip='For example, "Mailing Address", "Campbell River Region" or "Castlegar Woods Division"'
       v-model="selectedValue.locationName"
       :enabled="true"
       :validations="[
