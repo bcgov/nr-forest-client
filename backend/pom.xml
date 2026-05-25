@@ -72,7 +72,7 @@
         <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-        <testcontainers.version>1.21.4</testcontainers.version>
+        <testcontainers.version>2.0.5</testcontainers.version>
         <logback.version>1.5.26</logback.version>
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.9</nimbus-jose-jwt.version>
