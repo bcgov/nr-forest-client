@@ -41,13 +41,13 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <testcontainers.version>1.21.4</testcontainers.version>
-    <org.junit.version>6.0.3</org.junit.version>
+    <org.junit.version>6.1.0</org.junit.version>
     <junit.version>4.13.2</junit.version>
     <assertj.version>3.24.2</assertj.version>
-    <logback.version>1.5.26</logback.version>
+    <logback.version>1.5.32</logback.version>
     <oci.revision>${project.version}</oci.revision>
-    <flyway.version>11.11.0</flyway.version>
-    <opentelemetry.version>1.60.1</opentelemetry.version>
+    <flyway.version>11.20.3</flyway.version>
+    <opentelemetry.version>1.62.0</opentelemetry.version>
     <commons-lang3.version>3.20.0</commons-lang3.version>
     <jackson.version>2.21.1</jackson.version>
     <jackson-bom.version>2.21.1</jackson-bom.version>
@@ -434,7 +434,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.6.2</version>
+        <version>3.6.3</version>
         <executions>
           <execution>
             <id>default-cli</id>
