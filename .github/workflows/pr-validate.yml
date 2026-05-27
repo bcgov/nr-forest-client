@@ -32,12 +32,28 @@ jobs:
       markdown_links: |
         Any successful deployments (not always required) will be available [here](https://${{ github.event.repository.name }}-${{ needs.vars.outputs.url }}-frontend.apps.silver.devops.gov.bc.ca/)
 
+  # ==========================================================================
+  # WARNING: This job acts as the required merge gate for this workflow.
+  # If you add a new job to this workflow, you MUST add its ID to the 'needs'
+  # array below, otherwise its failure or cancellation will not block the PR!
+  # ==========================================================================
   results:
     name: Validate Results
     needs: [validate]
     if: always()
     runs-on: ubuntu-24.04
+    timeout-minutes: 1
     steps:
-      - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'cancelled')
-        run: echo "At least one job has failed or was cancelled." && exit 1
-      - run: echo "Success!"
+      - name: Log Job Results Context
+        run: |
+          echo "=== Upstream Job Statuses ==="
+          echo '${{ toJson(needs) }}'
+
+      - name: Evaluate Overall Status
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "❌ Critical Check Failure: At least one required job has failed or was cancelled."
+          exit 1
+
+      - name: Success Message
+        run: echo "✅ All critical checks passed or were intentionally skipped!"
