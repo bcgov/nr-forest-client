@@ -59,6 +59,6 @@ jobs:
     needs: [tests-java, tests-frontend] # Restore trivy when/if fixed
     runs-on: ubuntu-24.04
     steps:
-      - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
+      - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'cancelled')
         run: echo "At least one job has failed." && exit 1
       - run: echo "Success!"
