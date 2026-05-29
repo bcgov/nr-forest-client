@@ -1,12 +1,12 @@
 # Build static files
-FROM node:24.14-alpine3.22 AS build
+FROM node:24.16-alpine3.22 AS build
 
 WORKDIR /app
 COPY . .
 RUN npm ci --ignore-scripts && npm install @esbuild/linux-x64 --no-save --ignore-scripts && npm run build
 
 # Caddy
-FROM caddy:2.11.2-alpine
+FROM caddy:2.11.3-alpine
 
 # Copy static files and config
 COPY --from=build /app/dist /srv
