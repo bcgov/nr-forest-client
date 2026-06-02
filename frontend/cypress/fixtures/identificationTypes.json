@@ -6,5 +6,6 @@
   { "code": "FNID", "name": "First Nation status card", "countryCode": "" },
   { "code": "PRCD", "name": "Permanent resident card", "countryCode": "" },
   { "code": "USDL", "name": "US driver's licence", "countryCode": "US" },
-  { "code": "OTHR", "name": "Other", "countryCode": "" }
+  { "code": "OTHR", "name": "Other", "countryCode": "" },
+  { "code": "PRCD", "name": "Permanent resident card", "countryCode": "" }
 ]
