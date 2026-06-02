@@ -282,5 +282,30 @@ describe("validations", () => {
       });
     });
 
+    describe.each(["businessInformation.clientIdentification-PRCD"])("%s", (key) => {
+      const setter = (value: string) => {
+        data.businessInformation["clientIdentification-PRCD"] = value;
+      };
+      (<Scenario[]>[
+        ["A1234567890", false, "only 1 letter"],
+        ["ABC1234567890", false, "more than 2 letters"],
+        ["AB1", false, "only 1 digit"],
+        ["AB123456", false, "6 digits, less than 7"],
+        ["AB1234567", true, "7 digits valid"],
+        ["AB12345678", false, "8 digits, between 7 and 10"],
+        ["AB1234567890", true, "10 digits valid"],
+        ["AB12345678901", false, "11 digits, more than 10"],
+        ["ab1234567890", true, "lowercase letters allowed"],
+        ["Ab1234567890", true, "mixed case allowed"],
+        ["A B1234567890", false, "contains space"],
+        ["AB123456789a", false, "contains non-digit character"],
+        ["AB12345678!0", false, "contains special character"],
+        ["RA0302123456", true, "valid example format 1"],
+        ["RA1234567", true, "valid example format 2"],
+      ]).forEach((scenario) => {
+        test(data, key, setter, scenario);
+      });
+    });
+
   });
 });

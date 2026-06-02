@@ -142,6 +142,13 @@ class BusinessInformationIdentificationDocumentValidatorTest {
             Arguments.of("FNID",StringUtils.EMPTY,StringUtils.EMPTY,"1","clientIdentification","The First Nations ID must be a 10-digit number"),
             Arguments.of("FNID",StringUtils.EMPTY,StringUtils.EMPTY,"1234567890",StringUtils.EMPTY,StringUtils.EMPTY),
 
+            Arguments.of("PRCD", StringUtils.EMPTY, StringUtils.EMPTY, "AB1234567890", StringUtils.EMPTY, StringUtils.EMPTY),
+            Arguments.of("PRCD", StringUtils.EMPTY, StringUtils.EMPTY, "AB1234567", StringUtils.EMPTY, StringUtils.EMPTY),
+            Arguments.of("PRCD", StringUtils.EMPTY, StringUtils.EMPTY, "AB12345678", "clientIdentification", "The permanent resident card number must start with two letters followed by either 10 or 7 digits (e.g., RA0302123456 or RA1234567)"),
+            Arguments.of("PRCD", StringUtils.EMPTY, StringUtils.EMPTY, "A12345678", "clientIdentification", "The permanent resident card number must start with two letters followed by either 10 or 7 digits (e.g., RA0302123456 or RA1234567)"),
+            Arguments.of("PRCD", StringUtils.EMPTY, StringUtils.EMPTY, "ABC1234567890", "clientIdentification", "The permanent resident card number must start with two letters followed by either 10 or 7 digits (e.g., RA0302123456 or RA1234567)"),
+            Arguments.of("PRCD", StringUtils.EMPTY, StringUtils.EMPTY, "ab1234567890", StringUtils.EMPTY, StringUtils.EMPTY),
+
             Arguments.of("OTHR",StringUtils.EMPTY,StringUtils.EMPTY,"A1","clientIdentification","The other document must be between 3 and 40 characters long"),
             Arguments.of("OTHR",StringUtils.EMPTY,StringUtils.EMPTY,"A1".repeat(22),"clientIdentification","The other document must be between 3 and 40 characters long"),
             Arguments.of("OTHR",StringUtils.EMPTY,StringUtils.EMPTY,"12345","clientIdentification","Other identification must follow the pattern: [ID Type] : [ID Value] such as 'USA Passport : 12345'"),
