@@ -322,9 +322,7 @@ describe('useFetch', () => {
 
   it("should abort the request", async () => {
     const abortErrorMessage = "sample abort error message";
-    vi.spyOn(global, "AbortController").mockImplementation(
-      () => new MockAbortController() as AbortController,
-    );
+    vi.stubGlobal("AbortController", MockAbortController as any);
     axiosMock = vi.spyOn(axios, "request").mockImplementation(
       ({ signal }) =>
         new Promise((_resolve, reject) => {

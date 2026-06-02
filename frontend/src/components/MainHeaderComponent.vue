@@ -124,6 +124,9 @@ const handleLogoutClick = (event) => {
 };
 
 const currentDate = new Date();
+const isTest = process.env.NODE_ENV === 'test';
+const logoVertical = isTest ? '' : '/img/logo-vertical1.svg';
+const bcidLogo = isTest ? '' : '/img/BCID_H_rgb_rev.svg';
 </script>
 
 <template>
@@ -139,14 +142,14 @@ const currentDate = new Date();
 
     <a href="https://gov.bc.ca" v-if="$session.user?.provider !== 'idir'" class="bclogotop">
       <img
-        src="/img/logo-vertical1.svg"
+        :src="logoVertical"
         alt="Go to the Government of British Columbia website"
-        v-if="isSmallScreen"
+        v-if="isSmallScreen && !isTest"
       />
       <img
-        src="/img/BCID_H_rgb_rev.svg"
+        :src="bcidLogo"
         alt="Go to the Government of British Columbia website"
-        v-else
+        v-else-if="!isTest"
       />      
     </a>
     

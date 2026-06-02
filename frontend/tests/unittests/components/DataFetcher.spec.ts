@@ -9,9 +9,7 @@ import MockAbortController from "../../mocks/MockAbortController";
 vi.useFakeTimers();
 
 describe("DataFetcher", () => {
-  vi.spyOn(global, "AbortController").mockImplementation(
-    () => new MockAbortController() as AbortController,
-  );
+  vi.stubGlobal("AbortController", MockAbortController as any);
 
   const mockedFetchTo = (url: Ref<string>, received: Ref<any>, config: any = {}) => ({
     response: ref({}),
