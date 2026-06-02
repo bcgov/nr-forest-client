@@ -282,5 +282,28 @@ describe("validations", () => {
       });
     });
 
+    describe.each(["businessInformation.clientIdentification-PRCD"])("%s", (key) => {
+      const setter = (value: string) => {
+        data.businessInformation["clientIdentification-PRCD"] = value;
+      };
+      (<Scenario[]>[
+        ["A1234567890", false, "only 1 letter"],
+        ["ABC1234567890", false, "more than 2 letters"],
+        ["A1", false, "only 1 digit"],
+        ["AB1234567", false, "7 digits, less than minimum"],
+        ["AB12345678", true, "7 digits valid"],
+        ["AB1234567890", true, "10 digits valid"],
+        ["AB12345678901", false, "11 digits, more than maximum"],
+        ["ab1234567890", false, "lowercase letters"],
+        ["A B1234567890", false, "contains space"],
+        ["AB123456789a", false, "contains lowercase letter"],
+        ["AB12345678!0", false, "contains special character"],
+        ["RA0302123456", true, "valid example format 1"],
+        ["RA1234567", true, "valid example format 2"],
+      ]).forEach((scenario) => {
+        test(data, key, setter, scenario);
+      });
+    });
+
   });
 });

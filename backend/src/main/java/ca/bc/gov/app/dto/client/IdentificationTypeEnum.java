@@ -20,6 +20,7 @@ public enum IdentificationTypeEnum {
   PASS, // Passport
   CITZ, // Citizenship Document
   FNID, // First Nations ID
+  PRCD, // Permanent Resident Card
   USDL, // US Driver's License
   OTHR; // Other forms of identification
 
