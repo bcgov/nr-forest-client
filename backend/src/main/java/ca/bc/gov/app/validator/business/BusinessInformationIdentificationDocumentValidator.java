@@ -71,7 +71,7 @@ public class BusinessInformationIdentificationDocumentValidator implements
       return Mono.just(
           new ValidationError(
               fieldName,
-              "The permanent residence card number must start with two letters "
+              "The permanent resident card number must start with two letters "
                   + "followed by either 10 or 7 digits "
                   + "(e.g., RA0302123456 or RA1234567)"));
     }
