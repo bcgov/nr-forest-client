@@ -1,37 +1,37 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 // Carbon
-import '@carbon/web-components/es/components/modal/index';
-import '@carbon/web-components/es/components/notification/index';
+import "@carbon/web-components/es/components/modal/index";
+import "@carbon/web-components/es/components/notification/index";
 // Composables
-import { useEventBus } from '@vueuse/core'
+import { useEventBus } from "@vueuse/core";
 // Imported Types
-import type { ModalNotification } from '@/dto/CommonTypesDto'
+import type { ModalNotification } from "@/dto/CommonTypesDto";
 // @ts-ignore
-import Delete16 from '@carbon/icons-vue/es/trash-can/16'
-import UnauthorizedErrorPage from '@/pages/UnauthorizedErrorPage.vue';
+import Delete16 from "@carbon/icons-vue/es/trash-can/16";
+import UnauthorizedErrorPage from "@/pages/UnauthorizedErrorPage.vue";
 import SearchPage from "@/pages/SearchPage.vue";
 
-const modalBus = useEventBus<ModalNotification>('modal-notification')
-const toastBus = useEventBus<ModalNotification>('toast-notification')
-const overlayBus = useEventBus<boolean>('overlay-event')
+const modalBus = useEventBus<ModalNotification>("modal-notification");
+const toastBus = useEventBus<ModalNotification>("toast-notification");
+const overlayBus = useEventBus<boolean>("overlay-event");
 
 //Modal opening and closing
 const modalContent = ref<ModalNotification>({
   active: false,
-  message: '',
-  kind: '',
-  toastTitle: '',
-  handler: () => {}
-})
+  message: "",
+  kind: "",
+  toastTitle: "",
+  handler: () => {},
+});
 
 const toastContent = ref<ModalNotification>({
   active: false,
-  message: '',
-  kind: '',
-  toastTitle: '',
-  handler: () => {}
-})
+  message: "",
+  kind: "",
+  toastTitle: "",
+  handler: () => {},
+});
 
 const overlayContent = ref<{
   isVisible: boolean;
@@ -39,25 +39,25 @@ const overlayContent = ref<{
   showLoading: boolean;
 }>({
   isVisible: false,
-  message: '',
-  showLoading: false
-})
+  message: "",
+  showLoading: false,
+});
 
-const openModal = (event: ModalNotification) => (modalContent.value = event)
+const openModal = (event: ModalNotification) => (modalContent.value = event);
 
 const closeModal = () =>
-  (modalContent.value = { ...modalContent.value, active: false })
+  (modalContent.value = { ...modalContent.value, active: false });
 
 const openToast = (event: ModalNotification) => {
-  toastContent.value = event
-  setTimeout(() => (toastContent.value.active = false), 8000)
-}
+  toastContent.value = event;
+  setTimeout(() => (toastContent.value.active = false), 8000);
+};
 
 const openOverlay = (event: {
   isVisible: boolean;
   message: string;
   showLoading: boolean;
-}) => (overlayContent.value = event)
+}) => (overlayContent.value = event);
 
 const deleteContentModal = () => {
   openToast({
@@ -65,18 +65,20 @@ const deleteContentModal = () => {
     kind: "Success",
     toastTitle: "Success",
     active: true,
-    handler: () => {}
-  })
-  modalContent.value.handler()
-  closeModal()
-}
+    handler: () => {},
+  });
+  modalContent.value.handler();
+  closeModal();
+};
 
-modalBus.on(openModal)
-toastBus.on(openToast)
-overlayBus.on(openOverlay)
+modalBus.on(openModal);
+toastBus.on(openToast);
+overlayBus.on(openOverlay);
 
 const keepAliveComponents = [SearchPage];
-const keepAliveString = keepAliveComponents.map((item) => item.name || item.__name).join(",");
+const keepAliveString = keepAliveComponents
+  .map((item) => item.name || item.__name)
+  .join(",");
 </script>
 
 <template>
