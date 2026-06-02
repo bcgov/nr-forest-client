@@ -66,14 +66,6 @@ public class BusinessInformationIdentificationDocumentValidator implements
   private Mono<ValidationError> validatePermanentResidenceCard(
       String fieldName,
       String value) {
-
-    if (StringUtils.isBlank(value)) {
-      return Mono.just(
-          new ValidationError(
-              fieldName,
-              "The permanent residence card number must be provided"));
-    }
-
     String pattern = "^[A-Za-z]{2}(?:\\d{10}|\\d{7})$";
     if (!value.matches(pattern)) {
       return Mono.just(
