@@ -365,6 +365,13 @@ fieldValidations["client.clientIdentification-OTHR"] = [isAscii("ID number")];
 
 fieldValidations["client.clientIdentification-nonOTHR"] = [hasOnlyNamingCharacters("ID number")];
 
+fieldValidations["client.clientIdentification-PRCD"] = [
+  isRegex(
+    /^[A-Za-z]{2}(?:\d{10}|\d{7})$/,
+    "The permanent resident card number must start with two letters followed by either 10 or 7 digits (e.g., RA0302123456 or RA1234567)"
+  ),
+];
+
 // Related clients
 
 fieldValidations["relatedClients.*.*.client.location"] = [isNotEmpty("You must select a location")];
