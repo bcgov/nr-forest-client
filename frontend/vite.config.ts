@@ -32,6 +32,8 @@ export default defineConfig(({ command, mode }) => {
           "reports/",
           "reports/**/*",
           ".nyc_output/",
+          "**/*.cy.{js,ts,jsx,tsx}",
+          "**/*.cypress.{js,ts,jsx,tsx}"
         ],
         extension: [".js", ".ts", ".vue"],
         requireEnv: true,
