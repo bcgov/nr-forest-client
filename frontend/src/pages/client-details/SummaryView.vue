@@ -459,7 +459,19 @@ watch(goodStandingInd, () => {
 });
 
 const clientIdentificationValidations = computed(() => {
-  const suffix = formData.value.client.clientIdTypeCode === "OTHR" ? "OTHR" : "nonOTHR";
+  let suffix = "nonOTHR"; // default
+  const idTypeCode = formData.value.client.clientIdTypeCode;
+  
+  if (idTypeCode === "OTHR") {
+    suffix = "OTHR";
+  } else if (idTypeCode) {
+    // Uses specific validations for this ID type when configured (e.g., PRCD).
+    const specificValidations = getValidations(`client.clientIdentification-${idTypeCode}`);
+    if (specificValidations.length > 0) {
+      suffix = idTypeCode;
+    }
+  }
+  
   const additionalValidations = getValidations(`client.clientIdentification-${suffix}`);
 
   return optionalArray([
