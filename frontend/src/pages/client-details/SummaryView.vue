@@ -465,7 +465,7 @@ const clientIdentificationValidations = computed(() => {
   if (idTypeCode === "OTHR") {
     suffix = "OTHR";
   } else if (idTypeCode) {
-    // Uses specific validations for this ID type (e.g., PRCD, BCDL, BRTH, etc.)
+    // Uses specific validations for this ID type when configured (e.g., PRCD).
     const specificValidations = getValidations(`client.clientIdentification-${idTypeCode}`);
     if (specificValidations.length > 0) {
       suffix = idTypeCode;
