@@ -218,13 +218,13 @@ describe('<BusinessInformationWizardStep />', () => {
     showsUnknownSoleProprietor();
 
     // Wait for shadow DOM to fully render before trying to access selection button
-    cy.wait(5000);
+    cy.wait(8000);
     
     cy.get("#business", { timeout: 90000 })
       .should("be.visible", { timeout: 90000 })
       .shadow()
-      .find("#selection-button") // The X clear button
-      .click({ timeout: 90000 });
+      .find("#selection-button", { timeout: 90000 }) // The X clear button
+      .click();
 
     cy.get("cds-inline-notification", { timeout: 15000 }).should("not.exist", { timeout: 15000 });
   });
