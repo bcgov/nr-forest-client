@@ -46,9 +46,7 @@ const myProfileAction = ref<InstanceType<typeof CDSHeaderGlobalAction> | null>(
   null
 );
 const closePanel = () => {
-  if (myProfilePanel.value) {
-    myProfilePanel.value.expanded = false;
-  } else if (myProfileAction.value) {
+  if (myProfileAction.value) {
     myProfileAction.value.click();
   }
 };
@@ -124,9 +122,6 @@ const handleLogoutClick = (event) => {
 };
 
 const currentDate = new Date();
-const isTest = process.env.NODE_ENV === 'test';
-const logoVertical = isTest ? '' : '/img/logo-vertical1.svg';
-const bcidLogo = isTest ? '' : '/img/BCID_H_rgb_rev.svg';
 </script>
 
 <template>
@@ -142,14 +137,14 @@ const bcidLogo = isTest ? '' : '/img/BCID_H_rgb_rev.svg';
 
     <a href="https://gov.bc.ca" v-if="$session.user?.provider !== 'idir'" class="bclogotop">
       <img
-        :src="logoVertical"
+        src="/img/logo-vertical1.svg"
         alt="Go to the Government of British Columbia website"
-        v-if="isSmallScreen && !isTest"
+        v-if="isSmallScreen"
       />
       <img
-        :src="bcidLogo"
+        src="/img/BCID_H_rgb_rev.svg"
         alt="Go to the Government of British Columbia website"
-        v-else-if="!isTest"
+        v-else
       />      
     </a>
     
@@ -242,7 +237,7 @@ const bcidLogo = isTest ? '' : '/img/BCID_H_rgb_rev.svg';
       data-testid="my-profile-backdrop"
       ref="myProfileBackdrop"
       class="cds--side-nav__overlay"
-      @click.prevent="closePanel"
+      @click.prevent="myProfileAction?.click"
     ></div>
   </cds-header>
 

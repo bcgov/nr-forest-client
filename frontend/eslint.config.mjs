@@ -38,14 +38,7 @@ const cypressFiles = [
 
 export default defineConfigWithVueTs(
   {
-    ignores: [
-      "node_modules/",
-      "dist/",
-      "coverage/",
-      "reports/",
-      ".nuxt/",
-      "build/",
-    ],
+    ignores: sharedIgnores,
   },
   js.configs.recommended,
   importPlugin.flatConfigs.errors,

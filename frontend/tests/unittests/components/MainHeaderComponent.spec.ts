@@ -186,7 +186,7 @@ describe("MainHeaderComponent.vue", () => {
           expect(backdrop.exists()).toBe(true);
           await backdrop.trigger("click");
           const panel = wrapper.find("#my-profile-panel");
-          expect(panel.attributes().expanded).not.toEqual("true");
+          expect(panel.attributes().expanded).toBeUndefined();
         });
 
         it("displays a backdrop only when the panel is open", async () => {
