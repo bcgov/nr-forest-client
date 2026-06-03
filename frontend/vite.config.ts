@@ -45,9 +45,19 @@ export default defineConfig(({ command, mode }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
-    test: {
+    
+    test: process.env.VITEST ? {
       globals: true,
       reporters: ["verbose"],
+      
+      exclude: [
+        "**/node_modules/**", 
+        "**/dist/**", 
+        "**/cypress/**", 
+        "**/*.cy.{js,ts,jsx,tsx}",
+        "**/*.cypress.{js,ts,jsx,tsx}"
+      ],
+
       coverage: {
         reportsDirectory: "reports/.vite_report",
         provider: "istanbul",
@@ -83,7 +93,8 @@ export default defineConfig(({ command, mode }) => {
       },
       environment: "jsdom",
       setupFiles: "vitest.setup.ts",
-    },
+    } : undefined,
+    
     optimizeDeps: {
       exclude: ["@carbon/web-components"],
       entries:
