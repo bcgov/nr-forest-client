@@ -38,6 +38,9 @@ const warning = ref(false);
 
 const revalidateBus = useEventBus<string[] | undefined>("revalidate-bus");
 
+// Declare ref early so it can be used in watchers
+const cdsMultiSelectRef = ref<InstanceType<typeof CDSMultiSelect> | null>(null);
+
 //We set it as a separated ref due to props not being updatable
 const selectedValue = ref(props.initialValue);
 // This is to make the input list contains the selected value to show when component render
@@ -182,8 +185,6 @@ revalidateBus.on((keys: string[] | undefined) => {
 const ariaInvalidString = computed(() => (error.value ? "true" : "false"));
 
 const isFocused = ref(false);
-
-const cdsMultiSelectRef = ref<InstanceType<typeof CDSMultiSelect> | null>(null);
 
 watch(
   [cdsMultiSelectRef, () => props.required, isFocused, ariaInvalidString],
