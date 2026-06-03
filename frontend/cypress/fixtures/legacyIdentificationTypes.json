@@ -5,6 +5,7 @@
   { "code": "ARDL", "name": "Arkansas Drivers Licence" },
   { "code": "AZDL", "name": "Arizona Drivers Licence" },
   { "code": "BCDL", "name": "British Columbia Drivers Licence" },
+  { "code": "PRCD", "name": "Permanent Resident Card" },
   { "code": "BCEI", "name": "BCeID" },
   { "code": "BCID", "name": "British Columbia Identification" },
   { "code": "BCRE", "name": "BC Registry" },

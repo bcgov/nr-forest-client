@@ -53,10 +53,27 @@ public class BusinessInformationIdentificationDocumentValidator implements
         case "PASS" -> validatePassport(valueField, target.clientIdentification());
         case "CITZ" -> validateCanadianCitizenship(valueField, target.clientIdentification());
         case "FNID" -> validateFirstNationsId(valueField, target.clientIdentification());
+        case "PRCD" -> validatePermanentResidenceCard(valueField, target.clientIdentification());
         case "OTHR" -> validateOtherDocuments(valueField, target.clientIdentification());
         default -> validateDL(valueField, target.clientIdentification());
       };
 
+    }
+
+    return Mono.empty();
+  }
+
+  private Mono<ValidationError> validatePermanentResidenceCard(
+      String fieldName,
+      String value) {
+    String pattern = "^[A-Za-z]{2}(?:\\d{10}|\\d{7})$";
+    if (!value.matches(pattern)) {
+      return Mono.just(
+          new ValidationError(
+              fieldName,
+              "The permanent resident card number must start with two letters "
+                  + "followed by either 10 or 7 digits "
+                  + "(e.g., RA0302123456 or RA1234567)"));
     }
 
     return Mono.empty();
