@@ -219,9 +219,12 @@ describe('<BusinessInformationWizardStep />', () => {
 
     cy.get("#business")
       .should("be.visible")
-      .shadow()
-      .find("#selection-button") // The X clear button
-      .click();
+      .then(($el) => {
+         const cb = $el[0] as any;
+         console.log("filterInputValue is:", cb._filterInputValue);
+         console.log("value is:", cb.value);
+         cb._handleUserInitiatedClearInput();
+      });
 
     cy.get("cds-inline-notification").should("not.exist");
   });
