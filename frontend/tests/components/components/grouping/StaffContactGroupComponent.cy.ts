@@ -109,13 +109,11 @@ describe("<StaffLocationGroupComponent />", () => {
 
           cy.get("#addressname_1 cds-multi-select-item")
             .eq(0)
-            .invoke("text")
-            .should("eq", "Mailing address");
+            .should("contain.text", "Mailing address");
 
           cy.get("#addressname_1 cds-multi-select-item")
             .eq(1)
-            .invoke("text")
-            .should("eq", "Jutland office");
+            .should("contain.text", "Jutland office");
         });
       });
     });
@@ -140,13 +138,11 @@ describe("<StaffLocationGroupComponent />", () => {
 
           cy.get("#addressname_1 cds-multi-select-item")
             .eq(0)
-            .invoke("text")
-            .should("eq", "00 - Mailing address");
+            .should("contain.text", "00 - Mailing address");
 
           cy.get("#addressname_1 cds-multi-select-item")
             .eq(1)
-            .invoke("text")
-            .should("eq", "01 - Jutland office");
+            .should("contain.text", "01 - Jutland office");
         });
       });
     });
@@ -174,7 +170,7 @@ describe("<StaffLocationGroupComponent />", () => {
             },
           });
 
-          cy.get("#addressname_1").and("have.value", "Jutland office");
+          cy.get("#addressname_1").should("have.prop", "value", "Jutland office");
         });
       });
     });
@@ -203,7 +199,7 @@ describe("<StaffLocationGroupComponent />", () => {
             },
           });
 
-          cy.get("#addressname_1").and("have.value", "01 - Jutland office");
+          cy.get("#addressname_1").should("have.prop", "value", "01 - Jutland office");
         });
       });
     });
@@ -237,7 +233,7 @@ describe("<StaffLocationGroupComponent />", () => {
           .its("wrapper")
           .as("vueWrapper");
 
-        cy.get("#addressname_1").and("have.value", "01");
+        cy.get("#addressname_1").should("have.prop", "value", "01");
 
         cy.get("#addressname_1").find("[part='trigger-button']").click();
 
@@ -247,7 +243,7 @@ describe("<StaffLocationGroupComponent />", () => {
           .and("be.visible")
           .click();
 
-        cy.get("#addressname_1").and("have.value", "01,02");
+        cy.get("#addressname_1").should("have.prop", "value", "01,02");
 
         cy.get<VueWrapper<InstanceType<typeof StaffContactGroupComponent>>>("@vueWrapper").should(
           (vueWrapper) => {
