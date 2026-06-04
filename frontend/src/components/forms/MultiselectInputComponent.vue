@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick, onMounted } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/multi-select/index";
 import "@carbon/web-components/es/components/tag/index";
@@ -221,6 +221,23 @@ watch(
     }
   }
 );
+
+// Workaround for Vitest/Vue 3.0.6+: Carbon's cds-multi-select auto-detects pre-selected items 
+// via the `selected` HTML attribute during firstUpdated. Vue's :selected binding sets the DOM 
+// property instead of attribute, so Carbon resets selection. Re-applying value ensures Carbon 
+// reflects correct initial state.
+onMounted(async () => {
+  await nextTick();
+  if (cdsMultiSelectRef.value && selectedValue.value) {
+    // Await one more microtask for Carbon to finish evaluating its shadow DOM slots
+    setTimeout(() => {
+      if (cdsMultiSelectRef.value) {
+        (cdsMultiSelectRef.value as any).value = selectedValue.value;
+      }
+    }, 50);
+  }
+});
+
 </script>
 
 <template>
