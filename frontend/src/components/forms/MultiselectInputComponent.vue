@@ -222,19 +222,16 @@ watch(
   }
 );
 
-// Workaround for Vitest/Vue 3.0.6+: Carbon's cds-multi-select auto-detects pre-selected items 
-// via the `selected` HTML attribute during firstUpdated. Vue's :selected binding sets the DOM 
-// property instead of attribute, so Carbon resets selection. Re-applying value ensures Carbon 
-// reflects correct initial state.
+// Carbon's cds-multi-select resets selection during firstUpdated (LitElement lifecycle),
+// overriding Vue's :value binding. Re-applying the value after two nextTick calls allows
+// Carbon's firstUpdated to complete before we restore the correct selection.
 onMounted(async () => {
   await nextTick();
   if (cdsMultiSelectRef.value && selectedValue.value) {
-    // Await one more microtask for Carbon to finish evaluating its shadow DOM slots
-    setTimeout(() => {
-      if (cdsMultiSelectRef.value) {
-        (cdsMultiSelectRef.value as any).value = selectedValue.value;
-      }
-    }, 50);
+    await nextTick(); // second tick: lets Carbon's firstUpdated run before we re-apply
+    if (cdsMultiSelectRef.value) {
+      (cdsMultiSelectRef.value as any).value = selectedValue.value;
+    }
   }
 });
 
