@@ -220,10 +220,8 @@ describe('<BusinessInformationWizardStep />', () => {
     cy.get("#business")
       .should("be.visible")
       .then(($el) => {
-         const cb = $el[0] as any;
-         console.log("filterInputValue is:", cb._filterInputValue);
-         console.log("value is:", cb.value);
-         cb._handleUserInitiatedClearInput();
+        const cb = $el[0] as any;
+        cb._handleUserInitiatedClearInput();
       });
 
     cy.get("cds-inline-notification").should("not.exist");
