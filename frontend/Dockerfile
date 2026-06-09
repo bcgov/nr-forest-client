@@ -6,7 +6,7 @@ COPY . .
 RUN npm ci --ignore-scripts && npm install @esbuild/linux-x64 --no-save --ignore-scripts && npm run build
 
 # Caddy
-FROM caddy:2.11.3-alpine
+FROM caddy:2.11.4-alpine
 
 # Copy static files and config
 COPY --from=build /app/dist /srv
