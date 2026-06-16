@@ -100,8 +100,15 @@ export default defineConfig(({ command, mode }) => {
         ],
       },
       fs: {
-        // Security mitigation for CVE-2024-45811: server.fs.deny bypass on Windows alternate paths
-        deny: ['.env', '.env.*', '*.pem', '.key', '.git', 'node_modules', '/'],
+        deny: [
+          '**/.env',
+          '**/.env.*',
+          '**/*.pem',
+          '**/*.key',
+          '**/.git/**',
+          '**/node_modules/**',
+          '/',
+        ],
         allow: [
           fileURLToPath(new URL('./src', import.meta.url)),
           fileURLToPath(new URL('./public', import.meta.url)),
