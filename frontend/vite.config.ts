@@ -89,6 +89,9 @@ export default defineConfig(({ command, mode }) => {
           ? ["./src/**/*.{vue,js,jsx,ts,tsx}"]
           : undefined,
     },
+    build: {
+      sourcemap: true,
+    },
     server: {
       watch: {
         ignored: [
@@ -99,22 +102,24 @@ export default defineConfig(({ command, mode }) => {
           "**/reports*/**", // Ignore reports directory
         ],
       },
-      fs: {
-        deny: [
-          '**/.env',
-          '**/.env.*',
-          '**/*.pem',
-          '**/*.key',
-          '**/.git/**',
-          '**/node_modules/**',
-          '/',
-        ],
-        allow: [
-          fileURLToPath(new URL('./src', import.meta.url)),
-          fileURLToPath(new URL('./public', import.meta.url)),
-          fileURLToPath(new URL('./index.html', import.meta.url)),
-        ],
-      },
+      ...(command === "serve" && {
+        fs: {
+          deny: [
+            '**/.env',
+            '**/.env.*',
+            '**/*.pem',
+            '**/*.key',
+            '**/.git/**',
+            '**/node_modules/**',
+            '/',
+          ],
+          allow: [
+            fileURLToPath(new URL('./src', import.meta.url)),
+            fileURLToPath(new URL('./public', import.meta.url)),
+            fileURLToPath(new URL('./index.html', import.meta.url)),
+          ],
+        },
+      }),
     },
   };
 });
