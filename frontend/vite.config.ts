@@ -6,8 +6,37 @@ import Icons from "unplugin-icons/vite";
 import IconsResolver from "unplugin-icons/resolver";
 import istanbul from "vite-plugin-istanbul";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
+  const serverConfig: any = {
+    watch: {
+      ignored: [
+        "**/coverage/**", 
+        "**/node_modules/**", 
+        "**/.git/**", 
+        "**/dist/**", 
+        "**/reports*/**", 
+      ],
+    },
+  };
+
+  if (command === "serve") {
+    serverConfig.fs = {
+      deny: [
+        '**/.env',
+        '**/.env.*',
+        '**/*.pem',
+        '**/*.key',
+        '**/.git/**',
+        '**/node_modules/**',
+      ],
+      allow: [
+        fileURLToPath(new URL('./src', import.meta.url)),
+        fileURLToPath(new URL('./public', import.meta.url)),
+        fileURLToPath(new URL('./index.html', import.meta.url)),
+      ],
+    };
+  }
+
   return {
     plugins: [
       vue({
@@ -92,34 +121,6 @@ export default defineConfig(({ command, mode }) => {
     build: {
       sourcemap: true,
     },
-    server: {
-      watch: {
-        ignored: [
-          "**/coverage/**", // Ignore coverage directory
-          "**/node_modules/**", // Ignore node_modules
-          "**/.git/**", // Ignore .git directory
-          "**/dist/**", // Ignore dist directory
-          "**/reports*/**", // Ignore reports directory
-        ],
-      },
-      ...(command === "serve" && {
-        fs: {
-          deny: [
-            '**/.env',
-            '**/.env.*',
-            '**/*.pem',
-            '**/*.key',
-            '**/.git/**',
-            '**/node_modules/**',
-            '/',
-          ],
-          allow: [
-            fileURLToPath(new URL('./src', import.meta.url)),
-            fileURLToPath(new URL('./public', import.meta.url)),
-            fileURLToPath(new URL('./index.html', import.meta.url)),
-          ],
-        },
-      }),
-    },
+    server: serverConfig,
   };
 });
