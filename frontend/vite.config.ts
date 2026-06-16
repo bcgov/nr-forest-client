@@ -18,8 +18,8 @@ export default defineConfig(({ command, mode }) => {
       ],
     },
   };
-  
-  if (command === "serve" && mode !== "test") {
+
+  if (command === "serve" && process.env.VITE_MODE !== "test") {
     serverConfig.fs = {
       deny: [
         '**/.env',
