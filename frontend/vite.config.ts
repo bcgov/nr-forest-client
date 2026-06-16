@@ -18,8 +18,8 @@ export default defineConfig(({ command, mode }) => {
       ],
     },
   };
-
-  if (command === "serve") {
+  
+  if (command === "serve" && mode !== "test") {
     serverConfig.fs = {
       deny: [
         '**/.env',
