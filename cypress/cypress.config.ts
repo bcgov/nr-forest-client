@@ -50,6 +50,7 @@ async function setupNodeEvents(
 
 export default defineConfig({
   e2e: {
+    experimentalModifyObstructiveThirdPartyCode: true,
     reporter: require.resolve("@badeball/cypress-cucumber-preprocessor/pretty-reporter"),
     specPattern: "**/*.feature",
     setupNodeEvents,
@@ -60,7 +61,7 @@ export default defineConfig({
   viewportHeight: 1080,
   viewportWidth: 1920,
   retries: {    
-    runMode: 3,
+    runMode: 0,
     openMode: 0,
   },
 });
