@@ -1,12 +1,15 @@
 import { defineConfig } from "cypress";
 import webpack from "@cypress/webpack-preprocessor";
 import { addCucumberPreprocessorPlugin } from "@badeball/cypress-cucumber-preprocessor";
+import cypressOnFix from "cypress-on-fix";
 
 async function setupNodeEvents(
   on: Cypress.PluginEvents,
   config: Cypress.PluginConfigOptions
 ): Promise<Cypress.PluginConfigOptions> {
-  // This is required for the preprocessor to be able to generate JSON reports after each run, and more,
+  
+  on = cypressOnFix(on);
+
   await addCucumberPreprocessorPlugin(on, config);
 
   on(
@@ -42,7 +45,6 @@ async function setupNodeEvents(
     })
   );
 
-  // Make sure to return the config object as it might have been modified by the plugin.
   return config;
 }
 
