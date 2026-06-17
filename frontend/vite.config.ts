@@ -6,9 +6,39 @@ import Icons from "unplugin-icons/vite";
 import IconsResolver from "unplugin-icons/resolver";
 import istanbul from "vite-plugin-istanbul";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
+  const serverConfig: any = {
+    watch: {
+      ignored: [
+        "**/coverage/**", 
+        "**/node_modules/**", 
+        "**/.git/**", 
+        "**/dist/**", 
+        "**/reports*/**", 
+      ],
+    },
+  };
+  
+  if (command === "serve" && mode !== "test" && process.env.VITE_MODE !== "test" && process.env.NODE_ENV !== "test") {
+    serverConfig.fs = {
+      deny: [
+        '**/.env',
+        '**/.env.*',
+        '**/*.pem',
+        '**/*.key',
+        '**/.git/**',
+      ]
+    };
+  }
+
   return {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',
+        },
+      },
+    },
     plugins: [
       vue({
         template: {
@@ -89,16 +119,9 @@ export default defineConfig(({ command, mode }) => {
           ? ["./src/**/*.{vue,js,jsx,ts,tsx}"]
           : undefined,
     },
-    server: {
-      watch: {
-        ignored: [
-          "**/coverage/**", // Ignore coverage directory
-          "**/node_modules/**", // Ignore node_modules
-          "**/.git/**", // Ignore .git directory
-          "**/dist/**", // Ignore dist directory
-          "**/reports*/**", // Ignore reports directory
-        ],
-      },
+    build: {
+      sourcemap: true,
     },
+    server: serverConfig,
   };
 });
