@@ -27,17 +27,18 @@ export default defineConfig(({ command, mode }) => {
         '**/*.pem',
         '**/*.key',
         '**/.git/**',
-        '**/node_modules/**',
-      ],
-      allow: [
-        fileURLToPath(new URL('./src', import.meta.url)),
-        fileURLToPath(new URL('./public', import.meta.url)),
-        fileURLToPath(new URL('./index.html', import.meta.url)),
-      ],
+      ]
     };
   }
 
   return {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',
+        },
+      },
+    },
     plugins: [
       vue({
         template: {
