@@ -4,13 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Map;
 
 /**
- * Enumeration representing different types of identification used by clients.
+ * Identifies the supported client identification types.
  *
- * This enum defines various types of identification documents, such as birth certificates (BRTH),
- * Canadian driver's licenses (CDDL), passports (PASS), citizenship documents (CITZ), First Nations
- * ID (FNID), Permanent Resident Card (PRCD), US driver's licenses (USDL), and other forms of
- * identification (OTHR). It includes a static block to initialize a map for reverse lookup,
- * allowing retrieval of enum instances by their name.
+ * <p>The enum values map to the identification codes used by the application:
+ * BRTH, CDDL, PASS, CITZ, FNID, PRCD, BCID, USDL, and OTHR.
+ *
+ * <p>Use {@link #fromValue(String)} to resolve an enum constant from its string name.
  */
 public enum IdentificationTypeEnum {
 
@@ -21,30 +20,25 @@ public enum IdentificationTypeEnum {
   CITZ, // Citizenship Document
   FNID, // First Nations ID
   PRCD, // Permanent Resident Card
+  BCID, // British Columbia Identification Card
   USDL, // US Driver's License
   OTHR; // Other forms of identification
 
-  // A map for reverse lookup of enum constants by their name
+  // Reverse lookup by enum name
   private static final Map<String, IdentificationTypeEnum> CONSTANTS =
       new java.util.HashMap<>();
 
   static {
-    // Populates the CONSTANTS map with enum names and their corresponding enum instances
     for (IdentificationTypeEnum c : values()) {
       CONSTANTS.put(c.name(), c);
     }
   }
 
   /**
-   * Retrieves the enum instance corresponding to the given string value.
+   * Returns the enum constant matching the supplied name.
    *
-   * This method allows reverse lookup of enum instances by their name, facilitating conversion
-   * from strings to enum instances. It supports dynamic retrieval of enum instances in scenarios
-   * where the enum type is determined at runtime.
-   *
-   * @param value The string representation of the enum constant to be retrieved.
-   * @return The {@link IdentificationTypeEnum} instance corresponding to the given string value,
-   *         or null if no matching instance is found.
+   * @param value the enum name
+   * @return the matching {@link IdentificationTypeEnum}, or {@code null} if no match exists
    */
   @JsonCreator
   public static IdentificationTypeEnum fromValue(String value) {

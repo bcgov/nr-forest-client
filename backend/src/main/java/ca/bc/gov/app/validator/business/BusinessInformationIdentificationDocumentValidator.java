@@ -54,10 +54,22 @@ public class BusinessInformationIdentificationDocumentValidator implements
         case "CITZ" -> validateCanadianCitizenship(valueField, target.clientIdentification());
         case "FNID" -> validateFirstNationsId(valueField, target.clientIdentification());
         case "PRCD" -> validatePermanentResidenceCard(valueField, target.clientIdentification());
+        case "BCID" -> validateBCID(valueField, target.clientIdentification());
         case "OTHR" -> validateOtherDocuments(valueField, target.clientIdentification());
         default -> validateDL(valueField, target.clientIdentification());
       };
 
+    }
+
+    return Mono.empty();
+  }
+
+  private Mono<ValidationError> validateBCID(String fieldName, String value) {
+    if (!StringUtils.isNumeric(value) || StringUtils.length(value) != 8) {
+      return Mono.just(
+          new ValidationError(
+              fieldName,
+              "The British Columbia Identification Card must be an 8-digit number"));
     }
 
     return Mono.empty();

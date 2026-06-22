@@ -108,8 +108,7 @@ class BusinessInformationIdentificationDocumentValidatorTest {
         .verifyComplete();
 
   }
-
-
+  
   private static Stream<Arguments> validation() {
     return
         Stream.of(
@@ -141,6 +140,11 @@ class BusinessInformationIdentificationDocumentValidatorTest {
             Arguments.of("FNID",StringUtils.EMPTY,StringUtils.EMPTY,"12345678901234","clientIdentification","The First Nations ID must be a 10-digit number"),
             Arguments.of("FNID",StringUtils.EMPTY,StringUtils.EMPTY,"1","clientIdentification","The First Nations ID must be a 10-digit number"),
             Arguments.of("FNID",StringUtils.EMPTY,StringUtils.EMPTY,"1234567890",StringUtils.EMPTY,StringUtils.EMPTY),
+            
+            Arguments.of("BCID",StringUtils.EMPTY,StringUtils.EMPTY,"A1","clientIdentification","The British Columbia Identification Card must be an 8-digit number"),
+            Arguments.of("BCID",StringUtils.EMPTY,StringUtils.EMPTY,"12345678901234","clientIdentification","The British Columbia Identification Card must be an 8-digit number"),
+            Arguments.of("BCID",StringUtils.EMPTY,StringUtils.EMPTY,"1","clientIdentification","The British Columbia Identification Card must be an 8-digit number"),
+            Arguments.of("BCID",StringUtils.EMPTY,StringUtils.EMPTY,"12345678",StringUtils.EMPTY,StringUtils.EMPTY),
 
             Arguments.of("PRCD", StringUtils.EMPTY, StringUtils.EMPTY, "AB1234567890", StringUtils.EMPTY, StringUtils.EMPTY),
             Arguments.of("PRCD", StringUtils.EMPTY, StringUtils.EMPTY, "AB1234567", StringUtils.EMPTY, StringUtils.EMPTY),
