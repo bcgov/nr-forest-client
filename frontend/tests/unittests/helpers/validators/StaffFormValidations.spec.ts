@@ -292,24 +292,10 @@ describe("validations", () => {
         data.businessInformation["clientIdentification-FNID"] = value;
       };
       (<Scenario[]>[
-        ["1234567", false, "less than 8 digits"],
-        ["1234567A", false, "contains letters"],
-        ["12345678", true],
-        ["12345678901", false, "more than 8 digits"],
-      ]).forEach((scenario) => {
-        test(data, key, setter, scenario);
-      });
-    });
-
-    describe.each(["businessInformation.clientIdentification-BCID"])("%s", (key) => {
-      const setter = (value: string) => {
-        data.businessInformation["clientIdentification-BCID"] = value;
-      };
-      (<Scenario[]>[
-        ["1234567", false, "less than 8 digits"],
-        ["1234567A", false, "contains letters"],
-        ["12345678", true],
-        ["12345678901", false, "more than 8 digits"],
+        ["123456789", false, "less than 10 digits"],
+        ["123456789A", false, "contains letters"],
+        ["1234567890", true],
+        ["12345678901", false, "more than 10 digits"],
       ]).forEach((scenario) => {
         test(data, key, setter, scenario);
       });
