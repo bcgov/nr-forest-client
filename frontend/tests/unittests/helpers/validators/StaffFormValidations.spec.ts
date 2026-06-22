@@ -306,10 +306,10 @@ describe("validations", () => {
         data.businessInformation["clientIdentification-BCID"] = value;
       };
       (<Scenario[]>[
-        ["123456789", false, "less than 8 digits"],
+        ["1234567", false, "less than 8 digits"],
         ["123456789A", false, "contains letters"],
         ["12345678", true],
-        ["12345678901", false, "more than 8 digits"],
+        ["123456789", false, "more than 8 digits"],
       ]).forEach((scenario) => {
         test(data, key, setter, scenario);
       });
