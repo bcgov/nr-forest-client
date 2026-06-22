@@ -301,6 +301,20 @@ describe("validations", () => {
       });
     });
 
+    describe.each(["businessInformation.clientIdentification-BCID"])("%s", (key) => {
+      const setter = (value: string) => {
+        data.businessInformation["clientIdentification-BCID"] = value;
+      };
+      (<Scenario[]>[
+        ["1234567", false, "less than 8 digits"],
+        ["123456A", false, "contains letters"],
+        ["12345678", true],
+        ["123456789", false, "more than 8 digits"],
+      ]).forEach((scenario) => {
+        test(data, key, setter, scenario);
+      });
+    });
+
     // DRY execution block for both businessInformation and client for PRCD identification
     [
       { key: "businessInformation.clientIdentification-PRCD", rootNode: "businessInformation" },

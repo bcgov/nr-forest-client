@@ -111,6 +111,8 @@ export enum IdentificationTypeEnum {
   FNID,
   USDL,
   OTHR,
+  PRCD,
+  BCID,
 };
 
 export interface IdentificationCodeNameType {

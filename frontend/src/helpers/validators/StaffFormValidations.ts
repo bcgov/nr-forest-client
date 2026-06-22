@@ -147,6 +147,10 @@ export const clientIdentificationMaskParams = (() => {
     PRCD: {
       maxSize: 12,
     },
+    BCID: {
+      maxSize: 8,
+      onlyNumbers: true,
+    },
     FNID: {
       maxSize: 10,
       onlyNumbers: true,
@@ -213,6 +217,11 @@ fieldValidations["businessInformation.clientIdentification-CITZ"] = [
 fieldValidations["businessInformation.clientIdentification-FNID"] = [
   isOnlyNumbers("First Nation status ID should contain only numbers"),
   isExactSizMsg("First Nation status ID", clientIdentificationMaskParams.FNID.maxSize),
+];
+
+fieldValidations["businessInformation.clientIdentification-BCID"] = [
+  isOnlyNumbers("The British Columbia Identification Card must be an 8-digit number"),
+  isExactSizMsg("British Columbia identification", clientIdentificationMaskParams.BCID.maxSize),
 ];
 
 export const getClientIdentificationValidations = (
