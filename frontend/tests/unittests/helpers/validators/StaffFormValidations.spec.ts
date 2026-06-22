@@ -307,7 +307,7 @@ describe("validations", () => {
       };
       (<Scenario[]>[
         ["1234567", false, "less than 8 digits"],
-        ["123456789A", false, "contains letters"],
+        ["123456A", false, "contains letters"],
         ["12345678", true],
         ["123456789", false, "more than 8 digits"],
       ]).forEach((scenario) => {
