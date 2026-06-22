@@ -112,7 +112,7 @@ export enum IdentificationTypeEnum {
   USDL,
   OTHR,
   PRCD,
-  BCID
+  BCID,
 };
 
 export interface IdentificationCodeNameType {
