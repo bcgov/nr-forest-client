@@ -8,5 +8,6 @@ public enum IdentificationTypeEnum {
   FNID,
   PRCD,
   USDL,
+  BCID,
   OTHR
 }
