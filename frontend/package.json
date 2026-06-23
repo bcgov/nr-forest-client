@@ -120,7 +120,7 @@
   },
   "overrides": {
     "@babel/core": "^7.29.7",
-    "dompurify": "^3.4.10",
+    "dompurify": "^3.4.11",
     "uuid": "^14.0.0",
     "picomatch@^4.0.0": "^4.0.4",
     "flatted": "^3.4.2",
