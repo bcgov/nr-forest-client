@@ -7,6 +7,7 @@ public enum IdentificationTypeEnum {
   CITZ,
   FNID,
   PRCD,
+  BCID,
   USDL,
   OTHR
 }
