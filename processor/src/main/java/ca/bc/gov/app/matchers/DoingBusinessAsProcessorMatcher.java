@@ -12,9 +12,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * This class is a component that matches submissions based on the "Doing Business As" field.
- * It implements the ProcessorMatcher interface.
- * It uses a LegacyService to interact with the legacy system.
+ * Matches a submission against legacy clients using their registered
+ * "Doing Business As" (DBA) name, via fuzzy matching in the legacy system.
+ *
+ * <p>Only applies to submissions with client type "RSP"; see {@link #enabled}.
+ *
+ * @see ProcessorMatcher
  */
 @Component
 @RequiredArgsConstructor
@@ -24,69 +27,53 @@ public class DoingBusinessAsProcessorMatcher implements ProcessorMatcher {
   private final LegacyService legacyService;
 
   /**
-   * This method checks if the matcher is enabled for a given submission.
-   * It returns true if the client type of the submission is "RSP".
+   * Enabled only for "RSP" (Responsible Service Provider) submissions, since
+   * DBA matching is only meaningful for that client type.
    *
-   * @param submission A SubmissionInformationDto object.
-   * @return A boolean indicating if the matcher is enabled.
+   * @param submission the submission to check
+   * @return true if {@code submission.clientType()} is "RSP" (case-insensitive)
    */
   @Override
   public boolean enabled(SubmissionInformationDto submission) {
     return "RSP".equalsIgnoreCase(submission.clientType());
   }
 
-  /**
-   * This method returns the name of the matcher.
-   *
-   * @return A string representing the name of the matcher.
-   */
   @Override
   public String name() {
     return "Doing Business As Fuzzy Matcher";
   }
 
-  /**
-   * This method returns the field name that the matcher operates on.
-   *
-   * @return A string representing the field name.
-   */
   @Override
   public String fieldName() {
     return ApplicationConstant.MATCH_PARAM_NAME;
   }
 
   /**
-   * This method performs the matching operation for a given submission.
-   * It retrieves the "Doing Business As" name for the submission and sends a request
-   * to the legacy service to find matches. It then collects the client numbers of the
-   * matches into a MatcherResult.
+   * Looks up legacy clients whose DBA name matches the submission's
+   * corporation name, and collects their client numbers into a result.
    *
-   * @param submission A SubmissionInformationDto object.
-   * @return A Mono of MatcherResult containing the client numbers of the matches.
+   * @param submission the submission being matched; uses {@code corporationName}
+   * @return a {@link Mono} emitting a {@link MatcherResult} with the matched
+   *     client numbers (empty result if no matches are found)
    */
   @Override
   public Mono<MatcherResult> matches(SubmissionInformationDto submission) {
-
     log.info("{} :: Validating {}", name(), submission.corporationName());
 
-    return
-        matchBy(submission.corporationName())
-            .map(ClientDoingBusinessAsDto::clientNumber)
-            .collect(initializeResult(), compileResult());
+    return matchBy(submission.corporationName())
+        .map(ClientDoingBusinessAsDto::clientNumber)
+        .collect(initializeResult(), compileResult());
   }
 
   /**
-   * This method sends a request to the legacy service to find matches for a given
-   * company name. It logs each match found.
+   * Queries the legacy system for clients registered under the given DBA name.
    *
-   * @param companyName A string representing the company name.
-   * @return A Flux of ClientDoingBusinessAsDto objects representing the matches.
+   * @param companyName the DBA / corporation name to match against
+   * @return a {@link Flux} of matching legacy clients; empty if none are found
    */
   private Flux<ClientDoingBusinessAsDto> matchBy(String companyName) {
-    return
-        legacyService
-            .matchDba(companyName)
-            .doOnNext(entity -> log.info("Found a match {}", entity));
-
+    return legacyService
+        .matchDba(companyName)
+        .doOnNext(entity -> log.info("Found a match {}", entity));
   }
 }
