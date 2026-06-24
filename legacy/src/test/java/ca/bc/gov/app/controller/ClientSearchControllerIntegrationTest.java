@@ -178,7 +178,7 @@ class ClientSearchControllerIntegrationTest extends
             .uri(uriBuilder ->
                 uriBuilder
                     .path("/api/search/acronym")
-                    .queryParam("acronym", Optional.ofNullable(acronym))
+                    .queryParamIfPresent("acronym", Optional.ofNullable(acronym))
                     .build(new HashMap<>())
             )
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -216,7 +216,7 @@ class ClientSearchControllerIntegrationTest extends
             .uri(uriBuilder ->
                 uriBuilder
                     .path("/api/search/doingBusinessAs")
-                    .queryParam("dbaName", Optional.ofNullable(acronym))
+                    .queryParamIfPresent("dbaName", Optional.ofNullable(acronym))
                     .queryParamIfPresent("isFuzzy", Optional.ofNullable(isFuzzy))
                     .build(new HashMap<>())
             )
@@ -254,7 +254,7 @@ class ClientSearchControllerIntegrationTest extends
             .uri(uriBuilder ->
                 uriBuilder
                     .path("/api/search/clientName")
-                    .queryParam("clientName", Optional.ofNullable(clientName))
+                    .queryParamIfPresent("clientName", Optional.ofNullable(clientName))
                     .build(new HashMap<>())
             )
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -622,11 +622,11 @@ class ClientSearchControllerIntegrationTest extends
             .uri(uriBuilder ->
                 uriBuilder
                     .path("/api/search/corporationValues/{clientNumber}")
-                    .queryParam(
+                    .queryParamIfPresent(
                         "registryCompanyTypeCode",
                         Optional.ofNullable(registryCompanyTypeCode)
                     )
-                    .queryParam("corpRegnNmbr", Optional.ofNullable(corpRegnNmbr))
+                    .queryParamIfPresent("corpRegnNmbr", Optional.ofNullable(corpRegnNmbr))
                     .build(Map.of("clientNumber", clientNumber))
             )
             .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
