@@ -169,7 +169,7 @@ public class SubmissionValidatorService {
       return validationError("location.addresses", "addresses are missing");
     }
 
-    return checkSubmissionLimit(request.userId()).then(Mono.just(request));
+    return checkSubmissionLimit(request.userId()).then(Mono.empty());
   }
 
   private Mono<List<ValidationError>> businessValidationErrors(
