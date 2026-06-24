@@ -32,6 +32,7 @@ public class ClientCountryProvinceService {
    *
    * @param page The page number, it is a 0-index base.
    * @param size The amount of entries per page.
+   * @param currentDate The date used to filter active country records.
    * @return A list of {@link CodeNameDto} entries.
    */
   public Flux<CodeNameDto> listCountries(
@@ -78,16 +79,16 @@ public class ClientCountryProvinceService {
   /**
    * Loads a country value by description.
    *
-   * @param countryCode The description of the country to retrieve information for.
+   * @param countryDescription The description of the country to retrieve information for.
    * @return A Mono that emits the matching {@code ClientValueTextDto}, or a default value when no
    *     match is found.
    * @see ClientValueTextDto
    */
-  public Mono<ClientValueTextDto> loadCountry(String countryCode) {
+  public Mono<ClientValueTextDto> loadCountry(String countryDescription) {
     return countryCodeRepository
-        .findByDescription(countryCode)
+        .findByDescription(countryDescription)
         .map(entity -> new ClientValueTextDto(entity.getCountryCode(), entity.getDescription()))
-        .defaultIfEmpty(new ClientValueTextDto(StringUtils.EMPTY, countryCode));
+        .defaultIfEmpty(new ClientValueTextDto(StringUtils.EMPTY, countryDescription));
   }
 
   /**
