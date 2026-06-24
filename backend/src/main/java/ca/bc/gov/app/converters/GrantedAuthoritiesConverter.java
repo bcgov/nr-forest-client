@@ -61,7 +61,8 @@ public class GrantedAuthoritiesConverter
    * Loads an authority from the {@code custom:idp_name} claim.
    *
    * @param jwt the token to inspect
-   * @return a single authority, or an empty list when no claim is present
+   * @return a single authority derived from the claim, or a fallback {@code ROLE_NONE_USER}
+   *     authority when the claim is missing
    */
   private List<GrantedAuthority> loadRoleFromIdp(Jwt jwt) {
     return Optional.ofNullable(jwt.getClaims().getOrDefault("custom:idp_name", "none"))
