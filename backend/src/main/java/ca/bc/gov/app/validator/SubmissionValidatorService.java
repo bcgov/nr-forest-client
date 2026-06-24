@@ -236,19 +236,23 @@ public class SubmissionValidatorService {
    * @param principal the authenticated principal
    * @return a completion signal when no duplicate submission exists
    */
-  public Mono<Void> validateSubmissionDuplicationForUnregiteredBusinesses(
+  public Mono<Void> validateSubmissionDuplicationForUnregisteredBusinesses(
       JwtAuthenticationToken principal
   ) {
     String fullUsername = JwtPrincipalUtil.getUserId(principal);
 
-    return submissionRepository.countSubmissionUnregiteredBusinessesByUsername(fullUsername)
-        .doOnNext(count -> log.info("User {} has {} active submissions", fullUsername, count))
+    return submissionRepository
+        .countSubmissionUnregisteredBusinessesByUsername(fullUsername)
+        .doOnNext(count -> log.info(
+            "User {} has {} active submissions",
+            fullUsername,
+            count
+        ))
         .flatMap(count -> {
           if (count > 0) {
             return Mono.error(duplicateSubmissionError());
-          } else {
-            return Mono.empty();
           }
+          return Mono.empty();
         });
   }
 
@@ -258,11 +262,11 @@ public class SubmissionValidatorService {
    * @param registrationNumber the registration number to validate
    * @return a completion signal when no duplicate submission exists
    */
-  public Mono<Void> validateSubmissionDuplicationForRegiteredBusinesses(
+  public Mono<Void> validateSubmissionDuplicationForRegisteredBusinesses(
       String registrationNumber
   ) {
     return submissionRepository
-        .countSubmissionRegiteredBusinessesByRegistrationNumber(registrationNumber)
+        .countSubmissionRegisteredBusinessesByRegistrationNumber(registrationNumber)
         .doOnNext(
             count -> log.info("There are {} active submissions for {}", count, registrationNumber)
         )

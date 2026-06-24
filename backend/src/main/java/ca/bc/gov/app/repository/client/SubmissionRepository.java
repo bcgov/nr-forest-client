@@ -28,7 +28,7 @@ public interface SubmissionRepository extends ReactiveCrudRepository<SubmissionE
           and sd.business_type_code = 'U' 
           and s.create_user = :fullUsername 
         """)
-  Mono<Long> countSubmissionUnregiteredBusinessesByUsername(String fullUsername);
+  Mono<Long> countSubmissionUnregisteredBusinessesByUsername(String fullUsername);
 
   @Query("""
       select count(s.submission_id)
@@ -41,7 +41,7 @@ public interface SubmissionRepository extends ReactiveCrudRepository<SubmissionE
           and sd.business_type_code = 'R' 
           and sd.incorporation_number = :registrationNumber
         """)
-  Mono<Long> countSubmissionRegiteredBusinessesByRegistrationNumber(String registrationNumber);
+  Mono<Long> countSubmissionRegisteredBusinessesByRegistrationNumber(String registrationNumber);
   
   @Query("""
       select s.submission_id as id, dc.description as district, dc.email_address as emails
