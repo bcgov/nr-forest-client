@@ -7,9 +7,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @Configuration
 @ConditionalOnProperty(
-	value = "ca.bc.gov.nrs.processor.scheduling",
-	havingValue = "true",
-	matchIfMissing = true
+    value = "ca.bc.gov.nrs.processor.scheduling",
+    havingValue = "true",
+    matchIfMissing = true
 )
 public class SchedulerConfiguration {
 
