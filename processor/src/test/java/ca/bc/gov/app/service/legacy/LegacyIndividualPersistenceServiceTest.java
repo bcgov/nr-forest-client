@@ -45,14 +45,15 @@ class LegacyIndividualPersistenceServiceTest {
       SubmissionLocationContactRepository.class);
   private final LegacyService legacyService = mock(LegacyService.class);
 
-  private final LegacyIndividualPersistenceService service = new LegacyIndividualPersistenceService(
-      submissionDetailRepository,
-      submissionRepository,
-      locationRepository,
-      contactRepository,
-      locationContactRepository,
-      legacyService
-  );
+  private final LegacyIndividualPersistenceService service =
+      new LegacyIndividualPersistenceService(
+          submissionDetailRepository,
+          submissionRepository,
+          locationRepository,
+          contactRepository,
+          locationContactRepository,
+          legacyService
+      );
 
   @ParameterizedTest(name = "type: {0} expected: {1}")
   @MethodSource("byType")
@@ -205,7 +206,10 @@ class LegacyIndividualPersistenceServiceTest {
                 .withParameter(ApplicationConstant.MATCHING_REASON, StringUtils.EMPTY)
                 .withParameter(ApplicationConstant.CLIENT_TYPE_CODE, "I")
                 .withParameter(ApplicationConstant.MATCHED_USER, "IDIR\\JWICK")
-                .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Johnathan Valelono Wick")
+                .withParameter(
+                    ApplicationConstant.CLIENT_SUBMITTER_NAME,
+                    "Johnathan Valelono Wick"
+                )
                 .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
                 .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
                 .withParameter(ApplicationConstant.FOREST_CLIENT_NAME, "JOHNATHAN WICK")

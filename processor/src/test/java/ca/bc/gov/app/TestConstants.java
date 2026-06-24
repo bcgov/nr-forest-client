@@ -146,11 +146,11 @@ public class TestConstants {
           ]
       }""";
 
-  public static final String BCREG_RES2 = """
-        {
-          "errorMessage": "API backend third party service error.",
-          "rootCause": "message:ResourceErrorCodes.NOT_FOUND_ERR: no Document found for 7QbI0M6uBxx. "
-      }""";
+  public static final String BCREG_RES2 = "{\n"
+      + "  \"errorMessage\": \"API backend third party service error.\",\n"
+      + "  \"rootCause\": \"message:ResourceErrorCodes.NOT_FOUND_ERR: "
+      + "no Document found for 7QbI0M6uBxx. \"\n"
+      + "}";
 
   public static final ForestClientDto CLIENT_ENTITY = new ForestClientDto(
       null,

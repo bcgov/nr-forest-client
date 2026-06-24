@@ -57,8 +57,9 @@ public class DoingBusinessAsProcessorMatcher implements ProcessorMatcher {
 
   /**
    * This method performs the matching operation for a given submission.
-   * It retrieves the "Doing Business As" name for the submission and sends a request to the legacy service to find matches.
-   * It then collects the client numbers of the matches into a MatcherResult.
+   * It retrieves the "Doing Business As" name for the submission and sends a request
+   * to the legacy service to find matches. It then collects the client numbers of the
+   * matches into a MatcherResult.
    *
    * @param submission A SubmissionInformationDto object.
    * @return A Mono of MatcherResult containing the client numbers of the matches.

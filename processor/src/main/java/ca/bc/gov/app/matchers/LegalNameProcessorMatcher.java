@@ -23,7 +23,8 @@ public class LegalNameProcessorMatcher implements ProcessorMatcher {
   private final WebClient legacyClientApi;
 
   /**
-   * This constructor initializes the LegalNameProcessorMatcher with a WebClient for the legacy client API.
+   * This constructor initializes the LegalNameProcessorMatcher with a WebClient
+   * for the legacy client API.
    *
    * @param legacyClientApi A WebClient for the legacy client API.
    */

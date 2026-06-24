@@ -11,7 +11,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 /**
- * This class is a component that matches contacts. It implements the ProcessorMatcher interface. It
+ * This class is a component that matches contacts. It implements the
+ * ProcessorMatcher interface. It
  * uses a WebClient to interact with the legacy client API and a SubmissionContactRepository to
  * retrieve submission contacts.
  */

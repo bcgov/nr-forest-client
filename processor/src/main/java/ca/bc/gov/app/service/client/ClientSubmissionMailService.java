@@ -38,8 +38,13 @@ public class ClientSubmissionMailService {
                     .doOnNext(
                         source -> log.info("Email sent to {} {}", mailMessage.emailsCsv(), source))
                     .doOnError(
-                        throwable -> log.error("Error sending email to {}", mailMessage.emailsCsv(),
-                            throwable))
+                        throwable ->
+                            log.error(
+                                "Error sending email to {}",
+                                mailMessage.emailsCsv(),
+                                throwable
+                            )
+                    )
             );
   }
 

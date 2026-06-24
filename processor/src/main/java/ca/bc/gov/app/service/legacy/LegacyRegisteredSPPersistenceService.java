@@ -117,11 +117,15 @@ public class LegacyRegisteredSPPersistenceService extends LegacyAbstractPersiste
                     .withWcbFirmNumber(submissionDetail.getWorkSafeBCNumber())
 
                     .withLegalFirstName(
-                        isStaffSubmitted(message) ? submissionDetail.getFirstName().toUpperCase(Locale.ROOT)
-                            : StringUtils.EMPTY)
+                        isStaffSubmitted(message)
+                            ? submissionDetail.getFirstName().toUpperCase(Locale.ROOT)
+                            : StringUtils.EMPTY
+                    )
                     .withClientName(
-                        isStaffSubmitted(message) ? submissionDetail.getLastName().toUpperCase(Locale.ROOT)
-                            : StringUtils.EMPTY)
+                        isStaffSubmitted(message)
+                            ? submissionDetail.getLastName().toUpperCase(Locale.ROOT)
+                            : StringUtils.EMPTY
+                    )
                     .withClientTypeCode("I")
                     .withClientIdTypeCode("BCRE")
             )

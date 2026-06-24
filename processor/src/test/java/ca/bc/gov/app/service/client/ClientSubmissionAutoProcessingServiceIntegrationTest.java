@@ -289,7 +289,11 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
                           .containsKeys("fi", "fo")
                           .doesNotContainKeys("fa", "fu")
                           .containsEntry("fi", "00000000")
-                          .matches(m -> m.get("fo").toString().matches("^(?=.*00000001)(?=.*00000002)(?=.*00000003).*$"))
+                          .matches(
+                              actualMatchers -> actualMatchers.get("fo")
+                                  .toString()
+                                  .matches("^(?=.*00000001)(?=.*00000002)(?=.*00000003).*$")
+                          )
                   )
                   .verifyComplete();
             }

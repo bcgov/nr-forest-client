@@ -132,7 +132,10 @@ class LegacyClientPersistenceServiceTest {
                     .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
                     .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
                     .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
-                    .withParameter(ApplicationConstant.FOREST_CLIENT_NAME, "STAR DOT STAR VENTURES")
+                    .withParameter(
+                        ApplicationConstant.FOREST_CLIENT_NAME,
+                        "STAR DOT STAR VENTURES"
+                    )
                     .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "C0159297")
                     .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, false)
                     .withParameter(ApplicationConstant.DOING_BUSINESS_AS, StringUtils.EMPTY),
@@ -192,7 +195,10 @@ class LegacyClientPersistenceServiceTest {
                     .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
                     .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
                     .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
-                    .withParameter(ApplicationConstant.FOREST_CLIENT_NAME, "STAR DOT STAR VENTURES")
+                    .withParameter(
+                        ApplicationConstant.FOREST_CLIENT_NAME,
+                        "STAR DOT STAR VENTURES"
+                    )
                     .withParameter(ApplicationConstant.REGISTRATION_NUMBER, "C0159297")
                     .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, false)
                     .withParameter(ApplicationConstant.DOING_BUSINESS_AS, StringUtils.EMPTY),
@@ -245,14 +251,20 @@ class LegacyClientPersistenceServiceTest {
                     )
                     .withParameter(ApplicationConstant.SUBMISSION_STATUS, SubmissionStatusEnum.A)
                     .withParameter(ApplicationConstant.SUBMISSION_CLIENTID, StringUtils.EMPTY)
-                    .withParameter(ApplicationConstant.SUBMISSION_NAME, "Government of British Columbia")
+                    .withParameter(
+                        ApplicationConstant.SUBMISSION_NAME,
+                        "Government of British Columbia"
+                    )
                     .withParameter(ApplicationConstant.MATCHING_REASON, StringUtils.EMPTY)
                     .withParameter(ApplicationConstant.CLIENT_TYPE_CODE, "G")
                     .withParameter(ApplicationConstant.MATCHED_USER, "IDIR\\JWICK")
                     .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
                     .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
                     .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
-                    .withParameter(ApplicationConstant.FOREST_CLIENT_NAME, "GOVERNMENT OF BRITISH COLUMBIA")
+                    .withParameter(
+                        ApplicationConstant.FOREST_CLIENT_NAME,
+                        "GOVERNMENT OF BRITISH COLUMBIA"
+                    )
                     .withParameter(ApplicationConstant.REGISTRATION_NUMBER, StringUtils.EMPTY)
                     .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, false)
                     .withParameter(ApplicationConstant.DOING_BUSINESS_AS, StringUtils.EMPTY),
@@ -312,7 +324,10 @@ class LegacyClientPersistenceServiceTest {
                     .withParameter(ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow")
                     .withParameter(ApplicationConstant.CREATED_BY, "IDIR\\JWICK")
                     .withParameter(ApplicationConstant.UPDATED_BY, "IDIR\\JWICK")
-                    .withParameter(ApplicationConstant.FOREST_CLIENT_NAME, "TIMBER PRICING DIVISION")
+                    .withParameter(
+                        ApplicationConstant.FOREST_CLIENT_NAME,
+                        "TIMBER PRICING DIVISION"
+                    )
                     .withParameter(ApplicationConstant.REGISTRATION_NUMBER, StringUtils.EMPTY)
                     .withParameter(ApplicationConstant.IS_DOING_BUSINESS_AS, false)
                     .withParameter(ApplicationConstant.DOING_BUSINESS_AS, StringUtils.EMPTY),

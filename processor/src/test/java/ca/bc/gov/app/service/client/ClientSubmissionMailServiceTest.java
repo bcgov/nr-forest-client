@@ -8,8 +8,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.awaitility.Awaitility.await;
-import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
-
 import ca.bc.gov.app.TestConstants;
 import com.github.tomakehurst.wiremock.client.BasicCredentials;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -21,6 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
 
@@ -39,7 +38,7 @@ class ClientSubmissionMailServiceTest {
           .builder()
           .baseUrl("http://127.0.0.1:10010")
           .filter(
-              basicAuthentication(
+              ExchangeFilterFunctions.basicAuthentication(
                   "uat",
                   "thisisasupersecret"
               )

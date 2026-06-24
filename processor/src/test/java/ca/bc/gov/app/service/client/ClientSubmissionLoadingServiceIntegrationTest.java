@@ -58,19 +58,22 @@ class ClientSubmissionLoadingServiceIntegrationTest extends AbstractTestContaine
                 .withBasicAuth("uat", "thisisasupersecret")
                 .willReturn(
                     aResponse()
-                        .withBody("{\"code\": \"DCR\", \"description\": \"Test District\",\"emails\":\"alliance@mail.ca\"}")
+                        .withBody(
+                            "{\"code\": \"DCR\", \"description\": \"Test District\","
+                                + "\"emails\":\"alliance@mail.ca\"}"
+                        )
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                 )
         );
 
 
-    MessagingWrapper<Integer> message = new MessagingWrapper<>(submissionId,
+    MessagingWrapper<Integer> message = new MessagingWrapper<>(
+        submissionId,
         Map.of(
             ApplicationConstant.SUBMISSION_STATUS, status,
             ApplicationConstant.MATCHING_REASON, "reason"
         )
-
     );
     service
         .buildMailMessage(message)
@@ -88,8 +91,16 @@ class ClientSubmissionLoadingServiceIntegrationTest extends AbstractTestContaine
   private static Stream<Arguments> mailBody() {
     return Stream.of(
         Arguments.of(365, SubmissionStatusEnum.N, "alliance@mail.ca"),
-        Arguments.of(366, SubmissionStatusEnum.A, "alliance@mail.ca,uattestingmail@uat.testing.lo"),
-        Arguments.of(367, SubmissionStatusEnum.R, "alliance@mail.ca,uattestingmail@uat.testing.lo")
+        Arguments.of(
+            366,
+            SubmissionStatusEnum.A,
+            "alliance@mail.ca,uattestingmail@uat.testing.lo"
+        ),
+        Arguments.of(
+            367,
+            SubmissionStatusEnum.R,
+            "alliance@mail.ca,uattestingmail@uat.testing.lo"
+        )
     );
   }
 

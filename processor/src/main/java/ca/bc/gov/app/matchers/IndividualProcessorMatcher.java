@@ -24,7 +24,8 @@ public class IndividualProcessorMatcher implements ProcessorMatcher {
   private final WebClient legacyClientApi;
 
   /**
-   * This constructor initializes the IndividualProcessorMatcher with a WebClient for the legacy client API.
+   * This constructor initializes the IndividualProcessorMatcher with a
+   * WebClient for the legacy client API.
    *
    * @param legacyClientApi A WebClient for the legacy client API.
    */
@@ -68,8 +69,9 @@ public class IndividualProcessorMatcher implements ProcessorMatcher {
 
   /**
    * This method performs the matching operation for a given submission.
-   * It sends a request to the legacy client API to find matches based on the first name, last name, and date of birth.
-   * It then collects the client numbers of the matches into a MatcherResult.
+   * It sends a request to the legacy client API to find matches based on the
+   * first name, last name, and date of birth. It then collects the client
+   * numbers of the matches into a MatcherResult.
    *
    * @param submission A SubmissionInformationDto object.
    * @return A Mono of MatcherResult containing the client numbers of the matches.
