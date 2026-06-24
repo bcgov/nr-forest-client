@@ -3,6 +3,7 @@ package ca.bc.gov.app.controller;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Optional;
@@ -155,10 +156,10 @@ class ClientSearchIndividualControllerIntegrationTest extends
   private static Stream<Arguments> individuals() {
     return Stream
         .of(
-            Arguments.of("JAMES", null, LocalDate.of(1959, 5, 18), null),
-            Arguments.of(null, "BAXTER", LocalDate.of(1959, 5, 18), null),
-            Arguments.of("JAMES", StringUtils.EMPTY, LocalDate.of(1959, 5, 18), null),
-            Arguments.of(StringUtils.EMPTY, "BAXTER", LocalDate.of(1959, 5, 18), null)
+            Arguments.of("JAMES", null, LocalDate.of(1959, Month.MAY, 18), null),
+            Arguments.of(null, "BAXTER", LocalDate.of(1959, Month.MAY, 18), null),
+            Arguments.of("JAMES", StringUtils.EMPTY, LocalDate.of(1959, Month.MAY, 18), null),
+            Arguments.of(StringUtils.EMPTY, "BAXTER", LocalDate.of(1959, Month.MAY, 18), null)
         );
   }
 

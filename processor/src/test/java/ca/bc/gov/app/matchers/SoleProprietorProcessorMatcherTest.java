@@ -10,6 +10,7 @@ import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -76,7 +77,7 @@ class SoleProprietorProcessorMatcherTest {
                 new SubmissionInformationDto(
                     1,
                     "James Frank",
-                    LocalDate.of(2023, 4, 5),
+                    LocalDate.of(2023, Month.APRIL, 5),
                     null,
                     null,
                     "USP"
@@ -89,7 +90,7 @@ class SoleProprietorProcessorMatcherTest {
                 new SubmissionInformationDto(
                     1,
                     "Marco Polo",
-                    LocalDate.of(2023, 9, 12),
+                    LocalDate.of(2023, Month.SEPTEMBER, 12),
                     null,
                     null,
                     "RSP"
@@ -102,7 +103,7 @@ class SoleProprietorProcessorMatcherTest {
                 new SubmissionInformationDto(
                     1,
                     "Lucca DeBiaggio",
-                    LocalDate.of(2023, 10, 11),
+                    LocalDate.of(2023, Month.OCTOBER, 11),
                     null,
                     null,
                     "USP"

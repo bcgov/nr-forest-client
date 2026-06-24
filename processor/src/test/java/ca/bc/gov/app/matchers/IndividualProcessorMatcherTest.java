@@ -10,6 +10,7 @@ import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -71,7 +72,7 @@ class IndividualProcessorMatcherTest {
                 new SubmissionInformationDto(
                     1,
                     "James Frank",
-                    LocalDate.of(1985, 10, 4),
+                    LocalDate.of(1985, Month.OCTOBER, 4),
                     null,
                     "Y",
                     "I"
@@ -84,7 +85,7 @@ class IndividualProcessorMatcherTest {
                 new SubmissionInformationDto(
                     1,
                     "Marco Polo",
-                    LocalDate.of(1977, 3, 22),
+                    LocalDate.of(1977, Month.MARCH, 22),
                     null,
                     "Y",
                     "I"
@@ -97,7 +98,7 @@ class IndividualProcessorMatcherTest {
                 new SubmissionInformationDto(
                     1,
                     "Lucca DeBiaggio",
-                    LocalDate.of(1951, 12, 25),
+                    LocalDate.of(1951, Month.DECEMBER, 25),
                     null,
                     "Y",
                     "I"

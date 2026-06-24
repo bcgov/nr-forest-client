@@ -76,8 +76,8 @@ public class DoingBusinessAsProcessorMatcher implements ProcessorMatcher {
   }
 
   /**
-   * This method sends a request to the legacy service to find matches for a given company name.
-   * It logs each match found.
+   * This method sends a request to the legacy service to find matches for a given
+   * company name. It logs each match found.
    *
    * @param companyName A string representing the company name.
    * @return A Flux of ClientDoingBusinessAsDto objects representing the matches.
@@ -89,5 +89,4 @@ public class DoingBusinessAsProcessorMatcher implements ProcessorMatcher {
             .doOnNext(entity -> log.info("Found a match {}", entity));
 
   }
-
 }
