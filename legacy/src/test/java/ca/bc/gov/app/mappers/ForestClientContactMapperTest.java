@@ -1,7 +1,8 @@
 package ca.bc.gov.app.mappers;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
@@ -14,11 +15,10 @@ import org.mapstruct.factory.Mappers;
 @DisplayName("Unit Test | Forest Client Contact Mapper")
 class ForestClientContactMapperTest {
 
-
   private final ForestClientContactMapper mapper = Mappers.getMapper(
       ForestClientContactMapper.class);
 
-  ForestClientContactDto dto =  new ForestClientContactDto(
+  ForestClientContactDto dto = new ForestClientContactDto(
       "00000001",
       "00",
       List.of("00"),
@@ -68,7 +68,7 @@ class ForestClientContactMapperTest {
   @Test
   @DisplayName("Should convert to dto")
   void shouldConvertToDto() {
-    assertEquals(dto,mapper.toDto(entity));
+    assertEquals(dto, mapper.toDto(entity));
   }
 
 }

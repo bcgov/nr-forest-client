@@ -1271,17 +1271,17 @@ public final class ForestClientQueries {
 
   public static final String LOCATION_TO_REACTIVATE = """
       WITH ForestClientAudit AS (
-      	SELECT
-      		fca.client_number,
-      		fca.UPDATE_TIMESTAMP
-      	FROM THE.FOR_CLI_AUDIT fca
-      	WHERE fca.client_number = :client_number
-      	AND fca.CLIENT_STATUS_CODE = :client_status
-      	ORDER BY fca.FOREST_CLIENT_AUDIT_ID DESC
-      	FETCH NEXT 1 ROWS ONLY
+        SELECT
+          fca.client_number,
+          fca.UPDATE_TIMESTAMP
+        FROM THE.FOR_CLI_AUDIT fca
+        WHERE fca.client_number = :client_number
+          AND fca.CLIENT_STATUS_CODE = :client_status
+        ORDER BY fca.FOREST_CLIENT_AUDIT_ID DESC
+        FETCH NEXT 1 ROWS ONLY
       )
       SELECT
-      	DISTINCT cla.client_locn_code as code,
+        DISTINCT cla.client_locn_code as code,
         cla.client_locn_name as name
       FROM THE.CLI_LOCN_AUDIT cla
       LEFT JOIN ForestClientAudit fca ON fca.client_number = cla.client_number
@@ -1291,9 +1291,9 @@ public final class ForestClientQueries {
   public static final String CLIENT_IDIR_USERS_AUTOCOMPLETE = """
       SELECT DISTINCT UPDATE_USERID
       FROM THE.FOREST_CLIENT
-      WHERE UPDATE_USERID LIKE 'IDIR\\%' 
+      WHERE UPDATE_USERID LIKE 'IDIR\\%'
         AND UTL_MATCH.JARO_WINKLER_SIMILARITY(
-            REGEXP_SUBSTR(UPPER(UPDATE_USERID), '[^\\\\]+$'), 
+            REGEXP_SUBSTR(UPPER(UPDATE_USERID), '[^\\\\]+$'),
             UPPER(:userId)
         ) > 90
       ORDER BY UPDATE_USERID ASC

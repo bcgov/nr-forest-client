@@ -27,8 +27,12 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
   private static final String GET_ALL_CONTACT_IDS = """
       SELECT CLIENT_LOCN_CODE FROM CLIENT_CONTACT
       WHERE
-      	CLIENT_NUMBER = :client_number
-      	AND CONTACT_NAME = (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id)
+        CLIENT_NUMBER = :client_number
+        AND CONTACT_NAME = (
+          SELECT cl.CONTACT_NAME
+          FROM THE.CLIENT_CONTACT cl
+          WHERE cl.CLIENT_CONTACT_ID = :entity_id
+        )
       ORDER BY CLIENT_LOCN_CODE""";
 
   private static final String CHECK_CONTACT_EXIST = """
@@ -36,13 +40,21 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
       FROM CLIENT_CONTACT
       WHERE
         CLIENT_NUMBER = :client_number
-        AND CONTACT_NAME = (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id)
+        AND CONTACT_NAME = (
+          SELECT cl.CONTACT_NAME
+          FROM THE.CLIENT_CONTACT cl
+          WHERE cl.CLIENT_CONTACT_ID = :entity_id
+        )
         AND CLIENT_LOCN_CODE = :location_code""";
 
   public static final String REMOVE_CONTACT_ASSOCIATION = """
       DELETE FROM THE.CLIENT_CONTACT WHERE
       CLIENT_NUMBER = :client_number
-      AND CONTACT_NAME = (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id)
+      AND CONTACT_NAME = (
+        SELECT cl.CONTACT_NAME
+        FROM THE.CLIENT_CONTACT cl
+        WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      )
       AND CLIENT_LOCN_CODE = :location_code""";
 
   public static final String ADD_CONTACT_ASSOCIATION = """
@@ -55,12 +67,36 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
       )
       VALUES
       (client_contact_seq.NEXTVAL, :client_number, :location_code,
-      (SELECT cl.BUS_CONTACT_CODE FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.BUSINESS_PHONE FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.CELL_PHONE FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.FAX_NUMBER FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
-      (SELECT cl.EMAIL_ADDRESS FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id),
+      (
+        SELECT cl.BUS_CONTACT_CODE
+        FROM THE.CLIENT_CONTACT cl
+        WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      ),
+      (
+        SELECT cl.CONTACT_NAME
+        FROM THE.CLIENT_CONTACT cl
+        WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      ),
+      (
+        SELECT cl.BUSINESS_PHONE
+        FROM THE.CLIENT_CONTACT cl
+        WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      ),
+      (
+        SELECT cl.CELL_PHONE
+        FROM THE.CLIENT_CONTACT cl
+        WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      ),
+      (
+        SELECT cl.FAX_NUMBER
+        FROM THE.CLIENT_CONTACT cl
+        WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      ),
+      (
+        SELECT cl.EMAIL_ADDRESS
+        FROM THE.CLIENT_CONTACT cl
+        WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      ),
       SYSDATE, :user_id, 70, SYSDATE, :user_id, 70, 1)""";
 
   public static final String REPLACE_CONTACT_ASSOCIATION = """
@@ -72,7 +108,11 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
         update_userid = :user_id,
         update_org_unit = 70
       WHERE CLIENT_NUMBER = :client_number
-      AND CONTACT_NAME = (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id)
+      AND CONTACT_NAME = (
+        SELECT cl.CONTACT_NAME
+        FROM THE.CLIENT_CONTACT cl
+        WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      )
       AND CLIENT_LOCN_CODE = :old_location_code""";
 
   private final R2dbcEntityOperations entityTemplate;
@@ -111,9 +151,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
             )
             .then();
 
-
   }
-
 
   private static Function<List<String>, ContactAssociationDto> convertToAction(JsonNode node) {
     return locations -> {
@@ -222,7 +260,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
     return Flux
         .fromIterable(entries)
         .filter(entry -> entry.operation().equals("add"))
-        //If no contact association exists for the entityId and newLocationCode, then add it
+        // If no contact association exists for the entityId and newLocationCode, then add it.
         .filterWhen(entry -> hasContactAssociation(
                 clientNumber,
                 entry.entityId(),
@@ -269,7 +307,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
     return Flux
         .fromIterable(entries)
         .filter(entry -> entry.operation().equals("replace"))
-        //If no contact association exists for the entityId and newLocationCode, then add it
+        // If no contact association exists for the entityId and newLocationCode, then add it.
         .filterWhen(entry -> hasContactAssociation(
                 clientNumber,
                 entry.entityId(),
@@ -306,6 +344,4 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
         .map(Long::parseLong)
         .map(value -> value > 0);
   }
-
-
 }

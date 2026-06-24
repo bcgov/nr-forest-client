@@ -103,9 +103,22 @@ class ClientSearchIndividualServiceIntegrationTest extends AbstractTestContainer
     return Stream
         .of(
             Arguments.of("JAMES", "BAXTER", LocalDate.of(1959, 5, 18), null, "00000001", null),
-            Arguments.of("THOMAS", "FUNNY", LocalDate.of(1939, 7, 4), "34458787", "00000002", null),
-            Arguments.of("ALBUS", "DUMBLEDORE", LocalDate.of(1814, 5, 12), null, StringUtils.EMPTY,
-                null),
+            Arguments.of(
+                "THOMAS",
+                "FUNNY",
+                LocalDate.of(1939, 7, 4),
+                "34458787",
+                "00000002",
+                null
+            ),
+            Arguments.of(
+                "ALBUS",
+                "DUMBLEDORE",
+                LocalDate.of(1814, 5, 12),
+                null,
+                StringUtils.EMPTY,
+                null
+            ),
             Arguments.of("JAMES", null, null, null, null, MissingRequiredParameterException.class),
             Arguments.of("JAMES", "Baxter", null, null, "00000001", null),
             Arguments.of(null, "Baxter", LocalDate.of(1959, 5, 18), null, null,

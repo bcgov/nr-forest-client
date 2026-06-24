@@ -72,16 +72,19 @@ public class ClientContactService {
   }
 
   /**
-   * Searches for forest client contacts based on the provided search criteria. This method combines
-   * the first name and last name into a single search string, and uses this along with the email
-   * and phone number to search for matching client contacts. The search is case-insensitive and can
-   * partially match the contact information.
+   * Searches for forest client contacts based on the provided search criteria.
+   *
+   * <p>This method combines the first name and last name into a single search string,
+   * and uses this along with the email and phone number to search for matching client
+   * contacts. The search is case-insensitive and can partially match the contact
+   * information.
    *
    * @param firstName The first name of the client contact to search for.
    * @param lastName  The last name of the client contact to search for.
    * @param email     The email address of the client contact to search for.
    * @param phone     The phone number of the client contact to search for.
-   * @return A {@link Flux<ForestClientContactDto>} containing the search results mapped to DTOs.
+   * @return A {@link Flux<ForestClientContactDto>} containing the search results
+   *     mapped to DTOs.
    */
   public Flux<ForestClientContactDto> search(
       String firstName,

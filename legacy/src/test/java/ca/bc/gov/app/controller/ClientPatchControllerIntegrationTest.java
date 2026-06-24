@@ -140,7 +140,10 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Replace both WorkSafe BC Number and notes",
             "00000011",
-            "[{\"op\":\"replace\",\"path\":\"/client/wcbFirmNumber\",\"value\":\"142536\"},{\"op\":\"replace\",\"path\":\"/client/clientComment\",\"value\":\"This is a nota, yay\"}]",
+            "[{\"op\":\"replace\",\"path\":\"/client/wcbFirmNumber\","
+                + "\"value\":\"142536\"},{\"op\":\"replace\","
+                + "\"path\":\"/client/clientComment\","
+                + "\"value\":\"This is a nota, yay\"}]",
             "$.client.wcbFirmNumber",
             null,
             "142536"
@@ -148,7 +151,9 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Deactivate client due to bankruptcy",
             "00000103",
-            "[{\"op\":\"replace\",\"path\":\"/client/clientStatusCode\",\"value\":\"DAC\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"clientStatusCode\",\"reason\":\"BKR\"}}]",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientStatusCode\","
+                + "\"value\":\"DAC\"},{\"op\":\"add\",\"path\":\"/reasons/0\","
+                + "\"value\":{\"field\":\"clientStatusCode\",\"reason\":\"BKR\"}}]",
             "$.client.clientStatusCode",
             "ACT",
             "DAC"
@@ -156,7 +161,9 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Activate client due to correction",
             "00000158",
-            "[{\"op\":\"replace\",\"path\":\"/client/clientStatusCode\",\"value\":\"ACT\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"clientStatusCode\",\"reason\":\"CORR\"}}]",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientStatusCode\","
+                + "\"value\":\"ACT\"},{\"op\":\"add\",\"path\":\"/reasons/0\","
+                + "\"value\":{\"field\":\"clientStatusCode\",\"reason\":\"CORR\"}}]",
             "$.client.clientStatusCode",
             "DAC",
             "ACT"
@@ -164,7 +171,8 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Replace the notes value from a location",
             "00000157",
-            "[{\"op\":\"replace\",\"path\":\"/addresses/00/cliLocnComment\",\"value\": \"This is a homeland note\"}]",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/cliLocnComment\","
+                + "\"value\": \"This is a homeland note\"}]",
             "$.addresses[0].cliLocnComment",
             null,
             "This is a homeland note"
@@ -172,7 +180,8 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Replace the location name from a location",
             "00000157",
-            "[{\"op\":\"replace\",\"path\":\"/addresses/00/clientLocnName\",\"value\": \"HOMELAND\"}]",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/clientLocnName\","
+                + "\"value\": \"HOMELAND\"}]",
             "$.addresses[0].clientLocnName",
             null,
             "HOMELAND"
@@ -180,7 +189,8 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Replace the location phone from a location",
             "00000157",
-            "[{\"op\":\"replace\",\"path\":\"/addresses/00/cellPhone\",\"value\": \"4008000001\"}]",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/cellPhone\","
+                + "\"value\": \"4008000001\"}]",
             "$.addresses[0].cellPhone",
             null,
             "4008000001"
@@ -188,7 +198,16 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Add a new location",
             "00000137",
-            "[{\"op\":\"add\",\"path\":\"/addresses/null\",\"value\":{\"clientNumber\":\"00000137\",\"clientLocnName\":\"Headquarters\",\"addressOne\":\"2975 Jutland Rd\",\"addressTwo\":\"\",\"addressThree\":null,\"city\":\"Victoria\",\"provinceCode\":\"BC\",\"provinceDesc\":\"British Columbia\",\"postalCode\":\"V8T5J9\",\"countryCode\":\"CA\",\"countryDesc\":\"Canada\",\"businessPhone\":\"\",\"homePhone\":\"\",\"cellPhone\":\"\",\"faxNumber\":\"\",\"emailAddress\":\"\",\"locnExpiredInd\":\"N\",\"cliLocnComment\":\"\"}}]",
+            "[{\"op\":\"add\",\"path\":\"/addresses/null\",\"value\":{"
+                + "\"clientNumber\":\"00000137\",\"clientLocnName\":\"Headquarters\","
+                + "\"addressOne\":\"2975 Jutland Rd\",\"addressTwo\":\"\","
+                + "\"addressThree\":null,\"city\":\"Victoria\","
+                + "\"provinceCode\":\"BC\",\"provinceDesc\":\"British Columbia\","
+                + "\"postalCode\":\"V8T5J9\",\"countryCode\":\"CA\","
+                + "\"countryDesc\":\"Canada\",\"businessPhone\":\"\","
+                + "\"homePhone\":\"\",\"cellPhone\":\"\",\"faxNumber\":\"\","
+                + "\"emailAddress\":\"\",\"locnExpiredInd\":\"N\","
+                + "\"cliLocnComment\":\"\"}}]",
             "$.addresses[1].clientLocnName",
             null,
             "HEADQUARTERS"
@@ -204,7 +223,9 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Update contact name",
             "00000114",
-            "[{\"op\":\"replace\",\"path\":\"/contacts/17/contactTypeCode\",\"value\":\"BL\"},{\"op\":\"replace\",\"path\":\"/contacts/17/contactName\",\"value\":\"ANGELO GIANDER\"}]",
+            "[{\"op\":\"replace\",\"path\":\"/contacts/17/contactTypeCode\","
+                + "\"value\":\"BL\"},{\"op\":\"replace\","
+                + "\"path\":\"/contacts/17/contactName\",\"value\":\"ANGELO GIANDER\"}]",
             "$.contacts[0].contactName",
             "ANGELO GLANDER",
             "ANGELO GIANDER"
@@ -220,7 +241,12 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Add a new contact",
             "00000158",
-            "[{\"op\":\"add\",\"path\":\"/contacts/null\",\"value\":{\"clientNumber\":\"00000158\",\"locationCodes\":[\"00\"],\"contactName\":\"JAMES Lee-Roy\",\"contactTypeCode\":\"DI\",\"contactTypeDesc\":\"Director\",\"businessPhone\":\"2504447788\",\"secondaryPhone\":\"\",\"faxNumber\":\"\",\"emailAddress\":\"leeroy@oakheritagegroup.ca\"}}]",
+            "[{\"op\":\"add\",\"path\":\"/contacts/null\",\"value\":{"
+                + "\"clientNumber\":\"00000158\",\"locationCodes\":[\"00\"],"
+                + "\"contactName\":\"JAMES Lee-Roy\",\"contactTypeCode\":\"DI\","
+                + "\"contactTypeDesc\":\"Director\",\"businessPhone\":\"2504447788\","
+                + "\"secondaryPhone\":\"\",\"faxNumber\":\"\","
+                + "\"emailAddress\":\"leeroy@oakheritagegroup.ca\"}}]",
             "$.contacts[1].contactName",
             null,
             "JAMES LEE-ROY"
@@ -244,7 +270,9 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Update address information",
             "00000002",
-            "[{\"op\":\"replace\",\"path\":\"/addresses/00/city\",\"value\":\"HAMILTON\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/addresses/00\",\"reason\":\"CORR\"}}]",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/city\","
+                + "\"value\":\"HAMILTON\"},{\"op\":\"add\",\"path\":\"/reasons/0\","
+                + "\"value\":{\"field\":\"/addresses/00\",\"reason\":\"CORR\"}}]",
             "$.addresses[0].city",
             "VICTORIA",
             "HAMILTON"
@@ -252,7 +280,10 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Update corporate client name with a reason",
             "00000158",
-            "[{\"op\":\"replace\",\"path\":\"/client/clientName\",\"value\":\"THE OAK HERITAGE GROUP\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/client/name\",\"reason\":\"CORR\"}}]",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientName\","
+                + "\"value\":\"THE OAK HERITAGE GROUP\"},{\"op\":\"add\","
+                + "\"path\":\"/reasons/0\",\"value\":{\"field\":\"/client/name\","
+                + "\"reason\":\"CORR\"}}]",
             "$.client.clientName",
             "OAK HERITAGE GROUP",
             "THE OAK HERITAGE GROUP"
@@ -260,7 +291,13 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Update individual client name with a reason",
             "00000103",
-            "[{\"op\":\"replace\",\"path\":\"/client/legalMiddleName\",\"value\":\"WALLACE\"},{\"op\":\"replace\",\"path\":\"/client/legalFirstName\",\"value\":\"LAWRENCE\"},{\"op\":\"replace\",\"path\":\"/client/clientName\",\"value\":\"FISHBORN\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/client/name\",\"reason\":\"LNAM\"}}]",
+            "[{\"op\":\"replace\",\"path\":\"/client/legalMiddleName\","
+                + "\"value\":\"WALLACE\"},{\"op\":\"replace\","
+                + "\"path\":\"/client/legalFirstName\",\"value\":\"LAWRENCE\"},"
+                + "{\"op\":\"replace\",\"path\":\"/client/clientName\","
+                + "\"value\":\"FISHBORN\"},{\"op\":\"add\","
+                + "\"path\":\"/reasons/0\",\"value\":{\"field\":\"/client/name\","
+                + "\"reason\":\"LNAM\"}}]",
             "$.client.legalFirstName",
             "ADELICE",
             "LAWRENCE"
@@ -278,7 +315,9 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Update corporation number and type",
             "00000158",
-            "[{\"op\":\"replace\",\"path\":\"/client/corpRegnNmbr\",\"value\":\"1003402\"},{\"op\":\"replace\",\"path\":\"/client/registryCompanyTypeCode\",\"value\":\"REG\"}]",
+            "[{\"op\":\"replace\",\"path\":\"/client/corpRegnNmbr\","
+                + "\"value\":\"1003402\"},{\"op\":\"replace\","
+                + "\"path\":\"/client/registryCompanyTypeCode\",\"value\":\"REG\"}]",
             "$.client.corpRegnNmbr",
             "0003402",
             "1003402"
@@ -286,7 +325,9 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Update client id",
             "00000103",
-            "[{\"op\":\"replace\",\"path\":\"/client/clientIdentification\",\"value\":\"44654656\"},{\"op\":\"add\",\"path\":\"/reasons/0\",\"value\":{\"field\":\"/client/id\",\"reason\":\"CORR\"}}]",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientIdentification\","
+                + "\"value\":\"44654656\"},{\"op\":\"add\",\"path\":\"/reasons/0\","
+                + "\"value\":{\"field\":\"/client/id\",\"reason\":\"CORR\"}}]",
             "$.client.clientIdentification",
             "FM3176776",
             "44654656"
@@ -302,7 +343,10 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Change client type",
             "00000114",
-            "[{\"op\":\"replace\",\"path\":\"/client/clientTypeCode\",\"value\":\"F\"},{\"op\":\"replace\",\"path\":\"/client/corpRegnNmbr\",\"value\":null},{\"op\":\"replace\",\"path\":\"/client/registryCompanyTypeCode\",\"value\":null}]",
+            "[{\"op\":\"replace\",\"path\":\"/client/clientTypeCode\","
+                + "\"value\":\"F\"},{\"op\":\"replace\","
+                + "\"path\":\"/client/corpRegnNmbr\",\"value\":null},{\"op\":\"replace\","
+                + "\"path\":\"/client/registryCompanyTypeCode\",\"value\":null}]",
             "$.client.clientTypeCode",
             "C",
             "F"
@@ -310,7 +354,7 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
     );
   }
 
-  public static Stream<Arguments> patchRelatedClients(){
+  public static Stream<Arguments> patchRelatedClients() {
     return Stream.of(
         argumentSet(
             "Remove related client",
@@ -323,7 +367,9 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Update related client",
             "00000172",
-            "[{ \"op\": \"replace\", \"path\": \"/relatedClients/0000017201JV0000014400/percentageOwnership\", \"value\": \"15\" }]",
+            "[{ \"op\": \"replace\", \"path\": "
+                + "\"/relatedClients/0000017201JV0000014400/percentageOwnership\","
+                + " \"value\": \"15\" }]",
             "$[1].percentOwnership",
             null,
             "15.0"
@@ -331,7 +377,12 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Add related client",
             "00000172",
-            "[{ \"op\": \"add\", \"path\": \"/relatedClients/null\", \"value\": [ { \"relatedClient\": { \"client\": { \"code\": \"00000159\" }, \"location\": { \"code\": \"00\" } }, \"client\": { \"client\": { \"code\": \"00000172\" }, \"location\": { \"code\": \"01\" } }, \"relationship\": { \"code\": \"AG\" }, \"percentageOwnership\": null, \"hasSigningAuthority\": false } ] }]",
+            "[{ \"op\": \"add\", \"path\": \"/relatedClients/null\", \"value\": [ { "
+                + "\"relatedClient\": { \"client\": { \"code\": \"00000159\" },"
+                + " \"location\": { \"code\": \"00\" } }, \"client\": {"
+                + " \"client\": { \"code\": \"00000172\" }, \"location\": {"
+                + " \"code\": \"01\" } }, \"relationship\": { \"code\": \"AG\" },"
+                + " \"percentageOwnership\": null, \"hasSigningAuthority\": false } ] } ]",
             "$.length()",
             "2",
             "3"

@@ -32,8 +32,12 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
   private static final String GET_ALL_CONTACT_IDS = """
       SELECT CLIENT_CONTACT_ID FROM CLIENT_CONTACT
       WHERE
-      	CLIENT_NUMBER = :client_number
-      	AND CONTACT_NAME = (SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID=:entity_id)""";
+        CLIENT_NUMBER = :client_number
+        AND CONTACT_NAME = (
+          SELECT cl.CONTACT_NAME
+          FROM THE.CLIENT_CONTACT cl
+          WHERE cl.CLIENT_CONTACT_ID = :entity_id
+        )""";
 
   private final R2dbcEntityOperations entityTemplate;
 
@@ -111,7 +115,12 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
                     .flatMap(update ->
                         // Get all ids related to that entry
                         getAllEntityIds(clientNumber, Long.parseLong(entityId))
-                            .doOnNext(entityIds -> log.info("Updating contacts {} with the following changes {}",entityIds,update))
+                            .doOnNext(entityIds ->
+                                log.info(
+                                    "Updating contacts {} with the following changes {}",
+                                    entityIds,
+                                    update
+                                ))
                             .flatMap(entityIds ->
                                 // Update all at once
                                 entityTemplate.update(
@@ -124,8 +133,6 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
             )
             .then();
   }
-
-
   private Map<String, Object> getExtraFields(String userId, long revision) {
     return Map.of(
         "update_timestamp", LocalDateTime.now(),

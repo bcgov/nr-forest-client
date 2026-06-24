@@ -622,7 +622,10 @@ class ClientSearchControllerIntegrationTest extends
             .uri(uriBuilder ->
                 uriBuilder
                     .path("/api/search/corporationValues/{clientNumber}")
-                    .queryParam("registryCompanyTypeCode", Optional.ofNullable(registryCompanyTypeCode))
+                    .queryParam(
+                        "registryCompanyTypeCode",
+                        Optional.ofNullable(registryCompanyTypeCode)
+                    )
                     .queryParam("corpRegnNmbr", Optional.ofNullable(corpRegnNmbr))
                     .build(Map.of("clientNumber", clientNumber))
             )

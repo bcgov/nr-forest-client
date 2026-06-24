@@ -14,20 +14,25 @@ public interface ClientUpdateReasonRepository extends
       SELECT
         cur.*
       FROM CLIENT_UPDATE_REASON cur
-      LEFT JOIN FOR_CLI_AUDIT fca ON fca.FOREST_CLIENT_AUDIT_ID = cur.FOREST_CLIENT_AUDIT_ID
+      LEFT JOIN FOR_CLI_AUDIT fca
+        ON fca.FOREST_CLIENT_AUDIT_ID = cur.FOREST_CLIENT_AUDIT_ID
       WHERE
         fca.CLIENT_NUMBER = :number
         AND cur.CLIENT_UPDATE_REASON_CODE = 'UND'
         AND cur.CLIENT_UPDATE_ACTION_CODE = :action
         AND ROWNUM = 1"""
   )
-  Mono<ClientUpdateReasonEntity> findUndefinedByNumberWithFilteredActions(String number, String action);
+  Mono<ClientUpdateReasonEntity> findUndefinedByNumberWithFilteredActions(
+      String number,
+      String action
+  );
 
   @Query("""
       SELECT
         cur.*
       FROM CLIENT_UPDATE_REASON cur
-      LEFT JOIN FOR_CLI_AUDIT fca ON fca.FOREST_CLIENT_AUDIT_ID = cur.FOREST_CLIENT_AUDIT_ID
+      LEFT JOIN FOR_CLI_AUDIT fca
+        ON fca.FOREST_CLIENT_AUDIT_ID = cur.FOREST_CLIENT_AUDIT_ID
       WHERE
         fca.CLIENT_NUMBER = :number
         AND cur.CLIENT_UPDATE_REASON_CODE = 'UND'
@@ -35,5 +40,5 @@ public interface ClientUpdateReasonRepository extends
         AND ROWNUM = 1"""
   )
   Mono<ClientUpdateReasonEntity> findUndefinedByNumberWithFilteredActions(String number);
-  
+
 }
