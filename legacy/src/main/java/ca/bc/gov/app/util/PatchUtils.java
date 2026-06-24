@@ -33,7 +33,6 @@ import org.apache.commons.lang3.tuple.Pair;
 @Slf4j
 public class PatchUtils {
 
-
   /**
    * Applies a JSON Patch to a target object and returns the patched object.
    *
@@ -87,7 +86,10 @@ public class PatchUtils {
         // Then for each operation in the JsonNode we do
         .forEach(operation -> {
           // A check if the path of the operation starts with the specified path prefix
-          if (operation.has("path") && operation.get("path").asText().startsWith(String.format("/%s", checkPath))) {
+          if (
+              operation.has("path")
+                  && operation.get("path").asText().startsWith(String.format("/%s", checkPath))
+          ) {
             filteredNode.set(true);
           }
         });
@@ -142,9 +144,10 @@ public class PatchUtils {
         // Then for each operation in the JsonNode we do
         .forEach(operation -> {
 
-          //TODO: Potentially dangerous
-          if (!operation.has("path"))
+          // TODO: Potentially dangerous.
+          if (!operation.has("path")) {
             return;
+          }
 
           // Get the path of the operation
           String path = operation.get("path").asText();
@@ -249,14 +252,16 @@ public class PatchUtils {
   }
 
   /**
-   * Extracts and returns a map of IDs and their associated sub-IDs from the given filtered JSON Patch operations.
+   * Extracts and returns a map of IDs and their associated sub-IDs from the given
+   * filtered JSON Patch operations.
    *
-   * <p>The method processes each node in the provided JSON Patch operations, extracting a primary ID and
-   * any associated sub-IDs from the "path" field. The result is a map where each key is a primary ID, and
-   * the value is a set of sub-IDs associated with that primary ID.</p>
+   * <p>The method processes each node in the provided JSON Patch operations, extracting
+   * a primary ID and any associated sub-IDs from the "path" field. The result is a map
+   * where each key is a primary ID, and the value is a set of sub-IDs associated with
+   * that primary ID.
    *
    * @param filteredNode the JsonNode containing the filtered JSON Patch operations
-   * @return a Map where the keys are primary IDs (as Strings) and the values are Sets of sub-IDs (as Strings)
+   * @return a Map where the keys are primary IDs and the values are Sets of sub-IDs
    */
   public static Map<String, Set<String>> loadIdsAndSubIds(JsonNode filteredNode) {
     Map<String, Set<String>> subIds = new LinkedHashMap<>();
@@ -285,25 +290,26 @@ public class PatchUtils {
     return subIds;
   }
 
-  public static Map<String, Set<String>> loadNonNumericIds(JsonNode filteredNode){
+  public static Map<String, Set<String>> loadNonNumericIds(JsonNode filteredNode) {
     Map<String, Set<String>> subIds = new LinkedHashMap<>();
-    filteredNode.forEach(node ->{
+    filteredNode.forEach(node -> {
       var id = node.get("path").asText().split("/")[1];
-          if (StringUtils.isNotBlank(id)) {
-            subIds.putIfAbsent(id, new HashSet<>());
-            subIds.merge(id,
-                Optional
-                    .ofNullable(node.get("path"))
-                    .map(JsonNode::asText)
-                    .map(value -> value.replace(String.format("/%s/", id), "/"))
-                    .stream()
-                    .filter(StringUtils::isNotBlank)
-                    .collect(Collectors.toSet())
-                , (previousSet, nextSet) -> {
-                  previousSet.addAll(nextSet);
-                  return previousSet;
-                });
-          }
+      if (StringUtils.isNotBlank(id)) {
+        subIds.putIfAbsent(id, new HashSet<>());
+        subIds.merge(
+            id,
+            Optional
+                .ofNullable(node.get("path"))
+                .map(JsonNode::asText)
+                .map(value -> value.replace(String.format("/%s/", id), "/"))
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toSet()),
+            (previousSet, nextSet) -> {
+              previousSet.addAll(nextSet);
+              return previousSet;
+            });
+      }
 
     });
 
@@ -405,8 +411,9 @@ public class PatchUtils {
         // Then for each operation in the JsonNode we do
         .forEach(operation -> {
 
-          if (!operation.has("path") || !operation.has("op"))
+          if (!operation.has("path") || !operation.has("op")) {
             return;
+          }
 
           // Get the path of the operation
           String path = operation.get("path").asText();
@@ -419,7 +426,10 @@ public class PatchUtils {
             // We generate a new operation path without the prefix
             String newPath = removePrefix(path, prefix);
 
-            if (restrictedPaths.isEmpty() || restrictedPaths.stream().anyMatch(newPath::endsWith)) {
+            if (
+                restrictedPaths.isEmpty()
+                    || restrictedPaths.stream().anyMatch(newPath::endsWith)
+            ) {
               // We create a deep copy of the operation
               ObjectNode updatedOperation = operation.deepCopy();
               // Then we update the path of the operation
@@ -441,7 +451,7 @@ public class PatchUtils {
   public static BinaryOperator<JsonNode> mergeNodes() {
     return (node1, node2) -> {
       ArrayNode arrayNode = new ObjectMapper().createArrayNode();
-      if (node1 instanceof ArrayNode){
+      if (node1 instanceof ArrayNode) {
         arrayNode = node1.deepCopy();
       } else {
         arrayNode.add(node1);
@@ -471,7 +481,8 @@ public class PatchUtils {
   }
 
   /**
-   * Loads the value from a JSON Patch "add" operation and converts it to the specified entity class.
+   * Loads the value from a JSON Patch "add" operation and converts it to the
+   * specified entity class.
    *
    * @param <T> the type of the entity class
    * @param patch the JSON Patch containing the "add" operation

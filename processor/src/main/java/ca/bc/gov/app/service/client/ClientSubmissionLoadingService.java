@@ -48,14 +48,22 @@ public class ClientSubmissionLoadingService {
    * Load the submission details to be processed later on
    */
   public Mono<MessagingWrapper<SubmissionInformationDto>> loadSubmissionDetails(
-      Integer submissionId) {
+      Integer submissionId
+  ) {
 
     return
         submissionDetailRepository
             .findBySubmissionId(submissionId)
-            .doOnNext(submission -> log.info("Submission details loaded for id {}", submission.getSubmissionId()))
+            .doOnNext(
+                submission ->
+                    log.info(
+                        "Submission details loaded for id {}",
+                        submission.getSubmissionId()
+                    )
+            )
             //Grab what we need for the match part
-            .map(details -> new SubmissionInformationDto(
+            .map(
+                details -> new SubmissionInformationDto(
                     submissionId,
                     details.getOrganizationName(),
                     details.getBirthdate(),
@@ -66,7 +74,8 @@ public class ClientSubmissionLoadingService {
             )
 
             //Build a message with our dto and pass the submission Id as header
-            .map(event -> new MessagingWrapper<>(
+            .map(
+                event -> new MessagingWrapper<>(
                     event,
                     Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
                 )
@@ -81,17 +90,21 @@ public class ClientSubmissionLoadingService {
     return submissionRepository
         .findBySubmissionId(message.payload()) // Fetch SubmissionEntity
         .doOnNext(submission ->
-            log.info("Submission loaded for mail purpose {} - Notify client? {}", 
+            log.info(
+                "Submission loaded for mail purpose {} - Notify client? {}",
                 submission.getSubmissionId(),
-                submission.getNotifyClientInd()) // Use notifyClientInd from SubmissionEntity
+                submission.getNotifyClientInd()
+            ) // Use notifyClientInd from SubmissionEntity
         )
         .flatMap(submission ->
             submissionDetailRepository
                 .findBySubmissionId(message.payload()) // Fetch SubmissionDetailEntity
                 .doOnNext(details ->
-                    log.info("Submission details loaded for mail purpose {} - District: {}", 
+                    log.info(
+                        "Submission details loaded for mail purpose {} - District: {}",
                         details.getSubmissionId(),
-                        details.getDistrictCode()) // Log district information
+                        details.getDistrictCode()
+                    ) // Log district information
                 )
                 .flatMap(details ->
                     contactRepository
@@ -105,22 +118,29 @@ public class ClientSubmissionLoadingService {
                         .flatMap(submissionContact ->
                             getDistrictEmailsAndDescription(details.getDistrictCode())
                                 .doOnNext(districtInfo ->
-                                    log.info("District email and description loaded for mail purpose {} {} [{}]",
+                                    log.info(
+                                        "District email and description loaded for mail purpose "
+                                            + "{} {} [{}]",
                                         message.payload(),
                                         districtInfo.getLeft(),
-                                        districtInfo.getRight())
+                                        districtInfo.getRight()
+                                    )
                                 )
-                                .switchIfEmpty(Mono.just(Pair.of(StringUtils.EMPTY, StringUtils.EMPTY))
+                                .switchIfEmpty(
+                                    Mono.just(Pair.of(StringUtils.EMPTY, StringUtils.EMPTY))
                                     .doOnNext(districtInfo ->
-                                        log.info("No district email and description found for mail purpose {} [{}]",
+                                        log.info(
+                                            "No district email and description found for "
+                                                + "mail purpose {} [{}]",
                                             message.payload(),
-                                            details.getDistrictCode())
+                                            details.getDistrictCode()
+                                        )
                                     )
                                 )
                                 .flatMap(districtInfo -> {
                                   // Exclude client email if notifyClientInd is "N" 
                                   // and there is an email
-                                  String clientEmail = 
+                                  String clientEmail =
                                       submission.getNotifyClientInd().equalsIgnoreCase("N")
                                       && StringUtils.isNotEmpty(
                                           submissionContact.getEmailAddress()
@@ -129,9 +149,10 @@ public class ClientSubmissionLoadingService {
                                         : submissionContact.getEmailAddress();
 
                                   String rawEmails = getEmails(
-                                      message, 
-                                      districtInfo.getLeft(), 
-                                      clientEmail);
+                                      message,
+                                      districtInfo.getLeft(),
+                                      clientEmail
+                                  );
 
                                   // Avoid sending an email if no recipient emails exist
                                   if (StringUtils.isBlank(rawEmails)) {
@@ -148,12 +169,17 @@ public class ClientSubmissionLoadingService {
                                       getTemplate(message),
                                       getSubject(message, details.getOrganizationName()),
                                       getParameter(message,
-                                          submissionContact.getFirstName() + " " + submissionContact.getLastName(),
+                                          submissionContact.getFirstName()
+                                              + " "
+                                              + submissionContact.getLastName(),
                                           details.getOrganizationName(),
                                           districtInfo.getRight(),
                                           districtInfo.getLeft(),
                                           Objects.toString(details.getClientNumber(), ""),
-                                          String.valueOf(message.parameters().get(ApplicationConstant.MATCHING_REASON)),
+                                          String.valueOf(
+                                              message.parameters()
+                                                  .get(ApplicationConstant.MATCHING_REASON)
+                                          ),
                                           message.payload())
                                   ));
                                 })
@@ -228,8 +254,17 @@ public class ClientSubmissionLoadingService {
   ) {
     return switch ((SubmissionStatusEnum) message.parameters()
         .get(ApplicationConstant.SUBMISSION_STATUS)) {
-      case A -> approvalParameters(username, businessName, clientNumber, districtName, districtEmail);
-      case R -> rejectionParameters(username, businessName, clientNumber, reason, districtName, districtEmail);
+      case A ->
+          approvalParameters(username, businessName, clientNumber, districtName, districtEmail);
+      case R ->
+          rejectionParameters(
+              username,
+              businessName,
+              clientNumber,
+              reason,
+              districtName,
+              districtEmail
+          );
       default -> revisionParameters(username, businessName, submissionId, districtName);
     };
   }

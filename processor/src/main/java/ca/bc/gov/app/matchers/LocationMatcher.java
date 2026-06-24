@@ -13,7 +13,8 @@ import reactor.core.publisher.Mono;
 /**
  * This class is a component that matches submissions based on location.
  * It implements the ProcessorMatcher interface.
- * It uses a WebClient to interact with the legacy client API and a SubmissionLocationRepository to interact with the submission location data.
+ * It uses a WebClient to interact with the legacy client API and a
+ * SubmissionLocationRepository to interact with the submission location data.
  */
 @Component
 @Slf4j
@@ -23,7 +24,8 @@ public class LocationMatcher implements ProcessorMatcher {
   private final SubmissionLocationRepository locationRepository;
 
   /**
-   * This constructor initializes the LocationMatcher with a WebClient for the legacy client API and a SubmissionLocationRepository.
+   * This constructor initializes the LocationMatcher with a WebClient for the
+   * legacy client API and a SubmissionLocationRepository.
    *
    * @param legacyClientApi A WebClient for the legacy client API.
    * @param locationRepository A SubmissionLocationRepository for the submission location data.
@@ -70,8 +72,10 @@ public class LocationMatcher implements ProcessorMatcher {
 
   /**
    * This method performs the matching operation for a given submission.
-   * It retrieves the location for the submission from the SubmissionLocationRepository and sends a request to the legacy client API to find matches based on the address and postal code.
-   * It then collects the client numbers of the matches into a MatcherResult.
+   * It retrieves the location for the submission from the
+   * SubmissionLocationRepository and sends a request to the legacy client API
+   * to find matches based on the address and postal code. It then collects the
+   * client numbers of the matches into a MatcherResult.
    *
    * @param submission A SubmissionInformationDto object.
    * @return A Mono of MatcherResult containing the client numbers of the matches.

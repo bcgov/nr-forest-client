@@ -46,8 +46,9 @@ import reactor.core.publisher.Mono;
 /**
  * The ClientSearchService class provides methods to search for clients based on various criteria.
  * It uses the ForestClientRepository and ClientDoingBusinessAsRepository to perform the searches.
- * The results are mapped to ForestClientDto objects using the AbstractForestClientMapper. The class
- * is annotated with @Service, indicating that it's a service component in the Spring framework.
+ * The results are mapped to ForestClientDto objects using the
+ * AbstractForestClientMapper. The class is annotated with @Service, indicating that
+ * it's a service component in the Spring framework.
  */
 @Service
 @RequiredArgsConstructor
@@ -71,23 +72,27 @@ public class ClientSearchService {
   private final ForestClientConfiguration configuration;
 
   /**
-   * This method is used to find clients based on their registration number or company name. It
-   * first checks if both the registration number and company name are blank. If they are, it
-   * returns MissingRequiredParameterException. If at least one parameter is valid, it searches for
-   * company name or registration number. If no clients are found and the company name is not blank,
-   * it searches doing business as table Each retrieved client entity is then mapped to a DTO (Data
+   * This method is used to find clients based on their registration number or company
+   * name. It first checks if both the registration number and company name are blank.
+   * If they are, it returns MissingRequiredParameterException. If at least one
+   * parameter is valid, it searches for company name or registration number. If no
+   * clients are found and the company name is not blank, it searches the doing
+   * business as table. Each retrieved client entity is then mapped to a DTO (Data
    * Transfer Object) using the mapper.
    *
    * @param registrationNumber The registration number of the client to be searched for.
    * @param companyName        The company name of the client to be searched for.
    * @return A Flux stream of ForestClientDto objects that match the search criteria.
    */
-  public Flux<ForestClientDto> findByRegistrationNumberOrCompanyName(String registrationNumber,
-      String companyName) {
+  public Flux<ForestClientDto> findByRegistrationNumberOrCompanyName(
+      String registrationNumber,
+      String companyName
+  ) {
 
     if (StringUtils.isAllBlank(registrationNumber, companyName)) {
       log.error("Missing required parameter to search for registration number or company name");
-      return Flux.error(new MissingRequiredParameterException("registrationNumber or companyName"));
+      return Flux.error(
+          new MissingRequiredParameterException("registrationNumber or companyName"));
     }
 
     log.info("Searching for registration number: {} or company name: {}", registrationNumber,
@@ -99,7 +104,8 @@ public class ClientSearchService {
                 registrationNumber, companyName, dto.getClientNumber(), dto.getClientName()))
         .switchIfEmpty(Flux.from(Mono.justOrEmpty(Optional.ofNullable(companyName)))
             .filter(StringUtils::isNotBlank).flatMap(
-                name -> doingBusinessAsRepository.findByDoingBusinessAsName(name.toUpperCase(Locale.ROOT))
+                name -> doingBusinessAsRepository.findByDoingBusinessAsName(
+                        name.toUpperCase(Locale.ROOT))
                     .doOnNext(dto -> log.info("Found client doing business as: {} {}",
                         dto.getClientNumber(), dto.getDoingBusinessAsName()))
                     .map(ClientDoingBusinessAsEntity::getClientNumber)
@@ -111,9 +117,10 @@ public class ClientSearchService {
   /**
    * This method is used to find clients based on their first name, last name, date of birth, and
    * identification. If any of the parameters are blank or null, returns
-   * MissingRequiredParameterException. If all parameters are valid, it queries the legalFirstName,
-   * clientName and birthdate, and if present, the clientIdentification. For each client found, it
-   * logs the client's number and name.
+   * MissingRequiredParameterException. If all parameters are valid, it queries the
+   * legalFirstName, clientName and birthdate, and if present, the
+   * clientIdentification. For each client found, it logs the client's number and
+   * name.
    *
    * @param firstName      The first name of the client to be searched for.
    * @param lastName       The last name of the client to be searched for.
@@ -122,7 +129,12 @@ public class ClientSearchService {
    * @return A Flux stream of ForestClientDto objects that match the search criteria.
    */
   public Flux<ForestClientDto> findByIndividual(
-      String firstName, String lastName, LocalDate dob, String identification, boolean fuzzy) {
+      String firstName,
+      String lastName,
+      LocalDate dob,
+      String identification,
+      boolean fuzzy
+  ) {
 
     if (StringUtils.isAnyBlank(firstName, lastName)) {
       log.error("Missing required parameter to search for individual");
@@ -166,7 +178,7 @@ public class ClientSearchService {
         .is("I")
         .ignoreCase(true);
 
-    if ( dob != null) {
+    if (dob != null) {
       queryCriteria = queryCriteria
           .and("birthdate")
           .is(dob.atStartOfDay());
@@ -272,10 +284,10 @@ public class ClientSearchService {
   }
 
   /**
-   * This method is used to find clients based on their email address. If the parameter is blank, it
-   * returns a MissingRequiredParameterException. If the parameter is valid, it queries the
-   * emailAddress field to match the provided email address. It does that for the location and
-   * contact entities.
+   * This method is used to find clients based on their email address. If the
+   * parameter is blank, it returns a MissingRequiredParameterException. If the
+   * parameter is valid, it queries the emailAddress field to match the provided
+   * email address. It does that for the location and contact entities.
    *
    * @param email The email address of the client to be searched for.
    * @return A Flux stream of ForestClientDto objects that match the search criteria.
@@ -304,10 +316,11 @@ public class ClientSearchService {
   }
 
   /**
-   * This method is used to find clients based on their phone number. If the parameter is blank, it
-   * returns a MissingRequiredParameterException. If the parameter is valid, it queries the
-   * businessPhone, cellPhone, faxNumber, and homePhone fields to match the provided phone number.
-   * It does that for the location and contact entities.
+   * This method is used to find clients based on their phone number. If the
+   * parameter is blank, it returns a MissingRequiredParameterException. If the
+   * parameter is valid, it queries the businessPhone, cellPhone, faxNumber, and
+   * homePhone fields to match the provided phone number. It does that for the
+   * location and contact entities.
    *
    * @param phoneNumber The phone number of the client to be searched for.
    * @return A Flux stream of ForestClientDto objects that match the search criteria.
@@ -339,10 +352,10 @@ public class ClientSearchService {
   }
 
   /**
-   * This method is used to find clients based on their address. If the parameter is blank, it
-   * returns a MissingRequiredParameterException. If the parameter is valid, it queries the address,
-   * city, province, postal code, and country fields to match the provided address. It does that for
-   * the location entity.
+   * This method is used to find clients based on their address. If the parameter is
+   * blank, it returns a MissingRequiredParameterException. If the parameter is
+   * valid, it queries the address, city, province, postal code, and country fields
+   * to match the provided address. It does that for the location entity.
    *
    * @param address The address of the client to be searched for.
    * @return A Flux stream of ForestClientDto objects that match the search criteria.
@@ -364,17 +377,17 @@ public class ClientSearchService {
   }
 
   /**
-   * Searches for clients based on a composite contact search criteria. It combines the names into a
-   * single search string, and along with the email address and the phone number queries the
-   * repository for matching client entities based on this name string, email, and phone number.
-   * Each matching entity is then mapped to a {@link ForestClientDto}. The search results are made
-   * distinct by client number.
+   * Searches for clients based on a composite contact search criteria. It combines
+   * the names into a single search string, and along with the email address and the
+   * phone number queries the repository for matching client entities based on this
+   * name string, email, and phone number. Each matching entity is then mapped to a
+   * {@link ForestClientDto}. The search results are made distinct by client number.
    *
-   * @param contact The {@link ContactSearchDto} containing search criteria such as name, email, and
-   *                phone number.
-   * @return A {@link Flux} of {@link ForestClientDto} stream of client DTOs that match the search
-   *         criteria. If the contact parameter is null or not valid, a
-   *         {@link MissingRequiredParameterException} is emitted.
+   * @param contact The {@link ContactSearchDto} containing search criteria such as
+   *     name, email, and phone number.
+   * @return A {@link Flux} of {@link ForestClientDto} stream of client DTOs that
+   *     match the search criteria. If the contact parameter is null or not valid, a
+   *     {@link MissingRequiredParameterException} is emitted.
    */
   public Flux<ForestClientDto> findByContact(ContactSearchDto contact) {
 
@@ -426,8 +439,8 @@ public class ClientSearchService {
 
   /**
    * Finds clients by their doing business as (DBA) name. Logs the search process and results. If
-   * the DBA name is blank, returns a MissingRequiredParameterException. If the isFuzzy parameter is
-   * true, performs a fuzzy search.
+   * the DBA name is blank, returns a MissingRequiredParameterException. If the
+   * isFuzzy parameter is true, performs a fuzzy search.
    *
    * @param doingBusinessAs the DBA name to search for
    * @param isFuzzy         whether to perform a fuzzy search
@@ -475,8 +488,9 @@ public class ClientSearchService {
   }
 
   /**
-   * Finds client details by their client number. Logs the search process and results. If the client
-   * number is blank, returns a MissingRequiredParameterException. If no client is found, returns a
+   * Finds client details by their client number. Logs the search process and
+   * results. If the client number is blank, returns a
+   * MissingRequiredParameterException. If no client is found, returns a
    * NoValueFoundException.
    *
    * @param clientNumber the client number to search for
@@ -515,7 +529,8 @@ public class ClientSearchService {
             .map(dto::withContacts)
             .defaultIfEmpty(dto)
         )
-        .switchIfEmpty(Mono.error(new NoValueFoundException("Client with number: " + clientNumber)))
+        .switchIfEmpty(
+            Mono.error(new NoValueFoundException("Client with number: " + clientNumber)))
         .doOnNext(dto -> log.info("Found client with client number {}", clientNumber));
   }
 
@@ -570,8 +585,8 @@ public class ClientSearchService {
   }
 
   /**
-   * Retrieves the latest entries of predictive search results. Logs the search process and
-   * results.
+   * Retrieves the latest entries of predictive search results. Logs the search
+   * process and results.
    *
    * @param page the pagination information
    * @return a Flux containing pairs of PredictiveSearchResultDto objects and the total count of
@@ -582,15 +597,18 @@ public class ClientSearchService {
         LocalDateTime.now().minus(configuration.getData().getPredictiveCap())).flatMapMany(
         count -> forestClientRepository.findByEmptyFullSearch(page.getPageSize(), page.getOffset(),
             LocalDateTime.now().minus(configuration.getData().getPredictiveCap())).doOnNext(
-            dto -> log.info("Found complex empty search as {} {} with score {}", dto.clientNumber(),
-                dto.clientFullName(), dto.score())).map(dto -> Pair.of(dto, count)));
+            dto -> log.info(
+                "Found complex empty search as {} {} with score {}",
+                dto.clientNumber(),
+                dto.clientFullName(),
+                dto.score())).map(dto -> Pair.of(dto, count)));
   }
 
   public Flux<ForestClientDto> searchByCorporationValues(
       String clientNumber,
       String companyType,
       String companyNumber
-      ){
+  ) {
     return clientRepository
         .findByCompanyTypeOrNumber(clientNumber, companyType, companyNumber)
         .map(forestClientMapper::toDto);
@@ -617,11 +635,12 @@ public class ClientSearchService {
                     clientNumber,
                     Optional.ofNullable(type).map(String::toUpperCase).orElse("NOVALUE"),
                     value.toUpperCase(Locale.ROOT),
-                    //Why having pagination if hardcoded? We can add pagination if required
+                    // Why have pagination if it is hardcoded? We can add it if required.
                     10, 0
                 )
                 .doOnNext(dto -> log.info(
-                    "Performed related client search with like for value {} as {} {} with score {}",
+                     "Performed related client search with like for value {} as {} {} with score"
+                         + " {}",
                     value, dto.clientNumber(), dto.clientFullName(), dto.score())
                 )
                 .map(dto -> Pair.of(dto, count));
@@ -637,11 +656,12 @@ public class ClientSearchService {
                         clientNumber,
                         Optional.ofNullable(type).map(String::toUpperCase).orElse("NOVALUE"),
                         value.toUpperCase(Locale.ROOT),
-                        //Why having pagination if hardcoded? We can add pagination if required
+                        // Why have pagination if it is hardcoded? We can add it if required.
                         10, 0
                     )
                     .doOnNext(dto -> log.info(
-                        "Performed related client search with similarity for value {} as {} {} with score {}",
+                        "Performed related client search with similarity for value {} as {} {}"
+                            + " with score {}",
                         value, dto.clientNumber(), dto.clientFullName(), dto.score()))
                     .map(dto -> Pair.of(dto, similarityCount)));
           }
@@ -649,13 +669,14 @@ public class ClientSearchService {
   }
 
   /**
-   * This method is used to search for clients based on a given query criteria, page number, and
-   * page size. It first creates a query based on the provided query criteria. Then, it counts the
-   * total number of clients that match the search query. It retrieves the specific page of clients
-   * based on the page number and size. The clients are sorted in ascending order by client number
-   * and then by client name. Each retrieved client entity is then mapped to a DTO (Data Transfer
-   * Object). The count of total matching clients is also set in each client DTO. Finally, it logs
-   * the client number of each retrieved client.
+   * This method is used to search for clients based on a given query criteria,
+   * page number, and page size. It first creates a query based on the provided
+   * query criteria. Then, it counts the total number of clients that match the
+   * search query. It retrieves the specific page of clients based on the page
+   * number and size. The clients are sorted in ascending order by client number
+   * and then by client name. Each retrieved client entity is then mapped to a DTO
+   * (Data Transfer Object). The count of total matching clients is also set in
+   * each client DTO. Finally, it logs the client number of each retrieved client.
    *
    * @param queryCriteria The criteria used to search for clients.
    * @param entityClass   The class of the entity to be retrieved.

@@ -75,7 +75,10 @@ class PatchUtilsTest {
   @ParameterizedTest
   @DisplayName("Check and allow or deny patch op")
   @CsvSource({"'value',true", "'value/1',false", "'name',false"})
-  void shouldCheckAndAllowOrDenyPatchOp(String path, boolean exist) throws JsonProcessingException {
+  void shouldCheckAndAllowOrDenyPatchOp(
+      String path,
+      boolean exist
+  ) throws JsonProcessingException {
     JsonNode patch = toNode(CONTENT);
     assertEquals(exist, PatchUtils.checkOperation(patch, path, mapper));
   }
@@ -144,14 +147,17 @@ class PatchUtilsTest {
         "[{\"op\":\"replace\",\"path\":\"/entries/0/personalId\",\"value\":\"1234\"}]"
     );
 
-    assertEquals(expectation,PatchUtils.filterById(toNode(CONTENT), mapper).apply("0"));
+    assertEquals(expectation, PatchUtils.filterById(toNode(CONTENT), mapper).apply("0"));
   }
 
   @MethodSource("idsAndSubIds")
   @ParameterizedTest
   @DisplayName("Load IDs and sub-IDs")
   void shouldLoadIdsAndSubIds(
-      JsonNode node, String expectedId, String expectedSubId) throws JsonProcessingException {
+      JsonNode node,
+      String expectedId,
+      String expectedSubId
+  ) throws JsonProcessingException {
     PatchUtils.loadIdsAndSubIds(node).forEach((id, subId) -> {
       assertEquals(expectedId, id);
       if (expectedSubId == null) {
@@ -192,45 +198,61 @@ class PatchUtilsTest {
     );
   }
 
-  private static Stream<Arguments> idsAndSubIds(){
+  private static Stream<Arguments> idsAndSubIds() {
     return Stream.of(
         Arguments.argumentSet(
             "With ID and sub-ID",
-            createPathNode("/relatedClients/00/1/relatedClient/location/code"),"00","1"
+            createPathNode("/relatedClients/00/1/relatedClient/location/code"),
+            "00",
+            "1"
         ),
         Arguments.argumentSet(
             "With ID and sub-ID and extended path",
-            createPathNode("/relatedClients/00/0/relatedClient/location/code"),"00","0"
+            createPathNode("/relatedClients/00/0/relatedClient/location/code"),
+            "00",
+            "0"
         ),
         Arguments.argumentSet(
             "With ID and no sub-ID",
-            createPathNode("/relatedClients/00"),"00",null
+            createPathNode("/relatedClients/00"),
+            "00",
+            null
         ),
         Arguments.argumentSet(
             "With ID and no sub-ID and extended path",
-            createPathNode("/relatedClients/00/relatedClient/location/code"),"00",null
+            createPathNode("/relatedClients/00/relatedClient/location/code"),
+            "00",
+            null
         ),
         Arguments.argumentSet(
             "Started with ID and sub-ID",
-            createPathNode("/00/1/relatedClient/location/code"),"00","1"
+            createPathNode("/00/1/relatedClient/location/code"),
+            "00",
+            "1"
         ),
         Arguments.argumentSet(
             "Started with ID and sub-ID and extended path",
-            createPathNode("/00/0/relatedClient/location/code"),"00","0"
+            createPathNode("/00/0/relatedClient/location/code"),
+            "00",
+            "0"
         ),
         Arguments.argumentSet(
             "Started with ID and no sub-ID",
-            createPathNode("/00"),"00",null
+            createPathNode("/00"),
+            "00",
+            null
         ),
         Arguments.argumentSet(
             "Started with ID and no sub-ID and extended path",
-            createPathNode("/00/relatedClient/location/code"),"00",null
+            createPathNode("/00/relatedClient/location/code"),
+            "00",
+            null
         )
     );
   }
 
   private static JsonNode toNode(String content) throws JsonProcessingException {
-    return mapper.readValue(content,JsonNode.class);
+    return mapper.readValue(content, JsonNode.class);
   }
 
   private static JsonNode createValueNode(String value) {

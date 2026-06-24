@@ -134,8 +134,9 @@ public class ProcessorService {
   /**
    * Processes a submission message based on its ID and type.
    * <p>
-   * This method wraps the submission ID and type into a {@link MessagingWrapper} object, then calls
-   * the overloaded {@code processedMessage} method to handle the processing.
+   * This method wraps the submission ID and type into a {@link MessagingWrapper}
+   * object, then calls the overloaded {@code processedMessage} method to handle the
+   * processing.
    * </p>
    *
    * @param submissionId   the ID of the submission to be processed
@@ -189,7 +190,8 @@ public class ProcessorService {
         //Little wrapper to make it easier to pass around
         Mono
             .just(submissionWrapper)
-            //Only process HOT submissions, see ClientSubmissionAutoProcessingService.loadMatchingInfo for info
+            // Only process HOT submissions, see
+            // ClientSubmissionAutoProcessingService.loadMatchingInfo for info.
             .filter(submission -> submission.getParameter(ApplicationConstant.MATCHING_KIND,
                 SubmissionProcessKindEnum.class) == SubmissionProcessKindEnum.HOT
             )

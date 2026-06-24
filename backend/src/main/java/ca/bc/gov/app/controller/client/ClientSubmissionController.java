@@ -220,10 +220,10 @@ public class ClientSubmissionController {
   ) {
     log.info("businessType={}, registrationNumber={}", businessType, registrationNumber);
     if ("U".equals(businessType)) {
-      return validator.validateSubmissionDuplicationForUnregiteredBusinesses(principal); 
+      return validator.validateSubmissionDuplicationForUnregisteredBusinesses(principal); 
     }
     else {
-      return validator.validateSubmissionDuplicationForRegiteredBusinesses(registrationNumber);  
+      return validator.validateSubmissionDuplicationForRegisteredBusinesses(registrationNumber);  
     }
   } 
   

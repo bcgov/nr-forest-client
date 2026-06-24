@@ -105,8 +105,9 @@ public class LegacyIndividualPersistenceService extends LegacyAbstractPersistenc
                                         SubmissionProcessTypeEnum.class)
                                 ),
                                 detailEntity.getNotes(),
-                                getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
-                                    " submitted the individual with data acquired from BC Services Card"
+                                getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME)
+                                    + " submitted the individual with data acquired from "
+                                    + "BC Services Card"
                             )
                     )
                     .withClientTypeCode("I")

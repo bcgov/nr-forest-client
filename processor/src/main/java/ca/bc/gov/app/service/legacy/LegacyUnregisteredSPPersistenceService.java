@@ -76,11 +76,17 @@ public class LegacyUnregisteredSPPersistenceService extends LegacyAbstractPersis
                 )
                     .withBirthdate(detail.getBirthdate())
                     .withLegalFirstName(
-                        ProcessorUtil.splitName(detail.getOrganizationName())[1].toUpperCase(Locale.ROOT))
+                        ProcessorUtil.splitName(detail.getOrganizationName())[1]
+                            .toUpperCase(Locale.ROOT)
+                    )
                     .withClientName(
-                        ProcessorUtil.splitName(detail.getOrganizationName())[0].toUpperCase(Locale.ROOT))
+                        ProcessorUtil.splitName(detail.getOrganizationName())[0]
+                            .toUpperCase(Locale.ROOT)
+                    )
                     .withLegalMiddleName(
-                        ProcessorUtil.splitName(detail.getOrganizationName())[2].toUpperCase(Locale.ROOT))
+                        ProcessorUtil.splitName(detail.getOrganizationName())[2]
+                            .toUpperCase(Locale.ROOT)
+                    )
                     .withClientComment(
                         getUser(message, ApplicationConstant.CLIENT_SUBMITTER_NAME) +
                         " submitted the sole proprietor with data acquired from Business BCeID")

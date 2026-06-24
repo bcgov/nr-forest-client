@@ -14,91 +14,65 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 /**
- * This class is a converter that takes a Jwt token and converts it into a collection of
- * GrantedAuthority objects. It implements the Converter interface provided by Spring Framework.
+ * Converts a {@link Jwt} into Spring Security authorities.
  */
 @Slf4j
-public class GrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
+public class GrantedAuthoritiesConverter
+    implements Converter<Jwt, Collection<GrantedAuthority>> {
 
-/**
- * This method is responsible for converting a Jwt token into a collection of GrantedAuthority objects.
- * It does this by concatenating the streams of loadRoles(jwt) and loadRoleFromIdp(jwt) and collecting the results into a list.
- *
- * @param jwt the Jwt token to be converted
- * @return a collection of GrantedAuthority objects
- */
-public Collection<GrantedAuthority> convert(Jwt jwt) {
-  return Stream
-      .concat(loadRoles(jwt).stream(), loadRoleFromIdp(jwt).stream())
-      .toList();
-}
+  /**
+   * Converts the token claims into granted authorities.
+   *
+   * @param jwt the token to convert
+   * @return the extracted authorities
+   */
+  public Collection<GrantedAuthority> convert(Jwt jwt) {
+    return Stream.concat(loadRoles(jwt).stream(), loadRoleFromIdp(jwt).stream()).toList();
+  }
 
-/**
- * This method is responsible for loading roles from a Jwt token.
- * The results are collected into a list and returned.
- *
- * @param jwt the Jwt token from which to load roles
- * @return a list of GrantedAuthority objects
- */
-private List<GrantedAuthority> loadRoles(Jwt jwt) {
+  /**
+   * Loads authorities from the {@code cognito:groups} claim.
+   *
+   * @param jwt the token to inspect
+   * @return the extracted authorities
+   */
+  private List<GrantedAuthority> loadRoles(Jwt jwt) {
 
-  // It first retrieves the "cognito:groups" claim from the Jwt token, which is a list of roles.
-  Object rawRoles = jwt
-      .getClaims()
-      .getOrDefault("cognito:groups", List.of());
+    Object rawRoles = jwt.getClaims().getOrDefault("cognito:groups", List.of());
 
-  List<String> roles = new ArrayList<>();
+    List<String> roles = new ArrayList<>();
 
-  // It then converts each role to a string, converts each string to uppercase, and collects the results into a list.
-  if (rawRoles instanceof List<?> rawRolesList) {
-    roles = rawRolesList.stream()
-        .filter(Objects::nonNull)
-        .map(Object::toString)
-        .map(s -> s.toUpperCase(Locale.ROOT))
+    if (rawRoles instanceof List<?> rawRolesList) {
+      roles = rawRolesList.stream()
+          .filter(Objects::nonNull)
+          .map(Object::toString)
+          .map(role -> role.toUpperCase(Locale.ROOT))
+          .toList();
+    }
+
+    return roles.stream()
+        .map(role -> "ROLE_" + role)
+        .map(SimpleGrantedAuthority::new)
+        .map(GrantedAuthority.class::cast)
         .toList();
   }
 
-  // Then prefixes each string with "ROLE_", and converts each string into a SimpleGrantedAuthority object.
-  return roles.stream()
-
-      .map(role -> "ROLE_" + role)
-      .map(SimpleGrantedAuthority::new)
-      .map(GrantedAuthority.class::cast)
-      .toList();
-}
-
-/**
- * This method is responsible for loading a role from a Jwt token based on the "custom:idp_name" claim.
- * If the claim starts with "ca.bc.gov.flnr.fam.", it is converted to "bcsc".
- * The claim is then converted to uppercase, prefixed with "ROLE_", suffixed with "_USER", and converted into a SimpleGrantedAuthority object.
- * The result is returned as a list.
- * If the claim is null or empty, an empty list is returned.
- *
- * @param jwt the Jwt token from which to load the role
- * @return a list containing a single GrantedAuthority object, or an empty list
- */
-private List<GrantedAuthority> loadRoleFromIdp(Jwt jwt) {
-  return Optional
-      // Reads the "custom:idp_name" claim from the Jwt token
-      .ofNullable(jwt
-          .getClaims()
-          .getOrDefault("custom:idp_name", "none")
-      )
-      // Convert the claim to a string
-      .map(String::valueOf)
-      // If the claim starts with "ca.bc.gov.flnr.fam." then convert it to "bcsc"
-      .map(idp -> idp.startsWith("ca.bc.gov.flnr.fam.") ? "bcsc" : idp)
-      // Convert the string to uppercase
-      .map(s -> s.toUpperCase(Locale.ROOT))
-      // Add the "ROLE_" prefix and "_USER" suffix to the string
-      .map(idp -> "ROLE_" + idp + "_USER")
-      // Create a new SimpleGrantedAuthority object with the string
-      .map(SimpleGrantedAuthority::new)
-      // Cast it to a GrantedAuthority
-      .map(GrantedAuthority.class::cast)
-      // Return the result as a list
-      .map(List::of)
-      // If the claim is null or empty, return an empty list
-      .orElse(List.of());
-}
+  /**
+   * Loads an authority from the {@code custom:idp_name} claim.
+   *
+   * @param jwt the token to inspect
+   * @return a single authority derived from the claim, or a fallback {@code ROLE_NONE_USER}
+   *     authority when the claim is missing
+   */
+  private List<GrantedAuthority> loadRoleFromIdp(Jwt jwt) {
+    return Optional.ofNullable(jwt.getClaims().getOrDefault("custom:idp_name", "none"))
+        .map(String::valueOf)
+        .map(idp -> idp.startsWith("ca.bc.gov.flnr.fam.") ? "bcsc" : idp)
+        .map(idp -> idp.toUpperCase(Locale.ROOT))
+        .map(idp -> "ROLE_" + idp + "_USER")
+        .map(SimpleGrantedAuthority::new)
+        .map(GrantedAuthority.class::cast)
+        .map(List::of)
+        .orElse(List.of());
+  }
 }

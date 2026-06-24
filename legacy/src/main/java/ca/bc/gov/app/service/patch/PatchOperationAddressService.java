@@ -25,12 +25,12 @@ public class PatchOperationAddressService implements ClientPatchOperation {
   public static final String LOCATION_REASON_UPDATE = """
       UPDATE CLI_LOCN_AUDIT
       SET
-      	CLIENT_UPDATE_REASON_CODE = :reasonCode
+        CLIENT_UPDATE_REASON_CODE = :reasonCode
       WHERE
-      	CLIENT_UPDATE_REASON_CODE = 'UND'
-      	AND CLIENT_NUMBER = :clientNumber
-      	AND CLIENT_LOCN_CODE = :locationCode
-      	AND CLIENT_AUDIT_CODE = 'UPD'""";
+        CLIENT_UPDATE_REASON_CODE = 'UND'
+        AND CLIENT_NUMBER = :clientNumber
+        AND CLIENT_LOCN_CODE = :locationCode
+        AND CLIENT_AUDIT_CODE = 'UPD'""";
 
   private final R2dbcEntityOperations entityTemplate;
 

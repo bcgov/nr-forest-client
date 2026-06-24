@@ -10,6 +10,7 @@ import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -68,22 +69,40 @@ class IndividualProcessorMatcherTest {
     return
         Stream.of(
             Arguments.of(
-                new SubmissionInformationDto(1, "James Frank", LocalDate.of(1985, 10, 4), null, "Y",
-                    "I"),
+                new SubmissionInformationDto(
+                    1,
+                    "James Frank",
+                    LocalDate.of(1985, Month.OCTOBER, 4),
+                    null,
+                    "Y",
+                    "I"
+                ),
                 true,
                 new MatcherResult("corporationName", Set.of()),
                 "[]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(1, "Marco Polo", LocalDate.of(1977, 3, 22), null, "Y",
-                    "I"),
+                new SubmissionInformationDto(
+                    1,
+                    "Marco Polo",
+                    LocalDate.of(1977, Month.MARCH, 22),
+                    null,
+                    "Y",
+                    "I"
+                ),
                 false,
                 new MatcherResult("corporationName", Set.of("00000000")),
                 "[{\"clientNumber\":\"00000000\"}]"
             ),
             Arguments.of(
-                new SubmissionInformationDto(1, "Lucca DeBiaggio", LocalDate.of(1951, 12, 25), null,
-                    "Y", "I"),
+                new SubmissionInformationDto(
+                    1,
+                    "Lucca DeBiaggio",
+                    LocalDate.of(1951, Month.DECEMBER, 25),
+                    null,
+                    "Y",
+                    "I"
+                ),
                 false,
                 new MatcherResult("corporationName", Set.of("00000000", "00000001")),
                 "[{\"clientNumber\":\"00000000\"},{\"clientNumber\":\"00000001\"}]"

@@ -90,12 +90,13 @@ class ClientSearchRelatedClientIntegrationTest extends AbstractTestContainerInte
   }
 
   /**
-   * Iterates over a list and applies a given consumer function to each element along with its index.
+   * Iterates over a list and applies a given consumer function to each element along
+   * with its index.
    *
    * @param <T> The type of elements in the list.
    * @param list The list of elements to iterate over.
    * @param consumer A BiConsumer that takes the index and the element at that index.
-   *                 The consumer is applied to each element in the list.
+   *     The consumer is applied to each element in the list.
    */
   private static <T> void forEachIndexed(List<T> list, BiConsumer<Integer, T> consumer) {
     for (int i = 0; i < list.size(); i++) {

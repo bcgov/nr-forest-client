@@ -49,15 +49,16 @@ class LegacyRegisteredSPPersistenceServiceTest {
   private final LegacyService legacyService = mock(LegacyService.class);
   private final BcRegistryService bcRegistryService = mock(BcRegistryService.class);
 
-  private final LegacyRegisteredSPPersistenceService service = new LegacyRegisteredSPPersistenceService(
-      submissionDetailRepository,
-      submissionRepository,
-      locationRepository,
-      contactRepository,
-      mock(SubmissionLocationContactRepository.class),
-      legacyService,
-      bcRegistryService
-  );
+  private final LegacyRegisteredSPPersistenceService service =
+      new LegacyRegisteredSPPersistenceService(
+          submissionDetailRepository,
+          submissionRepository,
+          locationRepository,
+          contactRepository,
+          mock(SubmissionLocationContactRepository.class),
+          legacyService,
+          bcRegistryService
+      );
 
   @ParameterizedTest(name = "type: {0} expected: {1}")
   @MethodSource("byType")

@@ -31,7 +31,8 @@ public interface SubmissionRepository extends ReactiveCrudRepository<SubmissionE
       AND ( nrfc.submission_matching_detail.submission_matching_processed  is null or
       nrfc.submission_matching_detail.submission_matching_processed = false)
       AND (nrfc.submission_matching_detail.submission_matching_processed_time is null or
-      nrfc.submission_matching_detail.submission_matching_processed_time < now() - interval '2 minutes')"""
+      nrfc.submission_matching_detail.submission_matching_processed_time
+      < now() - interval '2 minutes')"""
   )
   Flux<Integer> loadProcessedSubmissions();
 
@@ -46,7 +47,8 @@ public interface SubmissionRepository extends ReactiveCrudRepository<SubmissionE
       AND ( nrfc.submission_matching_detail.submission_matching_processed  is null or
       nrfc.submission_matching_detail.submission_matching_processed = false)
       AND (nrfc.submission_matching_detail.submission_matching_processed_time is null or
-      nrfc.submission_matching_detail.submission_matching_processed_time < now() - interval '2 minutes')"""
+      nrfc.submission_matching_detail.submission_matching_processed_time
+      < now() - interval '2 minutes')"""
   )
   Flux<Integer> loadStaffSubmissions();
 

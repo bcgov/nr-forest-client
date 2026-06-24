@@ -33,7 +33,14 @@ public class ClientSubmissionProcessingService {
     return
         submissionRepository
             .findById(submissionId)
-            .doOnNext(submission -> log.info("Loaded submission {} created by {}", submission.getSubmissionId(), submission.getCreatedBy()))
+            .doOnNext(
+                submission ->
+                    log.info(
+                        "Loaded submission {} created by {}",
+                        submission.getSubmissionId(),
+                        submission.getCreatedBy()
+                    )
+            )
             .flatMap(event ->
                 submissionDetailRepository
                     .findBySubmissionId(submissionId)

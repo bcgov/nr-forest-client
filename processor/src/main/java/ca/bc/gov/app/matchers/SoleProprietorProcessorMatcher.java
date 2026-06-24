@@ -14,7 +14,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 /**
- * This class is a component that matches submissions based on the client type being "USP" or "RSP".
+ * This class is a component that matches submissions based on the client type
+ * being "USP" or "RSP".
  * It implements the ProcessorMatcher interface.
  * It uses a WebClient to interact with the legacy client API.
  */
@@ -25,7 +26,8 @@ public class SoleProprietorProcessorMatcher implements ProcessorMatcher {
   private final WebClient legacyClientApi;
 
   /**
-   * This constructor initializes the SoleProprietorProcessorMatcher with a WebClient for the legacy client API.
+   * This constructor initializes the SoleProprietorProcessorMatcher with a
+   * WebClient for the legacy client API.
    *
    * @param legacyClientApi A WebClient for the legacy client API.
    */
@@ -69,8 +71,9 @@ public class SoleProprietorProcessorMatcher implements ProcessorMatcher {
 
   /**
    * This method performs the matching operation for a given submission.
-   * It sends a request to the legacy client API to find matches based on the first name, last name, and date of birth.
-   * It then collects the client numbers of the matches into a MatcherResult.
+   * It sends a request to the legacy client API to find matches based on the
+   * first name, last name, and date of birth. It then collects the client
+   * numbers of the matches into a MatcherResult.
    *
    * @param submission A SubmissionInformationDto object.
    * @return A Mono of MatcherResult containing the client numbers of the matches.

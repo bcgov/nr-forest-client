@@ -82,7 +82,9 @@ public class LegacyClientPersistenceService extends LegacyAbstractPersistenceSer
                                 submissionDetail.getRegistrationNumber()
                         )
                     )
-                    .withClientName(submissionDetail.getOrganizationName().toUpperCase(Locale.ROOT))
+                    .withClientName(
+                        submissionDetail.getOrganizationName().toUpperCase(Locale.ROOT)
+                    )
                     .withClientTypeCode(submissionDetail.getClientTypeCode())
                     .withRegistryCompanyTypeCode(
                         ProcessorUtil.extractLetters(submissionDetail.getRegistrationNumber())

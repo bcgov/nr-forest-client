@@ -1,12 +1,11 @@
 package ca.bc.gov.app.configuration;
 
-import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
-
 import ca.bc.gov.app.dto.SubmissionInformationDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
@@ -25,7 +24,7 @@ public class GlobalServiceConfiguration {
     return webClientBuilder
         .baseUrl(configuration.getBackend().getUri())
         .filter(
-            basicAuthentication(
+            ExchangeFilterFunctions.basicAuthentication(
                 configuration.getSecurity().getServiceAccountName(),
                 configuration.getSecurity().getServiceAccountSecret()
             )

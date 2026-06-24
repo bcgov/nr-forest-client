@@ -113,7 +113,9 @@ public class SubmissionDetailEntity {
 
       if (
           (
-              IdentificationTypeEnum.CDDL.equals(IdentificationTypeEnum.valueOf(identificationTypeCode))
+              IdentificationTypeEnum.CDDL.equals(
+                  IdentificationTypeEnum.valueOf(identificationTypeCode)
+              )
                   ||
                   IdentificationTypeEnum.USDL.equals(
                       IdentificationTypeEnum.valueOf(identificationTypeCode))

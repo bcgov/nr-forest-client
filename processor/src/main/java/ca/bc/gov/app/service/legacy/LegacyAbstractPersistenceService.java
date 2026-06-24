@@ -168,8 +168,8 @@ public abstract class LegacyAbstractPersistenceService {
   }
 
   /**
-   * Creates a location if it does not exist on oracle. The creation happens by sending a request to
-   * the legacy service.
+   * Creates a location if it does not exist on oracle. The creation happens by
+   * sending a request to the legacy service.
    *
    * @param message A message containing the submission id
    * @return A flux of messages containing the submission id and the location id
@@ -233,7 +233,8 @@ public abstract class LegacyAbstractPersistenceService {
         // Log the contact detail
         .doOnNext(submissionContact ->
             log.info(
-                "Loaded submission contact for persistence on oracle Submission: {} Contact {} {} Location Code {}",
+                "Loaded submission contact for persistence on oracle "
+                    + "Submission: {} Contact {} {} Location Code {}",
                 message.payload(),
                 submissionContact.getFirstName(),
                 submissionContact.getLastName(),
