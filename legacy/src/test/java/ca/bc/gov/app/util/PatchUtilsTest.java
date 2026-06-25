@@ -157,7 +157,7 @@ class PatchUtilsTest {
       JsonNode node,
       String expectedId,
       String expectedSubId
-  ) throws JsonProcessingException {
+  ) {
     PatchUtils.loadIdsAndSubIds(node).forEach((id, subId) -> {
       assertEquals(expectedId, id);
       if (expectedSubId == null) {

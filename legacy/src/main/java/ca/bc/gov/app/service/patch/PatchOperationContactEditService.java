@@ -133,6 +133,7 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
             )
             .then();
   }
+  
   private Map<String, Object> getExtraFields(String userId, long revision) {
     return Map.of(
         "update_timestamp", LocalDateTime.now(),
