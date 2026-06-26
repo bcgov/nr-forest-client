@@ -7,6 +7,7 @@ import ca.bc.gov.app.dto.ForestClientDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -102,11 +103,18 @@ class ClientSearchIndividualServiceIntegrationTest extends AbstractTestContainer
   private static Stream<Arguments> byIndividual() {
     return Stream
         .of(
-            Arguments.of("JAMES", "BAXTER", LocalDate.of(1959, 5, 18), null, "00000001", null),
+            Arguments.of(
+                "JAMES",
+                "BAXTER",
+                LocalDate.of(1959, Month.MAY, 18),
+                null,
+                "00000001",
+                null
+            ),
             Arguments.of(
                 "THOMAS",
                 "FUNNY",
-                LocalDate.of(1939, 7, 4),
+                LocalDate.of(1939, Month.JULY, 4),
                 "34458787",
                 "00000002",
                 null
@@ -114,16 +122,16 @@ class ClientSearchIndividualServiceIntegrationTest extends AbstractTestContainer
             Arguments.of(
                 "ALBUS",
                 "DUMBLEDORE",
-                LocalDate.of(1814, 5, 12),
+                LocalDate.of(1814, Month.MAY, 12),
                 null,
                 StringUtils.EMPTY,
                 null
             ),
             Arguments.of("JAMES", null, null, null, null, MissingRequiredParameterException.class),
             Arguments.of("JAMES", "Baxter", null, null, "00000001", null),
-            Arguments.of(null, "Baxter", LocalDate.of(1959, 5, 18), null, null,
+            Arguments.of(null, "Baxter", LocalDate.of(1959, Month.MAY, 18), null, null,
                 MissingRequiredParameterException.class),
-            Arguments.of(null, null, LocalDate.of(1959, 5, 18), null, null,
+            Arguments.of(null, null, LocalDate.of(1959, Month.MAY, 18), null, null,
                 MissingRequiredParameterException.class)
         );
   }

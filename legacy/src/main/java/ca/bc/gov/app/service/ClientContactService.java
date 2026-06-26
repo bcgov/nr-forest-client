@@ -83,8 +83,8 @@ public class ClientContactService {
    * @param lastName  The last name of the client contact to search for.
    * @param email     The email address of the client contact to search for.
    * @param phone     The phone number of the client contact to search for.
-   * @return A {@link Flux<ForestClientContactDto>} containing the search results
-   *     mapped to DTOs.
+   * @return A {@link Flux} containing {@link ForestClientContactDto} search
+   *     results mapped to DTOs.
    */
   public Flux<ForestClientContactDto> search(
       String firstName,
@@ -116,8 +116,8 @@ public class ClientContactService {
    * @param clientNumber The client's unique identifier.
    * @param locationCode The location code associated with the client.
    * @param contactName  The name of the contact, case-insensitive.
-   * @return A {@link Flux<ForestClientContactEntity>} containing any found client contacts that
-   * match the criteria.
+   * @return A {@link Flux} containing any found {@link ForestClientContactEntity}
+   *     instances that match the criteria.
    */
   private Flux<ForestClientContactEntity> locateClientContact(
       String clientNumber,
@@ -151,9 +151,9 @@ public class ClientContactService {
    * expected to be present in the database schema, and it is used to generate unique identifiers
    * for new client contact entries.
    *
-   * @return a {@link Mono} emitting the next available contact ID as {@link Long}. If the query
-   * execution fails or the sequence value cannot be retrieved, the returned {@link Mono} will
-   * terminate with an error.
+   * @return a {@link Mono} emitting the next available contact ID as a {@link Long}.
+   *     If the query execution fails or the sequence value cannot be retrieved, the
+   *     returned {@link Mono} will terminate with an error.
    */
   private Mono<Long> getNextContactId() {
     return entityTemplate
