@@ -8,8 +8,8 @@ import { useEventBus } from "@vueuse/core";
 import { useFetch, useFetchTo } from "@/composables/useFetch";
 import { useFocus } from "@/composables/useFocus";
 // Importing types
-import { BusinessSearchResult, ClientTypeEnum, ProgressNotification } from "@/dto/CommonTypesDto";
-import { CodeNameType } from "@/dto/CommonTypesDto";
+import { ClientTypeEnum, type BusinessSearchResult, type ProgressNotification } from "@/dto/CommonTypesDto";
+import type { CodeNameType } from "@/dto/CommonTypesDto";
 import { defaultLocation, formatAddresses } from "@/dto/ApplyClientNumberDto";
 import type {
   FormDataDto,
