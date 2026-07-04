@@ -6,7 +6,6 @@ import Icons from "unplugin-icons/vite";
 import IconsResolver from "unplugin-icons/resolver";
 
 export default defineConfig(async ({ command, mode }) => {
-  const { default: istanbul } = await import("vite-plugin-istanbul");
   const serverConfig: any = {
     watch: {
       ignored: [
@@ -45,28 +44,37 @@ export default defineConfig(async ({ command, mode }) => {
           compilerOptions: {
             isCustomElement: (tag) => tag.includes("cds-"),
           },
+          transformAssetUrls: {
+            includeAbsolute: false,
+          },
         },
       }),
       Components({
         resolvers: [IconsResolver()],
       }),
       Icons(),
-      istanbul({
-        include: "src/*",
-        exclude: [
-          "node_modules/",
-          "test/",
-          "cypress/",
-          "stub/",
-          "coverage/",
-          "reports/",
-          "reports/**/*",
-          ".nyc_output/",
-        ],
-        extension: [".js", ".ts", ".vue"],
-        requireEnv: true,
-        nycrcPath: ".nycrc",
-      }),
+      ...(process.env.VITE_COVERAGE === "true"
+        ? [
+            await import("vite-plugin-istanbul").then(({ default: istanbul }) =>
+              istanbul({
+                include: "src/*",
+                exclude: [
+                  "node_modules/",
+                  "test/",
+                  "cypress/",
+                  "stub/",
+                  "coverage/",
+                  "reports/",
+                  "reports/**/*",
+                  ".nyc_output/",
+                ],
+                extension: [".js", ".ts", ".vue"],
+                requireEnv: true,
+                nycrcPath: ".nycrc",
+              })
+            ),
+          ]
+        : []),
     ],
     resolve: {
       alias: {
