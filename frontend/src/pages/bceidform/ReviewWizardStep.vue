@@ -14,7 +14,7 @@ import LocationStar20 from "@carbon/icons-vue/es/location--star/20";
 import Location20 from "@carbon/icons-vue/es/location/20";
 import User20 from "@carbon/icons-vue/es/user/20";
 import { useFetchTo } from "@/composables/useFetch";
-import { CodeNameType } from "@/dto/CommonTypesDto";
+import type { CodeNameType } from "@/dto/CommonTypesDto";
 import { codeConversionFn } from "@/services/ForestClientService";
 
 //Defining the props and emiter to reveice the data and emit an update

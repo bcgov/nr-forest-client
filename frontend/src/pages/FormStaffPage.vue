@@ -637,7 +637,7 @@ watch(submissionLimitError, () => {
           </span>
 
           <review-wizard-step
-              v-model:data="formData"
+              :data="formData"
               :active="currentTab == 3"
               @valid="validateStep"
               :goToStep="goToStep"

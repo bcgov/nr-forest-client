@@ -4,9 +4,8 @@ import vue from "@vitejs/plugin-vue";
 import Components from "unplugin-vue-components/vite";
 import Icons from "unplugin-icons/vite";
 import IconsResolver from "unplugin-icons/resolver";
-import istanbul from "vite-plugin-istanbul";
 
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(async ({ command, mode }) => {
   const serverConfig: any = {
     watch: {
       ignored: [
@@ -45,28 +44,37 @@ export default defineConfig(({ command, mode }) => {
           compilerOptions: {
             isCustomElement: (tag) => tag.includes("cds-"),
           },
+          transformAssetUrls: {
+            includeAbsolute: false,
+          },
         },
       }),
       Components({
         resolvers: [IconsResolver()],
       }),
       Icons(),
-      istanbul({
-        include: "src/*",
-        exclude: [
-          "node_modules/",
-          "test/",
-          "cypress/",
-          "stub/",
-          "coverage/",
-          "reports/",
-          "reports/**/*",
-          ".nyc_output/",
-        ],
-        extension: [".js", ".ts", ".vue"],
-        requireEnv: true,
-        nycrcPath: ".nycrc",
-      }),
+      ...(process.env.VITE_COVERAGE === "true"
+        ? [
+            await import("vite-plugin-istanbul").then(({ default: istanbul }) =>
+              istanbul({
+                include: "src/*",
+                exclude: [
+                  "node_modules/",
+                  "test/",
+                  "cypress/",
+                  "stub/",
+                  "coverage/",
+                  "reports/",
+                  "reports/**/*",
+                  ".nyc_output/",
+                ],
+                extension: [".js", ".ts", ".vue"],
+                requireEnv: true,
+                nycrcPath: ".nycrc",
+              })
+            ),
+          ]
+        : []),
     ],
     resolve: {
       alias: {
@@ -121,6 +129,7 @@ export default defineConfig(({ command, mode }) => {
     },
     build: {
       sourcemap: true,
+      cssMinify: "esbuild",
     },
     server: serverConfig,
   };

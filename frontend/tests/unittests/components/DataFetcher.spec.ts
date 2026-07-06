@@ -6,11 +6,13 @@ import * as fetcher from "@/composables/useFetch";
 import DataFetcher from "@/components/DataFetcher.vue";
 import MockAbortController from "../../mocks/MockAbortController";
 
-vi.useFakeTimers();
+vi.useFakeTimers({
+  toFake: ["setTimeout", "setInterval", "clearTimeout", "clearInterval", "Date"],
+});
 
 describe("DataFetcher", () => {
   vi.spyOn(global, "AbortController").mockImplementation(
-    () => new MockAbortController() as AbortController,
+    function () { return new MockAbortController() as unknown as AbortController; },
   );
 
   const mockedFetchTo = (url: Ref<string>, received: Ref<any>, config: any = {}) => ({
