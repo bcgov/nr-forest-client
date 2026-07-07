@@ -11,9 +11,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Named.named;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
-import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
-import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockUser;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.*;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.BcRegistryTestConstants;
 import ca.bc.gov.app.TestConstants;
@@ -555,7 +553,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
       Long expectedSize
   ) {
 
-    String legacyResponse = expectedSize > 0 ? "[{\"clientNumber\":\"" + clientNumber + "\"}]" : "[]";
+    String legacyResponse =
+        expectedSize > 0 ? "[{\"clientNumber\":\"" + clientNumber + "\"}]" : "[]";
 
     legacyStub
         .stubFor(
@@ -778,7 +777,8 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 "Double location",
                 "00000003",
                 Map.of("00", 1L, "01", 1L),
-                "[{\"relatedClntLocn\": \"00\",\"primaryClient\": false},{\"clientLocnCode\": \"01\",\"primaryClient\": true}]"
+                "[{\"relatedClntLocn\": \"00\",\"primaryClient\": false},"
+                    + "{\"clientLocnCode\": \"01\",\"primaryClient\": true}]"
             )
         );
   }
@@ -1094,6 +1094,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 null, 
                 null,
                 null, 
+                null,
+                null,
+                null,
+                null,
                 null
             )
         )
@@ -1152,6 +1156,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 null, 
                 null,
                 null, 
+                null,
+                null,
+                null,
+                null,
                 null
             )
         )
@@ -1219,6 +1227,10 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
                 null, 
                 null,
                 null, 
+                null,
+                null,
+                null,
+                null,
                 null
             )
         )

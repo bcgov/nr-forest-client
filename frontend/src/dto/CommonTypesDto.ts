@@ -197,6 +197,10 @@ export interface ClientSearchParameters {
   emailAddress?: string;
   updatedFromDate?: string;
   updatedToDate?: string;
+  birthdate?: string;
+  city?: string;
+  postalCode?: string;
+  comment?: string;
 };
 
 export interface ClientSearchResult {

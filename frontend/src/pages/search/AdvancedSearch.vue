@@ -68,6 +68,16 @@ const validations = reactive<{ [key in keyof ClientSearchParameters]: ((value: s
     isMaxSizeMsg("email", 100),
     hasOnlyEmailCharacters("email"),
   ],
+  birthdate: [],
+  city: getNamingValidations("city"),
+  postalCode: [
+    isMaxSizeMsg("postal code", 14),
+    isAscii("postal code"),
+  ],
+  comment: [
+    isMaxSizeMsg("comment", 4000),
+    isAscii("comment"),
+  ],
   updatedFromDate: [],
   updatedToDate: [],
 });
@@ -132,6 +142,10 @@ const clearFilters = () => {
     clientIdentification: undefined,
     contactName: undefined,
     emailAddress: undefined,
+    birthdate: undefined,
+    city: undefined,
+    postalCode: undefined,
+    comment: undefined,
     updatedFromDate: undefined,
     updatedToDate: undefined,
   };
@@ -141,6 +155,7 @@ const clearFilters = () => {
       validationState[key] = true;
   });
 
+  validations.birthdate = [];
   validations.updatedFromDate = [];
   validations.updatedToDate = [];
 
@@ -324,6 +339,58 @@ const clearFilters = () => {
             :validations="validations.emailAddress"
             @empty="validationState.emailAddress = true"
             @error="validationState.emailAddress = !$event"
+          />
+        </div>
+        <div class="horizontal-input-grouping-2">
+          <div class="grouping-03">
+            <div class="cds-text-input-label">
+              <span>Birthdate</span>
+            </div>
+            <date-input-component
+              id="birthdate"
+              title="Birthdate"
+              :autocomplete="['off', 'off', 'off']"
+              v-model="modalFilters.birthdate"
+              :enabled="true"
+              :validations="validations.birthdate"
+              @error="validationState.birthdate = !$event"
+              @possibly-valid="validationState.birthdate = $event"
+            />
+          </div>
+          <text-input-component
+            id="city"
+            label="City"
+            placeholder=""
+            tip=""
+            autocomplete="off"
+            v-model="modalFilters.city"
+            :validations="validations.city"
+            @empty="validationState.city = true"
+            @error="validationState.city = !$event"
+          />
+        </div>
+        <div class="horizontal-input-grouping-2">
+          <text-input-component
+            id="postalCode"
+            label="Postal code"
+            placeholder=""
+            tip=""
+            autocomplete="off"
+            v-model="modalFilters.postalCode"
+            :validations="validations.postalCode"
+            @empty="validationState.postalCode = true"
+            @error="validationState.postalCode = !$event"
+          />
+          <text-input-component
+            id="comment"
+            label="Comment"
+            placeholder=""
+            tip=""
+            autocomplete="off"
+            v-model="modalFilters.comment"
+            :validations="validations.comment"
+            @empty="validationState.comment = true"
+            @error="validationState.comment = !$event"
           />
         </div>
         <div class="horizontal-input-grouping-2">

@@ -1349,6 +1349,16 @@ public final class ForestClientQueries {
              OR C.UPDATE_TIMESTAMP >= :updatedFromDate)
         AND (:updatedToDate IS NULL
              OR C.UPDATE_TIMESTAMP <= :updatedToDate)
+        AND (:birthdate IS NULL
+             OR C.BIRTHDATE = :birthdate)
+        AND (:city IS NULL
+             OR UPPER(CL.CITY) LIKE '%' || UPPER(:city) || '%')
+        AND (:postalCode IS NULL
+             OR UPPER(CL.POSTAL_CODE) LIKE '%' || UPPER(:postalCode) || '%')
+        AND (:comment IS NULL
+             OR UPPER(C.CLIENT_COMMENT) LIKE '%' || UPPER(:comment) || '%'
+             OR UPPER(CL.CLI_LOCN_COMMENT) LIKE '%' || UPPER(:comment) || '%'
+             )
       """;
 
   public static final String ADVANCED_SEARCH = """

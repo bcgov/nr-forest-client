@@ -8,23 +8,27 @@ import org.apache.commons.lang3.StringUtils;
  * Data transfer object that encapsulates the optional search criteria used by
  * the advanced client search endpoint.
  *
- * <p>All fields are optional – when a field is {@code null} or blank it is
+ * <p>All fields are optional - when a field is {@code null} or blank it is
  * ignored by the search query. Non-blank fields are combined with AND logic
  * to narrow down the result set.
  *
  * @param clientName           the client's last name or organization name to search for
  * @param firstName            the client's first name to search for
  * @param middleName           the client's middle name to search for
- * @param clientStatus         the client status code (e.g. {@code "ACT"}, {@code "DAC"})
- * @param clientType           the client type code (e.g. {@code "I"} for individual,
+ * @param clientStatus         the client status code (for example {@code "ACT"} or {@code "DAC"})
+ * @param clientType           the client type code (for example {@code "I"} for individual or
  *                             {@code "C"} for corporation)
  * @param clientIdType         the type of the client identification document
- * @param clientIdentification the client identification number
+ * @param clientIdentification the client identification or registration value to match
  * @param emailAddress         the email address associated with the client contact or location
  * @param contactName          the name of a contact person associated with the client
- * @param userId               the user ID performing the search
- * @param updatedFromDate      the lower bound for the last updated date (inclusive)
- * @param updatedToDate        the upper bound for the last updated date (inclusive)
+ * @param userId               the updating user ID to search for
+ * @param updatedFromDate      the lower bound for the last updated date, inclusive
+ * @param updatedToDate        the upper bound for the last updated date, inclusive
+ * @param birthdate            the client's birthdate for exact-date matching
+ * @param city                 the primary client location city to search for
+ * @param postalCode           the primary client location postal code to search for
+ * @param comment              text to match against client or primary location comments
  */
 public record ClientAdvancedSearchCriteriaDto(
     String clientName, 
@@ -38,7 +42,11 @@ public record ClientAdvancedSearchCriteriaDto(
     String contactName,
     String userId,
     LocalDate updatedFromDate, 
-    LocalDate updatedToDate
+    LocalDate updatedToDate,
+    LocalDate birthdate,
+    String city,
+    String postalCode,
+    String comment
 ) {
   
   /**
@@ -66,13 +74,20 @@ public record ClientAdvancedSearchCriteriaDto(
             sanitizedCriteria.contactName,
             sanitizedCriteria.userId,
             sanitizedCriteria.updatedFromDate,
-            sanitizedCriteria.updatedToDate)
+            sanitizedCriteria.updatedToDate,
+            sanitizedCriteria.birthdate,
+            sanitizedCriteria.city,
+            sanitizedCriteria.postalCode,
+            sanitizedCriteria.comment)
         .anyMatch(java.util.Objects::nonNull);
   }
 
   /**
-   * Returns a new instance with all blank/empty values converted to null,
-   * so the SQL query can skip them via {@code :param IS NULL}.
+   * Returns a new instance with all blank or empty string values converted to
+   * {@code null} so the SQL query can skip them via {@code :param IS NULL}.
+   *
+   * @return a normalized copy of this criteria with blank string values
+   *         replaced by {@code null}
    */
   public ClientAdvancedSearchCriteriaDto sanitized() {
     return new ClientAdvancedSearchCriteriaDto(
@@ -87,7 +102,11 @@ public record ClientAdvancedSearchCriteriaDto(
         blankToNull(contactName),
         blankToNull(userId),
         blankToNull(updatedFromDate),
-        blankToNull(updatedToDate)
+        blankToNull(updatedToDate),
+        blankToNull(birthdate),
+        blankToNull(city),
+        blankToNull(postalCode),
+        blankToNull(comment)
     );
   }
 
@@ -95,15 +114,16 @@ public record ClientAdvancedSearchCriteriaDto(
    * Returns {@code null} if the given value is a {@link String} that is blank;
    * otherwise returns the original value unchanged.
    *
-   * <p>A value is considered blank if it is {@code null}, empty, or contains only
-   * whitespace (as defined by {@code StringUtils.isBlank}).
+   * <p>A value is considered blank if it is {@code null}, empty, or contains
+   * only whitespace as defined by {@link StringUtils#isBlank(CharSequence)}.
    *
-   * <p>For non-{@link String} types (e.g., {@link java.time.LocalDateTime}),
-   * the value is returned as-is.
+   * <p>For non-{@link String} types such as {@link java.time.LocalDate}, the
+   * value is returned as-is.
    *
    * @param <T> the type of the input value
    * @param value the value to check
-   * @return {@code null} if the value is a blank {@link String}; otherwise the original value
+   * @return {@code null} if the value is a blank {@link String}; otherwise the
+   *         original value
    */
   private static <T> T blankToNull(T value) {
     if (value instanceof String str) {
