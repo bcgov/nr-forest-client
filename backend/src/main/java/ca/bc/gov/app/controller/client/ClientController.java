@@ -318,9 +318,9 @@ public class ClientController {
     if (criteria == null) {
       criteria =
           new ClientAdvancedSearchCriteriaDto(
-              null, null, null, null, null,
-              null, null, null, null, null,
-              null, null);
+              null, null, null, null, null, null, null, null, 
+              null, null, null, null, null, null, null, null
+          );
     }
 
     log.info(

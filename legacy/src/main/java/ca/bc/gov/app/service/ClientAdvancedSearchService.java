@@ -70,6 +70,9 @@ public class ClientAdvancedSearchService {
     LocalDateTime updatedToDateTime = sanitizedCriteria.updatedToDate() != null
         ? sanitizedCriteria.updatedToDate().atTime(LocalTime.MAX)
         : null;
+    LocalDateTime birthdateTime = sanitizedCriteria.birthdate() != null
+        ? sanitizedCriteria.birthdate().atStartOfDay()
+        : null;
 
     return forestClientRepository
         .countByAdvancedSearch(
@@ -84,7 +87,11 @@ public class ClientAdvancedSearchService {
             sanitizedCriteria.contactName(),
             sanitizedCriteria.userId(),
             updatedFromDateTime,
-            updatedToDateTime
+            updatedToDateTime,
+            birthdateTime,
+            sanitizedCriteria.city(),
+            sanitizedCriteria.postalCode(),
+            sanitizedCriteria.comment()
         )
         .defaultIfEmpty(0L)
         .flatMapMany(count -> {
@@ -105,6 +112,10 @@ public class ClientAdvancedSearchService {
                   sanitizedCriteria.userId(),
                   updatedFromDateTime,
                   updatedToDateTime,
+                  birthdateTime,
+                  sanitizedCriteria.city(),
+                  sanitizedCriteria.postalCode(),
+                  sanitizedCriteria.comment(),
                   page.getPageSize(), 
                   page.getOffset()
               )

@@ -10,23 +10,27 @@ import org.apache.commons.lang3.StringUtils;
  * Data transfer object that encapsulates the optional search criteria used by
  * the advanced client search endpoint.
  *
- * <p>All fields are optional – when a field is {@code null} or blank it is
+ * <p>All fields are optional - when a field is {@code null} or blank it is
  * ignored by the search query. Non-blank fields are combined with AND logic
  * to narrow down the result set.
  *
  * @param clientName           the client's last name or organization name to search for
  * @param firstName            the client's first name to search for
  * @param middleName           the client's middle name to search for
- * @param clientStatus         the client status code (e.g. {@code "ACT"}, {@code "DAC"})
- * @param clientType           the client type code (e.g. {@code "I"} for individual,
+ * @param clientStatus         the client status code (for example {@code "ACT"} or {@code "DAC"})
+ * @param clientType           the client type code (for example {@code "I"} for individual or
  *                             {@code "C"} for corporation)
  * @param clientIdType         the type of the client identification document
- * @param clientIdentification the client identification number
+ * @param clientIdentification the client identification or registration value to match
  * @param emailAddress         the email address associated with the client contact or location
  * @param contactName          the name of a contact person associated with the client
- * @param userId               the user ID performing the search
- * @param updatedFromDate      the lower bound for the last updated date (inclusive)
- * @param updatedToDate        the upper bound for the last updated date (inclusive)
+ * @param userId               the updating user ID to search for
+ * @param updatedFromDate      the lower bound for the last updated date, inclusive
+ * @param updatedToDate        the upper bound for the last updated date, inclusive
+ * @param birthdate            the client's birthdate for exact-date matching
+ * @param city                 the primary client location city to search for
+ * @param postalCode           the primary client location postal code to search for
+ * @param comment              text to match against client or primary location comments
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ClientAdvancedSearchCriteriaDto(
@@ -41,7 +45,11 @@ public record ClientAdvancedSearchCriteriaDto(
     String contactName,
     String userId,
     @JsonFormat(pattern = "yyyy-MM-dd") LocalDate updatedFromDate, 
-    @JsonFormat(pattern = "yyyy-MM-dd") LocalDate updatedToDate
+    @JsonFormat(pattern = "yyyy-MM-dd") LocalDate updatedToDate,
+    @JsonFormat(pattern = "yyyy-MM-dd") LocalDate birthdate,
+    String city,
+    String postalCode,
+    String comment
 ) {
   
   /**
@@ -69,7 +77,11 @@ public record ClientAdvancedSearchCriteriaDto(
             sanitizedCriteria.contactName,
             sanitizedCriteria.userId,
             sanitizedCriteria.updatedFromDate,
-            sanitizedCriteria.updatedToDate)
+            sanitizedCriteria.updatedToDate,
+            sanitizedCriteria.birthdate,
+            sanitizedCriteria.city,
+            sanitizedCriteria.postalCode,
+            sanitizedCriteria.comment)
         .anyMatch(java.util.Objects::nonNull);
   }
 
@@ -90,7 +102,11 @@ public record ClientAdvancedSearchCriteriaDto(
         blankToNull(contactName),
         blankToNull(userId),
         blankToNull(updatedFromDate),
-        blankToNull(updatedToDate)
+        blankToNull(updatedToDate),
+        blankToNull(birthdate),
+        blankToNull(city),
+        blankToNull(postalCode),
+        blankToNull(comment)
     );
   }
 
