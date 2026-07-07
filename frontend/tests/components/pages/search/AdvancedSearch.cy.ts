@@ -101,6 +101,14 @@ describe("<advanced-search />", () => {
     cy.fillFormEntry("#contactName", "sample-contactName");
     cy.fillFormEntry("#emailAddress", "sample-emailAddress");
 
+    cy.fillFormEntry("#birthdateYear", "1990");
+    cy.fillFormEntry("#birthdateMonth", "06");
+    cy.fillFormEntry("#birthdateDay", "15");
+
+    cy.fillFormEntry("#city", "sample-city");
+    cy.fillFormEntry("#postalCode", "V8X3K2");
+    cy.fillFormEntry("#comment", "sample-comment");
+
     cy.fillFormEntry("#updatedFromDateYear", "2025");
     cy.fillFormEntry("#updatedFromDateMonth", "04");
     cy.fillFormEntry("#updatedFromDateDay", "15");
@@ -120,6 +128,10 @@ describe("<advanced-search />", () => {
       clientStatus: ["SPN"],
       contactName: "sample-contactName",
       emailAddress: "sample-emailAddress",
+      birthdate: "1990-06-15",
+      city: "sample-city",
+      postalCode: "V8X3K2",
+      comment: "sample-comment",
       updatedFromDate: "2025-04-15",
       updatedToDate: "2026-04-15",
     });
