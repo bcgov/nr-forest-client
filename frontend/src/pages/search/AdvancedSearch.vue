@@ -71,7 +71,7 @@ const validations = reactive<{ [key in keyof ClientSearchParameters]: ((value: s
   birthdate: [],
   city: getNamingValidations("city"),
   postalCode: [
-    isMaxSizeMsg("postal code", 14),
+    isMaxSizeMsg("postal code", 10),
     isAscii("postal code"),
   ],
   comment: [
@@ -357,17 +357,17 @@ const clearFilters = () => {
               @possibly-valid="validationState.birthdate = $event"
             />
           </div>
-                      <text-input-component
-              id="comment"
-              label="Comment"
-              placeholder=""
-              tip=""
-              autocomplete="off"
-              v-model="modalFilters.comment"
-              :validations="validations.comment"
-              @empty="validationState.comment = true"
-              @error="validationState.comment = !$event"
-            />
+          <text-input-component
+            id="comment"
+            label="Notes"
+            placeholder=""
+            tip=""
+            autocomplete="off"
+            v-model="modalFilters.comment"
+            :validations="validations.comment"
+            @empty="validationState.comment = true"
+            @error="validationState.comment = !$event"
+          />
         </div>
         <div class="horizontal-input-grouping-2">
           <text-input-component
