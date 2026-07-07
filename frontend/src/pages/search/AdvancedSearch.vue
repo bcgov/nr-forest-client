@@ -357,6 +357,19 @@ const clearFilters = () => {
               @possibly-valid="validationState.birthdate = $event"
             />
           </div>
+                      <text-input-component
+              id="comment"
+              label="Comment"
+              placeholder=""
+              tip=""
+              autocomplete="off"
+              v-model="modalFilters.comment"
+              :validations="validations.comment"
+              @empty="validationState.comment = true"
+              @error="validationState.comment = !$event"
+            />
+        </div>
+        <div class="horizontal-input-grouping-2">
           <text-input-component
             id="city"
             label="City"
@@ -368,8 +381,6 @@ const clearFilters = () => {
             @empty="validationState.city = true"
             @error="validationState.city = !$event"
           />
-        </div>
-        <div class="horizontal-input-grouping-2">
           <text-input-component
             id="postalCode"
             label="Postal code"
@@ -380,17 +391,6 @@ const clearFilters = () => {
             :validations="validations.postalCode"
             @empty="validationState.postalCode = true"
             @error="validationState.postalCode = !$event"
-          />
-          <text-input-component
-            id="comment"
-            label="Comment"
-            placeholder=""
-            tip=""
-            autocomplete="off"
-            v-model="modalFilters.comment"
-            :validations="validations.comment"
-            @empty="validationState.comment = true"
-            @error="validationState.comment = !$event"
           />
         </div>
         <div class="horizontal-input-grouping-2">

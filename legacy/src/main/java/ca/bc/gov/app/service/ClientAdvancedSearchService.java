@@ -71,7 +71,7 @@ public class ClientAdvancedSearchService {
         ? sanitizedCriteria.updatedToDate().atTime(LocalTime.MAX)
         : null;
     LocalDateTime birthdateTime = sanitizedCriteria.birthdate() != null
-        ? sanitizedCriteria.birthdate().atTime(LocalTime.MAX)
+        ? sanitizedCriteria.birthdate().atStartOfDay()
         : null;
 
     return forestClientRepository
