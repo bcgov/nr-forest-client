@@ -46,7 +46,6 @@ jobs:
         window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{}');
         window.localStorage.setItem(\"VITE_LOGOUT_BCSC_URL\",'https://www2.gov.bc.ca/gov/content/industry/natural-resource-use/client-number');
         window.localStorage.setItem(\"VITE_LOGOUT_BCEIDBUSINESS_URL\",'https://www2.gov.bc.ca/gov/content/industry/natural-resource-use/client-number');
-        window.localStorage.setItem(\"VITE_LOGOUT_IDIR_URL\",'https://forestclient-test.apps.silver.devops.gov.bc.ca/');
 
   reporting:
     name: SchemaSpy & ZAP
@@ -77,7 +76,6 @@ jobs:
         window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{}');
         window.localStorage.setItem(\"VITE_LOGOUT_BCSC_URL\",'https://www2.gov.bc.ca/gov/content/industry/natural-resource-use/client-number');
         window.localStorage.setItem(\"VITE_LOGOUT_BCEIDBUSINESS_URL\",'https://www2.gov.bc.ca/gov/content/industry/natural-resource-use/client-number');
-        window.localStorage.setItem(\"VITE_LOGOUT_IDIR_URL\",'https://forestclient.nrs.gov.bc.ca/');
 
   images-prod:
     name: Promote images to PROD
