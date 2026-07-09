@@ -27,7 +27,7 @@ jobs:
           VITE_LOGOUT_BCEIDBUSINESS_URL: http://localhost:3000
           VITE_LOGOUT_IDIR_URL: http://localhost:3000
         with:
-          node_version: 22.17.1
+          node_version: 22.18.0
           commands: |
             npm ci
             npm run coverage
