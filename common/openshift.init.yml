@@ -77,8 +77,6 @@ parameters:
   - name: GREEN_DOMAIN
     description: Green domain
     required: true
-  - name: LANDING_URL
-    required: true
   - name: URL_FRONTEND
     description: Frontend URL
     required: true
