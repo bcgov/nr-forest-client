@@ -90,6 +90,7 @@ jobs:
             -p VITE_NODE_ENV=openshift-${{ inputs.target }}
             -p URL_FRONTEND=${{ inputs.url }}
             -p GREEN_DOMAIN=${{ secrets.GREEN_DOMAIN }}
+            -p LANDING_URL=${{ inputs.url }}
             -p DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             -p SPRING_PROFILES_ACTIVE=${{ secrets.OC_NAMESPACE }}
 
