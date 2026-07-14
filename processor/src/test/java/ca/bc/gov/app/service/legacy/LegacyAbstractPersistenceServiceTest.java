@@ -1,7 +1,6 @@
 package ca.bc.gov.app.service.legacy;
 
 
-import static ca.bc.gov.app.TestConstants.CLIENT_ENTITY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -11,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.entity.SubmissionContactEntity;
 import ca.bc.gov.app.entity.SubmissionDetailEntity;
 import ca.bc.gov.app.entity.SubmissionLocationContactEntity;
@@ -353,16 +353,20 @@ class LegacyAbstractPersistenceServiceTest {
     when(legacyService.createClient(any()))
         .thenReturn(Mono.just("00000000"));
 
+    ForestClientDto newClient = new ForestClientDto(
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null, null
+    );
+
     service
         .createForestClient(
             new MessagingWrapper<>(
-                CLIENT_ENTITY,
+                newClient,
                 Map.of(
                     ApplicationConstant.SUBMISSION_ID, 2,
                     ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
                     ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
                     ApplicationConstant.CLIENT_TYPE_CODE, "C",
-                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
                     ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA"
                 )
             )
@@ -379,6 +383,45 @@ class LegacyAbstractPersistenceServiceTest {
               .isNotNull()
               .isInstanceOf(String.class)
               .isEqualTo("00000000");
+        })
+        .verifyComplete();
+
+  }
+
+  @Test
+  @DisplayName("skip client creation when client number already exists")
+  void shouldSkipClientCreationWhenClientNumberExists() {
+
+    ForestClientDto existingClient = new ForestClientDto(
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null, null
+    ).withClientNumber("00001000");
+
+    service
+        .createForestClient(
+            new MessagingWrapper<>(
+                existingClient,
+                Map.of(
+                    ApplicationConstant.SUBMISSION_ID, 2,
+                    ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.CLIENT_TYPE_CODE, "C",
+                    ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA"
+                )
+            )
+        )
+        .as(StepVerifier::create)
+        .assertNext(message -> {
+          assertThat(message)
+              .as("message")
+              .isNotNull()
+              .hasFieldOrPropertyWithValue("payload", 2);
+
+          assertThat(message.parameters().get(ApplicationConstant.FOREST_CLIENT_NUMBER))
+              .as("forest client number")
+              .isNotNull()
+              .isInstanceOf(String.class)
+              .isEqualTo("00001000");
         })
         .verifyComplete();
 

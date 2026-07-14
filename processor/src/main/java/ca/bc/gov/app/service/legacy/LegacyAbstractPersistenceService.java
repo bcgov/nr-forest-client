@@ -111,9 +111,27 @@ public abstract class LegacyAbstractPersistenceService {
 
   /**
    * Creates a client if does not exist on oracle and get back the client number.
+   * If a client number already exists for this submission, creation is skipped to
+   * prevent duplicate client creation (e.g. during processor restarts/deployments).
    */
   public Mono<MessagingWrapper<Integer>> createForestClient(
       MessagingWrapper<ForestClientDto> message) {
+
+    String existingClientNumber = message.payload().clientNumber();
+
+    if (StringUtils.isNotBlank(existingClientNumber)) {
+      log.info("Client {} already exists for submission {}, skipping creation",
+          existingClientNumber,
+          message.parameters().get(ApplicationConstant.SUBMISSION_ID)
+      );
+      return Mono.just(
+          new MessagingWrapper<>(
+              (Integer) message.parameters().get(ApplicationConstant.SUBMISSION_ID),
+              message.parameters()
+          )
+              .withParameter(ApplicationConstant.FOREST_CLIENT_NUMBER, existingClientNumber)
+      );
+    }
 
     log.info("Creating Forest Client {} {}",
         message.parameters().get(ApplicationConstant.FOREST_CLIENT_NAME),

@@ -292,20 +292,20 @@ class LegacyRegisteredSPPersistenceServiceTest {
     when(legacyService.createClient(any()))
         .thenReturn(Mono.just("00000000"));
 
+    ForestClientDto newClient = new ForestClientDto(
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null, null
+    ).withClientTypeCode("I").withClientIdTypeCode("BCRE");
+
     service
         .createForestClient(
             new MessagingWrapper<>(
-                TestConstants
-                    .CLIENT_ENTITY
-                    .withClientTypeCode("I")
-                    .withClientIdTypeCode("BCRE")
-                ,
+                newClient,
                 Map.of(
                     ApplicationConstant.SUBMISSION_ID, 2,
                     ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
                     ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
                     ApplicationConstant.CLIENT_TYPE_CODE, "RSP",
-                    ApplicationConstant.FOREST_CLIENT_NUMBER, "00000000",
                     ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA",
                     ApplicationConstant.CLIENT_SUBMITTER_NAME, "Jhon Snow"
                 )
@@ -335,13 +335,15 @@ class LegacyRegisteredSPPersistenceServiceTest {
       MessagingWrapper<ForestClientDto> wrapper
   ) {
 
+    String expectedClientNumber = "00100000";
+
     SubmissionDetailEntity detailEntity = SubmissionDetailEntity
         .builder()
         .submissionId(2)
         .registrationNumber("XX0000000")
         .organizationName("Sample test")
         .clientTypeCode("RSP")
-        .clientNumber(wrapper.payload().clientNumber())
+        .clientNumber(expectedClientNumber)
         .build();
 
     when(submissionDetailRepository.findBySubmissionId(any()))
@@ -349,9 +351,9 @@ class LegacyRegisteredSPPersistenceServiceTest {
     when(submissionDetailRepository.save(any()))
         .thenReturn(Mono.just(detailEntity));
     when(legacyService.createDoingBusinessAs(any(), any(), any(), any()))
-        .thenReturn(Mono.just(wrapper.payload().clientNumber()));
+        .thenReturn(Mono.just(expectedClientNumber));
     when(legacyService.createClient(any()))
-        .thenReturn(Mono.just(wrapper.payload().clientNumber()));
+        .thenReturn(Mono.just(expectedClientNumber));
 
     service
         .createForestClient(wrapper)
@@ -366,7 +368,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
               .as("forest client number")
               .isNotNull()
               .isInstanceOf(String.class)
-              .isEqualTo(wrapper.payload().clientNumber());
+              .isEqualTo(expectedClientNumber);
         })
         .verifyComplete();
 
@@ -589,7 +591,7 @@ class LegacyRegisteredSPPersistenceServiceTest {
 
   private static Stream<Arguments> generateDoingBusinessAs() {
     Integer submissionId = 9999;
-    String clientNumber = "00100000";
+    String clientNumber = null;
 
     return Stream.of(
         Arguments.of(
