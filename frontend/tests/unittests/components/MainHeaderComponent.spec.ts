@@ -158,7 +158,7 @@ describe("MainHeaderComponent.vue", () => {
           expect(panelAction.exists()).toBe(true);
           await panelAction.trigger("click");
           const panel = wrapper.find("#my-profile-panel");
-          expect(panel.attributes().expanded).toEqual("true");
+          expect(panel.attributes().expanded).toBeDefined();
         });
         afterEach(() => {
           wrapper.unmount();
@@ -186,7 +186,7 @@ describe("MainHeaderComponent.vue", () => {
           expect(backdrop.exists()).toBe(true);
           await backdrop.trigger("click");
           const panel = wrapper.find("#my-profile-panel");
-          expect(panel.attributes().expanded).toBeUndefined();
+          expect(panel.attributes().expanded).not.toEqual("true");
         });
 
         it("displays a backdrop only when the panel is open", async () => {

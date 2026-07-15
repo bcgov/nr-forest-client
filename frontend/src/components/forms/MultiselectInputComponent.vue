@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick, onMounted } from "vue";
 // Carbon
 import "@carbon/web-components/es/components/multi-select/index";
 import "@carbon/web-components/es/components/tag/index";
@@ -122,14 +122,6 @@ const emitChange = () => {
   emit("empty", reference.length === 0);
 };
 
-const addFromSelection = (itemCode: string) => {
-  const reference = props.modelValue.find((entry) => entry.name === itemCode);
-  if (reference && !items.value.includes(reference.name)) {
-    items.value.push(reference.name);
-    selectedValue.value = items.value.join(",");
-  }
-};
-
 const selectItems = (event: any) => {
   let contentValue = event?.data !== undefined ? event?.data : event.target.value;
   if (Array.isArray(contentValue)) {
@@ -141,28 +133,32 @@ const selectItems = (event: any) => {
   }
 };
 
-let skipEmitChange = false;
-
-watch(() => props.selectedValues, () => {
-  items.value = [];
-  selectedValue.value = props.initialValue;
-  if (props.selectedValues && props.selectedValues.length > 0) {
-    props.selectedValues.forEach((value: string) => addFromSelection(value));
+const syncMultiSelectValue = async () => {
+  await nextTick();
+  const multiSelect = cdsMultiSelectRef.value;
+  if (multiSelect) {
+    await customElements.whenDefined("cds-multi-select");
+    await multiSelect.updateComplete;
+    multiSelect.value = items.value.join(",");
+    await multiSelect.updateComplete;
   }
-  skipEmitChange = true;
+};
+
+onMounted(() => {
+  syncMultiSelectValue();
 });
 
-watch([items], () => {
-  if (!skipEmitChange) {
-    emitChange();
+watch([items], ([newItems], [oldItems]) => {
+  if (
+    oldItems &&
+    newItems.length === oldItems.length &&
+    newItems.every((item: string, i: number) => item === oldItems[i])
+  ) {
+    return;
   }
-  skipEmitChange = false;
+  emitChange();
+  syncMultiSelectValue();
 });
-
-watch(
-  () => props.modelValue,
-  () => (selectedValue.value = props.initialValue)
-);
 
 watch([selectedValue], () => validateInput(selectedValue.value));
 
@@ -244,6 +240,7 @@ watch(
           :warn="warning"
           :warn-text="warning && error"
           filterable
+          selection-feedback="fixed"
           @cds-multi-select-selected="selectItems"
           @focus="isFocused = true"
           @blur="

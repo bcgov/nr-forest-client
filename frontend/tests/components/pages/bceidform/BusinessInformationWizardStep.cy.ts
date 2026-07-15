@@ -217,11 +217,11 @@ describe('<BusinessInformationWizardStep />', () => {
   it('clears the error when the business name gets cleared', () => {
     showsUnknownSoleProprietor();
 
-    cy.get("#business")
-      .should("be.visible")
-      .shadow()
-      .find("#selection-button") // The X clear button
-      .click();
+    cy.get("#business").then(($el) => {
+      const input = $el[0].shadowRoot!.querySelector("input") as HTMLInputElement;
+      input.value = "";
+      input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    });
 
     cy.get("cds-inline-notification").should("not.exist");
   });

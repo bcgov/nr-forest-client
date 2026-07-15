@@ -237,7 +237,7 @@ const currentDate = new Date();
       data-testid="my-profile-backdrop"
       ref="myProfileBackdrop"
       class="cds--side-nav__overlay"
-      @click.prevent="myProfileAction?.click"
+      @click.prevent="closePanel"
     ></div>
   </cds-header>
 
