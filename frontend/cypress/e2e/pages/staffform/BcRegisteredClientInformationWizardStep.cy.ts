@@ -133,8 +133,7 @@ describe("BC Registered Staff Wizard Step", () => {
         "@clientSearchCOR"
       );
 
-      cy.get("#businessName").shadow().find("input").focus();
-      cy.get("#businessName").shadow().find("div#selection-button").click();
+      cy.clearComboBox("#businessName");
 
       cy.checkAutoCompleteErrorMessage(
         "#businessName",
@@ -157,8 +156,7 @@ describe("BC Registered Staff Wizard Step", () => {
 
       cy.wait(2);
 
-      cy.get("#businessName").shadow().find("input").focus();
-      cy.get("#businessName").shadow().find("div#selection-button").click();
+      cy.clearComboBox("#businessName");
 
       cy.checkAutoCompleteErrorMessage(
         "#businessName",
@@ -584,13 +582,7 @@ describe("BC Registered Staff Wizard Step", () => {
       {
         name: "the business name gets cleared",
         action: () => {
-          cy.get("#businessName")
-            .shadow()
-            .find("input").focus();
-          cy.get("#businessName")
-            .shadow()
-            .find("#selection-button") // The X clear button
-            .click();
+          cy.clearComboBox("#businessName");
         },
       },
     ];
@@ -696,7 +688,7 @@ describe("BC Registered Staff Wizard Step", () => {
         .should("exist")
         .and("contains.text", "Sole Proprietorship");
 
-      cy.clearFormEntry("#businessName");
+      cy.clearComboBox("#businessName");
 
       const cmpSearch = "cmp";
       const cmpCode = "C1231231";
@@ -755,7 +747,7 @@ describe("BC Registered Staff Wizard Step", () => {
         cy.contains("#birthdate .field-error", "You must enter a date of birth");
       });
       it("enables the button Next when a new Client name from a different type gets selected", () => {
-        cy.clearFormEntry("#businessName");
+        cy.clearComboBox("#businessName");
 
         const cmpSearch = "cmp";
         const cmpCode = "C1231231";
@@ -800,7 +792,7 @@ describe("BC Registered Staff Wizard Step", () => {
       cy.checkInputErrorMessage("#doingBusinessAs", "The doing business as can only contain");
     });
     it("enables the button Next when a new Client name with type Sole proprietorship gets selected", () => {
-      cy.clearFormEntry("#businessName");
+      cy.clearComboBox("#businessName");
 
       const sppSearch = "spp";
       const sppCode = "FM123123";

@@ -310,9 +310,7 @@ describe("<AddressGroupComponent />", () => {
 
     cy.get("#addr_0").should("be.visible").and("have.value", "2975 Jutland Rd");
 
-    // Click the clear (x) button
-    cy.get("#addr_0").shadow().find("input").focus();
-    cy.get("#addr_0").shadow().find("#selection-button").click();
+    cy.clearComboBox("#addr_0");
 
     cy.get("#addr_0").should("have.value", "");
 
@@ -528,9 +526,7 @@ describe("<AddressGroupComponent />", () => {
           .should("be.visible")
           .and("have.value", "British Columbia");
 
-        // Click the clear (x) button
-        cy.get("#province_0").shadow().find("input").focus();
-        cy.get("#province_0").shadow().find("#selection-button").click();
+        cy.clearComboBox("#province_0");
 
         // Province got cleared.
         cy.get("#province_0")
@@ -580,9 +576,7 @@ describe("<AddressGroupComponent />", () => {
           .should("be.visible")
           .and("have.value", "British Columbia");
 
-        // Click the clear (x) button
-        cy.get("#province_0").shadow().find("input").focus();
-        cy.get("#province_0").shadow().find("#selection-button").click();
+        cy.clearComboBox("#province_0");
 
         // Province got cleared.
         cy.get("#province_0")
@@ -639,8 +633,7 @@ describe("<AddressGroupComponent />", () => {
       cy.get("#city_0").shadow().find("input").should('be.focused').blur();
       cy.log("City field is cleared and blured");
 
-      cy.get("#province_0").shadow().find("input").focus();
-      cy.get("#province_0").shadow().find("#selection-button").click();
+      cy.clearComboBox("#province_0");
       cy.log("Province field is clicked");
       
       cy.get("#postalCode_0").shadow().find("input").type("Test");

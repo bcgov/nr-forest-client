@@ -97,8 +97,7 @@ describe("<registration-number />", () => {
   it("returns an error when both inputs become empty", () => {
     mount();
 
-    cy.get("#input-registryType").shadow().find("input").focus();
-    cy.get("#input-registryType").shadow().find("div#selection-button").click();
+    cy.clearComboBox("#input-registryType");
     cy.clearFormEntry("#input-registryNumber");
 
     // the message will either refer to the type or the number, but both start with "You must".
@@ -173,8 +172,7 @@ describe("<registration-number />", () => {
     });
 
     it("returns an error when the Type becomes empty", () => {
-      cy.get("#input-registryType").shadow().find("input").focus();
-      cy.get("#input-registryType").shadow().find("div#selection-button").click();
+      cy.clearComboBox("#input-registryType");
 
       cy.contains(".field-error", "You must select a type");
 

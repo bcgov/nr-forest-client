@@ -211,6 +211,11 @@ Cypress.Commands.add("clearFormEntry",(field: string, area: boolean = false) =>{
   .blur();
 });
 
+Cypress.Commands.add("clearComboBox", (field: string) => {
+  cy.get(field).should("exist").shadow().find("input").focus().type("a");
+  cy.get(field).shadow().find("#selection-button").should("exist").click();
+});
+
 Cypress.Commands.add("selectFormEntry", (field: string, value: string) => {
   // expands field options
   cy.get(field).find("[part='trigger-button']").click();

@@ -446,9 +446,7 @@ describe("<individual-client-information-wizard-step />", () => {
           cy.get("#identificationProvince")
             .should("be.visible")
             .and("have.value", "British Columbia");
-          cy.get("#identificationProvince").shadow().find("input").focus();
-          cy.get("#identificationProvince").shadow().find("#selection-button") // The X clear button
-            .click();
+          cy.clearComboBox("#identificationProvince");
         });
 
         it("should emit valid false", () => {
