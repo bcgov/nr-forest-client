@@ -133,6 +133,7 @@ describe("BC Registered Staff Wizard Step", () => {
         "@clientSearchCOR"
       );
 
+      cy.get("#businessName").shadow().find("input").focus();
       cy.get("#businessName").shadow().find("div#selection-button").click();
 
       cy.checkAutoCompleteErrorMessage(
@@ -156,6 +157,7 @@ describe("BC Registered Staff Wizard Step", () => {
 
       cy.wait(2);
 
+      cy.get("#businessName").shadow().find("input").focus();
       cy.get("#businessName").shadow().find("div#selection-button").click();
 
       cy.checkAutoCompleteErrorMessage(
@@ -582,6 +584,9 @@ describe("BC Registered Staff Wizard Step", () => {
       {
         name: "the business name gets cleared",
         action: () => {
+          cy.get("#businessName")
+            .shadow()
+            .find("input").focus();
           cy.get("#businessName")
             .shadow()
             .find("#selection-button") // The X clear button

@@ -445,8 +445,9 @@ describe("<individual-client-information-wizard-step />", () => {
         beforeEach(() => {
           cy.get("#identificationProvince")
             .should("be.visible")
-            .and("have.value", "British Columbia")
-            .find("#selection-button") // The X clear button
+            .and("have.value", "British Columbia");
+          cy.get("#identificationProvince").shadow().find("input").focus();
+          cy.get("#identificationProvince").shadow().find("#selection-button") // The X clear button
             .click();
         });
 
