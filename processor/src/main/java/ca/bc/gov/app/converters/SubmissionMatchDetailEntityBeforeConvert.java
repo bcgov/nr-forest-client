@@ -3,6 +3,7 @@ package ca.bc.gov.app.converters;
 import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;
 import java.util.Objects;
@@ -12,7 +13,6 @@ import org.reactivestreams.Publisher;
 import org.springframework.data.r2dbc.mapping.event.AfterConvertCallback;
 import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -23,7 +23,7 @@ public class SubmissionMatchDetailEntityBeforeConvert
     implements BeforeConvertCallback<SubmissionMatchDetailEntity>,
     AfterConvertCallback<SubmissionMatchDetailEntity> {
 
-  private final Jackson2ObjectMapperBuilder builder;
+  private final ObjectMapper objectMapper;
 
   @Override
   public Publisher<SubmissionMatchDetailEntity> onBeforeConvert(
@@ -43,8 +43,7 @@ public class SubmissionMatchDetailEntityBeforeConvert
     String json = "{}";
 
     try {
-      json = builder
-          .build()
+      json = objectMapper
           .writeValueAsString(entity.getMatchers());
     } catch (JsonProcessingException e) {
       log.error("Error while converting matchers to json", e);
@@ -60,7 +59,7 @@ public class SubmissionMatchDetailEntityBeforeConvert
     );
 
     try {
-      return builder.build().readValue(json, new TypeReference<Map<String, Object>>() {});
+      return objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {});
     } catch (JsonProcessingException e) {
       log.error("Error while converting matchers to json", e);
       }

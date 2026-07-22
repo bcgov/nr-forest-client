@@ -31,23 +31,6 @@ spring:
     user: ${ca.bc.gov.nrs.postgres.username}
     password: ${ca.bc.gov.nrs.postgres.password}
     url: jdbc:postgresql://${ca.bc.gov.nrs.postgres.host}/${ca.bc.gov.nrs.postgres.database}
-  http:
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
-  sleuth:
-    propagation-keys:
-      - X-TRACE-ID
-      - X-USER
-    baggage-keys:
-      - X-TRACE-ID
-      - X-USER
-    log:
-      slf4j:
-        whitelisted-mdc-keys:
-          - X-TRACE-ID
-          - X-USER
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
@@ -202,18 +185,6 @@ spring:
   config:
     activate:
       on-profile: container
-  sleuth:
-    propagation-keys:
-      - X-TRACE-ID
-      - X-USER
-    baggage-keys:
-      - X-TRACE-ID
-      - X-USER
-    log:
-      slf4j:
-        whitelisted-mdc-keys:
-          - X-TRACE-ID
-          - X-USER
 
 logging:
   pattern:

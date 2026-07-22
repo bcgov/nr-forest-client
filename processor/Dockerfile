@@ -1,29 +1,25 @@
-FROM eclipse-temurin:17.0.8.1_1-jdk-jammy AS build
+### Builder
+FROM eclipse-temurin:21-jdk-jammy AS build
 
-# Install Maven
-RUN apt update -y && \
-    apt install -y wget tar && \
-    wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz && \
-    tar xzf apache-maven-3.8.6-bin.tar.gz -C /opt && \
-    ln -s /opt/apache-maven-3.8.6 /opt/maven && \
-    ln -s /opt/maven/bin/mvn /usr/bin/mvn && \
-    rm apache-maven-3.8.6-bin.tar.gz && \
-    apt-get clean
-
-# Add Maven to the PATH environment variable
-ENV MAVEN_HOME=/opt/maven
-ENV PATH=$MAVEN_HOME/bin:$PATH
+# RELAX SECURITY: enable legacy TLS versions/algorithms (e.g. TLS 1.0/1.1, SHA1, DH/RSA keys < 2048)
+# so the application can complete a handshake with the legacy Oracle DB's old cert.
+RUN sed -i '/^jdk.tls.disabledAlgorithms=/,/[^\\]$/c\jdk.tls.disabledAlgorithms=SSLv3' "$JAVA_HOME/conf/security/java.security"
 
 # Copy
 WORKDIR /app
 COPY pom.xml ./
 COPY src ./src
+COPY mvnw ./
+COPY .mvn/wrapper/maven-wrapper.properties ./.mvn/wrapper/maven-wrapper.properties
+
+# Ensure mvnw has execution permissions
+RUN chmod +x mvnw
 
 # Build
-RUN mvn clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
+RUN ./mvnw clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
 
 ### Deployer
-FROM eclipse-temurin:17.0.8.1_1-jre-jammy AS deploy
+FROM eclipse-temurin:21-jre-jammy AS deploy
 ARG PORT=3100
 
 # Copy
@@ -35,7 +31,5 @@ USER 1001
 EXPOSE ${PORT}
 HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status":"UP"'
 
-ENV SPRING_PROFILES_ACTIVE=container
-
 # Startup
-ENTRYPOINT ["java", "-jar", "/app/nr-forest-client-processor.jar"]
+ENTRYPOINT ["java", "-jar", "/app/nr-forest-client-processor.jar","--spring.profiles.active=container"]

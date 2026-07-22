@@ -23,7 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.util.CollectionUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -113,20 +113,10 @@ public class ClientSubmissionController {
         .doOnError(e -> log.error("External submission is invalid: {}", e.getMessage()))
         .flatMap(submissionDto -> clientService.submit(submissionDto, principal))
         .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
-        .doOnNext(submissionId ->
-            serverResponse
-                .getHeaders()
-                .addAll(
-                    CollectionUtils
-                        .toMultiValueMap(
-                            Map.of(
-                                "Location",
-                                List.of(String.format("/api/clients/submissions/%d", submissionId)),
-                                "x-sub-id", List.of(String.valueOf(submissionId))
-                            )
-                        )
-                )
-        )
+        .doOnNext(submissionId -> {
+            serverResponse.getHeaders().add("Location", String.format("/api/clients/submissions/%d", submissionId));
+            serverResponse.getHeaders().add("x-sub-id", String.valueOf(submissionId));
+        })
         .then();
   }
 
@@ -170,15 +160,10 @@ public class ClientSubmissionController {
         .doOnError(e -> log.error("Staff submission is invalid: {}", 
                                   e.getMessage()))
         .flatMap(submission -> clientService.staffSubmit(submission, principal))
-        .doOnNext(clientId -> serverResponse
-            .getHeaders()
-            .addAll(CollectionUtils.toMultiValueMap(
-                Map.of(
-                    "Location", List.of(String.format("/api/clients/details/%s", clientId)),
-                    "x-client-id", List.of(String.valueOf(clientId))
-                )
-            ))
-        )
+        .doOnNext(clientId -> {
+            serverResponse.getHeaders().add("Location", String.format("/api/clients/details/%s", clientId));
+            serverResponse.getHeaders().add("x-client-id", String.valueOf(clientId));
+        })
         .then();
 
   }
