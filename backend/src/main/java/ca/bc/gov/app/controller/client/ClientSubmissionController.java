@@ -71,7 +71,7 @@ public class ClientSubmissionController {
                         dto.count().toString()))
         .doFinally(
             signalType -> {
-                if (!serverResponse.getHeaders().containsKey(ApplicationConstant.X_TOTAL_COUNT)) {
+                if (serverResponse.getHeaders().getFirst(ApplicationConstant.X_TOTAL_COUNT) == null) {
                     serverResponse.getHeaders().set(ApplicationConstant.X_TOTAL_COUNT, "0");
                 }
             });
