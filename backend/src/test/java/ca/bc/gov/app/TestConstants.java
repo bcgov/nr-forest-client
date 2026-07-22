@@ -52,7 +52,7 @@ public class TestConstants {
   public static final String CHES_422_MESSAGE = """
       {
          "type": "https://httpstatuses.com/422",
-         "title": "Unprocessable Entity",
+          "title": "Unprocessable Content",
          "status": 422,
          "detail": "string",
          "errors": [

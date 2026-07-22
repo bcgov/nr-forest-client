@@ -215,9 +215,9 @@ class ChesServiceIntegrationTest extends AbstractTestContainerIntegrationTest {
     );
     String expected = """
         <html>
-        <body><p>Hi John,</p>
-        <p>Thanks for registering with us. We'll be in touch at john@example.com.</p></body>
-        </html>""";
+          <body><p>Hi John,</p>
+          <p>Thanks for registering with us. We'll be in touch at john@example.com.</p></body>
+          </html>""";
 
     service
         .buildTemplate("test", variables)

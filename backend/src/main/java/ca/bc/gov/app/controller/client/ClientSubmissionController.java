@@ -66,16 +66,15 @@ public class ClientSubmissionController {
             dto ->
                 serverResponse
                     .getHeaders()
-                    .putIfAbsent(
+                    .set(
                         ApplicationConstant.X_TOTAL_COUNT,
-                        List.of(dto.count().toString())))
+                        dto.count().toString()))
         .doFinally(
-            signalType ->
-                serverResponse
-                    .getHeaders()
-                    .putIfAbsent(
-                        ApplicationConstant.X_TOTAL_COUNT,
-                        List.of("0")));
+            signalType -> {
+                if (!serverResponse.getHeaders().containsKey(ApplicationConstant.X_TOTAL_COUNT)) {
+                    serverResponse.getHeaders().set(ApplicationConstant.X_TOTAL_COUNT, "0");
+                }
+            });
   }
 
   @PostMapping
