@@ -33,6 +33,7 @@
     <maven.compiler.version>3.10.1</maven.compiler.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.proc>full</maven.compiler.proc>
     <skip.integration.tests>true</skip.integration.tests>
     <skip.unit.tests>false</skip.unit.tests>
     <jacoco.skip>true</jacoco.skip>

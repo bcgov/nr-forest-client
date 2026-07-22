@@ -43,7 +43,7 @@ management:
         prometheus: metrics
       base-path: /
       exposure:
-        include: health,info,metrics,otlp,tracing,httptrace,prometheus
+        include: health,info,metrics,otlp,tracing,httpexchanges,prometheus
   httpexchanges:
     recording:
       include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
