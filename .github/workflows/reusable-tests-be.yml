@@ -21,7 +21,7 @@ jobs:
           dir: backend
           java-cache: maven
           java-distribution: temurin
-          java-version: "17"
+          java-version: "21"
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=forest-client-backend

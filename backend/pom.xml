@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.16</version>
+        <version>4.1.0</version>
         <relativePath />
     </parent>
 
@@ -60,11 +60,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>17</java.version>
-        <jdk.version>17</jdk.version>
-        <maven.compiler.version>3.10.1</maven.compiler.version>
+        <java.version>21</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.proc>full</maven.compiler.proc>
         <skip.integration.tests>true</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
         <jacoco.skip>true</jacoco.skip>
@@ -72,14 +71,9 @@
         <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-        <testcontainers.version>1.21.4</testcontainers.version>
-        <logback.version>1.5.38</logback.version>
+        <testcontainers.version>2.0.5</testcontainers.version>
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.9</nimbus-jose-jwt.version>
-        <spring-security-core.version>6.5.11</spring-security-core.version>
-        <micrometer.version>1.16.6</micrometer.version>
-        <micrometer-tracing.version>1.6.6</micrometer-tracing.version>
-        <flyway.version>11.11.0</flyway.version>
         <opentelemetry.version>1.64.0</opentelemetry.version>
         <selenium.version>4.46.0</selenium.version>
         <org.junit.version>6.1.2</org.junit.version>
@@ -87,10 +81,6 @@
         <mockito.version>5.23.0</mockito.version>
         <jooq.version>3.21.6</jooq.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
-        <jackson.version>2.21.1</jackson.version>
-        <jackson-bom.version>2.22.0</jackson-bom.version>
-        <spring-security.version>6.5.9</spring-security.version>
-        <netty.version>4.1.132.Final</netty.version>
     </properties>
 
     <dependencies>
@@ -99,14 +89,8 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webclient</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -130,7 +114,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
         </dependency>
 
         <dependency>
@@ -173,14 +157,8 @@
             <artifactId>r2dbc-postgresql</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-            <version>${flyway.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-database-postgresql</artifactId>
-            <version>${flyway.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
         </dependency>
 
         <dependency>
@@ -233,26 +211,17 @@
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-r2dbc</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>r2dbc</artifactId>
-            <version>${testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${testcontainers.version}</version>
+            <artifactId>testcontainers-postgresql</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -271,43 +240,31 @@
             <artifactId>spring-boot-starter-oauth2-client</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-webflux-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-parameter-names</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>6.2.19</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
                 <version>${testcontainers.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-bom</artifactId>
-                <version>${micrometer.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-tracing-bom</artifactId>
-                <version>${micrometer-tracing.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -344,16 +301,6 @@
                 <version>${jooq.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-core</artifactId>
-                <version>${spring-security-core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-crypto</artifactId>
-                <version>${spring-security-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.nimbusds</groupId>
@@ -614,8 +561,8 @@
                                     <message>Invalid Maven version. It should be at least 3.2</message>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
-                                    <version>17</version>
-                                    <message>Invalid Java Version. It should be at least 17</message>
+                                    <version>21</version>
+                                    <message>Invalid Java Version. It should be at least 21</message>
                                 </requireJavaVersion>
                                 <requireNoRepositories>
                                     <allowedRepositories>

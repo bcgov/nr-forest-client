@@ -11,6 +11,7 @@ import io.micrometer.tracing.annotation.NewSpanParser;
 import io.micrometer.tracing.annotation.SpanAspect;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,11 +28,13 @@ public class TracingConfiguration {
   }
 
   @Bean
+  @ConditionalOnBean(Tracer.class)
   SpanAspect spanAspect(MethodInvocationProcessor methodInvocationProcessor) {
     return new SpanAspect(methodInvocationProcessor);
   }
 
   @Bean
+  @ConditionalOnBean(Tracer.class)
   MethodInvocationProcessor methodInvocationProcessor(NewSpanParser newSpanParser, Tracer tracer,
       BeanFactory beanFactory) {
     return new ImperativeMethodInvocationProcessor(newSpanParser, tracer, beanFactory::getBean,
@@ -39,6 +42,7 @@ public class TracingConfiguration {
   }
 
   @Bean
+  @ConditionalOnBean(Tracer.class)
   NewSpanParser newSpanParser() {
     return new DefaultNewSpanParser();
   }

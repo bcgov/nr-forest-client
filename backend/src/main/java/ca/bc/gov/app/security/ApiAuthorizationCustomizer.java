@@ -231,7 +231,5 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
             ApplicationConstant.ROLE_ADMIN,
             ApplicationConstant.ROLE_SUSPEND);
 
-    // Deny all other requests
-    authorize.anyExchange().denyAll();
   }
 }

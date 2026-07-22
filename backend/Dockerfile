@@ -1,5 +1,5 @@
 ### Builder
-FROM ghcr.io/graalvm/native-image:22.3.3 AS build
+FROM ghcr.io/graalvm/native-image-community:25 AS build
 
 # --- SSL Root CA Refresh (Sectigo R46) ---
 # Canada Post rotated its certificate chain to a root (Sectigo Public Server Authentication Root R46)
@@ -64,7 +64,7 @@ COPY src ./src
 COPY .mvn/ ./.mvn
 
 # Build
-RUN ./mvnw -Pnative package -DskipTests -Dskip.unit.tests=true
+RUN ./mvnw -Pnative -DskipTests -Dskip.unit.tests=true native:compile
 
 ### Deployer
 FROM gcr.io/distroless/java-base:nonroot AS deploy

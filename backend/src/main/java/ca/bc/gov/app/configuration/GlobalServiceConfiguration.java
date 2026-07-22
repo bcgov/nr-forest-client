@@ -69,15 +69,16 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.database.postgresql.TransactionalModel;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
@@ -153,7 +154,6 @@ import reactor.netty.http.client.HttpClient;
     JsonPatch.class,
     JsonNode.class,
     ForestClientContactDetailsDto.class,
-    TransactionalModel.class,
     ClientRelatedProjection.class,
     RelatedClientEntryDto.class,
     RelatedClientDto.class
@@ -387,23 +387,39 @@ public class GlobalServiceConfiguration {
   }
 
   /**
-   * Configures and provides an ObjectMapper bean. This ObjectMapper is built using the provided
-   * Jackson2ObjectMapperBuilder and is configured with the JavaTimeModule and a custom
-   * ForestClientDetailsSerializerModifier module.
+   * Configures and provides an ObjectMapper bean. This ObjectMapper is configured with the
+   * JavaTimeModule and a custom ForestClientDetailsSerializerModifier module.
    *
-   * @param builder The Jackson2ObjectMapperBuilder used to build the ObjectMapper.
    * @return A configured ObjectMapper instance.
    */
   @Bean
-  public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+  public ObjectMapper objectMapper() {
 
-    ObjectMapper mapper = builder.build();
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.findAndRegisterModules();
     mapper.registerModule(new JavaTimeModule());
     mapper.registerModule(forestClientDetailsDtoModule());
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
     return mapper;
+  }
+
+  /**
+   * Configures and provides a {@link CodecCustomizer} bean that sets the Jackson 2
+   * {@link ObjectMapper} for WebFlux codecs, ensuring that Jackson 2 (not Jackson 3)
+   * is used for JSON encoding/decoding in reactive streams.
+   *
+   * @param objectMapper The Jackson 2 ObjectMapper instance.
+   * @return A CodecCustomizer that configures the WebFlux codecs.
+   */
+  @Bean
+  public CodecCustomizer codecCustomizer(ObjectMapper objectMapper) {
+    return codec -> {
+      codec.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper));
+      codec.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper));
+    };
   }
 
   /**
