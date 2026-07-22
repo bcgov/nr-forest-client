@@ -1,5 +1,5 @@
 ### Builder
-FROM ghcr.io/graalvm/native-image:22.3.3 AS build
+FROM ghcr.io/graalvm/native-image-community:25 AS build
 
 # Copy
 WORKDIR /app
@@ -7,11 +7,14 @@ COPY pom.xml mvnw ./
 COPY src ./src
 COPY .mvn/ ./.mvn
 
+# TLS relaxation for legacy Oracle DB
+RUN sed -i '/^jdk.tls.disabledAlgorithms=/,/[^\\]$/c\jdk.tls.disabledAlgorithms=SSLv3' "$JAVA_HOME/conf/security/java.security"
+
 # Build
-RUN ./mvnw -Pnative package -DskipTests -Dskip.unit.tests=true
+RUN ./mvnw -Pnative native:compile -DskipTests -Dskip.unit.tests=true
 
 ### Deployer
-FROM gcr.io/distroless/java-base:nonroot AS deploy
+FROM gcr.io/distroless/base:nonroot AS deploy
 
 # Copy
 WORKDIR /app

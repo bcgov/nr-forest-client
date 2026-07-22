@@ -24,7 +24,6 @@ import com.flipkart.zjsonpatch.JsonPatch;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration
 @RegisterReflectionForBinding({
@@ -52,8 +51,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public class GlobalServiceConfiguration {
 
   @Bean
-  public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-    return builder.build();
+  public ObjectMapper objectMapper() {
+    return new ObjectMapper();
   }
 
 }

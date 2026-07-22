@@ -27,20 +27,6 @@ spring:
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
-  http:
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
-  sleuth:
-    propagation-keys:
-      - X-TRACE-ID
-    baggage-keys:
-      - X-TRACE-ID
-    log:
-      slf4j:
-        whitelisted-mdc-keys:
-          - X-TRACE-ID
 
 management:
   enable-native-support: true
@@ -111,15 +97,6 @@ spring:
   config:
     activate:
       on-profile: container
-  sleuth:
-    propagation-keys:
-      - X-TRACE-ID
-    baggage-keys:
-      - X-TRACE-ID
-    log:
-      slf4j:
-        whitelisted-mdc-keys:
-          - X-TRACE-ID
 
 logging:
   pattern:
