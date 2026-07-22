@@ -28,13 +28,13 @@ public class TracingConfiguration {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "management.tracing.enabled", havingValue = "true", matchIfMissing = true)
+  @ConditionalOnProperty(name = "management.tracing.export.enabled", havingValue = "true", matchIfMissing = true)
   SpanAspect spanAspect(MethodInvocationProcessor methodInvocationProcessor) {
     return new SpanAspect(methodInvocationProcessor);
   }
 
   @Bean
-  @ConditionalOnProperty(name = "management.tracing.enabled", havingValue = "true", matchIfMissing = true)
+  @ConditionalOnProperty(name = "management.tracing.export.enabled", havingValue = "true", matchIfMissing = true)
   MethodInvocationProcessor methodInvocationProcessor(NewSpanParser newSpanParser, Tracer tracer,
       BeanFactory beanFactory) {
     return new ImperativeMethodInvocationProcessor(newSpanParser, tracer, beanFactory::getBean,
@@ -42,7 +42,7 @@ public class TracingConfiguration {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "management.tracing.enabled", havingValue = "true", matchIfMissing = true)
+  @ConditionalOnProperty(name = "management.tracing.export.enabled", havingValue = "true", matchIfMissing = true)
   NewSpanParser newSpanParser() {
     return new DefaultNewSpanParser();
   }
