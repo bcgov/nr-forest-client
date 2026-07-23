@@ -9,8 +9,9 @@ import ca.bc.gov.app.security.Oauth2Customizer;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.annotation.web.reactive.ServerHttpSecurityConfiguration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
@@ -19,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.WebFilterChainProxy;
 
 /**
  * This class configures the security settings for the application. It uses the @Configuration
@@ -26,7 +28,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  * annotation to enable Spring Security's reactive features.
  */
 @Configuration
-@EnableWebFluxSecurity
+@Import(ServerHttpSecurityConfiguration.class)
 public class SecurityConfiguration {
 
 /**
@@ -60,6 +62,11 @@ SecurityWebFilterChain springSecurityFilterChain(
       .httpBasic(Customizer.withDefaults());
   return http.build();
 }
+
+  @Bean
+  public WebFilterChainProxy webFilterChainProxy(SecurityWebFilterChain securityWebFilterChain) {
+    return new WebFilterChainProxy(List.of(securityWebFilterChain));
+  }
 
   /**
    * This method creates a ReactiveJwtDecoder bean. The ReactiveJwtDecoder is used to decode JWTs in
