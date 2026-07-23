@@ -2,16 +2,11 @@ package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.security.ApiAuthorizationCustomizer;
-import ca.bc.gov.app.security.CorsCustomizer;
-import ca.bc.gov.app.security.CsrfCustomizer;
-import ca.bc.gov.app.security.HeadersCustomizer;
-import ca.bc.gov.app.security.Oauth2Customizer;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.reactive.ServerHttpSecurityConfiguration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
@@ -20,52 +15,35 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.WebFilterChainProxy;
 
 /**
  * This class configures the security settings for the application. It uses the @Configuration
  * annotation to indicate that it is a configuration class. It uses the @EnableWebFluxSecurity
  * annotation to enable Spring Security's reactive features.
+ *
+ * <p>{@code ApiAuthorizationCustomizer} must NOT be registered as a Spring bean (neither
+ * {@code @Component} nor {@code @Bean}). If it were, {@code ServerHttpSecurityConfiguration.
+ * applyTopLevelBeanCustomizers} would auto-discover it via {@code context.getBeanProvider}
+ * and call {@code http.authorizeExchange(apiAuthorizationCustomizer)} during
+ * {@link ServerHttpSecurity} bean creation, registering {@code anyExchange()} prematurely.
+ * That would prevent {@code ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration} and
+ * other auto-configurations from adding their own matchers to the shared
+ * {@code ServerHttpSecurity} instance. Instead, it is instantiated locally and applied
+ * explicitly in {@link #springSecurityFilterChain(ServerHttpSecurity)}.
  */
 @Configuration
-@Import(ServerHttpSecurityConfiguration.class)
+@EnableWebFluxSecurity
 public class SecurityConfiguration {
 
-/**
- * This method is a Spring Bean that configures the Spring Security filter chain.
- * The filter chain is a mechanism that Spring Security uses to apply security features to HTTP requests.
- *
- * @param http The ServerHttpSecurity instance that is used to build the security filter chain.
- * @param headersCustomizer A customizer for the HTTP headers security settings.
- * @param corsSpecCustomizer A customizer for the Cross-Origin Resource Sharing (CORS) security settings.
- * @param apiAuthorizationCustomizer A customizer for the API authorization security settings.
- * @param oauth2SpecCustomizer A customizer for the OAuth2 resource server security settings.
- * @param csrfSpecCustomizer A customizer for the Cross-Site Request Forgery (CSRF) security settings.
- *
- * @return The configured SecurityWebFilterChain.
- */
-@Bean
-SecurityWebFilterChain springSecurityFilterChain(
-    ServerHttpSecurity http,
-    HeadersCustomizer headersCustomizer,
-    CorsCustomizer corsSpecCustomizer,
-    ApiAuthorizationCustomizer apiAuthorizationCustomizer,
-    Oauth2Customizer oauth2SpecCustomizer,
-    CsrfCustomizer csrfSpecCustomizer
-) {
-  http
-      .headers(headersCustomizer)
-      .authorizeExchange(apiAuthorizationCustomizer)
-      .oauth2ResourceServer(oauth2SpecCustomizer)
-      .cors(corsSpecCustomizer)
-      .csrf(csrfSpecCustomizer)
-      .httpBasic(Customizer.withDefaults());
-  return http.build();
-}
-
+  /**
+   * This method is a Spring Bean that configures the Spring Security filter chain.
+   */
   @Bean
-  public WebFilterChainProxy webFilterChainProxy(SecurityWebFilterChain securityWebFilterChain) {
-    return new WebFilterChainProxy(List.of(securityWebFilterChain));
+  SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    http
+        .authorizeExchange(new ApiAuthorizationCustomizer())
+        .httpBasic(Customizer.withDefaults());
+    return http.build();
   }
 
   /**

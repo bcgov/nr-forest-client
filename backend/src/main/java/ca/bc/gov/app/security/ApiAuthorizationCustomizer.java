@@ -4,13 +4,18 @@ import ca.bc.gov.app.ApplicationConstant;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity.AuthorizeExchangeSpec;
-import org.springframework.stereotype.Component;
 
 /**
  * This class customizes the authorization rules for different API endpoints. It implements the
  * Customizer interface and overrides the customize method to set the authorization rules.
+ *
+ * <p>This class is intentionally NOT annotated with {@code @Component} to prevent
+ * {@code ServerHttpSecurityConfiguration.applyTopLevelBeanCustomizers} from auto-discovering
+ * it and registering {@code anyExchange()} on the shared {@code ServerHttpSecurity} before
+ * other auto-configurations (e.g. {@code ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration})
+ * have a chance to configure it. Instead, it is explicitly applied in
+ * {@code SecurityConfiguration.springSecurityFilterChain}.
  */
-@Component
 public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeSpec> {
 
   /**
