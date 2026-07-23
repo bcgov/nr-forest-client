@@ -115,12 +115,12 @@ ca:
           url: ${ADDRESS_COMPLETE_URL:https://ws1.postescanada-canadapost.ca/addresscomplete/interactive}
           apiKey: ${ADDRESS_COMPLETE_KEY:apiKey}
         security:
-          region: ${COGNITO_REGION}
-          user-pool: ${COGNITO_USER_POOL}
-          environment: ${COGNITO_ENVIRONMENT}
+          region: ${COGNITO_REGION:placeholder}
+          user-pool: ${COGNITO_USER_POOL:placeholder}
+          environment: ${COGNITO_ENVIRONMENT:placeholder}
           service-accounts:
-            - name: ${PROCESSOR_SERVICE_ACCOUNT_NAME}
-              secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET}
+            - name: ${PROCESSOR_SERVICE_ACCOUNT_NAME:processor}
+              secret: ${PROCESSOR_SERVICE_ACCOUNT_SECRET:secret}
         frontend:
           url: ${FRONTEND_URL:*}
           cors:
