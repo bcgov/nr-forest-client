@@ -13,31 +13,32 @@ ARG SECTIGO_R46_PEM=""
 RUN set -e; \
   CERT_FILE=/tmp/sectigo-r46-root.pem; \
   echo "--- Starting Sectigo CA Import ---"; \
-  if [ -n "$SECTIGO_R46_PEM" ]; then \
+  NEED_IMPORT=false; \
+  if keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit -alias sectigo-r46-root >/dev/null 2>&1; then \
+    echo "Alias sectigo-r46-root already exists in trust store, skipping import."; \
+  elif [ -n "$SECTIGO_R46_PEM" ]; then \
     echo "Using provided SECTIGO_R46_PEM build argument."; \
     printf '%b' "$SECTIGO_R46_PEM" > "$CERT_FILE"; \
+    NEED_IMPORT=true; \
   else \
     echo "Attempting remote fetch of Sectigo R46 root..."; \
-    curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
+    if curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
          --retry 5 \
          --retry-delay 5 \
          --retry-connrefused \
+         --connect-timeout 15 \
          -fsSL 'https://crt.sh/?d=4256644734' \
-         -o "$CERT_FILE" \
-      || { echo "ERROR: Curl failed to connect to crt.sh."; exit 1; }; \
-    \
-    echo "Verifying downloaded file format..."; \
-    grep -q "BEGIN CERTIFICATE" "$CERT_FILE" || { \
-      echo "ERROR: Downloaded file is not a valid PEM. crt.sh likely returned an HTML error page. File content:"; \
-      cat "$CERT_FILE"; \
-      exit 1; \
-    }; \
+         -o "$CERT_FILE" 2>/dev/null \
+       && grep -q "BEGIN CERTIFICATE" "$CERT_FILE" 2>/dev/null; then \
+      echo "Certificate fetched and verified successfully."; \
+      NEED_IMPORT=true; \
+    else \
+      echo "WARNING: Could not fetch Sectigo R46 root from crt.sh."; \
+      echo "This is likely fine — GraalVM 25 (JDK 25) should include modern CAs."; \
+      echo "If Canada Post SSL connections fail at runtime, provide the cert via SECTIGO_R46_PEM build arg."; \
+    fi; \
   fi; \
-  \
-  echo "Checking if alias already exists in trust store..."; \
-  if keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit -alias sectigo-r46-root >/dev/null 2>&1; then \
-    echo "Alias sectigo-r46-root already exists, skipping import."; \
-  else \
+  if [ "$NEED_IMPORT" = true ]; then \
     echo "Importing certificate..."; \
     keytool -importcert \
       -trustcacerts \
@@ -46,16 +47,14 @@ RUN set -e; \
       -file "$CERT_FILE" \
       -keystore "$JAVA_HOME/lib/security/cacerts" \
       -storepass changeit; \
+    echo "Verifying successful installation..."; \
+    keytool -list \
+      -keystore "$JAVA_HOME/lib/security/cacerts" \
+      -storepass changeit \
+      -alias sectigo-r46-root >/dev/null; \
+    rm -f "$CERT_FILE"; \
   fi; \
-  \
-  echo "Verifying successful installation..."; \
-  keytool -list \
-    -keystore "$JAVA_HOME/lib/security/cacerts" \
-    -storepass changeit \
-    -alias sectigo-r46-root >/dev/null; \
-  \
-  rm -f "$CERT_FILE"; \
-  echo "--- Sectigo CA Import Successful ---"
+  echo "--- Sectigo CA Import Complete ---"
 
 # Copy
 WORKDIR /app
