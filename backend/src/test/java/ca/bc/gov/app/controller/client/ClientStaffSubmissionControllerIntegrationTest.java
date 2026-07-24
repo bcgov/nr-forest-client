@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
@@ -96,6 +97,19 @@ class ClientStaffSubmissionControllerIntegrationTest
       .configureStaticDsl(true)
       .build();
 
+  @RegisterExtension
+  static WireMockExtension legacyStub = WireMockExtension
+      .newInstance()
+      .options(
+          wireMockConfig()
+              .port(10060)
+              .notifier(new WiremockLogNotifier())
+              .asynchronousResponseEnabled(true)
+              .stubRequestLoggingDisabled(false)
+      )
+      .configureStaticDsl(true)
+      .build();
+
   @BeforeEach
   public void init() {
     chesStub
@@ -129,6 +143,24 @@ class ClientStaffSubmissionControllerIntegrationTest
         .stubFor(
             get(urlMatching("/api/processor/\\d"))
                 .willReturn(created())
+        );
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/codes/registry-types/I"))
+                .willReturn(
+                    ok("[{\"code\":\"SP\",\"name\":\"Sole Proprietorship\"}]")
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
+        );
+
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/codes/registry-types/RSP"))
+                .willReturn(
+                    ok("[{\"code\":\"SP\",\"name\":\"Sole Proprietorship\"}]")
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                )
         );
 
     client = client.mutate()
