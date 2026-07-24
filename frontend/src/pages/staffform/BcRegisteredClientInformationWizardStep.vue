@@ -89,6 +89,51 @@ const detailsData = ref(null);
 const soleProprietorOwner = ref<string>("");
 const bcRegistryError = ref<boolean>(false);
 const showOnError = ref<boolean>(false);
+const invalidLegalTypeForClientType = ref<boolean>(false);
+
+// Validate clientType + legalType combination against CLIENT_TYPE_COMPANY_XREF
+const registryTypesUrl = computed(
+  () => formData.value.businessInformation.clientType
+    ? `/api/codes/registry-types/${formData.value.businessInformation.clientType}`
+    : "",
+);
+const validRegistryTypes = ref([]);
+const fetchValidRegistryTypes = useFetchTo(registryTypesUrl, validRegistryTypes, { skip: true });
+watch(registryTypesUrl, (newUrl) => {
+  if (newUrl) {
+    fetchValidRegistryTypes.fetch();
+  }
+}, { immediate: true });
+watch(validRegistryTypes, () => {
+  const legalType = formData.value.businessInformation.legalType;
+  const clientType = formData.value.businessInformation.clientType;
+  if (validRegistryTypes.value && validRegistryTypes.value.length > 0 && legalType && clientType) {
+    const isValid = validRegistryTypes.value.some(
+      (item) => item.code === legalType,
+    );
+    if (!isValid) {
+      invalidLegalTypeForClientType.value = true;
+      validation.business = false;
+      errorBus.emit(
+        [
+          {
+            fieldId: "businessInformation.legalType",
+            fieldName: "Legal type",
+            errorMsg: `The legal type ${legalType} is not valid for client type ${clientType}`,
+          },
+        ],
+        {
+          skipNotification: true,
+        },
+      );
+      exitBus.emit({
+        unsupportedLegalType: true,
+      });
+    } else {
+      invalidLegalTypeForClientType.value = false;
+    }
+  }
+});
 
 const showFields = computed(() => {
   return (
@@ -131,6 +176,7 @@ watch([autoCompleteResult], () => {
   detailsData.value = null;
   bcRegistryError.value = false;
   showOnError.value = false;
+  invalidLegalTypeForClientType.value = false;
 
   // reset businessInformation
   Object.assign(formData.value.businessInformation, {
@@ -437,6 +483,22 @@ onMounted(() => {
         >
           <p class="cds--inline-notification-content">
             The legal type of this client is not supported. Please email
+            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
+          </p>
+        </cds-inline-notification>
+
+        <cds-inline-notification
+          data-text="Client information"
+          v-if="invalidLegalTypeForClientType"
+          hide-close-button="true"
+          low-contrast="true"
+          open="true"
+          kind="error"
+          title="Invalid legal type for client type"
+        >
+          <p class="cds--inline-notification-content">
+            The legal type of this client is not valid for the selected client type.
+            Please email
             <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
           </p>
         </cds-inline-notification>

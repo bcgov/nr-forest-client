@@ -10,8 +10,10 @@ import ca.bc.gov.app.exception.MissingRequiredParameterException;
 import ca.bc.gov.app.exception.NoValueFoundException;
 import ca.bc.gov.app.mappers.AbstractForestClientMapper;
 import ca.bc.gov.app.repository.ForestClientRepository;
+import ca.bc.gov.app.repository.RegistryCompanyTypeCodeRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -25,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.stereotype.Service;
@@ -41,6 +44,7 @@ public class ClientService {
   private final R2dbcEntityOperations entityTemplate;
   private final AbstractForestClientMapper<ForestClientDto, ForestClientEntity> mapper;
   private final ForestClientRepository forestClientRepository;
+  private final RegistryCompanyTypeCodeRepository registryCompanyTypeCodeRepository;
 
   public Mono<String> saveAndGetIndex(ForestClientDto dto) {
     return
@@ -54,6 +58,13 @@ public class ClientService {
                     "Saving forest client {}",
                     forestClientDto.name()
                 )
+            )
+            .flatMap(forestClientDto ->
+                validateClientTypeCompanyCombination(
+                    forestClientDto.clientTypeCode(),
+                    forestClientDto.registryCompanyTypeCode()
+                )
+                .then(Mono.just(forestClientDto))
             )
             .map(mapper::toEntity)
             .flatMap(entity ->
@@ -73,7 +84,7 @@ public class ClientService {
                                 entity.getName()
                                 )
                             )
-                            .filter(org.springframework.dao.DataIntegrityViolationException.class::isInstance)
+                            .filter(DuplicateKeyException.class::isInstance)
                     )
             )
             .doOnNext(forestClientContact ->
@@ -95,6 +106,34 @@ public class ClientService {
                         clientNumber -> log.info("Client with number {} already exists", clientNumber)
                     )
             );
+  }
+
+  private Mono<Void> validateClientTypeCompanyCombination(
+      String clientTypeCode,
+      String registryCompanyTypeCode
+  ) {
+    if (StringUtils.isBlank(clientTypeCode) || StringUtils.isBlank(registryCompanyTypeCode)) {
+      return Mono.empty();
+    }
+
+    return registryCompanyTypeCodeRepository
+        .countByClientTypeCodeAndRegistryCompanyTypeCode(
+            clientTypeCode,
+            registryCompanyTypeCode,
+            LocalDate.now()
+        )
+        .filter(count -> count > 0)
+        .switchIfEmpty(
+            Mono.error(new org.springframework.dao.DataIntegrityViolationException(
+                String.format(
+                    "Invalid client type (%s) and registry company type (%s) combination: "
+                        + "no matching entry found in CLIENT_TYPE_COMPANY_XREF",
+                    clientTypeCode,
+                    registryCompanyTypeCode
+                )
+            ))
+        )
+        .then();
   }
   
   private Mono<String> getNextClientNumber() {

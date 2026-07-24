@@ -338,6 +338,45 @@ describe("BC Registered Staff Wizard Step", () => {
     });
   });
 
+  describe("Invalid legal type for client type", () => {
+    beforeEach(() => {
+      cy.intercept("GET", "**/api/clients/name/inv", {
+        statusCode: 200,
+        fixture: "clients/bcreg_ac_list5.json",
+      }).as("clientSearchINV");
+
+      cy.intercept("GET", "**/api/clients/LL999888", {
+        fixture: "clients/bcreg_LL999888.json",
+      }).as("clientDetailsLL999888");
+
+      // Mock the registry types endpoint to return empty for client type "L"
+      // (LL maps to client type L, which has no valid entries in CLIENT_TYPE_COMPANY_XREF)
+      cy.intercept("GET", "**/api/codes/registry-types/L", {
+        statusCode: 200,
+        body: [],
+      }).as("getRegistryTypesL");
+
+      loginAndNavigateToStaffForm();
+    });
+
+    it("should show error notification when legal type is not valid for client type", () => {
+      cy.selectAutocompleteEntry(
+        "#businessName",
+        "inv",
+        "LL999888",
+        "@clientSearchINV"
+      );
+
+      cy.wait("@clientDetailsLL999888");
+      cy.wait("@getRegistryTypesL");
+
+      // The error notification for invalid legal type should appear
+      cy.get("cds-inline-notification")
+        .should("exist")
+        .and("contain.text", "Invalid legal type for client type");
+    });
+  });
+
   const interceptClientsApi = (companySearch: string, companyCode: string) => {
     const detailsCode = (code: string) => {
       switch (code) {

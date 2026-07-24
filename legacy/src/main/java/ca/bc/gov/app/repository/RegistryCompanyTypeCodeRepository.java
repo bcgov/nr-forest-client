@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ca.bc.gov.app.dto.CodeNameDto;
 import ca.bc.gov.app.entity.RegistryCompanyTypeCodeEntity;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface RegistryCompanyTypeCodeRepository 
@@ -34,5 +35,20 @@ public interface RegistryCompanyTypeCodeRepository
   Flux<CodeNameDto> findActiveRegistryTypeCodesByClientTypeCode(
       String clientTypeCode,
       LocalDate now);
+
+  @Query("""
+      SELECT COUNT(*) AS CNT
+      FROM THE.CLIENT_TYPE_COMPANY_XREF CTRX
+      INNER JOIN THE.REGISTRY_COMPANY_TYPE_CODE RCTC
+          ON CTRX.REGISTRY_COMPANY_TYPE_CODE = RCTC.REGISTRY_COMPANY_TYPE_CODE
+      WHERE CTRX.CLIENT_TYPE_CODE = :clientTypeCode
+          AND CTRX.REGISTRY_COMPANY_TYPE_CODE = :registryCompanyTypeCode
+          AND (RCTC.EXPIRY_DATE IS NULL OR RCTC.EXPIRY_DATE > :activeDate)
+          AND RCTC.EFFECTIVE_DATE <= :activeDate
+      """)
+  Mono<Long> countByClientTypeCodeAndRegistryCompanyTypeCode(
+      String clientTypeCode,
+      String registryCompanyTypeCode,
+      LocalDate activeDate);
   
 }
