@@ -14,7 +14,7 @@ public final class ForestClientQueries {
           + "C.CLIENT_NUMBER ASC ";
 
   public static final String SELECT_COUNT_C_CLIENT_NUMBER =
-      "SELECT COUNT(DISTINCT C.CLIENT_NUMBER) ";
+      "SELECT COUNT(C.CLIENT_NUMBER) ";
 
   public static final String CLIENT_INFORMATION_HISTORY = """
       WITH BASE_DATA AS (
@@ -1012,7 +1012,7 @@ public final class ForestClientQueries {
 
   public static final String COUNT_BY_EMPTY_FULL_SEARCH = """
       SELECT
-          COUNT(DISTINCT C.CLIENT_NUMBER)
+          COUNT(C.CLIENT_NUMBER)
       FROM THE.FOREST_CLIENT C
       LEFT JOIN THE.CLIENT_DOING_BUSINESS_AS DBA ON C.CLIENT_NUMBER = DBA.CLIENT_NUMBER
       LEFT JOIN THE.CLIENT_TYPE_CODE CTC ON C.CLIENT_TYPE_CODE = CTC.CLIENT_TYPE_CODE
