@@ -1,0 +1,78 @@
+[
+    {
+        "code": "A",
+        "name": "Extraprovincial Company"
+    },
+    {
+        "code": "B",
+        "name": "Extraprovincial Company"
+    },
+    {
+        "code": "BC",
+        "name": "British Columbia Company"
+    },
+    {
+        "code": "C",
+        "name": "Continuation In"
+    },
+    {
+        "code": "CP",
+        "name": "Cooperative Association"
+    },
+    {
+        "code": "EPR",
+        "name": "Extraprovincial Company"
+    },
+    {
+        "code": "FOR",
+        "name": "Extraprovincial Company"
+    },
+    {
+        "code": "LIC",
+        "name": "Extraprovincial Company"
+    },
+    {
+        "code": "LL",
+        "name": "Limited Liability Partnership"
+    },
+    {
+        "code": "LP",
+        "name": "Limited Partnership"
+    },
+    {
+        "code": "NON",
+        "name": "Non Registered Company"
+    },
+    {
+        "code": "REG",
+        "name": "Extraprovincial Company"
+    },
+    {
+        "code": "S",
+        "name": "British Columbia Society"
+    },
+    {
+        "code": "XCP",
+        "name": "Extraprovincial Cooperative Association"
+    },
+    {
+        "code": "XL",
+        "name": "Extraprovincial Limited Liability Partnership"
+    },
+    {
+        "code": "XP",
+        "name": "Extraprovincial Limited Partnership"
+    },
+    {
+        "code": "XS",
+        "name": "Extraprovincial Society"
+    },
+    {
+        "code": "FM",
+        "name": "Sole Proprietorship"
+    },
+    {
+        "code": "DINA",
+        "name": "Federal First Nations ID"
+    }
+]

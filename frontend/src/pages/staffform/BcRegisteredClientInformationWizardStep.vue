@@ -107,13 +107,15 @@ watch(registryTypesUrl, (newUrl) => {
 watch(validRegistryTypes, () => {
   const legalType = formData.value.businessInformation.legalType;
   const clientType = formData.value.businessInformation.clientType;
-  if (validRegistryTypes.value && validRegistryTypes.value.length > 0 && legalType && clientType) {
-    const isValid = validRegistryTypes.value.some(
+  if (validRegistryTypes.value && legalType && clientType) {
+    const isValid = validRegistryTypes.value.length > 0 && validRegistryTypes.value.some(
       (item) => item.code === legalType,
     );
     if (!isValid) {
       invalidLegalTypeForClientType.value = true;
+      showUnsupportedLegalTypeError.value = true;
       validation.business = false;
+      progressIndicatorBus.emit({ kind: "disabled", value: true });
       errorBus.emit(
         [
           {
@@ -131,6 +133,8 @@ watch(validRegistryTypes, () => {
       });
     } else {
       invalidLegalTypeForClientType.value = false;
+      showUnsupportedLegalTypeError.value = false;
+      progressIndicatorBus.emit({ kind: "disabled", value: false });
     }
   }
 });

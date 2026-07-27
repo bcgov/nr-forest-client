@@ -89,6 +89,13 @@ describe("Staff Form Fuzzy Matches", () => {
       },
     }).as("getClientType");
 
+    cy.intercept("GET", `${API_BASE}/codes/registry-types/**`, {
+      fixture: "response-registry-types.json",
+      headers: {
+        "content-type": "application/json;charset=UTF-8",
+      },
+    }).as("getRegistryTypes");
+
     interceptFuzzyMatch(1, this.currentTest.title);
     interceptFuzzyMatch(2, this.currentTest.title);
     interceptFuzzyMatch(3, this.currentTest.title);

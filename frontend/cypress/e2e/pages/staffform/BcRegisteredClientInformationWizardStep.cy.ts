@@ -48,6 +48,10 @@ describe("BC Registered Staff Wizard Step", () => {
       statusCode: 200,
       fixture: "clients/bcreg_ac_list3.json",
     }).as("clientSearchCORPORATION");
+
+    cy.intercept("GET", "**/api/codes/registry-types/**", {
+      fixture: "response-registry-types.json",
+    }).as("getRegistryTypes");
   });
 
   it("should render the component", () => {
@@ -373,7 +377,7 @@ describe("BC Registered Staff Wizard Step", () => {
       // The error notification for invalid legal type should appear
       cy.get("cds-inline-notification")
         .should("exist")
-        .and("contain.text", "Invalid legal type for client type");
+        .and("contain.text", "Legal type not supported");
     });
   });
 

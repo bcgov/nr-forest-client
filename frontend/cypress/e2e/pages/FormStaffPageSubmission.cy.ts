@@ -162,6 +162,13 @@ describe("Staff Form Submission", () => {
       },
     }).as("getClientType");
 
+    cy.intercept("GET", `${API_BASE}/codes/registry-types/**`, {
+      fixture: "response-registry-types.json",
+      headers: {
+        "content-type": "application/json;charset=UTF-8",
+      },
+    }).as("getRegistryTypes");
+
     const testSubmissionFixture = this.currentTest.title
       .replace("should be ", "")
       .replaceAll(" ", "-");
