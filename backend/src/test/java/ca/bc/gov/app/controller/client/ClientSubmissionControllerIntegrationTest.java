@@ -172,33 +172,6 @@ class ClientSubmissionControllerIntegrationTest
                 .willReturn(okJson(TestConstants.LEGACY_EMPTY))
         );
 
-    legacyStub
-        .stubFor(
-            get(urlPathEqualTo("/api/codes/registry-types/RSP"))
-                .willReturn(
-                    ok("[{\"code\":\"SP\",\"name\":\"Sole Proprietorship\"}]")
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
-
-    legacyStub
-        .stubFor(
-            get(urlPathEqualTo("/api/codes/registry-types/I"))
-                .willReturn(
-                    ok("[{\"code\":\"SP\",\"name\":\"Sole Proprietorship\"}]")
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
-
-    legacyStub
-        .stubFor(
-            get(urlPathEqualTo("/api/codes/registry-types/USP"))
-                .willReturn(
-                    ok("[{\"code\":\"SP\",\"name\":\"Sole Proprietorship\"}]")
-                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                )
-        );
-
     client = client.mutate()
         .responseTimeout(Duration.ofSeconds(10))
         .build();
