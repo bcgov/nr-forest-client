@@ -5,7 +5,6 @@ export const retrieveClientType = (legalType: string): string => {
       case "B":
       case "BC":
       case "C":
-      case "CP":
       case "EPR":
       case "FOR":
       case "LIC":
@@ -15,6 +14,7 @@ export const retrieveClientType = (legalType: string): string => {
       case "S":
       case "XS":
         return "S";
+      case "CP":
       case "XCP":
         return "A";
       case "SP":
