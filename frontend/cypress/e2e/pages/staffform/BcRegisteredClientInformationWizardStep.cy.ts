@@ -377,7 +377,7 @@ describe("BC Registered Staff Wizard Step", () => {
       // The error notification for invalid legal type should appear
       cy.get("cds-inline-notification")
         .should("exist")
-        .and("contain.text", "Legal type not supported");
+        .and("contain.text", "The legal type of this client is not supported.");
     });
   });
 
