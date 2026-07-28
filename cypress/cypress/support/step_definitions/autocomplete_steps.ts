@@ -14,8 +14,7 @@ BeforeStep({ tags: "@loginAsEditor or @loginAsViewer or @loginAsAdmin" }, functi
 Then('I type {string} and select {string} from the {string} form autocomplete', (search: string, value: string, input: string) => {
 
   if(input === 'Client name' || input === 'BC registered business name') {
-    cy.intercept('GET',  `**/api/clients/**`).as('autocomplete');
-    cy.intercept('GET',  `**/api/opendata/**`).as('autocomplete');
+    cy.intercept('GET',  `**/api/{clients,opendata}/**`).as('autocomplete');
   } else if(input === 'Street address or PO box') {
     cy.intercept('GET',  `**/api/address**`).as('autocomplete');
   }
