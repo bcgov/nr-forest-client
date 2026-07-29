@@ -176,7 +176,7 @@ class ClientSubmissionControllerIntegrationTest
         .stubFor(
             get(urlPathEqualTo("/api/codes/registry-types/RSP"))
                 .willReturn(
-                    ok("[{\"code\":\"SP\",\"name\":\"Sole Proprietorship\"}]")
+                    ok("[{\"code\":\"FM\",\"name\":\"Sole Proprietorship\"}]")
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 )
         );
@@ -185,7 +185,7 @@ class ClientSubmissionControllerIntegrationTest
         .stubFor(
             get(urlPathEqualTo("/api/codes/registry-types/I"))
                 .willReturn(
-                    ok("[{\"code\":\"SP\",\"name\":\"Sole Proprietorship\"}]")
+                    ok("[{\"code\":\"FM\",\"name\":\"Sole Proprietorship\"}]")
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 )
         );
@@ -194,7 +194,7 @@ class ClientSubmissionControllerIntegrationTest
         .stubFor(
             get(urlPathEqualTo("/api/codes/registry-types/USP"))
                 .willReturn(
-                    ok("[{\"code\":\"SP\",\"name\":\"Sole Proprietorship\"}]")
+                    ok("[{\"code\":\"FM\",\"name\":\"Sole Proprietorship\"}]")
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 )
         );

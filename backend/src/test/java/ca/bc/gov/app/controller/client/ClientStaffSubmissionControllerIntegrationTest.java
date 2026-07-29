@@ -158,7 +158,7 @@ class ClientStaffSubmissionControllerIntegrationTest
         .stubFor(
             get(urlPathEqualTo("/api/codes/registry-types/RSP"))
                 .willReturn(
-                    ok("[{\"code\":\"SP\",\"name\":\"Sole Proprietorship\"}]")
+                    ok("[{\"code\":\"FM\",\"name\":\"Sole Proprietorship\"}]")
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 )
         );

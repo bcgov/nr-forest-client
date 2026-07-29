@@ -108,9 +108,9 @@ watch(validRegistryTypes, () => {
   const legalType = formData.value.businessInformation.legalType;
   const clientType = formData.value.businessInformation.clientType;
   if (validRegistryTypes.value && legalType && clientType) {
-    const xrefCode = legalType === "SP" ? "FM" : legalType;
+    const registryTypeCode = legalType === "SP" ? "FM" : legalType;
     const isValid = validRegistryTypes.value.length > 0 && validRegistryTypes.value.some(
-      (item) => item.code === xrefCode,
+      (item) => item.code === registryTypeCode,
     );
     if (!isValid) {
       invalidLegalTypeForClientType.value = true;
