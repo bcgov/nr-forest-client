@@ -353,11 +353,15 @@ describe("BC Registered Staff Wizard Step", () => {
         fixture: "clients/bcreg_LL999888.json",
       }).as("clientDetailsLL999888");
 
-      // Mock the registry types endpoint to return empty for client type "L"
-      // (LL maps to client type L, which has no valid entries in CLIENT_TYPE_COMPANY_XREF)
+      // Mock the registry types endpoint to return entries for client type "L" that don't include "LL"
+      // This simulates a legal type that is not compatible with the client type
       cy.intercept("GET", "**/api/codes/registry-types/L", {
         statusCode: 200,
-        body: [],
+        body: [
+          { code: "LP", name: "Limited Partnership" },
+          { code: "XL", name: "Extraprovincial Limited Liability Partnership" },
+          { code: "XP", name: "Extraprovincial Limited Partnership" },
+        ],
       }).as("getRegistryTypesL");
 
       loginAndNavigateToStaffForm();

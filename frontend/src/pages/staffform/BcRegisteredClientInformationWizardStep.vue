@@ -62,6 +62,61 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 // Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data);
 const showUnsupportedLegalTypeError = ref<boolean>(false); 
+const invalidLegalTypeForClientType = ref<boolean>(false);
+
+const registryTypesUrl = computed(
+  () => formData.value.businessInformation.clientType
+    ? `/api/codes/registry-types/${formData.value.businessInformation.clientType}`
+    : "",
+);
+const validRegistryTypes = ref([]);
+const fetchValidRegistryTypes = useFetchTo(registryTypesUrl, validRegistryTypes, { skip: true });
+watch(registryTypesUrl, (newUrl) => {
+  if (newUrl) {
+    fetchValidRegistryTypes.fetch();
+  }
+}, { immediate: true });
+watch(validRegistryTypes, () => {
+  const legalType = formData.value.businessInformation.legalType;
+  const clientType = formData.value.businessInformation.clientType;
+  if (validRegistryTypes.value && legalType && clientType) {
+    if (validRegistryTypes.value.length > 0) {
+      const xrefCode = legalType === "SP" ? "FM" : legalType;
+      const isValid = validRegistryTypes.value.some(
+        (item) => item.code === xrefCode,
+      );
+      if (!isValid) {
+        invalidLegalTypeForClientType.value = true;
+        showUnsupportedLegalTypeError.value = true;
+        validation.business = false;
+        progressIndicatorBus.emit({ kind: "disabled", value: true });
+        errorBus.emit(
+          [
+            {
+              fieldId: "businessInformation.legalType",
+              fieldName: "Legal type",
+              errorMsg: `The legal type ${legalType} is not valid for client type ${clientType}`,
+            },
+          ],
+          {
+            skipNotification: true,
+          },
+        );
+        exitBus.emit({
+          unsupportedLegalType: true,
+        });
+      } else {
+        invalidLegalTypeForClientType.value = false;
+        showUnsupportedLegalTypeError.value = false;
+        progressIndicatorBus.emit({ kind: "disabled", value: false });
+      }
+    } else {
+      invalidLegalTypeForClientType.value = false;
+      showUnsupportedLegalTypeError.value = false;
+      progressIndicatorBus.emit({ kind: "disabled", value: false });
+    }
+  }
+});
 
 watch(
   () => formData.value,
@@ -89,56 +144,6 @@ const detailsData = ref(null);
 const soleProprietorOwner = ref<string>("");
 const bcRegistryError = ref<boolean>(false);
 const showOnError = ref<boolean>(false);
-const invalidLegalTypeForClientType = ref<boolean>(false);
-
-// Validate clientType + legalType combination against CLIENT_TYPE_COMPANY_XREF
-const registryTypesUrl = computed(
-  () => formData.value.businessInformation.clientType
-    ? `/api/codes/registry-types/${formData.value.businessInformation.clientType}`
-    : "",
-);
-const validRegistryTypes = ref([]);
-const fetchValidRegistryTypes = useFetchTo(registryTypesUrl, validRegistryTypes, { skip: true });
-watch(registryTypesUrl, (newUrl) => {
-  if (newUrl) {
-    fetchValidRegistryTypes.fetch();
-  }
-}, { immediate: true });
-watch(validRegistryTypes, () => {
-  const legalType = formData.value.businessInformation.legalType;
-  const clientType = formData.value.businessInformation.clientType;
-  if (validRegistryTypes.value && legalType && clientType) {
-    const registryTypeCode = legalType === "SP" ? "FM" : legalType;
-    const isValid = validRegistryTypes.value.length > 0 && validRegistryTypes.value.some(
-      (item) => item.code === registryTypeCode,
-    );
-    if (!isValid) {
-      invalidLegalTypeForClientType.value = true;
-      showUnsupportedLegalTypeError.value = true;
-      validation.business = false;
-      progressIndicatorBus.emit({ kind: "disabled", value: true });
-      errorBus.emit(
-        [
-          {
-            fieldId: "businessInformation.legalType",
-            fieldName: "Legal type",
-            errorMsg: `The legal type ${legalType} is not valid for client type ${clientType}`,
-          },
-        ],
-        {
-          skipNotification: true,
-        },
-      );
-      exitBus.emit({
-        unsupportedLegalType: true,
-      });
-    } else {
-      invalidLegalTypeForClientType.value = false;
-      showUnsupportedLegalTypeError.value = false;
-      progressIndicatorBus.emit({ kind: "disabled", value: false });
-    }
-  }
-});
 
 const showFields = computed(() => {
   return (
@@ -182,6 +187,7 @@ watch([autoCompleteResult], () => {
   bcRegistryError.value = false;
   showOnError.value = false;
   invalidLegalTypeForClientType.value = false;
+  validRegistryTypes.value = [];
 
   // reset businessInformation
   Object.assign(formData.value.businessInformation, {
@@ -388,7 +394,9 @@ watch([detailsData], () => {
     );
 
     //FSADT1-1388 standing is not a factor that prevents a submission
-    validation.business = true;
+    if (!invalidLegalTypeForClientType.value) {
+      validation.business = true;
+    }
 
     emit("update:data", formData.value);
 
