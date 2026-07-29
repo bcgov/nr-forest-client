@@ -62,7 +62,6 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 // Set the prop as a ref, and then emit when it changes
 const formData = ref<FormDataDto>(props.data);
 const showUnsupportedLegalTypeError = ref<boolean>(false); 
-const invalidLegalTypeForClientType = ref<boolean>(false);
 
 const registryTypesUrl = computed(
   () => formData.value.businessInformation.clientType
@@ -86,7 +85,6 @@ watch(validRegistryTypes, () => {
         (item) => item.code === xrefCode,
       );
       if (!isValid) {
-        invalidLegalTypeForClientType.value = true;
         showUnsupportedLegalTypeError.value = true;
         validation.business = false;
         progressIndicatorBus.emit({ kind: "disabled", value: true });
@@ -106,12 +104,10 @@ watch(validRegistryTypes, () => {
           unsupportedLegalType: true,
         });
       } else {
-        invalidLegalTypeForClientType.value = false;
         showUnsupportedLegalTypeError.value = false;
         progressIndicatorBus.emit({ kind: "disabled", value: false });
       }
     } else {
-      invalidLegalTypeForClientType.value = false;
       showUnsupportedLegalTypeError.value = false;
       progressIndicatorBus.emit({ kind: "disabled", value: false });
     }
@@ -186,7 +182,6 @@ watch([autoCompleteResult], () => {
   detailsData.value = null;
   bcRegistryError.value = false;
   showOnError.value = false;
-  invalidLegalTypeForClientType.value = false;
   validRegistryTypes.value = [];
 
   // reset businessInformation
@@ -394,7 +389,7 @@ watch([detailsData], () => {
     );
 
     //FSADT1-1388 standing is not a factor that prevents a submission
-    if (!invalidLegalTypeForClientType.value) {
+    if (!showUnsupportedLegalTypeError.value) {
       validation.business = true;
     }
 
@@ -500,21 +495,6 @@ onMounted(() => {
           </p>
         </cds-inline-notification>
 
-        <cds-inline-notification
-          data-text="Client information"
-          v-if="invalidLegalTypeForClientType"
-          hide-close-button="true"
-          low-contrast="true"
-          open="true"
-          kind="error"
-          title="Invalid legal type for client type"
-        >
-          <p class="cds--inline-notification-content">
-            The legal type of this client is not valid for the selected client type.
-            Please email
-            <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
-          </p>
-        </cds-inline-notification>
     </data-fetcher>
 
     <cds-inline-notification
