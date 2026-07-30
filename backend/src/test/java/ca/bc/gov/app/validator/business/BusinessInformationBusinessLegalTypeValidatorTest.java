@@ -1,7 +1,6 @@
 package ca.bc.gov.app.validator.business;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.dto.ValidationError;
