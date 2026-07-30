@@ -157,12 +157,6 @@ watch([autoCompleteResult], () => {
     formData.value.businessInformation.clientType = retrieveClientType(
       autoCompleteResult.value.legalType
     );
-
-    if (!formData.value.businessInformation.clientType) {
-      toggleErrorMessages(null, null, null, null, true);
-      return;
-    };
-    
     showAutoCompleteInfo.value = false;
 
     if (formData.value.businessInformation.clientType === 'RSP') {
