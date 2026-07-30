@@ -65,7 +65,7 @@ class ClientLocationControllerIntegrationTest extends
   }
 
   private static Stream<String> saveLocation() {
-    return Stream.of("00000001", "00000002", "00000008");
+    return Stream.of("00000001", "00000002", "00000005");
   }
 
   @ParameterizedTest
