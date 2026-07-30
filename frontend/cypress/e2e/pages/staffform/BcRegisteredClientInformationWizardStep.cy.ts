@@ -48,10 +48,6 @@ describe("BC Registered Staff Wizard Step", () => {
       statusCode: 200,
       fixture: "clients/bcreg_ac_list3.json",
     }).as("clientSearchCORPORATION");
-
-    cy.intercept("GET", "**/api/codes/registry-types/**", {
-      fixture: "response-registry-types.json",
-    }).as("getRegistryTypes");
   });
 
   it("should render the component", () => {
@@ -339,49 +335,6 @@ describe("BC Registered Staff Wizard Step", () => {
         .should("exist")
         .and("have.class", "field-error")
         .and("include.text", "Date of birth must include a day");
-    });
-  });
-
-  describe("Invalid legal type for client type", () => {
-    beforeEach(() => {
-      cy.intercept("GET", "**/api/clients/name/inv", {
-        statusCode: 200,
-        fixture: "clients/bcreg_ac_list5.json",
-      }).as("clientSearchINV");
-
-      cy.intercept("GET", "**/api/clients/LL999888", {
-        fixture: "clients/bcreg_LL999888.json",
-      }).as("clientDetailsLL999888");
-
-      // Mock the registry types endpoint to return entries for client type "L" that don't include "LL"
-      // This simulates a legal type that is not compatible with the client type
-      cy.intercept("GET", "**/api/codes/registry-types/L", {
-        statusCode: 200,
-        body: [
-          { code: "LP", name: "Limited Partnership" },
-          { code: "XL", name: "Extraprovincial Limited Liability Partnership" },
-          { code: "XP", name: "Extraprovincial Limited Partnership" },
-        ],
-      }).as("getRegistryTypesL");
-
-      loginAndNavigateToStaffForm();
-    });
-
-    it("should show error notification when legal type is not valid for client type", () => {
-      cy.selectAutocompleteEntry(
-        "#businessName",
-        "inv",
-        "LL999888",
-        "@clientSearchINV"
-      );
-
-      cy.wait("@clientDetailsLL999888");
-      cy.wait("@getRegistryTypesL");
-
-      // The error notification for invalid legal type should appear
-      cy.get("cds-inline-notification")
-        .should("exist")
-        .and("contain.text", "The legal type of this client is not supported.");
     });
   });
 

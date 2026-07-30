@@ -94,10 +94,6 @@ describe("Staff Form", () => {
       fixture: "clientTypeIndividual.json",
     }).as("getIndividual");
 
-    cy.intercept("GET", "**/api/codes/registry-types/**", {
-      fixture: "response-registry-types.json",
-    }).as("getRegistryTypes");
-
     cy.intercept("GET", "**/api/codes/countries?page=0&size=250", {
       fixture: "countries.json",
     }).as("getCountries");

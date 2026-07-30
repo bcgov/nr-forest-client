@@ -63,57 +63,6 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 const formData = ref<FormDataDto>(props.data);
 const showUnsupportedLegalTypeError = ref<boolean>(false); 
 
-const registryTypesUrl = computed(
-  () => formData.value.businessInformation.clientType
-    ? `/api/codes/registry-types/${formData.value.businessInformation.clientType}`
-    : "",
-);
-const validRegistryTypes = ref([]);
-const fetchValidRegistryTypes = useFetchTo(registryTypesUrl, validRegistryTypes, { skip: true });
-watch(registryTypesUrl, (newUrl) => {
-  if (newUrl) {
-    fetchValidRegistryTypes.fetch();
-  }
-}, { immediate: true });
-watch(validRegistryTypes, () => {
-  const legalType = formData.value.businessInformation.legalType;
-  const clientType = formData.value.businessInformation.clientType;
-  if (validRegistryTypes.value && legalType && clientType) {
-    if (validRegistryTypes.value.length > 0) {
-      const xrefCode = legalType === "SP" ? "FM" : legalType;
-      const isValid = validRegistryTypes.value.some(
-        (item) => item.code === xrefCode,
-      );
-      if (!isValid) {
-        showUnsupportedLegalTypeError.value = true;
-        validation.business = false;
-        progressIndicatorBus.emit({ kind: "disabled", value: true });
-        errorBus.emit(
-          [
-            {
-              fieldId: "businessInformation.legalType",
-              fieldName: "Legal type",
-              errorMsg: `The legal type ${legalType} is not valid for client type ${clientType}`,
-            },
-          ],
-          {
-            skipNotification: true,
-          },
-        );
-        exitBus.emit({
-          unsupportedLegalType: true,
-        });
-      } else {
-        showUnsupportedLegalTypeError.value = false;
-        progressIndicatorBus.emit({ kind: "disabled", value: false });
-      }
-    } else {
-      showUnsupportedLegalTypeError.value = false;
-      progressIndicatorBus.emit({ kind: "disabled", value: false });
-    }
-  }
-});
-
 watch(
   () => formData.value,
   () => emit("update:data", formData.value)
@@ -182,7 +131,6 @@ watch([autoCompleteResult], () => {
   detailsData.value = null;
   bcRegistryError.value = false;
   showOnError.value = false;
-  validRegistryTypes.value = [];
 
   // reset businessInformation
   Object.assign(formData.value.businessInformation, {
@@ -389,9 +337,7 @@ watch([detailsData], () => {
     );
 
     //FSADT1-1388 standing is not a factor that prevents a submission
-    if (!showUnsupportedLegalTypeError.value) {
-      validation.business = true;
-    }
+    validation.business = true;
 
     emit("update:data", formData.value);
 
@@ -494,7 +440,6 @@ onMounted(() => {
             <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span> for help.
           </p>
         </cds-inline-notification>
-
     </data-fetcher>
 
     <cds-inline-notification
