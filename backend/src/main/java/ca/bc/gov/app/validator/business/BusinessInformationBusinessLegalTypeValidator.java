@@ -103,7 +103,8 @@ public class BusinessInformationBusinessLegalTypeValidator implements
 
     if (StringUtils.isBlank(target.clientType())
         || VIRTUAL_CLIENT_TYPES.contains(target.clientType())
-        || LegalTypeEnum.fromValue(target.legalType()) == null) {
+        || LegalTypeEnum.fromValue(target.legalType()) == null
+        || Set.of("SP", "GP").contains(target.legalType())) {
       return Mono.empty();
     }
 

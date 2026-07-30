@@ -153,12 +153,11 @@ watch([autoCompleteResult], () => {
     formData.value.businessInformation.registrationNumber =
       autoCompleteResult.value.code;
 
-    const legalType = autoCompleteResult.value.legalType;
     formData.value.businessInformation.legalType =
-      legalType === 'SP' || legalType === 'GP' ? 'FM' : legalType;
+      autoCompleteResult.value.legalType;
 
     formData.value.businessInformation.clientType = retrieveClientType(
-      legalType
+      autoCompleteResult.value.legalType
     );
     showAutoCompleteInfo.value = false;
 
