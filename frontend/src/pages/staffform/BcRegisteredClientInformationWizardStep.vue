@@ -63,24 +63,6 @@ const errorBus = useEventBus<ValidationMessageType[]>(
 const formData = ref<FormDataDto>(props.data);
 const showUnsupportedLegalTypeError = ref<boolean>(false); 
 
-const toggleErrorMessages = (
-  unsupportedLegalType: boolean | null = null,
-) => {
-  showUnsupportedLegalTypeError.value = unsupportedLegalType ?? false;
-
-  if (unsupportedLegalType) {
-    progressIndicatorBus.emit({ kind: "disabled", value: true });
-    exitBus.emit({
-      unsupportedLegalType
-    });
-  } else {
-    progressIndicatorBus.emit({ kind: "disabled", value: false });
-    exitBus.emit({
-      unsupportedLegalType: false
-    });
-  }
-};
-
 watch(
   () => formData.value,
   () => emit("update:data", formData.value)
@@ -164,16 +146,29 @@ watch([autoCompleteResult], () => {
     );
     formData.value.businessInformation.businessType = getEnumKeyByEnumValue(BusinessTypeEnum, BusinessTypeEnum.R);
 
-    if (!formData.value.businessInformation.clientType) {
-      toggleErrorMessages(true);
-      return;
-    }
-
     emit("update:data", formData.value);
 
     if (formData.value.businessInformation.clientType === "RSP") {
       validation.birthdate = false;
     }
+
+    const toggleErrorMessages = (
+      unsupportedLegalType: boolean | null = null,
+    ) => {
+      showUnsupportedLegalTypeError.value = unsupportedLegalType ?? false;
+
+      if (unsupportedLegalType) {
+        progressIndicatorBus.emit({ kind: "disabled", value: true });
+        exitBus.emit({
+          unsupportedLegalType
+        });
+      } else {
+        progressIndicatorBus.emit({ kind: "disabled", value: false });
+        exitBus.emit({
+          unsupportedLegalType: false
+        });
+      }
+    };
 
     //Also, we will load the backend data to fill all the other information as well
     const {
@@ -451,7 +446,7 @@ onMounted(() => {
       data-text="Client information"
       v-shadow="2"
       id="bcRegistrySearchNotification"
-      v-if="!formData.businessInformation.clientType && !showUnsupportedLegalTypeError"
+      v-if="!formData.businessInformation.clientType"
       low-contrast="true"
       open="true"
       kind="info"
