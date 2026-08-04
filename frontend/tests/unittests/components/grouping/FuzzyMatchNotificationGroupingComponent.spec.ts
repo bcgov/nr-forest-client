@@ -138,8 +138,9 @@ describe("Fuzzy Match Notification Grouping Component", () => {
       wrapper.find<CDSActionableNotification>("cds-actionable-notification")
         .element.title
     ).toContain("Possible matching records found");
-    const liList = wrapper.findAll<HTMLLIElement>(
-      "cds-actionable-notification span"
+    const notification = wrapper.find("cds-actionable-notification");
+    const liList = notification.findAll<HTMLLIElement>(
+      "span"
     );
     expect(liList).toHaveLength(3);
 
@@ -186,8 +187,9 @@ describe("Fuzzy Match Notification Grouping Component", () => {
           .element.title
       ).toContain("Client already exists");
 
-      const liList = wrapper.findAll<HTMLLIElement>(
-        "cds-actionable-notification span a"
+      const notification = wrapper.find("cds-actionable-notification");
+      const liList = notification.findAll<HTMLLIElement>(
+        "span a"
       );
 
       expect(liList).toHaveLength(2);
