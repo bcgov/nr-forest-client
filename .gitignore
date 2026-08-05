@@ -575,3 +575,4 @@ frontend/reports/
 **/reports-merge/
 
 **docker-compose.override.yml
+graphify-out
