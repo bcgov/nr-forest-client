@@ -152,8 +152,10 @@ watch([autoCompleteResult], () => {
 
     formData.value.businessInformation.registrationNumber =
       autoCompleteResult.value.code;
+
     formData.value.businessInformation.legalType =
       autoCompleteResult.value.legalType;
+
     formData.value.businessInformation.clientType = retrieveClientType(
       autoCompleteResult.value.legalType
     );
