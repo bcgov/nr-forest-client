@@ -58,6 +58,10 @@ spring:
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
+    deserialization:
+      # Jackson 3 (Spring Boot 4) enables FAIL_ON_NULL_FOR_PRIMITIVES by default,
+      # which rejects null values for primitive int fields that clients previously sent.
+      FAIL_ON_NULL_FOR_PRIMITIVES: false
 
 management:
   enable-native-support: true
