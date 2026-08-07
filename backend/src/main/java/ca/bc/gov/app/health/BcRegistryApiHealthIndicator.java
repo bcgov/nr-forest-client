@@ -2,7 +2,6 @@ package ca.bc.gov.app.health;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.health.contributor.Health;
-import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.stereotype.Component;
 
 @Component
