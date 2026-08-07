@@ -5,6 +5,13 @@ spring:
     lazy-initialization: false
     banner-mode: "off"
     allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude:
+      # The application defines its own SecurityWebFilterChain (SecurityConfiguration) which
+      # already configures the OAuth2 resource server, so the auto-configured default chain
+      # (anyExchange().authenticated() registered first) is redundant and would break
+      # authorization rule registration under Spring Security 7.
+      - org.springframework.boot.security.oauth2.server.resource.autoconfigure.web.reactive.ReactiveOAuth2ResourceServerWebSecurityAutoConfiguration
   security:
     oauth2:
       resourceserver:
