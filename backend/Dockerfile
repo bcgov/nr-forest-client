@@ -1,5 +1,5 @@
 ### Builder
-FROM ghcr.io/graalvm/native-image-community:21 AS build
+FROM ghcr.io/graalvm/native-image-community:21.0.2 AS build
 
 # --- SSL Root CA Refresh (Sectigo R46) ---
 # Canada Post rotated its certificate chain to a root (Sectigo Public Server Authentication Root R46)
