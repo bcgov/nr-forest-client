@@ -74,4 +74,5 @@ public final class SubmissionEnumConverters {
       return SubmissionTypeCodeEnum.valueOf(source);
     }
   }
+
 }

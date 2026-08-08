@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.r2dbc.convert.R2dbcCustomConversions;
+import org.springframework.data.r2dbc.dialect.PostgresDialect;
 
 /**
  * Registers Spring Data R2DBC custom conversions that are no longer provided by default
@@ -34,14 +35,14 @@ public class R2dbcConversionsConfiguration {
    */
   @Bean
   R2dbcCustomConversions r2dbcCustomConversions() {
-    return new R2dbcCustomConversions(
-        R2dbcCustomConversions.STORE_CONVERSIONS,
-        List.of(
-            new SubmissionEnumConverters.SubmissionStatusEnumToString(),
-            new SubmissionEnumConverters.StringToSubmissionStatusEnum(),
-            new SubmissionEnumConverters.SubmissionTypeCodeEnumToString(),
-            new SubmissionEnumConverters.StringToSubmissionTypeCodeEnum()
-        )
-    );
+     return R2dbcCustomConversions.of(
+         PostgresDialect.INSTANCE,
+         List.of(
+             new SubmissionEnumConverters.SubmissionStatusEnumToString(),
+             new SubmissionEnumConverters.StringToSubmissionStatusEnum(),
+             new SubmissionEnumConverters.SubmissionTypeCodeEnumToString(),
+             new SubmissionEnumConverters.StringToSubmissionTypeCodeEnum()
+         ).toArray()
+     );
   }
 }
