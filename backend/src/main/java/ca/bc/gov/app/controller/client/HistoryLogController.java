@@ -9,13 +9,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
-import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping(value = "/api/clients/history-logs", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -35,12 +36,11 @@ public class HistoryLogController {
    * @param sources optional list of source filters to apply; empty by default
    */
   @GetMapping("/{clientNumber}")
-  public Flux<HistoryLogDto> getHistoryLogsByClientNumber(
+  public Mono<ResponseEntity<Flux<HistoryLogDto>>> getHistoryLogsByClientNumber(
       @PathVariable String clientNumber,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "5") Integer size,
-      @RequestParam(required = false, defaultValue = "") List<String> sources,
-      ServerHttpResponse serverResponse) {
+      @RequestParam(required = false, defaultValue = "") List<String> sources) {
 
     log.info(
         "Getting history logs by client number {}, page {}, size {}, sources {}",
@@ -48,18 +48,14 @@ public class HistoryLogController {
 
     return clientLegacyService
         .retrieveHistoryLogs(clientNumber, page, size, sources)
-        .doOnNext(
-            pair -> {
-              Long count = pair.getSecond();
-              serverResponse
-                  .getHeaders()
-                  .putIfAbsent(ApplicationConstant.X_TOTAL_COUNT, List.of(count.toString()));
-            })
-        .map(Pair::getFirst)
-        .doFinally(
-            signalType ->
-                serverResponse
-                    .getHeaders()
-                    .putIfAbsent(ApplicationConstant.X_TOTAL_COUNT, List.of("0")));
+        .collectList()
+        .map(
+            pairs -> {
+              String totalCount = pairs.isEmpty() ? "0" : String.valueOf(pairs.get(0).getSecond());
+              return ResponseEntity
+                  .ok()
+                  .header(ApplicationConstant.X_TOTAL_COUNT, totalCount)
+                  .body(Flux.fromIterable(pairs).map(Pair::getFirst));
+            });
   }
 }
