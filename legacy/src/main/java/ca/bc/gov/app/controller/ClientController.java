@@ -52,11 +52,16 @@ public class ClientController {
   ) {
     log.info("Receiving request to search client history by client number {}", 
              clientNumber);
-    return service
+    Flux<Pair<HistoryLogDto, Integer>> resultFlux = service
         .findHistoryLogsByClientNumber(clientNumber, PageRequest.of(page, size), sources)
+        .cache();
+
+    return resultFlux
+        .next()
         .doOnNext(pair -> serverResponse.getHeaders()
-            .putIfAbsent("x-total-count", List.of(pair.getValue().toString()))
+            .add("x-total-count", pair.getValue().toString())
         )
+        .thenMany(resultFlux)
         .map(Pair::getKey);
   }
 
