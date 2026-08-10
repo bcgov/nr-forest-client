@@ -43,18 +43,6 @@ spring:
       charset: UTF-8
       enabled: true
       force: true
-  sleuth:
-    propagation-keys:
-      - X-TRACE-ID
-      - X-USER
-    baggage-keys:
-      - X-TRACE-ID
-      - X-USER
-    log:
-      slf4j:
-        whitelisted-mdc-keys:
-          - X-TRACE-ID
-          - X-USER
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
@@ -213,19 +201,6 @@ spring:
   config:
     activate:
       on-profile: container
-  sleuth:
-    propagation-keys:
-      - X-TRACE-ID
-      - X-USER
-    baggage-keys:
-      - X-TRACE-ID
-      - X-USER
-    log:
-      slf4j:
-        whitelisted-mdc-keys:
-          - X-TRACE-ID
-          - X-USER
-
 logging:
   pattern:
     console: "{\"time\": \"%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}\", \"level\": \"${LOG_LEVEL:%5p}\", \"app\":\"${spring.application.name:-}\", \"user\":\"%X{X-USER:-}\", \"traceId\":\"%X{${X-TRACE-ID:traceId}:-}\", \"spanId\":\"%X{spanId:-}\", \"pid\": \"${PID: }\", \"thread\": \"%t\", \"source\": \"%logger{63}:%L\", \"message\": \"%m\", \"exception\":\"${LOG_EXCEPTION_CONVERSION_WORD:%wEx}\"}%n"
