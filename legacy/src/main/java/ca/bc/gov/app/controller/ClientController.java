@@ -9,6 +9,7 @@ import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -54,10 +55,15 @@ public class ClientController {
              clientNumber);
     return service
         .findHistoryLogsByClientNumber(clientNumber, PageRequest.of(page, size), sources)
-        .doOnNext(pair -> serverResponse.getHeaders()
-            .putIfAbsent("x-total-count", List.of(pair.getValue().toString()))
-        )
-        .map(Pair::getKey);
+        .switchOnFirst((signal, flux) -> {
+          if (signal.hasValue()) {
+            int total = Optional.ofNullable(signal.get()).map(Pair::getValue).orElse(0);
+            serverResponse.getHeaders().add("x-total-count", String.valueOf(total));
+          } else {
+            serverResponse.getHeaders().add("x-total-count", "0");
+          }
+          return flux.map(Pair::getKey);
+        });
   }
 
   @GetMapping("/{clientNumber}/related-clients")
