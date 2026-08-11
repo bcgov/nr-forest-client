@@ -20,10 +20,11 @@ root.
 | Import alias in `cacerts` | `sectigo-r46-root` |
 | Type | Root CA (`BasicConstraints: CA=true`), no private key present |
 
-The pinned fingerprint above is also encoded as the `SECTIGO_R46_SHA256` build
-argument default in [`backend/Dockerfile`](../Dockerfile) and is verified there
-before the certificate is imported. A build fails if the checked-in PEM does not
-hash to this value.
+The pinned fingerprint above is also hardcoded as a shell variable inside the
+CA-import `RUN` step in [`backend/Dockerfile`](../Dockerfile) (not a build `ARG`,
+so it cannot be overridden via `--build-arg`) and is verified there before the
+certificate is imported. A build fails if the checked-in PEM does not hash to
+this value.
 
 ## Provenance
 
@@ -50,7 +51,7 @@ If Canada Post or Sectigo rotates this root:
    fetch.
 2. Validate it locally (`openssl x509 -noout -subject -issuer -serial -dates
    -fingerprint -sha256`).
-3. Replace `sectigo-r46-root.pem` and update the `SECTIGO_R46_SHA256` default in
+3. Replace `sectigo-r46-root.pem` and update the `SECTIGO_R46_SHA256` value in
    `backend/Dockerfile` and the table above in the same pull request, so the
    certificate and its pinned fingerprint change atomically.
 4. Have the change reviewed as a security-sensitive dependency update.

@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 ### Builder
 FROM ghcr.io/graalvm/native-image:22.3.3 AS build
 
@@ -8,14 +9,14 @@ FROM ghcr.io/graalvm/native-image:22.3.3 AS build
 # Source of truth: the reviewed, checked-in public certificate below (see backend/certs/ for
 # provenance and rotation notes). This is public CA material, not a secret. The fingerprint is
 # pinned and verified before import; there is no network fetch (e.g. crt.sh) in this build path.
-ARG SECTIGO_R46_ALIAS="sectigo-r46-root"
-ARG SECTIGO_R46_SHA256="7B:B6:47:A6:2A:EE:AC:88:BF:25:7A:A5:22:D0:1F:FE:A3:95:E0:AB:45:C7:3F:93:F6:56:54:EC:38:F2:5A:06"
+# Not ARGs: these are fixed inside the RUN so `--build-arg` cannot override the pinned value.
+# Bind-mounted (not COPY'd) so the PEM is never written into any image layer or build cache.
 
-COPY certs/sectigo-r46-root.pem /tmp/sectigo-r46-root.pem
-
-RUN set -eu; \
+RUN --mount=type=bind,source=certs/sectigo-r46-root.pem,target=/tmp/sectigo-r46-root.pem,ro \
+  set -eu; \
   CERT_FILE=/tmp/sectigo-r46-root.pem; \
-  ALIAS="$SECTIGO_R46_ALIAS"; \
+  ALIAS="sectigo-r46-root"; \
+  SECTIGO_R46_SHA256="7B:B6:47:A6:2A:EE:AC:88:BF:25:7A:A5:22:D0:1F:FE:A3:95:E0:AB:45:C7:3F:93:F6:56:54:EC:38:F2:5A:06"; \
   KEYSTORE="$JAVA_HOME/lib/security/cacerts"; \
   STOREPASS=changeit; \
   echo "--- Sectigo R46 CA import ---"; \
@@ -25,7 +26,7 @@ RUN set -eu; \
   [ -w "$KEYSTORE" ] || { echo "ERROR: keystore $KEYSTORE is not writable."; exit 1; }; \
   echo "Validating certificate with keytool..."; \
   keytool -printcert -file "$CERT_FILE" > /tmp/sectigo-r46-root.info 2>/tmp/sectigo-r46-root.err \
-    || { echo "ERROR: certificate is malformed and failed to parse:"; cat /tmp/sectigo-r46-root.err; rm -f "$CERT_FILE" /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; exit 1; }; \
+    || { echo "ERROR: certificate is malformed and failed to parse:"; cat /tmp/sectigo-r46-root.err; rm -f /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; exit 1; }; \
   ACTUAL_SHA256=$(grep -i "SHA256:" /tmp/sectigo-r46-root.info | head -1 | sed 's/.*SHA256: *//' | tr -d ' \t'); \
   [ -n "$ACTUAL_SHA256" ] || { echo "ERROR: could not extract a SHA-256 fingerprint from the certificate."; exit 1; }; \
   EXPECTED_NORM=$(echo "$SECTIGO_R46_SHA256" | tr '[:lower:]' '[:upper:]' | tr -d ':'); \
@@ -34,7 +35,7 @@ RUN set -eu; \
     echo "ERROR: certificate fingerprint mismatch."; \
     echo "  expected sha256: $SECTIGO_R46_SHA256"; \
     echo "  actual sha256:   $ACTUAL_SHA256"; \
-    rm -f "$CERT_FILE" /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; \
+    rm -f /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; \
     exit 1; \
   fi; \
   echo "Fingerprint verified (sha256=$ACTUAL_SHA256)."; \
@@ -45,7 +46,7 @@ RUN set -eu; \
       echo "Alias $ALIAS already present in $KEYSTORE with matching fingerprint; skipping import."; \
     else \
       echo "ERROR: alias $ALIAS already exists in $KEYSTORE with a mismatched fingerprint (found $EXISTING_SHA256)."; \
-      rm -f "$CERT_FILE" /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; \
+      rm -f /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; \
       exit 1; \
     fi; \
   else \
@@ -62,7 +63,7 @@ RUN set -eu; \
   keytool -list -keystore "$KEYSTORE" -storepass "$STOREPASS" -alias "$ALIAS" >/dev/null 2>&1 \
     || { echo "ERROR: post-import verification failed for alias $ALIAS."; exit 1; }; \
   \
-  rm -f "$CERT_FILE" /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; \
+  rm -f /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; \
   echo "--- Sectigo R46 CA import complete (alias=$ALIAS, sha256=$ACTUAL_SHA256) ---"
 
 # Copy
