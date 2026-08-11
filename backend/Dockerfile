@@ -1,61 +1,69 @@
 ### Builder
 FROM ghcr.io/graalvm/native-image:22.3.3 AS build
 
-# --- SSL Root CA Refresh (Sectigo R46) ---
+# --- SSL Root CA Import (Sectigo Public Server Authentication Root R46) ---
 # Canada Post rotated its certificate chain to a root (Sectigo Public Server Authentication Root R46)
 # missing from the older JDK bundled with this GraalVM image. We need that root in the trust store
 # BEFORE native-image build so the embedded trust store trusts Canada Post endpoints.
-# Policy: do NOT commit the PEM. Approaches supported:
-#  1. Provide the PEM via build arg SECTIGO_R46_PEM (recommended; store content in GitHub/OpenShift secret).
-#  2. Fallback: attempt network fetch from crt.sh (public CT log) if build arg not supplied.
-ARG SECTIGO_R46_PEM=""
+# Source of truth: the reviewed, checked-in public certificate below (see backend/certs/ for
+# provenance and rotation notes). This is public CA material, not a secret. The fingerprint is
+# pinned and verified before import; there is no network fetch (e.g. crt.sh) in this build path.
+ARG SECTIGO_R46_ALIAS="sectigo-r46-root"
+ARG SECTIGO_R46_SHA256="7B:B6:47:A6:2A:EE:AC:88:BF:25:7A:A5:22:D0:1F:FE:A3:95:E0:AB:45:C7:3F:93:F6:56:54:EC:38:F2:5A:06"
 
-RUN set -e; \
+COPY certs/sectigo-r46-root.pem /tmp/sectigo-r46-root.pem
+
+RUN set -eu; \
   CERT_FILE=/tmp/sectigo-r46-root.pem; \
-  echo "--- Starting Sectigo CA Import ---"; \
-  if [ -n "$SECTIGO_R46_PEM" ]; then \
-    echo "Using provided SECTIGO_R46_PEM build argument."; \
-    printf '%b' "$SECTIGO_R46_PEM" > "$CERT_FILE"; \
-  else \
-    echo "Attempting remote fetch of Sectigo R46 root..."; \
-    curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
-         --retry 5 \
-         --retry-delay 5 \
-         --retry-connrefused \
-         -fsSL 'https://crt.sh/?d=4256644734' \
-         -o "$CERT_FILE" \
-      || { echo "ERROR: Curl failed to connect to crt.sh."; exit 1; }; \
-    \
-    echo "Verifying downloaded file format..."; \
-    grep -q "BEGIN CERTIFICATE" "$CERT_FILE" || { \
-      echo "ERROR: Downloaded file is not a valid PEM. crt.sh likely returned an HTML error page. File content:"; \
-      cat "$CERT_FILE"; \
-      exit 1; \
-    }; \
+  ALIAS="$SECTIGO_R46_ALIAS"; \
+  KEYSTORE="$JAVA_HOME/lib/security/cacerts"; \
+  STOREPASS=changeit; \
+  echo "--- Sectigo R46 CA import ---"; \
+  [ -s "$CERT_FILE" ] || { echo "ERROR: $CERT_FILE is missing or empty. Ensure backend/certs/sectigo-r46-root.pem is committed and included in the build context."; exit 1; }; \
+  grep -q "BEGIN CERTIFICATE" "$CERT_FILE" || { echo "ERROR: $CERT_FILE does not contain PEM certificate data."; exit 1; }; \
+  [ -f "$KEYSTORE" ] || { echo "ERROR: keystore $KEYSTORE was not found in this image."; exit 1; }; \
+  [ -w "$KEYSTORE" ] || { echo "ERROR: keystore $KEYSTORE is not writable."; exit 1; }; \
+  echo "Validating certificate with keytool..."; \
+  keytool -printcert -file "$CERT_FILE" > /tmp/sectigo-r46-root.info 2>/tmp/sectigo-r46-root.err \
+    || { echo "ERROR: certificate is malformed and failed to parse:"; cat /tmp/sectigo-r46-root.err; rm -f "$CERT_FILE" /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; exit 1; }; \
+  ACTUAL_SHA256=$(grep -i "SHA256:" /tmp/sectigo-r46-root.info | head -1 | sed 's/.*SHA256: *//' | tr -d ' \t'); \
+  [ -n "$ACTUAL_SHA256" ] || { echo "ERROR: could not extract a SHA-256 fingerprint from the certificate."; exit 1; }; \
+  EXPECTED_NORM=$(echo "$SECTIGO_R46_SHA256" | tr '[:lower:]' '[:upper:]' | tr -d ':'); \
+  ACTUAL_NORM=$(echo "$ACTUAL_SHA256" | tr '[:lower:]' '[:upper:]' | tr -d ':'); \
+  if [ "$ACTUAL_NORM" != "$EXPECTED_NORM" ]; then \
+    echo "ERROR: certificate fingerprint mismatch."; \
+    echo "  expected sha256: $SECTIGO_R46_SHA256"; \
+    echo "  actual sha256:   $ACTUAL_SHA256"; \
+    rm -f "$CERT_FILE" /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; \
+    exit 1; \
   fi; \
-  \
-  echo "Checking if alias already exists in trust store..."; \
-  if keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit -alias sectigo-r46-root >/dev/null 2>&1; then \
-    echo "Alias sectigo-r46-root already exists, skipping import."; \
+  echo "Fingerprint verified (sha256=$ACTUAL_SHA256)."; \
+  if keytool -list -keystore "$KEYSTORE" -storepass "$STOREPASS" -alias "$ALIAS" >/dev/null 2>&1; then \
+    EXISTING_SHA256=$(keytool -list -v -keystore "$KEYSTORE" -storepass "$STOREPASS" -alias "$ALIAS" 2>/dev/null \
+      | grep -i "SHA256:" | head -1 | sed 's/.*SHA256: *//' | tr -d ' \t' | tr '[:lower:]' '[:upper:]' | tr -d ':'); \
+    if [ "$EXISTING_SHA256" = "$EXPECTED_NORM" ]; then \
+      echo "Alias $ALIAS already present in $KEYSTORE with matching fingerprint; skipping import."; \
+    else \
+      echo "ERROR: alias $ALIAS already exists in $KEYSTORE with a mismatched fingerprint (found $EXISTING_SHA256)."; \
+      rm -f "$CERT_FILE" /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; \
+      exit 1; \
+    fi; \
   else \
-    echo "Importing certificate..."; \
+    echo "Importing certificate as alias $ALIAS..."; \
     keytool -importcert \
       -trustcacerts \
       -noprompt \
-      -alias sectigo-r46-root \
+      -alias "$ALIAS" \
       -file "$CERT_FILE" \
-      -keystore "$JAVA_HOME/lib/security/cacerts" \
-      -storepass changeit; \
+      -keystore "$KEYSTORE" \
+      -storepass "$STOREPASS"; \
   fi; \
-  \
   echo "Verifying successful installation..."; \
-  keytool -list \
-    -keystore "$JAVA_HOME/lib/security/cacerts" \
-    -storepass changeit \
-    -alias sectigo-r46-root >/dev/null; \
+  keytool -list -keystore "$KEYSTORE" -storepass "$STOREPASS" -alias "$ALIAS" >/dev/null 2>&1 \
+    || { echo "ERROR: post-import verification failed for alias $ALIAS."; exit 1; }; \
   \
-  rm -f "$CERT_FILE"; \
-  echo "--- Sectigo CA Import Successful ---"
+  rm -f "$CERT_FILE" /tmp/sectigo-r46-root.info /tmp/sectigo-r46-root.err; \
+  echo "--- Sectigo R46 CA import complete (alias=$ALIAS, sha256=$ACTUAL_SHA256) ---"
 
 # Copy
 WORKDIR /app
