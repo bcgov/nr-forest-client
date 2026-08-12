@@ -1,5 +1,7 @@
 package ca.bc.gov.app.service.patch;
 
+import ca.bc.gov.app.exception.ContactInUseException;
+import ca.bc.gov.app.repository.ScaleSiteContactRepository;
 import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +32,7 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
       )""";
 
   private final R2dbcEntityOperations entityTemplate;
+  private final ScaleSiteContactRepository scaleSiteContactRepository;
 
   @Override
   public String getPrefix() {
@@ -67,9 +70,33 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
             .filter(node -> !node.get("path").asText().contains("locationCodes"))
             .map(node -> node.get("path").asText().replace("/", StringUtils.EMPTY))
             .map(Long::parseLong)
-            .flatMap(entityId -> removeAllByEntityId(clientNumber, entityId))
+            .flatMap(entityId ->
+                verifyNotInUse(entityId)
+                    .then(removeAllByEntityId(clientNumber, entityId))
+            )
             .then();
 
+  }
+
+  /**
+   * Verifies that the contact identified by {@code entityId} is not currently being used by
+   * another system (e.g. EMS, GAS2, LEXIS, or SCS) before allowing it to be deleted.
+   *
+   * @param entityId the client contact id to verify
+   * @return a {@link Mono} that completes successfully if the contact can be deleted, or errors
+   *     with {@link ContactInUseException} if the contact is still in use
+   */
+  private Mono<Void> verifyNotInUse(Long entityId) {
+    return
+        scaleSiteContactRepository
+            .existsByClientContactId(entityId)
+            .doOnNext(inUse ->
+                log.info("Contact {} in use by another system? {}", entityId, inUse)
+            )
+            .flatMap(inUse -> inUse
+                ? Mono.error(new ContactInUseException())
+                : Mono.empty()
+            );
   }
 
   private Mono<Long> removeAllByEntityId(String clientNumber, Long entityId) {

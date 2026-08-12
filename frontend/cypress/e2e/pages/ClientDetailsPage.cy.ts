@@ -1917,6 +1917,43 @@ describe("Client Details Page", () => {
           cy.get("#contact-null-SaveBtn").shadow().find("button").should("be.enabled");
         });
       });
+
+      describe("delete a contact that is in use by another system", () => {
+        it("shows the backend error message in the toast", function () {
+          init.call(this);
+
+          cy.intercept("PATCH", "/api/clients/details/*", {
+            statusCode: 409,
+            body:
+              "You can't delete this contact yet because it's being used by EMS, GAS2, LEXIS, " +
+              "or SCS. Remove it from the other system first, then try again.",
+            delay: 250,
+          }).as("saveClientDetails");
+
+          cy.visit("/clients/details/p");
+
+          // Switch to the Contacts tab
+          cy.get("#tab-contacts").click();
+
+          // Clicks to expand the accordion
+          cy.get("#contact-10 [slot='title']").click();
+
+          cy.get("#contact-10-EditBtn").click();
+
+          // Delete contact
+          cy.get("#contact-10-DeleteBtn").click();
+          cy.get("#modal-delete .cds--modal-submit-btn").filter(":visible").click();
+
+          cy.wait("@saveClientDetails");
+
+          cy.get("cds-toast-notification[kind='error']").should("be.visible");
+
+          cy.get("cds-toast-notification[kind='error']").contains(
+            "You can't delete this contact yet because it's being used by EMS, GAS2, LEXIS, " +
+              "or SCS.",
+          );
+        });
+      });
     });
   });
 

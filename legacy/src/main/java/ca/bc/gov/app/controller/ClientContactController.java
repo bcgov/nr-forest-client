@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +44,20 @@ public class ClientContactController {
     log.info("Receiving request to search for contact: {} {} {} {}", firstName, lastName, email,
         phone);
     return service.search(firstName, lastName, email, phone);
+  }
+
+  /**
+   * Checks whether a contact is being used (referenced) by another system, such as EMS, GAS2,
+   * LEXIS, or SCS.
+   *
+   * @param contactId the id of the contact to check
+   * @return a {@link Mono} emitting {@code true} if the contact is in use, {@code false}
+   *     otherwise
+   */
+  @GetMapping("/{contactId}/in-use")
+  public Mono<Boolean> isContactInUse(@PathVariable Long contactId) {
+    log.info("Receiving request to check if contact {} is in use by another system", contactId);
+    return service.isContactInUse(contactId);
   }
 
 }

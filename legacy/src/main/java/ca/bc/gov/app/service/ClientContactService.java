@@ -5,6 +5,7 @@ import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.mappers.ForestClientContactMapper;
 import ca.bc.gov.app.repository.ForestClientContactRepository;
+import ca.bc.gov.app.repository.ScaleSiteContactRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class ClientContactService {
   private final R2dbcEntityOperations entityTemplate;
   private final ForestClientContactRepository repository;
   private final ForestClientContactMapper mapper;
+  private final ScaleSiteContactRepository scaleSiteContactRepository;
 
   public Mono<String> saveAndGetIndex(ForestClientContactDto dto) {
     log.info("Saving forest client contact {} {}", dto.clientNumber(), dto.contactName());
@@ -104,6 +106,25 @@ public class ClientContactService {
                 )
             )
             .map(mapper::toDto);
+  }
+
+  /**
+   * Checks whether a contact is currently being used (referenced) by another system, such as
+   * EMS, GAS2, LEXIS, or SCS. This is determined by the presence of a matching record in the
+   * {@code THE.SCALE_SITE_CONTACT} table.
+   *
+   * @param contactId the client contact id to check
+   * @return a {@link Mono} emitting {@code true} if the contact is in use by another system,
+   *     {@code false} otherwise
+   */
+  public Mono<Boolean> isContactInUse(Long contactId) {
+    log.info("Checking if contact {} is in use by another system", contactId);
+    return
+        scaleSiteContactRepository
+            .existsByClientContactId(contactId)
+            .doOnNext(inUse ->
+                log.info("Contact {} in use by another system? {}", contactId, inUse)
+            );
   }
 
   /**
