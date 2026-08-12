@@ -79,7 +79,7 @@
         <flyway.version>11.11.0</flyway.version>
         <opentelemetry.version>1.64.0</opentelemetry.version>
         <selenium.version>4.46.0</selenium.version>
-        <org.junit.version>6.1.2</org.junit.version>
+        <org.junit.version>5.11.4</org.junit.version>
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.23.0</mockito.version>
         <jooq.version>3.21.6</jooq.version>
@@ -90,10 +90,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-health</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -230,11 +226,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-webflux-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -383,6 +374,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED</jvmArguments>
                 </configuration>
             </plugin>
 
