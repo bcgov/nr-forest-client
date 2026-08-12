@@ -42,7 +42,7 @@
     "module-lookup-amd": {
       "glob": "13.0.6"
     },
-    "fast-uri": "3.1.5",
+    "fast-uri": "4.1.2",
     "postcss": "8.5.25",
     "brace-expansion@^2.0.0": "2.1.4"
   }
