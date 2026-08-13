@@ -22,7 +22,7 @@ COMMENT ON TABLE THE.SCALE_SITE_CONTACT IS
     'A SITE CONTACT is an individual the ministry may contact at or in regards to a SCALE SITE. Note: This does not include SCALERS.';
 
 COMMENT ON COLUMN THE.SCALE_SITE_CONTACT.SCALE_SITE_ID_NMBR IS
-    'System generated number to uniquely identify a SCALE SITE. Legacy SCALE SITE IDs where composed of both alpha and numerical characters. All new SCALE SITE IDs will be generated sequentially starting from 1111. Note: This name has been retained from old SCS for HBS compatibility.';
+    'System generated number to uniquely identify a SCALE SITE. Legacy SCALE SITE IDs were composed of both alpha and numerical characters. All new SCALE SITE IDs will be generated sequentially starting from 1111. Note: This name has been retained from old SCS for HBS compatibility.';
 
 COMMENT ON COLUMN THE.SCALE_SITE_CONTACT.CLIENT_CONTACT_ID IS
     'Reference from CLIENT';
