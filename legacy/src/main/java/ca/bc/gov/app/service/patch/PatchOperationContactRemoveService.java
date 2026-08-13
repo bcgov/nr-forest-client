@@ -23,6 +23,11 @@ import reactor.core.publisher.Mono;
  * <p>Removing a contact deletes every {@code CLIENT_CONTACT} row of the client that shares the
  * same {@code CONTACT_NAME}, as a single contact can be associated to multiple locations. Before
  * deleting, it validates that none of those rows are referenced by another system.</p>
+ *
+ * <p>When a single patch removes multiple contacts, every contact is validated first, in order,
+ * before any deletion is attempted. This avoids leaving the client in a partially-updated state
+ * when an earlier contact is successfully removable but a later one is still in use: in that
+ * case the whole operation fails with {@link ContactInUseException} and nothing is deleted.</p>
  */
 @Service
 @Slf4j
@@ -73,12 +78,32 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
             .filter(node -> !node.get("path").asText().contains("locationCodes"))
             .map(node -> node.get("path").asText().replace("/", StringUtils.EMPTY))
             .map(Long::parseLong)
-            .flatMap(entityId ->
-                verifyNotInUse(clientNumber, entityId)
-                    .then(removeAllByEntityId(clientNumber, entityId))
-            )
-            .then();
+            .collectList()
+            .flatMap(entityIds -> verifyNoneInUse(clientNumber, entityIds)
+                .thenMany(removeAll(clientNumber, entityIds))
+                .then()
+            );
+  }
 
+  /**
+   * Verifies, in order, that none of the contacts identified by {@code entityIds} (nor any other
+   * contact of the client sharing the same {@code CONTACT_NAME}) are currently being used by
+   * another system (e.g. EMS, GAS2, LEXIS, or SCS).
+   *
+   * <p>Checks run sequentially via {@code concatMap} and stop at the first contact found in use,
+   * so that a later failure cannot occur after an earlier contact has already been deleted: this
+   * method never deletes anything, it only validates the full set of contacts up front.</p>
+   *
+   * @param clientNumber the client number that owns the contacts
+   * @param entityIds the client contact ids to verify, in the order they appear in the patch
+   * @return a {@link Mono} that completes successfully if every contact can be deleted, or errors
+   *     with {@link ContactInUseException} on the first one that is still in use
+   */
+  private Mono<Void> verifyNoneInUse(String clientNumber, List<Long> entityIds) {
+    return
+        Flux.fromIterable(entityIds)
+            .concatMap(entityId -> verifyNotInUse(clientNumber, entityId))
+            .then();
   }
 
   /**
@@ -111,6 +136,20 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
                 ? Mono.error(new ContactInUseException())
                 : Mono.empty()
             );
+  }
+
+  /**
+   * Removes every contact identified by {@code entityIds}, in order. Only invoked after
+   * {@link #verifyNoneInUse(String, List)} has confirmed that all of them can be safely deleted.
+   *
+   * @param clientNumber the client number that owns the contacts
+   * @param entityIds the client contact ids to remove, in the order they appear in the patch
+   * @return a {@link Flux} emitting each removed contact id, when available
+   */
+  private Flux<Long> removeAll(String clientNumber, List<Long> entityIds) {
+    return
+        Flux.fromIterable(entityIds)
+            .concatMap(entityId -> removeAllByEntityId(clientNumber, entityId));
   }
 
   /**
