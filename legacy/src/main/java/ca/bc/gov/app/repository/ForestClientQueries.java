@@ -1384,4 +1384,46 @@ public final class ForestClientQueries {
       + ADVANCED_SEARCH_BASE_FROM
       + ADVANCED_SEARCH_WHERE;
 
+  /**
+   * Deletes all contacts of a client that share the same CONTACT_NAME as the provided contact id.
+   */
+  public static final String REMOVE_ALL_CONTACTS = """
+      DELETE FROM THE.CLIENT_CONTACT
+      WHERE CLIENT_NUMBER = :client_number
+      AND CONTACT_NAME = (
+          SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      )""";
+
+  /**
+   * Counts how many of the contacts that would be removed (same client and CONTACT_NAME as the
+   * provided contact id) are referenced by another system through THE.SCALE_SITE_CONTACT.
+   */
+  public static final String COUNT_CONTACTS_IN_USE = """
+      SELECT COUNT(1) AS IN_USE_COUNT
+      FROM THE.SCALE_SITE_CONTACT ssc
+      WHERE ssc.CLIENT_CONTACT_ID IN (
+          SELECT cc.CLIENT_CONTACT_ID
+          FROM THE.CLIENT_CONTACT cc
+          WHERE cc.CLIENT_NUMBER = :client_number
+          AND cc.CONTACT_NAME = (
+              SELECT cl.CONTACT_NAME
+              FROM THE.CLIENT_CONTACT cl
+              WHERE cl.CLIENT_CONTACT_ID = :entity_id
+          )
+      )""";
+
+  /**
+   * Retrieves all contact ids of a client that share the same CONTACT_NAME as the provided
+   * contact id.
+   */
+  public static final String GET_ALL_CONTACT_IDS = """
+      SELECT CLIENT_CONTACT_ID FROM CLIENT_CONTACT
+      WHERE
+        CLIENT_NUMBER = :client_number
+        AND CONTACT_NAME = (
+          SELECT cl.CONTACT_NAME
+          FROM THE.CLIENT_CONTACT cl
+          WHERE cl.CLIENT_CONTACT_ID = :entity_id
+        )""";
+
 }

@@ -1,7 +1,7 @@
 package ca.bc.gov.app.service.patch;
 
 import ca.bc.gov.app.exception.ContactInUseException;
-import ca.bc.gov.app.repository.ScaleSiteContactRepository;
+import ca.bc.gov.app.repository.ForestClientQueries;
 import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,15 +24,11 @@ import reactor.core.publisher.Mono;
 @Order(7)
 public class PatchOperationContactRemoveService implements ClientPatchOperation {
 
-  private static final String REMOVE_ALL_CONTACTS = """
-      DELETE FROM THE.CLIENT_CONTACT 
-      WHERE CLIENT_NUMBER = :client_number
-      AND CONTACT_NAME = (
-          SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID = :entity_id
-      )""";
+  private static final String REMOVE_ALL_CONTACTS = ForestClientQueries.REMOVE_ALL_CONTACTS;
+
+  private static final String COUNT_CONTACTS_IN_USE = ForestClientQueries.COUNT_CONTACTS_IN_USE;
 
   private final R2dbcEntityOperations entityTemplate;
-  private final ScaleSiteContactRepository scaleSiteContactRepository;
 
   @Override
   public String getPrefix() {
@@ -71,7 +67,7 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
             .map(node -> node.get("path").asText().replace("/", StringUtils.EMPTY))
             .map(Long::parseLong)
             .flatMap(entityId ->
-                verifyNotInUse(entityId)
+                verifyNotInUse(clientNumber, entityId)
                     .then(removeAllByEntityId(clientNumber, entityId))
             )
             .then();
@@ -79,17 +75,29 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
   }
 
   /**
-   * Verifies that the contact identified by {@code entityId} is not currently being used by
-   * another system (e.g. EMS, GAS2, LEXIS, or SCS) before allowing it to be deleted.
+   * Verifies that none of the contacts that would be removed (all contacts of the client sharing
+   * the same CONTACT_NAME as {@code entityId}) are currently being used by another system (e.g.
+   * EMS, GAS2, LEXIS, or SCS) before allowing the deletion.
    *
+   * @param clientNumber the client number that owns the contacts
    * @param entityId the client contact id to verify
-   * @return a {@link Mono} that completes successfully if the contact can be deleted, or errors
-   *     with {@link ContactInUseException} if the contact is still in use
+   * @return a {@link Mono} that completes successfully if the contacts can be deleted, or errors
+   *     with {@link ContactInUseException} if any of them is still in use
    */
-  private Mono<Void> verifyNotInUse(Long entityId) {
+  private Mono<Void> verifyNotInUse(String clientNumber, Long entityId) {
     return
-        scaleSiteContactRepository
-            .existsByClientContactId(entityId)
+        entityTemplate
+            .getDatabaseClient()
+            .sql(COUNT_CONTACTS_IN_USE)
+            .bind("client_number", clientNumber)
+            .bind("entity_id", entityId)
+            .fetch()
+            .one()
+            .map(results -> results.get("IN_USE_COUNT"))
+            .map(Object::toString)
+            .map(Long::parseLong)
+            .defaultIfEmpty(0L)
+            .map(count -> count > 0)
             .doOnNext(inUse ->
                 log.info("Contact {} in use by another system? {}", entityId, inUse)
             )

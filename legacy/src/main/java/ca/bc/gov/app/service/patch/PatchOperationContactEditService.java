@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.patch;
 
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
+import ca.bc.gov.app.repository.ForestClientQueries;
 import ca.bc.gov.app.util.PatchUtils;
 import ca.bc.gov.app.util.ReplacePatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,15 +30,7 @@ import reactor.core.publisher.Mono;
 @Order(8)
 public class PatchOperationContactEditService implements ClientPatchOperation {
 
-  private static final String GET_ALL_CONTACT_IDS = """
-      SELECT CLIENT_CONTACT_ID FROM CLIENT_CONTACT
-      WHERE
-        CLIENT_NUMBER = :client_number
-        AND CONTACT_NAME = (
-          SELECT cl.CONTACT_NAME
-          FROM THE.CLIENT_CONTACT cl
-          WHERE cl.CLIENT_CONTACT_ID = :entity_id
-        )""";
+  private static final String GET_ALL_CONTACT_IDS = ForestClientQueries.GET_ALL_CONTACT_IDS;
 
   private final R2dbcEntityOperations entityTemplate;
 
