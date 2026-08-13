@@ -1398,6 +1398,26 @@ public final class ForestClientQueries {
       )""";
 
   /**
+   * Locks (with {@code FOR UPDATE}) all contacts that would be removed (same client and
+   * CONTACT_NAME as the provided contact id). Must run inside the same transaction as
+   * {@link #COUNT_CONTACTS_IN_USE} and {@link #REMOVE_ALL_CONTACTS}: because
+   * {@code THE.SCALE_SITE_CONTACT} has a foreign key to {@code THE.CLIENT_CONTACT}, holding this
+   * lock blocks a concurrent {@code SCALE_SITE_CONTACT} insert referencing one of these contacts
+   * until the transaction commits or rolls back, closing the gap between the in-use check and
+   * the delete.
+   */
+  public static final String LOCK_CONTACTS_FOR_UPDATE = """
+      SELECT cc.CLIENT_CONTACT_ID
+      FROM THE.CLIENT_CONTACT cc
+      WHERE cc.CLIENT_NUMBER = :client_number
+      AND cc.CONTACT_NAME = (
+          SELECT cl.CONTACT_NAME
+          FROM THE.CLIENT_CONTACT cl
+          WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      )
+      FOR UPDATE""";
+
+  /**
    * Counts how many of the contacts that would be removed (same client and CONTACT_NAME as the
    * provided contact id) are referenced by another system through THE.SCALE_SITE_CONTACT.
    */
