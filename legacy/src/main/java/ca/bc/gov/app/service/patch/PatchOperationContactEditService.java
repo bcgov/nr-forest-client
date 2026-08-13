@@ -23,6 +23,12 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Patch operation that handles the edition of client contacts.
+ *
+ * <p>As a single contact can be associated to multiple locations, every {@code CLIENT_CONTACT}
+ * row of the client sharing the same {@code CONTACT_NAME} is updated at once.</p>
+ */
 @Service
 @Slf4j
 @Observed

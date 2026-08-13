@@ -1,7 +1,7 @@
 package ca.bc.gov.app.controller;
 
-
 import static ca.bc.gov.app.ApplicationConstants.MDC_USERID;
+
 import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
@@ -30,7 +30,7 @@ class ClientContactControllerIntegrationTest extends
 
   @Autowired
   private ForestClientContactRepository forestClientContactRepository;
-  
+
   @ParameterizedTest
   @MethodSource("saveContact")
   @DisplayName("Save a contact")
@@ -108,7 +108,7 @@ class ClientContactControllerIntegrationTest extends
         Arguments.of("Domingos", "Chaves", "dingo@tomclancy.ca", "2554457789", 0)
     );
   }
-  
+
   @Test
   @DisplayName("Should report a contact as in use when referenced by SCALE_SITE_CONTACT")
   void shouldReportContactInUse() {

@@ -3,6 +3,9 @@ package ca.bc.gov.app.repository;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * Holds the native SQL queries used by the forest client repositories and services.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ForestClientQueries {
 

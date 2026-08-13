@@ -17,6 +17,13 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Patch operation that handles the removal of client contacts.
+ *
+ * <p>Removing a contact deletes every {@code CLIENT_CONTACT} row of the client that shares the
+ * same {@code CONTACT_NAME}, as a single contact can be associated to multiple locations. Before
+ * deleting, it validates that none of those rows are referenced by another system.</p>
+ */
 @Service
 @Slf4j
 @Observed
@@ -106,6 +113,14 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
             );
   }
 
+  /**
+   * Removes every contact of the client that shares the same {@code CONTACT_NAME} as the contact
+   * identified by {@code entityId}.
+   *
+   * @param clientNumber the client number that owns the contacts
+   * @param entityId the client contact id used to resolve the contact name
+   * @return a {@link Mono} emitting the removed contact id, when available
+   */
   private Mono<Long> removeAllByEntityId(String clientNumber, Long entityId) {
     return
         entityTemplate
