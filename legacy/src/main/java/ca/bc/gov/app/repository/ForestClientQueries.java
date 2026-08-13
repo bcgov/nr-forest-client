@@ -1420,7 +1420,7 @@ public final class ForestClientQueries {
    * contact id.
    */
   public static final String GET_ALL_CONTACT_IDS = """
-      SELECT CLIENT_CONTACT_ID FROM CLIENT_CONTACT
+      SELECT CLIENT_CONTACT_ID FROM THE.CLIENT_CONTACT
       WHERE
         CLIENT_NUMBER = :client_number
         AND CONTACT_NAME = (
