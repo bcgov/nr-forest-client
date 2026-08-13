@@ -97,11 +97,10 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
             .map(Object::toString)
             .map(Long::parseLong)
             .defaultIfEmpty(0L)
-            .map(count -> count > 0)
-            .doOnNext(inUse ->
-                log.info("Contact {} in use by another system? {}", entityId, inUse)
+            .doOnNext(count ->
+                log.info("Contact {} in use by another system? {}", entityId, count > 0)
             )
-            .flatMap(inUse -> inUse
+            .flatMap(count -> count > 0
                 ? Mono.error(new ContactInUseException())
                 : Mono.empty()
             );
