@@ -1919,9 +1919,11 @@ describe("Client Details Page", () => {
       });
 
       describe("delete a contact that is in use by another system", () => {
-        it("shows the backend error message in the toast", function () {
+        beforeEach(function () {
           init.call(this);
+        });
 
+        it("shows the backend error message in the toast", () => {
           cy.intercept("PATCH", "/api/clients/details/*", {
             statusCode: 409,
             body:
