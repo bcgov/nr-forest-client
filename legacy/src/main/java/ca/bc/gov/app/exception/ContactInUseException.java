@@ -11,6 +11,10 @@ import org.springframework.web.server.ResponseStatusException;
 @ResponseStatus(HttpStatus.CONFLICT)
 public class ContactInUseException extends ResponseStatusException {
 
+  /**
+   * Creates the exception with an HTTP 409 (Conflict) status and a message explaining that the
+   * contact must be removed from the other system before it can be deleted here.
+   */
   public ContactInUseException() {
     super(
         HttpStatus.CONFLICT,

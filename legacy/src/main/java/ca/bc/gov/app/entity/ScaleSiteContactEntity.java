@@ -15,6 +15,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+/**
+ * Represents a record of the {@code THE.SCALE_SITE_CONTACT} table.
+ *
+ * <p>This table links a client contact to a scale site and is used by other systems (EMS, GAS2,
+ * LEXIS, SCS) to reference client contacts. It is mainly used to check whether a client contact
+ * is still in use before allowing it to be deleted.</p>
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
