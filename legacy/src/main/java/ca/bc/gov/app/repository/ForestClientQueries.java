@@ -3,6 +3,9 @@ package ca.bc.gov.app.repository;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * Holds the native SQL queries used by the forest client repositories and services.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ForestClientQueries {
 
@@ -1383,5 +1386,67 @@ public final class ForestClientQueries {
       "SELECT COUNT(DISTINCT C.CLIENT_NUMBER) "
       + ADVANCED_SEARCH_BASE_FROM
       + ADVANCED_SEARCH_WHERE;
+
+  /**
+   * Deletes all contacts of a client that share the same CONTACT_NAME as the provided contact id.
+   */
+  public static final String REMOVE_ALL_CONTACTS = """
+      DELETE FROM THE.CLIENT_CONTACT
+      WHERE CLIENT_NUMBER = :client_number
+      AND CONTACT_NAME = (
+          SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      )""";
+
+  /**
+   * Locks (with {@code FOR UPDATE}) all contacts that would be removed (same client and
+   * CONTACT_NAME as the provided contact id). Must run inside the same transaction as
+   * {@link #COUNT_CONTACTS_IN_USE} and {@link #REMOVE_ALL_CONTACTS}: because
+   * {@code THE.SCALE_SITE_CONTACT} has a foreign key to {@code THE.CLIENT_CONTACT}, holding this
+   * lock blocks a concurrent {@code SCALE_SITE_CONTACT} insert referencing one of these contacts
+   * until the transaction commits or rolls back, closing the gap between the in-use check and
+   * the delete.
+   */
+  public static final String LOCK_CONTACTS_FOR_UPDATE = """
+      SELECT cc.CLIENT_CONTACT_ID
+      FROM THE.CLIENT_CONTACT cc
+      WHERE cc.CLIENT_NUMBER = :client_number
+      AND cc.CONTACT_NAME = (
+          SELECT cl.CONTACT_NAME
+          FROM THE.CLIENT_CONTACT cl
+          WHERE cl.CLIENT_CONTACT_ID = :entity_id
+      )
+      FOR UPDATE""";
+
+  /**
+   * Counts how many of the contacts that would be removed (same client and CONTACT_NAME as the
+   * provided contact id) are referenced by another system through THE.SCALE_SITE_CONTACT.
+   */
+  public static final String COUNT_CONTACTS_IN_USE = """
+      SELECT COUNT(1) AS IN_USE_COUNT
+      FROM THE.SCALE_SITE_CONTACT ssc
+      WHERE ssc.CLIENT_CONTACT_ID IN (
+          SELECT cc.CLIENT_CONTACT_ID
+          FROM THE.CLIENT_CONTACT cc
+          WHERE cc.CLIENT_NUMBER = :client_number
+          AND cc.CONTACT_NAME = (
+              SELECT cl.CONTACT_NAME
+              FROM THE.CLIENT_CONTACT cl
+              WHERE cl.CLIENT_CONTACT_ID = :entity_id
+          )
+      )""";
+
+  /**
+   * Retrieves all contact ids of a client that share the same CONTACT_NAME as the provided
+   * contact id.
+   */
+  public static final String GET_ALL_CONTACT_IDS = """
+      SELECT CLIENT_CONTACT_ID FROM THE.CLIENT_CONTACT
+      WHERE
+        CLIENT_NUMBER = :client_number
+        AND CONTACT_NAME = (
+          SELECT cl.CONTACT_NAME
+          FROM THE.CLIENT_CONTACT cl
+          WHERE cl.CLIENT_CONTACT_ID = :entity_id
+        )""";
 
 }

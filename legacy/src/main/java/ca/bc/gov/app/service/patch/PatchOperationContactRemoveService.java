@@ -1,35 +1,65 @@
 package ca.bc.gov.app.service.patch;
 
+import ca.bc.gov.app.exception.ContactInUseException;
+import ca.bc.gov.app.repository.ForestClientQueries;
 import ca.bc.gov.app.util.PatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.stream.StreamSupport;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Patch operation that handles the removal of client contacts.
+ *
+ * <p>Removing a contact deletes every {@code CLIENT_CONTACT} row of the client that shares the
+ * same {@code CONTACT_NAME}, as a single contact can be associated to multiple locations. Before
+ * deleting, it validates that none of those rows are referenced by another system.</p>
+ *
+ * <p>When a single patch removes multiple contacts, every contact is validated first, in order,
+ * before any deletion is attempted, and the whole check-then-delete sequence runs inside a single
+ * database transaction. This avoids leaving the client in a partially-updated state when an
+ * earlier contact is successfully deleted but a later one is still in use (the transaction rolls
+ * back), and the {@code FOR UPDATE} row lock taken by {@link #verifyNotInUse(String, Long)} on
+ * the affected {@code CLIENT_CONTACT} rows keeps a concurrent insert into
+ * {@code SCALE_SITE_CONTACT} from landing between the check and the delete for the same contact:
+ * {@code SCALE_SITE_CONTACT} has a {@code NOT DEFERRABLE} foreign key
+ * ({@code SICT_CC_FK}) to {@code CLIENT_CONTACT}, so Oracle validates it immediately on insert
+ * and blocks on the locked parent row until this transaction commits or rolls back.</p>
+ */
 @Service
 @Slf4j
 @Observed
-@RequiredArgsConstructor
 @Order(7)
 public class PatchOperationContactRemoveService implements ClientPatchOperation {
 
-  private static final String REMOVE_ALL_CONTACTS = """
-      DELETE FROM THE.CLIENT_CONTACT 
-      WHERE CLIENT_NUMBER = :client_number
-      AND CONTACT_NAME = (
-          SELECT cl.CONTACT_NAME FROM THE.CLIENT_CONTACT cl WHERE cl.CLIENT_CONTACT_ID = :entity_id
-      )""";
+  private static final String REMOVE_ALL_CONTACTS = ForestClientQueries.REMOVE_ALL_CONTACTS;
+
+  private static final String COUNT_CONTACTS_IN_USE = ForestClientQueries.COUNT_CONTACTS_IN_USE;
+
+  private static final String LOCK_CONTACTS_FOR_UPDATE =
+      ForestClientQueries.LOCK_CONTACTS_FOR_UPDATE;
 
   private final R2dbcEntityOperations entityTemplate;
+
+  private final TransactionalOperator transactionalOperator;
+
+  public PatchOperationContactRemoveService(
+      R2dbcEntityOperations entityTemplate,
+      ReactiveTransactionManager transactionManager
+  ) {
+    this.entityTemplate = entityTemplate;
+    this.transactionalOperator = TransactionalOperator.create(transactionManager);
+  }
 
   @Override
   public String getPrefix() {
@@ -67,11 +97,131 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
             .filter(node -> !node.get("path").asText().contains("locationCodes"))
             .map(node -> node.get("path").asText().replace("/", StringUtils.EMPTY))
             .map(Long::parseLong)
-            .flatMap(entityId -> removeAllByEntityId(clientNumber, entityId))
-            .then();
-
+            .collectList()
+            .flatMap(entityIds -> verifyNoneInUse(clientNumber, entityIds)
+                .thenMany(removeAll(clientNumber, entityIds))
+                .then()
+                .as(transactionalOperator::transactional)
+            );
   }
 
+  /**
+   * Verifies, in order, that none of the contacts identified by {@code entityIds} (nor any other
+   * contact of the client sharing the same {@code CONTACT_NAME}) are currently being used by
+   * another system (e.g. EMS, GAS2, LEXIS, or SCS).
+   *
+   * <p>Checks run sequentially via {@code concatMap} and stop at the first contact found in use,
+   * so that a later failure cannot occur after an earlier contact has already been deleted: this
+   * method never deletes anything, it only validates the full set of contacts up front.</p>
+   *
+   * @param clientNumber the client number that owns the contacts
+   * @param entityIds the client contact ids to verify, in the order they appear in the patch
+   * @return a {@link Mono} that completes successfully if every contact can be deleted, or errors
+   *     with {@link ContactInUseException} on the first one that is still in use
+   */
+  private Mono<Void> verifyNoneInUse(String clientNumber, List<Long> entityIds) {
+    return
+        Flux.fromIterable(entityIds)
+            .concatMap(entityId -> verifyNotInUse(clientNumber, entityId))
+            .then();
+  }
+
+  /**
+   * Verifies that none of the contacts that would be removed (all contacts of the client sharing
+   * the same CONTACT_NAME as {@code entityId}) are currently being used by another system (e.g.
+   * EMS, GAS2, LEXIS, or SCS) before allowing the deletion.
+   *
+   * <p>First acquires a {@code FOR UPDATE} row lock on the affected {@code CLIENT_CONTACT} rows
+   * (see {@link ForestClientQueries#LOCK_CONTACTS_FOR_UPDATE}) for the lifetime of the
+   * surrounding transaction. Because {@code THE.SCALE_SITE_CONTACT} has a foreign key to
+   * {@code THE.CLIENT_CONTACT}, a concurrent transaction inserting a
+   * {@code SCALE_SITE_CONTACT} row referencing one of these contacts blocks until this
+   * transaction commits or rolls back, instead of racing the check.</p>
+   *
+   * @param clientNumber the client number that owns the contacts
+   * @param entityId the client contact id to verify
+   * @return a {@link Mono} that completes successfully if the contacts can be deleted, or errors
+   *     with {@link ContactInUseException} if any of them is still in use
+   */
+  private Mono<Void> verifyNotInUse(String clientNumber, Long entityId) {
+    return
+        lockContacts(clientNumber, entityId)
+            .then(countContactsInUse(clientNumber, entityId))
+            .flatMap(count -> count > 0
+                ? Mono.error(new ContactInUseException())
+                : Mono.empty()
+            );
+  }
+
+  /**
+   * Locks, with {@code FOR UPDATE}, every contact that would be removed (all contacts of the
+   * client sharing the same CONTACT_NAME as {@code entityId}). Must be called within the same
+   * transaction as {@link #countContactsInUse(String, Long)} and the subsequent delete.
+   *
+   * @param clientNumber the client number that owns the contacts
+   * @param entityId the client contact id used to resolve the contact name
+   * @return a {@link Mono} that completes once every matching row has been locked
+   */
+  private Mono<Void> lockContacts(String clientNumber, Long entityId) {
+    return
+        entityTemplate
+            .getDatabaseClient()
+            .sql(LOCK_CONTACTS_FOR_UPDATE)
+            .bind("client_number", clientNumber)
+            .bind("entity_id", entityId)
+            .fetch()
+            .all()
+            .then();
+  }
+
+  /**
+   * Counts how many of the contacts that would be removed (same client and CONTACT_NAME as
+   * {@code entityId}) are referenced by another system through {@code THE.SCALE_SITE_CONTACT}.
+   *
+   * @param clientNumber the client number that owns the contacts
+   * @param entityId the client contact id to verify
+   * @return a {@link Mono} emitting the number of contacts still in use
+   */
+  private Mono<Long> countContactsInUse(String clientNumber, Long entityId) {
+    return
+        entityTemplate
+            .getDatabaseClient()
+            .sql(COUNT_CONTACTS_IN_USE)
+            .bind("client_number", clientNumber)
+            .bind("entity_id", entityId)
+            .fetch()
+            .one()
+            .map(results -> results.get("IN_USE_COUNT"))
+            .map(Object::toString)
+            .map(Long::parseLong)
+            .defaultIfEmpty(0L)
+            .doOnNext(count ->
+                log.info("Contact {} in use by another system? {}", entityId, count > 0)
+            );
+  }
+
+  /**
+   * Removes every contact identified by {@code entityIds}, in order. Only invoked after
+   * {@link #verifyNoneInUse(String, List)} has confirmed that all of them can be safely deleted.
+   *
+   * @param clientNumber the client number that owns the contacts
+   * @param entityIds the client contact ids to remove, in the order they appear in the patch
+   * @return a {@link Flux} emitting each removed contact id, when available
+   */
+  private Flux<Long> removeAll(String clientNumber, List<Long> entityIds) {
+    return
+        Flux.fromIterable(entityIds)
+            .concatMap(entityId -> removeAllByEntityId(clientNumber, entityId));
+  }
+
+  /**
+   * Removes every contact of the client that shares the same {@code CONTACT_NAME} as the contact
+   * identified by {@code entityId}.
+   *
+   * @param clientNumber the client number that owns the contacts
+   * @param entityId the client contact id used to resolve the contact name
+   * @return a {@link Mono} emitting the removed contact id, when available
+   */
   private Mono<Long> removeAllByEntityId(String clientNumber, Long entityId) {
     return
         entityTemplate
