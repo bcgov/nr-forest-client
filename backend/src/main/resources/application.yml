@@ -50,6 +50,15 @@ spring:
       # Jackson 3 (Spring Boot 4) enables FAIL_ON_NULL_FOR_PRIMITIVES by default,
       # which rejects null values for primitive int fields that clients previously sent.
       FAIL_ON_NULL_FOR_PRIMITIVES: false
+  aot:
+    data:
+      accessors:
+        # Spring Data's AOT type collector walks reachable types from R2DBC entities and can
+        # reach Reactor Netty internals (e.g. io.netty.util.ResourceLeakDetector), which is not
+        # a real persistent/data-binding type and crashes AOT processing with an
+        # InaccessibleObjectException (java.lang.ref is not opened for reflection). Exclude
+        # third-party/JDK-internal packages from accessor contribution to avoid this.
+        exclude: io.netty.**,io.r2dbc.**,reactor.**,jdk.internal.**,java.lang.ref.**
 
 management:
   enable-native-support: true
