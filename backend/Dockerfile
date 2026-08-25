@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 ### Builder
-FROM ghcr.io/graalvm/native-image-community:21.0.2 AS build
+FROM ghcr.io/graalvm/native-image-community:25 AS build
 
 # --- SSL Root CA Import (Sectigo Public Server Authentication Root R46) ---
 # Canada Post rotated its certificate chain to a root (Sectigo Public Server Authentication Root R46)
