@@ -79,7 +79,11 @@
         <flyway.version>11.11.0</flyway.version>
         <opentelemetry.version>1.64.0</opentelemetry.version>
         <selenium.version>4.46.0</selenium.version>
-        <org.junit.version>5.11.4</org.junit.version>
+        <!-- Do NOT override org.junit.version / junit-jupiter.version here: Spring Boot 4.1.0
+             manages junit-jupiter at 6.0.3 (JUnit 6). Overriding it with an older junit-bom
+             (e.g. 5.11.4) downgrades junit-platform/junit-jupiter-api below what
+             spring-boot-test / spring-test require, causing NoSuchMethodError on
+             ExtensionContext$Store.computeIfAbsent at test runtime. -->
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.23.0</mockito.version>
         <jooq.version>3.21.6</jooq.version>
@@ -298,13 +302,6 @@
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-bom</artifactId>
                 <version>${selenium.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>${org.junit.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
