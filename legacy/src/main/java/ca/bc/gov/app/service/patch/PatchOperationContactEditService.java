@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.patch;
 
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
+import ca.bc.gov.app.repository.ForestClientQueries;
 import ca.bc.gov.app.util.PatchUtils;
 import ca.bc.gov.app.util.ReplacePatchUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -22,6 +23,12 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Patch operation that handles the edition of client contacts.
+ *
+ * <p>As a single contact can be associated to multiple locations, every {@code CLIENT_CONTACT}
+ * row of the client sharing the same {@code CONTACT_NAME} is updated at once.</p>
+ */
 @Service
 @Slf4j
 @Observed
@@ -29,15 +36,7 @@ import reactor.core.publisher.Mono;
 @Order(8)
 public class PatchOperationContactEditService implements ClientPatchOperation {
 
-  private static final String GET_ALL_CONTACT_IDS = """
-      SELECT CLIENT_CONTACT_ID FROM CLIENT_CONTACT
-      WHERE
-        CLIENT_NUMBER = :client_number
-        AND CONTACT_NAME = (
-          SELECT cl.CONTACT_NAME
-          FROM THE.CLIENT_CONTACT cl
-          WHERE cl.CLIENT_CONTACT_ID = :entity_id
-        )""";
+  private static final String GET_ALL_CONTACT_IDS = ForestClientQueries.GET_ALL_CONTACT_IDS;
 
   private final R2dbcEntityOperations entityTemplate;
 
@@ -133,7 +132,7 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
             )
             .then();
   }
-  
+
   private Map<String, Object> getExtraFields(String userId, long revision) {
     return Map.of(
         "update_timestamp", LocalDateTime.now(),
