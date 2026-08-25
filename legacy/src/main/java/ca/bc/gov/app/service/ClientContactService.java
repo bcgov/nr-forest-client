@@ -5,6 +5,7 @@ import ca.bc.gov.app.dto.ForestClientContactDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.mappers.ForestClientContactMapper;
 import ca.bc.gov.app.repository.ForestClientContactRepository;
+import ca.bc.gov.app.repository.ScaleSiteContactRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Provides the business logic to create, search and validate forest client contacts.
+ */
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -25,7 +29,15 @@ public class ClientContactService {
   private final R2dbcEntityOperations entityTemplate;
   private final ForestClientContactRepository repository;
   private final ForestClientContactMapper mapper;
+  private final ScaleSiteContactRepository scaleSiteContactRepository;
 
+  /**
+   * Saves the provided forest client contact, when it does not exist yet, and returns the client
+   * number it belongs to.
+   *
+   * @param dto the contact to be saved
+   * @return a {@link Mono} emitting the client number of the saved contact
+   */
   public Mono<String> saveAndGetIndex(ForestClientContactDto dto) {
     log.info("Saving forest client contact {} {}", dto.clientNumber(), dto.contactName());
     return
@@ -104,6 +116,25 @@ public class ClientContactService {
                 )
             )
             .map(mapper::toDto);
+  }
+
+  /**
+   * Checks whether a contact is currently being used (referenced) by another system, such as
+   * EMS, GAS2, LEXIS, or SCS. This is determined by the presence of a matching record in the
+   * {@code THE.SCALE_SITE_CONTACT} table.
+   *
+   * @param contactId the client contact id to check
+   * @return a {@link Mono} emitting {@code true} if the contact is in use by another system,
+   *     {@code false} otherwise
+   */
+  public Mono<Boolean> isContactInUse(Long contactId) {
+    log.info("Checking if contact {} is in use by another system", contactId);
+    return
+        scaleSiteContactRepository
+            .existsByClientContactId(contactId)
+            .doOnNext(inUse ->
+                log.info("Contact {} in use by another system? {}", contactId, inUse)
+            );
   }
 
   /**

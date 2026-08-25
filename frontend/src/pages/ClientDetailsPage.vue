@@ -779,7 +779,10 @@ const operateContact =
         kind: "Error",
         active: true,
         handler: () => {},
-        message: `Failed to ${action.infinitive} contact`,
+        message:
+          error.response?.status === 409 && typeof error.response.data === "string"
+            ? error.response.data
+            : `Failed to ${action.infinitive} contact`,
         toastTitle: undefined,
       };
       toastBus.emit(toastNotification);
