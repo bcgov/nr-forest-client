@@ -5,7 +5,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity.HeaderSpec;
 import org.springframework.security.config.web.server.ServerHttpSecurity.HeaderSpec.XssProtectionSpec;
 import org.springframework.security.web.server.header.ReferrerPolicyServerHttpHeadersWriter.ReferrerPolicy;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class HeadersCustomizer implements Customizer<HeaderSpec> {
+public class HeadersCustomizer {
 
   /**
    * The self URI of the application, which is injected from the application properties.
@@ -39,7 +38,6 @@ public class HeadersCustomizer implements Customizer<HeaderSpec> {
    *
    * @param headerSpec The specification for the HTTP headers.
    */
-  @Override
   public void customize(HeaderSpec headerSpec) {
 
     // Define the policy directives for the Content-Security-Policy header.
@@ -63,7 +61,7 @@ public class HeadersCustomizer implements Customizer<HeaderSpec> {
                 policyDirectives)) // Set the Content-Security-Policy header.
         .hsts(hstsSpec -> hstsSpec.maxAge(Duration.ofDays(30)).includeSubdomains(true)) // Set the Strict-Transport-Security header.
         .xssProtection(XssProtectionSpec::disable) // Disable the X-XSS-Protection header.
-        .contentTypeOptions(Customizer.withDefaults()) // Set the X-Content-Type-Options header to its default value.
+        .contentTypeOptions(contentTypeOptionsSpec -> {}) // Set the X-Content-Type-Options header to its default value.
         .referrerPolicy(referrerPolicySpec -> referrerPolicySpec.policy(ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)) // Set the Referrer-Policy header.
         .permissionsPolicy(permissionsPolicySpec -> permissionsPolicySpec.policy(
             "geolocation=(), microphone=(), camera=(), speaker=(), usb=(), bluetooth=(), payment=(), interest-cohort=()")) // Set the Permissions-Policy header.

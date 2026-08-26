@@ -3,7 +3,6 @@ package ca.bc.gov.app.security;
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity.CorsSpec;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Component;
  */
 @RequiredArgsConstructor
 @Component
-public class CorsCustomizer implements Customizer<CorsSpec> {
+public class CorsCustomizer {
 
   /**
    * The configuration object that contains the settings for the CORS configuration.
@@ -32,7 +31,6 @@ public class CorsCustomizer implements Customizer<CorsSpec> {
    *
    * @param corsSpec The CORS specification to be customized.
    */
-  @Override
   public void customize(CorsSpec corsSpec) {
     corsSpec.configurationSource(
         serverWebExchange -> {

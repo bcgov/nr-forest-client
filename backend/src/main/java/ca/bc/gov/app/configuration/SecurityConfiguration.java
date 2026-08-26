@@ -1,6 +1,11 @@
 package ca.bc.gov.app.configuration;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.security.ApiAuthorizationCustomizer;
+import ca.bc.gov.app.security.CorsCustomizer;
+import ca.bc.gov.app.security.CsrfCustomizer;
+import ca.bc.gov.app.security.HeadersCustomizer;
+import ca.bc.gov.app.security.Oauth2Customizer;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,18 +33,37 @@ public class SecurityConfiguration {
    * This method is a Spring Bean that configures the Spring Security filter chain.
    * The filter chain is a mechanism that Spring Security uses to apply security features to HTTP requests.
    *
-   * <p>Since Spring Security 7, the {@code Customizer} beans ({@code HeadersCustomizer},
-   * {@code CorsCustomizer}, {@code ApiAuthorizationCustomizer}, {@code Oauth2Customizer} and
-   * {@code CsrfCustomizer}) are automatically applied to the {@link ServerHttpSecurity} instance
-   * when it is created, so they no longer need to be wired up explicitly here.
+   * <p>The application-specific customizers are applied explicitly here instead of being exposed as
+   * generic {@code Customizer<T>} beans. Spring Security 7 auto-applies generic customizer beans
+   * reflectively while creating the {@link ServerHttpSecurity} bean; keeping this wiring explicit
+   * makes startup deterministic and avoids native/AOT failures during ServerHttpSecurity creation.
    *
    * @param http The ServerHttpSecurity instance that is used to build the security filter chain.
+   * @param headersCustomizer customizes security response headers.
+   * @param corsCustomizer customizes CORS.
+   * @param csrfCustomizer customizes CSRF handling.
+   * @param oauth2Customizer customizes JWT resource-server authentication.
+   * @param apiAuthorizationCustomizer customizes endpoint authorization rules.
    *
    * @return The configured SecurityWebFilterChain.
    */
   @Bean
-  SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-    http.httpBasic(Customizer.withDefaults());
+  SecurityWebFilterChain springSecurityFilterChain(
+      ServerHttpSecurity http,
+      HeadersCustomizer headersCustomizer,
+      CorsCustomizer corsCustomizer,
+      CsrfCustomizer csrfCustomizer,
+      Oauth2Customizer oauth2Customizer,
+      ApiAuthorizationCustomizer apiAuthorizationCustomizer
+  ) {
+    http
+        .headers(headersCustomizer::customize)
+        .cors(corsCustomizer::customize)
+        .csrf(csrfCustomizer::customize)
+        .oauth2ResourceServer(oauth2Customizer::customize)
+        .authorizeExchange(apiAuthorizationCustomizer::customize)
+        .httpBasic(Customizer.withDefaults());
+
     return http.build();
   }
 
