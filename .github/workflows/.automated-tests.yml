@@ -79,6 +79,7 @@ jobs:
         with:
           name: cypress-screenshots
           path: cypress/cypress/screenshots
+          if-no-files-found: ignore
           retention-days: 7
 
       - uses: actions/upload-artifact@v7
@@ -87,4 +88,5 @@ jobs:
         with:
           name: cypress-videos
           path: cypress/cypress/videos
+          if-no-files-found: ignore
           retention-days: 7
