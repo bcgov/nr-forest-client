@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -32,6 +33,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.Exceptions;
 import reactor.core.publisher.Mono;
 
 /**
@@ -101,8 +103,16 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
   private Mono<ServerResponse> renderErrorResponse(
       ServerRequest request, ErrorAttributes errorAttributes) {
 
-    // Get the error associated with the request and fill in its stack trace
-    Throwable exception = errorAttributes.getError(request).fillInStackTrace();
+    // Get the error associated with the request. Reactor frequently wraps the original
+    // exception (e.g. via Exceptions.propagate/onAssembly, or when it crosses a
+    // flatMap/reduce boundary) before it reaches this top-level handler. If we don't unwrap
+    // it here, the instanceof checks below (ValidationException, WebClientResponseException,
+    // etc.) silently fail to match and the request falls through to a generic 500, even
+    // though the real cause carries a perfectly good status code (e.g. 404, 202-related
+    // downstream failures). Exceptions.unwrap walks the cause chain until it finds a
+    // non-Reactor-internal exception, or returns the original if there's nothing to unwrap.
+    Throwable exception = Exceptions.unwrap(errorAttributes.getError(request))
+        .fillInStackTrace();
 
     // If the error is a ValidationException, log the validation errors and return a response with the status code, reason, and errors from the exception
     if (exception instanceof ValidationException validationException) {
@@ -154,7 +164,15 @@ public class GlobalErrorController extends AbstractErrorWebExceptionHandler {
     if (exception instanceof WebClientResponseException wcre) {
       errorMessage = wcre.getResponseBodyAsString();
       errorStatus = wcre.getStatusCode();
+    }
 
+    // WebClientRequestException wraps I/O-level failures (connection refused, timeouts, etc.)
+    // when talking to a downstream WebClient-backed API. Unlike WebClientResponseException,
+    // it has no HTTP status of its own, but it should still be surfaced as a Bad Gateway
+    // rather than falling through as an unqualified Internal Server Error.
+    if (exception instanceof WebClientRequestException wcre) {
+      errorMessage = wcre.getMessage();
+      errorStatus = HttpStatus.BAD_GATEWAY;
     }
 
     // If the error message is blank, set it to an empty string
