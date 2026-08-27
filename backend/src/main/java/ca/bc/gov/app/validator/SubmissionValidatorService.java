@@ -179,7 +179,7 @@ public class SubmissionValidatorService {
     return Flux.fromIterable(businessValidators)
         .filter(validator -> validator.supports(source))
         .doOnNext(validator -> log.info(LOG_MESSAGE, validator.getClass().getSimpleName()))
-        .flatMap(validator -> validator.validate(request.businessInformation(), null))
+        .concatMap(validator -> validator.validate(request.businessInformation(), null))
         .filter(ValidationError::isValid)
         .collectList();
   }
@@ -191,7 +191,7 @@ public class SubmissionValidatorService {
     return Flux.fromIterable(locationValidators)
         .filter(validator -> validator.supports(source))
         .doOnNext(validator -> log.info(LOG_MESSAGE, validator.getClass().getSimpleName()))
-        .flatMap(validator -> validator.validate(request.location(), null))
+        .concatMap(validator -> validator.validate(request.location(), null))
         .filter(ValidationError::isValid)
         .collectList();
   }
@@ -203,10 +203,10 @@ public class SubmissionValidatorService {
     return Flux.fromIterable(addressValidators)
         .filter(validator -> validator.supports(source))
         .doOnNext(validator -> log.info(LOG_MESSAGE, validator.getClass().getSimpleName()))
-        .flatMap(
+        .concatMap(
             validator ->
                 Flux.fromIterable(request.location().addresses())
-                    .flatMap(address -> validator.validate(address, address.index()))
+                    .concatMap(address -> validator.validate(address, address.index()))
                     .filter(ValidationError::isValid)
         )
         .collectList()
@@ -220,10 +220,10 @@ public class SubmissionValidatorService {
     return Flux.fromIterable(contactValidators)
         .filter(validator -> validator.supports(source))
         .doOnNext(validator -> log.info(LOG_MESSAGE, validator.getClass().getSimpleName()))
-        .flatMap(
+        .concatMap(
             validator ->
                 Flux.fromIterable(request.location().contacts())
-                    .flatMap(contact -> validator.validate(contact, contact.index()))
+                    .concatMap(contact -> validator.validate(contact, contact.index()))
                     .filter(ValidationError::isValid)
         )
         .collectList()
