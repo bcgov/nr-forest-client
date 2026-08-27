@@ -18,13 +18,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         name: Start node
         with:
           node-version: 24
 
       - name: Run Cypress End-to-End
-        uses: cypress-io/github-action@v7.4.2
+        uses: cypress-io/github-action@v7.4.3
         with:
           working-directory: cypress
         env:
@@ -79,6 +79,7 @@ jobs:
         with:
           name: cypress-screenshots
           path: cypress/cypress/screenshots
+          if-no-files-found: ignore
           retention-days: 7
 
       - uses: actions/upload-artifact@v7
@@ -87,4 +88,5 @@ jobs:
         with:
           name: cypress-videos
           path: cypress/cypress/videos
+          if-no-files-found: ignore
           retention-days: 7
