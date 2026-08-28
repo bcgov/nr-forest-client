@@ -21,9 +21,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.util.CollectionUtils;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,16 +48,15 @@ public class ClientSubmissionController {
   
   
   @GetMapping
-  public Flux<ClientListSubmissionDto> listSubmissions(
+  public Mono<ResponseEntity<Flux<ClientListSubmissionDto>>> listSubmissions(
       @RequestParam(required = false, defaultValue = "0") int page,
       @RequestParam(required = false, defaultValue = "10") int size,
       @RequestParam(required = false) SubmissionStatusEnum[] requestStatus,
       @RequestParam(required = false) String[] clientType,
       @RequestParam(required = false) String[] district,
       @RequestParam(required = false) String[] name,
-      @RequestParam(required = false) String[] submittedAt,
-      ServerHttpResponse serverResponse) {
-    
+      @RequestParam(required = false) String[] submittedAt) {
+
     log.info(
         "Listing submissions: page={}, size={}, requestType={}, requestStatus={}, clientType={}, "
             + "name={}, submittedAt={}",
@@ -64,27 +64,20 @@ public class ClientSubmissionController {
 
     return clientService
         .listSubmissions(page, size, requestStatus, clientType, district, name, submittedAt)
-        .doOnNext(
-            dto ->
-                serverResponse
-                    .getHeaders()
-                    .putIfAbsent(
-                        ApplicationConstant.X_TOTAL_COUNT,
-                        List.of(dto.count().toString())))
-        .doFinally(
-            signalType ->
-                serverResponse
-                    .getHeaders()
-                    .putIfAbsent(
-                        ApplicationConstant.X_TOTAL_COUNT,
-                        List.of("0")));
+        .collectList()
+        .map(
+            dtos -> {
+              String totalCount = dtos.isEmpty() ? "0" : String.valueOf(dtos.get(0).count());
+              return ResponseEntity
+                  .ok()
+                  .header(ApplicationConstant.X_TOTAL_COUNT, totalCount)
+                  .body(Flux.fromIterable(dtos));
+            });
   }
 
   @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public Mono<Void> submit(
+  public Mono<ResponseEntity<Void>> submit(
       @RequestBody ClientSubmissionDto request,
-      ServerHttpResponse serverResponse,
       JwtAuthenticationToken principal
   ) {
 
@@ -113,21 +106,11 @@ public class ClientSubmissionController {
         .doOnError(e -> log.error("External submission is invalid: {}", e.getMessage()))
         .flatMap(submissionDto -> clientService.submit(submissionDto, principal))
         .doOnNext(submissionId -> log.info("Submission persisted: {}", submissionId))
-        .doOnNext(submissionId ->
-            serverResponse
-                .getHeaders()
-                .addAll(
-                    CollectionUtils
-                        .toMultiValueMap(
-                            Map.of(
-                                "Location",
-                                List.of(String.format("/api/clients/submissions/%d", submissionId)),
-                                "x-sub-id", List.of(String.valueOf(submissionId))
-                            )
-                        )
-                )
-        )
-        .then();
+        .map(submissionId -> ResponseEntity
+            .status(HttpStatus.CREATED)
+            .header("Location", String.format("/api/clients/submissions/%d", submissionId))
+            .header("x-sub-id", String.valueOf(submissionId))
+            .build());
   }
 
   /**
@@ -137,17 +120,15 @@ public class ClientSubmissionController {
    * submission. If the request body is missing, an {@link InvalidRequestObjectException} is thrown.
    * Upon successful submission, the response headers include the client ID and resource location.
    *
-   * @param request        The client submission request body containing business and 
-   *                       location details.
-   * @param serverResponse The HTTP response used to set headers with client details upon success.
-   * @param principal      The authentication token containing staff user details.
-   * @return A {@link Mono} that completes when the submission is successfully processed.
+   * @param request   The client submission request body containing business and 
+   *                  location details.
+   * @param principal The authentication token containing staff user details.
+   * @return A {@link Mono} that emits a {@link ResponseEntity} with the {@code Location} and
+   *         {@code x-client-id} headers set, completing when the submission is processed.
    */
   @PostMapping("/staff")
-  @ResponseStatus(HttpStatus.CREATED)
-  public Mono<Void> submitStaff(
+  public Mono<ResponseEntity<Void>> submitStaff(
       @RequestBody ClientSubmissionDto request,
-      ServerHttpResponse serverResponse,
       JwtAuthenticationToken principal
   ) {
 
@@ -170,16 +151,11 @@ public class ClientSubmissionController {
         .doOnError(e -> log.error("Staff submission is invalid: {}", 
                                   e.getMessage()))
         .flatMap(submission -> clientService.staffSubmit(submission, principal))
-        .doOnNext(clientId -> serverResponse
-            .getHeaders()
-            .addAll(CollectionUtils.toMultiValueMap(
-                Map.of(
-                    "Location", List.of(String.format("/api/clients/details/%s", clientId)),
-                    "x-client-id", List.of(String.valueOf(clientId))
-                )
-            ))
-        )
-        .then();
+        .map(clientId -> ResponseEntity
+            .status(HttpStatus.CREATED)
+            .header("Location", String.format("/api/clients/details/%s", clientId))
+            .header("x-client-id", String.valueOf(clientId))
+            .build());
 
   }
 

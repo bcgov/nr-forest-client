@@ -71,7 +71,7 @@ public class ClientController {
             JwtPrincipalUtil.getProvider(principal)
         );
   }
-  
+
   /**
    * Retrieves legacy client details using either a registration number or an
    * incorporation number.
@@ -142,7 +142,7 @@ public class ClientController {
         registrationNumber);
     return clientService.getBcRegistryInformation(registrationNumber);
   }
-  
+
   /**
    * Performs a full-text search for clients based on the provided keyword, with pagination
    * support.
@@ -168,25 +168,28 @@ public class ClientController {
 
     return clientLegacyService
         .search(page, size, keyword)
-        .doOnNext(pair -> {
-          Long count = pair.getSecond();
+        .collectList()
+        .flatMapMany(list -> {
+          Long count = list.isEmpty()
+              ? 0L
+              : list.get(0).getSecond();
 
           serverResponse
               .getHeaders()
-              .putIfAbsent(
-                  ApplicationConstant.X_TOTAL_COUNT,
-                  List.of(count.toString())
-              );
+              .set(ApplicationConstant.X_TOTAL_COUNT, String.valueOf(count));
+
+          return Flux.fromIterable(list)
+              .map(Pair::getFirst);
         })
-        .map(Pair::getFirst)
-        .doFinally(signalType ->
-            serverResponse
-                .getHeaders()
-                .putIfAbsent(
-                    ApplicationConstant.X_TOTAL_COUNT,
-                    List.of("0")
-                )
-        );
+        .onErrorResume(e -> {
+          log.error("Error in fullSearch endpoint", e);
+
+          serverResponse
+              .getHeaders()
+              .set(ApplicationConstant.X_TOTAL_COUNT, "0");
+
+          return Flux.empty();
+        });
   }
 
   /**
@@ -287,7 +290,7 @@ public class ClientController {
   ) {
     return clientLegacyService.getClientIdirUsersByUserId(userId).collectList();
   }
-  
+
   /**
    * Performs an advanced search for clients using dynamic query parameters.
    *
@@ -318,7 +321,7 @@ public class ClientController {
     if (criteria == null) {
       criteria =
           new ClientAdvancedSearchCriteriaDto(
-              null, null, null, null, null, null, null, null, 
+              null, null, null, null, null, null, null, null,
               null, null, null, null, null, null, null, null
           );
     }
@@ -354,5 +357,5 @@ public class ClientController {
           return Flux.empty();
         });
   }
-  
+
 }

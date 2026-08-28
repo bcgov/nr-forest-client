@@ -1243,4 +1243,237 @@ class ClientControllerIntegrationTest extends AbstractTestContainerIntegrationTe
         .jsonPath("$[0].clientNumber").isEqualTo("00000002");
   }
   
+  @Test
+  @DisplayName("Full search with results")
+  void shouldFullSearchWithResults() {
+
+    reset();
+
+    String legacyResponse = """
+        [
+          {
+            "clientNumber": "00000001",
+            "clientAcronym": "SC",
+            "clientFullName": "SAMPLE COMPANY",
+            "clientType": "C",
+            "city": "VICTORIA",
+            "clientStatus": "A"
+          }
+        ]
+        """;
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search"))
+            .withQueryParam("page", equalTo("0"))
+            .withQueryParam("size", equalTo("100"))
+            .withQueryParam("value", equalTo("SAMPLE"))
+            .willReturn(
+                okJson(legacyResponse)
+                    .withHeader("x-total-count", "1")));
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR)))
+        .get()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/search")
+            .queryParam("page", "0")
+            .queryParam("size", "100")
+            .queryParam("keyword", "SAMPLE")
+            .build())
+        .exchange()
+        .expectStatus().isOk()
+        .expectHeader().valueEquals(ApplicationConstant.X_TOTAL_COUNT, "1")
+        .expectBody()
+        .consumeWith(System.out::println)
+        .jsonPath("$").isArray()
+        .jsonPath("$.length()").isEqualTo(1)
+        .jsonPath("$[0].clientNumber").isEqualTo("00000001")
+        .jsonPath("$[0].clientFullName").isEqualTo("SAMPLE COMPANY");
+  }
+
+  @Test
+  @DisplayName("Full search with empty keyword returns broad results without truncation")
+  void shouldFullSearchWithEmptyKeywordReturnFullResults() {
+
+    reset();
+
+    // Regression test for the ERR_INCOMPLETE_CHUNKED_ENCODING / UnsupportedOperationException
+    // bug: an empty keyword returns a broader result set, which is what originally exposed the
+    // header-mutation-after-commit issue in fullSearch(). This asserts the full body is returned
+    // intact and the header is present, not truncated mid-stream.
+    String legacyResponse = """
+        [
+          { "clientNumber": "00000001", "clientFullName": "SAMPLE COMPANY", "clientType": "C", "city": "VICTORIA", "clientStatus": "A" },
+          { "clientNumber": "00000002", "clientFullName": "TEST COMPANY", "clientType": "C", "city": "VANCOUVER", "clientStatus": "A" },
+          { "clientNumber": "00000003", "clientFullName": "THIRD COMPANY", "clientType": "C", "city": "NANAIMO", "clientStatus": "A" }
+        ]
+        """;
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search"))
+            .withQueryParam("page", equalTo("0"))
+            .withQueryParam("size", equalTo("100"))
+            .withQueryParam("value", equalTo(""))
+            .willReturn(
+                okJson(legacyResponse)
+                    .withHeader("x-total-count", "3")));
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR)))
+        .get()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/search")
+            .queryParam("page", "0")
+            .queryParam("size", "100")
+            .queryParam("keyword", "")
+            .build())
+        .exchange()
+        .expectStatus().isOk()
+        .expectHeader().valueEquals(ApplicationConstant.X_TOTAL_COUNT, "3")
+        .expectBody()
+        .consumeWith(System.out::println)
+        .jsonPath("$").isArray()
+        .jsonPath("$.length()").isEqualTo(3)
+        .jsonPath("$[2].clientNumber").isEqualTo("00000003");
+  }
+
+  @Test
+  @DisplayName("Full search with no results")
+  void shouldFullSearchWithNoResults() {
+
+    reset();
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search"))
+            .withQueryParam("page", equalTo("0"))
+            .withQueryParam("size", equalTo("100"))
+            .withQueryParam("value", equalTo("NONEXISTENT"))
+            .willReturn(
+                okJson("[]")
+                    .withHeader("x-total-count", "0")));
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR)))
+        .get()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/search")
+            .queryParam("page", "0")
+            .queryParam("size", "100")
+            .queryParam("keyword", "NONEXISTENT")
+            .build())
+        .exchange()
+        .expectStatus().isOk()
+        .expectHeader().valueEquals(ApplicationConstant.X_TOTAL_COUNT, "0")
+        .expectBody()
+        .consumeWith(System.out::println)
+        .json("[]");
+  }
+
+  @Test
+  @DisplayName("Full search with default pagination")
+  void shouldFullSearchWithDefaultPagination() {
+
+    reset();
+
+    String legacyResponse = """
+        [
+          { "clientNumber": "00000002", "clientFullName": "TEST COMPANY", "clientType": "C", "city": "VANCOUVER", "clientStatus": "A" }
+        ]
+        """;
+
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search"))
+            .withQueryParam("page", equalTo("0"))
+            .withQueryParam("size", equalTo("100"))
+            .withQueryParam("value", equalTo(""))
+            .willReturn(
+                okJson(legacyResponse)
+                    .withHeader("x-total-count", "1")));
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR)))
+        .get()
+        .uri("/api/clients/search")
+        .exchange()
+        .expectStatus().isOk()
+        .expectHeader().valueEquals(ApplicationConstant.X_TOTAL_COUNT, "1")
+        .expectBody()
+        .consumeWith(System.out::println)
+        .jsonPath("$").isArray()
+        .jsonPath("$.length()").isEqualTo(1)
+        .jsonPath("$[0].clientNumber").isEqualTo("00000002");
+  }
+
+  @Test
+  @DisplayName("Full search falls back to empty result with zero count on legacy error")
+  void shouldFullSearchFallbackOnLegacyError() {
+
+    reset();
+
+    // The legacy response body is not valid ClientListDto JSON, which forces a decoding
+    // failure inside the reactive chain, exercising the onErrorResume() fallback in
+    // fullSearch(). This is the specific behavior restored by the fix: the endpoint must
+    // degrade to an empty list with a 0 count rather than propagate a 500 or a partial,
+    // truncated response.
+    legacyStub.stubFor(
+        get(urlPathEqualTo("/api/search"))
+            .withQueryParam("page", equalTo("0"))
+            .withQueryParam("size", equalTo("100"))
+            .withQueryParam("value", equalTo("ERROR"))
+            .willReturn(
+                status(500)
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody("not a valid client list payload")));
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(
+                    claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                .authorities(
+                    new SimpleGrantedAuthority(
+                        "ROLE_" + ApplicationConstant.ROLE_EDITOR)))
+        .get()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/search")
+            .queryParam("page", "0")
+            .queryParam("size", "100")
+            .queryParam("keyword", "ERROR")
+            .build())
+        .exchange()
+        .expectStatus().isOk()
+        .expectHeader().valueEquals(ApplicationConstant.X_TOTAL_COUNT, "0")
+        .expectBody()
+        .consumeWith(System.out::println)
+        .json("[]");
+  }
 }

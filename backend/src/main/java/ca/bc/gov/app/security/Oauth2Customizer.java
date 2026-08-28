@@ -3,7 +3,6 @@ package ca.bc.gov.app.security;
 import ca.bc.gov.app.converters.GrantedAuthoritiesConverter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity.OAuth2ResourceServerSpec;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -20,7 +19,7 @@ import reactor.core.publisher.Mono;
  * allows the extraction of granted authorities from the JWT.
  */
 @Component
-public class Oauth2Customizer implements Customizer<OAuth2ResourceServerSpec> {
+public class Oauth2Customizer {
 
   /**
    * This method customizes the OAuth2ResourceServerSpec by setting the JWT authentication
@@ -29,7 +28,6 @@ public class Oauth2Customizer implements Customizer<OAuth2ResourceServerSpec> {
    *
    * @param oAuth2ResourceServerSpec The OAuth2ResourceServerSpec to be customized.
    */
-  @Override
   public void customize(OAuth2ResourceServerSpec oAuth2ResourceServerSpec) {
     oAuth2ResourceServerSpec.jwt(jwt ->
         jwt

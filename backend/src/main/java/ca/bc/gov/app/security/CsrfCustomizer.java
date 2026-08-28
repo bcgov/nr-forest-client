@@ -1,7 +1,6 @@
 package ca.bc.gov.app.security;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity.CsrfSpec;
 import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class CsrfCustomizer implements Customizer<CsrfSpec> {
+public class CsrfCustomizer {
 
   /**
    * This is a final field of type CookieCsrfRequestAttributeHandler.
@@ -30,7 +29,6 @@ public class CsrfCustomizer implements Customizer<CsrfSpec> {
    *
    * @param csrfSpec The CSRF specification to be customized.
    */
-  @Override
   public void customize(CsrfSpec csrfSpec) {
     csrfSpec
         .csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse())

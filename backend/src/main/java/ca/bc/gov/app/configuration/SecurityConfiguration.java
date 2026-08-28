@@ -29,37 +29,43 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SecurityConfiguration {
 
-/**
- * This method is a Spring Bean that configures the Spring Security filter chain.
- * The filter chain is a mechanism that Spring Security uses to apply security features to HTTP requests.
- *
- * @param http The ServerHttpSecurity instance that is used to build the security filter chain.
- * @param headersCustomizer A customizer for the HTTP headers security settings.
- * @param corsSpecCustomizer A customizer for the Cross-Origin Resource Sharing (CORS) security settings.
- * @param apiAuthorizationCustomizer A customizer for the API authorization security settings.
- * @param oauth2SpecCustomizer A customizer for the OAuth2 resource server security settings.
- * @param csrfSpecCustomizer A customizer for the Cross-Site Request Forgery (CSRF) security settings.
- *
- * @return The configured SecurityWebFilterChain.
- */
-@Bean
-SecurityWebFilterChain springSecurityFilterChain(
-    ServerHttpSecurity http,
-    HeadersCustomizer headersCustomizer,
-    CorsCustomizer corsSpecCustomizer,
-    ApiAuthorizationCustomizer apiAuthorizationCustomizer,
-    Oauth2Customizer oauth2SpecCustomizer,
-    CsrfCustomizer csrfSpecCustomizer
-) {
-  http
-      .headers(headersCustomizer)
-      .authorizeExchange(apiAuthorizationCustomizer)
-      .oauth2ResourceServer(oauth2SpecCustomizer)
-      .cors(corsSpecCustomizer)
-      .csrf(csrfSpecCustomizer)
-      .httpBasic(Customizer.withDefaults());
-  return http.build();
-}
+  /**
+   * This method is a Spring Bean that configures the Spring Security filter chain.
+   * The filter chain is a mechanism that Spring Security uses to apply security features to HTTP requests.
+   *
+   * <p>The application-specific customizers are applied explicitly here instead of being exposed as
+   * generic {@code Customizer<T>} beans. Spring Security 7 auto-applies generic customizer beans
+   * reflectively while creating the {@link ServerHttpSecurity} bean; keeping this wiring explicit
+   * makes startup deterministic and avoids native/AOT failures during ServerHttpSecurity creation.
+   *
+   * @param http The ServerHttpSecurity instance that is used to build the security filter chain.
+   * @param headersCustomizer customizes security response headers.
+   * @param corsCustomizer customizes CORS.
+   * @param csrfCustomizer customizes CSRF handling.
+   * @param oauth2Customizer customizes JWT resource-server authentication.
+   * @param apiAuthorizationCustomizer customizes endpoint authorization rules.
+   *
+   * @return The configured SecurityWebFilterChain.
+   */
+  @Bean
+  SecurityWebFilterChain springSecurityFilterChain(
+      ServerHttpSecurity http,
+      HeadersCustomizer headersCustomizer,
+      CorsCustomizer corsCustomizer,
+      CsrfCustomizer csrfCustomizer,
+      Oauth2Customizer oauth2Customizer,
+      ApiAuthorizationCustomizer apiAuthorizationCustomizer
+  ) {
+    http
+        .headers(headersCustomizer::customize)
+        .cors(corsCustomizer::customize)
+        .csrf(csrfCustomizer::customize)
+        .oauth2ResourceServer(oauth2Customizer::customize)
+        .authorizeExchange(apiAuthorizationCustomizer::customize)
+        .httpBasic(Customizer.withDefaults());
+
+    return http.build();
+  }
 
   /**
    * This method creates a ReactiveJwtDecoder bean. The ReactiveJwtDecoder is used to decode JWTs in
