@@ -387,17 +387,20 @@ public class GlobalServiceConfiguration {
   }
 
   /**
-   * Configures and provides an ObjectMapper bean. This ObjectMapper is built using the provided
-   * Jackson2ObjectMapperBuilder and is configured with the JavaTimeModule and a custom
+   * Configures and provides an ObjectMapper bean. This ObjectMapper is built from the Spring
+   * Boot-managed {@link Jackson2ObjectMapperBuilder} (customized from the {@code spring.jackson.*}
+   * properties in {@code application.yml}, e.g. {@code FAIL_ON_NULL_FOR_PRIMITIVES} and
+   * {@code FAIL_ON_EMPTY_BEANS}, via {@code Jackson2ObjectMapperBuilderCustomizer} beans) instead
+   * of a bare, unconfigured builder. It's further configured with the JavaTimeModule and a custom
    * ForestClientDetailsSerializerModifier module.
    *
-   * @param builder The Jackson2ObjectMapperBuilder used to build the ObjectMapper.
+   * @param jackson2ObjectMapperBuilder the Spring Boot-managed, property-customized builder
    * @return A configured ObjectMapper instance.
    */
   @Bean
-  public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+  public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
 
-    ObjectMapper mapper = builder.build();
+    ObjectMapper mapper = jackson2ObjectMapperBuilder.build();
     mapper.registerModule(new JavaTimeModule());
     mapper.registerModule(forestClientDetailsDtoModule());
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.16</version>
+        <version>4.1.0</version>
         <relativePath />
     </parent>
 
@@ -65,6 +65,7 @@
         <maven.compiler.version>3.10.1</maven.compiler.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.proc>full</maven.compiler.proc>
         <skip.integration.tests>true</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
         <jacoco.skip>true</jacoco.skip>
@@ -73,40 +74,55 @@
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <testcontainers.version>1.21.4</testcontainers.version>
-        <logback.version>1.6.1</logback.version>
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.9.1</nimbus-jose-jwt.version>
-        <spring-security-core.version>6.5.11</spring-security-core.version>
-        <micrometer.version>1.17.0</micrometer.version>
-        <micrometer-tracing.version>1.7.0</micrometer-tracing.version>
-        <flyway.version>11.11.0</flyway.version>
         <opentelemetry.version>1.64.0</opentelemetry.version>
         <selenium.version>4.46.0</selenium.version>
-        <org.junit.version>6.1.2</org.junit.version>
+        <!-- Do NOT override org.junit.version / junit-jupiter.version here: Spring Boot 4.1.0
+             manages junit-jupiter at 6.0.3 (JUnit 6). Overriding it with an older junit-bom
+             (e.g. 5.11.4) downgrades junit-platform/junit-jupiter-api below what
+             spring-boot-test / spring-test require, causing NoSuchMethodError on
+             ExtensionContext$Store.computeIfAbsent at test runtime. -->
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.23.0</mockito.version>
         <jooq.version>3.21.6</jooq.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
-        <jackson.version>2.21.1</jackson.version>
-        <jackson-bom.version>2.22.0</jackson-bom.version>
-        <spring-security.version>6.5.9</spring-security.version>
-        <netty.version>4.1.132.Final</netty.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webclient</artifactId>
+        </dependency>
+        <!-- Spring Boot 4's default JSON stack is Jackson 3 (spring-boot-jackson, transitively
+             pulled in by spring-boot-starter-webflux via spring-boot-starter-jackson). This
+             application's code exclusively uses the classic Jackson 2 API
+             (com.fasterxml.jackson.databind.*) and defines its own Jackson 2 ObjectMapper bean
+             in GlobalServiceConfiguration. Without spring-boot-jackson2, there is no
+             Jackson2AutoConfiguration on the classpath, so the Jackson2ObjectMapperBuilder bean
+             (customized from the spring.jackson.* properties in application.yml, e.g.
+             FAIL_ON_NULL_FOR_PRIMITIVES/FAIL_ON_EMPTY_BEANS) never exists - those properties were
+             silently being ignored. Adding this module restores that bean so it can be injected
+             and customized instead of building a bare, unconfigured ObjectMapper. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-jackson2</artifactId>
+        </dependency>
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -130,9 +146,8 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
         </dependency>
-
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
@@ -140,6 +155,13 @@
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-tracing-bridge-otel</artifactId>
+        </dependency>
+        <!-- Spring Boot 4 moved the tracing auto-configuration out of spring-boot-actuator-autoconfigure
+             into dedicated modules. The OpenTelemetry module provides the OpenTelemetryTracingAutoConfiguration
+             that creates the Tracer/SdkTracerProvider beans and the Zipkin exporter wiring. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-micrometer-tracing-opentelemetry</artifactId>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
@@ -175,12 +197,17 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>${flyway.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
-            <version>${flyway.version}</version>
+        </dependency>
+        <!-- Spring Boot 4 moved the Flyway auto-configuration out of spring-boot-actuator-autoconfigure
+             into the dedicated spring-boot-flyway module. Without it the FlywayAutoConfiguration
+             (which runs the database migrations at startup) is never loaded. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-flyway</artifactId>
         </dependency>
 
         <dependency>
@@ -221,6 +248,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-webtestclient</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
@@ -228,31 +260,26 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>${org.junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>r2dbc</artifactId>
-            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -276,21 +303,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>6.2.19</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
                 <version>${testcontainers.version}</version>
@@ -298,30 +310,9 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-bom</artifactId>
-                <version>${micrometer.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-tracing-bom</artifactId>
-                <version>${micrometer-tracing.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-bom</artifactId>
                 <version>${selenium.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>${org.junit.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -344,16 +335,6 @@
                 <version>${jooq.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-core</artifactId>
-                <version>${spring-security-core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-crypto</artifactId>
-                <version>${spring-security-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.nimbusds</groupId>
@@ -410,6 +391,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED</jvmArguments>
                 </configuration>
             </plugin>
 

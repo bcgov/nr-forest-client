@@ -2,7 +2,6 @@ package ca.bc.gov.app.security;
 
 import ca.bc.gov.app.ApplicationConstant;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity.AuthorizeExchangeSpec;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Component;
  * Customizer interface and overrides the customize method to set the authorization rules.
  */
 @Component
-public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeSpec> {
+public class ApiAuthorizationCustomizer {
 
   /**
    * This method customizes the AuthorizeExchangeSpec by setting the authorization rules for
@@ -19,7 +18,6 @@ public class ApiAuthorizationCustomizer implements Customizer<AuthorizeExchangeS
    *
    * @param authorize The AuthorizeExchangeSpec to be customized.
    */
-  @Override
   public void customize(AuthorizeExchangeSpec authorize) {
     // Begin authorization rules configuration
 
