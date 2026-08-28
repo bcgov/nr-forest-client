@@ -74,10 +74,14 @@
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <testcontainers.version>1.21.4</testcontainers.version>
+        <logback.version>1.6.3</logback.version>
         <oci.revision>${project.version}</oci.revision>
         <nimbus-jose-jwt.version>10.9.1</nimbus-jose-jwt.version>
+        <spring-security-core.version>6.5.11</spring-security-core.version>
+        <micrometer.version>1.17.1</micrometer.version>
+        <micrometer-tracing.version>1.7.1</micrometer-tracing.version>
         <opentelemetry.version>1.64.0</opentelemetry.version>
-        <selenium.version>4.46.0</selenium.version>
+        <selenium.version>4.47.0</selenium.version>
         <!-- Do NOT override org.junit.version / junit-jupiter.version here: Spring Boot 4.1.0
              manages junit-jupiter at 6.0.3 (JUnit 6). Overriding it with an older junit-bom
              (e.g. 5.11.4) downgrades junit-platform/junit-jupiter-api below what
@@ -85,7 +89,7 @@
              ExtensionContext$Store.computeIfAbsent at test runtime. -->
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.23.0</mockito.version>
-        <jooq.version>3.21.6</jooq.version>
+        <jooq.version>3.21.7</jooq.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
     </properties>
 
@@ -645,7 +649,7 @@
             <plugin>
                 <groupId>org.cyclonedx</groupId>
                 <artifactId>cyclonedx-maven-plugin</artifactId>
-                <version>2.9.2</version>
+                <version>2.9.3</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
