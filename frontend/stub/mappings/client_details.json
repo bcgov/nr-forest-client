@@ -426,7 +426,8 @@
         ]
       },
       "response": {
-        "fault": "MALFORMED_RESPONSE_CHUNK",
+        "status": 500,
+        "body": "Sample network error",
         "fixedDelayMilliseconds": 500
       }
     },
