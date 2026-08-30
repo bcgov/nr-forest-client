@@ -65,6 +65,8 @@ describe("Client Details Page", () => {
 
     let resumePatch: () => void;
 
+    let alreadyIntercepted = false;
+
     const createUnresolvedPromise = () =>
       new Promise<void>((resolve) => {
         resumePatch = resolve;
@@ -91,6 +93,15 @@ describe("Client Details Page", () => {
       });
 
     cy.intercept("PATCH", "/api/clients/details/*", (req) => {
+      // Only the first request this handler sees represents the scenario's own save.
+      // Any later request (e.g. from a following scenario in this `testIsolation: false`
+      // suite) must flow through untouched, otherwise it would be paused forever since
+      // `resumePatch()` is only invoked for the scenario that created this handler.
+      if (alreadyIntercepted) {
+        req.continue();
+        return;
+      }
+      alreadyIntercepted = true;
       req.continue(createUnresolvedPromise);
       requestCallback?.(req);
     }).as("saveClientDetails");
@@ -204,6 +215,7 @@ describe("Client Details Page", () => {
       clientId: "enet",
       elId: "internalServerError",
       description: "a network error",
+      networkError: true,
     },
     {
       clientId: "e400",
@@ -219,9 +231,14 @@ describe("Client Details Page", () => {
   ];
 
   errorScenarios.forEach((scenario) => {
-    const { clientId, elId, description, detail } = scenario;
+    const { clientId, elId, description, detail, networkError } = scenario;
     describe(`when error is ${description}`, () => {
       beforeEach(() => {
+        if (networkError) {
+          // Simulate the server being unreachable, so the app sees a real network
+          // error instead of a malformed response relayed by the Cypress proxy.
+          cy.intercept("GET", `**/api/clients/details/${clientId}`, { forceNetworkError: true });
+        }
         cy.visit(`/clients/details/${clientId}`);
       });
       const suffix = detail ? ` with detail "${detail}"` : "";
@@ -509,7 +526,7 @@ describe("Client Details Page", () => {
 
       const scenarios = [
         { name: "on generic failure", value: "error", shouldInterrupt: true },
-        { name: "on network error", value: "enet", shouldInterrupt: false },
+        { name: "on network error", value: "enet", shouldInterrupt: true },
       ];
       scenarios.forEach((scenario) => {
         describe(scenario.name, { testIsolation: false }, () => {
