@@ -40,7 +40,14 @@ public abstract class AbstractTestContainer {
    * The application is explicitly Jackson 2 based ({@code com.fasterxml.jackson.*}). Align the
    * test client with the application's Jackson 2 {@link ObjectMapper} so decoded DTOs round-trip
    * correctly.
+   *
+   * <p>The {@code jackson2JsonEncoder}/{@code jackson2JsonDecoder} APIs used below are deprecated
+   * for removal in Spring Framework 7 in favor of the Jackson 3-based {@code jacksonJsonEncoder}/
+   * {@code jacksonJsonDecoder}. They are intentionally retained here as the sanctioned Jackson 2
+   * compatibility bridge (see {@code spring-boot-jackson2}) until the module's DTOs/entities are
+   * migrated off the classic Jackson 2 API. Suppressed rather than removed.
    */
+  @SuppressWarnings({"removal", "java:S1874"})
   @BeforeEach
   public void configureJackson2Codecs() {
     client =
@@ -67,13 +74,11 @@ public abstract class AbstractTestContainer {
         .withDatabaseName("nfrc")
         .withUsername("nrfc")
         .withPassword(genPassword());
-
     postgres.start();
   }
 
   @DynamicPropertySource
   static void registerDynamicProperties(DynamicPropertyRegistry registry) {
-
     registry
         .add(
             "ca.bc.gov.nrs.postgres.database",
@@ -81,19 +86,16 @@ public abstract class AbstractTestContainer {
                 .getDatabaseName()
                 .concat("?TC_INITSCRIPT=file:../backend/src/test/resources/init_pg.sql")
         );
-
     registry
         .add(
             "ca.bc.gov.nrs.postgres.host",
             () -> String.format("%s:%d", postgres.getHost(), postgres.getMappedPort(5432))
         );
-
     registry
         .add(
             "ca.bc.gov.nrs.postgres.username",
             postgres::getUsername
         );
-
     registry
         .add(
             "ca.bc.gov.nrs.postgres.password",
@@ -109,6 +111,4 @@ public abstract class AbstractTestContainer {
         .replace("-", "")
         .substring(24);
   }
-
-
 }
