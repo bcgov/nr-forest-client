@@ -18,12 +18,16 @@ public class ForestClientObfuscate<T> extends ValueSerializer<T> {
   private final List<String> obfuscateFields = List.of(CLIENT_IDENTIFICATION, "birthdate");
 
   /**
-   * Serializes the given value, obfuscating certain fields based on user roles.
+   * Serializes the provided value as a JSON object, masking configured sensitive fields according to
+   * the current user's roles.
    *
-   * @param value The value to serialize.
-   * @param gen The JSON generator used to write the JSON output.
-   * @param ctxt The serialization context.
-   * @throws IOException If an I/O error occurs.
+   * <p>Properties listed in {@link #obfuscateFields} are written using the obfuscation rules in
+   * {@link #obfuscate(String, String, Object)}. All other non-null properties are serialized with
+   * Jackson's default value serializers. A {@code null} value is serialized as JSON null.
+   *
+   * @param value the value to serialize
+   * @param gen the JSON generator used to write the JSON output
+   * @param ctxt the serialization context used to inspect properties and resolve serializers
    */
   @SneakyThrows
   @Override
