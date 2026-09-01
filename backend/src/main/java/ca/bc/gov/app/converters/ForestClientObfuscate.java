@@ -2,18 +2,17 @@ package ca.bc.gov.app.converters;
 
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 @Slf4j
-public class ForestClientObfuscate<T> extends JsonSerializer<T> {
+public class ForestClientObfuscate<T> extends ValueSerializer<T> {
 
   public static final String CLIENT_IDENTIFICATION = "clientIdentification";
   private final List<String> obfuscateFields = List.of(CLIENT_IDENTIFICATION, "birthdate");
@@ -23,7 +22,7 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
    *
    * @param value The value to serialize.
    * @param gen The JSON generator used to write the JSON output.
-   * @param provider The serializer provider.
+   * @param ctxt The serialization context.
    * @throws IOException If an I/O error occurs.
    */
   @SneakyThrows
@@ -31,8 +30,8 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
   public void serialize(
       T value,
       JsonGenerator gen,
-      SerializerProvider provider
-  ) throws IOException {
+      SerializationContext ctxt
+  ) {
 
     if (value == null) {
       gen.writeNull();
@@ -41,7 +40,7 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
 
     gen.writeStartObject();
 
-    var beanProps = provider.getConfig().introspect(provider.constructType(value.getClass()))
+    var beanProps = ctxt.introspectBeanDescription(ctxt.constructType(value.getClass()))
         .findProperties();
 
     String clientIdTypeCode = null;
@@ -51,7 +50,7 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
       var rawValue = property.getAccessor().getValue(value);
 
       // Use the default serializer for other fields
-      gen.writeFieldName(propName);
+      gen.writeName(propName);
 
       // Skip null values entirely
       if (rawValue == null) {
@@ -67,8 +66,8 @@ public class ForestClientObfuscate<T> extends JsonSerializer<T> {
           continue;
         }
 
-        var serializer = provider.findValueSerializer(property.getRawPrimaryType());
-        serializer.serialize(rawValue, gen, provider);
+        var serializer = ctxt.findValueSerializer(property.getRawPrimaryType());
+        serializer.serialize(rawValue, gen, ctxt);
       }
     }
 

@@ -95,10 +95,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
@@ -107,19 +103,12 @@
             <artifactId>spring-boot-starter-webclient</artifactId>
         </dependency>
         <!-- Spring Boot 4's default JSON stack is Jackson 3 (spring-boot-jackson, transitively
-             pulled in by spring-boot-starter-webflux via spring-boot-starter-jackson). This
-             application's code exclusively uses the classic Jackson 2 API
-             (com.fasterxml.jackson.databind.*) and defines its own Jackson 2 ObjectMapper bean
-             in GlobalServiceConfiguration. Without spring-boot-jackson2, there is no
-             Jackson2AutoConfiguration on the classpath, so the Jackson2ObjectMapperBuilder bean
-             (customized from the spring.jackson.* properties in application.yml, e.g.
-             FAIL_ON_NULL_FOR_PRIMITIVES/FAIL_ON_EMPTY_BEANS) never exists - those properties were
-             silently being ignored. Adding this module restores that bean so it can be injected
-             and customized instead of building a bare, unconfigured ObjectMapper. -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-jackson2</artifactId>
-        </dependency>
+             pulled in by spring-boot-starter-webflux via spring-boot-starter-jackson), which
+             embeds java.time support automatically. This application's code uses the Jackson 3
+             API (tools.jackson.*) and defines its own JsonMapper bean in GlobalServiceConfiguration.
+             Jackson 2 only survives for the annotation package
+             (com.fasterxml.jackson.annotation.* via jackson-annotations 2.x), which Jackson 3
+             still respects. -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
@@ -239,11 +228,6 @@
         <dependency>
             <groupId>io.projectreactor.addons</groupId>
             <artifactId>reactor-extra</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.flipkart.zjsonpatch</groupId>
-            <artifactId>zjsonpatch</artifactId>
-            <version>0.4.16</version>
         </dependency>
 
         <dependency>

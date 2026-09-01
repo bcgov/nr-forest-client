@@ -1,6 +1,6 @@
 package ca.bc.gov.app.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;

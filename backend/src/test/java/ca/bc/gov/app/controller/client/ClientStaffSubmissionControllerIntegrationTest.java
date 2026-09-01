@@ -19,8 +19,8 @@ import ca.bc.gov.app.exception.SubmissionNotCompletedException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -145,7 +145,7 @@ class ClientStaffSubmissionControllerIntegrationTest
   @Test
   @DisplayName("Failed due to validation")
   @Order(1)
-  void shouldFailSubmissionDueToValidation() throws JsonProcessingException {
+  void shouldFailSubmissionDueToValidation() throws JacksonException {
 
     ClientSubmissionDto dto = mapper.readValue(
         TestConstants.STAFF_SUBMITTED_INDIVIDUAL_JSON,
@@ -182,7 +182,7 @@ class ClientStaffSubmissionControllerIntegrationTest
   @Test
   @DisplayName("Successfully created staff submission of individual")
   @Order(2)
-  void shouldSubmitIndividualClientSubmission() throws JsonProcessingException {
+  void shouldSubmitIndividualClientSubmission() throws JacksonException {
 
     ClientSubmissionDto dto = mapper.readValue(
         TestConstants.STAFF_SUBMITTED_INDIVIDUAL_JSON,
@@ -213,7 +213,7 @@ class ClientStaffSubmissionControllerIntegrationTest
   @Test
   @DisplayName("Sole proprietorship not owner by person is not allowed")
   @Order(3)
-  void shouldNotAllowSubmissionFromNonPersonProprietor() throws JsonProcessingException {
+  void shouldNotAllowSubmissionFromNonPersonProprietor() throws JacksonException {
 
     bcRegistryStub
         .stubFor(

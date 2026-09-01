@@ -23,11 +23,8 @@ spring:
       poolName: FsaProcessorClientConPool
   http:
     codecs:
-      # Spring Boot 4 defaults HTTP JSON codecs to Jackson 3 (`jackson`). This application uses
-      # classic Jackson 2 types throughout (`com.fasterxml.jackson.*`). Prefer the Jackson 2
-      # codec stack explicitly so WebFlux/WebClient encode/decode with the same mapper family
-      # used by the application code.
-      preferred-json-mapper: jackson2
+      # Spring Boot 4 defaults HTTP JSON codecs to Jackson 3 (`jackson`), which matches the
+      # application's Jackson 3 code (tools.jackson.*).
     encoding:
       charset: UTF-8
       enabled: true

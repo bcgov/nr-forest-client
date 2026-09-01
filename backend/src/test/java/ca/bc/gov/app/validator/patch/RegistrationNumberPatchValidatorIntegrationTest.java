@@ -9,8 +9,9 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -44,7 +45,7 @@ class RegistrationNumberPatchValidatorIntegrationTest extends AbstractTestContai
   @Autowired
   private RegistrationNumberPatchValidator validator;
 
-  public static final ObjectMapper MAPPER = new ObjectMapper();
+  public static final ObjectMapper MAPPER = new JsonMapper();
 
   private static final JsonNode ID = MAPPER.createObjectNode()
       .put("op", "replace")
@@ -117,7 +118,7 @@ class RegistrationNumberPatchValidatorIntegrationTest extends AbstractTestContai
         .of(
             Arguments.of(ID, true),
             Arguments.of(NUMBER, true),
-            Arguments.of(new ObjectMapper().createObjectNode()
+            Arguments.of(new JsonMapper().createObjectNode()
                 .put("op", "add")
                 .put("path", "/client/clientName")
                 .put("value", "ABC"), false)

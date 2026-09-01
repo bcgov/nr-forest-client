@@ -3,8 +3,9 @@ package ca.bc.gov.app.validator.patch;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +22,7 @@ class AdminRolePatchValidatorIntegrationTest extends AbstractTestContainerIntegr
   @Autowired
   private AdminRolePatchValidator validator;
 
-  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final ObjectMapper MAPPER = new JsonMapper();
 
   public static final JsonNode ADMIN_DATA = MAPPER
       .createObjectNode()

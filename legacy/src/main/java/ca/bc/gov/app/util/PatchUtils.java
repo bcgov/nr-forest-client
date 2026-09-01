@@ -1,12 +1,13 @@
 package ca.bc.gov.app.util;
 
 import ca.bc.gov.app.exception.CannotApplyPatchException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.flipkart.zjsonpatch.JsonPatch;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.json.JsonMapper;
+import com.flipkart.zjsonpatch.Jackson3JsonPatch;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,7 +56,7 @@ public class PatchUtils {
       JsonNode node = mapper.convertValue(target, JsonNode.class);
 
       // Apply the patch to the original object in order to create a new object with the changes.
-      JsonNode patched = JsonPatch.apply(patch, node);
+      JsonNode patched = Jackson3JsonPatch.apply(patch, node);
 
       // Convert the JsonNode back to the entity object to be saved
       return mapper.treeToValue(patched, entityClass);
@@ -166,7 +167,7 @@ public class PatchUtils {
                 || restrictedPaths.stream().anyMatch(patchCheck::equals)
             ) {
               // We create a deep copy of the operation
-              ObjectNode updatedOperation = operation.deepCopy();
+              ObjectNode updatedOperation = (ObjectNode) operation.deepCopy();
               // Then we update the path of the operation
               updatedOperation.put("path", newPath);
               // Finally we add the updated operation to the filteredNode
@@ -431,7 +432,7 @@ public class PatchUtils {
                     || restrictedPaths.stream().anyMatch(newPath::endsWith)
             ) {
               // We create a deep copy of the operation
-              ObjectNode updatedOperation = operation.deepCopy();
+              ObjectNode updatedOperation = (ObjectNode) operation.deepCopy();
               // Then we update the path of the operation
               updatedOperation.put("path", newPath);
               // Finally we add the updated operation to the filteredNode
@@ -450,9 +451,9 @@ public class PatchUtils {
    */
   public static BinaryOperator<JsonNode> mergeNodes() {
     return (node1, node2) -> {
-      ArrayNode arrayNode = new ObjectMapper().createArrayNode();
+      ArrayNode arrayNode = new JsonMapper().createArrayNode();
       if (node1 instanceof ArrayNode) {
-        arrayNode = node1.deepCopy();
+        arrayNode = (ArrayNode) node1.deepCopy();
       } else {
         arrayNode.add(node1);
       }
@@ -498,7 +499,7 @@ public class PatchUtils {
   ) {
     try {
       return mapper.readValue(patch.get("value").toPrettyString(), entityClass);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new RuntimeException(e);
     }
   }

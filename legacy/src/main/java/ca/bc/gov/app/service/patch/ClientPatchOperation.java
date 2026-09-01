@@ -2,8 +2,8 @@ package ca.bc.gov.app.service.patch;
 
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.util.PatchUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
