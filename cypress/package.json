@@ -25,6 +25,7 @@
     "nonGlobalStepDefinitions": true
   },
   "overrides": {
+    "browserslist": "^4.28.7",
     "uuid": "^14.0.0",
     "picomatch@^2.3.0": "4.0.4",
     "serialize-javascript": "^7.0.0",
