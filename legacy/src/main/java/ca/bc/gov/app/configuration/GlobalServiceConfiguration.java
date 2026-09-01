@@ -31,7 +31,7 @@ import org.springframework.http.codec.json.JacksonJsonDecoder;
 import org.springframework.http.codec.json.JacksonJsonEncoder;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
+
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.json.JsonMapper;
@@ -62,7 +62,7 @@ import tools.jackson.databind.json.JsonMapper;
 public class GlobalServiceConfiguration {
 
   @Bean
-  public ObjectMapper objectMapper() {
+  public JsonMapper objectMapper() {
     return JsonMapper.builder()
         .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
         .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
@@ -71,11 +71,11 @@ public class GlobalServiceConfiguration {
   }
 
   @Bean
-  CodecCustomizer jacksonCodecCustomizer(ObjectMapper objectMapper) {
+  CodecCustomizer jacksonCodecCustomizer(JsonMapper objectMapper) {
     return configurer -> {
       var codecs = configurer.defaultCodecs();
-      codecs.jacksonJsonEncoder(new JacksonJsonEncoder((JsonMapper) objectMapper));
-      codecs.jacksonJsonDecoder(new JacksonJsonDecoder((JsonMapper) objectMapper));
+      codecs.jacksonJsonEncoder(new JacksonJsonEncoder(objectMapper));
+      codecs.jacksonJsonDecoder(new JacksonJsonDecoder(objectMapper));
     };
   }
 
