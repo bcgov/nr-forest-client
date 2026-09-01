@@ -118,7 +118,7 @@
     "wiremock": "^3.13.2"
   },
   "overrides": {
-    "browserslist": "^4.28.7",
+    "browserslist": "4.28.8",
     "@babel/core": "^8.0.0",
     "dompurify": "3.4.14",
     "uuid": "^14.0.0",
