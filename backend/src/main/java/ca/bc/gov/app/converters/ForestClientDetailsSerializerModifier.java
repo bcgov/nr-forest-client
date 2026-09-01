@@ -8,8 +8,8 @@ import tools.jackson.databind.SerializationConfig;
 import tools.jackson.databind.ser.ValueSerializerModifier;
 
 /**
- * A custom ValueSerializerModifier that modifies the serializer for ForestClientDetailsDto. If the
- * bean class is assignable from ForestClientDetailsDto, it returns a custom serializer
+ * A custom ValueSerializerModifier that modifies the serializer for ForestClientInformationDto. If the
+ * bean class is assignable from ForestClientInformationDto, it returns a custom serializer
  * ForestClientObfuscate. Otherwise, it returns the default serializer.
  */
 @Slf4j
