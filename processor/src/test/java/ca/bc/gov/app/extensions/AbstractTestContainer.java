@@ -17,7 +17,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 @Testcontainers
@@ -31,12 +30,12 @@ public abstract class AbstractTestContainer {
   protected WebTestClient client;
 
   @Autowired
-  private ObjectMapper objectMapper;
+  private JsonMapper objectMapper;
 
   /**
    * The auto-configured {@link WebTestClient} is created with {@code WebTestClient.bindToServer()}
    * because these tests boot on a random port. Align the test client with the application's Jackson
-   * 3 {@link ObjectMapper} so decoded DTOs round-trip correctly.
+   * 3 {@link JsonMapper} so decoded DTOs round-trip correctly.
    */
   @BeforeEach
   public void configureJackson3Codecs() {
@@ -49,9 +48,9 @@ public abstract class AbstractTestContainer {
                     .codecs(
                         configurer -> {
                           configurer.defaultCodecs().jacksonJsonEncoder(
-                              new JacksonJsonEncoder((JsonMapper) objectMapper));
+                              new JacksonJsonEncoder(objectMapper));
                           configurer.defaultCodecs().jacksonJsonDecoder(
-                              new JacksonJsonDecoder((JsonMapper) objectMapper));
+                              new JacksonJsonDecoder(objectMapper));
                         })
                     .build())
             .build();
