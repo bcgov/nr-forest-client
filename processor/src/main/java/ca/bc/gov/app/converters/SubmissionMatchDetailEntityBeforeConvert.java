@@ -60,7 +60,7 @@ public class SubmissionMatchDetailEntityBeforeConvert
     try {
       return mapper.readValue(json, new TypeReference<Map<String, Object>>() {});
     } catch (JacksonException e) {
-      log.error("Error while converting matchers to json", e);
+      log.error("Error while converting json to matchers", e);
       }
 
       return Map.of();
