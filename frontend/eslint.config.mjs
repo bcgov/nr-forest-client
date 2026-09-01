@@ -10,7 +10,7 @@ import {
 } from "@vue/eslint-config-typescript";
 import cypressPlugin from "eslint-plugin-cypress";
 import globals from "globals";
-import importPlugin from "eslint-plugin-import";
+import { importX as importPlugin } from "eslint-plugin-import-x";
 import pluginVue from "eslint-plugin-vue";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -60,7 +60,7 @@ export default defineConfigWithVueTs(
       sourceType: "module",
     },
     settings: {
-      "import/resolver": {
+      "import-x/resolver": {
         node: {
           extensions: [".js", ".jsx", ".ts", ".tsx", ".vue"],
           moduleDirectory: ["node_modules", "src/"],
@@ -80,7 +80,7 @@ export default defineConfigWithVueTs(
           caughtErrorsIgnorePattern: "^_",
         },
       ],
-      "import/extensions": [
+      "import-x/extensions": [
         "error",
         "always",
         { js: "never", ts: "never", vue: "never" },

@@ -1,4 +1,4 @@
-/* eslint-disable import/no-unresolved */
+/* eslint-disable import-x/no-unresolved */
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import './commands'
