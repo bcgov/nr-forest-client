@@ -334,7 +334,7 @@ const processAndLogOut = () => {
           `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}` ??
           "",
         userId: ForestClientUserSession.user.userId ?? "",
-        email: ForestClientUserSession.user.email ?? "",
+        emailsCsv: ForestClientUserSession.user.email ?? "",
       },
       {}
     );
