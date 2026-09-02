@@ -2,8 +2,9 @@ package ca.bc.gov.app.validator.patch;
 
 import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +24,7 @@ public class RelatedClientsRelationshipTypePatchValidatorIntegrationTest
 
   public static final String PATCH_PATH = "/relatedClients/00/0/relationship";
   public static final String CLIENT_NUMBER = "01000001";
-  public static final ObjectMapper MAPPER = new ObjectMapper();
+  public static final ObjectMapper MAPPER = new JsonMapper();
 
   private static final JsonNode NODE = MAPPER.createObjectNode()
       .put("op", "replace")

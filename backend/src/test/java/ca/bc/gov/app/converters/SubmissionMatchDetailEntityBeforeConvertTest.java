@@ -3,8 +3,9 @@ package ca.bc.gov.app.converters;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -19,7 +20,7 @@ import reactor.test.StepVerifier;
 @DisplayName("Unit Test | Submission Match Detail Entity Before Convert")
 class SubmissionMatchDetailEntityBeforeConvertTest {
 
-  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper mapper = new JsonMapper();
   private final SubmissionMatchDetailEntityBeforeConvert sut = new SubmissionMatchDetailEntityBeforeConvert(
       mapper);
 
@@ -59,7 +60,7 @@ class SubmissionMatchDetailEntityBeforeConvertTest {
 
   }
 
-  private static Stream<Arguments> onBefore() throws JsonProcessingException {
+  private static Stream<Arguments> onBefore() throws JacksonException {
     return Stream
         .of(
             Arguments.of(
@@ -86,7 +87,7 @@ class SubmissionMatchDetailEntityBeforeConvertTest {
         );
   }
 
-  private static Stream<Arguments> onAfter() throws JsonProcessingException {
+  private static Stream<Arguments> onAfter() throws JacksonException {
     return Stream
         .of(
             Arguments.of(

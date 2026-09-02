@@ -7,7 +7,7 @@ import ca.bc.gov.app.dto.legacy.ForestClientInformationDto;
 import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import ca.bc.gov.app.validator.PatchValidator;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;

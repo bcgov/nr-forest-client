@@ -1,8 +1,8 @@
 package ca.bc.gov.app.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
 import java.util.function.BinaryOperator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ public class PatchUtils {
     return (node1, node2) -> {
       ArrayNode arrayNode = mapper.createArrayNode();
       if (node1 instanceof ArrayNode) {
-        arrayNode = node1.deepCopy();
+        arrayNode = (ArrayNode) node1.deepCopy();
       } else {
         arrayNode.add(node1);
       }

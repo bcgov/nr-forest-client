@@ -1,8 +1,9 @@
 package ca.bc.gov.app.validator.patch;
 
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +21,7 @@ class BirthdatePatchValidatorIntegrationTest extends AbstractTestContainerIntegr
   @Autowired
   private BirthdatePatchValidator validator;
 
-  public static final ObjectMapper MAPPER = new ObjectMapper();
+  public static final ObjectMapper MAPPER = new JsonMapper();
   private static final JsonNode NODE = MAPPER.createObjectNode()
       .put("op", "replace")
       .put("path", "/client/birthdate")

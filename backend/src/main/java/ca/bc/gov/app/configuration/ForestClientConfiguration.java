@@ -2,7 +2,6 @@ package ca.bc.gov.app.configuration;
 
 import java.time.Duration;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Component
 @ConfigurationProperties("ca.bc.gov.nrs")
 public class ForestClientConfiguration {
@@ -44,13 +42,41 @@ public class ForestClientConfiguration {
   @NestedConfigurationProperty
   private OpenDataConfiguration openData;
 
+  public ForestClientConfiguration(
+      ChesConfiguration ches,
+      FrontEndConfiguration frontend,
+      LegacyConfiguration legacy,
+      LegacyConfiguration processor,
+      BcRegistryConfiguration bcregistry,
+      AddressCompleteConfiguration addressComplete,
+      SecurityConfiguration security,
+      Duration submissionLimit,
+      Duration idirSubmissionTimeWindow,
+      int idirMaxSubmissions,
+      Duration otherSubmissionTimeWindow,
+      int otherMaxSubmissions,
+      OpenDataConfiguration openData) {
+    this.ches = ches;
+    this.frontend = frontend;
+    this.legacy = legacy;
+    this.processor = processor;
+    this.bcregistry = bcregistry;
+    this.addressComplete = addressComplete;
+    this.security = security;
+    this.submissionLimit = submissionLimit;
+    this.idirSubmissionTimeWindow = idirSubmissionTimeWindow;
+    this.idirMaxSubmissions = idirMaxSubmissions;
+    this.otherSubmissionTimeWindow = otherSubmissionTimeWindow;
+    this.otherMaxSubmissions = otherMaxSubmissions;
+    this.openData = openData;
+  }
+
   /**
    * The Common hosted email service configuration.
    */
   @Data
   @Builder
   @NoArgsConstructor
-  @AllArgsConstructor
   public static class ChesConfiguration {
 
     private String uri;
@@ -59,6 +85,21 @@ public class ForestClientConfiguration {
     private String clientSecret;
     private String scope;
     private List<String> copyEmail;
+
+    public ChesConfiguration(
+        String uri,
+        String tokenUrl,
+        String clientId,
+        String clientSecret,
+        String scope,
+        List<String> copyEmail) {
+      this.uri = uri;
+      this.tokenUrl = tokenUrl;
+      this.clientId = clientId;
+      this.clientSecret = clientSecret;
+      this.scope = scope;
+      this.copyEmail = copyEmail;
+    }
   }
 
   /**
@@ -67,13 +108,16 @@ public class ForestClientConfiguration {
   @Data
   @Builder
   @NoArgsConstructor
-  @AllArgsConstructor
   public static class FrontEndConfiguration {
 
     private String url;
     @NestedConfigurationProperty
     private FrontEndCorsConfiguration cors;
 
+    public FrontEndConfiguration(String url, FrontEndCorsConfiguration cors) {
+      this.url = url;
+      this.cors = cors;
+    }
   }
 
   /**
@@ -82,12 +126,17 @@ public class ForestClientConfiguration {
   @Data
   @Builder
   @NoArgsConstructor
-  @AllArgsConstructor
   public static class FrontEndCorsConfiguration {
 
     private List<String> headers;
     private List<String> methods;
     private Duration age;
+
+    public FrontEndCorsConfiguration(List<String> headers, List<String> methods, Duration age) {
+      this.headers = headers;
+      this.methods = methods;
+      this.age = age;
+    }
   }
 
   /**
@@ -96,12 +145,17 @@ public class ForestClientConfiguration {
   @Data
   @Builder
   @NoArgsConstructor
-  @AllArgsConstructor
   public static class BcRegistryConfiguration {
 
     private String uri;
     private String apiKey;
     private String accountId;
+
+    public BcRegistryConfiguration(String uri, String apiKey, String accountId) {
+      this.uri = uri;
+      this.apiKey = apiKey;
+      this.accountId = accountId;
+    }
   }
 
   /**
@@ -110,10 +164,13 @@ public class ForestClientConfiguration {
   @Data
   @Builder
   @NoArgsConstructor
-  @AllArgsConstructor
   public static class LegacyConfiguration {
 
     private String url;
+
+    public LegacyConfiguration(String url) {
+      this.url = url;
+    }
   }
 
   /**
@@ -122,11 +179,15 @@ public class ForestClientConfiguration {
   @Data
   @Builder
   @NoArgsConstructor
-  @AllArgsConstructor
   public static class AddressCompleteConfiguration {
 
     private String url;
     private String apiKey;
+
+    public AddressCompleteConfiguration(String url, String apiKey) {
+      this.url = url;
+      this.apiKey = apiKey;
+    }
   }
 
   /**
@@ -135,13 +196,20 @@ public class ForestClientConfiguration {
   @Data
   @Builder
   @NoArgsConstructor
-  @AllArgsConstructor
   public static class SecurityConfiguration {
 
     private String region;
     private String userPool;
     private String environment;
     private List<NameSecretDto> serviceAccounts;
+
+    public SecurityConfiguration(
+        String region, String userPool, String environment, List<NameSecretDto> serviceAccounts) {
+      this.region = region;
+      this.userPool = userPool;
+      this.environment = environment;
+      this.serviceAccounts = serviceAccounts;
+    }
 
     public String getDomainUrl() {
       return String.format("https://cognito-idp.%s.amazonaws.com/", region);
@@ -158,13 +226,20 @@ public class ForestClientConfiguration {
   @Data
   @Builder
   @NoArgsConstructor
-  @AllArgsConstructor
   public static class OpenDataConfiguration {
 
     private String sacBandUrl;
     private String sacTribeUrl;
     private String openMapsBandUrl;
     private String openMapsTribeUrl;
+
+    public OpenDataConfiguration(
+        String sacBandUrl, String sacTribeUrl, String openMapsBandUrl, String openMapsTribeUrl) {
+      this.sacBandUrl = sacBandUrl;
+      this.sacTribeUrl = sacTribeUrl;
+      this.openMapsBandUrl = openMapsBandUrl;
+      this.openMapsTribeUrl = openMapsTribeUrl;
+    }
   }
 
   public record NameSecretDto(String name, String secret) {}

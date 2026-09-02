@@ -57,13 +57,6 @@ import ca.bc.gov.app.dto.opendata.FeatureProperties;
 import ca.bc.gov.app.dto.opendata.Geometry;
 import ca.bc.gov.app.dto.opendata.OpenData;
 import ca.bc.gov.app.health.ManualHealthIndicator;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.flipkart.zjsonpatch.JsonPatch;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
@@ -77,8 +70,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
@@ -150,7 +148,6 @@ import reactor.netty.http.client.HttpClient;
     BcRegistryFacetPartyDto.class,
     BcRegistryFacetRequestBodyDto.class,
     BcRegistryFacetRequestQueryDto.class,
-    JsonPatch.class,
     JsonNode.class,
     ForestClientContactDetailsDto.class,
     TransactionalModel.class,
@@ -388,25 +385,25 @@ public class GlobalServiceConfiguration {
 
   /**
    * Configures and provides an ObjectMapper bean. This ObjectMapper is built from the Spring
-   * Boot-managed {@link Jackson2ObjectMapperBuilder} (customized from the {@code spring.jackson.*}
+   * Boot-managed {@link JsonMapper.Builder} (customized from the {@code spring.jackson.*}
    * properties in {@code application.yml}, e.g. {@code FAIL_ON_NULL_FOR_PRIMITIVES} and
-   * {@code FAIL_ON_EMPTY_BEANS}, via {@code Jackson2ObjectMapperBuilderCustomizer} beans) instead
-   * of a bare, unconfigured builder. It's further configured with the JavaTimeModule and a custom
-   * ForestClientDetailsSerializerModifier module.
+   * {@code FAIL_ON_EMPTY_BEANS}, via {@code JsonMapperBuilderCustomizer} beans) instead of a bare,
+   * unconfigured builder. It's further configured with a custom ForestClientDetailsSerializerModifier
+   * module. In Jackson 3 the {@code java.time} handlers are embedded in databind and registered
+   * automatically, so no separate JavaTimeModule is required.
    *
-   * @param jackson2ObjectMapperBuilder the Spring Boot-managed, property-customized builder
+   * @param jacksonBuilder the Spring Boot-managed, property-customized Jackson 3 mapper builder
    * @return A configured ObjectMapper instance.
    */
   @Bean
-  public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+  public ObjectMapper objectMapper(JsonMapper.Builder jacksonBuilder) {
 
-    ObjectMapper mapper = jackson2ObjectMapperBuilder.build();
-    mapper.registerModule(new JavaTimeModule());
-    mapper.registerModule(forestClientDetailsDtoModule());
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    JsonMapper.Builder builder = jacksonBuilder
+        .addModule(forestClientDetailsDtoModule())
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-    return mapper;
+    return builder.build();
   }
 
   /**

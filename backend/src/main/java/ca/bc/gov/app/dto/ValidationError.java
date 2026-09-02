@@ -1,11 +1,12 @@
 package ca.bc.gov.app.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -20,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
  * specified field. It can be a single value or a comma-separated list of values. The value as well
  * is context dependent, as it can be a client number, a name, or a date for example.
  */
-@AllArgsConstructor
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
@@ -33,15 +33,22 @@ public class ValidationError implements Serializable {
   private final String match;
 
   public ValidationError() {
-    this.fieldId = null;
-    this.errorMsg = null;
-    this.match = null;
+    this(null, null, null);
   }
 
   public ValidationError(String fieldId, String errorMsg) {
+    this(fieldId, errorMsg, null);
+  }
+
+  @JsonCreator
+  public ValidationError(
+      @JsonProperty("fieldId") String fieldId,
+      @JsonProperty("errorMsg") String errorMsg,
+      @JsonProperty("match") String match
+  ) {
     this.fieldId = fieldId;
     this.errorMsg = errorMsg;
-    this.match = null;
+    this.match = match;
   }
 
   @JsonIgnore
