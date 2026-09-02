@@ -274,6 +274,7 @@ const isLast = computed(() => currentTab.value === progressData.length - 1);
 const isFirst = computed(() => currentTab.value === 0);
 const endAndLogOut = ref<boolean>(false);
 const mailAndLogOut = ref<boolean>(false);
+const duplicateEmailInFlight = ref(false);
 
 const goToStep = (index: number, skipCheck: boolean = false) => {
   if (skipCheck || (index <= currentTab.value && checkStepValidity(index)))
@@ -325,21 +326,32 @@ const validateStep = (valid: boolean) => {
 
 const processAndLogOut = () => {
   if (mailAndLogOut.value) {
-    usePost(
+    if (duplicateEmailInFlight.value) return;
+
+    duplicateEmailInFlight.value = true;
+    const user = ForestClientUserSession.user;
+    const firstName = user?.firstName ?? "";
+    const lastName = user?.lastName ?? "";
+    const duplicateEmail = usePost(
       "/api/ches/duplicate",
       {
         registrationNumber: formData.businessInformation.registrationNumber,
         name: formData.businessInformation.businessName,
-        userName:
-          `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}` ??
-          "",
-        userId: ForestClientUserSession.user.userId ?? "",
-        email: ForestClientUserSession.user.email ?? "",
+        userName: [firstName, lastName].filter(Boolean).join(" "),
+        userId: user?.userId ?? "",
+        emailsCsv: user?.email ?? "",
       },
-      {}
+      { skip: true }
     );
+    // Send the email before logging out so the request is not aborted by the
+    // logout redirect.
+    duplicateEmail.fetch().finally(() => {
+      duplicateEmailInFlight.value = false;
+      session?.logOut();
+    });
+  } else {
+    session?.logOut();
   }
-  session?.logOut();
 };
 
 const submitBtnDisabled = ref(false);
@@ -725,6 +737,7 @@ watch(
             size="lg"
             v-show="!isLast && (endAndLogOut || mailAndLogOut)"
             @click.prevent="processAndLogOut"
+            :disabled="duplicateEmailInFlight"
             :data-text="`${endAndLogOut ? 'End application' : 'Receive email'} and logout`"
           >
             <span
