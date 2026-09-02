@@ -2,11 +2,15 @@ package ca.bc.gov.app.controller.ches;
 
 import static ca.bc.gov.app.TestConstants.EMAIL_REQUEST;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.csrf;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
@@ -168,4 +172,48 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
 
   }
 
+  @Test
+  @DisplayName("Send duplicate client email from the literal browser request shape")
+  void shouldSendDuplicateClientEmailFromBrowserShape() {
+    legacyStub
+        .stubFor(
+            get(urlPathEqualTo("/api/search/registrationOrName"))
+                .withQueryParam("registrationNumber", equalTo("XX1234567"))
+                .withQueryParam("companyName", equalTo("Example Inc."))
+                .willReturn(okJson(TestConstants.LEGACY_OK))
+        );
+
+    // Mirror the JSON the browser now sends (recipient field is emailsCsv), sent as a raw
+    // literal body rather than a deserialized EmailRequestDto so the wire contract is asserted.
+    String rawBody = """
+        {
+          "registrationNumber": "XX1234567",
+          "name": "Example Inc.",
+          "userName": "Account Holder",
+          "userId": "user-123",
+          "emailsCsv": "account-holder@example.com"
+        }
+        """;
+
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+        )
+        .post()
+        .uri("/api/ches/duplicate")
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(rawBody)
+        .exchange()
+        .expectStatus().isAccepted()
+        .expectBody().isEmpty();
+
+    verify(
+        exactly(1),
+        postRequestedFor(urlPathEqualTo("/chess/uri/email"))
+            .withRequestBody(matchingJsonPath("$.to[0]", equalTo("account-holder@example.com")))
+    );
+  }
 }
