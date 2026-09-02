@@ -325,21 +325,28 @@ const validateStep = (valid: boolean) => {
 
 const processAndLogOut = () => {
   if (mailAndLogOut.value) {
-    usePost(
+    const user = ForestClientUserSession.user;
+    const firstName = user?.firstName ?? "";
+    const lastName = user?.lastName ?? "";
+    const duplicateEmail = usePost(
       "/api/ches/duplicate",
       {
         registrationNumber: formData.businessInformation.registrationNumber,
         name: formData.businessInformation.businessName,
-        userName:
-          `${ForestClientUserSession.user?.firstName} ${ForestClientUserSession.user?.lastName}` ??
-          "",
-        userId: ForestClientUserSession.user.userId ?? "",
-        emailsCsv: ForestClientUserSession.user.email ?? "",
+        userName: [firstName, lastName].filter(Boolean).join(" "),
+        userId: user?.userId ?? "",
+        emailsCsv: user?.email ?? "",
       },
-      {}
+      { skip: true }
     );
+    // Send the email before logging out so the request is not aborted by the
+    // logout redirect.
+    duplicateEmail.fetch().finally(() => {
+      session?.logOut();
+    });
+  } else {
+    session?.logOut();
   }
-  session?.logOut();
 };
 
 const submitBtnDisabled = ref(false);
