@@ -2,6 +2,7 @@ package ca.bc.gov.app.controller.ches;
 
 import static ca.bc.gov.app.TestConstants.EMAIL_REQUEST;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
@@ -210,6 +211,7 @@ class ChesControllerIntegrationTest extends AbstractTestContainerIntegrationTest
         .expectBody().isEmpty();
 
     verify(
+        exactly(1),
         postRequestedFor(urlPathEqualTo("/chess/uri/email"))
             .withRequestBody(matchingJsonPath("$.to[0]", equalTo("account-holder@example.com")))
     );
