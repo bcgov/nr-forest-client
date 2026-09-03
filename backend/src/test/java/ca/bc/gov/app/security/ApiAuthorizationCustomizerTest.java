@@ -41,12 +41,19 @@ class ApiAuthorizationCustomizerTest {
     String source = Files.readString(
         Path.of("src/main/java/ca/bc/gov/app/security/ApiAuthorizationCustomizer.java"));
     int detailsGet = source.indexOf("HttpMethod.GET, \"/api/clients/details/**\"");
+    // Closing paren so this does not match GET /api/clients/submissions/{id:[0-9]+}.
+    int submissionsGet = source.indexOf("HttpMethod.GET, \"/api/clients/submissions\")");
     int searchGet = source.indexOf("HttpMethod.GET, \"/api/clients/search/**\"");
     int historyGet = source.indexOf("HttpMethod.GET, \"/api/clients/history-logs/**\"");
+    int relationGet = source.indexOf("HttpMethod.GET, \"/api/clients/relation/**\"");
+    int clientUsersGet = source.indexOf("HttpMethod.GET, \"/api/clients/client-users/**\"");
     int broadGet = source.indexOf("HttpMethod.GET, \"/api/clients/**\"");
     assertTrue(detailsGet > 0 && detailsGet < broadGet);
+    assertTrue(submissionsGet > 0 && submissionsGet < broadGet);
     assertTrue(searchGet > 0 && searchGet < broadGet);
     assertTrue(historyGet > 0 && historyGet < broadGet);
+    assertTrue(relationGet > 0 && relationGet < broadGet);
+    assertTrue(clientUsersGet > 0 && clientUsersGet < broadGet);
     assertFalse(source.contains("HttpMethod.GET, \"/api/clients/submissions/**\""));
   }
 }
