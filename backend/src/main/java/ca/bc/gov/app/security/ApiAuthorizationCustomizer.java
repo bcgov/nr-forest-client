@@ -231,7 +231,7 @@ public class ApiAuthorizationCustomizer {
             ApplicationConstant.ROLE_ADMIN,
             ApplicationConstant.ROLE_SUSPEND);
 
-    // Viewer, editor, suspend and admin users can GET from the clients advanced search endpoint
+    // Viewer, editor, suspend and admin users can POST to the clients advanced search endpoint
     authorize
         .pathMatchers(HttpMethod.POST, "/api/clients/advanced-search/**")
         .hasAnyRole(
