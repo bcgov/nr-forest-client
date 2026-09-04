@@ -181,7 +181,57 @@ public class ApiAuthorizationCustomizer {
             ApplicationConstant.ROLE_SUSPEND
         );
 
-    // Viewer, editor, suspend and admin users can GET from the clients advanced search endpoint
+    // Staff-only GET routes must be declared before GET /api/clients/** (first match wins).
+    // GET /api/clients/submissions/duplicate-check/** stays on the broad grant for self-service.
+    authorize
+        .pathMatchers(HttpMethod.GET, "/api/clients/details/**")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
+
+    authorize
+        .pathMatchers(HttpMethod.GET, "/api/clients/submissions")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
+
+    authorize
+        .pathMatchers(HttpMethod.GET, "/api/clients/search/**")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
+
+    authorize
+        .pathMatchers(HttpMethod.GET, "/api/clients/history-logs/**")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
+
+    authorize
+        .pathMatchers(HttpMethod.GET, "/api/clients/relation/**")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
+
+    authorize
+        .pathMatchers(HttpMethod.GET, "/api/clients/client-users/**")
+        .hasAnyRole(
+            ApplicationConstant.ROLE_VIEWER,
+            ApplicationConstant.ROLE_EDITOR,
+            ApplicationConstant.ROLE_ADMIN,
+            ApplicationConstant.ROLE_SUSPEND);
+
+    // Viewer, editor, suspend and admin users can POST to the clients advanced search endpoint
     authorize
         .pathMatchers(HttpMethod.POST, "/api/clients/advanced-search/**")
         .hasAnyRole(
@@ -197,33 +247,6 @@ public class ApiAuthorizationCustomizer {
         .hasAnyRole(
             ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER,
             ApplicationConstant.USERTYPE_BCSC_USER,
-            ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN,
-            ApplicationConstant.ROLE_SUSPEND);
-    
-    // Viewer, editor, suspend and admin can GET from the clients submissions endpoint
-    authorize
-        .pathMatchers(HttpMethod.GET, "/api/clients/submissions/**")
-        .hasAnyRole(
-            ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN,
-            ApplicationConstant.ROLE_SUSPEND);
-    
-    // Viewer, editor, suspend and admin users can GET from the clients search endpoint
-    authorize
-        .pathMatchers(HttpMethod.GET, "/api/clients/search/**")
-        .hasAnyRole(
-            ApplicationConstant.ROLE_VIEWER,
-            ApplicationConstant.ROLE_EDITOR,
-            ApplicationConstant.ROLE_ADMIN,
-            ApplicationConstant.ROLE_SUSPEND);
-    
-    // Viewer, editor, suspend and admin users can GET from the clients search endpoint
-    authorize
-        .pathMatchers(HttpMethod.GET, "/api/clients/history-log/**")
-        .hasAnyRole(
             ApplicationConstant.ROLE_VIEWER,
             ApplicationConstant.ROLE_EDITOR,
             ApplicationConstant.ROLE_ADMIN,
