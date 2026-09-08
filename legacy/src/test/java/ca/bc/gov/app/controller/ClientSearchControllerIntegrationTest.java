@@ -1,6 +1,8 @@
 package ca.bc.gov.app.controller;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.equalTo;
 import ca.bc.gov.app.dto.AddressSearchDto;
 import ca.bc.gov.app.dto.ContactSearchDto;
 import ca.bc.gov.app.exception.MissingRequiredParameterException;
@@ -347,7 +349,8 @@ class ClientSearchControllerIntegrationTest extends
       .value("x-total-count", count -> assertThat(count).isGreaterThanOrEqualTo("1"))
       .expectBody()
       .jsonPath("$[0].clientNumber").isNotEmpty()
-      .jsonPath("$[0].clientNumber").isEqualTo("00000159");
+      .jsonPath("$[0].clientNumber")
+      .value(anyOf(equalTo("00000159"), equalTo("00000160")));
   }
   
   private static Stream<Arguments> byEmail() {

@@ -67,6 +67,7 @@ public class GlobalServiceConfiguration {
         .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
         .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
         .build();
   }
 
