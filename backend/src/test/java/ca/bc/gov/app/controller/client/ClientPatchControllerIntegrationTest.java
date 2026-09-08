@@ -46,6 +46,44 @@ class ClientPatchControllerIntegrationTest
   }
 
   @Test
+  @DisplayName("Should not allow external user to GET client details")
+  void shouldNotAllowExternalUserToGetClientDetails() {
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(
+                    TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+        )
+        .get()
+        .uri("/api/clients/details/00123456")
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+  }
+
+  @Test
+  @DisplayName("Should not allow external user to GET client search")
+  void shouldNotAllowExternalUserToGetClientSearch() {
+    client
+        .mutateWith(csrf())
+        .mutateWith(
+            mockJwt()
+                .jwt(jwt -> jwt.claims(claims -> claims.putAll(
+                    TestConstants.getClaims("bceidbusiness"))))
+                .authorities(new SimpleGrantedAuthority(
+                    "ROLE_" + ApplicationConstant.USERTYPE_BCEIDBUSINESS_USER))
+        )
+        .get()
+        .uri("/api/clients/search")
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+  }
+
+  @Test
   @DisplayName("Should not allow non-editor to patch client")
   void shouldNotAllowNonEditorToPatchClient() {
     client
