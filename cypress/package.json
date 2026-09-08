@@ -36,14 +36,13 @@
     "qs": "6.16.0",
     "tmp": "^0.2.6",
     "@babel/plugin-transform-modules-systemjs@<7.29.3": "7.29.4",
-    "fast-uri@<3.1.0": "3.1.5",
+    "fast-uri": "4.1.4",
     "shelljs": {
       "glob": "13.0.6"
     },
     "module-lookup-amd": {
       "glob": "13.0.6"
     },
-    "fast-uri": "4.1.4",
     "postcss": "8.5.28",
     "nanoid": "6.0.1",
     "brace-expansion@^2.0.0": "2.1.4"
