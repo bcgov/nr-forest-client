@@ -1,12 +1,6 @@
 package ca.bc.gov.app.util;
 
 import ca.bc.gov.app.exception.CannotApplyPatchException;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.node.ArrayNode;
-import tools.jackson.databind.node.ObjectNode;
-import tools.jackson.databind.json.JsonMapper;
 import com.flipkart.zjsonpatch.Jackson3JsonPatch;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -26,6 +20,12 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Utility class for applying JSON Patches to objects.

@@ -1,12 +1,12 @@
 package ca.bc.gov.app.entity;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.relational.core.mapping.Column;
-import jakarta.validation.constraints.NotNull;
 
 @SuperBuilder
 @Data

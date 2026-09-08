@@ -2,12 +2,12 @@ package ca.bc.gov.app.service.patch;
 
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.util.PatchUtils;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Represents a patch operation that can be applied to a specific section of a forest client.

@@ -18,8 +18,8 @@ public class ForestClientObfuscate<T> extends ValueSerializer<T> {
   private final List<String> obfuscateFields = List.of(CLIENT_IDENTIFICATION, "birthdate");
 
   /**
-   * Serializes the provided value as a JSON object, masking configured sensitive fields according to
-   * the current user's roles.
+   * Serializes the provided value as a JSON object, masking configured sensitive fields according 
+   * to the current user's roles.
    *
    * <p>Properties listed in {@link #obfuscateFields} are written using the obfuscation rules in
    * {@link #obfuscate(String, String, Object)}. All other non-null properties are serialized with

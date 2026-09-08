@@ -14,8 +14,6 @@ import ca.bc.gov.app.service.client.ClientSubmissionService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import ca.bc.gov.app.validator.SubmissionValidatorService;
 import io.micrometer.observation.annotation.Observed;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

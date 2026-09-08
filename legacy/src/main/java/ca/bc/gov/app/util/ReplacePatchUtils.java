@@ -1,6 +1,5 @@
 package ca.bc.gov.app.util;
 
-import tools.jackson.databind.JsonNode;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -10,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
+import tools.jackson.databind.JsonNode;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j

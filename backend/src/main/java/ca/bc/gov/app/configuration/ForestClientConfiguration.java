@@ -42,6 +42,9 @@ public class ForestClientConfiguration {
   @NestedConfigurationProperty
   private OpenDataConfiguration openData;
 
+  /**
+   * Creates a forest client configuration with all configured service properties.
+   */
   public ForestClientConfiguration(
       ChesConfiguration ches,
       FrontEndConfiguration frontend,

@@ -1,8 +1,8 @@
 package ca.bc.gov.app.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.With;
 
 @With
