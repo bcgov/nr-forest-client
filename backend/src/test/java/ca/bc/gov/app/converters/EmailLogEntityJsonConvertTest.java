@@ -1,12 +1,15 @@
 package ca.bc.gov.app.converters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.entity.client.EmailLogEntity;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -35,12 +38,42 @@ class EmailLogEntityJsonConvertTest {
         )
         .as(StepVerifier::create)
         .assertNext(actual -> {
-          assertEquals(expected.getEmailVariables().asString(), actual.getEmailVariables().asString());
-          if (expected.getVariables() != null)
+          assertEquals(
+              expected.getEmailVariables().asString(),
+              actual.getEmailVariables().asString()
+          );
+          if (expected.getVariables() != null) {
             assertEquals(expected.getVariables(), actual.getVariables());
+          }
         })
         .verifyComplete();
 
+  }
+
+  @Test
+  @DisplayName("CASE 1b: onBeforeConvert failure converts to empty json")
+  void shouldFallBackToEmptyJsonOnSerializationFailure() {
+    ObjectMapper failingMapper = mock(ObjectMapper.class);
+    when(failingMapper.writeValueAsString(Map.of("potato", "potato")))
+        .thenThrow(new JacksonException("boom") {
+        });
+
+    EmailLogEntityJsonConvert convertingSut =
+        new EmailLogEntityJsonConvert(failingMapper);
+
+    Mono.from(convertingSut
+            .onBeforeConvert(
+                EmailLogEntity.builder()
+                    .variables(Map.of("potato", "potato"))
+                    .build(),
+                SqlIdentifier.unquoted("table")
+            )
+        )
+        .as(StepVerifier::create)
+        .assertNext(actual ->
+            assertEquals("{}", actual.getEmailVariables().asString())
+        )
+        .verifyComplete();
   }
 
   @ParameterizedTest
