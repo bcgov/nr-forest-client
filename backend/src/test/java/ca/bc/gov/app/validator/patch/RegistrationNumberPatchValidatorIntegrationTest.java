@@ -9,9 +9,6 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -23,6 +20,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("Integrated Test | Patch Validator : Registration number")
 class RegistrationNumberPatchValidatorIntegrationTest extends AbstractTestContainerIntegrationTest {

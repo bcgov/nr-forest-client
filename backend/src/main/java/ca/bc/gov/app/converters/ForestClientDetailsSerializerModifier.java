@@ -3,8 +3,8 @@ package ca.bc.gov.app.converters;
 import ca.bc.gov.app.dto.legacy.ForestClientInformationDto;
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.BeanDescription;
-import tools.jackson.databind.ValueSerializer;
 import tools.jackson.databind.SerializationConfig;
+import tools.jackson.databind.ValueSerializer;
 import tools.jackson.databind.ser.ValueSerializerModifier;
 
 /**

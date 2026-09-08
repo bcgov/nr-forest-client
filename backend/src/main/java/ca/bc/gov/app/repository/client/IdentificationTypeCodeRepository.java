@@ -1,10 +1,10 @@
 package ca.bc.gov.app.repository.client;
 
+import ca.bc.gov.app.entity.client.IdentificationTypeCodeEntity;
 import java.time.LocalDate;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-import ca.bc.gov.app.entity.client.IdentificationTypeCodeEntity;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

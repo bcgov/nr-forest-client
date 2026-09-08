@@ -9,10 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.node.ArrayNode;
-import tools.jackson.databind.json.JsonMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -25,6 +21,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
 
 @DisplayName("Integrated Test | Patch Validator : Client Status")
 class ClientStatusPatchValidatorIntegrationTest extends AbstractTestContainerIntegrationTest {

@@ -3,9 +3,6 @@ package ca.bc.gov.app.converters;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -16,6 +13,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("Unit Test | Submission Match Detail Entity Before Convert")
 class SubmissionMatchDetailEntityBeforeConvertTest {

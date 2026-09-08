@@ -3,8 +3,6 @@ package ca.bc.gov.app.controller.client;
 import ca.bc.gov.app.service.client.ClientPatchService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import ca.bc.gov.app.util.PatchUtils;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * The Client patch controller. This is where the patch request arrives to be handled.

@@ -2,8 +2,6 @@ package ca.bc.gov.app.service.client;
 
 import ca.bc.gov.app.util.PatchUtils;
 import ca.bc.gov.app.validator.PatchValidator;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * The Client patch service. This is where the patch request is processed.

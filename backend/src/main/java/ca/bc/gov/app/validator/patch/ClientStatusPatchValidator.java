@@ -6,8 +6,6 @@ import ca.bc.gov.app.dto.legacy.ForestClientLocationDetailsDto;
 import ca.bc.gov.app.service.client.ClientLegacyService;
 import ca.bc.gov.app.util.PatchUtils;
 import ca.bc.gov.app.validator.PatchValidator;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +15,8 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
 @RequiredArgsConstructor

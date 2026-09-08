@@ -1,8 +1,6 @@
 package ca.bc.gov.app.converters;
 
 import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;
 import java.util.Objects;
@@ -16,6 +14,8 @@ import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * This class is responsible for converting SubmissionMatchDetailEntity before and after it is saved in the database.
