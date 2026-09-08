@@ -14,8 +14,6 @@ import ca.bc.gov.app.service.client.ClientSubmissionService;
 import ca.bc.gov.app.util.JwtPrincipalUtil;
 import ca.bc.gov.app.validator.SubmissionValidatorService;
 import io.micrometer.observation.annotation.Observed;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -2,10 +2,10 @@ package ca.bc.gov.app.utils;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import ca.bc.gov.app.util.PkceUtil;
 import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ca.bc.gov.app.util.PkceUtil;
 
 @DisplayName("Unit Test | PkceUtil")
 class PkceUtilTest {

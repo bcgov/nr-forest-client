@@ -8,14 +8,14 @@ import ca.bc.gov.app.entity.ClientUpdateReasonEntity;
 import ca.bc.gov.app.repository.ClientUpdateReasonRepository;
 import ca.bc.gov.app.repository.ForestClientRepository;
 import ca.bc.gov.app.util.PatchUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @RequiredArgsConstructor
 @Slf4j

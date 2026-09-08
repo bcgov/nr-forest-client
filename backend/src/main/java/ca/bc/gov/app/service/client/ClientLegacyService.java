@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.client;
 
 import static ca.bc.gov.app.ApplicationConstant.MDC_USERID;
 import static ca.bc.gov.app.ApplicationConstant.REQUEST_LEGACY;
+
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.ClientAdvancedSearchCriteriaDto;
 import ca.bc.gov.app.dto.client.ClientListDto;
@@ -14,7 +15,6 @@ import ca.bc.gov.app.dto.legacy.ContactSearchDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientDto;
 import ca.bc.gov.app.dto.legacy.HistoryLogDto;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
 import java.util.List;
@@ -36,6 +36,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
 
 /**
  * This class is responsible for interacting with the legacy API to fetch client data. It uses the

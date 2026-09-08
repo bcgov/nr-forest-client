@@ -1,12 +1,16 @@
 package ca.bc.gov.app.converters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import ca.bc.gov.app.entity.client.SubmissionMatchDetailEntity;
+import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -14,6 +18,7 @@ import org.springframework.data.relational.core.sql.SqlIdentifier;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -21,8 +26,8 @@ import tools.jackson.databind.json.JsonMapper;
 class SubmissionMatchDetailEntityBeforeConvertTest {
 
   private static final ObjectMapper mapper = new JsonMapper();
-  private final SubmissionMatchDetailEntityBeforeConvert sut = new SubmissionMatchDetailEntityBeforeConvert(
-      mapper);
+  private final SubmissionMatchDetailEntityBeforeConvert sut =
+      new SubmissionMatchDetailEntityBeforeConvert(mapper);
 
   @ParameterizedTest
   @MethodSource("onBefore")
@@ -35,12 +40,13 @@ class SubmissionMatchDetailEntityBeforeConvertTest {
         )
         .as(StepVerifier::create)
         .assertNext(actual -> {
-          assertEquals(expected.getMatchingField().asString(), actual.getMatchingField().asString());
-          if (expected.getMatchers() != null)
+          assertEquals(expected.getMatchingField().asString(),
+              actual.getMatchingField().asString());
+          if (expected.getMatchers() != null) {
             assertEquals(expected.getMatchers(), actual.getMatchers());
+          }
         })
         .verifyComplete();
-
   }
 
   @ParameterizedTest
@@ -57,7 +63,33 @@ class SubmissionMatchDetailEntityBeforeConvertTest {
             assertEquals(expected.getMatchers(), actual.getMatchers())
         )
         .verifyComplete();
+  }
 
+  @Test
+  @DisplayName("CASE 3: onAfterConvert returns empty map on json failure")
+  void shouldReturnEmptyMapOnJsonReadFailure() {
+    ObjectMapper failingMapper = mock(ObjectMapper.class);
+    when(failingMapper.readValue(any(String.class),
+        any(TypeReference.class)))
+        .thenThrow(new JacksonException("boom") {
+        });
+
+    SubmissionMatchDetailEntityBeforeConvert convertingSut =
+        new SubmissionMatchDetailEntityBeforeConvert(failingMapper);
+
+    Mono.from(convertingSut
+            .onAfterConvert(
+                SubmissionMatchDetailEntity.builder()
+                    .matchingField(Json.of("{not-valid-json}"))
+                    .build(),
+                SqlIdentifier.unquoted("table")
+            )
+        )
+        .as(StepVerifier::create)
+        .assertNext(actual ->
+            assertEquals(Map.of(), actual.getMatchers())
+        )
+        .verifyComplete();
   }
 
   private static Stream<Arguments> onBefore() throws JacksonException {
@@ -65,7 +97,7 @@ class SubmissionMatchDetailEntityBeforeConvertTest {
         .of(
             Arguments.of(
                 SubmissionMatchDetailEntity.builder().build(),
-                SubmissionMatchDetailEntity.builder().matchingField(Json.of("{}")).build()
+                SubmissionMatchDetailEntity.builder().matchingField(Json.of("null")).build()
             ),
             Arguments.of(
                 SubmissionMatchDetailEntity.builder().matchers(Map.of()).build(),

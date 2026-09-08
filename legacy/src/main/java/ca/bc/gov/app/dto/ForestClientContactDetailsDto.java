@@ -1,7 +1,7 @@
 package ca.bc.gov.app.dto;
 
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
 import lombok.With;
 import org.apache.commons.lang3.StringUtils;
 

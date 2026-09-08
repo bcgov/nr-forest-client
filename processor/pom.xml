@@ -67,16 +67,11 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webclient</artifactId>
     </dependency>
-    <!-- Spring Boot 4's default JSON stack is Jackson 3 (spring-boot-jackson), transitively
+    <!-- Spring Boot 4's default JSON stack is Jackson 3 (spring-boot-jackson, transitively
          pulled in by spring-boot-starter-webflux via spring-boot-starter-jackson). This
-         application's code exclusively uses the classic Jackson 2 API
-         (com.fasterxml.jackson.*) for its DTOs, entities and WebClient exchange. Adding
-         spring-boot-jackson2 restores the Jackson2AutoConfiguration so the HTTP codecs use
-         the Jackson 2 mapper family. -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-jackson2</artifactId>
-    </dependency>
+         application's code uses the Jackson 3 API (tools.jackson.*). Jackson 2 only survives for
+         the annotation package (com.fasterxml.jackson.annotation.* via jackson-annotations 2.x),
+         which Jackson 3 still respects. -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>

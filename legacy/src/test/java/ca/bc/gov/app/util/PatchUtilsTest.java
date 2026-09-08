@@ -7,9 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.exception.CannotApplyPatchException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -27,7 +28,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 @DisplayName("Unit Test | Patch Utils")
 class PatchUtilsTest {
 
-  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper mapper = new JsonMapper();
 
   public static final String SIMPLE = """
       [
@@ -56,7 +57,7 @@ class PatchUtilsTest {
 
   @Test
   @DisplayName("Apply patch")
-  void shouldApplyPatch() throws JsonProcessingException {
+  void shouldApplyPatch() throws JacksonException {
     JsonNode patchNode = toNode(SIMPLE);
     TestEntity result = PatchUtils.patchClient(patchNode, new TestEntity("abc123"),
         TestEntity.class, mapper);
@@ -78,7 +79,7 @@ class PatchUtilsTest {
   void shouldCheckAndAllowOrDenyPatchOp(
       String path,
       boolean exist
-  ) throws JsonProcessingException {
+  ) throws JacksonException {
     JsonNode patch = toNode(CONTENT);
     assertEquals(exist, PatchUtils.checkOperation(patch, path, mapper));
   }
@@ -87,7 +88,7 @@ class PatchUtilsTest {
   @MethodSource("filterOps")
   @DisplayName("Filter patch ops")
   void shouldFilterPatchOps(String prefix, List<String> paths, String expectation)
-      throws JsonProcessingException {
+      throws JacksonException {
     JsonNode patch = toNode(CONTENT);
     JsonNode result = PatchUtils.filterPatchOperations(patch, prefix, paths, mapper);
     assertEquals(expectation, result.toString());
@@ -106,14 +107,14 @@ class PatchUtilsTest {
 
   @Test
   @DisplayName("Load IDs")
-  void shouldLoadIds() throws JsonProcessingException {
+  void shouldLoadIds() throws JacksonException {
     JsonNode patch = toNode(CONTENT);
     assertIterableEquals(Set.of("0"), PatchUtils.loadIds(patch));
   }
 
   @Test
   @DisplayName("Load ID")
-  void shouldLoadId() throws JsonProcessingException {
+  void shouldLoadId() throws JacksonException {
     JsonNode patch = toNode(
         "{\"op\":\"replace\",\"path\":\"/entries/0/personalId\",\"value\":\"1234\"}"
     );
@@ -122,7 +123,7 @@ class PatchUtilsTest {
 
   @Test
   @DisplayName("Merge two nodes")
-  void shouldMergeNodes() throws JsonProcessingException {
+  void shouldMergeNodes() throws JacksonException {
     JsonNode expectation = toNode("[{\"value\":\"1234\"},{\"value\":\"5678\"}]");
     JsonNode node1 = createValueNode("1234");
     JsonNode node2 = createValueNode("5678");
@@ -132,7 +133,7 @@ class PatchUtilsTest {
 
   @Test
   @DisplayName("Merge node to array")
-  void shouldMergeNodesIfArray() throws JsonProcessingException {
+  void shouldMergeNodesIfArray() throws JacksonException {
     JsonNode expectation = toNode("[{\"value\":\"5678\"}]");
     JsonNode node1 = mapper.createArrayNode();
     JsonNode node2 = createValueNode("5678");
@@ -142,7 +143,7 @@ class PatchUtilsTest {
 
   @Test
   @DisplayName("Filter by ID")
-  void shouldFilterById() throws JsonProcessingException {
+  void shouldFilterById() throws JacksonException {
     JsonNode expectation = toNode(
         "[{\"op\":\"replace\",\"path\":\"/entries/0/personalId\",\"value\":\"1234\"}]"
     );
@@ -251,7 +252,7 @@ class PatchUtilsTest {
     );
   }
 
-  private static JsonNode toNode(String content) throws JsonProcessingException {
+  private static JsonNode toNode(String content) throws JacksonException {
     return mapper.readValue(content, JsonNode.class);
   }
 

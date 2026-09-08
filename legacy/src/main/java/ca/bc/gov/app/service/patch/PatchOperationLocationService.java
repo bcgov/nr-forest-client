@@ -5,8 +5,6 @@ import ca.bc.gov.app.dto.ForestClientLocationDetailsDto;
 import ca.bc.gov.app.entity.ForestClientLocationEntity;
 import ca.bc.gov.app.util.PatchUtils;
 import ca.bc.gov.app.util.ReplacePatchUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +24,8 @@ import org.springframework.data.relational.core.query.Update;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Service responsible for applying JSON Patch operations to a

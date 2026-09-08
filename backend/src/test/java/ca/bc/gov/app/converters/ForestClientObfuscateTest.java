@@ -5,31 +5,30 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.legacy.ForestClientDetailsDto;
 import ca.bc.gov.app.dto.legacy.ForestClientInformationDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 @DisplayName("Unit Test | Forest Client Obfuscate Serializer")
 class ForestClientObfuscateTest {
 
-  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper mapper = JsonMapper
+      .builder()
+      .addModule(buildModule())
+      .build();
 
-  @BeforeAll
-  public static void setUp() {
+  private static SimpleModule buildModule() {
     SimpleModule module = new SimpleModule();
     module.setSerializerModifier(new ForestClientDetailsSerializerModifier());
-    mapper.registerModule(new JavaTimeModule());
-    mapper.registerModule(module);
-
+    return module;
   }
 
   @Test

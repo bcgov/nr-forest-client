@@ -1,25 +1,29 @@
 package ca.bc.gov.app.converters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.entity.client.EmailLogEntity;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("Unit Test | Submission Match Detail Entity Before Convert")
 class EmailLogEntityJsonConvertTest {
 
-  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper mapper = new JsonMapper();
   private final EmailLogEntityJsonConvert sut = new EmailLogEntityJsonConvert(
       mapper);
 
@@ -34,12 +38,42 @@ class EmailLogEntityJsonConvertTest {
         )
         .as(StepVerifier::create)
         .assertNext(actual -> {
-          assertEquals(expected.getEmailVariables().asString(), actual.getEmailVariables().asString());
-          if (expected.getVariables() != null)
+          assertEquals(
+              expected.getEmailVariables().asString(),
+              actual.getEmailVariables().asString()
+          );
+          if (expected.getVariables() != null) {
             assertEquals(expected.getVariables(), actual.getVariables());
+          }
         })
         .verifyComplete();
 
+  }
+
+  @Test
+  @DisplayName("CASE 1b: onBeforeConvert failure converts to empty json")
+  void shouldFallBackToEmptyJsonOnSerializationFailure() {
+    ObjectMapper failingMapper = mock(ObjectMapper.class);
+    when(failingMapper.writeValueAsString(Map.of("potato", "potato")))
+        .thenThrow(new JacksonException("boom") {
+        });
+
+    EmailLogEntityJsonConvert convertingSut =
+        new EmailLogEntityJsonConvert(failingMapper);
+
+    Mono.from(convertingSut
+            .onBeforeConvert(
+                EmailLogEntity.builder()
+                    .variables(Map.of("potato", "potato"))
+                    .build(),
+                SqlIdentifier.unquoted("table")
+            )
+        )
+        .as(StepVerifier::create)
+        .assertNext(actual ->
+            assertEquals("{}", actual.getEmailVariables().asString())
+        )
+        .verifyComplete();
   }
 
   @ParameterizedTest
@@ -59,7 +93,7 @@ class EmailLogEntityJsonConvertTest {
 
   }
 
-  private static Stream<Arguments> onBefore() throws JsonProcessingException {
+  private static Stream<Arguments> onBefore() throws JacksonException {
     return Stream
         .of(
             Arguments.of(
@@ -86,7 +120,7 @@ class EmailLogEntityJsonConvertTest {
         );
   }
 
-  private static Stream<Arguments> onAfter() throws JsonProcessingException {
+  private static Stream<Arguments> onAfter() throws JacksonException {
     return Stream
         .of(
             Arguments.of(

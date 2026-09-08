@@ -1,8 +1,6 @@
 package ca.bc.gov.app.converters;
 
 import ca.bc.gov.app.entity.client.EmailLogEntity;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.r2dbc.postgresql.codec.Json;
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +13,8 @@ import org.springframework.data.r2dbc.mapping.event.BeforeConvertCallback;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * This class is responsible for converting EmailLogEntity objects to and from JSON format.
@@ -75,7 +75,7 @@ public class EmailLogEntityJsonConvert
                 .map(value -> {
                   try {
                     return mapper.writeValueAsString(value);
-                  } catch (JsonProcessingException e) {
+                  } catch (JacksonException e) {
                     log.error("Error while converting matchers to json", e);
                     return "{}";
                   }
@@ -100,7 +100,7 @@ public class EmailLogEntityJsonConvert
             .map(value -> {
               try {
                 return mapper.readValue(value, Map.class);
-              } catch (JsonProcessingException e) {
+              } catch (JacksonException e) {
                 log.error("Error while converting matchers to json", e);
                 return Map.of();
               }

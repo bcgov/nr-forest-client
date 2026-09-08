@@ -8,9 +8,6 @@ import ca.bc.gov.app.entity.RelatedClientEntity;
 import ca.bc.gov.app.repository.RelatedClientRepository;
 import ca.bc.gov.app.util.PatchUtils;
 import ca.bc.gov.app.util.ReplacePatchUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.micrometer.observation.annotation.Observed;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,6 +31,9 @@ import org.springframework.data.relational.core.query.Update;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 @Service
 @Slf4j

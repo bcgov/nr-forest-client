@@ -1,8 +1,5 @@
 package ca.bc.gov.app.entity.client;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 import ca.bc.gov.app.ApplicationConstant;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,6 +10,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.With;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Table(name = "identification_type_code", schema = ApplicationConstant.POSTGRES_ATTRIBUTE_SCHEMA)
 @Data

@@ -9,8 +9,6 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import ca.bc.gov.app.exception.ValidationException;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -22,6 +20,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.test.StepVerifier;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("Integrated Test | Patch Validator : Acronym")
 class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrationTest {
@@ -42,7 +42,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
   @Autowired
   private AcronymPatchValidator validator;
 
-  private static final JsonNode NODE = new ObjectMapper().createObjectNode()
+  private static final JsonNode NODE = new JsonMapper().createObjectNode()
       .put("op", "replace")
       .put("path", "/client/clientAcronym")
       .put("value", "ABC");
@@ -78,7 +78,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
 
     StepVerifier
         .create(validator.validate("00000001").apply(
-            new ObjectMapper().createObjectNode()
+            new JsonMapper().createObjectNode()
                 .put("op", "replace")
                 .put("path", "/client/clientAcronym")
                 .put("value", "W")
@@ -108,7 +108,7 @@ class AcronymPatchValidatorIntegrationTest extends AbstractTestContainerIntegrat
     return Stream
         .of(
             Arguments.of(NODE, true),
-            Arguments.of(new ObjectMapper().createObjectNode()
+            Arguments.of(new JsonMapper().createObjectNode()
                 .put("op", "add")
                 .put("path", "/client/clientName")
                 .put("value", "ABC"), false)

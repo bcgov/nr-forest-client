@@ -1,7 +1,7 @@
 package ca.bc.gov.app.dto.client;
 
-import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.With;
 import org.apache.commons.lang3.StringUtils;

@@ -26,7 +26,6 @@ import ca.bc.gov.app.exception.InvalidAccessTokenException;
 import ca.bc.gov.app.exception.NoClientDataFound;
 import ca.bc.gov.app.exception.UnexpectedErrorException;
 import ca.bc.gov.app.util.ClientMapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.annotation.Observed;
 import java.util.ArrayList;
@@ -47,6 +46,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.observability.micrometer.Micrometer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 @Service

@@ -2,8 +2,6 @@ package ca.bc.gov.app.service.patch;
 
 import ca.bc.gov.app.dto.FieldReasonDto;
 import ca.bc.gov.app.util.PatchUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +12,8 @@ import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j

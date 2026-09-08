@@ -3,8 +3,6 @@ package ca.bc.gov.app.service.patch;
 import ca.bc.gov.app.exception.ContactInUseException;
 import ca.bc.gov.app.repository.ForestClientQueries;
 import ca.bc.gov.app.util.PatchUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -17,6 +15,8 @@ import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Patch operation that handles the removal of client contacts.
