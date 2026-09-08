@@ -189,6 +189,14 @@ ca:
               - X-Client-Id
               - x-step
               - X-Step
+              - x-b3-traceid
+              - X-B3-TraceId
+              - x-b3-spanid
+              - X-B3-SpanId
+              - x-b3-parentspanid
+              - X-B3-ParentSpanId
+              - x-b3-sampled
+              - X-B3-Sampled
             methods:
               - OPTIONS
               - GET
