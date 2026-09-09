@@ -25,8 +25,8 @@ const doLogin = (kind: string, afterLoginLocation: string, extraLandingParam: st
       }
 
       // Log into the application, not using a step here to prevent password spillage
-      cy.get("#user").type(username, { log: false });
-      cy.get("#password").type(password, { log: false });
+      cy.get("#user").type(username, { log: false, parseSpecialCharSequences: false });
+      cy.get("#password").type(password, { log: false, parseSpecialCharSequences: false });
       Step(this, 'I click on the "Continue" button');
 
       // Validate the login for session purposes
