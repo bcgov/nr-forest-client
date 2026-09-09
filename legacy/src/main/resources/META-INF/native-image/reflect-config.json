@@ -1,0 +1,46 @@
+[
+  {
+    "name": "com.flipkart.zjsonpatch.mapping.jackson3.Jackson3ObjectNodeWrapper",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.flipkart.zjsonpatch.mapping.jackson3.Jackson3ArrayNodeWrapper",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.flipkart.zjsonpatch.mapping.jackson3.Jackson3NodeWrapper",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "com.flipkart.zjsonpatch.mapping.jackson3.Jackson3NodeFactory",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "tools.jackson.databind.JsonNode",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "tools.jackson.databind.node.ObjectNode",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "tools.jackson.databind.node.ArrayNode",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  }
+]
+
