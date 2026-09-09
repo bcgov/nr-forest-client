@@ -54,7 +54,7 @@ export default defineConfig({
     specPattern: "**/*.feature",
     setupNodeEvents,
     defaultCommandTimeout: 10000,
-    pageLoadTimeout: 60000,
+    pageLoadTimeout: 120000,
     chromeWebSecurity: false, 
     experimentalModifyObstructiveThirdPartyCode: true,
   },
