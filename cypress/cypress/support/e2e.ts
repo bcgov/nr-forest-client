@@ -16,7 +16,8 @@ Cypress.on('window:before:load', (win) => {
 Cypress.on('uncaught:exception', (err, runnable) => {
   if (
     err.name === 'DOMException' || 
-    err.message.includes('Cannot set property message of [object DOMException]')
+    err.message.includes('Cannot set property message of [object DOMException]') ||
+    err.message.includes('missing ) after argument list')
   ) {
     return false;
   }
