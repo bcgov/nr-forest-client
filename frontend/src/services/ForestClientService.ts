@@ -111,7 +111,7 @@ export const convertFieldNameToSentence = (input: string): string => {
 export const adminEmail = "forhvap.cliadmin@gov.bc.ca";
 
 export const getObfuscatedEmailLink = email => {
-  return `<a target="_blank" href="mailto:${email}">${getObfuscatedEmail(email)}</a>`;
+  return `<a target="_blank" rel="noopener noreferrer" href="mailto:${email}">${getObfuscatedEmail(email)}</a>`;
 };
 
 export const getFormattedHtml = ((value: string) => {
