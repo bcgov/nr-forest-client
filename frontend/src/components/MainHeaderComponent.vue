@@ -31,7 +31,7 @@ import Close16 from "@carbon/icons-vue/es/close/16";
 import TaskAdd16 from "@carbon/icons-vue/es/task--add/16";
 // @ts-ignore
 import Search16 from "@carbon/icons-vue/es/search--locate/16"
-import { formatDate } from "@/services/ForestClientService";
+import { adminEmail, formatDate, getObfuscatedEmailLink } from "@/services/ForestClientService";
 
 const envPrefix = "openshift-";
 const env = ref(nodeEnv);
@@ -240,6 +240,29 @@ const currentDate = new Date();
       @click.prevent="myProfileAction?.click"
     ></div>
   </cds-header>
+
+  <cds-modal
+    id="help-modal"
+    aria-labelledby="help-modal-heading"
+    aria-describedby="help-modal-body"
+    size="sm"
+    :open="helpModalActive"
+    @cds-modal-closed="helpModalActive = false"
+  >
+    <cds-modal-header>
+      <cds-modal-close-button></cds-modal-close-button>
+      <cds-modal-heading id="help-modal-heading">
+        Help with application
+      </cds-modal-heading>
+    </cds-modal-header>
+    <cds-modal-body id="help-modal-body">
+      <p>
+        Can't proceed with your application? Let us know by emailing your issue to
+        <span v-dompurify-html="getObfuscatedEmailLink(adminEmail)"></span>
+        and we'll get back to you.
+      </p>
+    </cds-modal-body>
+  </cds-modal>
 
   <cds-side-nav 
     v-if="$route.meta.sideMenu" 
