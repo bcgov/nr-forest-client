@@ -87,6 +87,36 @@ describe("MainHeaderComponent.vue", () => {
       expect(session.logOut).not.toBeCalled();
     });
 
+    it("shows the help modal when user clicks the help button", async () => {
+      const wrapper = mount(MainHeaderComponent, {
+        global: {
+          mocks: {
+            $session: session,
+            $route: mockRoute,
+          },
+        },
+      });
+      expect(wrapper.find<CDSModal>("#help-modal").element.open).toBe(false);
+      await wrapper.find("[data-id='help-btn']").trigger("click");
+      expect(wrapper.find<CDSModal>("#help-modal").element.open).toBe(true);
+    });
+
+    it("closes the help modal when the modal emits cds-modal-closed", async () => {
+      const wrapper = mount(MainHeaderComponent, {
+        global: {
+          mocks: {
+            $session: session,
+            $route: mockRoute,
+          },
+        },
+      });
+      await wrapper.find("[data-id='help-btn']").trigger("click");
+      expect(wrapper.find<CDSModal>("#help-modal").element.open).toBe(true);
+
+      await wrapper.find<CDSModal>("#help-modal").trigger("cds-modal-closed");
+      expect(wrapper.find<CDSModal>("#help-modal").element.open).toBe(false);
+    });
+
     describe("when current route is the confirmation page", () => {
       const routes = [
         { name: 'externalConfirmationRoute', route: "confirmation" },
