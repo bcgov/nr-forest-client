@@ -46,7 +46,7 @@ const myProfileAction = ref<InstanceType<typeof CDSHeaderGlobalAction> | null>(
   null
 );
 const closePanel = () => {
-  if (myProfilePanel.value?.hasAttribute("expanded") && myProfileAction.value) {
+  if (myProfileAction.value) {
     myProfileAction.value.click();
   }
 };
@@ -237,7 +237,7 @@ const currentDate = new Date();
       data-testid="my-profile-backdrop"
       ref="myProfileBackdrop"
       class="cds--side-nav__overlay"
-      @click.prevent="closePanel"
+      @click.prevent="myProfileAction?.click"
     ></div>
   </cds-header>
 
