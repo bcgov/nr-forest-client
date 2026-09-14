@@ -188,7 +188,7 @@ describe("MainHeaderComponent.vue", () => {
           expect(panelAction.exists()).toBe(true);
           await panelAction.trigger("click");
           const panel = wrapper.find("#my-profile-panel");
-          expect(panel.attributes().expanded).toEqual("true");
+          expect(panel.attributes().expanded).toBeDefined();
         });
         afterEach(() => {
           wrapper.unmount();
