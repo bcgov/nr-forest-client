@@ -93,9 +93,9 @@ Cypress.Commands.add(
 
     const accessToken = {
       "sub": generateRandomUUID(),
-      "iss": `https://cognito-idp.${Cypress.env('AWS_COGNITO_REGION')}.amazonaws.com/${Cypress.env('AWS_COGNITO_REGION')}_${Cypress.env('VITE_AWS_COGNITO_POOL_ID')}`,
+      "iss": `https://cognito-idp.${Cypress.expose('AWS_COGNITO_REGION')}.amazonaws.com/${Cypress.expose('AWS_COGNITO_REGION')}_${Cypress.expose('VITE_AWS_COGNITO_POOL_ID')}`,
       "version": 2,
-      "client_id": Cypress.env('VITE_AWS_COGNITO_CLIENT_ID'),
+      "client_id": Cypress.expose('VITE_AWS_COGNITO_CLIENT_ID'),
       "origin_jti": generateRandomUUID(),
       "token_use": "access",
       "scope": "openid",
@@ -106,7 +106,7 @@ Cypress.Commands.add(
       "username": userId
     };
 
-    const baseCookieName = `CognitoIdentityServiceProvider.${Cypress.env('AWS_COGNITO_CLIENT_ID')}`;
+    const baseCookieName = `CognitoIdentityServiceProvider.${Cypress.expose('AWS_COGNITO_CLIENT_ID')}`;
     const baseUserCookieName = `${baseCookieName}.${userId}`;
     const cognitoResponse = {
       "AccessToken": `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${jwtfy(accessToken)}.`,
@@ -118,7 +118,7 @@ Cypress.Commands.add(
 
     cy.intercept(
       "POST", 
-      `https://cognito-idp.${Cypress.env('AWS_COGNITO_REGION')}.amazonaws.com/`,
+      `https://cognito-idp.${Cypress.expose('AWS_COGNITO_REGION')}.amazonaws.com/`,
       { statusCode: 200, body: cognitoResponse, }
     ).as("cognitoPull");
 
