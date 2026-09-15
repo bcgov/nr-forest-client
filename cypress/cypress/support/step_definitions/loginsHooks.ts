@@ -1,7 +1,13 @@
 import { Before, Step } from '@badeball/cypress-cucumber-preprocessor';
 
 const doLogin = (kind: string, afterLoginLocation: string, extraLandingParam: string = null) => {
-  cy.env([`${kind}_username`, `${kind}_password`]).then(({ username, password }) => {
+  const usernameKey = `${kind}_username`;
+  const passwordKey = `${kind}_password`;
+
+  cy.env([usernameKey, passwordKey]).then((env) => {
+    const username = env[usernameKey];
+    const password = env[passwordKey];
+
     if (!username || !password) {
       throw new Error(`Username or password for ${kind} not found.`);
     }
