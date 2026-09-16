@@ -20,8 +20,12 @@ export default defineConfig({
         '**/stub/**/*'
       ]
     },
+  },
+  expose: {
     AWS_COGNITO_REGION: process.env.VITE_AWS_COGNITO_REGION,
     AWS_COGNITO_CLIENT_ID: process.env.VITE_AWS_COGNITO_CLIENT_ID,
+    VITE_AWS_COGNITO_POOL_ID: process.env.VITE_AWS_COGNITO_POOL_ID,
+    VITE_AWS_COGNITO_CLIENT_ID: process.env.VITE_AWS_COGNITO_CLIENT_ID,
   },
 
   e2e: {

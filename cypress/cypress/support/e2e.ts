@@ -1,5 +1,9 @@
 import './commands'
 
+Cypress.Keyboard.defaults({
+  keystrokeDelay: 10,
+});
+
 Cypress.on('window:before:load', (win) => {
   // Listen to browser console logs and pass them to the Cypress console
   const originalConsoleLog = win.console.log;

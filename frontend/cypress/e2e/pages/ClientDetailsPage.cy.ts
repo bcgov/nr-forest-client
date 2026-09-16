@@ -2,8 +2,6 @@ import type { ClientDetails } from "@/dto/CommonTypesDto";
 import type { CyHttpMessages } from "cypress/types/net-stubbing";
 
 describe("Client Details Page", () => {
-  const greenDomain = Cypress.env("VITE_GREEN_DOMAIN");
-
   const getTestRole = (ctx: Mocha.Context) => {
     const titlePath = ctx.currentTest.titlePath();
     for (const title of titlePath.reverse()) {
