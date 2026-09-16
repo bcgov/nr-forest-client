@@ -47,28 +47,45 @@ const buttonClick = (
     throw new Error(`Button with label "${name}" not found.`);
   }
 
-   // Build a selector string that matches any of the button kinds
+  // Build a selector string that matches any of the button kinds
   const kindSelector = kinds.join(',');
 
-  cy.get(selector)
-    .find(kindSelector)
-    .filter(':visible') // Only consider visible buttons
-    .filter((index, element) => {
-      // Check for the button label in various places
-      return Cypress.$(element).attr('data-text')?.includes(name) ||
-            Cypress.$(element).html().includes(name) ||
-            Cypress.$(element).text().includes(name) ||
-            Cypress.$(element).val()?.toString().includes(name);
-    })
-    .first() // Get the first matching, visible button
-    .should('be.visible') // Ensure it's visible before clicking
-    .click() // Click the button
-    .then(() => {
-      // Handle waiting for intercept or time after clicking
-      if (waitForIntercept) {
-        cy.wait(`@${waitForIntercept}`, { timeout: waitForTime * 1000 });
-      } else if (waitForTime) {
-        cy.wait(waitForTime);
-      }
+  cy.get(selector).then(($root) => {
+    // If an open modal exists and contains a matching button, target the modal to avoid clicking covered elements in the background
+    const activeModal = $root.find('cds-modal[open]');
+    const matchingInModal = activeModal.find(kindSelector).filter((index, element) => {
+      return (
+        Cypress.$(element).attr('data-text')?.includes(name) ||
+        Cypress.$(element).html().includes(name) ||
+        Cypress.$(element).text().includes(name) ||
+        Cypress.$(element).val()?.toString().includes(name)
+      );
     });
-}
+
+    const target = matchingInModal.length > 0 ? cy.wrap(activeModal.first()) : cy.wrap($root);
+
+    target
+      .find(kindSelector)
+      .filter(':visible') // Only consider visible buttons
+      .filter((index, element) => {
+        // Check for the button label in various places
+        return (
+          Cypress.$(element).attr('data-text')?.includes(name) ||
+          Cypress.$(element).html().includes(name) ||
+          Cypress.$(element).text().includes(name) ||
+          Cypress.$(element).val()?.toString().includes(name)
+        );
+      })
+      .first() // Get the first matching, visible button
+      .should('be.visible') // Ensure it's visible before clicking
+      .click() // Click the button
+      .then(() => {
+        // Handle waiting for intercept or time after clicking
+        if (waitForIntercept) {
+          cy.wait(`@${waitForIntercept}`, { timeout: waitForTime * 1000 });
+        } else if (waitForTime) {
+          cy.wait(waitForTime);
+        }
+      });
+  });
+};
