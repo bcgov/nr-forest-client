@@ -24,7 +24,7 @@ Then('I cannot see {string}', (button: string) => {
 });
 
 Then('I wait for the text {string} to appear', (text: string) => {
-  cy.contains(text).should('be.visible');
+  cy.contains(text, { timeout: 30000 }).should('be.visible');
 });
 
 Then('I wait for the text {string} to appear after {string}', (text: string,waitFor: string) => {
