@@ -76,7 +76,7 @@ COPY .mvn/ ./.mvn
 RUN ./mvnw -Pnative package -DskipTests -Dskip.unit.tests=true
 
 ### Deployer
-FROM gcr.io/distroless/java21-debian12:nonroot AS deploy
+FROM gcr.io/distroless/base:nonroot AS deploy
 
 # Copy
 WORKDIR /app
