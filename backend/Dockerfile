@@ -76,16 +76,15 @@ COPY .mvn/ ./.mvn
 RUN ./mvnw -Pnative package -DskipTests -Dskip.unit.tests=true
 
 ### Deployer
-FROM gcr.io/distroless/java21-debian12:nonroot AS deploy
+FROM gcr.io/distroless/base:nonroot AS deploy
 
 # Copy
 WORKDIR /app
 COPY --from=build /app/target/nr-forest-client-backend ./nr-forest-client-backend
 
-# User, port and health check
+# User and port
 USER 1001
 EXPOSE 8080
-HEALTHCHECK CMD curl -f http://localhost:8080/actuator/health | grep '"status":"UP"'
 
 ENV SPRING_PROFILES_ACTIVE=container
 
