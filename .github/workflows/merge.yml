@@ -19,7 +19,7 @@ jobs:
     name: Set Variables
     outputs:
       pr: ${{ steps.pr.outputs.pr }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 1
     steps:
       # Get PR number for squash merges to main
@@ -84,7 +84,7 @@ jobs:
     needs: [deploy-prod]
     permissions:
       packages: write
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       matrix:
         component: [backend, frontend, legacy, database, processor]
@@ -101,7 +101,7 @@ jobs:
     needs: [deploy-prod]
     permissions:
       contents: write
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
 

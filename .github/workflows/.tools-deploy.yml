@@ -13,7 +13,7 @@ permissions: {}
 jobs:
   builds:
     name: Builds
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       packages: write
     steps:
@@ -34,7 +34,7 @@ jobs:
   pre-tools:
     name: Pre Deploy Tools
     needs: [builds]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Scale down legacy
         continue-on-error: true
@@ -62,7 +62,7 @@ jobs:
   deploy-oracle:
     name: Deploy Oracle Database
     needs: [pre-tools, builds]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Initializing Deployment
         uses: bcgov/action-deployer-openshift@27a85b7b157bfc9c3c9bf0aca53bcd288d4d2506 # v4.2.1
@@ -87,7 +87,7 @@ jobs:
   deploy-tools:
     name: Deploy Tools
     needs: [remove-tools, deploy-oracle]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Create the PR database
         continue-on-error: true
@@ -155,7 +155,7 @@ jobs:
     name: Scale up legacy
     needs: [deploy-tools]
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Start the Legacy Service
         continue-on-error: true

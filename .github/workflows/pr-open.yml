@@ -13,7 +13,7 @@ permissions: {}
 jobs:
   vars:
     name: Variables
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       url: ${{ steps.calculate.outputs.url }}
     steps:
@@ -26,7 +26,7 @@ jobs:
 
   builds:
     name: Builds
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       packages: write
       id-token: write
@@ -86,7 +86,7 @@ jobs:
     name: PR Results
     needs: [builds, deploy, tests]
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 1
     steps:
       - name: Log Job Results Context
