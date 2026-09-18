@@ -48,7 +48,7 @@ permissions: {}
 jobs:
   vars:
     name: Variables
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       tag: ${{ steps.pr.outputs.pr }}
     steps:
@@ -60,7 +60,7 @@ jobs:
   init:
     name: Deploy (init)
     environment: ${{ inputs.environment }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Deployment Init
         uses: bcgov/action-deployer-openshift@27a85b7b157bfc9c3c9bf0aca53bcd288d4d2506 # v4.2.1
@@ -108,7 +108,7 @@ jobs:
     name: Deploy
     needs: [init, vars]
     environment: ${{ inputs.environment }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     strategy:
       matrix:
@@ -144,7 +144,7 @@ jobs:
     name: Database Dev Job
     if: inputs.environment == ''
     needs: [deploy]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Database Dev settings
         uses: bcgov/action-deployer-openshift@27a85b7b157bfc9c3c9bf0aca53bcd288d4d2506 # v4.2.1

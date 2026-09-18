@@ -35,7 +35,7 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     permissions:
       security-events: write
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
       - name: Run Trivy vulnerability scanner in repo mode
@@ -62,7 +62,7 @@ jobs:
     name: Analysis Results
     needs: [tests-java, tests-frontend] # Restore trivy when/if fixed
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 1
     steps:
       - name: Log Job Results Context

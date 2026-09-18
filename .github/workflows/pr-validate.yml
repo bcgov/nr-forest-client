@@ -14,7 +14,7 @@ permissions:
 jobs:
   vars:
     name: Variables
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       url: ${{ steps.calculate.outputs.url }}
     steps:
@@ -41,7 +41,7 @@ jobs:
     name: Validate Results
     needs: [validate]
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 1
     steps:
       - name: Log Job Results Context

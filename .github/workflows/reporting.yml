@@ -25,7 +25,7 @@ jobs:
       schemaspy_schema: 'nrfc'
     
   zap_scan:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     name: Penetration Tests
     env:
       DOMAIN: apps.silver.devops.gov.bc.ca
