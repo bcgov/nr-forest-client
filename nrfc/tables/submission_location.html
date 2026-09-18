@@ -196,13 +196,13 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="submission_location.country_code references country_code.country_code via submission_location_country_code_fk"><a href='country_code.html'>country_code</a><span class='relatedKey'>.country_code</span></td>
-                                                <td class="constraint detail">submission_location_country_code_fk</td>
+                                                <td title="submission_location.[country_code, province_code] references province_code.[country_code, province_code] via submission_location_province_code_fk"><a href='province_code.html'>province_code</a><span class='relatedKey'>.country_code</span></td>
+                                                <td class="constraint detail">submission_location_province_code_fk</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
-                                                <td title="submission_location.[country_code, province_code] references province_code.[country_code, province_code] via submission_location_province_code_fk"><a href='province_code.html'>province_code</a><span class='relatedKey'>.country_code</span></td>
-                                                <td class="constraint detail">submission_location_province_code_fk</td>
+                                                <td title="submission_location.country_code references country_code.country_code via submission_location_country_code_fk"><a href='country_code.html'>country_code</a><span class='relatedKey'>.country_code</span></td>
+                                                <td class="constraint detail">submission_location_country_code_fk</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
