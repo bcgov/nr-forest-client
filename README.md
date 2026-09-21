@@ -241,36 +241,90 @@ npm run stub
 
 ### 3. Backend Services
 
-Each backend service (`backend/`, `legacy/`, and `processor/`) supports personal developer profiles to override settings without committing secrets.
+Each backend service (`backend/`, `legacy/`, and `processor/`) supports personal developer profiles to override settings without committing secrets. Create an `application-dev-<yourname>.yml` file in the `config/` folder of the service you are running.
 
-1. In `backend/config/` (or `legacy/config/`, `processor/config/`), create `application-dev-<yourname>.yml`:
+> [!NOTE]
+> The examples below use the safe local container defaults defined in `docker-compose.yml` (`postgres/default` and `THE/default`). Never commit production credentials, secret tokens, or private network hosts to Git configuration files.
+
+#### A. Main Backend API (`backend/config/application-dev-<yourname>.yml`)
 
 ```yml
 ca:
   bc:
     gov:
       nrs:
+        # Local PostgreSQL container (docker-compose: database)
         postgres:
           host: localhost:5432
           database: postgres
           username: postgres
           password: default
+        # Frontend URL for CORS
         frontend:
           url: http://localhost:3000
+        # Legacy Oracle service endpoint
+        legacy:
+          url: http://localhost:9000
 ```
 
-2. Run the application with your active profile:
+#### B. Legacy Oracle Service (`legacy/config/application-dev-<yourname>.yml`)
+
+```yml
+# Override TCPS/SSL with standard TCP R2DBC URL to connect to the local container
+spring:
+  r2dbc:
+    url: r2dbc:oracle://${ca.bc.gov.nrs.oracle.host}:${ca.bc.gov.nrs.oracle.port}/${ca.bc.gov.nrs.oracle.service}
+
+ca:
+  bc:
+    gov:
+      nrs:
+        # Local Oracle container (docker-compose: legacydb)
+        oracle:
+          host: localhost
+          port: 1521
+          service: FREEPDB1
+          database: FREEPDB1
+          schema: THE
+          username: THE
+          password: default
+```
+
+#### C. Background Processor (`processor/config/application-dev-<yourname>.yml`)
+
+```yml
+ca:
+  bc:
+    gov:
+      nrs:
+        # Local PostgreSQL container (docker-compose: database)
+        postgres:
+          host: localhost:5432
+          database: postgres
+          username: postgres
+          password: default
+        # Main Backend API endpoint
+        backend:
+          uri: http://localhost:8080/api
+        # Legacy Oracle service endpoint
+        legacy:
+          uri: http://localhost:9000/api
+```
+
+#### Running the Services
+
+Run each service from its respective directory specifying your active profile:
 
 ```bash
-# Main Backend API
+# Main Backend API (runs on port 8080)
 cd backend
 mvn spring-boot:run -Dspring-boot.run.profiles=dev-<yourname>
 
-# Legacy Oracle Service
+# Legacy Oracle Service (runs on port 9000)
 cd legacy
 mvn spring-boot:run -Dspring-boot.run.profiles=dev-<yourname>
 
-# Processor Service
+# Processor Service (runs on port 3100)
 cd processor
 mvn spring-boot:run -Dspring-boot.run.profiles=dev-<yourname>
 ```
