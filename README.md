@@ -1,7 +1,7 @@
 <!-- PROJECT SHIELDS -->
 <div align="center">
 
-# Forest Client Management System (FCMS)
+# Forests Client Management System
 
 [![Merge to Main](https://github.com/bcgov/nr-forest-client/actions/workflows/merge.yml/badge.svg)](https://github.com/bcgov/nr-forest-client/actions/workflows/merge.yml)
 [![Unit Tests and Analysis](https://github.com/bcgov/nr-forest-client/actions/workflows/analysis.yml/badge.svg)](https://github.com/bcgov/nr-forest-client/actions/workflows/analysis.yml)
