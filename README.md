@@ -398,7 +398,7 @@ npm run cy:run -- --config baseUrl=http://localhost:3000
 
 - **Pull Request Validation**: Every PR triggers [`.github/workflows/analysis.yml`](.github/workflows/analysis.yml), running linter checks, frontend Vitest tests, backend Maven builds, and SonarCloud quality gate analysis.
 - **Ephemeral PR Environments**: Pull requests deploy automated preview environments via GitHub Actions to test changes in isolation.
-- **Continuous Deployment**: Merges to `main` trigger [`.github/workflows/merge.yml`](.github/workflows/merge.yml), building container images and deploying to OpenShift Silver dev/test clusters.
+- **Continuous Deployment**: Merges to `main` that include non-documentation changes trigger [`.github/workflows/merge.yml`](.github/workflows/merge.yml), building container images and deploying to OpenShift Silver dev/test clusters.
 
 ---
 
