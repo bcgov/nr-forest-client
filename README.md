@@ -231,7 +231,7 @@ If you want to work on frontend UI/UX without running Java backend services, use
 
 ```bash
 # Starts both the WireMock stubs and Vite in preview mode
-npm run preview
+# Starts both the WireMock stubs and the Vite development server
 
 # Or run the stub server independently in a dedicated terminal
 npm run stub
