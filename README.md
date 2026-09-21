@@ -357,9 +357,8 @@ All contributions require thorough automated test verification. We enforce a min
 
 ```bash
 cd frontend
-npm test              # Run unit tests
-npm run test:unit     # Run tests in watch mode
-npm run test:coverage # Generate Vitest coverage report
+npm run test:unit     # Run unit tests (with Vitest coverage)
+npm run coverage      # Run full suite (unit, component, and e2e coverage)
 ```
 
 ### Backend Tests (JUnit & Testcontainers)

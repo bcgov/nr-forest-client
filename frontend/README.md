@@ -20,7 +20,7 @@ The frontend is written in [vue3](https://vuejs.org) composition api in typescri
 
 - Install all requirement packages: `npm install`
 - Start the application: `npm start`
-- Run test: `npm test`
+- Run test: `npm run test:unit`
 
 ### **Running with Stubs**
 
