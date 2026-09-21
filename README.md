@@ -230,8 +230,8 @@ The application will be available at `http://localhost:3000`.
 If you want to work on frontend UI/UX without running Java backend services, use the embedded WireMock stub server:
 
 ```bash
-# Starts both the WireMock stubs and Vite in preview mode
 # Starts both the WireMock stubs and the Vite development server
+npm run preview
 
 # Or run the stub server independently in a dedicated terminal
 npm run stub
@@ -364,15 +364,21 @@ npm run coverage      # Run full suite (unit, component, and e2e coverage)
 ### Backend Tests (JUnit & Testcontainers)
 
 ```bash
+# Main Backend API (unit tests and Testcontainers integration tests)
 cd backend
-mvn clean verify -P all-tests        # Run unit tests and Testcontainers integration tests
+mvn clean verify -P all-tests
 
+# Legacy Oracle Service (unit tests and Testcontainers integration tests)
 cd legacy
-mvn clean test
+mvn clean verify -P all-tests
 
+# Processor Service (unit tests and Testcontainers integration tests)
 cd processor
-mvn clean test
+mvn clean verify -P all-tests
 ```
+
+> [!NOTE]
+> Running `mvn clean verify -P all-tests` executes both fast unit tests and Testcontainers integration tests. To execute only unit tests without spinning up Docker containers, run `mvn clean test`.
 
 ### End-to-End User Journey Tests (Cypress & Cucumber)
 
@@ -398,7 +404,7 @@ npm run cy:run -- --config baseUrl=http://localhost:3000
 
 - **Pull Request Validation**: Every PR triggers [`.github/workflows/analysis.yml`](.github/workflows/analysis.yml), running linter checks, frontend Vitest tests, backend Maven builds, and SonarCloud quality gate analysis.
 - **Ephemeral PR Environments**: Pull requests deploy automated preview environments via GitHub Actions to test changes in isolation.
-- **Continuous Deployment**: Merges to `main` that include non-documentation changes trigger [`.github/workflows/merge.yml`](.github/workflows/merge.yml), building container images and deploying to OpenShift Silver dev/test clusters.
+- **Continuous Deployment**: Merges to `main` that include non-documentation changes trigger [`.github/workflows/merge.yml`](.github/workflows/merge.yml), building container images and deploying to OpenShift Silver dev/test clusters (changes strictly limited to markdown `**.md` files and issue templates are excluded).
 
 ---
 
