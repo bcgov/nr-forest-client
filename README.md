@@ -365,7 +365,7 @@ npm run coverage      # Run full suite (unit, component, and e2e coverage)
 
 ```bash
 cd backend
-mvn clean test        # Run unit tests and Testcontainers integration tests
+mvn clean verify -P all-tests        # Run unit tests and Testcontainers integration tests
 
 cd legacy
 mvn clean test
