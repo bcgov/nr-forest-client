@@ -141,7 +141,7 @@ flowchart TD
 | **Frontend** | Vue 3 (Composition API) | 3.5.x | Reactive single-page web application |
 | **Frontend Tooling** | Vite, TypeScript, Sass | 8.3.x / ~6.0.0 / ~1.104.1 | Lightning-fast build, typed modules, styling |
 | **UI Components** | Carbon Design System | `@carbon/web-components` 2.x | Accessible BC Gov-aligned UI system |
-| **Backend API** | Spring Boot (WebFlux), Java | 4.1.x / Java 17 | Reactive non-blocking REST API, GraalVM native |
+| **Backend API** | Spring Boot (WebFlux), Java | 4.1.x / Java 17 (JDK 25) | Reactive non-blocking REST API, GraalVM native |
 | **Background Processor** | Spring Integration, Java | 4.1.x / Java 17 | Async submission pipeline with queue channels |
 | **Legacy Connector** | Spring Boot (WebFlux), Java | 4.1.x / Java 21 | High-throughput reactive Oracle database interface |
 | **Primary Database** | PostgreSQL | 13.x (moving to 17) | Modern relational store with R2DBC |
@@ -149,7 +149,7 @@ flowchart TD
 | **Database Migrations**| Flyway | 10.x / 11.x | Versioned, reproducible SQL schema migrations |
 | **Testing: Frontend** | Vitest, Vue Test Utils | 5.x / 2.x | Fast, modern unit and component testing |
 | **Testing: Backend** | JUnit 5/6, Mockito, Testcontainers | 6.x / 5.x / 2.x | Unit and containerized integration testing |
-| **Testing: E2E** | Cypress, Cucumber Gherkin | 16.x / 5.x | BDD user journey automation and regression |
+| **Testing: E2E** | Cypress, Cucumber Gherkin | 16.x / 28.x | BDD user journey automation and regression |
 
 ---
 
@@ -177,7 +177,7 @@ nr-forest-client/
 Ensure you have the following tools installed:
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) or [Podman](https://podman.io/)
-- [Java Development Kit (JDK)](https://adoptium.net/) 17 or 21
+- [Java Development Kit (JDK)](https://adoptium.net/) 17, 21, or 25
 - [Apache Maven](https://maven.apache.org/) 3.9+
 - [Node.js](https://nodejs.org/) (v22 or v24 LTS) and [npm](https://www.npmjs.com/)
 
@@ -388,10 +388,12 @@ End-to-End tests reside in [`cypress/`](cypress/) and are authored in plain Engl
 cd cypress
 npm install
 
-# Interactive Cypress GUI (headed)
-npm run cy:open -- --config baseUrl=http://localhost:3000
+# Run against local dev server (http://127.0.0.1:3000)
+npm run cy:open:local    # Interactive Cypress GUI (headed)
+npm run cy:run:local     # Headless test run
 
-# Headless CI Execution
+# Or execute with custom configuration
+npm run cy:open -- --config baseUrl=http://localhost:3000
 npm run cy:run -- --config baseUrl=http://localhost:3000
 ```
 

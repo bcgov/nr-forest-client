@@ -1,6 +1,6 @@
 # Overview
 
-The frontend is written in [vue3](https://vuejs.org) composition api in typescript, building with [Vite](https://vitejs.dev). Using the [BC Parks Bootstrap theme](https://digitalspace.github.io/bcparks-bootstrap-theme/). The theme still need to be discussed with UX designers.
+The frontend is written in [Vue 3](https://vuejs.org) (Composition API) with TypeScript, built with [Vite](https://vitejs.dev), and styled using the [Carbon Design System](https://carbondesignsystem.com/) (`@carbon/web-components`) and `@bcgov-nr/nr-fsa-theme`.
 
 ## **Setup local development**
 
@@ -18,14 +18,15 @@ The frontend is written in [vue3](https://vuejs.org) composition api in typescri
 
   ```
 
-- Install all requirement packages: `npm install`
+- Install all required packages: `npm install`
 - Start the application: `npm start`
-- Run test: `npm run test:unit`
+- Run unit tests: `npm run test:unit`
+- Run full test suite with coverage: `npm run coverage`
 
 ### **Running with Stubs**
 
-If you don't want to rely on the backend for development (maybe you're just doing cosmetic changes), you can run the application with the stubs,
-for that you can run `npm run preview` and that will spin-up the stub server for you.
+If you don't want to rely on the backend for development (maybe you're just doing UI/UX changes), you can run the application with stubs:
+- Run `npm run preview` to spin up both the WireMock stub server and the Vite development server.
 
 For more information check the [stubs](#stubs) section.
 
