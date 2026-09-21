@@ -139,7 +139,7 @@ flowchart TD
 | Layer / Component | Technology | Version | Purpose |
 |---|---|---|---|
 | **Frontend** | Vue 3 (Composition API) | 3.5.x | Reactive single-page web application |
-| **Frontend Tooling** | Vite, TypeScript, Sass | 5.4.x / ~5.9.0 | Lightning-fast build, typed modules, styling |
+| **Frontend Tooling** | Vite, TypeScript, Sass | 8.3.x / ~6.0.0 / ~1.104.1 | Lightning-fast build, typed modules, styling |
 | **UI Components** | Carbon Design System | `@carbon/web-components` 2.x | Accessible BC Gov-aligned UI system |
 | **Backend API** | Spring Boot (WebFlux), Java | 4.1.x / Java 17 | Reactive non-blocking REST API, GraalVM native |
 | **Background Processor** | Spring Integration, Java | 4.1.x / Java 17 | Async submission pipeline with queue channels |
