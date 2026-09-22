@@ -229,4 +229,18 @@ class PatchOperationDoingBusinessServiceTest {
     verify(dbaRepository, never()).findByClientNumber(anyString());
   }
 
+  @Test
+  @DisplayName("Throw exception when remove op targets a subpath rather than DBA root")
+  void shouldNotDeleteWhenRemoveOpHasSubPath() {
+    JsonNode patch = mapper.readTree(
+        "[{\"op\":\"remove\",\"path\":\"/doingBusinessAs/invalidSubPath\"}]"
+    );
+
+    assertThrows(IllegalArgumentException.class, () ->
+        patchService.applyPatch("00175721", patch, mapper, "user1")
+    );
+
+    verify(dbaRepository, never()).findByClientNumber(anyString());
+  }
+
 }

@@ -147,7 +147,8 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
     if (patch.isArray() && patch.has(0)) {
       JsonNode opNode = patch.get(0);
       String op = opNode.path("op").asText();
-      if ("remove".equalsIgnoreCase(op)) {
+      if ("remove".equalsIgnoreCase(op)
+          && opNode.path("path").asText().isEmpty()) {
         return true;
       }
       if (opNode.has("value")) {
