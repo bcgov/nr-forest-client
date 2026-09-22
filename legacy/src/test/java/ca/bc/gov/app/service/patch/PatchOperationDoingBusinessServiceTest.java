@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.springframework.transaction.ReactiveTransaction;
+import org.springframework.transaction.ReactiveTransactionManager;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -33,6 +35,7 @@ class PatchOperationDoingBusinessServiceTest {
 
   private ClientDoingBusinessAsRepository dbaRepository;
   private ClientDoingBusinessAsService service;
+  private ReactiveTransactionManager transactionManager;
   private ObjectMapper mapper;
 
   private PatchOperationDoingBusinessService patchService;
@@ -41,11 +44,18 @@ class PatchOperationDoingBusinessServiceTest {
   void setup() {
     dbaRepository = mock(ClientDoingBusinessAsRepository.class);
     service = mock(ClientDoingBusinessAsService.class);
+    transactionManager = mock(ReactiveTransactionManager.class);
     mapper = new JsonMapper();
+
+    ReactiveTransaction transaction = mock(ReactiveTransaction.class);
+    when(transactionManager.getReactiveTransaction(any())).thenReturn(Mono.just(transaction));
+    when(transactionManager.commit(any())).thenReturn(Mono.empty());
+    when(transactionManager.rollback(any())).thenReturn(Mono.empty());
 
     patchService = new PatchOperationDoingBusinessService(
         dbaRepository,
-        service
+        service,
+        transactionManager
     );
   }
 
@@ -105,6 +115,7 @@ class PatchOperationDoingBusinessServiceTest {
         .verifyComplete();
 
     verify(dbaRepository).delete(existingDba);
+    verify(transactionManager).getReactiveTransaction(any());
   }
 
   @Test

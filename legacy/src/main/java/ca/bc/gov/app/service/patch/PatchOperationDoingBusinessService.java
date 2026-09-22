@@ -11,11 +11,12 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -26,7 +27,6 @@ import tools.jackson.databind.ObjectMapper;
 @Service
 @Slf4j
 @Observed
-@RequiredArgsConstructor
 @Order(11)
 public class PatchOperationDoingBusinessService implements ClientPatchOperation {
 
@@ -34,6 +34,17 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
 
   private final ClientDoingBusinessAsRepository dbaRepository;
   private final ClientDoingBusinessAsService service;
+  private final TransactionalOperator transactionalOperator;
+
+  public PatchOperationDoingBusinessService(
+      ClientDoingBusinessAsRepository dbaRepository,
+      ClientDoingBusinessAsService service,
+      ReactiveTransactionManager transactionManager
+  ) {
+    this.dbaRepository = dbaRepository;
+    this.service = service;
+    this.transactionalOperator = TransactionalOperator.create(transactionManager);
+  }
 
   @Override
   public String getPrefix() {
@@ -119,7 +130,7 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
     log.info("Removing DBA for client {}", clientNumber);
     return dbaRepository
         .findByClientNumber(clientNumber)
-        .flatMap(dba ->
+        .concatMap(dba ->
             dbaRepository
                 .delete(dba)
                 .doOnSuccess(unused -> log.info(
@@ -128,7 +139,8 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
                     clientNumber
                 ))
         )
-        .then();
+        .then()
+        .as(transactionalOperator::transactional);
   }
 
   private boolean isDeleteOperation(JsonNode patch) {
