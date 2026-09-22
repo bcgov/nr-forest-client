@@ -341,6 +341,14 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "TIRULIRU"
         ),
         argumentSet(
+            "Remove doing business name",
+            "00000145",
+            "[{\"op\":\"replace\",\"path\":\"/doingBusinessAs\",\"value\":\"\"}]",
+            "$.doingBusinessAs",
+            "MINYX",
+            null
+        ),
+        argumentSet(
             "Change client type",
             "00000114",
             "[{\"op\":\"replace\",\"path\":\"/client/clientTypeCode\","
