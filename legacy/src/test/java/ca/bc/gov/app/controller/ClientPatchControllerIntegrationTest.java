@@ -342,10 +342,10 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         ),
         argumentSet(
             "Remove doing business name",
-            "00000145",
+            "00000171",
             "[{\"op\":\"replace\",\"path\":\"/doingBusinessAs\",\"value\":\"\"}]",
             "$.doingBusinessAs",
-            "MINYX",
+            "BLOGSPAN",
             null
         ),
         argumentSet(
