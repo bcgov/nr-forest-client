@@ -31,11 +31,19 @@ import tools.jackson.databind.ObjectMapper;
 public class PatchOperationDoingBusinessService implements ClientPatchOperation {
 
   public static final String DEFAULT_USER_ID = "idir\\ottomated";
+  private static final String PATCH_VALUE_FIELD = "value";
 
   private final ClientDoingBusinessAsRepository dbaRepository;
   private final ClientDoingBusinessAsService service;
   private final TransactionalOperator transactionalOperator;
 
+  /**
+   * Constructs a new {@link PatchOperationDoingBusinessService}.
+   *
+   * @param dbaRepository the repository for managing DBA entities
+   * @param service the service for saving and indexing DBA records
+   * @param transactionManager the reactive transaction manager used for transactional operations
+   */
   public PatchOperationDoingBusinessService(
       ClientDoingBusinessAsRepository dbaRepository,
       ClientDoingBusinessAsService service,
@@ -46,16 +54,35 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
     this.transactionalOperator = TransactionalOperator.create(transactionManager);
   }
 
+  /**
+   * Returns the prefix associated with this patch operation.
+   *
+   * @return The string prefix "doingBusinessAs".
+   */
   @Override
   public String getPrefix() {
     return "doingBusinessAs";
   }
 
+  /**
+   * Returns a list of paths that are restricted from modification.
+   *
+   * @return A list of restricted JSON Patch paths.
+   */
   @Override
   public List<String> getRestrictedPaths() {
     return List.of();
   }
 
+  /**
+   * Applies the JSON Patch operation to the client's doing business as record.
+   *
+   * @param clientNumber The unique identifier of the client to be patched.
+   * @param patch The JSON Patch document describing the changes.
+   * @param mapper The {@link ObjectMapper} used to deserialize and apply the patch.
+   * @param userId The username of the user who triggered the request.
+   * @return A {@link Mono} that completes when the patch has been applied.
+   */
   @Override
   public Mono<Void> applyPatch(
       String clientNumber,
@@ -143,6 +170,12 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
         .as(transactionalOperator::transactional);
   }
 
+  /**
+   * Checks whether the patch represents a delete or removal operation.
+   *
+   * @param patch The JSON Patch node to inspect.
+   * @return {@code true} if the operation removes or clears doing business as, {@code false} otherwise.
+   */
   private boolean isDeleteOperation(JsonNode patch) {
     if (patch.isArray() && patch.has(0)) {
       JsonNode opNode = patch.get(0);
@@ -151,17 +184,24 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
           && opNode.path("path").asText().isEmpty()) {
         return true;
       }
-      if (opNode.has("value")) {
-        JsonNode valueNode = opNode.get("value");
+      if (opNode.has(PATCH_VALUE_FIELD)) {
+        JsonNode valueNode = opNode.get(PATCH_VALUE_FIELD);
         return valueNode.isNull() || StringUtils.isBlank(valueNode.asText());
       }
     }
     return false;
   }
 
+  /**
+   * Extracts and validates the doing business as name from the patch.
+   *
+   * @param patch The JSON Patch node containing the value.
+   * @return The normalized uppercase doing business as name.
+   * @throws IllegalArgumentException If the patch does not contain a non-blank value.
+   */
   private String getDoingBusinessAsName(JsonNode patch) {
-    if (patch.isArray() && patch.has(0) && patch.get(0).hasNonNull("value")) {
-      String name = patch.get(0).get("value").asText().trim().toUpperCase(Locale.ROOT);
+    if (patch.isArray() && patch.has(0) && patch.get(0).hasNonNull(PATCH_VALUE_FIELD)) {
+      String name = patch.get(0).get(PATCH_VALUE_FIELD).asText().trim().toUpperCase(Locale.ROOT);
       if (StringUtils.isNotBlank(name)) {
         return name;
       }
