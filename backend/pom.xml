@@ -88,7 +88,7 @@
              spring-boot-test / spring-test require, causing NoSuchMethodError on
              ExtensionContext$Store.computeIfAbsent at test runtime. -->
         <junit.version>4.13.2</junit.version>
-        <mockito.version>5.23.0</mockito.version>
+        <mockito.version>5.24.0</mockito.version>
         <jooq.version>3.21.8</jooq.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
     </properties>
