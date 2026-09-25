@@ -29,10 +29,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>21</java.version>
-    <jdk.version>21</jdk.version>
-    <maven.compiler.version>3.10.1</maven.compiler.version>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.compiler.proc>full</maven.compiler.proc>
     <skip.integration.tests>true</skip.integration.tests>
     <skip.unit.tests>false</skip.unit.tests>
@@ -41,7 +37,6 @@
     <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-    <oci.revision>${project.version}</oci.revision>
     <mapstruct.version>1.6.3</mapstruct.version>
     <oracle-driver.version>23.26.2.0.0</oracle-driver.version>
   </properties>
@@ -70,6 +65,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -90,7 +86,6 @@
     <dependency>
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-exporter-zipkin</artifactId>
-      <version>${opentelemetry.version}</version>
     </dependency>
 
     <dependency>
@@ -156,11 +151,6 @@
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>testcontainers-r2dbc</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-oracle-xe</artifactId>
       <scope>test</scope>
     </dependency>
@@ -202,7 +192,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.5.0</version>
       </plugin>
 
       <plugin>
@@ -234,7 +223,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.6.0</version>
         <executions>
           <execution>
             <id>integration-tests</id>
@@ -257,18 +245,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.6.0</version>
         <configuration>
           <argLine>@{argLine}</argLine>
           <skipTests>${skip.unit.tests}</skipTests>
           <excludes>
             <exclude>**/*IntegrationTest.java</exclude>
           </excludes>
-          <properties>
-            <configurationParameters>
-              cucumber.junit-platform.naming-strategy=long
-            </configurationParameters>
-          </properties>
         </configuration>
       </plugin>
 
@@ -285,7 +267,8 @@
             <exclude>**/entity/**</exclude>
             <exclude>**/repository/**</exclude>
             <exclude>**/*$*Builder*</exclude>
-            <exclude>**/BootApplication*</exclude>
+            <exclude>**/LegacyApplication*</exclude>
+            <exclude>**/ApplicationConstants*</exclude>
           </excludes>
         </configuration>
         <executions>
@@ -385,9 +368,8 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.12.0</version>
         <configuration>
-          <source>8</source>
+          <source>${java.version}</source>
           <doctitle>Javadoc Documentation for ${project.name} ${project.version}
           </doctitle>
           <windowtitle>${project.name} ${project.version}
@@ -398,7 +380,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.6.3</version>
         <executions>
           <execution>
             <id>default-cli</id>
@@ -462,8 +443,8 @@
         </configuration>
         <executions>
           <execution>
-            <id>validate</id>
-            <phase>validate</phase>
+            <id>verify</id>
+            <phase>verify</phase>
             <goals>
               <goal>check</goal>
             </goals>
@@ -477,7 +458,7 @@
         <version>2.9.3</version>
         <executions>
           <execution>
-            <phase>validate</phase>
+            <phase>package</phase>
             <goals>
               <goal>makeAggregateBom</goal>
             </goals>
@@ -497,16 +478,8 @@
 
   <profiles>
     <profile>
-      <id>dev</id>
-      <properties>
-        <build.profile.id>dev</build.profile.id>
-      </properties>
-    </profile>
-
-    <profile>
       <id>all-tests</id>
       <properties>
-        <build.profile.id>all-tests</build.profile.id>
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
         <jacoco.skip>false</jacoco.skip>
@@ -516,26 +489,14 @@
     <profile>
       <id>integration-test</id>
       <properties>
-        <build.profile.id>integration-test</build.profile.id>
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>true</skip.unit.tests>
       </properties>
     </profile>
 
     <profile>
-      <id>macos</id>
-      <activation>
-        <os>
-          <family>mac</family>
-          <arch>aarch64</arch>
-        </os>
-      </activation>
-    </profile>
-
-    <profile>
       <id>native</id>
       <properties>
-        <build.profile.id>native</build.profile.id>
         <skip.integration.tests>true</skip.integration.tests>
         <skip.unit.tests>true</skip.unit.tests>
         <jacoco.skip>true</jacoco.skip>
