@@ -1,7 +1,7 @@
 package ca.bc.gov.app.utils;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;

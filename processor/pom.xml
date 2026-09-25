@@ -29,10 +29,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>17</java.version>
-    <jdk.version>17</jdk.version>
-    <maven.compiler.version>3.10.1</maven.compiler.version>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.proc>full</maven.compiler.proc>
     <skip.integration.tests>true</skip.integration.tests>
     <skip.unit.tests>false</skip.unit.tests>
     <jacoco.skip>true</jacoco.skip>
@@ -40,19 +37,8 @@
     <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-    <testcontainers.version>2.0.5</testcontainers.version>
-    <!-- Do NOT override org.junit.version here: Spring Boot 4.1.0 manages junit-jupiter at
-         6.0.3 (JUnit 6) via its parent BOM. -->
-    <junit.version>4.13.2</junit.version>
-    <logback.version>1.6.3</logback.version>
-    <oci.revision>${project.version}</oci.revision>
     <opentelemetry.version>1.64.0</opentelemetry.version>
-    <commons-lang3.version>3.20.0</commons-lang3.version>
-    <!-- Do NOT override assertj/jackson/jackson-bom/spring-security/netty versions here: they are
-         unused by this module and, being spring-boot-dependencies property names, would override
-         the Spring Boot 4.1.0 parent's managed versions (e.g. jackson-bom.version defaults to
-         3.1.4; overriding it to an older value forces resolution of a non-existent
-         tools.jackson:jackson-bom and breaks the build). -->
+    <testcontainers.version>2.0.5</testcontainers.version>
   </properties>
 
   <dependencies>
@@ -75,12 +61,10 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>${logback.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>${logback.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -136,7 +120,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>${commons-lang3.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -173,19 +156,17 @@
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>testcontainers-r2dbc</artifactId>
+      <artifactId>testcontainers</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
-      <version>${flyway.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-database-postgresql</artifactId>
-      <version>${flyway.version}</version>
       <scope>test</scope>
     </dependency>
     <!-- Spring Boot 4 moved the Flyway auto-configuration out of spring-boot-actuator-autoconfigure
@@ -219,32 +200,11 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>${logback.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${logback.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-bom</artifactId>
         <version>${testcontainers.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>${commons-lang3.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -263,7 +223,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.5.0</version>
       </plugin>
       <plugin>
         <groupId>org.graalvm.buildtools</groupId>
@@ -284,7 +243,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.6.0</version>
         <executions>
           <execution>
             <id>integration-tests</id>
@@ -306,18 +264,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.6.0</version>
         <configuration>
           <argLine>@{argLine}</argLine>
           <skipTests>${skip.unit.tests}</skipTests>
           <excludes>
             <exclude>**/*IntegrationTest.java</exclude>
           </excludes>
-          <properties>
-            <configurationParameters>
-              cucumber.junit-platform.naming-strategy=long
-            </configurationParameters>
-          </properties>
         </configuration>
       </plugin>
       <plugin>
@@ -333,7 +285,8 @@
             <exclude>**/entity/**</exclude>
             <exclude>**/repository/**</exclude>
             <exclude>**/*$*Builder*</exclude>
-            <exclude>**/BootApplication*</exclude>
+            <exclude>**/ProcessorApplication*</exclude>
+            <exclude>**/ApplicationConstant*</exclude>
           </excludes>
         </configuration>
         <executions>
@@ -432,9 +385,8 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.12.0</version>
         <configuration>
-          <source>8</source>
+          <source>${java.version}</source>
           <doctitle>
             Javadoc Documentation for ${project.name} ${project.version}
           </doctitle>
@@ -444,7 +396,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.6.3</version>
         <executions>
           <execution>
             <id>default-cli</id>
@@ -511,8 +462,8 @@
         </configuration>
         <executions>
           <execution>
-            <id>validate</id>
-            <phase>validate</phase>
+            <id>verify</id>
+            <phase>verify</phase>
             <goals>
               <goal>check</goal>
             </goals>
@@ -522,10 +473,9 @@
       <plugin>
         <groupId>org.cyclonedx</groupId>
         <artifactId>cyclonedx-maven-plugin</artifactId>
-        <version>2.9.3</version>
         <executions>
           <execution>
-            <phase>validate</phase>
+            <phase>package</phase>
             <goals>
               <goal>makeAggregateBom</goal>
             </goals>
@@ -544,12 +494,8 @@
 
   <profiles>
     <profile>
-      <id>dev</id>
-    </profile>
-    <profile>
       <id>all-tests</id>
       <properties>
-        <build.profile.id>all-tests</build.profile.id>
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
         <jacoco.skip>false</jacoco.skip>
@@ -558,24 +504,13 @@
     <profile>
       <id>integration-test</id>
       <properties>
-        <build.profile.id>integration-test</build.profile.id>
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>true</skip.unit.tests>
       </properties>
     </profile>
     <profile>
-      <id>macos</id>
-      <activation>
-        <os>
-          <family>mac</family>
-          <arch>aarch64</arch>
-        </os>
-      </activation>
-    </profile>
-    <profile>
       <id>native</id>
       <properties>
-        <build.profile.id>native</build.profile.id>
         <skip.integration.tests>true</skip.integration.tests>
         <skip.unit.tests>true</skip.unit.tests>
       </properties>
