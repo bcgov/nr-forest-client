@@ -79,7 +79,6 @@
              ExtensionContext$Store.computeIfAbsent at test runtime. -->
         <mockito.version>5.24.0</mockito.version>
         <nimbus-jose-jwt.version>10.10</nimbus-jose-jwt.version>
-        <opentelemetry.version>1.64.0</opentelemetry.version>
         <testcontainers.version>2.0.5</testcontainers.version>
     </properties>
 
@@ -150,7 +149,6 @@
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-zipkin</artifactId>
-            <version>${opentelemetry.version}</version>
         </dependency>
         <dependency>
             <groupId>io.projectreactor</groupId>

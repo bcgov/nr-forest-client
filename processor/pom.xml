@@ -36,7 +36,6 @@
     <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-    <opentelemetry.version>1.64.0</opentelemetry.version>
     <testcontainers.version>2.0.5</testcontainers.version>
   </properties>
 
@@ -99,7 +98,6 @@
     <dependency>
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-exporter-zipkin</artifactId>
-      <version>${opentelemetry.version}</version>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
