@@ -20,6 +20,9 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Mono;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -551,6 +554,56 @@ public class PatchUtils {
     } catch (NumberFormatException e) {
       return Optional.empty();
     }
+  }
+
+  /**
+   * Checks if a JSON Patch operation represents a clearing operation (remove, or replace with null/blank).
+   *
+   * @param op the operation node to check
+   * @return true if the operation clears a field, false otherwise
+   */
+  public static boolean isClearingOperation(JsonNode op) {
+    if (op == null || !op.has("op")) {
+      return false;
+    }
+    String opName = op.get("op").asText();
+    if ("remove".equalsIgnoreCase(opName)) {
+      return true;
+    }
+    if ("replace".equalsIgnoreCase(opName)) {
+      if (!op.has("value") || op.get("value") == null || op.get("value").isNull()) {
+        return true;
+      }
+      JsonNode valNode = op.get("value");
+      return valNode.isTextual() && StringUtils.isBlank(valNode.asText());
+    }
+    return false;
+  }
+
+  /**
+   * Validates that none of the operations in the patch clear mandatory fields.
+   *
+   * @param patchOps the filtered patch operations
+   * @param mandatoryFields the set of field path suffixes that are mandatory
+   * @return a Mono that completes if validation passes, or emits a ResponseStatusException (400) if a mandatory field is cleared
+   */
+  public static Mono<Void> validateMandatoryFields(JsonNode patchOps, Set<String> mandatoryFields) {
+    if (patchOps != null && mandatoryFields != null && !mandatoryFields.isEmpty()) {
+      for (JsonNode op : patchOps) {
+        if (op.has("path") && isClearingOperation(op)) {
+          String path = op.get("path").asText();
+          for (String mandatoryField : mandatoryFields) {
+            if (path.endsWith(mandatoryField)) {
+              return Mono.error(new ResponseStatusException(
+                  HttpStatus.BAD_REQUEST,
+                  String.format("Field %s is mandatory and cannot be removed or set to null", mandatoryField)
+              ));
+            }
+          }
+        }
+      }
+    }
+    return Mono.empty();
   }
 
 }

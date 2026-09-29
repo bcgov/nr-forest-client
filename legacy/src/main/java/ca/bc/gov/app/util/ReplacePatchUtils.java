@@ -8,6 +8,7 @@ import java.util.stream.StreamSupport;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import tools.jackson.databind.JsonNode;
 
@@ -35,7 +36,8 @@ public class ReplacePatchUtils {
       }
       JsonNode valNode = node.get("value");
       if (valNode.isTextual()) {
-        return valNode.asText();
+        String text = valNode.asText();
+        return StringUtils.isBlank(text) ? null : text;
       } else if (valNode.isBoolean()) {
         return valNode.asBoolean();
       } else if (valNode.isNumber()) {

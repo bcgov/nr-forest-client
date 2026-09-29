@@ -77,6 +77,12 @@ public class PatchOperationLocationService implements ClientPatchOperation {
           )
       );
 
+  private final Set<String> mandatoryFields = Set.of(
+      "/addressOne",
+      "/city",
+      "/countryCode"
+  );
+
   @Override
   public String getPrefix() {
     return "addresses";
@@ -193,44 +199,47 @@ public class PatchOperationLocationService implements ClientPatchOperation {
         mapper
     );
 
-    return Flux
-        //We will loop through it using a flux from the ids
-        .fromIterable(PatchUtils.loadIds(patch))
-        //For each location that was changed
-        .flatMap(locationNumber ->
-            //We look it up in the database
-            findClientLocation(clientNumber, locationNumber)
-                .flatMap(entity ->
-                    Mono.just(locationNumber)
-                        //We load the patch operations for the current location
-                        .map(PatchUtils.filterById(filteredNodeOps, mapper))
-                        //We use filterPatchOperation to remove the location number prefix
-                        .map(node -> PatchUtils.filterPatchOperations(
-                                node,
-                                locationNumber,
-                                getRestrictedPaths(),
-                                mapper
-                            )
+    return PatchUtils.validateMandatoryFields(filteredNodeOps, mandatoryFields)
+        .thenMany(
+            Flux
+                //We will loop through it using a flux from the ids
+                .fromIterable(PatchUtils.loadIds(patch))
+                //For each location that was changed
+                .flatMap(locationNumber ->
+                    //We look it up in the database
+                    findClientLocation(clientNumber, locationNumber)
+                        .flatMap(entity ->
+                            Mono.just(locationNumber)
+                                //We load the patch operations for the current location
+                                .map(PatchUtils.filterById(filteredNodeOps, mapper))
+                                //We use filterPatchOperation to remove the location number prefix
+                                .map(node -> PatchUtils.filterPatchOperations(
+                                        node,
+                                        locationNumber,
+                                        getRestrictedPaths(),
+                                        mapper
+                                    )
+                                )
+                                //We convert the patch operations to a map to be used in an update op
+                                .map(node ->
+                                    ReplacePatchUtils.buildUpdate(
+                                        node,
+                                        fieldToDataField,
+                                        getExtraFields(userId, entity.getRevision() + 1)
+                                    )
+                                )
+                                .map(Update::from)
+                                //We apply the patch to the entity and save it
+                                .flatMap(update -> entityTemplate
+                                    .update(
+                                        getLocationIdentification(clientNumber, locationNumber),
+                                        update,
+                                        ForestClientLocationEntity.class
+                                    )
+                                )
+                                .doOnNext(clientChangesApplied -> log.info(
+                                    "Applying Client Location changes on {} client", clientChangesApplied))
                         )
-                        //We convert the patch operations to a map to be used in an update op
-                        .map(node ->
-                            ReplacePatchUtils.buildUpdate(
-                                node,
-                                fieldToDataField,
-                                getExtraFields(userId, entity.getRevision() + 1)
-                            )
-                        )
-                        .map(Update::from)
-                        //We apply the patch to the entity and save it
-                        .flatMap(update -> entityTemplate
-                            .update(
-                                getLocationIdentification(clientNumber, locationNumber),
-                                update,
-                                ForestClientLocationEntity.class
-                            )
-                        )
-                        .doOnNext(clientChangesApplied -> log.info(
-                            "Applying Client Location changes on {} client", clientChangesApplied))
                 )
         )
         .then();
@@ -239,7 +248,7 @@ public class PatchOperationLocationService implements ClientPatchOperation {
   private Map<String, Object> getExtraFields(String userId, long revision) {
     return Map.of(
         "update_timestamp", LocalDateTime.now(),
-        "update_userid", StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID),
+        "update_userid", userId,
         "update_org_unit", 70L,
         "revision_count", revision
     );

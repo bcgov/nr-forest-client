@@ -217,7 +217,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         .doOnNext(dd("0"))
         .map(pair ->
             Pair.of(pair.getValue(), PatchUtils.filterOperationsByOp(
-                filteredNodeOps,
+                nonDeleteNodeOps,
                 "replace",
                 pair.getKey().getKey(),
                 getRestrictedPaths(),

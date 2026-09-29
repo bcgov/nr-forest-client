@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -165,5 +166,32 @@ class PatchOperationLocationServiceTest {
         .orElse(null);
     org.junit.jupiter.api.Assertions.assertNotNull(emailEntry);
     org.junit.jupiter.api.Assertions.assertNull(emailEntry.getValue());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "[{\"op\":\"remove\",\"path\":\"/addresses/00/addressOne\"}]",
+      "[{\"op\":\"replace\",\"path\":\"/addresses/00/addressOne\",\"value\":null}]",
+      "[{\"op\":\"replace\",\"path\":\"/addresses/00/addressOne\",\"value\":\"\"}]",
+      "[{\"op\":\"replace\",\"path\":\"/addresses/00/addressOne\",\"value\":\"   \"}]",
+      "[{\"op\":\"remove\",\"path\":\"/addresses/00/city\"}]",
+      "[{\"op\":\"replace\",\"path\":\"/addresses/00/city\",\"value\":null}]",
+      "[{\"op\":\"replace\",\"path\":\"/addresses/00/city\",\"value\":\"\"}]",
+      "[{\"op\":\"remove\",\"path\":\"/addresses/00/countryCode\"}]",
+      "[{\"op\":\"replace\",\"path\":\"/addresses/00/countryCode\",\"value\":null}]",
+      "[{\"op\":\"replace\",\"path\":\"/addresses/00/countryCode\",\"value\":\"\"}]"
+  })
+  @DisplayName("Reject removing or clearing mandatory location fields with 400 Bad Request")
+  void shouldFailWhenClearingMandatoryLocationField(String patchJson) {
+    JsonNode patch = mapper.readTree(patchJson);
+
+    StepVerifier.create(service.applyPatch("00000159", patch, mapper, "user1"))
+        .expectErrorMatches(throwable ->
+            throwable instanceof org.springframework.web.server.ResponseStatusException rse
+                && rse.getStatusCode().value() == 400
+        )
+        .verify();
+
+    verify(entityTemplate, never()).update(any(Query.class), any(Update.class), eq(ForestClientLocationEntity.class));
   }
 }

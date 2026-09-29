@@ -170,6 +170,29 @@ class PatchUtilsTest {
   }
 
   @Test
+  @DisplayName("Merge two array nodes")
+  void shouldMergeTwoArrays() throws JacksonException {
+    JsonNode expectation = toNode("[{\"value\":\"1234\"},{\"value\":\"5678\"}]");
+    tools.jackson.databind.node.ArrayNode node1 = mapper.createArrayNode();
+    node1.add(createValueNode("1234"));
+    tools.jackson.databind.node.ArrayNode node2 = mapper.createArrayNode();
+    node2.add(createValueNode("5678"));
+    JsonNode result = PatchUtils.mergeNodes().apply(node1, node2);
+    assertEquals(expectation, result);
+  }
+
+  @Test
+  @DisplayName("Merge object node with array as second operand")
+  void shouldMergeNodeToArraySecondOperand() throws JacksonException {
+    JsonNode expectation = toNode("[{\"value\":\"1234\"},{\"value\":\"5678\"}]");
+    JsonNode node1 = createValueNode("1234");
+    tools.jackson.databind.node.ArrayNode node2 = mapper.createArrayNode();
+    node2.add(createValueNode("5678"));
+    JsonNode result = PatchUtils.mergeNodes().apply(node1, node2);
+    assertEquals(expectation, result);
+  }
+
+  @Test
   @DisplayName("Filter by ID")
   void shouldFilterById() throws JacksonException {
     JsonNode expectation = toNode(

@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.patch;
 
 import static ca.bc.gov.app.ApplicationConstants.DEFAULT_PAGE_SIZE;
 
+import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
@@ -30,7 +31,7 @@ import tools.jackson.databind.ObjectMapper;
 @Order(11)
 public class PatchOperationDoingBusinessService implements ClientPatchOperation {
 
-  public static final String DEFAULT_USER_ID = "idir\\ottomated";
+  public static final String DEFAULT_USER_ID = ApplicationConstants.DEFAULT_USER_ID;
   private static final String PATCH_VALUE_FIELD = "value";
 
   private final ClientDoingBusinessAsRepository dbaRepository;

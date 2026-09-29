@@ -197,4 +197,28 @@ class PatchOperationContactEditServiceTest {
 
     verify(entityTemplate, never()).update(any(Query.class), any(Update.class), eq(ForestClientContactEntity.class));
   }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "[{\"op\":\"remove\",\"path\":\"/contacts/26/contactName\"}]",
+      "[{\"op\":\"replace\",\"path\":\"/contacts/26/contactName\",\"value\":null}]",
+      "[{\"op\":\"replace\",\"path\":\"/contacts/26/contactName\",\"value\":\"\"}]",
+      "[{\"op\":\"replace\",\"path\":\"/contacts/26/contactName\",\"value\":\"   \"}]",
+      "[{\"op\":\"remove\",\"path\":\"/contacts/26/contactTypeCode\"}]",
+      "[{\"op\":\"replace\",\"path\":\"/contacts/26/contactTypeCode\",\"value\":null}]",
+      "[{\"op\":\"replace\",\"path\":\"/contacts/26/contactTypeCode\",\"value\":\"\"}]"
+  })
+  @DisplayName("Reject removing or clearing mandatory contact fields with 400 Bad Request")
+  void shouldFailWhenClearingMandatoryContactField(String patchJson) {
+    JsonNode patch = mapper.readTree(patchJson);
+
+    StepVerifier.create(service.applyPatch("00000159", patch, mapper, "user1"))
+        .expectErrorMatches(throwable ->
+            throwable instanceof org.springframework.web.server.ResponseStatusException rse
+                && rse.getStatusCode().value() == 400
+        )
+        .verify();
+
+    verify(entityTemplate, never()).update(any(Query.class), any(Update.class), eq(ForestClientContactEntity.class));
+  }
 }
