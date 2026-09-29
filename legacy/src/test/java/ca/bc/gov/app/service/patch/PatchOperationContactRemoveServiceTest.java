@@ -12,6 +12,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.r2dbc.core.FetchSpec;
@@ -108,6 +110,23 @@ class PatchOperationContactRemoveServiceTest {
     JsonNode patch = mapper.readTree(
         "[{\"op\":\"remove\",\"path\":\"/contacts/99999999999999999999999999\"}]"
     );
+
+    StepVerifier.create(service.applyPatch("00000159", patch, mapper, "user1"))
+        .verifyComplete();
+
+    verify(databaseClient, never()).sql(any(String.class));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "[{\"op\":\"remove\",\"path\":\"/contacts/26/0\"}]",
+      "[{\"op\":\"remove\",\"path\":\"/contacts/26/0/1\"}]",
+      "[{\"op\":\"remove\",\"path\":\"/contacts/12/34\"}]",
+      "[{\"op\":\"remove\",\"path\":\"/contacts/26/locationCodes/0\"}]"
+  })
+  @DisplayName("Ignore remove operations on numeric subpaths without deleting contact")
+  void shouldIgnoreNumericSubpathRemovalsWithoutDeletingContact(String patchString) {
+    JsonNode patch = mapper.readTree(patchString);
 
     StepVerifier.create(service.applyPatch("00000159", patch, mapper, "user1"))
         .verifyComplete();
