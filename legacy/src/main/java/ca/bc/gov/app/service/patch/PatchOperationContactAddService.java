@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.patch;
 
+import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ForestClientContactDetailsDto;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import ca.bc.gov.app.util.PatchUtils;
@@ -10,6 +11,7 @@ import java.util.Locale;
 import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,7 @@ public class PatchOperationContactAddService implements ClientPatchOperation {
       ObjectMapper mapper,
       String userId
   ) {
+    String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
 
     JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
         patch,
@@ -71,9 +74,9 @@ public class PatchOperationContactAddService implements ClientPatchOperation {
                             dto.faxNumber(),
                             dto.emailAddress(),
                             LocalDateTime.now(),
-                            userId,
+                            effectiveUserId,
                             LocalDateTime.now(),
-                            userId,
+                            effectiveUserId,
                             70L,
                             70L,
                             1L

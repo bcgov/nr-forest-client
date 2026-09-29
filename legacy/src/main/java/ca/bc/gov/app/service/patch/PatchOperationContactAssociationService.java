@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.patch;
 
+import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ContactAssociationDto;
 import ca.bc.gov.app.util.PatchUtils;
 import io.micrometer.observation.annotation.Observed;
@@ -134,6 +135,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
       ObjectMapper mapper,
       String userId
   ) {
+    String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
 
     return
         Flux.fromStream(StreamSupport.stream(patch.spliterator(), false))
@@ -146,8 +148,8 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
             .collectList()
             .flatMap(entries ->
                 processRemove(clientNumber, entries)
-                    .then(processAdd(clientNumber, userId, entries))
-                    .then(processReplace(clientNumber, userId, entries))
+                    .then(processAdd(clientNumber, effectiveUserId, entries))
+                    .then(processReplace(clientNumber, effectiveUserId, entries))
             )
             .then();
 

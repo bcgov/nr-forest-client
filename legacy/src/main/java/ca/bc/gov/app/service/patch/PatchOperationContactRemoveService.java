@@ -96,13 +96,18 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
             )
             .filter(node -> !node.get("path").asText().contains("locationCodes"))
             .map(node -> node.get("path").asText().replace("/", StringUtils.EMPTY))
+            .filter(StringUtils::isNumeric)
             .map(Long::parseLong)
             .collectList()
-            .flatMap(entityIds -> verifyNoneInUse(clientNumber, entityIds)
-                .thenMany(removeAll(clientNumber, entityIds))
-                .then()
-                .as(transactionalOperator::transactional)
-            );
+            .flatMap(entityIds -> {
+              if (entityIds.isEmpty()) {
+                return Mono.empty();
+              }
+              return verifyNoneInUse(clientNumber, entityIds)
+                  .thenMany(removeAll(clientNumber, entityIds))
+                  .then()
+                  .as(transactionalOperator::transactional);
+            });
   }
 
   /**

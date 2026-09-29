@@ -98,13 +98,14 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       ObjectMapper mapper,
       String userId
   ) {
+    String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
 
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
       return
           Flux.concat(
-                  applyRemove(clientNumber, patch, mapper, userId),
-                  applyReplace(clientNumber, patch, mapper, userId),
-                  applyAdd(clientNumber, patch, mapper, userId)
+                  applyRemove(clientNumber, patch, mapper, effectiveUserId),
+                  applyReplace(clientNumber, patch, mapper, effectiveUserId),
+                  applyAdd(clientNumber, patch, mapper, effectiveUserId)
               )
               .then();
     }
@@ -118,12 +119,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       ObjectMapper mapper,
       String userId
   ) {
-    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
-        patch,
-        "remove",
-        getPrefix(),
-        mapper
-    );
+    JsonNode filteredNodeOps = filterRemoveOperations(patch, mapper);
 
     if (filteredNodeOps.isEmpty()) {
       return Mono.empty();
@@ -135,6 +131,37 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         .filter(entry -> StringUtils.isNotBlank(entry.getKey()))
         .flatMap(entry -> processRemove(clientNumber, entry.getKey(), userId))
         .then();
+  }
+
+  private JsonNode filterRemoveOperations(JsonNode patch, ObjectMapper mapper) {
+    tools.jackson.databind.node.ArrayNode filtered = mapper.createArrayNode();
+    patch.forEach(op -> {
+      if (!op.has("path") || !op.has("op")) {
+        return;
+      }
+      String path = op.get("path").asText();
+      if (!path.startsWith("/" + getPrefix())) {
+        return;
+      }
+      String opName = op.get("op").asText();
+      String newPath = PatchUtils.removePrefix(path, getPrefix());
+      String idCandidate = newPath.startsWith("/") ? newPath.substring(1) : newPath;
+
+      if ("remove".equalsIgnoreCase(opName)) {
+        tools.jackson.databind.node.ObjectNode copy = (tools.jackson.databind.node.ObjectNode) op.deepCopy();
+        copy.put("path", newPath);
+        filtered.add(copy);
+      } else if ("replace".equalsIgnoreCase(opName) && identifierPattern.matcher(idCandidate).matches()) {
+        JsonNode valueNode = op.get(PATCH_VALUE_FIELD);
+        if (valueNode == null || valueNode.isNull() || StringUtils.isBlank(valueNode.asText())) {
+          tools.jackson.databind.node.ObjectNode copy = (tools.jackson.databind.node.ObjectNode) op.deepCopy();
+          copy.put("path", newPath);
+          copy.put("op", "remove");
+          filtered.add(copy);
+        }
+      }
+    });
+    return filtered;
   }
 
   private Mono<Void> applyReplace(
@@ -150,13 +177,26 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         mapper
     );
 
-    if (filteredNodeOps.isEmpty()) {
+    tools.jackson.databind.node.ArrayNode nonDeleteNodeOps = mapper.createArrayNode();
+    filteredNodeOps.forEach(op -> {
+      String path = op.path("path").asText();
+      String idCandidate = path.startsWith("/") ? path.substring(1) : path;
+      if (identifierPattern.matcher(idCandidate).matches()) {
+        JsonNode valueNode = op.get(PATCH_VALUE_FIELD);
+        if (valueNode == null || valueNode.isNull() || StringUtils.isBlank(valueNode.asText())) {
+          return;
+        }
+      }
+      nonDeleteNodeOps.add(op);
+    });
+
+    if (nonDeleteNodeOps.isEmpty()) {
       return Mono.empty();
     }
-    log.info("Applying replace operations for related clients: {}", filteredNodeOps);
+    log.info("Applying replace operations for related clients: {}", nonDeleteNodeOps);
 
     return Flux
-        .fromIterable(PatchUtils.loadNonNumericIds(filteredNodeOps).entrySet())
+        .fromIterable(PatchUtils.loadNonNumericIds(nonDeleteNodeOps).entrySet())
         .doOnNext(dd("1"))
         .flatMap(locationEntry -> {
           Matcher matcher = identifierPattern.matcher(locationEntry.getKey());

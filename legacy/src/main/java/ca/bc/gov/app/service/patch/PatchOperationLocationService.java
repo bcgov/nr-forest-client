@@ -102,10 +102,11 @@ public class PatchOperationLocationService implements ClientPatchOperation {
       String userId) {
     // If there's a patch operation targeting client location data we move ahead
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
+      String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
       return
           Flux.concat(
-                  applyReplacePatch(clientNumber, patch, mapper, userId),
-                  applyAddPatch(clientNumber, patch, mapper, userId)
+                  applyReplacePatch(clientNumber, patch, mapper, effectiveUserId),
+                  applyAddPatch(clientNumber, patch, mapper, effectiveUserId)
               )
               .then();
     }
@@ -182,14 +183,22 @@ public class PatchOperationLocationService implements ClientPatchOperation {
    */
   private Mono<Void> applyReplacePatch(String clientNumber, JsonNode patch, ObjectMapper mapper,
       String userId) {
-    //We load just the replace operations
-    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
+    //We load replace and remove operations
+    JsonNode replaceOps = PatchUtils.filterOperationsByOp(
         patch,
         "replace",
         getPrefix(),
         getRestrictedPaths(),
         mapper
     );
+    JsonNode removeOps = PatchUtils.filterOperationsByOp(
+        patch,
+        "remove",
+        getPrefix(),
+        getRestrictedPaths(),
+        mapper
+    );
+    JsonNode filteredNodeOps = PatchUtils.mergeNodes().apply(replaceOps, removeOps);
 
     return Flux
         //We will loop through it using a flux from the ids
@@ -237,7 +246,7 @@ public class PatchOperationLocationService implements ClientPatchOperation {
   private Map<String, Object> getExtraFields(String userId, long revision) {
     return Map.of(
         "update_timestamp", LocalDateTime.now(),
-        "update_userid", userId,
+        "update_userid", StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID),
         "update_org_unit", 70L,
         "revision_count", revision
     );

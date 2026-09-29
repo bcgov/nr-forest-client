@@ -452,12 +452,16 @@ public class PatchUtils {
   public static BinaryOperator<JsonNode> mergeNodes() {
     return (node1, node2) -> {
       ArrayNode arrayNode = new JsonMapper().createArrayNode();
-      if (node1 instanceof ArrayNode) {
-        arrayNode = (ArrayNode) node1.deepCopy();
+      if (node1 instanceof ArrayNode array1) {
+        arrayNode = (ArrayNode) array1.deepCopy();
       } else {
         arrayNode.add(node1);
       }
-      arrayNode.add(node2);
+      if (node2 instanceof ArrayNode array2) {
+        arrayNode.addAll(array2);
+      } else {
+        arrayNode.add(node2);
+      }
       return arrayNode;
     };
   }

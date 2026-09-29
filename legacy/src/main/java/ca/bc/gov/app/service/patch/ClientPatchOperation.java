@@ -1,10 +1,12 @@
 package ca.bc.gov.app.service.patch;
 
+import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.util.PatchUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -77,7 +79,7 @@ public interface ClientPatchOperation {
         .map(this::normalizeNames)
         //Can only happen if there's a change
         .map(client -> client
-            .withUpdatedBy(userId) // Is still missing the user org unit
+            .withUpdatedBy(StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID)) // Is still missing the user org unit
             .withUpdatedAt(LocalDateTime.now())
             .withRevision(client.getRevision() + 1)
         );

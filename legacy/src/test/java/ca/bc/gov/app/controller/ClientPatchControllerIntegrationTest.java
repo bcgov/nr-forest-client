@@ -358,6 +358,14 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.clientTypeCode",
             "C",
             "F"
+        ),
+        argumentSet(
+            "Clear location email via null value",
+            "00000171",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/emailAddress\",\"value\":null}]",
+            "$.addresses[0].emailAddress",
+            "BCULLRFORD0@BOSTON.COM",
+            null
         )
     );
   }
@@ -371,6 +379,14 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$[1].clientNumber",
             "00000158",
             null
+        ),
+        argumentSet(
+            "Remove related client via empty replace",
+            "00000001",
+            "[{ \"op\": \"replace\", \"path\": \"/relatedClients/0000000100FM0000000200\", \"value\": \"\" }]",
+            "$.length()",
+            1,
+            0
         ),
         argumentSet(
             "Update related client",

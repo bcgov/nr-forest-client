@@ -1,5 +1,6 @@
 package ca.bc.gov.app.util;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -7,7 +8,6 @@ import java.util.stream.StreamSupport;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import tools.jackson.databind.JsonNode;
 
@@ -30,20 +30,24 @@ public class ReplacePatchUtils {
 
     // Function that generates the update map value, based on the type of the value
     Function<JsonNode, Object> valueExtractor = node -> {
-      if (node.get("value").isTextual()) {
-        return node.get("value").asText();
-      } else if (node.get("value").isBoolean()) {
-        return node.get("value").asBoolean();
-      } else if (node.get("value").isNumber()) {
-        return node.get("value").numberValue();
-      } else if (node.get("value").isArray()) {
+      if (!node.has("value") || node.get("value") == null || node.get("value").isNull()) {
+        return null;
+      }
+      JsonNode valNode = node.get("value");
+      if (valNode.isTextual()) {
+        return valNode.asText();
+      } else if (valNode.isBoolean()) {
+        return valNode.asBoolean();
+      } else if (valNode.isNumber()) {
+        return valNode.numberValue();
+      } else if (valNode.isArray()) {
         return StreamSupport
-            .stream(node.get("value").spliterator(), false)
+            .stream(valNode.spliterator(), false)
             .map(JsonNode::asText)
             .collect(Collectors.toList());
       } else {
-        String value = node.get("value").asText();
-        return value != null && !value.equals("null") ? value : StringUtils.EMPTY;
+        String value = valNode.asText();
+        return value != null && !value.equals("null") ? value : null;
       }
     };
 
@@ -52,29 +56,20 @@ public class ReplacePatchUtils {
         fieldMap.get(node.get("path").asText()));
 
     // Filter the patch operations that are in the field map,
-    // to prevent fields that are not supposed to be here
-    Map<SqlIdentifier, Object> updateMap = StreamSupport
-        .stream(patch.spliterator(), false)
-        .filter(entry -> fieldMap.containsKey(entry.get("path").asText()))
-        .collect(
-            Collectors.toMap(
-                keyExtractor,
-                valueExtractor
-            )
-        );
+    // to prevent fields that are not supposed to be here.
+    // Use LinkedHashMap to safely support null values (Collectors.toMap throws NPE on null).
+    Map<SqlIdentifier, Object> updateMap = new LinkedHashMap<>();
+    for (JsonNode entry : patch) {
+      if (entry.has("path") && fieldMap.containsKey(entry.get("path").asText())) {
+        updateMap.put(keyExtractor.apply(entry), valueExtractor.apply(entry));
+      }
+    }
 
     // If we have extra fields, such as updated user, we add them here
     if (extraFields != null) {
-      updateMap.putAll(
-          extraFields
-              .entrySet().stream()
-              .collect(
-                  Collectors.toMap(
-                      entry -> SqlIdentifier.unquoted(entry.getKey()),
-                      Map.Entry::getValue
-                  )
-              )
-      );
+      for (Map.Entry<String, Object> entry : extraFields.entrySet()) {
+        updateMap.put(SqlIdentifier.unquoted(entry.getKey()), entry.getValue());
+      }
     }
 
     return updateMap;

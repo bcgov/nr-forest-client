@@ -73,13 +73,23 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
       ObjectMapper mapper,
       String userId
   ) {
-    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
+    String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
+
+    JsonNode replaceOps = PatchUtils.filterOperationsByOp(
         patch,
         "replace",
         getPrefix(),
         getRestrictedPaths(),
         mapper
     );
+    JsonNode removeOps = PatchUtils.filterOperationsByOp(
+        patch,
+        "remove",
+        getPrefix(),
+        getRestrictedPaths(),
+        mapper
+    );
+    JsonNode filteredNodeOps = PatchUtils.mergeNodes().apply(replaceOps, removeOps);
 
     return
         // Load ids
@@ -105,7 +115,7 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
                             .map(entity -> ReplacePatchUtils.buildUpdate(
                                     node,
                                     fieldToDataField,
-                                    getExtraFields(userId, entity.getRevision() + 1)
+                                    getExtraFields(effectiveUserId, entity.getRevision() + 1)
                                 )
                             )
                     )
@@ -136,7 +146,7 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
   private Map<String, Object> getExtraFields(String userId, long revision) {
     return Map.of(
         "update_timestamp", LocalDateTime.now(),
-        "update_userid", userId,
+        "update_userid", StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID),
         "update_org_unit", 70L,
         "revision_count", revision
     );
