@@ -186,7 +186,7 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
       }
       if (opNode.has(PATCH_VALUE_FIELD)) {
         JsonNode valueNode = opNode.get(PATCH_VALUE_FIELD);
-        return valueNode.isNull() || StringUtils.isBlank(valueNode.asText());
+        return valueNode.isNull() || (valueNode.isTextual() && StringUtils.isBlank(valueNode.asText()));
       }
     }
     return false;

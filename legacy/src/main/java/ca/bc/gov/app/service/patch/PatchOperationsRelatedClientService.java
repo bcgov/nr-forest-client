@@ -153,7 +153,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         filtered.add(copy);
       } else if ("replace".equalsIgnoreCase(opName) && identifierPattern.matcher(idCandidate).matches()) {
         JsonNode valueNode = op.get(PATCH_VALUE_FIELD);
-        if (valueNode == null || valueNode.isNull() || StringUtils.isBlank(valueNode.asText())) {
+        if (isExplicitNullOrBlank(valueNode)) {
           tools.jackson.databind.node.ObjectNode copy = (tools.jackson.databind.node.ObjectNode) op.deepCopy();
           copy.put("path", newPath);
           copy.put("op", "remove");
@@ -183,7 +183,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       String idCandidate = path.startsWith("/") ? path.substring(1) : path;
       if (identifierPattern.matcher(idCandidate).matches()) {
         JsonNode valueNode = op.get(PATCH_VALUE_FIELD);
-        if (valueNode == null || valueNode.isNull() || StringUtils.isBlank(valueNode.asText())) {
+        if (isExplicitNullOrBlank(valueNode)) {
           return;
         }
       }
@@ -509,5 +509,10 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
 
   private <T> Consumer<T> dd(String label) {
     return v -> log.info("[{}] : {}", label, v);
+  }
+
+  private static boolean isExplicitNullOrBlank(JsonNode valueNode) {
+    return valueNode != null
+        && (valueNode.isNull() || (valueNode.isTextual() && StringUtils.isBlank(valueNode.asText())));
   }
 }
