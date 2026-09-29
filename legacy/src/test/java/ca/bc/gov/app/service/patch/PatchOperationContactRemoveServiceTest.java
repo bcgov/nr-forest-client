@@ -101,4 +101,17 @@ class PatchOperationContactRemoveServiceTest {
 
     verify(databaseClient, org.mockito.Mockito.atLeastOnce()).sql(any(String.class));
   }
+
+  @Test
+  @DisplayName("Ignore remove operations with overflow or non-long numeric paths without throwing NumberFormatException")
+  void shouldIgnoreOverflowContactIdsWithoutError() {
+    JsonNode patch = mapper.readTree(
+        "[{\"op\":\"remove\",\"path\":\"/contacts/99999999999999999999999999\"}]"
+    );
+
+    StepVerifier.create(service.applyPatch("00000159", patch, mapper, "user1"))
+        .verifyComplete();
+
+    verify(databaseClient, never()).sql(any(String.class));
+  }
 }

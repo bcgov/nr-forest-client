@@ -88,7 +88,7 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
         // Load ids
         Flux
             .fromIterable(PatchUtils.loadIds(filteredNodeOps))
-            .filter(StringUtils::isNumeric)
+            .filter(id -> PatchUtils.parseLongSafely(id).isPresent())
             .flatMap(entityId ->
                 Mono.just(entityId)
                     // Get changes for just that ID

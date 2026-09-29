@@ -141,6 +141,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
         Flux.fromStream(StreamSupport.stream(patch.spliterator(), false))
             .filter(node -> node.has("path"))
             .filter(node -> node.get("path").asText().contains("locationCodes"))
+            .filter(node -> PatchUtils.parseLongSafely(PatchUtils.loadId(node)).isPresent())
             .flatMap(node ->
                 getLocationCodeOrder(clientNumber, Long.parseLong(PatchUtils.loadId(node)))
                     .map(convertToAction(node))

@@ -1,6 +1,7 @@
 package ca.bc.gov.app.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayName("Unit Test | Patch Utils")
 class PatchUtilsTest {
@@ -175,6 +177,42 @@ class PatchUtilsTest {
     );
 
     assertEquals(expectation, PatchUtils.filterById(toNode(CONTENT), mapper).apply("0"));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "26, 26",
+      "0, 0",
+      "-1, -1",
+      "9223372036854775807, 9223372036854775807",
+      "-9223372036854775808, -9223372036854775808"
+  })
+  @DisplayName("Parse valid long safely")
+  void shouldParseValidLongSafely(String input, Long expected) {
+    assertTrue(PatchUtils.parseLongSafely(input).isPresent());
+    assertEquals(expected, PatchUtils.parseLongSafely(input).get());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "99999999999999999999999999",
+      "9223372036854775808",
+      "-9223372036854775809",
+      "abc",
+      "26emailAddress",
+      "12.34",
+      "",
+      "   "
+  })
+  @DisplayName("Safely return empty Optional for invalid or overflow long strings")
+  void shouldReturnEmptyForInvalidOrOverflowLong(String input) {
+    assertTrue(PatchUtils.parseLongSafely(input).isEmpty());
+  }
+
+  @Test
+  @DisplayName("Safely return empty Optional for null string")
+  void shouldReturnEmptyForNullLong() {
+    assertTrue(PatchUtils.parseLongSafely(null).isEmpty());
   }
 
   @MethodSource("idsAndSubIds")

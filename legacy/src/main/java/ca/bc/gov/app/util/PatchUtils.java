@@ -535,4 +535,23 @@ public class PatchUtils {
     }
   }
 
+  /**
+   * Safely parses a string into a {@link Long}.
+   *
+   * @param value the string to parse
+   * @return an {@link Optional} containing the parsed {@link Long}, or {@link Optional#empty()} if
+   *         the string is null, blank, not numeric, or exceeds the range of {@link Long}.
+   */
+  public static Optional<Long> parseLongSafely(String value) {
+    if (StringUtils.isBlank(value)) {
+      return Optional.empty();
+    }
+    try {
+      return Optional.of(Long.parseLong(value));
+    } catch (NumberFormatException e) {
+      return Optional.empty();
+    }
+  }
+
 }
+

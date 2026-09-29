@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -182,5 +183,18 @@ class PatchOperationContactEditServiceTest {
         .orElse(null);
     org.junit.jupiter.api.Assertions.assertNotNull(emailEntry);
     org.junit.jupiter.api.Assertions.assertNull(emailEntry.getValue());
+  }
+
+  @Test
+  @DisplayName("Ignore operations with overflow contact IDs without throwing NumberFormatException")
+  void shouldIgnoreOverflowContactIdsWithoutError() {
+    JsonNode patch = mapper.readTree(
+        "[{\"op\":\"replace\",\"path\":\"/contacts/99999999999999999999999999/emailAddress\",\"value\":\"new@test.com\"}]"
+    );
+
+    StepVerifier.create(service.applyPatch("00000159", patch, mapper, "user1"))
+        .verifyComplete();
+
+    verify(entityTemplate, never()).update(any(Query.class), any(Update.class), eq(ForestClientContactEntity.class));
   }
 }
