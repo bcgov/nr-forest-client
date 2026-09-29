@@ -382,11 +382,11 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         ),
         argumentSet(
             "Remove related client via empty replace",
-            "00000001",
-            "[{ \"op\": \"replace\", \"path\": \"/relatedClients/0000000100FM0000000200\", \"value\": \"\" }]",
-            "$.length()",
-            1,
-            0
+            "00000158",
+            "[{ \"op\": \"replace\", \"path\": \"/relatedClients/0000015800AG0000013700\", \"value\": \"\" }]",
+            "$[0].clientNumber",
+            "00000158",
+            null
         ),
         argumentSet(
             "Update related client",
