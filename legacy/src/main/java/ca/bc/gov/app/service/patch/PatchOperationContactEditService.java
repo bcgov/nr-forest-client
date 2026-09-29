@@ -9,6 +9,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -75,21 +76,13 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
   ) {
     String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
 
-    JsonNode replaceOps = PatchUtils.filterOperationsByOp(
+    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOps(
         patch,
-        "replace",
+        Set.of("replace", "remove"),
         getPrefix(),
         getRestrictedPaths(),
         mapper
     );
-    JsonNode removeOps = PatchUtils.filterOperationsByOp(
-        patch,
-        "remove",
-        getPrefix(),
-        getRestrictedPaths(),
-        mapper
-    );
-    JsonNode filteredNodeOps = PatchUtils.mergeNodes().apply(replaceOps, removeOps);
 
     return
         // Load ids

@@ -136,4 +136,51 @@ class PatchOperationContactEditServiceTest {
             .orElse(null)
     );
   }
+
+  @Test
+  @DisplayName("Preserve operation order when remove is followed by replace")
+  void shouldPreserveOrderWhenRemoveFollowedByReplace() {
+    JsonNode patch = mapper.readTree(
+        "[{\"op\":\"remove\",\"path\":\"/contacts/26/emailAddress\"},"
+            + "{\"op\":\"replace\",\"path\":\"/contacts/26/emailAddress\",\"value\":\"final@test.com\"}]"
+    );
+
+    StepVerifier.create(service.applyPatch("00000159", patch, mapper, "user1"))
+        .verifyComplete();
+
+    ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
+    verify(entityTemplate).update(any(Query.class), updateCaptor.capture(), eq(ForestClientContactEntity.class));
+
+    Update update = updateCaptor.getValue();
+    assertEquals("final@test.com",
+        update.getAssignments().entrySet().stream()
+            .filter(e -> e.getKey().getReference().equalsIgnoreCase("email_address"))
+            .map(Map.Entry::getValue)
+            .findFirst()
+            .orElse(null)
+    );
+  }
+
+  @Test
+  @DisplayName("Preserve operation order when replace is followed by remove")
+  void shouldPreserveOrderWhenReplaceFollowedByRemove() {
+    JsonNode patch = mapper.readTree(
+        "[{\"op\":\"replace\",\"path\":\"/contacts/26/emailAddress\",\"value\":\"temp@test.com\"},"
+            + "{\"op\":\"remove\",\"path\":\"/contacts/26/emailAddress\"}]"
+    );
+
+    StepVerifier.create(service.applyPatch("00000159", patch, mapper, "user1"))
+        .verifyComplete();
+
+    ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
+    verify(entityTemplate).update(any(Query.class), updateCaptor.capture(), eq(ForestClientContactEntity.class));
+
+    Update update = updateCaptor.getValue();
+    Map.Entry<?, Object> emailEntry = update.getAssignments().entrySet().stream()
+        .filter(e -> e.getKey().getReference().equalsIgnoreCase("email_address"))
+        .findFirst()
+        .orElse(null);
+    org.junit.jupiter.api.Assertions.assertNotNull(emailEntry);
+    org.junit.jupiter.api.Assertions.assertNull(emailEntry.getValue());
+  }
 }

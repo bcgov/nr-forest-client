@@ -94,6 +94,32 @@ class PatchUtilsTest {
     assertEquals(expectation, result.toString());
   }
 
+  @Test
+  @DisplayName("Filter operations by multiple ops preserving order")
+  void shouldFilterOperationsByMultipleOpsPreservingOrder() throws JacksonException {
+    String input = """
+        [
+          {"op":"remove","path":"/contacts/26/emailAddress"},
+          {"op":"replace","path":"/contacts/26/emailAddress","value":"test@example.com"},
+          {"op":"add","path":"/contacts/26/locationCodes/0","value":"00"}
+        ]
+        """;
+    JsonNode patch = toNode(input);
+    JsonNode result = PatchUtils.filterOperationsByOps(
+        patch,
+        Set.of("replace", "remove"),
+        "contacts",
+        List.of("/emailAddress"),
+        mapper
+    );
+    assertEquals(2, result.size());
+    assertEquals("remove", result.get(0).get("op").asText());
+    assertEquals("/26/emailAddress", result.get(0).get("path").asText());
+    assertEquals("replace", result.get(1).get("op").asText());
+    assertEquals("/26/emailAddress", result.get(1).get("path").asText());
+    assertEquals("test@example.com", result.get(1).get("value").asText());
+  }
+
   @ParameterizedTest
   @CsvSource({
       "'/value','user','/value'",

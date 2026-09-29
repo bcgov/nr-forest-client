@@ -385,20 +385,19 @@ public class PatchUtils {
   }
 
   /**
-   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and
-   * restricted paths.
+   * Filters the operations in a JSON Patch based on a set of specified operation names, prefix,
+   * and restricted paths, preserving the original sequence of operations.
    *
    * @param patch           the JSON Patch to filter
-   * @param operationName   the name of the operation to filter by (e.g., "add", "remove",
-   *                        "replace")
+   * @param operationNames  the set of operation names to filter by (e.g., Set.of("replace", "remove"))
    * @param prefix          the prefix to filter the operations by
    * @param restrictedPaths the list of restricted paths to filter the operations by
    * @param mapper          the ObjectMapper to use for JSON processing
-   * @return a JsonNode containing the filtered operations
+   * @return a JsonNode containing the filtered operations in their original order
    */
-  public static JsonNode filterOperationsByOp(
+  public static JsonNode filterOperationsByOps(
       JsonNode patch,
-      String operationName,
+      Set<String> operationNames,
       String prefix,
       List<String> restrictedPaths,
       ObjectMapper mapper
@@ -422,7 +421,7 @@ public class PatchUtils {
           if (
               StringUtils.isNotBlank(prefix)
               && path.startsWith(String.format("/%s", prefix))
-              && operation.get("op").asText().equals(operationName)
+              && operationNames.contains(operation.get("op").asText())
           ) {
             // We generate a new operation path without the prefix
             String newPath = removePrefix(path, prefix);
@@ -442,6 +441,34 @@ public class PatchUtils {
         });
 
     return filteredNode;
+  }
+
+  /**
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and
+   * restricted paths.
+   *
+   * @param patch           the JSON Patch to filter
+   * @param operationName   the name of the operation to filter by (e.g., "add", "remove",
+   *                        "replace")
+   * @param prefix          the prefix to filter the operations by
+   * @param restrictedPaths the list of restricted paths to filter the operations by
+   * @param mapper          the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations
+   */
+  public static JsonNode filterOperationsByOp(
+      JsonNode patch,
+      String operationName,
+      String prefix,
+      List<String> restrictedPaths,
+      ObjectMapper mapper
+  ) {
+    return filterOperationsByOps(
+        patch,
+        Set.of(operationName),
+        prefix,
+        restrictedPaths,
+        mapper
+    );
   }
 
   /**

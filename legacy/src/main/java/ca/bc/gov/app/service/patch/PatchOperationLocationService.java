@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -183,22 +184,14 @@ public class PatchOperationLocationService implements ClientPatchOperation {
    */
   private Mono<Void> applyReplacePatch(String clientNumber, JsonNode patch, ObjectMapper mapper,
       String userId) {
-    //We load replace and remove operations
-    JsonNode replaceOps = PatchUtils.filterOperationsByOp(
+    //We load replace and remove operations preserving original patch order
+    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOps(
         patch,
-        "replace",
+        Set.of("replace", "remove"),
         getPrefix(),
         getRestrictedPaths(),
         mapper
     );
-    JsonNode removeOps = PatchUtils.filterOperationsByOp(
-        patch,
-        "remove",
-        getPrefix(),
-        getRestrictedPaths(),
-        mapper
-    );
-    JsonNode filteredNodeOps = PatchUtils.mergeNodes().apply(replaceOps, removeOps);
 
     return Flux
         //We will loop through it using a flux from the ids
