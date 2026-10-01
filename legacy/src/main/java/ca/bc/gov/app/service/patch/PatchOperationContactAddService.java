@@ -20,6 +20,9 @@ import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+/**
+ * Patch operation that handles adding new client contacts.
+ */
 @Service
 @Slf4j
 @Observed
@@ -46,7 +49,8 @@ public class PatchOperationContactAddService implements ClientPatchOperation {
       ObjectMapper mapper,
       String userId
   ) {
-    String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
+    String effectiveUserId =
+        StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
 
     JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
         patch,

@@ -283,8 +283,8 @@ public class PatchUtils {
                     .map(Pair::getKey)
                     .stream()
                     .filter(StringUtils::isNotBlank)
-                    .collect(Collectors.toSet())
-                , (previousSet, nextSet) -> {
+                    .collect(Collectors.toSet()),
+                (previousSet, nextSet) -> {
                   previousSet.addAll(nextSet);
                   return previousSet;
                 });
@@ -294,6 +294,12 @@ public class PatchUtils {
     return subIds;
   }
 
+  /**
+   * Loads non-numeric identifiers and their associated sub-paths from the patch operations.
+   *
+   * @param filteredNode the JSON node containing filtered patch operations
+   * @return a map of identifiers to sets of sub-paths
+   */
   public static Map<String, Set<String>> loadNonNumericIds(JsonNode filteredNode) {
     Map<String, Set<String>> subIds = new LinkedHashMap<>();
     filteredNode.forEach(node -> {
@@ -388,11 +394,40 @@ public class PatchUtils {
   }
 
   /**
+   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and
+   * restricted paths.
+   *
+   * @param patch           the JSON Patch to filter
+   * @param operationName   the name of the operation to filter by (e.g., "add", "remove",
+   *                        "replace")
+   * @param prefix          the prefix to filter the operations by
+   * @param restrictedPaths the list of restricted paths to filter the operations by
+   * @param mapper          the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations
+   */
+  public static JsonNode filterOperationsByOp(
+      JsonNode patch,
+      String operationName,
+      String prefix,
+      List<String> restrictedPaths,
+      ObjectMapper mapper
+  ) {
+    return filterOperationsByOps(
+        patch,
+        Set.of(operationName),
+        prefix,
+        restrictedPaths,
+        mapper
+    );
+  }
+
+  /**
    * Filters the operations in a JSON Patch based on a set of specified operation names, prefix,
    * and restricted paths, preserving the original sequence of operations.
    *
    * @param patch           the JSON Patch to filter
-   * @param operationNames  the set of operation names to filter by (e.g., Set.of("replace", "remove"))
+   * @param operationNames  the set of operation names to filter by
+   *                        (e.g., Set.of("replace", "remove"))
    * @param prefix          the prefix to filter the operations by
    * @param restrictedPaths the list of restricted paths to filter the operations by
    * @param mapper          the ObjectMapper to use for JSON processing
@@ -444,34 +479,6 @@ public class PatchUtils {
         });
 
     return filteredNode;
-  }
-
-  /**
-   * Filters the operations in a JSON Patch based on a specified operation name, prefix, and
-   * restricted paths.
-   *
-   * @param patch           the JSON Patch to filter
-   * @param operationName   the name of the operation to filter by (e.g., "add", "remove",
-   *                        "replace")
-   * @param prefix          the prefix to filter the operations by
-   * @param restrictedPaths the list of restricted paths to filter the operations by
-   * @param mapper          the ObjectMapper to use for JSON processing
-   * @return a JsonNode containing the filtered operations
-   */
-  public static JsonNode filterOperationsByOp(
-      JsonNode patch,
-      String operationName,
-      String prefix,
-      List<String> restrictedPaths,
-      ObjectMapper mapper
-  ) {
-    return filterOperationsByOps(
-        patch,
-        Set.of(operationName),
-        prefix,
-        restrictedPaths,
-        mapper
-    );
   }
 
   /**
@@ -557,7 +564,8 @@ public class PatchUtils {
   }
 
   /**
-   * Checks if a JSON Patch operation represents a clearing operation (remove, or replace with null/blank).
+   * Checks if a JSON Patch operation represents a clearing operation (remove, or replace with
+   * null/blank).
    *
    * @param op the operation node to check
    * @return true if the operation clears a field, false otherwise
@@ -585,9 +593,13 @@ public class PatchUtils {
    *
    * @param patchOps the filtered patch operations
    * @param mandatoryFields the set of field path suffixes that are mandatory
-   * @return a Mono that completes if validation passes, or emits a ResponseStatusException (400) if a mandatory field is cleared
+   * @return a Mono that completes if validation passes, or emits a ResponseStatusException (400)
+   *     if a mandatory field is cleared
    */
-  public static Mono<Void> validateMandatoryFields(JsonNode patchOps, Set<String> mandatoryFields) {
+  public static Mono<Void> validateMandatoryFields(
+      JsonNode patchOps,
+      Set<String> mandatoryFields
+  ) {
     if (patchOps != null && mandatoryFields != null && !mandatoryFields.isEmpty()) {
       for (JsonNode op : patchOps) {
         if (op.has("path") && isClearingOperation(op)) {
@@ -596,7 +608,10 @@ public class PatchUtils {
             if (path.endsWith(mandatoryField)) {
               return Mono.error(new ResponseStatusException(
                   HttpStatus.BAD_REQUEST,
-                  String.format("Field %s is mandatory and cannot be removed or set to null", mandatoryField)
+                  String.format(
+                      "Field %s is mandatory and cannot be removed or set to null",
+                      mandatoryField
+                  )
               ));
             }
           }

@@ -77,8 +77,11 @@ class PatchOperationContactEditServiceTest {
     when(executeSpec.fetch()).thenReturn(fetchSpec);
     when(fetchSpec.all()).thenReturn(Flux.just(Map.of("CLIENT_CONTACT_ID", "26")));
 
-    when(entityTemplate.update(any(Query.class), any(Update.class), eq(ForestClientContactEntity.class)))
-        .thenReturn(Mono.just(1L));
+    when(entityTemplate.update(
+        any(Query.class),
+        any(Update.class),
+        eq(ForestClientContactEntity.class)
+    )).thenReturn(Mono.just(1L));
 
     service = new PatchOperationContactEditService(entityTemplate);
   }
@@ -109,10 +112,15 @@ class PatchOperationContactEditServiceTest {
         .verifyComplete();
 
     ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
-    verify(entityTemplate).update(any(Query.class), updateCaptor.capture(), eq(ForestClientContactEntity.class));
+    verify(entityTemplate).update(
+        any(Query.class),
+        updateCaptor.capture(),
+        eq(ForestClientContactEntity.class)
+    );
 
     Update update = updateCaptor.getValue();
-    assertTrue(update.getAssignments().keySet().stream().anyMatch(k -> k.getReference().equalsIgnoreCase("email_address")));
+    assertTrue(update.getAssignments().keySet().stream()
+        .anyMatch(k -> k.getReference().equalsIgnoreCase("email_address")));
   }
 
   @Test
@@ -126,7 +134,11 @@ class PatchOperationContactEditServiceTest {
         .verifyComplete();
 
     ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
-    verify(entityTemplate).update(any(Query.class), updateCaptor.capture(), eq(ForestClientContactEntity.class));
+    verify(entityTemplate).update(
+        any(Query.class),
+        updateCaptor.capture(),
+        eq(ForestClientContactEntity.class)
+    );
 
     Update update = updateCaptor.getValue();
     assertEquals(ApplicationConstants.DEFAULT_USER_ID,
@@ -143,14 +155,19 @@ class PatchOperationContactEditServiceTest {
   void shouldPreserveOrderWhenRemoveFollowedByReplace() {
     JsonNode patch = mapper.readTree(
         "[{\"op\":\"remove\",\"path\":\"/contacts/26/emailAddress\"},"
-            + "{\"op\":\"replace\",\"path\":\"/contacts/26/emailAddress\",\"value\":\"final@test.com\"}]"
+            + "{\"op\":\"replace\",\"path\":\"/contacts/26/emailAddress\","
+            + "\"value\":\"final@test.com\"}]"
     );
 
     StepVerifier.create(service.applyPatch("00000159", patch, mapper, "user1"))
         .verifyComplete();
 
     ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
-    verify(entityTemplate).update(any(Query.class), updateCaptor.capture(), eq(ForestClientContactEntity.class));
+    verify(entityTemplate).update(
+        any(Query.class),
+        updateCaptor.capture(),
+        eq(ForestClientContactEntity.class)
+    );
 
     Update update = updateCaptor.getValue();
     assertEquals("final@test.com",
@@ -174,7 +191,11 @@ class PatchOperationContactEditServiceTest {
         .verifyComplete();
 
     ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
-    verify(entityTemplate).update(any(Query.class), updateCaptor.capture(), eq(ForestClientContactEntity.class));
+    verify(entityTemplate).update(
+        any(Query.class),
+        updateCaptor.capture(),
+        eq(ForestClientContactEntity.class)
+    );
 
     Update update = updateCaptor.getValue();
     Map.Entry<?, Object> emailEntry = update.getAssignments().entrySet().stream()
@@ -186,16 +207,22 @@ class PatchOperationContactEditServiceTest {
   }
 
   @Test
-  @DisplayName("Ignore operations with overflow contact IDs without throwing NumberFormatException")
+  @DisplayName("Ignore operations with overflow contact IDs without throwing NFE")
   void shouldIgnoreOverflowContactIdsWithoutError() {
     JsonNode patch = mapper.readTree(
-        "[{\"op\":\"replace\",\"path\":\"/contacts/99999999999999999999999999/emailAddress\",\"value\":\"new@test.com\"}]"
+        "[{\"op\":\"replace\","
+            + "\"path\":\"/contacts/99999999999999999999999999/emailAddress\","
+            + "\"value\":\"new@test.com\"}]"
     );
 
     StepVerifier.create(service.applyPatch("00000159", patch, mapper, "user1"))
         .verifyComplete();
 
-    verify(entityTemplate, never()).update(any(Query.class), any(Update.class), eq(ForestClientContactEntity.class));
+    verify(entityTemplate, never()).update(
+        any(Query.class),
+        any(Update.class),
+        eq(ForestClientContactEntity.class)
+    );
   }
 
   @ParameterizedTest
@@ -219,6 +246,10 @@ class PatchOperationContactEditServiceTest {
         )
         .verify();
 
-    verify(entityTemplate, never()).update(any(Query.class), any(Update.class), eq(ForestClientContactEntity.class));
+    verify(entityTemplate, never()).update(
+        any(Query.class),
+        any(Update.class),
+        eq(ForestClientContactEntity.class)
+    );
   }
 }

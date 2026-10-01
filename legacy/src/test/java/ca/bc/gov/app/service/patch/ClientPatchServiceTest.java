@@ -79,7 +79,7 @@ class ClientPatchServiceTest {
   @ParameterizedTest
   @NullAndEmptySource
   @ValueSource(strings = {"   "})
-  @DisplayName("Fallback to ApplicationConstants.DEFAULT_USER_ID when userId is null, empty, or blank")
+  @DisplayName("Fallback to DEFAULT_USER_ID when userId is null, empty, or blank")
   void shouldFallbackToDefaultUserIdWhenBlank(String userId) {
     JsonNode patch = mapper.createArrayNode();
 

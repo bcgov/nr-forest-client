@@ -57,7 +57,8 @@ class PatchOperationsRelatedClientServiceTest {
     when(entityTemplate.delete(RelatedClientEntity.class)).thenReturn(reactiveDelete);
     when(reactiveDelete.matching(any())).thenReturn(terminatingDelete);
     when(terminatingDelete.all()).thenReturn(Mono.just(1L));
-    when(entityTemplate.update(any(), any(), eq(RelatedClientEntity.class))).thenReturn(Mono.just(1L));
+    when(entityTemplate.update(any(), any(), eq(RelatedClientEntity.class)))
+        .thenReturn(Mono.just(1L));
 
     RelatedClientEntity existingEntity = RelatedClientEntity.builder()
         .clientNumber("00000158")
@@ -112,7 +113,8 @@ class PatchOperationsRelatedClientServiceTest {
   @ValueSource(strings = {
       "[{\"op\":\"remove\",\"path\":\"/relatedClients/0000015800JV0000015900\"}]",
       "[{\"op\":\"replace\",\"path\":\"/relatedClients/0000015800JV0000015900\",\"value\":\"\"}]",
-      "[{\"op\":\"replace\",\"path\":\"/relatedClients/0000015800JV0000015900\",\"value\":\"   \"}]",
+      "[{\"op\":\"replace\",\"path\":\"/relatedClients/0000015800JV0000015900\","
+          + "\"value\":\"   \"}]",
       "[{\"op\":\"replace\",\"path\":\"/relatedClients/0000015800JV0000015900\",\"value\":null}]"
   })
   @DisplayName("Delete related client when patch indicates removal or blank value on identifier")
@@ -145,10 +147,11 @@ class PatchOperationsRelatedClientServiceTest {
   @ParameterizedTest
   @ValueSource(strings = {
       "[{\"op\":\"replace\",\"path\":\"/relatedClients/0000015800JV0000015900\"}]",
-      "[{\"op\":\"replace\",\"path\":\"/relatedClients/0000015800JV0000015900\",\"value\":{\"percentOwnership\":50}}]",
+      "[{\"op\":\"replace\",\"path\":\"/relatedClients/0000015800JV0000015900\","
+          + "\"value\":{\"percentOwnership\":50}}]",
       "[{\"op\":\"replace\",\"path\":\"/relatedClients/0000015800JV0000015900\",\"value\":[]}]"
   })
-  @DisplayName("Do not delete related client when replace has no value or has structured object/array value")
+  @DisplayName("Do not delete related client when replace has no value or structured value")
   void shouldNotDeleteRelatedClientWhenReplaceHasNoValueOrStructuredValue(String patchString) {
     JsonNode patch = mapper.readTree(patchString);
 

@@ -35,6 +35,9 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
+/**
+ * Patch operation that handles related client associations.
+ */
 @Service
 @Slf4j
 @Observed
@@ -49,7 +52,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   // It matches a string of the form "/{locationId}/{index}" and captures:
   // - Group 1: locationId (any sequence of characters except '/')
   // - Group 2: index (any sequence of characters except '/')
-  private final String CHECK_RELATION_EXIST = """
+  private static final String CHECK_RELATION_EXIST = """
       SELECT
         count(1) as count_results
       FROM RELATED_CLIENT rc
@@ -59,7 +62,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         AND rc.RELATED_CLNT_NMBR = :relatedClient
         AND rc.RELATED_CLNT_LOCN = :relatedLocation
         AND rc.RELATIONSHIP_CODE = :relationship""";
-  private final String UPDATE_DEL_USER = """
+  private static final String UPDATE_DEL_USER = """
       UPDATE
         REL_CLI_AUDIT
       SET UPDATE_USERID = :userId
@@ -98,7 +101,8 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       ObjectMapper mapper,
       String userId
   ) {
-    String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
+    String effectiveUserId =
+        StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
 
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
       return
@@ -148,13 +152,14 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       String idCandidate = newPath.startsWith("/") ? newPath.substring(1) : newPath;
 
       if ("remove".equalsIgnoreCase(opName)) {
-        tools.jackson.databind.node.ObjectNode copy = (tools.jackson.databind.node.ObjectNode) op.deepCopy();
+        ObjectNode copy = (ObjectNode) op.deepCopy();
         copy.put("path", newPath);
         filtered.add(copy);
-      } else if ("replace".equalsIgnoreCase(opName) && identifierPattern.matcher(idCandidate).matches()) {
+      } else if ("replace".equalsIgnoreCase(opName)
+          && identifierPattern.matcher(idCandidate).matches()) {
         JsonNode valueNode = op.get(PATCH_VALUE_FIELD);
         if (isExplicitNullOrBlank(valueNode)) {
-          tools.jackson.databind.node.ObjectNode copy = (tools.jackson.databind.node.ObjectNode) op.deepCopy();
+          ObjectNode copy = (ObjectNode) op.deepCopy();
           copy.put("path", newPath);
           copy.put("op", "remove");
           filtered.add(copy);
@@ -513,6 +518,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
 
   private static boolean isExplicitNullOrBlank(JsonNode valueNode) {
     return valueNode != null
-        && (valueNode.isNull() || (valueNode.isTextual() && StringUtils.isBlank(valueNode.asText())));
+        && (valueNode.isNull()
+            || (valueNode.isTextual() && StringUtils.isBlank(valueNode.asText())));
   }
 }

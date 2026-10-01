@@ -59,8 +59,11 @@ class PatchOperationLocationServiceTest {
     when(entityTemplate.selectOne(any(Query.class), eq(ForestClientLocationEntity.class)))
         .thenReturn(Mono.just(location));
 
-    when(entityTemplate.update(any(Query.class), any(Update.class), eq(ForestClientLocationEntity.class)))
-        .thenReturn(Mono.just(1L));
+    when(entityTemplate.update(
+        any(Query.class),
+        any(Update.class),
+        eq(ForestClientLocationEntity.class)
+    )).thenReturn(Mono.just(1L));
 
     service = new PatchOperationLocationService(entityTemplate);
   }
@@ -91,7 +94,11 @@ class PatchOperationLocationServiceTest {
         .verifyComplete();
 
     ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
-    verify(entityTemplate).update(any(Query.class), updateCaptor.capture(), eq(ForestClientLocationEntity.class));
+    verify(entityTemplate).update(
+        any(Query.class),
+        updateCaptor.capture(),
+        eq(ForestClientLocationEntity.class)
+    );
 
     Update update = updateCaptor.getValue();
     assertTrue(update.getAssignments().keySet().stream()
@@ -102,14 +109,19 @@ class PatchOperationLocationServiceTest {
   @DisplayName("Fallback to default userId when blank")
   void shouldFallbackToDefaultUserIdWhenBlank() {
     JsonNode patch = mapper.readTree(
-        "[{\"op\":\"replace\",\"path\":\"/addresses/00/emailAddress\",\"value\":\"new@example.com\"}]"
+        "[{\"op\":\"replace\",\"path\":\"/addresses/00/emailAddress\","
+            + "\"value\":\"new@example.com\"}]"
     );
 
     StepVerifier.create(service.applyPatch("00000159", patch, mapper, "  "))
         .verifyComplete();
 
     ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
-    verify(entityTemplate).update(any(Query.class), updateCaptor.capture(), eq(ForestClientLocationEntity.class));
+    verify(entityTemplate).update(
+        any(Query.class),
+        updateCaptor.capture(),
+        eq(ForestClientLocationEntity.class)
+    );
 
     Update update = updateCaptor.getValue();
     assertEquals(ApplicationConstants.DEFAULT_USER_ID,
@@ -126,14 +138,19 @@ class PatchOperationLocationServiceTest {
   void shouldPreserveOrderWhenRemoveFollowedByReplace() {
     JsonNode patch = mapper.readTree(
         "[{\"op\":\"remove\",\"path\":\"/addresses/00/emailAddress\"},"
-            + "{\"op\":\"replace\",\"path\":\"/addresses/00/emailAddress\",\"value\":\"final@example.com\"}]"
+            + "{\"op\":\"replace\",\"path\":\"/addresses/00/emailAddress\","
+            + "\"value\":\"final@example.com\"}]"
     );
 
     StepVerifier.create(service.applyPatch("00000159", patch, mapper, "user1"))
         .verifyComplete();
 
     ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
-    verify(entityTemplate).update(any(Query.class), updateCaptor.capture(), eq(ForestClientLocationEntity.class));
+    verify(entityTemplate).update(
+        any(Query.class),
+        updateCaptor.capture(),
+        eq(ForestClientLocationEntity.class)
+    );
 
     Update update = updateCaptor.getValue();
     assertEquals("final@example.com",
@@ -149,7 +166,8 @@ class PatchOperationLocationServiceTest {
   @DisplayName("Preserve operation order when replace is followed by remove")
   void shouldPreserveOrderWhenReplaceFollowedByRemove() {
     JsonNode patch = mapper.readTree(
-        "[{\"op\":\"replace\",\"path\":\"/addresses/00/emailAddress\",\"value\":\"temp@example.com\"},"
+        "[{\"op\":\"replace\",\"path\":\"/addresses/00/emailAddress\","
+            + "\"value\":\"temp@example.com\"},"
             + "{\"op\":\"remove\",\"path\":\"/addresses/00/emailAddress\"}]"
     );
 
@@ -157,7 +175,11 @@ class PatchOperationLocationServiceTest {
         .verifyComplete();
 
     ArgumentCaptor<Update> updateCaptor = ArgumentCaptor.forClass(Update.class);
-    verify(entityTemplate).update(any(Query.class), updateCaptor.capture(), eq(ForestClientLocationEntity.class));
+    verify(entityTemplate).update(
+        any(Query.class),
+        updateCaptor.capture(),
+        eq(ForestClientLocationEntity.class)
+    );
 
     Update update = updateCaptor.getValue();
     Map.Entry<?, Object> emailEntry = update.getAssignments().entrySet().stream()
@@ -192,6 +214,10 @@ class PatchOperationLocationServiceTest {
         )
         .verify();
 
-    verify(entityTemplate, never()).update(any(Query.class), any(Update.class), eq(ForestClientLocationEntity.class));
+    verify(entityTemplate, never()).update(
+        any(Query.class),
+        any(Update.class),
+        eq(ForestClientLocationEntity.class)
+    );
   }
 }

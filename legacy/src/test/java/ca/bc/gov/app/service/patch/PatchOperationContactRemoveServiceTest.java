@@ -58,7 +58,8 @@ class PatchOperationContactRemoveServiceTest {
     when(executeSpec.bind(any(String.class), any())).thenReturn(executeSpec);
     when(executeSpec.fetch()).thenReturn(fetchSpec);
     when(fetchSpec.all()).thenReturn(Flux.empty());
-    when(fetchSpec.one()).thenReturn(Mono.just(Map.of("IN_USE_COUNT", 0L, "CLIENT_CONTACT_ID", 26L)));
+    when(fetchSpec.one()).thenReturn(
+        Mono.just(Map.of("IN_USE_COUNT", 0L, "CLIENT_CONTACT_ID", 26L)));
     when(fetchSpec.rowsUpdated()).thenReturn(Mono.just(1L));
 
     service = new PatchOperationContactRemoveService(entityTemplate, transactionManager);
@@ -105,7 +106,7 @@ class PatchOperationContactRemoveServiceTest {
   }
 
   @Test
-  @DisplayName("Ignore remove operations with overflow or non-long numeric paths without throwing NumberFormatException")
+  @DisplayName("Ignore remove operations with overflow paths without throwing NFE")
   void shouldIgnoreOverflowContactIdsWithoutError() {
     JsonNode patch = mapper.readTree(
         "[{\"op\":\"remove\",\"path\":\"/contacts/99999999999999999999999999\"}]"

@@ -18,6 +18,9 @@ import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+/**
+ * Patch operation that handles contact location associations.
+ */
 @Service
 @Slf4j
 @Observed
@@ -135,7 +138,8 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
       ObjectMapper mapper,
       String userId
   ) {
-    String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
+    String effectiveUserId =
+        StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
 
     return
         Flux.fromStream(StreamSupport.stream(patch.spliterator(), false))

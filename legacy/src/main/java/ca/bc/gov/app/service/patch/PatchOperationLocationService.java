@@ -109,7 +109,8 @@ public class PatchOperationLocationService implements ClientPatchOperation {
       String userId) {
     // If there's a patch operation targeting client location data we move ahead
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
-      String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
+      String effectiveUserId =
+          StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
       return
           Flux.concat(
                   applyReplacePatch(clientNumber, patch, mapper, effectiveUserId),
@@ -220,7 +221,8 @@ public class PatchOperationLocationService implements ClientPatchOperation {
                                         mapper
                                     )
                                 )
-                                //We convert the patch operations to a map to be used in an update op
+                                // We convert the patch operations to a map
+                                // to be used in an update op
                                 .map(node ->
                                     ReplacePatchUtils.buildUpdate(
                                         node,
@@ -238,7 +240,9 @@ public class PatchOperationLocationService implements ClientPatchOperation {
                                     )
                                 )
                                 .doOnNext(clientChangesApplied -> log.info(
-                                    "Applying Client Location changes on {} client", clientChangesApplied))
+                                    "Applying Client Location changes on {} client",
+                                    clientChangesApplied
+                                ))
                         )
                 )
         )
@@ -276,7 +280,8 @@ public class PatchOperationLocationService implements ClientPatchOperation {
     return entityTemplate
         .getDatabaseClient()
         .sql(
-            "SELECT MAX(CLIENT_LOCN_CODE) as locn_code FROM CLIENT_LOCATION WHERE CLIENT_NUMBER = :clientNumber")
+            "SELECT MAX(CLIENT_LOCN_CODE) as locn_code FROM CLIENT_LOCATION "
+                + "WHERE CLIENT_NUMBER = :clientNumber")
         .bind("clientNumber", clientNumber)
         .map(row -> row.get("locn_code", String.class))
         .one()

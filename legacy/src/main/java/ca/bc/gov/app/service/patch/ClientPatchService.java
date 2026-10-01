@@ -30,6 +30,13 @@ public class ClientPatchService {
   private final List<ClientPatchOperation> partialServices;
   private final TransactionalOperator transactionalOperator;
 
+  /**
+   * Constructs a new {@link ClientPatchService}.
+   *
+   * @param mapper the {@link ObjectMapper} for JSON processing
+   * @param partialServices the list of registered patch operations
+   * @param transactionManager the transaction manager for reactive transactions
+   */
   public ClientPatchService(
       ObjectMapper mapper,
       List<ClientPatchOperation> partialServices,
@@ -61,15 +68,21 @@ public class ClientPatchService {
     log.info("Patching client with client number {} if any changes are detected {}", clientNumber,
         forestClient);
 
-    String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
+    String effectiveUserId =
+        StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
     if (StringUtils.isBlank(userId)) {
-      log.warn("Patch request for client {} has missing or blank userId; falling back to default user ID '{}'",
-          clientNumber, effectiveUserId);
+      log.warn(
+          "Patch request for client {} has missing or blank userId; falling back to default '{}'",
+          clientNumber,
+          effectiveUserId
+      );
     }
 
     return Flux
         .fromStream(partialServices.stream())
-        .concatMap(service -> service.applyPatch(clientNumber, forestClient, mapper, effectiveUserId))
+        .concatMap(service ->
+            service.applyPatch(clientNumber, forestClient, mapper, effectiveUserId)
+        )
         .then()
         .as(transactionalOperator::transactional);
   }

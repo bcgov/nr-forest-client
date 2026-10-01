@@ -79,7 +79,8 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
       ObjectMapper mapper,
       String userId
   ) {
-    String effectiveUserId = StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
+    String effectiveUserId =
+        StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
 
     JsonNode filteredNodeOps = PatchUtils.filterOperationsByOps(
         patch,

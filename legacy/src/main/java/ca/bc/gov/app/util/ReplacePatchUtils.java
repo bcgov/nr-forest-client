@@ -12,12 +12,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import tools.jackson.databind.JsonNode;
 
+/**
+ * Utility class for building database update maps from JSON Patch operations.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public class ReplacePatchUtils {
 
   /**
    * Builds an update map from a JSON Patch, a field map, and extra fields.
+   *
    * @param patch The JSON Patch to build the update map from
    * @param fieldMap The field map to use for mapping the patch paths to the database columns
    * @param extraFields Extra fields to include in the update map

@@ -3,6 +3,9 @@ package ca.bc.gov.app;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * Application-wide constants.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApplicationConstants {
 
