@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.entity.ForestClientContactEntity;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

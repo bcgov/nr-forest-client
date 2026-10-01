@@ -92,7 +92,7 @@ public class PatchUtils {
           // A check if the path of the operation starts with the specified path prefix
           if (
               operation.has("path")
-                  && operation.get("path").asText().startsWith(String.format("/%s", checkPath))
+                  && operation.get("path").asText().startsWith("/" + checkPath)
           ) {
             filteredNode.set(true);
           }
@@ -156,7 +156,7 @@ public class PatchUtils {
           // Get the path of the operation
           String path = operation.get("path").asText();
           // If the path starts with the prefixed path
-          if (StringUtils.isNotBlank(prefix) && path.startsWith(String.format("/%s", prefix))) {
+          if (StringUtils.isNotBlank(prefix) && path.startsWith("/" + prefix)) {
             // We generate a new operation path without the prefix
             String newPath = removePrefix(path, prefix);
             // This variable here initially is just a copy of the above, but it is used to
@@ -216,7 +216,7 @@ public class PatchUtils {
     // When it matches, it means that this entry is a list entry
     if (matcher.find()) {
       // So we extract the field name and the id
-      return Pair.of(matcher.group(1), String.format("/%s", matcher.group(2)));
+      return Pair.of(matcher.group(1), "/" + matcher.group(2));
     } else {
       // Otherwise we just return the path as is
       return Pair.of(null, path);
@@ -233,7 +233,7 @@ public class PatchUtils {
   public static String removePrefix(String path, String prefix) {
 
     // We generate the prefixed path for later use
-    String prefixedPath = String.format("/%s", prefix);
+    String prefixedPath = "/" + prefix;
 
     // If the path starts with the prefixed path
     if (path.startsWith(prefixedPath)) {
@@ -311,7 +311,7 @@ public class PatchUtils {
             Optional
                 .ofNullable(node.get("path"))
                 .map(JsonNode::asText)
-                .map(value -> value.replace(String.format("/%s/", id), "/"))
+                .map(value -> value.replace("/" + id + "/", "/"))
                 .stream()
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.toSet()),
@@ -458,7 +458,7 @@ public class PatchUtils {
           // If the path starts with the prefixed path
           if (
               StringUtils.isNotBlank(prefix)
-              && path.startsWith(String.format("/%s", prefix))
+              && path.startsWith("/" + prefix)
               && operationNames.contains(operation.get("op").asText())
           ) {
             // We generate a new operation path without the prefix
