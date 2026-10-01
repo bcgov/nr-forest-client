@@ -83,6 +83,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       "^(\\d{8})(\\d{2})([A-Z]+)(\\d{8})(\\d{2})$");
 
   private static final String PATCH_VALUE_FIELD = "value";
+  private static final String OP_REPLACE = "replace";
   
   @Override
   public String getPrefix() {
@@ -155,7 +156,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         ObjectNode copy = (ObjectNode) op.deepCopy();
         copy.put("path", newPath);
         filtered.add(copy);
-      } else if ("replace".equalsIgnoreCase(opName)
+      } else if (OP_REPLACE.equalsIgnoreCase(opName)
           && identifierPattern.matcher(idCandidate).matches()) {
         JsonNode valueNode = op.get(PATCH_VALUE_FIELD);
         if (isExplicitNullOrBlank(valueNode)) {
@@ -177,7 +178,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   ) {
     JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
         patch,
-        "replace",
+        OP_REPLACE,
         getPrefix(),
         mapper
     );
@@ -223,7 +224,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         .map(pair ->
             Pair.of(pair.getValue(), PatchUtils.filterOperationsByOp(
                 nonDeleteNodeOps,
-                "replace",
+                OP_REPLACE,
                 pair.getKey().getKey(),
                 getRestrictedPaths(),
                 mapper

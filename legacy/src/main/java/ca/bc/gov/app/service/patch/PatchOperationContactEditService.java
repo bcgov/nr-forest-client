@@ -38,12 +38,14 @@ import tools.jackson.databind.ObjectMapper;
 public class PatchOperationContactEditService implements ClientPatchOperation {
 
   private static final String GET_ALL_CONTACT_IDS = ForestClientQueries.GET_ALL_CONTACT_IDS;
+  private static final String PATH_CONTACT_NAME = "/contactName";
+  private static final String PATH_CONTACT_TYPE_CODE = "/contactTypeCode";
 
   private final R2dbcEntityOperations entityTemplate;
 
   private final Map<String, String> fieldToDataField = Map.of(
-      "/contactName", "contact_name",
-      "/contactTypeCode", "bus_contact_code",
+      PATH_CONTACT_NAME, "contact_name",
+      PATH_CONTACT_TYPE_CODE, "bus_contact_code",
       "/emailAddress", "email_address",
       "/faxNumber", "fax_number",
       "/secondaryPhone", "cell_phone",
@@ -51,8 +53,8 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
   );
 
   private final Set<String> mandatoryFields = Set.of(
-      "/contactName",
-      "/contactTypeCode"
+      PATH_CONTACT_NAME,
+      PATH_CONTACT_TYPE_CODE
   );
 
   @Override
@@ -63,8 +65,8 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
   @Override
   public List<String> getRestrictedPaths() {
     return List.of(
-        "/contactName",
-        "/contactTypeCode",
+        PATH_CONTACT_NAME,
+        PATH_CONTACT_TYPE_CODE,
         "/businessPhone",
         "/secondaryPhone",
         "/faxNumber",

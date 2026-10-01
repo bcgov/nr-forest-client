@@ -44,6 +44,10 @@ import tools.jackson.databind.ObjectMapper;
 @Order(5)
 public class PatchOperationLocationService implements ClientPatchOperation {
 
+  private static final String PATH_ADDRESS_ONE = "/addressOne";
+  private static final String PATH_CITY = "/city";
+  private static final String PATH_COUNTRY_CODE = "/countryCode";
+
   private final R2dbcEntityOperations entityTemplate;
   private final Map<String, String> fieldToDataField = Stream.concat(
           Map.of(
@@ -59,12 +63,12 @@ public class PatchOperationLocationService implements ClientPatchOperation {
               .entrySet()
               .stream(),
           Map.of(
-                  "/addressOne", "address_1",
+                  PATH_ADDRESS_ONE, "address_1",
                   "/addressTwo", "address_2",
                   "/addressThree", "address_3",
-                  "/city", "city",
+                  PATH_CITY, "city",
                   "/provinceCode", "province",
-                  "/countryCode", "country",
+                  PATH_COUNTRY_CODE, "country",
                   "/postalCode", "postal_code"
               )
               .entrySet()
@@ -78,9 +82,9 @@ public class PatchOperationLocationService implements ClientPatchOperation {
       );
 
   private final Set<String> mandatoryFields = Set.of(
-      "/addressOne",
-      "/city",
-      "/countryCode"
+      PATH_ADDRESS_ONE,
+      PATH_CITY,
+      PATH_COUNTRY_CODE
   );
 
   @Override
@@ -91,8 +95,8 @@ public class PatchOperationLocationService implements ClientPatchOperation {
   @Override
   public List<String> getRestrictedPaths() {
     return List.of("/cliLocnComment", "/emailAddress", "/faxNumber", "/cellPhone", "/homePhone",
-        "/businessPhone", "/clientLocnName", "/locnExpiredInd", "/addressOne", "/addressTwo",
-        "/addressThree", "/city", "/provinceCode", "/countryCode", "/postalCode");
+        "/businessPhone", "/clientLocnName", "/locnExpiredInd", PATH_ADDRESS_ONE, "/addressTwo",
+        "/addressThree", PATH_CITY, "/provinceCode", PATH_COUNTRY_CODE, "/postalCode");
   }
 
   /**
