@@ -9,6 +9,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -37,16 +38,23 @@ import tools.jackson.databind.ObjectMapper;
 public class PatchOperationContactEditService implements ClientPatchOperation {
 
   private static final String GET_ALL_CONTACT_IDS = ForestClientQueries.GET_ALL_CONTACT_IDS;
+  private static final String PATH_CONTACT_NAME = "/contactName";
+  private static final String PATH_CONTACT_TYPE_CODE = "/contactTypeCode";
 
   private final R2dbcEntityOperations entityTemplate;
 
   private final Map<String, String> fieldToDataField = Map.of(
-      "/contactName", "contact_name",
-      "/contactTypeCode", "bus_contact_code",
+      PATH_CONTACT_NAME, "contact_name",
+      PATH_CONTACT_TYPE_CODE, "bus_contact_code",
       "/emailAddress", "email_address",
       "/faxNumber", "fax_number",
       "/secondaryPhone", "cell_phone",
       "/businessPhone", "business_phone"
+  );
+
+  private final Set<String> mandatoryFields = Set.of(
+      PATH_CONTACT_NAME,
+      PATH_CONTACT_TYPE_CODE
   );
 
   @Override
@@ -57,8 +65,8 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
   @Override
   public List<String> getRestrictedPaths() {
     return List.of(
-        "/contactName",
-        "/contactTypeCode",
+        PATH_CONTACT_NAME,
+        PATH_CONTACT_TYPE_CODE,
         "/businessPhone",
         "/secondaryPhone",
         "/faxNumber",
@@ -73,64 +81,69 @@ public class PatchOperationContactEditService implements ClientPatchOperation {
       ObjectMapper mapper,
       String userId
   ) {
-    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
+    String effectiveUserId =
+        StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
+
+    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOps(
         patch,
-        "replace",
+        Set.of("replace", "remove"),
         getPrefix(),
         getRestrictedPaths(),
         mapper
     );
 
-    return
-        // Load ids
-        Flux
-            .fromIterable(PatchUtils.loadIds(filteredNodeOps))
-            .filter(StringUtils::isNumeric)
-            .flatMap(entityId ->
-                Mono.just(entityId)
-                    // Get changes for just that ID
-                    .map(PatchUtils.filterById(filteredNodeOps, mapper))
-                    // Filter Patches
-                    .map(node -> PatchUtils.filterPatchOperations(
-                            node,
-                            entityId,
-                            getRestrictedPaths(),
-                            mapper
+    return PatchUtils.validateMandatoryFields(filteredNodeOps, mandatoryFields)
+        .thenMany(
+            // Load ids
+            Flux
+                .fromIterable(PatchUtils.loadIds(filteredNodeOps))
+                .filter(id -> PatchUtils.parseLongSafely(id).isPresent())
+                .flatMap(entityId ->
+                    Mono.just(entityId)
+                        // Get changes for just that ID
+                        .map(PatchUtils.filterById(filteredNodeOps, mapper))
+                        // Filter Patches
+                        .map(node -> PatchUtils.filterPatchOperations(
+                                node,
+                                entityId,
+                                getRestrictedPaths(),
+                                mapper
+                            )
                         )
-                    )
-                    .flatMap(node ->
-                        // Load the entity JUST BECAUSE OF REVISION
-                        findEntity(clientNumber, Long.parseLong(entityId))
-                            // Generate update
-                            .map(entity -> ReplacePatchUtils.buildUpdate(
-                                    node,
-                                    fieldToDataField,
-                                    getExtraFields(userId, entity.getRevision() + 1)
+                        .flatMap(node ->
+                            // Load the entity JUST BECAUSE OF REVISION
+                            findEntity(clientNumber, Long.parseLong(entityId))
+                                // Generate update
+                                .map(entity -> ReplacePatchUtils.buildUpdate(
+                                        node,
+                                        fieldToDataField,
+                                        getExtraFields(effectiveUserId, entity.getRevision() + 1)
+                                    )
                                 )
-                            )
-                    )
-                    // Turn the map into Update
-                    .map(Update::from)
-                    .flatMap(update ->
-                        // Get all ids related to that entry
-                        getAllEntityIds(clientNumber, Long.parseLong(entityId))
-                            .doOnNext(entityIds ->
-                                log.info(
-                                    "Updating contacts {} with the following changes {}",
-                                    entityIds,
-                                    update
-                                ))
-                            .flatMap(entityIds ->
-                                // Update all at once
-                                entityTemplate.update(
-                                    getEntityIdentification(clientNumber, entityIds),
-                                    update,
-                                    getEntityClass()
+                        )
+                        // Turn the map into Update
+                        .map(Update::from)
+                        .flatMap(update ->
+                            // Get all ids related to that entry
+                            getAllEntityIds(clientNumber, Long.parseLong(entityId))
+                                .doOnNext(entityIds ->
+                                    log.info(
+                                        "Updating contacts {} with the following changes {}",
+                                        entityIds,
+                                        update
+                                    ))
+                                .flatMap(entityIds ->
+                                    // Update all at once
+                                    entityTemplate.update(
+                                        getEntityIdentification(clientNumber, entityIds),
+                                        update,
+                                        getEntityClass()
+                                    )
                                 )
-                            )
-                    )
-            )
-            .then();
+                        )
+                )
+        )
+        .then();
   }
 
   private Map<String, Object> getExtraFields(String userId, long revision) {

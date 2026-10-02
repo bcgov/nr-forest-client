@@ -5,9 +5,10 @@ import ca.bc.gov.app.repository.ForestClientQueries;
 import ca.bc.gov.app.util.PatchUtils;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.r2dbc.core.R2dbcEntityOperations;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,8 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
 
   private static final String LOCK_CONTACTS_FOR_UPDATE =
       ForestClientQueries.LOCK_CONTACTS_FOR_UPDATE;
+
+  private static final Pattern ROOT_CONTACT_ID_PATTERN = Pattern.compile("^/?(\\d+)$");
 
   private final R2dbcEntityOperations entityTemplate;
 
@@ -94,15 +97,21 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
                     false
                 )
             )
-            .filter(node -> !node.get("path").asText().contains("locationCodes"))
-            .map(node -> node.get("path").asText().replace("/", StringUtils.EMPTY))
-            .map(Long::parseLong)
+            .map(node -> ROOT_CONTACT_ID_PATTERN.matcher(node.path("path").asText()))
+            .filter(Matcher::matches)
+            .map(matcher -> matcher.group(1))
+            .map(PatchUtils::parseLongSafely)
+            .flatMap(Mono::justOrEmpty)
             .collectList()
-            .flatMap(entityIds -> verifyNoneInUse(clientNumber, entityIds)
-                .thenMany(removeAll(clientNumber, entityIds))
-                .then()
-                .as(transactionalOperator::transactional)
-            );
+            .flatMap(entityIds -> {
+              if (entityIds.isEmpty()) {
+                return Mono.empty();
+              }
+              return verifyNoneInUse(clientNumber, entityIds)
+                  .thenMany(removeAll(clientNumber, entityIds))
+                  .then()
+                  .as(transactionalOperator::transactional);
+            });
   }
 
   /**

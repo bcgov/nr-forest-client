@@ -1,5 +1,6 @@
 package ca.bc.gov.app.service.patch;
 
+import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ContactAssociationDto;
 import ca.bc.gov.app.util.PatchUtils;
 import io.micrometer.observation.annotation.Observed;
@@ -17,6 +18,9 @@ import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+/**
+ * Patch operation that handles contact location associations.
+ */
 @Service
 @Slf4j
 @Observed
@@ -134,11 +138,14 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
       ObjectMapper mapper,
       String userId
   ) {
+    String effectiveUserId =
+        StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
 
     return
         Flux.fromStream(StreamSupport.stream(patch.spliterator(), false))
             .filter(node -> node.has("path"))
             .filter(node -> node.get("path").asText().contains("locationCodes"))
+            .filter(node -> PatchUtils.parseLongSafely(PatchUtils.loadId(node)).isPresent())
             .flatMap(node ->
                 getLocationCodeOrder(clientNumber, Long.parseLong(PatchUtils.loadId(node)))
                     .map(convertToAction(node))
@@ -146,8 +153,8 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
             .collectList()
             .flatMap(entries ->
                 processRemove(clientNumber, entries)
-                    .then(processAdd(clientNumber, userId, entries))
-                    .then(processReplace(clientNumber, userId, entries))
+                    .then(processAdd(clientNumber, effectiveUserId, entries))
+                    .then(processReplace(clientNumber, effectiveUserId, entries))
             )
             .then();
 

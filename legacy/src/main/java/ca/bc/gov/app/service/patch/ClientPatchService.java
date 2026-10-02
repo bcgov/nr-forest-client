@@ -1,10 +1,13 @@
 package ca.bc.gov.app.service.patch;
 
+import ca.bc.gov.app.ApplicationConstants;
 import io.micrometer.observation.annotation.Observed;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
@@ -19,17 +22,34 @@ import tools.jackson.databind.ObjectMapper;
  * </p>
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Observed
 public class ClientPatchService {
 
   private final ObjectMapper mapper;
   private final List<ClientPatchOperation> partialServices;
+  private final TransactionalOperator transactionalOperator;
+
+  /**
+   * Constructs a new {@link ClientPatchService}.
+   *
+   * @param mapper the {@link ObjectMapper} for JSON processing
+   * @param partialServices the list of registered patch operations
+   * @param transactionManager the transaction manager for reactive transactions
+   */
+  public ClientPatchService(
+      ObjectMapper mapper,
+      List<ClientPatchOperation> partialServices,
+      ReactiveTransactionManager transactionManager
+  ) {
+    this.mapper = mapper;
+    this.partialServices = partialServices;
+    this.transactionalOperator = TransactionalOperator.create(transactionManager);
+  }
 
   /**
    * Applies the JSON Patch updates to a forest client by invoking all available
-   * {@link ClientPatchOperation} services.
+   * {@link ClientPatchOperation} services within a single reactive transaction.
    * <p>
    * Each service in {@code partialServices} attempts to apply the patch if relevant. The updates
    * are chained reactively, ensuring all applicable patches are processed before completion.
@@ -48,9 +68,22 @@ public class ClientPatchService {
     log.info("Patching client with client number {} if any changes are detected {}", clientNumber,
         forestClient);
 
+    String effectiveUserId =
+        StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
+    if (StringUtils.isBlank(userId)) {
+      log.warn(
+          "Patch request for client {} has missing or blank userId; falling back to default '{}'",
+          clientNumber,
+          effectiveUserId
+      );
+    }
+
     return Flux
         .fromStream(partialServices.stream())
-        .concatMap(service -> service.applyPatch(clientNumber, forestClient, mapper, userId))
-        .then();
+        .concatMap(service ->
+            service.applyPatch(clientNumber, forestClient, mapper, effectiveUserId)
+        )
+        .then()
+        .as(transactionalOperator::transactional);
   }
 }

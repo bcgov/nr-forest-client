@@ -1,10 +1,12 @@
 package ca.bc.gov.app.service.patch;
 
+import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.entity.ForestClientEntity;
 import ca.bc.gov.app.util.PatchUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -58,6 +60,15 @@ public interface ClientPatchOperation {
    */
   Mono<Void> applyPatch(String clientNumber, JsonNode patch, ObjectMapper mapper, String userId);
 
+  /**
+   * Applies the filtered patch operations to a {@link ForestClientEntity}.
+   *
+   * @param mapper the {@link ObjectMapper} used to apply the patch
+   * @param userId the user who triggered the request
+   * @param entity the existing client entity
+   * @param filteredNode the patch operations to apply
+   * @return a {@link Mono} containing the patched entity if changed, or empty
+   */
   default Mono<ForestClientEntity> patchForestClientEntity(
       ObjectMapper mapper,
       String userId,
@@ -77,7 +88,9 @@ public interface ClientPatchOperation {
         .map(this::normalizeNames)
         //Can only happen if there's a change
         .map(client -> client
-            .withUpdatedBy(userId) // Is still missing the user org unit
+            .withUpdatedBy(
+                StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID)
+            )
             .withUpdatedAt(LocalDateTime.now())
             .withRevision(client.getRevision() + 1)
         );

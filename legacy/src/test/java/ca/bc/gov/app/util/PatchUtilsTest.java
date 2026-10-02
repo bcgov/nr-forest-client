@@ -1,16 +1,13 @@
 package ca.bc.gov.app.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.exception.CannotApplyPatchException;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -24,6 +21,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("Unit Test | Patch Utils")
 class PatchUtilsTest {
@@ -94,6 +96,32 @@ class PatchUtilsTest {
     assertEquals(expectation, result.toString());
   }
 
+  @Test
+  @DisplayName("Filter operations by multiple ops preserving order")
+  void shouldFilterOperationsByMultipleOpsPreservingOrder() throws JacksonException {
+    String input = """
+        [
+          {"op":"remove","path":"/contacts/26/emailAddress"},
+          {"op":"replace","path":"/contacts/26/emailAddress","value":"test@example.com"},
+          {"op":"add","path":"/contacts/26/locationCodes/0","value":"00"}
+        ]
+        """;
+    JsonNode patch = toNode(input);
+    JsonNode result = PatchUtils.filterOperationsByOps(
+        patch,
+        Set.of("replace", "remove"),
+        "contacts",
+        List.of("/emailAddress"),
+        mapper
+    );
+    assertEquals(2, result.size());
+    assertEquals("remove", result.get(0).get("op").asText());
+    assertEquals("/26/emailAddress", result.get(0).get("path").asText());
+    assertEquals("replace", result.get(1).get("op").asText());
+    assertEquals("/26/emailAddress", result.get(1).get("path").asText());
+    assertEquals("test@example.com", result.get(1).get("value").asText());
+  }
+
   @ParameterizedTest
   @CsvSource({
       "'/value','user','/value'",
@@ -142,6 +170,29 @@ class PatchUtilsTest {
   }
 
   @Test
+  @DisplayName("Merge two array nodes")
+  void shouldMergeTwoArrays() throws JacksonException {
+    JsonNode expectation = toNode("[{\"value\":\"1234\"},{\"value\":\"5678\"}]");
+    tools.jackson.databind.node.ArrayNode node1 = mapper.createArrayNode();
+    node1.add(createValueNode("1234"));
+    tools.jackson.databind.node.ArrayNode node2 = mapper.createArrayNode();
+    node2.add(createValueNode("5678"));
+    JsonNode result = PatchUtils.mergeNodes().apply(node1, node2);
+    assertEquals(expectation, result);
+  }
+
+  @Test
+  @DisplayName("Merge object node with array as second operand")
+  void shouldMergeNodeToArraySecondOperand() throws JacksonException {
+    JsonNode expectation = toNode("[{\"value\":\"1234\"},{\"value\":\"5678\"}]");
+    JsonNode node1 = createValueNode("1234");
+    tools.jackson.databind.node.ArrayNode node2 = mapper.createArrayNode();
+    node2.add(createValueNode("5678"));
+    JsonNode result = PatchUtils.mergeNodes().apply(node1, node2);
+    assertEquals(expectation, result);
+  }
+
+  @Test
   @DisplayName("Filter by ID")
   void shouldFilterById() throws JacksonException {
     JsonNode expectation = toNode(
@@ -149,6 +200,42 @@ class PatchUtilsTest {
     );
 
     assertEquals(expectation, PatchUtils.filterById(toNode(CONTENT), mapper).apply("0"));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "26, 26",
+      "0, 0",
+      "-1, -1",
+      "9223372036854775807, 9223372036854775807",
+      "-9223372036854775808, -9223372036854775808"
+  })
+  @DisplayName("Parse valid long safely")
+  void shouldParseValidLongSafely(String input, Long expected) {
+    assertTrue(PatchUtils.parseLongSafely(input).isPresent());
+    assertEquals(expected, PatchUtils.parseLongSafely(input).get());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+      "99999999999999999999999999",
+      "9223372036854775808",
+      "-9223372036854775809",
+      "abc",
+      "26emailAddress",
+      "12.34",
+      "",
+      "   "
+  })
+  @DisplayName("Safely return empty Optional for invalid or overflow long strings")
+  void shouldReturnEmptyForInvalidOrOverflowLong(String input) {
+    assertTrue(PatchUtils.parseLongSafely(input).isEmpty());
+  }
+
+  @Test
+  @DisplayName("Safely return empty Optional for null string")
+  void shouldReturnEmptyForNullLong() {
+    assertTrue(PatchUtils.parseLongSafely(null).isEmpty());
   }
 
   @MethodSource("idsAndSubIds")

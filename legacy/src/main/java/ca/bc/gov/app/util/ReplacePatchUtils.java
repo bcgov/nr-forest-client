@@ -1,7 +1,7 @@
 package ca.bc.gov.app.util;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.AccessLevel;
@@ -11,12 +11,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import tools.jackson.databind.JsonNode;
 
+/**
+ * Utility class for building database update maps from JSON Patch operations.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public class ReplacePatchUtils {
 
   /**
    * Builds an update map from a JSON Patch, a field map, and extra fields.
+   *
    * @param patch The JSON Patch to build the update map from
    * @param fieldMap The field map to use for mapping the patch paths to the database columns
    * @param extraFields Extra fields to include in the update map
@@ -27,57 +31,60 @@ public class ReplacePatchUtils {
       Map<String, String> fieldMap,
       Map<String, Object> extraFields
   ) {
+    Map<SqlIdentifier, Object> updateMap = new LinkedHashMap<>();
 
-    // Function that generates the update map value, based on the type of the value
-    Function<JsonNode, Object> valueExtractor = node -> {
-      if (node.get("value").isTextual()) {
-        return node.get("value").asText();
-      } else if (node.get("value").isBoolean()) {
-        return node.get("value").asBoolean();
-      } else if (node.get("value").isNumber()) {
-        return node.get("value").numberValue();
-      } else if (node.get("value").isArray()) {
-        return StreamSupport
-            .stream(node.get("value").spliterator(), false)
-            .map(JsonNode::asText)
-            .collect(Collectors.toList());
-      } else {
-        String value = node.get("value").asText();
-        return value != null && !value.equals("null") ? value : StringUtils.EMPTY;
+    if (patch != null && fieldMap != null) {
+      for (JsonNode entry : patch) {
+        if (entry.has("path")) {
+          String path = entry.get("path").asText();
+          if (fieldMap.containsKey(path)) {
+            updateMap.put(
+                SqlIdentifier.unquoted(fieldMap.get(path)),
+                extractValue(entry)
+            );
+          }
+        }
       }
-    };
+    }
 
-    // Function that generates the update map key
-    Function<JsonNode, SqlIdentifier> keyExtractor = node -> SqlIdentifier.unquoted(
-        fieldMap.get(node.get("path").asText()));
-
-    // Filter the patch operations that are in the field map,
-    // to prevent fields that are not supposed to be here
-    Map<SqlIdentifier, Object> updateMap = StreamSupport
-        .stream(patch.spliterator(), false)
-        .filter(entry -> fieldMap.containsKey(entry.get("path").asText()))
-        .collect(
-            Collectors.toMap(
-                keyExtractor,
-                valueExtractor
-            )
-        );
-
-    // If we have extra fields, such as updated user, we add them here
     if (extraFields != null) {
-      updateMap.putAll(
-          extraFields
-              .entrySet().stream()
-              .collect(
-                  Collectors.toMap(
-                      entry -> SqlIdentifier.unquoted(entry.getKey()),
-                      Map.Entry::getValue
-                  )
-              )
+      extraFields.forEach((key, value) ->
+          updateMap.put(SqlIdentifier.unquoted(key), value)
       );
     }
 
     return updateMap;
+  }
+
+  /**
+   * Extracts the typed value from a JSON Patch entry node.
+   *
+   * @param node the patch operation node
+   * @return the extracted value, or {@code null} if absent or blank
+   */
+  private static Object extractValue(JsonNode node) {
+    if (!node.has("value") || node.get("value") == null || node.get("value").isNull()) {
+      return null;
+    }
+    JsonNode valNode = node.get("value");
+    if (valNode.isTextual()) {
+      String text = valNode.asText();
+      return StringUtils.isBlank(text) ? null : text;
+    }
+    if (valNode.isBoolean()) {
+      return valNode.asBoolean();
+    }
+    if (valNode.isNumber()) {
+      return valNode.numberValue();
+    }
+    if (valNode.isArray()) {
+      return StreamSupport
+          .stream(valNode.spliterator(), false)
+          .map(JsonNode::asText)
+          .collect(Collectors.toList());
+    }
+    String value = valNode.asText();
+    return value != null && !value.equals("null") ? value : null;
   }
 
 }

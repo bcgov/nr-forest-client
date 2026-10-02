@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -43,6 +44,10 @@ import tools.jackson.databind.ObjectMapper;
 @Order(5)
 public class PatchOperationLocationService implements ClientPatchOperation {
 
+  private static final String PATH_ADDRESS_ONE = "/addressOne";
+  private static final String PATH_CITY = "/city";
+  private static final String PATH_COUNTRY_CODE = "/countryCode";
+
   private final R2dbcEntityOperations entityTemplate;
   private final Map<String, String> fieldToDataField = Stream.concat(
           Map.of(
@@ -58,12 +63,12 @@ public class PatchOperationLocationService implements ClientPatchOperation {
               .entrySet()
               .stream(),
           Map.of(
-                  "/addressOne", "address_1",
+                  PATH_ADDRESS_ONE, "address_1",
                   "/addressTwo", "address_2",
                   "/addressThree", "address_3",
-                  "/city", "city",
+                  PATH_CITY, "city",
                   "/provinceCode", "province",
-                  "/countryCode", "country",
+                  PATH_COUNTRY_CODE, "country",
                   "/postalCode", "postal_code"
               )
               .entrySet()
@@ -76,6 +81,12 @@ public class PatchOperationLocationService implements ClientPatchOperation {
           )
       );
 
+  private final Set<String> mandatoryFields = Set.of(
+      PATH_ADDRESS_ONE,
+      PATH_CITY,
+      PATH_COUNTRY_CODE
+  );
+
   @Override
   public String getPrefix() {
     return "addresses";
@@ -84,8 +95,8 @@ public class PatchOperationLocationService implements ClientPatchOperation {
   @Override
   public List<String> getRestrictedPaths() {
     return List.of("/cliLocnComment", "/emailAddress", "/faxNumber", "/cellPhone", "/homePhone",
-        "/businessPhone", "/clientLocnName", "/locnExpiredInd", "/addressOne", "/addressTwo",
-        "/addressThree", "/city", "/provinceCode", "/countryCode", "/postalCode");
+        "/businessPhone", "/clientLocnName", "/locnExpiredInd", PATH_ADDRESS_ONE, "/addressTwo",
+        "/addressThree", PATH_CITY, "/provinceCode", PATH_COUNTRY_CODE, "/postalCode");
   }
 
   /**
@@ -102,10 +113,12 @@ public class PatchOperationLocationService implements ClientPatchOperation {
       String userId) {
     // If there's a patch operation targeting client location data we move ahead
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
+      String effectiveUserId =
+          StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
       return
           Flux.concat(
-                  applyReplacePatch(clientNumber, patch, mapper, userId),
-                  applyAddPatch(clientNumber, patch, mapper, userId)
+                  applyReplacePatch(clientNumber, patch, mapper, effectiveUserId),
+                  applyAddPatch(clientNumber, patch, mapper, effectiveUserId)
               )
               .then();
     }
@@ -182,53 +195,59 @@ public class PatchOperationLocationService implements ClientPatchOperation {
    */
   private Mono<Void> applyReplacePatch(String clientNumber, JsonNode patch, ObjectMapper mapper,
       String userId) {
-    //We load just the replace operations
-    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
+    //We load replace and remove operations preserving original patch order
+    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOps(
         patch,
-        "replace",
+        Set.of("replace", "remove"),
         getPrefix(),
         getRestrictedPaths(),
         mapper
     );
 
-    return Flux
-        //We will loop through it using a flux from the ids
-        .fromIterable(PatchUtils.loadIds(patch))
-        //For each location that was changed
-        .flatMap(locationNumber ->
-            //We look it up in the database
-            findClientLocation(clientNumber, locationNumber)
-                .flatMap(entity ->
-                    Mono.just(locationNumber)
-                        //We load the patch operations for the current location
-                        .map(PatchUtils.filterById(filteredNodeOps, mapper))
-                        //We use filterPatchOperation to remove the location number prefix
-                        .map(node -> PatchUtils.filterPatchOperations(
-                                node,
-                                locationNumber,
-                                getRestrictedPaths(),
-                                mapper
-                            )
+    return PatchUtils.validateMandatoryFields(filteredNodeOps, mandatoryFields)
+        .thenMany(
+            Flux
+                //We will loop through it using a flux from the ids
+                .fromIterable(PatchUtils.loadIds(patch))
+                //For each location that was changed
+                .flatMap(locationNumber ->
+                    //We look it up in the database
+                    findClientLocation(clientNumber, locationNumber)
+                        .flatMap(entity ->
+                            Mono.just(locationNumber)
+                                //We load the patch operations for the current location
+                                .map(PatchUtils.filterById(filteredNodeOps, mapper))
+                                //We use filterPatchOperation to remove the location number prefix
+                                .map(node -> PatchUtils.filterPatchOperations(
+                                        node,
+                                        locationNumber,
+                                        getRestrictedPaths(),
+                                        mapper
+                                    )
+                                )
+                                // We convert the patch operations to a map
+                                // to be used in an update op
+                                .map(node ->
+                                    ReplacePatchUtils.buildUpdate(
+                                        node,
+                                        fieldToDataField,
+                                        getExtraFields(userId, entity.getRevision() + 1)
+                                    )
+                                )
+                                .map(Update::from)
+                                //We apply the patch to the entity and save it
+                                .flatMap(update -> entityTemplate
+                                    .update(
+                                        getLocationIdentification(clientNumber, locationNumber),
+                                        update,
+                                        ForestClientLocationEntity.class
+                                    )
+                                )
+                                .doOnNext(clientChangesApplied -> log.info(
+                                    "Applying Client Location changes on {} client",
+                                    clientChangesApplied
+                                ))
                         )
-                        //We convert the patch operations to a map to be used in an update op
-                        .map(node ->
-                            ReplacePatchUtils.buildUpdate(
-                                node,
-                                fieldToDataField,
-                                getExtraFields(userId, entity.getRevision() + 1)
-                            )
-                        )
-                        .map(Update::from)
-                        //We apply the patch to the entity and save it
-                        .flatMap(update -> entityTemplate
-                            .update(
-                                getLocationIdentification(clientNumber, locationNumber),
-                                update,
-                                ForestClientLocationEntity.class
-                            )
-                        )
-                        .doOnNext(clientChangesApplied -> log.info(
-                            "Applying Client Location changes on {} client", clientChangesApplied))
                 )
         )
         .then();
@@ -265,7 +284,8 @@ public class PatchOperationLocationService implements ClientPatchOperation {
     return entityTemplate
         .getDatabaseClient()
         .sql(
-            "SELECT MAX(CLIENT_LOCN_CODE) as locn_code FROM CLIENT_LOCATION WHERE CLIENT_NUMBER = :clientNumber")
+            "SELECT MAX(CLIENT_LOCN_CODE) as locn_code FROM CLIENT_LOCATION "
+                + "WHERE CLIENT_NUMBER = :clientNumber")
         .bind("clientNumber", clientNumber)
         .map(row -> row.get("locn_code", String.class))
         .one()

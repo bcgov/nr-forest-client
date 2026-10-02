@@ -2,6 +2,7 @@ package ca.bc.gov.app.controller;
 
 import static ca.bc.gov.app.ApplicationConstants.MDC_USERID;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -215,7 +216,8 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
         argumentSet(
             "Update contact phone",
             "00000158",
-            "[{\"op\":\"replace\",\"path\":\"/contacts/25/businessPhone\",\"value\":\"1234567894\"}]",
+            "[{\"op\":\"replace\",\"path\":\"/contacts/25/businessPhone\","
+                + "\"value\":\"1234567894\"}]",
             "$.contacts[0].businessPhone",
             "7574522379",
             "1234567894"
@@ -306,7 +308,8 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "Update birthdate",
             "00000103",
             //The value here includes time because the backend service injects the time
-            "[{\"op\":\"replace\",\"path\":\"/client/birthdate\",\"value\":\"1971-02-03 00:00:00\"}]",
+            "[{\"op\":\"replace\",\"path\":\"/client/birthdate\","
+                + "\"value\":\"1971-02-03 00:00:00\"}]",
             "$.client.birthdate",
             "1966-02-04T00:00:00",
             "1971-02-03T00:00:00"
@@ -358,6 +361,14 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "$.client.clientTypeCode",
             "C",
             "F"
+        ),
+        argumentSet(
+            "Clear location email via null value",
+            "00000171",
+            "[{\"op\":\"replace\",\"path\":\"/addresses/00/emailAddress\",\"value\":null}]",
+            "$.addresses[0].emailAddress",
+            "BCULLRFORD0@BOSTON.COM",
+            null
         )
     );
   }
@@ -369,6 +380,15 @@ class ClientPatchControllerIntegrationTest extends AbstractTestContainerIntegrat
             "00000158",
             "[{ \"op\": \"remove\", \"path\": \"/relatedClients/0000015800JV0000015900\" }]",
             "$[1].clientNumber",
+            "00000158",
+            null
+        ),
+        argumentSet(
+            "Remove related client via empty replace",
+            "00000158",
+            "[{ \"op\": \"replace\", \"path\": \"/relatedClients/0000015800AG0000013700\","
+                + " \"value\": \"\" }]",
+            "$[0].clientNumber",
             "00000158",
             null
         ),

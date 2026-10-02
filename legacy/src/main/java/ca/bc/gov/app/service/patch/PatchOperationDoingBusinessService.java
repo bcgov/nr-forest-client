@@ -2,6 +2,7 @@ package ca.bc.gov.app.service.patch;
 
 import static ca.bc.gov.app.ApplicationConstants.DEFAULT_PAGE_SIZE;
 
+import ca.bc.gov.app.ApplicationConstants;
 import ca.bc.gov.app.dto.ClientDoingBusinessAsDto;
 import ca.bc.gov.app.entity.ClientDoingBusinessAsEntity;
 import ca.bc.gov.app.repository.ClientDoingBusinessAsRepository;
@@ -30,7 +31,7 @@ import tools.jackson.databind.ObjectMapper;
 @Order(11)
 public class PatchOperationDoingBusinessService implements ClientPatchOperation {
 
-  public static final String DEFAULT_USER_ID = "idir\\ottomated";
+  public static final String DEFAULT_USER_ID = ApplicationConstants.DEFAULT_USER_ID;
   private static final String PATCH_VALUE_FIELD = "value";
 
   private final ClientDoingBusinessAsRepository dbaRepository;
@@ -174,7 +175,8 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
    * Checks whether the patch represents a delete or removal operation.
    *
    * @param patch The JSON Patch node to inspect.
-   * @return {@code true} if the operation removes or clears doing business as, {@code false} otherwise.
+   * @return {@code true} if the operation removes or clears doing business as, {@code false}
+   *     otherwise.
    */
   private boolean isDeleteOperation(JsonNode patch) {
     if (patch.isArray() && patch.has(0)) {
@@ -186,7 +188,8 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
       }
       if (opNode.has(PATCH_VALUE_FIELD)) {
         JsonNode valueNode = opNode.get(PATCH_VALUE_FIELD);
-        return valueNode.isNull() || StringUtils.isBlank(valueNode.asText());
+        return valueNode.isNull()
+            || (valueNode.isTextual() && StringUtils.isBlank(valueNode.asText()));
       }
     }
     return false;

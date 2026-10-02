@@ -35,6 +35,9 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
+/**
+ * Patch operation that handles related client associations.
+ */
 @Service
 @Slf4j
 @Observed
@@ -49,7 +52,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   // It matches a string of the form "/{locationId}/{index}" and captures:
   // - Group 1: locationId (any sequence of characters except '/')
   // - Group 2: index (any sequence of characters except '/')
-  private final String CHECK_RELATION_EXIST = """
+  private static final String CHECK_RELATION_EXIST = """
       SELECT
         count(1) as count_results
       FROM RELATED_CLIENT rc
@@ -59,7 +62,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         AND rc.RELATED_CLNT_NMBR = :relatedClient
         AND rc.RELATED_CLNT_LOCN = :relatedLocation
         AND rc.RELATIONSHIP_CODE = :relationship""";
-  private final String UPDATE_DEL_USER = """
+  private static final String UPDATE_DEL_USER = """
       UPDATE
         REL_CLI_AUDIT
       SET UPDATE_USERID = :userId
@@ -80,6 +83,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       "^(\\d{8})(\\d{2})([A-Z]+)(\\d{8})(\\d{2})$");
 
   private static final String PATCH_VALUE_FIELD = "value";
+  private static final String OP_REPLACE = "replace";
   
   @Override
   public String getPrefix() {
@@ -98,13 +102,15 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       ObjectMapper mapper,
       String userId
   ) {
+    String effectiveUserId =
+        StringUtils.defaultIfBlank(userId, ApplicationConstants.DEFAULT_USER_ID);
 
     if (PatchUtils.checkOperation(patch, getPrefix(), mapper)) {
       return
           Flux.concat(
-                  applyRemove(clientNumber, patch, mapper, userId),
-                  applyReplace(clientNumber, patch, mapper, userId),
-                  applyAdd(clientNumber, patch, mapper, userId)
+                  applyRemove(clientNumber, patch, mapper, effectiveUserId),
+                  applyReplace(clientNumber, patch, mapper, effectiveUserId),
+                  applyAdd(clientNumber, patch, mapper, effectiveUserId)
               )
               .then();
     }
@@ -118,12 +124,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       ObjectMapper mapper,
       String userId
   ) {
-    JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
-        patch,
-        "remove",
-        getPrefix(),
-        mapper
-    );
+    JsonNode filteredNodeOps = filterRemoveOperations(patch, mapper);
 
     if (filteredNodeOps.isEmpty()) {
       return Mono.empty();
@@ -137,6 +138,38 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         .then();
   }
 
+  private JsonNode filterRemoveOperations(JsonNode patch, ObjectMapper mapper) {
+    tools.jackson.databind.node.ArrayNode filtered = mapper.createArrayNode();
+    patch.forEach(op -> {
+      if (!op.has("path") || !op.has("op")) {
+        return;
+      }
+      String path = op.get("path").asText();
+      if (!path.startsWith("/" + getPrefix())) {
+        return;
+      }
+      String opName = op.get("op").asText();
+      String newPath = PatchUtils.removePrefix(path, getPrefix());
+      String idCandidate = newPath.startsWith("/") ? newPath.substring(1) : newPath;
+
+      if ("remove".equalsIgnoreCase(opName)) {
+        ObjectNode copy = (ObjectNode) op.deepCopy();
+        copy.put("path", newPath);
+        filtered.add(copy);
+      } else if (OP_REPLACE.equalsIgnoreCase(opName)
+          && identifierPattern.matcher(idCandidate).matches()) {
+        JsonNode valueNode = op.get(PATCH_VALUE_FIELD);
+        if (isExplicitNullOrBlank(valueNode)) {
+          ObjectNode copy = (ObjectNode) op.deepCopy();
+          copy.put("path", newPath);
+          copy.put("op", "remove");
+          filtered.add(copy);
+        }
+      }
+    });
+    return filtered;
+  }
+
   private Mono<Void> applyReplace(
       String clientNumber, 
       JsonNode patch, 
@@ -145,18 +178,31 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   ) {
     JsonNode filteredNodeOps = PatchUtils.filterOperationsByOp(
         patch,
-        "replace",
+        OP_REPLACE,
         getPrefix(),
         mapper
     );
 
-    if (filteredNodeOps.isEmpty()) {
+    tools.jackson.databind.node.ArrayNode nonDeleteNodeOps = mapper.createArrayNode();
+    filteredNodeOps.forEach(op -> {
+      String path = op.path("path").asText();
+      String idCandidate = path.startsWith("/") ? path.substring(1) : path;
+      if (identifierPattern.matcher(idCandidate).matches()) {
+        JsonNode valueNode = op.get(PATCH_VALUE_FIELD);
+        if (isExplicitNullOrBlank(valueNode)) {
+          return;
+        }
+      }
+      nonDeleteNodeOps.add(op);
+    });
+
+    if (nonDeleteNodeOps.isEmpty()) {
       return Mono.empty();
     }
-    log.info("Applying replace operations for related clients: {}", filteredNodeOps);
+    log.info("Applying replace operations for related clients: {}", nonDeleteNodeOps);
 
     return Flux
-        .fromIterable(PatchUtils.loadNonNumericIds(filteredNodeOps).entrySet())
+        .fromIterable(PatchUtils.loadNonNumericIds(nonDeleteNodeOps).entrySet())
         .doOnNext(dd("1"))
         .flatMap(locationEntry -> {
           Matcher matcher = identifierPattern.matcher(locationEntry.getKey());
@@ -177,8 +223,8 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
         .doOnNext(dd("0"))
         .map(pair ->
             Pair.of(pair.getValue(), PatchUtils.filterOperationsByOp(
-                filteredNodeOps,
-                "replace",
+                nonDeleteNodeOps,
+                OP_REPLACE,
                 pair.getKey().getKey(),
                 getRestrictedPaths(),
                 mapper
@@ -469,5 +515,11 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
 
   private <T> Consumer<T> dd(String label) {
     return v -> log.info("[{}] : {}", label, v);
+  }
+
+  private static boolean isExplicitNullOrBlank(JsonNode valueNode) {
+    return valueNode != null
+        && (valueNode.isNull()
+            || (valueNode.isTextual() && StringUtils.isBlank(valueNode.asText())));
   }
 }

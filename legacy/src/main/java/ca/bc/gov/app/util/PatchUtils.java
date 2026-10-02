@@ -20,6 +20,9 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Mono;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -89,7 +92,7 @@ public class PatchUtils {
           // A check if the path of the operation starts with the specified path prefix
           if (
               operation.has("path")
-                  && operation.get("path").asText().startsWith(String.format("/%s", checkPath))
+                  && operation.get("path").asText().startsWith("/" + checkPath)
           ) {
             filteredNode.set(true);
           }
@@ -153,7 +156,7 @@ public class PatchUtils {
           // Get the path of the operation
           String path = operation.get("path").asText();
           // If the path starts with the prefixed path
-          if (StringUtils.isNotBlank(prefix) && path.startsWith(String.format("/%s", prefix))) {
+          if (StringUtils.isNotBlank(prefix) && path.startsWith("/" + prefix)) {
             // We generate a new operation path without the prefix
             String newPath = removePrefix(path, prefix);
             // This variable here initially is just a copy of the above, but it is used to
@@ -213,7 +216,7 @@ public class PatchUtils {
     // When it matches, it means that this entry is a list entry
     if (matcher.find()) {
       // So we extract the field name and the id
-      return Pair.of(matcher.group(1), String.format("/%s", matcher.group(2)));
+      return Pair.of(matcher.group(1), "/" + matcher.group(2));
     } else {
       // Otherwise we just return the path as is
       return Pair.of(null, path);
@@ -230,7 +233,7 @@ public class PatchUtils {
   public static String removePrefix(String path, String prefix) {
 
     // We generate the prefixed path for later use
-    String prefixedPath = String.format("/%s", prefix);
+    String prefixedPath = "/" + prefix;
 
     // If the path starts with the prefixed path
     if (path.startsWith(prefixedPath)) {
@@ -280,8 +283,8 @@ public class PatchUtils {
                     .map(Pair::getKey)
                     .stream()
                     .filter(StringUtils::isNotBlank)
-                    .collect(Collectors.toSet())
-                , (previousSet, nextSet) -> {
+                    .collect(Collectors.toSet()),
+                (previousSet, nextSet) -> {
                   previousSet.addAll(nextSet);
                   return previousSet;
                 });
@@ -291,6 +294,12 @@ public class PatchUtils {
     return subIds;
   }
 
+  /**
+   * Loads non-numeric identifiers and their associated sub-paths from the patch operations.
+   *
+   * @param filteredNode the JSON node containing filtered patch operations
+   * @return a map of identifiers to sets of sub-paths
+   */
   public static Map<String, Set<String>> loadNonNumericIds(JsonNode filteredNode) {
     Map<String, Set<String>> subIds = new LinkedHashMap<>();
     filteredNode.forEach(node -> {
@@ -302,7 +311,7 @@ public class PatchUtils {
             Optional
                 .ofNullable(node.get("path"))
                 .map(JsonNode::asText)
-                .map(value -> value.replace(String.format("/%s/", id), "/"))
+                .map(value -> value.replace("/" + id + "/", "/"))
                 .stream()
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.toSet()),
@@ -403,6 +412,34 @@ public class PatchUtils {
       List<String> restrictedPaths,
       ObjectMapper mapper
   ) {
+    return filterOperationsByOps(
+        patch,
+        Set.of(operationName),
+        prefix,
+        restrictedPaths,
+        mapper
+    );
+  }
+
+  /**
+   * Filters the operations in a JSON Patch based on a set of specified operation names, prefix,
+   * and restricted paths, preserving the original sequence of operations.
+   *
+   * @param patch           the JSON Patch to filter
+   * @param operationNames  the set of operation names to filter by
+   *                        (e.g., Set.of("replace", "remove"))
+   * @param prefix          the prefix to filter the operations by
+   * @param restrictedPaths the list of restricted paths to filter the operations by
+   * @param mapper          the ObjectMapper to use for JSON processing
+   * @return a JsonNode containing the filtered operations in their original order
+   */
+  public static JsonNode filterOperationsByOps(
+      JsonNode patch,
+      Set<String> operationNames,
+      String prefix,
+      List<String> restrictedPaths,
+      ObjectMapper mapper
+  ) {
 
     // A new ArrayNode to store the filtered operations
     ArrayNode filteredNode = mapper.createArrayNode();
@@ -421,8 +458,8 @@ public class PatchUtils {
           // If the path starts with the prefixed path
           if (
               StringUtils.isNotBlank(prefix)
-              && path.startsWith(String.format("/%s", prefix))
-              && operation.get("op").asText().equals(operationName)
+              && path.startsWith("/" + prefix)
+              && operationNames.contains(operation.get("op").asText())
           ) {
             // We generate a new operation path without the prefix
             String newPath = removePrefix(path, prefix);
@@ -452,12 +489,16 @@ public class PatchUtils {
   public static BinaryOperator<JsonNode> mergeNodes() {
     return (node1, node2) -> {
       ArrayNode arrayNode = new JsonMapper().createArrayNode();
-      if (node1 instanceof ArrayNode) {
-        arrayNode = (ArrayNode) node1.deepCopy();
+      if (node1 instanceof ArrayNode array1) {
+        arrayNode = (ArrayNode) array1.deepCopy();
       } else {
         arrayNode.add(node1);
       }
-      arrayNode.add(node2);
+      if (node2 instanceof ArrayNode array2) {
+        arrayNode.addAll(array2);
+      } else {
+        arrayNode.add(node2);
+      }
       return arrayNode;
     };
   }
@@ -504,4 +545,81 @@ public class PatchUtils {
     }
   }
 
+  /**
+   * Safely parses a string into a {@link Long}.
+   *
+   * @param value the string to parse
+   * @return an {@link Optional} containing the parsed {@link Long}, or {@link Optional#empty()} if
+   *         the string is null, blank, not numeric, or exceeds the range of {@link Long}.
+   */
+  public static Optional<Long> parseLongSafely(String value) {
+    if (StringUtils.isBlank(value)) {
+      return Optional.empty();
+    }
+    try {
+      return Optional.of(Long.parseLong(value));
+    } catch (NumberFormatException e) {
+      return Optional.empty();
+    }
+  }
+
+  /**
+   * Checks if a JSON Patch operation represents a clearing operation (remove, or replace with
+   * null/blank).
+   *
+   * @param op the operation node to check
+   * @return true if the operation clears a field, false otherwise
+   */
+  public static boolean isClearingOperation(JsonNode op) {
+    if (op == null || !op.has("op")) {
+      return false;
+    }
+    String opName = op.get("op").asText();
+    if ("remove".equalsIgnoreCase(opName)) {
+      return true;
+    }
+    if ("replace".equalsIgnoreCase(opName)) {
+      if (!op.has("value") || op.get("value") == null || op.get("value").isNull()) {
+        return true;
+      }
+      JsonNode valNode = op.get("value");
+      return valNode.isTextual() && StringUtils.isBlank(valNode.asText());
+    }
+    return false;
+  }
+
+  /**
+   * Validates that none of the operations in the patch clear mandatory fields.
+   *
+   * @param patchOps the filtered patch operations
+   * @param mandatoryFields the set of field path suffixes that are mandatory
+   * @return a Mono that completes if validation passes, or emits a ResponseStatusException (400)
+   *     if a mandatory field is cleared
+   */
+  public static Mono<Void> validateMandatoryFields(
+      JsonNode patchOps,
+      Set<String> mandatoryFields
+  ) {
+    if (patchOps != null && mandatoryFields != null && !mandatoryFields.isEmpty()) {
+      for (JsonNode op : patchOps) {
+        if (op.has("path") && isClearingOperation(op)) {
+          String path = op.get("path").asText();
+          for (String mandatoryField : mandatoryFields) {
+            if (path.endsWith(mandatoryField)) {
+              return Mono.error(new ResponseStatusException(
+                  HttpStatus.BAD_REQUEST,
+                  String.format(
+                      "Field %s is mandatory and cannot be removed or set to null",
+                      mandatoryField
+                  )
+              ));
+            }
+          }
+        }
+      }
+    }
+    return Mono.empty();
+  }
+
 }
+
