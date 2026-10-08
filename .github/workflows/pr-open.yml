@@ -16,12 +16,20 @@ jobs:
     runs-on: ubuntu-26.04
     outputs:
       url: ${{ steps.calculate.outputs.url }}
+      api-triggered: ${{ steps.triggers.outputs.triggered }}
     steps:
+      - uses: actions/checkout@v7
+      - name: API Diff Triggers
+        id: triggers
+        uses: bcgov/actions/diff-triggers@4026bfd276b8a5839029106099b13edfb594b2c3 # v0.8.0
+        with:
+          triggers: |
+            api/
       # steps.calculate.outputs.url => needs.vars.outputs.url
       - name: Calculate the deployment number
         id: calculate
         run: |
-          echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
+          echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca" >> "$GITHUB_OUTPUT"
           echo "url=${{ github.event.repository.name }}-$((${{ github.event.number }} % 50))-frontend.apps.silver.devops.gov.bc.ca"
 
   builds:
@@ -33,7 +41,7 @@ jobs:
       attestations: write
     strategy:
       matrix:
-        package: [backend, database, frontend, legacy, processor]
+        package: [backend, database, frontend, legacy, processor, api]
     steps:
       - name: Build
         uses: bcgov/action-builder-ghcr@cb2629351c87dd1c2130073e4ebb7233a9653a63 # v4.4.1
@@ -44,13 +52,14 @@ jobs:
 
   deploy:
     name: Deploy (${{ github.event.number }})
-    needs: [builds]
+    needs: [builds, vars]
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
       oracledb-port: 1521
       oracledb-servicename: PR_${{ github.event.number }}
       oracledb-username: THE
+      deploy-api: ${{ needs.vars.outputs.api-triggered == 'true' }}
       configmap-backend: |-
         features:
           staff:

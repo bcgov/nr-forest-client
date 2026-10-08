@@ -28,6 +28,9 @@ parameters:
   - name: ORG
     description: Organization name
     value: bcgov
+  - name: IMAGE_REPO
+    description: Image repository name
+    value: nr-forest-client
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
@@ -147,7 +150,7 @@ objects:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
           containers:
-            - image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
+            - image: ${REGISTRY}/${ORG}/${IMAGE_REPO}/${COMPONENT}:${TAG}
               imagePullPolicy: Always
               name: ${NAME}
               env:
