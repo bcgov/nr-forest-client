@@ -185,6 +185,7 @@ jobs:
             -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
             -p ORACLEDB_SERVICENAME=${{ inputs.oracledb-servicename || secrets.ORACLEDB_SERVICENAME }}
             -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
+            -p ORACLEDB_PORT=${{ inputs.oracledb-port }}
             -p ZONE=${{ inputs.target }}
             -p TAG=${{ needs.vars.outputs.tag }}
 

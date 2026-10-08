@@ -59,6 +59,9 @@ parameters:
   - name: ORACLEDB_SECRET
     description: Oracle database keystore secret/password
     required: true
+  - name: ORACLEDB_PORT
+    description: Oracle database port
+    value: "1543"
   - name: CERT_PVC_SIZE
     description: The amount of storage the cert PVC should have
     value: 25Mi
@@ -122,7 +125,7 @@ objects:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
           initContainers:
             - name: ${NAME}-init
-              image: ghcr.io/bcgov/nr-forest-client/common:prod
+              image: ${REGISTRY}/bcgov/nr-forest-client-commons/certextractor:0.2.0
               imagePullPolicy: Always
               env:
                 - name: ORACLEDB_HOST
@@ -136,7 +139,7 @@ objects:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: oracle-secret
                 - name: ORACLEDB_PORT
-                  value: "1543"
+                  value: ${ORACLEDB_PORT}
                 - name: RANDOM_EXPRESSION
                   value: ${RANDOM_EXPRESSION}
               volumeMounts:
@@ -180,7 +183,7 @@ objects:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: oracle-service
                 - name: ORACLEDB_PORT
-                  value: "1543"
+                  value: ${ORACLEDB_PORT}
                 - name: ORACLEDB_SECRET
                   valueFrom:
                     secretKeyRef:

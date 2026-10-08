@@ -36,10 +36,10 @@ ARG PORT=3001
 WORKDIR /app
 COPY --from=build /app/target/nr-forest-client-api ./nr-forest-client-api
 
-# User, port and health check
+# User and port
 USER 1001
 EXPOSE ${PORT}
-HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status":"UP"'
+HEALTHCHECK NONE
 
 # Startup
 ENTRYPOINT ["/app/nr-forest-client-api","--spring.profiles.active=container"]
