@@ -1,0 +1,37 @@
+name: Pull Request Close
+
+on:
+  pull_request:
+    types: [closed]
+
+concurrency:
+  # PR open and close use the same group, allowing only one at a time
+  group: ${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  cleanup:
+    name: Cleanup and Images
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@a11ad3d1b9288fb40757c4314a62eb86ff227931 # v1.2.1
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+    with:
+      cleanup: label
+      environment: dev
+      packages: api
+
+  merge-notification:
+    name: Merge Notification
+    runs-on: ubuntu-26.04
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    steps:
+      - name: Pre-merge update
+        uses: mshick/add-pr-comment@ec328af66588ab8f77cdeb2c264f14aba45bbf59 # v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          allow-repeats: false
+          message: |
+            Your Pull Request code is being promoted!  Please follow the link below.
+            [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)

@@ -1,0 +1,45 @@
+### Builder
+FROM ghcr.io/graalvm/native-image-community:25 AS build
+
+# RELAX SECURITY: enable legacy TLS versions/algorithms (e.g. TLS 1.0/1.1, SHA1, DH/RSA keys < 2048)
+# so the native image can complete a handshake with the legacy Oracle DB's old cert.
+# GraalVM native-image bakes the JDK security providers into the binary at build time, so this
+# must be patched here (pre-compile) rather than via a runtime java.security override.
+RUN sed -i '/^jdk.tls.disabledAlgorithms=/,/[^\\]$/c\jdk.tls.disabledAlgorithms=SSLv3' "$JAVA_HOME/conf/security/java.security"
+
+# App version
+ARG APP_VERSION=0.0.1
+
+# Copy
+WORKDIR /app
+COPY pom.xml ./
+COPY src ./src
+COPY mvnw ./
+COPY .mvn/wrapper/maven-wrapper.properties ./.mvn/wrapper/maven-wrapper.properties
+
+# Ensure mvnw has execution permissions
+RUN chmod +x mvnw
+
+# Setting app version
+RUN ./mvnw versions:set -DnewVersion=${APP_VERSION} -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true && \
+    ./mvnw versions:commit -f pom.xml -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
+
+# Build
+RUN ./mvnw -Pnative native:compile
+
+
+### Deployer
+FROM gcr.io/distroless/java-base:nonroot@sha256:b55ed2a449bdeaaa4fe5800358f8f6c14b9c9fc29083bac5cbf5a0560a5be9ab AS deploy
+ARG PORT=3001
+
+# Copy
+WORKDIR /app
+COPY --from=build /app/target/nr-forest-client-api ./nr-forest-client-api
+
+# User, port and health check
+USER 1001
+EXPOSE ${PORT}
+HEALTHCHECK CMD curl -f http://localhost:${PORT}/actuator/health | grep '"status":"UP"'
+
+# Startup
+ENTRYPOINT ["/app/nr-forest-client-api","--spring.profiles.active=container"]

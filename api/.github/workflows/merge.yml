@@ -1,0 +1,120 @@
+name: Merge
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "*.md"
+      - ".github/**"
+      - ".github/graphics/**"
+      - ".github/ISSUE_TEMPLATE/**"
+      - "!.github/workflows/**"
+
+env:
+  DOMAIN: apps.silver.devops.gov.bc.ca
+  NS: nr-d2723f
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  init:
+    name: Initialize
+    outputs:
+      pr: ${{ steps.pr.outputs.pr }}
+    runs-on: ubuntu-26.04
+    steps:
+      # Get PR number for squash merges to main
+      - id: pr
+        uses: bcgov/action-get-pr@28b0adf8e4d40720d41f9c87356ce24b0a4bd6af # v0.3.1
+
+  deploy-test:
+    name: TEST Deployment
+    needs: [init]
+    runs-on: ubuntu-26.04
+    outputs:
+      tag: ${{ steps.changelog.outputs.tag }}
+    permissions:
+      contents: write
+      discussions: write
+    environment:
+      name: test
+    steps:
+      - uses: actions/checkout@v7
+      - name: Deploys
+        uses: bcgov/action-deployer-openshift@e2d60eb9cacceb89c3b97d8dcf0a2c460eea5eab # v4.2.3
+        with:
+          file: openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          oc_version: "4.13"
+          parameters: -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
+            -p ZONE=test
+            -p TAG=${{ needs.init.outputs.pr }}
+
+      - name: Publish API
+        uses: bcgov/action-gwa-publish@v1.0.0
+        with:
+          namespace: ${{ env.NS }}
+          client_id: ${{ secrets.GWA_ACCT_ID }}
+          client_secret: ${{ secrets.GWA_ACCT_SECRET }}
+          file: .github/gwa/service-test.yaml
+
+      - name: Postman Smoke Test on API Gateway
+        uses: matt-ball/newman-action@master
+        with:
+          collection: postman/FCA.postman_collection.json
+          envVar: '[{"key":"URL_FCA","value":"https://${{ github.event.repository.name }}-test.api.gov.bc.ca"}]'
+          reporters: '["cli"]'
+          folder: '["general"]'
+
+  deploy-prod:
+    name: PROD Deployment
+    needs: [deploy-test, init]
+    runs-on: ubuntu-26.04
+    environment:
+      name: prod
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Deploys
+        uses: bcgov/action-deployer-openshift@e2d60eb9cacceb89c3b97d8dcf0a2c460eea5eab # v4.2.3
+        with:
+          file: openshift.deploy.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          oc_version: "4.13"
+          parameters: -p ORACLEDB_USER=${{ secrets.ORACLEDB_USERNAME }}
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
+            -p ZONE=prod
+            -p TAG=${{ needs.init.outputs.pr }}
+
+      - name: Publish API
+        uses: bcgov/action-gwa-publish@v1.0.0
+        with:
+          namespace: ${{ env.NS }}
+          client_id: ${{ secrets.GWA_ACCT_ID }}
+          client_secret: ${{ secrets.GWA_ACCT_SECRET }}
+          file: .github/gwa/service-prod.yaml
+
+      - name: Postman Smoke Test on API Gateway
+        uses: matt-ball/newman-action@master
+        with:
+          collection: postman/FCA.postman_collection.json
+          envVar: '[{"key":"URL_FCA","value":"https://${{ github.event.repository.name }}-prod.api.gov.bc.ca"}]'
+          reporters: '["cli"]'
+          folder: '["general"]'
