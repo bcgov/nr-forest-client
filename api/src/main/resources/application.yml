@@ -1,0 +1,122 @@
+server:
+  port: 3001
+
+spring:
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+    default-property-inclusion: always
+  application:
+    name: FSA Forest Client API
+  main:
+    lazy-initialization: false
+    banner-mode: "off"
+    allow-bean-definition-overriding: true
+  r2dbc:
+    url: r2dbcs:oracle:thin:@tcps://${ca.bc.gov.nrs.oracle.host}:${ca.bc.gov.nrs.oracle.port}/${ca.bc.gov.nrs.oracle.service}?javax.net.ssl.trustStore=${ca.bc.gov.nrs.oracle.keystore}&javax.net.ssl.trustStorePassword=${ca.bc.gov.nrs.oracle.secret}&javax.net.ssl.keyStore=${ca.bc.gov.nrs.oracle.keystore}&javax.net.ssl.keyStorePassword=${ca.bc.gov.nrs.oracle.secret}
+    properties:
+      oracle.r2dbc.tls.keyAlias: ${ca.bc.gov.nrs.oracle.host}
+      oracle.r2dbc.tls.serverDnMatch: false
+    username: ${ca.bc.gov.nrs.oracle.username}
+    password: ${ca.bc.gov.nrs.oracle.password}
+    pool:
+      enabled: true
+      initialSize: 1
+      minIdle: 1
+      maxSize: 3
+      maxLifeTime: 60000
+      maxIdleTime: 45000
+      maxCreateConnectionTime: 90000
+      poolName: ForestClientApiPool
+
+management:
+  enable-native-support: true
+  endpoint:
+    metrics:
+      enabled: false
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      path-mapping:
+        prometheus: metrics
+      base-path: /
+      exposure:
+        include: health,info,metrics,otlp,tracing,httpexchanges,prometheus
+  httpexchanges:
+    recording:
+      include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    enabled: false
+    baggage:
+      remote-fields:
+        - X-TRACE-ID
+      correlation:
+        fields:
+          - X-TRACE-ID
+    sampling:
+      probability: 0.75
+  otlp:
+    metrics:
+      export:
+        enabled: false
+info:
+  app:
+    name: ${spring.application.name}
+    zone: ${APP_ZONE:local}
+
+springdoc:
+  enable-native-support: true
+  swagger-ui:
+    path: /
+  webjars:
+    prefix: /v3
+  api-docs:
+    groups:
+      enabled: true
+  show-actuator: false
+
+ca:
+  bc:
+    gov:
+      nrs:
+        oracle:
+          service: ${ORACLEDB_SERVICENAME:fsa-forest}
+          database: ${ORACLEDB_DATABASE:fsa-forest}
+          host: ${ORACLEDB_HOST:localhost}
+          port: ${ORACLEDB_PORT:1521}
+          username: ${ORACLEDB_USER:user}
+          password: ${ORACLEDB_PASSWORD:passwd}
+          keystore: ${ORACLEDB_KEYSTORE:jssecacerts.jks}
+          secret: ${ORACLEDB_SECRET:changeit}
+          schema: THE
+
+logging:
+  pattern:
+    correlation: "[${spring.application.name:},%X{${X-TRACE-ID:traceId}:-},%X{spanId:-}] "
+
+
+# Profile Specific Properties
+---
+spring:
+  config:
+    activate:
+      on-profile: container
+
+logging:
+  pattern:
+    console: "{\"time\": \"%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}\", \"level\": \"${LOG_LEVEL:%5p}\", \"app\":\"${spring.application.name:-}\", \"traceId\":\"%X{${X-TRACE-ID:traceId}:-}\", \"spanId\":\"%X{spanId:-}\", \"pid\": \"${PID: }\", \"thread\": \"%t\", \"source\": \"%logger{63}:%L\", \"message\": \"%m${LOG_EXCEPTION_CONVERSION_WORD:%wEx}\"}%n"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: d2723f-dev
+  r2dbc:
+    url: r2dbc:oracle://${ca.bc.gov.nrs.oracle.host}:${ca.bc.gov.nrs.oracle.port}/${ca.bc.gov.nrs.oracle.service}

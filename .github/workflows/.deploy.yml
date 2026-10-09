@@ -13,9 +13,13 @@ on:
         type: string
       configmap-frontend:
         description: Configuration map for params.js
-        required: true
+        required: false
         type: string
         default: ""
+      deploy-api:
+        description: Deploy API component
+        default: false
+        type: boolean
       environment:
         description: GitHub/OpenShift environment; usually PR number, test or prod
         default: ""
@@ -155,3 +159,56 @@ jobs:
           oc_token: ${{ secrets.oc_token }}
           overwrite: true
           parameters: -p ZONE=${{ inputs.target }}
+
+  deploy-api:
+    name: Deploy API
+    if: inputs.deploy-api
+    needs: [init, vars]
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-26.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Deploy API
+        uses: bcgov/action-deployer-openshift@e2d60eb9cacceb89c3b97d8dcf0a2c460eea5eab # v4.2.3
+        with:
+          file: api/openshift.deploy.yml
+          oc_namespace: ${{ secrets.oc_namespace }}
+          oc_server: ${{ secrets.oc_server }}
+          oc_token: ${{ secrets.oc_token }}
+          overwrite: true
+          oc_version: "4.13"
+          parameters: -p ORACLEDB_USER=${{ inputs.oracledb-username || secrets.ORACLEDB_USERNAME }}
+            -p ORACLEDB_PASSWORD=${{ secrets.ORACLEDB_PASSWORD }}
+            -p ORACLEDB_DATABASE=${{ secrets.ORACLEDB_DATABASE }}
+            -p ORACLEDB_HOST=${{ secrets.ORACLEDB_HOST }}
+            -p ORACLEDB_SERVICENAME=${{ inputs.oracledb-servicename || secrets.ORACLEDB_SERVICENAME }}
+            -p ORACLEDB_SECRET=${{ secrets.ORACLEDB_SECRET }}
+            -p ORACLEDB_PORT=${{ inputs.oracledb-port }}
+            -p ZONE=${{ inputs.target }}
+            -p TAG=${{ needs.vars.outputs.tag }}
+
+      - name: Deploy API Dev Route
+        if: inputs.environment == ''
+        uses: bcgov/action-deployer-openshift@e2d60eb9cacceb89c3b97d8dcf0a2c460eea5eab # v4.2.3
+        with:
+          file: api/openshift.dev.yml
+          oc_namespace: ${{ secrets.oc_namespace }}
+          oc_server: ${{ secrets.oc_server }}
+          oc_token: ${{ secrets.oc_token }}
+          oc_version: "4.13"
+          overwrite: true
+          parameters: -p ZONE=${{ inputs.target }}
+
+      - name: Publish API Gateway
+        if: inputs.environment != '' && env.GWA_ACCT_ID != '' && env.GWA_ACCT_SECRET != ''
+        env:
+          GWA_ACCT_ID: ${{ secrets.GWA_ACCT_ID }}
+          GWA_ACCT_SECRET: ${{ secrets.GWA_ACCT_SECRET }}
+        uses: bcgov/action-gwa-publish@5b9a79621b1dad19037c1a05498e8628210e1a00 # v1.0.0
+        with:
+          namespace: nr-d2723f
+          client_id: ${{ secrets.GWA_ACCT_ID }}
+          client_secret: ${{ secrets.GWA_ACCT_SECRET }}
+          file: api/gwa/service-${{ inputs.environment }}.yaml

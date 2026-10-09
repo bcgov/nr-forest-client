@@ -1,0 +1,279 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: ${NAME}
+  annotations:
+    description: "Nr-Forest-Client-Api"
+    tags: "nr-forest-client-api"
+    iconClass: icon-js
+labels:
+  app: ${NAME}-${ZONE}
+  app.kubernetes.io/part-of: ${NAME}-${ZONE}
+parameters:
+  - name: NAME
+    description: Module name
+    value: nr-forest-client
+  - name: COMPONENT
+    description: Component name
+    value: api
+  - name: ZONE
+    description: Deployment zone, e.g. pr-### or prod
+    required: true
+  - name: TAG
+    description: The image tag to deploy
+    required: true
+  - name: REGISTRY
+    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
+    value: ghcr.io
+  - name: ORG
+    description: Organization name
+    value: bcgov
+  - name: CPU_REQUEST
+    value: 75m
+  - name: MEMORY_REQUEST
+    value: 200Mi
+  - name: ORACLEDB_USER
+    description: Oracle database user name
+    required: true
+  - name: ORACLEDB_PASSWORD
+    description: Oracle database password
+    required: true
+  - name: ORACLEDB_DATABASE
+    description: Oracle database database name
+    required: true
+  - name: ORACLEDB_HOST
+    description: Oracle database host
+    required: true
+  - name: ORACLEDB_SERVICENAME
+    description: Oracle database service name
+    required: true
+  - name: ORACLEDB_KEYSTORE
+    description: Oracle database keystore file
+  - name: ORACLEDB_SECRET
+    description: Oracle database keystore secret/password
+    required: true
+  - name: ORACLEDB_PORT
+    description: Oracle database port
+    value: "1543"
+  - name: CERT_PVC_SIZE
+    description: The amount of storage the cert PVC should have
+    value: 25Mi
+  - name: RANDOM_EXPRESSION
+    description: Random expression to make sure deployments update
+    from: "[a-zA-Z0-9]{32}"
+    generate: expression
+objects:
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+    stringData:
+      oracle-user: "${ORACLEDB_USER}"
+      oracle-password: "${ORACLEDB_PASSWORD}"
+      oracle-database: "${ORACLEDB_DATABASE}"
+      oracle-host: "${ORACLEDB_HOST}"
+      oracle-service: "${ORACLEDB_SERVICENAME}"
+      oracle-secret: "${ORACLEDB_SECRET}"
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: ${CERT_PVC_SIZE}
+      storageClassName: netapp-file-standard
+  - kind: Deployment
+    apiVersion: apps/v1
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          deployment: ${NAME}-${ZONE}-${COMPONENT}
+      strategy:
+        type: RollingUpdate
+      template:
+        metadata:
+          annotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "3001"
+            prometheus.io/path: "/metrics"
+          labels:
+            app: ${NAME}-${ZONE}
+            deployment: ${NAME}-${ZONE}-${COMPONENT}
+        spec:
+          volumes:
+            - name: ${NAME}-${ZONE}-${COMPONENT}
+              persistentVolumeClaim:
+                claimName: ${NAME}-${ZONE}-${COMPONENT}
+          initContainers:
+            - name: ${NAME}-init
+              image: ${REGISTRY}/bcgov/nr-forest-client-commons/certextractor:0.2.0
+              imagePullPolicy: Always
+              env:
+                - name: ORACLEDB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-host
+                - name: ORACLEDB_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-secret
+                - name: ORACLEDB_PORT
+                  value: ${ORACLEDB_PORT}
+                - name: RANDOM_EXPRESSION
+                  value: ${RANDOM_EXPRESSION}
+              volumeMounts:
+                - name: ${NAME}-${ZONE}-${COMPONENT}
+                  mountPath: /cert
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+          containers:
+            - image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
+              imagePullPolicy: Always
+              name: ${NAME}
+              env:
+                - name: ORACLEDB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-user
+                - name: ORACLEDB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-password
+                - name: ORACLEDB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-database
+                - name: ORACLEDB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-host
+                - name: ORACLEDB_SERVICENAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-service
+                - name: ORACLEDB_PORT
+                  value: ${ORACLEDB_PORT}
+                - name: ORACLEDB_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: oracle-secret
+                - name: ORACLEDB_KEYSTORE
+                  value: /cert/jssecacerts
+                - name: TZ
+                  value: America/Vancouver
+                - name: APP_ZONE
+                  value: ${ZONE}
+                - name: SPRING_PROFILES_ACTIVE
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: spring-profiles-active
+              ports:
+                - containerPort: 3001
+                  protocol: TCP
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+              readinessProbe:
+                failureThreshold: 30
+                httpGet:
+                  path: /health
+                  port: 3001
+                  scheme: HTTP
+                initialDelaySeconds: 3
+                periodSeconds: 15
+                timeoutSeconds: 5
+              livenessProbe:
+                successThreshold: 1
+                failureThreshold: 30
+                httpGet:
+                  path: /health
+                  port: 3001
+                  scheme: HTTP
+                initialDelaySeconds: 3
+                periodSeconds: 30
+                timeoutSeconds: 5
+              volumeMounts:
+                - mountPath: /cert
+                  name: ${NAME}-${ZONE}-${COMPONENT}
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
+    spec:
+      ports:
+        - name: 3001-tcp
+          protocol: TCP
+          port: 80
+          targetPort: 3001
+      selector:
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: allow-from-openshift-ingress
+      labels:
+        template: openshift-${ZONE}
+    spec:
+      podSelector: {}
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  network.openshift.io/policy-group: ingress
+      policyTypes:
+        - Ingress
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: allow-same-namespace
+      labels:
+        template: quickstart-network-security-policy
+    spec:
+      podSelector: {}
+      ingress:
+        - from:
+            - podSelector: {}
+      policyTypes:
+        - Ingress
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}-gateway-ingress
+      labels:
+        app: ${NAME}-${ZONE}
+    spec:
+      podSelector:
+        matchLabels:
+          app: ${NAME}-${ZONE}
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  environment: prod
+                  name: 264e6f
