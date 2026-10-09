@@ -47,7 +47,7 @@ jobs:
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/repository/**,**/*$*Builder*,**/LegacyApplication***/ApplicationConstants*
           sonar_token: ${{ secrets.SONAR_TOKEN_LEGACY }}
-          triggers: ('legacy/')
+          triggers: ('legacy/src/' 'legacy/pom.xml' 'legacy/config/')
 
       - uses: bcgov/action-test-and-analyse-java@7c7309721cae054b3e837c723afa4efb4b1a256d # v1.1.0
         name: Processor Coverage
@@ -82,7 +82,7 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/repository/**,**/*$*Builder*,**/Application*
-          sonar_token: ${{ secrets.SONAR_TOKEN_API || secrets.SONAR_TOKEN_BACKEND }}
+          sonar_token: ${{ secrets.SONAR_TOKEN_API }}
           triggers: ('api/')
 
       - name: Archive CycloneDX
