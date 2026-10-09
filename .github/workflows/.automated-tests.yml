@@ -6,11 +6,20 @@ on:
       url:
         required: true
         type: string
+      api-url:
+        required: false
+        type: string
+        default: ""
+      test-api:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   cypress-run:
     name: "User flow test"
     permissions:
+      checks: write
       pull-requests: write
     runs-on: ubuntu-26.04
     environment: tools
@@ -56,20 +65,20 @@ jobs:
         run: |
           if [ -d "cypress/cypress/screenshots" ] && [ "$(ls -A cypress/cypress/screenshots)" ]; then
             echo "Screenshots folder is not empty, uploading artifacts."            
-            echo "screenshots=true" >> $GITHUB_OUTPUT
+            echo "screenshots=true" >> "$GITHUB_OUTPUT"
 
           else
             echo "Screenshots folder is empty or does not exist."
-            echo "screenshots=false" >> $GITHUB_OUTPUT
+            echo "screenshots=false" >> "$GITHUB_OUTPUT"
           fi
 
           if [ -d "cypress/cypress/videos" ] && [ "$(ls -A cypress/cypress/videos)" ]; then
             echo "Videos folder is not empty, uploading artifacts."            
-            echo "videos=true" >> $GITHUB_OUTPUT
+            echo "videos=true" >> "$GITHUB_OUTPUT"
 
           else
             echo "Videos folder is empty or does not exist."
-            echo "videos=false" >> $GITHUB_OUTPUT
+            echo "videos=false" >> "$GITHUB_OUTPUT"
           fi
         id: check_artifacts
 
@@ -88,3 +97,42 @@ jobs:
           name: cypress-videos
           path: cypress/cypress/videos
           retention-days: 7
+
+  postman-api:
+    name: "API Smoke Test"
+    if: inputs.test-api
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: API Health check
+        uses: matt-ball/newman-action@170d252f10d199d75d6be4c739b48a3bd5f15ece # v2.0.0
+        with:
+          collection: api/postman/FCA.postman_collection.json
+          envVar: '[{"key":"URL_FCA","value":"https://${{ inputs.api-url }}"}]'
+          reporters: '["cli"]'
+          folder: '["general"]'
+
+      - name: Postman Smoke Test
+        uses: matt-ball/newman-action@170d252f10d199d75d6be4c739b48a3bd5f15ece # v2.0.0
+        with:
+          collection: api/postman/FCA.postman_collection.json
+          envVar: '[{"key":"URL_FCA","value":"https://${{ inputs.api-url }}"}]'
+          iterationData: api/postman/FCA_postman_tests_dev.json
+          reporters: '["cli", "junit"]'
+          reporter: '{ "junit" : { "export" : "./api/postman/report.xml" } }'
+
+      - name: Postman Smoke Test Report
+        uses: mikepenz/action-junit-report@b7b80d7ac5b1da46d6aaff9fb57ad50d8453bcb3 # v6
+        if: always()
+        with:
+          report_paths: "api/postman/report.xml"
+          commit: ${{ github.event.pull_request.head.sha }}
+          summary: Postman Tests
+          detailed_summary: true
+          job_name: Postman Smoke Test Report

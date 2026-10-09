@@ -81,10 +81,13 @@ jobs:
     needs: [deploy, vars]
     uses: ./.github/workflows/.automated-tests.yml
     permissions:
+      checks: write
       pull-requests: write
     secrets: inherit
     with:
       url: ${{ needs.vars.outputs.url }}
+      api-url: ${{ github.event.repository.name }}-${{ github.event.number }}-api.apps.silver.devops.gov.bc.ca
+      test-api: ${{ needs.vars.outputs.api-triggered == 'true' }}
 
   # ==========================================================================
   # WARNING: This job acts as the required merge gate for this workflow.
