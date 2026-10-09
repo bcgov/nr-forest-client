@@ -81,6 +81,7 @@ jobs:
     needs: [deploy, vars]
     uses: ./.github/workflows/.automated-tests.yml
     permissions:
+      contents: read
       checks: write
       pull-requests: write
     secrets: inherit
