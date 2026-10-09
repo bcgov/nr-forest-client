@@ -30,12 +30,8 @@ parameters:
     value: bcgov
   - name: CPU_REQUEST
     value: 75m
-  - name: CPU_LIMIT
-    value: 200m
   - name: MEMORY_REQUEST
-    value: 150Mi
-  - name: MEMORY_LIMIT
-    value: 150Mi
+    value: 200Mi
   - name: ORACLEDB_USER
     description: Oracle database user name
     required: true
@@ -143,9 +139,6 @@ objects:
                 - name: ${NAME}-${ZONE}-${COMPONENT}
                   mountPath: /cert
               resources:
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
@@ -192,18 +185,20 @@ objects:
                   value: America/Vancouver
                 - name: APP_ZONE
                   value: ${ZONE}
+                - name: SPRING_PROFILES_ACTIVE
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}
+                      key: spring-profiles-active
               ports:
                 - containerPort: 3001
                   protocol: TCP
               resources:
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
               readinessProbe:
-                failureThreshold: 12
+                failureThreshold: 30
                 httpGet:
                   path: /health
                   port: 3001
@@ -213,7 +208,7 @@ objects:
                 timeoutSeconds: 5
               livenessProbe:
                 successThreshold: 1
-                failureThreshold: 12
+                failureThreshold: 30
                 httpGet:
                   path: /health
                   port: 3001

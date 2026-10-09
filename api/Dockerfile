@@ -41,5 +41,7 @@ USER 1001
 EXPOSE ${PORT}
 HEALTHCHECK NONE
 
+ENV SPRING_PROFILES_ACTIVE=container
+
 # Startup
-ENTRYPOINT ["/app/nr-forest-client-api","--spring.profiles.active=container"]
+ENTRYPOINT ["/app/nr-forest-client-api"]
