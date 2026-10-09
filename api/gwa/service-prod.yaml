@@ -1,12 +1,12 @@
 services:
-  - name: nr-forest-client-api-prod
-    host: nr-forest-client-api-prod-api.d2723f-prod.svc
+  - name: nr-forest-client-prod-api
+    host: nr-forest-client-prod-api.d2723f-prod.svc
     tags: [ns.nr-d2723f.prod]
     port: 80
     protocol: http
     retries: 0
     routes:
-      - name: nr-forest-client-api-prod-swagger-route
+      - name: nr-forest-client-prod-swagger-route
         tags: [ns.nr-d2723f.prod]
         hosts:
           - nr-forest-client-api-prod.api.gov.bc.ca
@@ -17,7 +17,7 @@ services:
         strip_path: false
         https_redirect_status_code: 426
         path_handling: v0
-      - name: nr-forest-client-api-prod-route
+      - name: nr-forest-client-prod-route
         tags: [ns.nr-d2723f.prod]
         hosts:
           - nr-forest-client-api-prod.api.gov.bc.ca

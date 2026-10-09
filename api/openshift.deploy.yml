@@ -12,7 +12,7 @@ labels:
 parameters:
   - name: NAME
     description: Module name
-    value: nr-forest-client-api
+    value: nr-forest-client
   - name: COMPONENT
     description: Component name
     value: api
@@ -28,9 +28,6 @@ parameters:
   - name: ORG
     description: Organization name
     value: bcgov
-  - name: IMAGE_REPO
-    description: Image repository name
-    value: nr-forest-client
   - name: CPU_REQUEST
     value: 75m
   - name: CPU_LIMIT
@@ -153,7 +150,7 @@ objects:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
           containers:
-            - image: ${REGISTRY}/${ORG}/${IMAGE_REPO}/${COMPONENT}:${TAG}
+            - image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${TAG}
               imagePullPolicy: Always
               name: ${NAME}
               env:
@@ -272,7 +269,9 @@ objects:
   - kind: NetworkPolicy
     apiVersion: networking.k8s.io/v1
     metadata:
-      name: allow-traffic-from-gateway-to-your-api
+      name: ${NAME}-${ZONE}-${COMPONENT}-gateway-ingress
+      labels:
+        app: ${NAME}-${ZONE}
     spec:
       podSelector:
         matchLabels:
