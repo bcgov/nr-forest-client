@@ -50,9 +50,16 @@ jobs:
           tag_fallback: latest
           triggers: ('${{ matrix.package }}/')
 
+  tools:
+    name: Tools
+    permissions:
+      packages: write
+    secrets: inherit
+    uses: ./.github/workflows/.tools-deploy.yml
+
   deploy:
     name: Deploy (${{ github.event.number }})
-    needs: [builds, vars]
+    needs: [builds, tools]
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
@@ -97,7 +104,7 @@ jobs:
   # ==========================================================================
   results:
     name: PR Results
-    needs: [builds, deploy, tests]
+    needs: [builds, tools, deploy, tests]
     if: always()
     runs-on: ubuntu-26.04
     timeout-minutes: 1
