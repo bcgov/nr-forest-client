@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Postman Smoke Test on API Gateway
-        uses: matt-ball/newman-action@170d252f10d199d75d6be4c739b48a3bd5f15ece # v0.1.0
+        uses: matt-ball/newman-action@b46f18d42cbdce32cb4e426fe9b3ce98a75f957f # v0.3.7
         with:
           collection: api/postman/FCA.postman_collection.json
           envVar: '[{"key":"URL_FCA","value":"https://nr-forest-client-api-${{ matrix.environment }}.${{ env.GTW_DOMAIN }}"}]'
