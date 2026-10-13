@@ -1,0 +1,138 @@
+[
+  {
+    "INDIVIDUALS_QUERY_STRING": "",
+    "INDIVIDUALS_SIZE": 10,
+    "INDIVIDUALS_CLIENT_TYPE_CODE": [],
+    "FIND_NUMBER": "00000012",
+    "FIND_BODY": {
+      "clientNumber": "00000012",
+      "clientName": "SAMPLER FOREST PRODUCTS INC.",
+      "clientStatusCode": "ACT",
+      "clientTypeCode": "U"
+    },
+    "FIND_CODE": 200,
+    "BYACRONYM_QUERY_STRING": "acronym=SAMPLIBC",
+    "BYACRONYM_CODE": 200,
+    "BYACRONYM_NUMBER": [
+      "00000004"
+    ],
+    "LOCATIONS_NUMBER": "00000006",
+    "LOCATIONS_QUERY_STRING": "page=0",
+    "LOCATIONS_CODE": 200,
+    "LOCATIONS_SIZE": 4,
+    "LOCATIONS_POSTALCODES": [
+      "V6G3C5",
+      "V6E4S3",
+      "V2L4X3",
+      "V0A1K0"
+    ]
+  },
+  {
+    "INDIVIDUALS_QUERY_STRING": "size=5",
+    "INDIVIDUALS_SIZE": 5,
+    "INDIVIDUALS_CLIENT_TYPE_CODE": [],
+    "FIND_NUMBER": "",
+    "FIND_BODY": "",
+    "FIND_CODE": 404,
+    "BYACRONYM_QUERY_STRING": "acronym=OAKS",
+    "BYACRONYM_CODE": 200,
+    "BYACRONYM_NUMBER": [
+      "00000158"
+    ],
+    "LOCATIONS_NUMBER": "00000006",
+    "LOCATIONS_QUERY_STRING": "",
+    "LOCATIONS_CODE": 200,
+    "LOCATIONS_SIZE": 4,
+    "LOCATIONS_POSTALCODES": [
+      "V6G3C5",
+      "V6E4S3",
+      "V2L4X3",
+      "V0A1K0"
+    ]
+  },
+  {
+    "INDIVIDUALS_QUERY_STRING": "sortedColumnName=clientTypeCode",
+    "INDIVIDUALS_SIZE": 10,
+    "INDIVIDUALS_CLIENT_TYPE_CODE": [
+      "A"
+    ],
+    "FIND_NUMBER": "abc",
+    "FIND_BODY": "Invalid Client Number",
+    "FIND_CODE": 400,
+    "BYACRONYM_QUERY_STRING": "acronym=SAMPLIBC",
+    "BYACRONYM_CODE": 200,
+    "BYACRONYM_NUMBER": [
+      "00000004"
+    ],
+    "LOCATIONS_NUMBER": "00000006",
+    "LOCATIONS_QUERY_STRING": "page=0&size=2",
+    "LOCATIONS_CODE": 200,
+    "LOCATIONS_SIZE": 2,
+    "LOCATIONS_POSTALCODES": [
+      "V6G3C5",
+      "V6E4S3"
+    ]
+  },
+  {
+    "INDIVIDUALS_QUERY_STRING": "",
+    "INDIVIDUALS_SIZE": 10,
+    "INDIVIDUALS_CLIENT_TYPE_CODE": [],
+    "FIND_NUMBER": "00000012",
+    "FIND_BODY": {
+      "clientNumber": "00000012",
+      "clientName": "SAMPLER FOREST PRODUCTS INC.",
+      "clientStatusCode": "ACT",
+      "clientTypeCode": "U"
+    },
+    "FIND_CODE": 200,
+    "BYACRONYM_QUERY_STRING": "acronym=",
+    "BYACRONYM_CODE": 400,
+    "LOCATIONS_NUMBER": "00000006",
+    "LOCATIONS_QUERY_STRING": "page=1",
+    "LOCATIONS_CODE": 200,
+    "LOCATIONS_SIZE": 0,
+    "LOCATIONS_POSTALCODES": []
+  },
+  {
+    "INDIVIDUALS_QUERY_STRING": "",
+    "INDIVIDUALS_SIZE": 10,
+    "INDIVIDUALS_CLIENT_TYPE_CODE": [],
+    "FIND_NUMBER": "00000012",
+    "FIND_BODY": {
+      "clientNumber": "00000012",
+      "clientName": "SAMPLER FOREST PRODUCTS INC.",
+      "clientStatusCode": "ACT",
+      "clientTypeCode": "U"
+    },
+    "FIND_CODE": 200,
+    "BYACRONYM_QUERY_STRING": "",
+    "BYACRONYM_CODE": 400,
+    "LOCATIONS_NUMBER": "00000006",
+    "LOCATIONS_QUERY_STRING": "page=1&size=1",
+    "LOCATIONS_CODE": 200,
+    "LOCATIONS_SIZE": 1,
+    "LOCATIONS_POSTALCODES": [
+      "V6E4S3"
+    ]
+  },
+  {
+    "INDIVIDUALS_QUERY_STRING": "",
+    "INDIVIDUALS_SIZE": 10,
+    "INDIVIDUALS_CLIENT_TYPE_CODE": [],
+    "FIND_NUMBER": "00000012",
+    "FIND_BODY": {
+      "clientNumber": "00000012",
+      "clientName": "SAMPLER FOREST PRODUCTS INC.",
+      "clientStatusCode": "ACT",
+      "clientTypeCode": "U"
+    },
+    "FIND_CODE": 200,
+    "BYACRONYM_QUERY_STRING": "acronym=NONEXISTENT",
+    "BYACRONYM_CODE": 404,
+    "LOCATIONS_NUMBER": "00000006",
+    "LOCATIONS_QUERY_STRING": "page=99",
+    "LOCATIONS_CODE": 200,
+    "LOCATIONS_SIZE": 0,
+    "LOCATIONS_POSTALCODES": []
+  }
+]

@@ -41,3 +41,19 @@ jobs:
           cmd_options: "-a"
           issue_title: "ZAP: frontend"
           target: https://forestclient-test.apps.silver.devops.gov.bc.ca
+
+  zap_scan_api:
+    runs-on: ubuntu-26.04
+    name: API Penetration Tests
+    permissions:
+      issues: write
+    steps:
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c # v0.13.0
+        with:
+          allow_issue_writing: true
+          artifact_name: "zap_api"
+          cmd_options: "-a"
+          issue_title: "ZAP: API"
+          target: https://nr-forest-client-api-test-backend.apps.silver.devops.gov.bc.ca
+

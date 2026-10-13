@@ -142,6 +142,7 @@ flowchart TD
 | **Frontend Tooling** | Vite, TypeScript, Sass | 8.3.x / ~6.0.0 / ~1.104.1 | Lightning-fast build, typed modules, styling |
 | **UI Components** | Carbon Design System | `@carbon/web-components` 2.x | Accessible BC Gov-aligned UI system |
 | **Backend API** | Spring Boot (WebFlux), Java | 4.1.x / Java 17 (JDK 25) | Reactive non-blocking REST API, GraalVM native |
+| **Forest Client API** | Spring Boot, Java | 4.1.x / Java 17 | Public Forest Client API published via API Gateway |
 | **Background Processor** | Spring Integration, Java | 4.1.x / Java 17 | Async submission pipeline with queue channels |
 | **Legacy Connector** | Spring Boot (WebFlux), Java | 4.1.x / Java 21 | High-throughput reactive Oracle database interface |
 | **Primary Database** | PostgreSQL | 13.x (moving to 17) | Modern relational store with R2DBC |
@@ -159,6 +160,7 @@ flowchart TD
 nr-forest-client/
 ├── frontend/               # Vue 3 SPA frontend source, components, and tests
 ├── backend/                # Main Spring Boot reactive backend API
+├── api/                    # Forest Client API (public API published via API Gateway)
 ├── legacy/                 # Spring Boot legacy service connecting to Oracle
 ├── processor/              # Spring Integration background processing engine
 ├── cypress/                # Cypress End-to-End user journey test suite (Gherkin/BDD)

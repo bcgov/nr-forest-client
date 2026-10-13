@@ -1,0 +1,34 @@
+name: API Validation Check
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  verify-api:
+    name: Verify Gateway (${{ matrix.environment }})
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        environment: [test, prod]
+    env:
+      GTW_DOMAIN: api.gov.bc.ca
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Postman Smoke Test on API Gateway
+        uses: matt-ball/newman-action@170d252f10d199d75d6be4c739b48a3bd5f15ece # v0.1.0
+        with:
+          collection: api/postman/FCA.postman_collection.json
+          envVar: '[{"key":"URL_FCA","value":"https://nr-forest-client-api-${{ matrix.environment }}.${{ env.GTW_DOMAIN }}"}]'
+          reporters: '["cli"]'
+          folder: '["general"]'

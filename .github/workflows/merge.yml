@@ -19,9 +19,19 @@ jobs:
     name: Set Variables
     outputs:
       pr: ${{ steps.pr.outputs.pr }}
+      api-triggered: ${{ steps.triggers.outputs.triggered }}
     runs-on: ubuntu-26.04
-    timeout-minutes: 1
+    timeout-minutes: 2
     steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+      - name: API Diff Triggers
+        id: triggers
+        uses: bcgov/actions/diff-triggers@4026bfd276b8a5839029106099b13edfb594b2c3 # v0.8.0
+        with:
+          triggers: |
+            api/
       # Get PR number for squash merges to main
       - name: PR Number
         id: pr
@@ -29,12 +39,14 @@ jobs:
 
   deploy-test:
     name: Deploy (TEST)
+    needs: [vars]
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
       environment: test
       target: test
       url: forestclient-test.apps.silver.devops.gov.bc.ca
+      deploy-api: ${{ needs.vars.outputs.api-triggered == 'true' }}
       configmap-backend: |-
         features:
           staff:
@@ -59,13 +71,14 @@ jobs:
 
   deploy-prod:
     name: Deploy (PROD)
-    needs: [deploy-test]
+    needs: [deploy-test, vars]
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
       environment: prod
       target: prod
       url: forestclient.nrs.gov.bc.ca
+      deploy-api: ${{ needs.vars.outputs.api-triggered == 'true' }}
       configmap-backend: |-
         features:
           staff:
@@ -93,6 +106,21 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
+          target: test
+          tags: prod
+
+  images-api-prod:
+    name: Promote API image to PROD
+    if: needs.vars.outputs.api-triggered == 'true'
+    needs: [deploy-prod, vars]
+    permissions:
+      packages: write
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: shrink/actions-docker-registry-tag@e6aaef25c595b6e0edd18bf4c7dbfea3abd43299 # v5
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/api
           target: test
           tags: prod
 

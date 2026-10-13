@@ -22,7 +22,7 @@ jobs:
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
       cleanup: label
-      packages: backend database frontend legacy processor
+      packages: backend database frontend legacy processor api
 
   remove-tools:
     name: Remove database and user
