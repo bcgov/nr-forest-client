@@ -1,12 +1,7 @@
 name: Tools deployment
 
 on:
-  pull_request:
-
-concurrency:
-  # PR open and close use the same group, allowing only one at a time
-  group: tools-${{ github.event.number }}
-  cancel-in-progress: true
+  workflow_call:
 
 permissions: {}
 
@@ -90,7 +85,6 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: Create the PR database
-        continue-on-error: true
         uses: bcgov/action-oc-runner@111868d1fc50db0a40417ba321d865ef5c931bbd # v1.7.0
         with:
           oc_namespace: d2723f-tools
@@ -112,10 +106,10 @@ jobs:
 
             if [ -z "$POD_NAME" ]; then
               echo "Failed to find the pod after 5 attempts."
+              exit 1
             fi
 
       - name: Create the PR user
-        continue-on-error: true
         uses: bcgov/action-oc-runner@111868d1fc50db0a40417ba321d865ef5c931bbd # v1.7.0
         with:
           oc_namespace: d2723f-tools
@@ -137,10 +131,10 @@ jobs:
 
             if [ -z "$POD_NAME" ]; then
               echo "Failed to find the pod after 5 attempts."
+              exit 1
             fi
 
       - name: Migrate the PR database
-        continue-on-error: true
         uses: bcgov/action-oc-runner@111868d1fc50db0a40417ba321d865ef5c931bbd # v1.7.0
         with:
           oc_namespace: d2723f-tools
