@@ -23,6 +23,7 @@ jobs:
       checks: write
       pull-requests: write
     runs-on: ubuntu-26.04
+    timeout-minutes: 20
     environment: tools
     steps:
       - name: Checkout
