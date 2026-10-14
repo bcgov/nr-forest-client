@@ -123,7 +123,7 @@ public class BusinessInformationIdentificationDocumentValidator implements
     String pattern = "^([A-Z]{2}[0-9]{6}|[A-Z][0-9]{6}[A-Z]{2})$";
     if (!value.matches(pattern)) {
       return Mono.just(new ValidationError(fieldName,
-          "The passport must be 8 or 9 characters and contain only letters and numbers"));
+          "The passport must follow the format: two letters followed by six digits (e.g., AB123456) or one letter, six digits, and two letters (e.g., A123456BC)"));
     }
     return Mono.empty();
   }

@@ -207,7 +207,7 @@ fieldValidations["businessInformation.clientIdentification-BRTH"] = [
 fieldValidations["businessInformation.clientIdentification-PASS"] = [
   isRegex(
     /^([A-Z]{2}[0-9]{6}|[A-Z][0-9]{6}[A-Z]{2})$/,
-    "The passport must be 8 or 9 characters and contain only letters and numbers"
+    "The passport must follow the format: two letters followed by six digits (e.g., AB123456) or one letter, six digits, and two letters (e.g., A123456BC)"
   ),
 ];
 
@@ -386,7 +386,7 @@ fieldValidations["client.clientIdentification-PRCD"] = [
 fieldValidations["client.clientIdentification-PASS"] = [
   isRegex(
     /^([A-Z]{2}[0-9]{6}|[A-Z][0-9]{6}[A-Z]{2})$/,
-    "The passport must be 8 or 9 characters and contain only letters and numbers"
+    "The passport must follow the format: two letters followed by six digits (e.g., AB123456) or one letter, six digits, and two letters (e.g., A123456BC)"
   ),
 ];
 

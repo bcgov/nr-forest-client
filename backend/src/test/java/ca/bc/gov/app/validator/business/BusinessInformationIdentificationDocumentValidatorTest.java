@@ -126,12 +126,12 @@ class BusinessInformationIdentificationDocumentValidatorTest {
             Arguments.of("CDDL","CA","BC","potato","clientIdentification","The driver's license must be a 7 or 8-digit number"),
             Arguments.of("CDDL","CA","BC","12345678",StringUtils.EMPTY,StringUtils.EMPTY),
 
-            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"!A1","clientIdentification","The passport must be 8 or 9 characters and contain only letters and numbers"),
-            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"12345678901234","clientIdentification","The passport must be 8 or 9 characters and contain only letters and numbers"),
-            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"potato","clientIdentification","The passport must be 8 or 9 characters and contain only letters and numbers"),
-            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"12345678","clientIdentification","The passport must be 8 or 9 characters and contain only letters and numbers"),
-            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"XX1234567","clientIdentification","The passport must be 8 or 9 characters and contain only letters and numbers"),
-            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"xx123456","clientIdentification","The passport must be 8 or 9 characters and contain only letters and numbers"),
+            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"!A1","clientIdentification","The passport must follow the format: two letters followed by six digits (e.g., AB123456) or one letter, six digits, and two letters (e.g., A123456BC)"),
+            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"12345678901234","clientIdentification","The passport must follow the format: two letters followed by six digits (e.g., AB123456) or one letter, six digits, and two letters (e.g., A123456BC)"),
+            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"potato","clientIdentification","The passport must follow the format: two letters followed by six digits (e.g., AB123456) or one letter, six digits, and two letters (e.g., A123456BC)"),
+            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"12345678","clientIdentification","The passport must follow the format: two letters followed by six digits (e.g., AB123456) or one letter, six digits, and two letters (e.g., A123456BC)"),
+            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"XX1234567","clientIdentification","The passport must follow the format: two letters followed by six digits (e.g., AB123456) or one letter, six digits, and two letters (e.g., A123456BC)"),
+            Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"xx123456","clientIdentification","The passport must follow the format: two letters followed by six digits (e.g., AB123456) or one letter, six digits, and two letters (e.g., A123456BC)"),
             Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"XX123456",StringUtils.EMPTY,StringUtils.EMPTY),
             Arguments.of("PASS",StringUtils.EMPTY,StringUtils.EMPTY,"A123456BC",StringUtils.EMPTY,StringUtils.EMPTY),
 
