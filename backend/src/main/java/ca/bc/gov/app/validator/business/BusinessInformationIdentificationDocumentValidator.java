@@ -120,10 +120,10 @@ public class BusinessInformationIdentificationDocumentValidator implements
   }
 
   private Mono<ValidationError> validatePassport(String fieldName, String value) {
-    String pattern = "^([A-Z]{2}[0-9]{6}|[A-Z][0-9]{6}[A-Z]{2})$";
+    String pattern = "^[A-Z]{2}[0-9]{6,7}$";
     if (!value.matches(pattern)) {
       return Mono.just(new ValidationError(fieldName,
-          "The passport must follow the format: two letters followed by six digits (e.g., AB123456) or one letter, six digits, and two letters (e.g., A123456BC)"));
+          "The passport must follow the format: two letters followed by 6 or 7 digits (e.g., AB123456 or AB1234567)"));
     }
     return Mono.empty();
   }

@@ -46,12 +46,11 @@ const passScenarios: Scenario[] = [
   ["!A1", false, "invalid characters and length"],
   ["AB12345", false, "2 letters and 5 digits (7 chars)"],
   ["AB123456", true, "valid 8-character format: 2 letters + 6 digits"],
-  ["AB1234567", false, "2 letters and 7 digits"],
-  ["A123456BC", true, "valid 9-character format: 1 letter + 6 digits + 2 letters"],
-  ["A123456B", false, "1 letter + 6 digits + 1 letter (8 chars)"],
-  ["A1234567BC", false, "1 letter + 7 digits + 2 letters (10 chars)"],
+  ["AB1234567", true, "valid 9-character format: 2 letters + 7 digits"],
+  ["AB12345678", false, "2 letters and 8 digits (10 chars)"],
+  ["A123456BC", false, "not 2 letters followed by digits"],
   ["ab123456", false, "lowercase letters not allowed by regex"],
-  ["a123456bc", false, "lowercase letters not allowed by regex"],
+  ["ab1234567", false, "lowercase letters not allowed by regex"],
 ];
 
 describe("validations", () => {

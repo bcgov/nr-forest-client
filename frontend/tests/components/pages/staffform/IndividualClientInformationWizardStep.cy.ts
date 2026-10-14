@@ -163,7 +163,7 @@ describe("<individual-client-information-wizard-step />", () => {
       const valueAlphanumeric13 = "1234567890ABC";
       const valueNumeric8 = "12345678";
       const valueAlphanumeric8 = "12345ABC";
-      const valueAlphanumeric9 = "A123456BC";
+      const valueAlphanumeric9 = "AB1234567";
 
       const isValid = () => {
         cy.get("#clientIdentification").shadow().find("[name='invalid-text']").should("not.exist");
