@@ -53,6 +53,9 @@ parameters:
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
     generate: expression
+  - name: ROUTER_TIMEOUT
+    description: Router timeout for long-running requests
+    value: 3m
 objects:
   - kind: Deployment
     apiVersion: apps/v1
@@ -217,6 +220,8 @@ objects:
   - kind: Route
     apiVersion: route.openshift.io/v1
     metadata:
+      annotations:
+        haproxy.router.openshift.io/timeout: ${ROUTER_TIMEOUT}
       labels:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
