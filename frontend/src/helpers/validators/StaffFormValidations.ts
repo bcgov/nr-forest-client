@@ -205,8 +205,10 @@ fieldValidations["businessInformation.clientIdentification-BRTH"] = [
 ];
 
 fieldValidations["businessInformation.clientIdentification-PASS"] = [
-  isIdCharacters("Canadian passport"),
-  isExactSizMsg("Canadian passport", clientIdentificationMaskParams.PASS.maxSize),
+  isRegex(
+    /^([A-Z]{2}[0-9]{6}|[A-Z][0-9]{6}[A-Z]{2})$/,
+    "The passport must be 8 or 9 characters and contain only letters and numbers"
+  ),
 ];
 
 fieldValidations["businessInformation.clientIdentification-CITZ"] = [
@@ -378,6 +380,13 @@ fieldValidations["client.clientIdentification-PRCD"] = [
   isRegex(
     /^[A-Za-z]{2}(?:\d{10}|\d{7})$/,
     "The permanent resident card number must start with two letters followed by either 10 or 7 digits (e.g., RA0302123456 or RA1234567)"
+  ),
+];
+
+fieldValidations["client.clientIdentification-PASS"] = [
+  isRegex(
+    /^([A-Z]{2}[0-9]{6}|[A-Z][0-9]{6}[A-Z]{2})$/,
+    "The passport must be 8 or 9 characters and contain only letters and numbers"
   ),
 ];
 

@@ -163,7 +163,7 @@ describe("<individual-client-information-wizard-step />", () => {
       const valueAlphanumeric13 = "1234567890ABC";
       const valueNumeric8 = "12345678";
       const valueAlphanumeric8 = "12345ABC";
-      const valueAlphanumeric9 = "123456ABC";
+      const valueAlphanumeric9 = "A123456BC";
 
       const isValid = () => {
         cy.get("#clientIdentification").shadow().find("[name='invalid-text']").should("not.exist");
@@ -476,7 +476,7 @@ describe("<individual-client-information-wizard-step />", () => {
           describe("and the ID number is properly filled in", () => {
             beforeEach(() => {
               cy.clearFormEntry("#clientIdentification");
-              cy.get("#clientIdentification").shadow().find("input").type("123456789");
+              cy.get("#clientIdentification").shadow().find("input").type("AB123456");
 
               cy.get("#clientIdentification").shadow().find("input").blur();
               cy.wait(1);
