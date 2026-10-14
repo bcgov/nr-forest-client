@@ -12,6 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+/**
+ * Validator for identification document in client business information.
+ */
 @Component
 @Observed
 @Slf4j
@@ -105,7 +108,8 @@ public class BusinessInformationIdentificationDocumentValidator implements
     if (!StringUtils.isAlphanumeric(value) || (StringUtils.length(value) < 7
         || StringUtils.length(value) > 20)) {
       return Mono.just(new ValidationError(fieldName,
-          "The driver's license must be between 7 and 20 characters and contain only letters and numbers"));
+          "The driver's license must be between 7 and 20 characters "
+              + "and contain only letters and numbers"));
     }
     return Mono.empty();
   }
@@ -120,10 +124,11 @@ public class BusinessInformationIdentificationDocumentValidator implements
   }
 
   private Mono<ValidationError> validatePassport(String fieldName, String value) {
-    String pattern = "^[A-Z]{2}[0-9]{6,7}$";
+    String pattern = "^[A-Z]{2}\\d{6,7}$";
     if (!value.matches(pattern)) {
       return Mono.just(new ValidationError(fieldName,
-          "The passport must follow the format: two letters followed by 6 or 7 digits (e.g., AB123456 or AB1234567)"));
+          "The passport must follow the format: two letters followed by 6 or 7 digits "
+              + "(e.g., AB123456 or AB1234567)"));
     }
     return Mono.empty();
   }
@@ -145,7 +150,9 @@ public class BusinessInformationIdentificationDocumentValidator implements
   }
 
   private Mono<ValidationError> validateOtherDocuments(String fieldName, String value) {
-    // other documents should be between 3 and 40 characters long, and match the regex pattern /^[^:]+:\s?[^\s:]+$/ where the left side should be composed of A-Z 0-9 characters only and the right side should have a minimum of 1 character size of 3
+    // other documents should be between 3 and 40 characters long, and match the regex pattern
+    // /^[^:]+:\s?[^\s:]+$/ where the left side should be composed of A-Z 0-9 characters only
+    // and the right side should have a minimum of 1 character size of 3
     if (StringUtils.length(value) < 3 || StringUtils.length(value) > 40) {
       return Mono.just(new ValidationError(fieldName,
           "The other document must be between 3 and 40 characters long"));
@@ -153,7 +160,8 @@ public class BusinessInformationIdentificationDocumentValidator implements
 
     if (!value.matches("^(?=.{3,40}$)[^:]+:\\s?[A-Z0-9]{3,}$")) {
       return Mono.just(new ValidationError(fieldName,
-          "Other identification must follow the pattern: [ID Type] : [ID Value] such as 'USA Passport : 12345'"));
+          "Other identification must follow the pattern: [ID Type] : [ID Value] "
+              + "such as 'USA Passport : 12345'"));
     }
 
     return Mono.empty();
