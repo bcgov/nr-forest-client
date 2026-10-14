@@ -10,7 +10,7 @@ const individualBaseData = {
   identificationTypeCode: "PASS",
   identificationTypeValue: "Canadian passport",
   identificationProvinceValue: undefined,
-  clientIdentification: "AB3456789",
+  clientIdentification: "AB345678",
 };
 
 const fillIndividual = (data = individualBaseData) => {
