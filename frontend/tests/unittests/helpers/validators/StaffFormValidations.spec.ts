@@ -34,6 +34,25 @@ const prcdScenarios: Scenario[] = [
   ["RA1234567", true, "valid example format 2"],
 ];
 
+// Scenarios for Canadian Passport identification
+const passScenarios: Scenario[] = [
+  ["1234ABC!", false, "contains special character"],
+  ["1234ABCa", false, "contains lower-case letter"],
+  ["1234 ABC", false, "contains space"],
+  ["1234567", false, "less than 8 digits"],
+  ["12345678", false, "8 digits with no letters"],
+  ["123456789", false, "9 digits with no letters"],
+  ["potato", false, "letters only"],
+  ["!A1", false, "invalid characters and length"],
+  ["AB12345", false, "2 letters and 5 digits (7 chars)"],
+  ["AB123456", true, "valid 8-character format: 2 letters + 6 digits"],
+  ["AB1234567", true, "valid 9-character format: 2 letters + 7 digits"],
+  ["AB12345678", false, "2 letters and 8 digits (10 chars)"],
+  ["A123456BC", false, "not 2 letters followed by digits"],
+  ["ab123456", false, "lowercase letters not allowed by regex"],
+  ["ab1234567", false, "lowercase letters not allowed by regex"],
+];
+
 describe("validations", () => {
   describe.each(["businessInformation.clientType"])("%s", (key) => {
     const formDataDto = newFormDataDto();
@@ -255,22 +274,6 @@ describe("validations", () => {
       });
     });
 
-    describe.each(["businessInformation.clientIdentification-PASS"])("%s", (key) => {
-      const setter = (value: string) => {
-        data.businessInformation["clientIdentification-PASS"] = value;
-      };
-      (<Scenario[]>[
-        ["1234ABC!", false, "contains special character"],
-        ["1234ABCa", false, "contains lower-case letter"],
-        ["1234 ABC", false, "contains space"],
-        ["1234567", false, "less than 9 digits"],
-        ["1234ABCD9", true],
-        ["1234ABCD90", false, "more than 9 digits"],
-      ]).forEach((scenario) => {
-        test(data, key, setter, scenario);
-      });
-    });
-
     describe.each(["businessInformation.clientIdentification-CITZ"])("%s", (key) => {
       const setter = (value: string) => {
         data.businessInformation["clientIdentification-CITZ"] = value;
@@ -327,6 +330,23 @@ describe("validations", () => {
         };
 
         prcdScenarios.forEach((scenario) => {
+          test(testData, key, setter, scenario);
+        });
+      });
+    });
+
+    // DRY execution block for both businessInformation and client for PASS identification
+    [
+      { key: "businessInformation.clientIdentification-PASS", rootNode: "businessInformation" },
+      { key: "client.clientIdentification-PASS", rootNode: "client" },
+    ].forEach(({ key, rootNode }) => {
+      describe(key, () => {
+        const testData: any = { [rootNode]: {} };
+        const setter = (value: string) => {
+          testData[rootNode]["clientIdentification-PASS"] = value;
+        };
+
+        passScenarios.forEach((scenario) => {
           test(testData, key, setter, scenario);
         });
       });
