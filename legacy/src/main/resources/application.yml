@@ -17,9 +17,9 @@ spring:
     password: ${ca.bc.gov.nrs.oracle.password}
     pool:
       enabled: true
-      initialSize: 1
-      minIdle: 1
-      maxSize: 3
+      initialSize: ${R2DBC_INITIAL_SIZE:2}
+      minIdle: ${R2DBC_MIN_IDLE:2}
+      maxSize: ${R2DBC_MAX_SIZE:10}
       maxLifeTime: 60000
       maxIdleTime: 45000
       maxCreateConnectionTime: 90000
