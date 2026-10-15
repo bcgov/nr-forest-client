@@ -648,9 +648,9 @@ public class ClientSubmissionService {
 
     //If no user provided query found, then use the default one
     if (userQuery.isEmpty()) {
-      //List all submission of status N, or submissions of type AAC and RNC that were updated in the last X time
+      //List all submission of status N or P, or submissions of type AAC and RNC that were updated in the last X time
       userQuery = QueryPredicates
-          .orEqualTo(new String[]{"N"}, ApplicationConstant.SUBMISSION_STATUS)
+          .orEqualTo(new String[]{"N", "P"}, ApplicationConstant.SUBMISSION_STATUS)
           .or(
               QueryPredicates
                   .isAfter(
@@ -729,7 +729,10 @@ public class ClientSubmissionService {
     return stringBuilder.toString();
   }
 
-  private String removeProvider(String input) {
+  String removeProvider(String input) {
+    if (StringUtils.isBlank(input)) {
+      return StringUtils.EMPTY;
+    }
     String[] parts = input.split("\\\\");
     if (parts.length > 1) {
       return parts[1];
