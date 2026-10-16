@@ -42,6 +42,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -393,7 +394,7 @@ public class ClientSubmissionService {
             .switchIfEmpty(Mono.error(new RequestAlreadyProcessedException()))
             .map(submission -> {
               submission.setUpdatedBy(userId);
-              submission.setUpdatedAt(LocalDateTime.now());
+              submission.setUpdatedAt(LocalDateTime.now(ZoneId.systemDefault()));
               submission.setSubmissionStatus(
                   request.approved() ? SubmissionStatusEnum.A : SubmissionStatusEnum.R
               );
@@ -406,7 +407,7 @@ public class ClientSubmissionService {
                     .map(matched ->
                         matched
                             .withStatus(BooleanUtils.toString(request.approved(), "Y", "N"))
-                            .withUpdatedAt(LocalDateTime.now())
+                            .withUpdatedAt(LocalDateTime.now(ZoneId.systemDefault()))
                             .withCreatedBy(userId)
                             .withMatchingMessage(processRejectionReason(request))
                     )
@@ -452,7 +453,7 @@ public class ClientSubmissionService {
                             : SubmissionStatusEnum.A
                     )
                     .submissionType(submissionType)
-                    .submissionDate(LocalDateTime.now())
+                    .submissionDate(LocalDateTime.now(ZoneId.systemDefault()))
                     .createdBy(JwtPrincipalUtil.getUserId(principal))
                     .updatedBy(JwtPrincipalUtil.getUserId(principal))
                     .notifyClientInd(clientSubmissionDto.notifyClientInd())
@@ -498,7 +499,7 @@ public class ClientSubmissionService {
                     .just(SubmissionMatchDetailEntity
                         .builder()
                         .submissionId(submission)
-                        .updatedAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now(ZoneId.systemDefault()))
                         .createdBy(JwtPrincipalUtil.getUserId(principal))
                         .matchers(
                             Map.of(
@@ -662,7 +663,7 @@ public class ClientSubmissionService {
               QueryPredicates
                   .isAfter(
                       LocalDateTime
-                          .now()
+                          .now(ZoneId.systemDefault())
                           .minus(configuration.getSubmissionLimit())
                           .withHour(0)
                           .withMinute(0)

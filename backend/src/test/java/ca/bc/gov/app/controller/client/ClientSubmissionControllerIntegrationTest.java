@@ -38,6 +38,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -586,7 +587,7 @@ class ClientSubmissionControllerIntegrationTest
           + "and exclude old reviewed submissions")
   @Order(13)
   void shouldIncludeOldPendingAndExcludeOldReviewedSubmissions() {
-    LocalDateTime twoWeeksAgo = LocalDateTime.now().minusDays(14);
+    LocalDateTime twoWeeksAgo = LocalDateTime.now(ZoneId.systemDefault()).minusDays(14);
     SubmissionEntity pendingEntity = null;
     SubmissionDetailEntity pendingDetail = null;
     SubmissionEntity reviewedEntity = null;

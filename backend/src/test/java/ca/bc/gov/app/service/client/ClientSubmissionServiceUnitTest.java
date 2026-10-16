@@ -89,13 +89,13 @@ class ClientSubmissionServiceUnitTest {
     String criteriaString = criteria.toString();
 
     // Verify both pending statuses ('N' and 'P') are present in the query
-    assertThat(criteriaString).contains("submissionStatus = 'N'");
-    assertThat(criteriaString).contains("submissionStatus = 'P'");
-
-    // Verify the 7-day age cutoff applies to reviewed submission types ('AAC' and 'RNC')
-    assertThat(criteriaString).contains("updateTimestamp >=");
-    assertThat(criteriaString).contains("submissionType = 'AAC'");
-    assertThat(criteriaString).contains("submissionType = 'RNC'");
+    // and the 7-day age cutoff applies to reviewed submission types ('AAC' and 'RNC')
+    assertThat(criteriaString)
+        .contains("submissionStatus = 'N'")
+        .contains("submissionStatus = 'P'")
+        .contains("updateTimestamp >=")
+        .contains("submissionType = 'AAC'")
+        .contains("submissionType = 'RNC'");
   }
 
 }
