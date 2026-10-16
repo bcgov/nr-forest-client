@@ -586,53 +586,59 @@ class ClientSubmissionControllerIntegrationTest
           + "and exclude old reviewed submissions")
   @Order(13)
   void shouldIncludeOldPendingAndExcludeOldReviewedSubmissions() {
-    int oldPendingId = 998;
-    int oldReviewedId = 999;
     LocalDateTime twoWeeksAgo = LocalDateTime.now().minusDays(14);
-
-    SubmissionEntity pendingEntity = SubmissionEntity.builder()
-        .submissionId(oldPendingId)
-        .submissionStatus(SubmissionStatusEnum.P)
-        .submissionType(SubmissionTypeCodeEnum.RNC)
-        .submissionDate(twoWeeksAgo)
-        .updateTimestamp(twoWeeksAgo)
-        .createdBy("IDIR\\TEST")
-        .updatedBy("IDIR\\TEST")
-        .build();
-
-    SubmissionDetailEntity pendingDetail = SubmissionDetailEntity.builder()
-        .submissionDetailId(oldPendingId)
-        .submissionId(oldPendingId)
-        .organizationName("OLD PENDING CORP")
-        .clientTypeCode("C")
-        .districtCode("DCR")
-        .businessTypeCode("U")
-        .build();
-
-    SubmissionEntity reviewedEntity = SubmissionEntity.builder()
-        .submissionId(oldReviewedId)
-        .submissionStatus(SubmissionStatusEnum.R)
-        .submissionType(SubmissionTypeCodeEnum.RNC)
-        .submissionDate(twoWeeksAgo)
-        .updateTimestamp(twoWeeksAgo)
-        .createdBy("IDIR\\TEST")
-        .updatedBy("IDIR\\TEST")
-        .build();
-
-    SubmissionDetailEntity reviewedDetail = SubmissionDetailEntity.builder()
-        .submissionDetailId(oldReviewedId)
-        .submissionId(oldReviewedId)
-        .organizationName("OLD REVIEWED CORP")
-        .clientTypeCode("C")
-        .districtCode("DCR")
-        .businessTypeCode("U")
-        .build();
+    SubmissionEntity pendingEntity = null;
+    SubmissionDetailEntity pendingDetail = null;
+    SubmissionEntity reviewedEntity = null;
+    SubmissionDetailEntity reviewedDetail = null;
 
     try {
-      submissionRepository.save(pendingEntity).block();
-      detailRepository.save(pendingDetail).block();
-      submissionRepository.save(reviewedEntity).block();
-      detailRepository.save(reviewedDetail).block();
+      pendingEntity = submissionRepository.save(
+          SubmissionEntity.builder()
+              .submissionStatus(SubmissionStatusEnum.P)
+              .submissionType(SubmissionTypeCodeEnum.RNC)
+              .submissionDate(twoWeeksAgo)
+              .updateTimestamp(twoWeeksAgo)
+              .updatedAt(twoWeeksAgo)
+              .createdBy("IDIR\\TEST")
+              .updatedBy("IDIR\\TEST")
+              .build()
+      ).block();
+
+      pendingDetail = detailRepository.save(
+          SubmissionDetailEntity.builder()
+              .submissionId(pendingEntity.getSubmissionId())
+              .organizationName("OLD PENDING CORP")
+              .clientTypeCode("C")
+              .districtCode("DCR")
+              .businessTypeCode("U")
+              .build()
+      ).block();
+
+      reviewedEntity = submissionRepository.save(
+          SubmissionEntity.builder()
+              .submissionStatus(SubmissionStatusEnum.R)
+              .submissionType(SubmissionTypeCodeEnum.RNC)
+              .submissionDate(twoWeeksAgo)
+              .updateTimestamp(twoWeeksAgo)
+              .updatedAt(twoWeeksAgo)
+              .createdBy("IDIR\\TEST")
+              .updatedBy("IDIR\\TEST")
+              .build()
+      ).block();
+
+      reviewedDetail = detailRepository.save(
+          SubmissionDetailEntity.builder()
+              .submissionId(reviewedEntity.getSubmissionId())
+              .organizationName("OLD REVIEWED CORP")
+              .clientTypeCode("C")
+              .districtCode("DCR")
+              .businessTypeCode("U")
+              .build()
+      ).block();
+
+      long pendingId = pendingEntity.getSubmissionId().longValue();
+      long reviewedId = reviewedEntity.getSubmissionId().longValue();
 
       client
           .mutateWith(csrf())
@@ -654,15 +660,23 @@ class ClientSubmissionControllerIntegrationTest
           .expectBodyList(ClientListSubmissionDto.class)
           .value(dtos -> {
             AssertionsForInterfaceTypes.assertThat(dtos)
-                .anyMatch(dto -> dto.id() == oldPendingId);
+                .anyMatch(dto -> dto.id() == pendingId);
             AssertionsForInterfaceTypes.assertThat(dtos)
-                .noneMatch(dto -> dto.id() == oldReviewedId);
+                .noneMatch(dto -> dto.id() == reviewedId);
           });
     } finally {
-      detailRepository.deleteById(oldPendingId).block();
-      submissionRepository.deleteById(oldPendingId).block();
-      detailRepository.deleteById(oldReviewedId).block();
-      submissionRepository.deleteById(oldReviewedId).block();
+      if (pendingDetail != null && pendingDetail.getSubmissionDetailId() != null) {
+        detailRepository.deleteById(pendingDetail.getSubmissionDetailId()).block();
+      }
+      if (pendingEntity != null && pendingEntity.getSubmissionId() != null) {
+        submissionRepository.deleteById(pendingEntity.getSubmissionId()).block();
+      }
+      if (reviewedDetail != null && reviewedDetail.getSubmissionDetailId() != null) {
+        detailRepository.deleteById(reviewedDetail.getSubmissionDetailId()).block();
+      }
+      if (reviewedEntity != null && reviewedEntity.getSubmissionId() != null) {
+        submissionRepository.deleteById(reviewedEntity.getSubmissionId()).block();
+      }
     }
   }
 
