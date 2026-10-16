@@ -20,7 +20,7 @@ jobs:
 
       - name: Extract feature content
         id: feature
-        uses: bcgov/action-gherkin-issue-processor@996c4dd154e93e49a3ddeead7c26c18c3a1602f3 # v1.1.3
+        uses: bcgov/action-gherkin-issue-processor@fa2d4ede01ad5c6034cc90180a5cafa8000aac79 # v1.1.4
         with:
           issue: ${{ github.event.issue.number }}
           default_title: "[Test Case]: REPLACE WITH YOUR TEST CASE TITLE"
