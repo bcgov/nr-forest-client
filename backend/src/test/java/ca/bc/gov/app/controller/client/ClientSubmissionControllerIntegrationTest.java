@@ -24,14 +24,20 @@ import ca.bc.gov.app.dto.client.ClientListSubmissionDto;
 import ca.bc.gov.app.dto.client.ClientSubmissionDto;
 import ca.bc.gov.app.dto.submissions.SubmissionApproveRejectDto;
 import ca.bc.gov.app.entity.client.SubmissionContactEntity;
+import ca.bc.gov.app.entity.client.SubmissionDetailEntity;
+import ca.bc.gov.app.entity.client.SubmissionEntity;
 import ca.bc.gov.app.extensions.AbstractTestContainerIntegrationTest;
 import ca.bc.gov.app.extensions.WiremockLogNotifier;
+import ca.bc.gov.app.models.client.SubmissionStatusEnum;
+import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.repository.client.SubmissionContactRepository;
 import ca.bc.gov.app.repository.client.SubmissionDetailRepository;
+import ca.bc.gov.app.repository.client.SubmissionRepository;
 import ca.bc.gov.app.utils.ClientSubmissionAggregator;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import java.net.URI;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +80,9 @@ class ClientSubmissionControllerIntegrationTest
   
   @Autowired
   private SubmissionDetailRepository detailRepository;
+
+  @Autowired
+  private SubmissionRepository submissionRepository;
   
   private final AtomicLong submissionId = new AtomicLong(0L);
 
@@ -569,6 +578,88 @@ class ClientSubmissionControllerIntegrationTest
         .exchange()
         .expectStatus().isOk()
         .expectBody().isEmpty();
+  }
+
+  @Test
+  @DisplayName("Regression #2543: Default listing should include old pending submissions and exclude old reviewed submissions")
+  @Order(13)
+  void shouldIncludeOldPendingAndExcludeOldReviewedSubmissions() {
+    int oldPendingId = 998;
+    int oldReviewedId = 999;
+    LocalDateTime twoWeeksAgo = LocalDateTime.now().minusDays(14);
+
+    SubmissionEntity pendingEntity = SubmissionEntity.builder()
+        .submissionId(oldPendingId)
+        .submissionStatus(SubmissionStatusEnum.P)
+        .submissionType(SubmissionTypeCodeEnum.RNC)
+        .submissionDate(twoWeeksAgo)
+        .updateTimestamp(twoWeeksAgo)
+        .createdBy("IDIR\\TEST")
+        .updatedBy("IDIR\\TEST")
+        .build();
+
+    SubmissionDetailEntity pendingDetail = SubmissionDetailEntity.builder()
+        .submissionDetailId(oldPendingId)
+        .submissionId(oldPendingId)
+        .organizationName("OLD PENDING CORP")
+        .clientTypeCode("C")
+        .districtCode("DCR")
+        .businessTypeCode("U")
+        .build();
+
+    SubmissionEntity reviewedEntity = SubmissionEntity.builder()
+        .submissionId(oldReviewedId)
+        .submissionStatus(SubmissionStatusEnum.R)
+        .submissionType(SubmissionTypeCodeEnum.RNC)
+        .submissionDate(twoWeeksAgo)
+        .updateTimestamp(twoWeeksAgo)
+        .createdBy("IDIR\\TEST")
+        .updatedBy("IDIR\\TEST")
+        .build();
+
+    SubmissionDetailEntity reviewedDetail = SubmissionDetailEntity.builder()
+        .submissionDetailId(oldReviewedId)
+        .submissionId(oldReviewedId)
+        .organizationName("OLD REVIEWED CORP")
+        .clientTypeCode("C")
+        .districtCode("DCR")
+        .businessTypeCode("U")
+        .build();
+
+    try {
+      submissionRepository.save(pendingEntity).block();
+      detailRepository.save(pendingDetail).block();
+      submissionRepository.save(reviewedEntity).block();
+      detailRepository.save(reviewedDetail).block();
+
+      client
+          .mutateWith(csrf())
+          .mutateWith(mockUser().roles(ApplicationConstant.ROLE_EDITOR))
+          .mutateWith(
+              mockJwt()
+                  .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                  .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+          )
+          .get()
+          .uri("/api/clients/submissions")
+          .header(ApplicationConstant.USERID_HEADER, "testUserId")
+          .header(ApplicationConstant.USERMAIL_HEADER, "test@mail.ca")
+          .header(ApplicationConstant.USERNAME_HEADER, "Jhon Doe")
+          .exchange()
+          .expectStatus().isOk()
+          .expectBodyList(ClientListSubmissionDto.class)
+          .value(dtos -> {
+            AssertionsForInterfaceTypes.assertThat(dtos)
+                .anyMatch(dto -> dto.id() == oldPendingId);
+            AssertionsForInterfaceTypes.assertThat(dtos)
+                .noneMatch(dto -> dto.id() == oldReviewedId);
+          });
+    } finally {
+      detailRepository.deleteById(oldPendingId).block();
+      submissionRepository.deleteById(oldPendingId).block();
+      detailRepository.deleteById(oldReviewedId).block();
+      submissionRepository.deleteById(oldReviewedId).block();
+    }
   }
 
 }
