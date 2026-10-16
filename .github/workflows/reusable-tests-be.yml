@@ -78,7 +78,7 @@ jobs:
           java-version: "17"
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=bcgov_forest-client-api
+            -Dsonar.projectKey=bcgov_nr-forest-client-api
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/repository/**,**/*$*Builder*,**/Application*
