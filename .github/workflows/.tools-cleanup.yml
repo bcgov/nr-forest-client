@@ -10,30 +10,36 @@ jobs:
     name: Cleanup tools environment
     runs-on: ubuntu-26.04
     steps:
-      - name: Scale down legacy
-        continue-on-error: true
+      - name: Scale down services
         uses: bcgov/action-oc-runner@111868d1fc50db0a40417ba321d865ef5c931bbd # v1.7.0
         with:
           oc_namespace: d2723f-dev
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
           commands: |
-            oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=0
-            undesired_replicas=0
+            for component in legacy api; do
+              dep="deployment/nr-forest-client-${{ github.event.number }}-${component}"
+              if oc get "$dep" >/dev/null 2>&1; then
+                echo "Scaling down $dep to 0 replicas..."
+                oc scale "$dep" --replicas=0
+                oc wait --for=delete pod -l "deployment=nr-forest-client-${{ github.event.number }}-${component}" --timeout=60s 2>/dev/null || true
+              fi
+            done
 
-            while true; do
-              available_replicas=$(oc get deployment/nr-forest-client-${{ github.event.number }}-legacy -o jsonpath='{.status.availableReplicas}')
-
-              if [[ "$available_replicas" -ge "$undesired_replicas" ]]; then
-                echo "DeploymentConfig d2723f-dev-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
+            for i in {1..30}; do
+              remaining=$(oc get pods -l "app=nr-forest-client-${{ github.event.number }}" --no-headers 2>/dev/null | awk '/legacy|api/ { count++ } END { print count+0 }')
+              if [ "$remaining" -eq 0 ]; then
+                echo "All legacy and api pods successfully terminated."
                 break
               fi
-
-              echo "Waiting... ($available_replicas pods available)"
-              sleep 5
+              if [ "$i" -eq 30 ]; then
+                echo "Timed out waiting for legacy and api pods to terminate ($remaining remaining)."
+                exit 1
+              fi
+              echo "Waiting for remaining pods to terminate ($remaining remaining)... ($i/30)"
+              sleep 2
             done
-            echo "Scaled down the legacy service"
-            sleep 10
+            sleep 5
 
       - name: Remove the PR database
         continue-on-error: true

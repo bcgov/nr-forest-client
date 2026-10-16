@@ -4,11 +4,25 @@ set -Eeuo pipefail
 APP_USER="${1}"
 PDB_TO_REMOVE="${2:-}"
 
+# Check if PDB exists when PDB_TO_REMOVE is provided
+if [ -n "${PDB_TO_REMOVE}" ]; then
+  PDB_EXISTS=$(sqlplus -s / as sysdba <<EOF
+     SET PAGESIZE 0 FEEDBACK OFF VERIFY OFF HEADING OFF ECHO OFF
+     SELECT COUNT(*) FROM cdb_pdbs WHERE pdb_name = UPPER('${PDB_TO_REMOVE}');
+     exit;
+EOF
+)
+  PDB_EXISTS=$(echo "$PDB_EXISTS" | tr -d '[:space:]')
+  if [ "$PDB_EXISTS" = "0" ]; then
+    echo "PDB ${PDB_TO_REMOVE} does not exist, skipping removal."
+    exit 0
+  fi
+fi
+
 # Kill any sessions connected to the user
-if [ -n "${APP_USER}" ]; then
-  sqlplus -s / as sysdba <<EOF
-     -- Exit on any errors
-     WHENEVER SQLERROR EXIT SQL.SQLCODE
+if [ -n "${APP_USER}" ] && [ -n "${PDB_TO_REMOVE}" ]; then
+  sqlplus -s / as sysdba <<EOF || true
+     WHENEVER SQLERROR CONTINUE
 
      ALTER SESSION SET CONTAINER=${PDB_TO_REMOVE};
 
@@ -28,9 +42,8 @@ fi;
 
 # Drop services for the PDB
 if [ -n "${PDB_TO_REMOVE}" ]; then
-  sqlplus -s / as sysdba <<EOF
-     -- Exit on any errors
-     WHENEVER SQLERROR EXIT SQL.SQLCODE
+  sqlplus -s / as sysdba <<EOF || true
+     WHENEVER SQLERROR CONTINUE
 
      -- Check and drop services
      DECLARE
