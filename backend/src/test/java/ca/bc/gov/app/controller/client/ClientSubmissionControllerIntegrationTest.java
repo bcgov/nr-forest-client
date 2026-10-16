@@ -581,7 +581,9 @@ class ClientSubmissionControllerIntegrationTest
   }
 
   @Test
-  @DisplayName("Regression #2543: Default listing should include old pending submissions and exclude old reviewed submissions")
+  @DisplayName(
+      "Regression #2543: Default listing should include old pending submissions "
+          + "and exclude old reviewed submissions")
   @Order(13)
   void shouldIncludeOldPendingAndExcludeOldReviewedSubmissions() {
     int oldPendingId = 998;
@@ -637,8 +639,10 @@ class ClientSubmissionControllerIntegrationTest
           .mutateWith(mockUser().roles(ApplicationConstant.ROLE_EDITOR))
           .mutateWith(
               mockJwt()
-                  .jwt(jwt -> jwt.claims(claims -> claims.putAll(TestConstants.getClaims("idir"))))
-                  .authorities(new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
+                  .jwt(jwt -> jwt.claims(
+                      claims -> claims.putAll(TestConstants.getClaims("idir"))))
+                  .authorities(
+                      new SimpleGrantedAuthority("ROLE_" + ApplicationConstant.ROLE_EDITOR))
           )
           .get()
           .uri("/api/clients/submissions")
