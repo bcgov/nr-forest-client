@@ -31,7 +31,7 @@ jobs:
     needs: [builds]
     runs-on: ubuntu-26.04
     steps:
-      - name: Scale down legacy
+      - name: Scale down services
         continue-on-error: true
         uses: bcgov/action-oc-runner@111868d1fc50db0a40417ba321d865ef5c931bbd # v1.7.0
         with:
@@ -39,20 +39,25 @@ jobs:
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
           commands: |
-            oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=0 -n ${{ secrets.OC_NAMESPACE }}
-            undesired_replicas=0
+            for component in legacy api; do
+              dep="deployment/nr-forest-client-${{ github.event.number }}-${component}"
+              if oc get "$dep" -n ${{ secrets.OC_NAMESPACE }} >/dev/null 2>&1; then
+                echo "Scaling down $dep to 0 replicas..."
+                oc scale "$dep" --replicas=0 -n ${{ secrets.OC_NAMESPACE }}
+                oc wait --for=delete pod -l "deployment=nr-forest-client-${{ github.event.number }}-${component}" -n ${{ secrets.OC_NAMESPACE }} --timeout=60s 2>/dev/null || true
+              fi
+            done
 
-            while true; do
-              available_replicas=$(oc get deployment/nr-forest-client-${{ github.event.number }}-legacy -n ${{ secrets.OC_NAMESPACE }} -o jsonpath='{.status.availableReplicas}')
-
-              if [[ "$available_replicas" -ge "$undesired_replicas" ]]; then
-                echo "DeploymentConfig ${{ secrets.OC_NAMESPACE }}-${{ github.event.number }}-legacy is now available with $available_replicas replicas."
+            for i in {1..30}; do
+              remaining=$(oc get pods -l "app=nr-forest-client-${{ github.event.number }}" -n ${{ secrets.OC_NAMESPACE }} --no-headers 2>/dev/null | grep -E 'legacy|api' | wc -l)
+              if [ "$remaining" -eq 0 ]; then
+                echo "All legacy and api pods successfully terminated."
                 break
               fi
-
-              echo "Waiting... ($available_replicas pods available)"
-              sleep 5
+              echo "Waiting for remaining pods to terminate ($remaining remaining)... ($i/30)"
+              sleep 2
             done
+            sleep 5
 
   deploy-oracle:
     name: Deploy Oracle Database
