@@ -42,6 +42,7 @@ import io.micrometer.observation.annotation.Observed;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -234,7 +235,8 @@ public class ClientSubmissionService {
                             .doBeforeRetry(retrySignal -> log.warn(
                                     "[Check #{}] Checking submission {} completion in oracle",
                                     retrySignal.totalRetries() + 2,
-                                    //We add 2 because the first one happens before the retry and starts on 0
+                                    // We add 2 because the first one happens before
+                                    // the retry and starts on 0
                                     submissionId
                                 )
                             )
@@ -392,7 +394,7 @@ public class ClientSubmissionService {
             .switchIfEmpty(Mono.error(new RequestAlreadyProcessedException()))
             .map(submission -> {
               submission.setUpdatedBy(userId);
-              submission.setUpdatedAt(LocalDateTime.now());
+              submission.setUpdatedAt(LocalDateTime.now(ZoneId.systemDefault()));
               submission.setSubmissionStatus(
                   request.approved() ? SubmissionStatusEnum.A : SubmissionStatusEnum.R
               );
@@ -405,7 +407,7 @@ public class ClientSubmissionService {
                     .map(matched ->
                         matched
                             .withStatus(BooleanUtils.toString(request.approved(), "Y", "N"))
-                            .withUpdatedAt(LocalDateTime.now())
+                            .withUpdatedAt(LocalDateTime.now(ZoneId.systemDefault()))
                             .withCreatedBy(userId)
                             .withMatchingMessage(processRejectionReason(request))
                     )
@@ -428,7 +430,9 @@ public class ClientSubmissionService {
       SubmissionTypeCodeEnum submissionType
   ) {
 
-    log.info("Saving submission from user {} with email {} and name {} with type {} and business name {}",
+    log.info(
+        "Saving submission from user {} with email {} and name {} with type {}"
+            + " and business name {}",
         JwtPrincipalUtil.getUserId(principal),
         JwtPrincipalUtil.getEmail(principal),
         JwtPrincipalUtil.getName(principal),
@@ -441,14 +445,15 @@ public class ClientSubmissionService {
             .just(
                 SubmissionEntity
                     .builder()
-                    //If the submission type is SPP, then the status is New, otherwise it is Approved
+                    // If the submission type is SPP, then the status is New,
+                    // otherwise it is Approved
                     .submissionStatus(
                         SubmissionTypeCodeEnum.SPP.equals(submissionType)
                             ? SubmissionStatusEnum.N
                             : SubmissionStatusEnum.A
                     )
                     .submissionType(submissionType)
-                    .submissionDate(LocalDateTime.now())
+                    .submissionDate(LocalDateTime.now(ZoneId.systemDefault()))
                     .createdBy(JwtPrincipalUtil.getUserId(principal))
                     .updatedBy(JwtPrincipalUtil.getUserId(principal))
                     .notifyClientInd(clientSubmissionDto.notifyClientInd())
@@ -494,7 +499,7 @@ public class ClientSubmissionService {
                     .just(SubmissionMatchDetailEntity
                         .builder()
                         .submissionId(submission)
-                        .updatedAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now(ZoneId.systemDefault()))
                         .createdBy(JwtPrincipalUtil.getUserId(principal))
                         .matchers(
                             Map.of(
@@ -559,7 +564,9 @@ public class ClientSubmissionService {
                     .map(locationName ->
                         SubmissionLocationContactEntity
                             .builder()
-                            .submissionLocationId(getLocationIdByName(locations, locationName.text()))
+                            .submissionLocationId(
+                                getLocationIdByName(locations, locationName.text())
+                            )
                             .submissionContactId(contactEntity.getSubmissionContactId())
                             .build()
                     )
@@ -646,16 +653,17 @@ public class ClientSubmissionService {
         .orSubmittedAt(submittedAt)
         .and(SubmissionPredicates.orStatus(requestStatus));
 
-    //If no user provided query found, then use the default one
+    // If no user provided query found, then use the default one
     if (userQuery.isEmpty()) {
-      //List all submission of status N, or submissions of type AAC and RNC that were updated in the last X time
+      // List all submission of status N or P, or submissions of type AAC and RNC
+      // that were updated in the last X time
       userQuery = QueryPredicates
-          .orEqualTo(new String[]{"N"}, ApplicationConstant.SUBMISSION_STATUS)
+          .orEqualTo(new String[]{"N", "P"}, ApplicationConstant.SUBMISSION_STATUS)
           .or(
               QueryPredicates
                   .isAfter(
                       LocalDateTime
-                          .now()
+                          .now(ZoneId.systemDefault())
                           .minus(configuration.getSubmissionLimit())
                           .withHour(0)
                           .withMinute(0)
@@ -729,7 +737,10 @@ public class ClientSubmissionService {
     return stringBuilder.toString();
   }
 
-  private String removeProvider(String input) {
+  String removeProvider(String input) {
+    if (StringUtils.isBlank(input)) {
+      return StringUtils.EMPTY;
+    }
     String[] parts = input.split("\\\\");
     if (parts.length > 1) {
       return parts[1];
