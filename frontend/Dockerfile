@@ -27,3 +27,4 @@ HEALTHCHECK --interval=30s --timeout=3s CMD ["curl", "-f", "http://localhost:300
 USER 1001
 
 CMD ["/bin/sh", "-c", ". /app/setenv.sh; caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"]
+
