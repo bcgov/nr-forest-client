@@ -39,4 +39,3 @@ ENV SPRING_PROFILES_ACTIVE=container
 
 # Startup
 ENTRYPOINT ["java", "-jar", "/app/nr-forest-client-processor.jar"]
-

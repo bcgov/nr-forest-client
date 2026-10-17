@@ -90,4 +90,3 @@ ENV SPRING_PROFILES_ACTIVE=container
 
 # Startup
 ENTRYPOINT ["/app/nr-forest-client-backend"]
-
