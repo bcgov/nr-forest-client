@@ -1,10 +1,18 @@
 import { describe, it, expect } from "vitest";
-import { retrieveClientType } from "@/helpers/DataConverters";
+import { retrieveClientType, retrieveLegalTypeDesc } from "@/helpers/DataConverters";
 
 describe("DataConverters.ts", () => {
   it("retrieveClientType should return C when legalType is A", () => {
     const result = retrieveClientType("A");
     expect(result).toEqual("C");
+  });
+  it("retrieveClientType should return C when legalType is LLC", () => {
+    const result = retrieveClientType("LLC");
+    expect(result).toEqual("C");
+  });
+  it("retrieveLegalTypeDesc should return Limited Liability Company when legalType is LLC", () => {
+    const result = retrieveLegalTypeDesc("LLC");
+    expect(result).toEqual("Limited Liability Company");
   });
   it("retrieveClientType should return I when legalType is SP", () => {
     const result = retrieveClientType("SP");
