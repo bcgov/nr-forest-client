@@ -153,7 +153,7 @@ const summitSvg = useSvg(summit);
           </cds-table-header-row>
         </cds-table-head>
         <cds-table-body>
-          <cds-table-row v-for="row in tableData" :key="row.name" @click="selectEntry(row)">
+          <cds-table-row v-for="row in tableData" :key="row.id" @click="selectEntry(row)">
             <cds-table-cell />
             <cds-table-cell><span>{{ toUpperCase(row.name) }}</span></cds-table-cell>
             <cds-table-cell><span>{{ row.clientType }}</span></cds-table-cell>
