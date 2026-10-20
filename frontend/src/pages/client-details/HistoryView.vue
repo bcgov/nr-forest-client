@@ -24,24 +24,86 @@ import UserAvatar20 from '@carbon/icons-vue/es/user--avatar/20';
 import UserSearch from "@carbon/pictograms/es/user--search";
 import useSvg from '@/composables/useSvg';
 
+// Carbon pagination & select components
+import "@carbon/web-components/es/components/pagination/index";
+import "@carbon/web-components/es/components/select/index";
 
 const router = useRouter();
 const clientNumber = router.currentRoute.value.params.id as string;
 
-const showDetails = ref({});
-const toggleDetails = (index) => {
+const showDetails = ref<{ [index: number]: boolean }>({});
+const toggleDetails = (index: number) => {
   showDetails.value[index] = !showDetails.value[index];
 };
 
+const auditTables: CodeNameType[] = [
+  { code: 'CLI', name: 'Client summary' },
+  { code: 'CTC', name: 'Contacts' },
+  { code: 'DBA', name: 'Doing business as' },
+  { code: 'LOC', name: 'Locations' },
+  { code: 'RCT', name: 'Related clients' }
+];
+
+const selectedAuditTables = ref<string[]>([]);
+
+const selectedAuditTableNames = computed<string[]>(() =>
+  selectedAuditTables.value
+    .map(code => {
+      const found = auditTables.find(t => t.code === code);
+      return found ? found.name : undefined;
+    })
+    .filter((name): name is string => Boolean(name))
+);
+
 const historyLogs = ref<HistoryLogResult[]>([]);
-let { loading } = useFetchTo(`/api/clients/history-logs/${clientNumber}`, historyLogs);
+const pageNumber = ref(1);
+const pageSize = ref(20);
+const totalItems = ref(0);
+
+const uri = computed(() => {
+  const params = new URLSearchParams();
+  params.append("page", (pageNumber.value - 1).toString());
+  params.append("size", pageSize.value.toString());
+  if (selectedAuditTables.value.length > 0) {
+    params.append("sources", selectedAuditTables.value.join(","));
+  }
+  return `/api/clients/history-logs/${clientNumber}?${params.toString()}`;
+});
+
+const { response, fetch, loading } = useFetchTo(uri, historyLogs);
+
+watch(uri, () => {
+  if (!loading.value) {
+    fetch();
+  }
+});
+
+watch(selectedAuditTables, () => {
+  pageNumber.value = 1;
+});
+
+watch(
+  response,
+  () => {
+    const totalCount = Number.parseInt(response.value?.headers?.["x-total-count"] || "0");
+    totalItems.value = totalCount;
+  }
+);
+
+const paginate = (event: any) => {
+  pageNumber.value = event.detail.page;
+  pageSize.value = event.detail.pageSize;
+};
 
 watch(
   () => historyLogs.value,
   (newLogs) => {
-    newLogs.forEach((_, index) => {
-      showDetails.value[index] = false;
-    });
+    showDetails.value = {};
+    if (newLogs) {
+      newLogs.forEach((_, index) => {
+        showDetails.value[index] = false;
+      });
+    }
   },
   { immediate: true }
 );
@@ -99,29 +161,6 @@ const getReasonForColumn = (
 
   return null;
 };
-
-const auditTables: CodeNameType[] = [
-  { code: 'CLI', name: 'Client summary' },
-  { code: 'CTC', name: 'Contacts' },
-  { code: 'DBA', name: 'Doing business as' },
-  { code: 'LOC', name: 'Locations' },
-  { code: 'RCT', name: 'Related clients' }
-];
-
-const selectedAuditTables = ref<string[]>([]);
-
-const selectedAuditTableNames = computed(() =>
-  selectedAuditTables.value
-    .map(code => {
-      const found = auditTables.find(t => t.code === code);
-      return found ? found.name : undefined;
-    })
-    .filter(Boolean)
-);
-
-watch(selectedAuditTables, (newCodes) => {
-  useFetchTo(`/api/clients/history-logs/${clientNumber}?sources=${newCodes}`, historyLogs);
-});
 
 const userSearchSvg = useSvg(UserSearch);
 </script>
@@ -270,6 +309,21 @@ const userSearchSvg = useSvg(UserSearch);
         <span v-else>filters</span>
       </p>
       <p class="body-compact-01">Consider adjusting the filters and try again.</p>
+    </div>
+
+    <div class="paginator" v-if="totalItems > 0">
+      <cds-pagination
+        :key="`${totalItems}-${pageSize}`"
+        :page="pageNumber"
+        :page-size="pageSize"
+        :total-items="totalItems"
+        @cds-pagination-changed-current="paginate"
+      >
+        <cds-select-item :value="10">10</cds-select-item>
+        <cds-select-item :value="20" selected>20</cds-select-item>
+        <cds-select-item :value="50">50</cds-select-item>
+        <cds-select-item :value="100">100</cds-select-item>
+      </cds-pagination>
     </div>
 
   </div>

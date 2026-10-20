@@ -32,14 +32,14 @@ public class HistoryLogController {
    *
    * @param clientNumber the unique identifier of the client
    * @param page the page number to retrieve (zero-based), defaults to 0 if not provided
-   * @param size the number of items per page, defaults to 5 if not provided
+   * @param size the number of items per page, defaults to 20 if not provided
    * @param sources optional list of source filters to apply; empty by default
    */
   @GetMapping("/{clientNumber}")
   public Mono<ResponseEntity<Flux<HistoryLogDto>>> getHistoryLogsByClientNumber(
       @PathVariable String clientNumber,
       @RequestParam(required = false, defaultValue = "0") Integer page,
-      @RequestParam(required = false, defaultValue = "5") Integer size,
+      @RequestParam(required = false, defaultValue = "20") Integer size,
       @RequestParam(required = false, defaultValue = "") List<String> sources) {
 
     log.info(

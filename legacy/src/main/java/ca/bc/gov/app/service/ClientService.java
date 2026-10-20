@@ -156,16 +156,21 @@ public class ClientService {
     }
 
     final List<HistorySourceEnum> selectedSources;
-    if (CollectionUtils.isEmpty(sources)) {
+    List<String> cleanedSources = CollectionUtils.isEmpty(sources)
+        ? List.of()
+        : sources.stream()
+            .flatMap(s -> Arrays.stream(s.split(",")))
+            .map(String::trim)
+            .filter(StringUtils::isNotBlank)
+            .toList();
+
+    if (cleanedSources.isEmpty()) {
       selectedSources = List.of(HistorySourceEnum.values());
     } else {
       try {
-        selectedSources =
-            sources.stream()
-                .flatMap(s -> Arrays.stream(s.split(",")))
-                .map(String::trim)
-                .map(HistorySourceEnum::fromValue)
-                .collect(Collectors.toList());
+        selectedSources = cleanedSources.stream()
+            .map(HistorySourceEnum::fromValue)
+            .toList();
       } catch (IllegalArgumentException e) {
         return Flux.error(new MissingRequiredParameterException(e.getMessage()));
       }
@@ -259,8 +264,19 @@ public class ClientService {
                       )
               );
 
-              log.info("Total history logs found for client {}: {}", clientNumber, list.size());
-              return Flux.fromIterable(list);
+              int totalCount = list.size();
+
+              List<Pair<HistoryLogDto, Integer>> pagedList = list.stream()
+                  .skip(page.getOffset())
+                  .limit(page.getPageSize())
+                  .map(pair -> Pair.of(pair.getLeft(), totalCount))
+                  .toList();
+
+              log.info(
+                  "Total history logs found for client {}: {}, returning page {} with size {} (actual: {})",
+                  clientNumber, totalCount, page.getPageNumber(), page.getPageSize(), pagedList.size());
+
+              return Flux.fromIterable(pagedList);
             });
   }
 

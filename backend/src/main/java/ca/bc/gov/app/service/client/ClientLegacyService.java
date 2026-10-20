@@ -690,17 +690,25 @@ public class ClientLegacyService {
     log.info("Retrieving history log for client {} with page {} and size {} and sources {}",
         clientNumber, page, size, sources);
 
+    List<String> validSources = sources == null
+        ? List.of()
+        : sources.stream()
+            .filter(StringUtils::isNotBlank)
+            .toList();
+
     return
         legacyApi
             .get()
-            .uri(builder ->
-                builder
-                    .path("/api/clients/history-logs/" + clientNumber)
-                    .queryParam("page", page)
-                    .queryParam("size", size)
-                    .queryParam("sources", sources)
-                    .build()
-            )
+            .uri(builder -> {
+              var uriBuilder = builder
+                  .path("/api/clients/history-logs/" + clientNumber)
+                  .queryParam("page", page)
+                  .queryParam("size", size);
+              if (!validSources.isEmpty()) {
+                uriBuilder.queryParam("sources", validSources);
+              }
+              return uriBuilder.build();
+            })
             .exchangeToFlux(response -> {
               List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
               Long count = totalCountHeader.isEmpty() ? 
