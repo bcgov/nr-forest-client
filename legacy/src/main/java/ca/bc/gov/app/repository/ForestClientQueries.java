@@ -159,14 +159,27 @@ public final class ForestClientQueries {
   public static final String LOCATION_HISTORY = """
       WITH BASE_DATA AS (
         SELECT
-            AL.CLIENT_LOCATION_AUDIT_ID || '-' || CLIENT_LOCN_CODE AS IDX,
+            AL.CLIENT_LOCATION_AUDIT_ID || '-' || AL.CLIENT_LOCN_CODE AS IDX,
             AL.CLIENT_LOCATION_AUDIT_ID,
             AL.CLIENT_LOCN_CODE,
             CASE
                 WHEN AL.LOCN_EXPIRED_IND = 'Y' THEN 'Deactivated'
                 WHEN AL.LOCN_EXPIRED_IND = 'N' THEN 'Active'
             END AS LOCN_EXPIRED_IND,
+            LAG(
+                CASE
+                    WHEN AL.LOCN_EXPIRED_IND = 'Y' THEN 'Deactivated'
+                    WHEN AL.LOCN_EXPIRED_IND = 'N' THEN 'Active'
+                END
+            ) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_LOCN_EXPIRED_IND,
             AL.CLIENT_LOCN_NAME,
+            LAG(AL.CLIENT_LOCN_NAME) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_LOCATION_NAME,
             TRIM(
               COALESCE(AL.ADDRESS_1, '') ||
               CASE
@@ -179,31 +192,100 @@ public final class ForestClientQueries {
                 ELSE ''
               END
             ) AS ADDRESS,
+            LAG(
+              TRIM(
+                COALESCE(AL.ADDRESS_1, '') ||
+                CASE
+                  WHEN AL.ADDRESS_2 IS NOT NULL THEN '<br>' || AL.ADDRESS_2
+                  ELSE ''
+                END ||
+                CASE
+                  WHEN AL.ADDRESS_3 IS NOT NULL THEN
+                    '<br>' || AL.ADDRESS_3
+                  ELSE ''
+                END
+              )
+            ) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_ADDRESS,
             AL.CITY,
+            LAG(AL.CITY) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_CITY,
             CASE
                 WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
                     THEN PC.PROVINCE_STATE_NAME
                 ELSE NULL
             END AS STATE_DESC,
+            LAG(
+                CASE
+                    WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
+                        THEN PC.PROVINCE_STATE_NAME
+                    ELSE NULL
+                END
+            ) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_STATE_DESC,
             CASE
                 WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
                     THEN NULL
                 WHEN PC.PROVINCE_STATE_NAME IS NULL THEN AL.PROVINCE
                 ELSE PC.PROVINCE_STATE_NAME
             END AS PROVINCE_DESC,
+            LAG(
+                CASE
+                    WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
+                        THEN NULL
+                    WHEN PC.PROVINCE_STATE_NAME IS NULL THEN AL.PROVINCE
+                    ELSE PC.PROVINCE_STATE_NAME
+                END
+            ) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_PROVINCE_DESC,
             AL.COUNTRY AS COUNTRY_DESC,
+            LAG(AL.COUNTRY) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_COUNTRY_DESC,
             CASE
               WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
                 THEN AL.POSTAL_CODE
               ELSE NULL
             END AS ZIP_CODE,
-
+            LAG(
+              CASE
+                WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
+                  THEN AL.POSTAL_CODE
+                ELSE NULL
+              END
+            ) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_ZIP_CODE,
             CASE
               WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
                 THEN NULL
               ELSE AL.POSTAL_CODE
             END AS POSTAL_CODE,
+            LAG(
+              CASE
+                WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
+                  THEN NULL
+                ELSE AL.POSTAL_CODE
+              END
+            ) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_POSTAL_CODE,
             AL.EMAIL_ADDRESS,
+            LAG(AL.EMAIL_ADDRESS) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_EMAIL_ADDRESS,
             CASE
               WHEN LENGTH(AL.BUSINESS_PHONE) = 10 AND REGEXP_LIKE(AL.BUSINESS_PHONE, '^\\d{10}$') THEN
                 '(' || SUBSTR(AL.BUSINESS_PHONE, 1, 3) || ') ' ||
@@ -211,6 +293,18 @@ public final class ForestClientQueries {
                 SUBSTR(AL.BUSINESS_PHONE, 7, 4)
               ELSE AL.BUSINESS_PHONE
             END AS BUSINESS_PHONE,
+            LAG(
+              CASE
+                WHEN LENGTH(AL.BUSINESS_PHONE) = 10 AND REGEXP_LIKE(AL.BUSINESS_PHONE, '^\\d{10}$') THEN
+                  '(' || SUBSTR(AL.BUSINESS_PHONE, 1, 3) || ') ' ||
+                  SUBSTR(AL.BUSINESS_PHONE, 4, 3) || '-' ||
+                  SUBSTR(AL.BUSINESS_PHONE, 7, 4)
+                ELSE AL.BUSINESS_PHONE
+              END
+            ) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_BUSINESS_PHONE,
             CASE
                 WHEN LENGTH(AL.CELL_PHONE) = 10 AND REGEXP_LIKE(AL.CELL_PHONE, '^\\d{10}$') THEN
                   '(' || SUBSTR(AL.CELL_PHONE, 1, 3) || ') ' ||
@@ -218,6 +312,18 @@ public final class ForestClientQueries {
                   SUBSTR(AL.CELL_PHONE, 7, 4)
                 ELSE AL.CELL_PHONE
             END AS CELL_PHONE,
+            LAG(
+                CASE
+                    WHEN LENGTH(AL.CELL_PHONE) = 10 AND REGEXP_LIKE(AL.CELL_PHONE, '^\\d{10}$') THEN
+                      '(' || SUBSTR(AL.CELL_PHONE, 1, 3) || ') ' ||
+                      SUBSTR(AL.CELL_PHONE, 4, 3) || '-' ||
+                      SUBSTR(AL.CELL_PHONE, 7, 4)
+                    ELSE AL.CELL_PHONE
+                END
+            ) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_CELL_PHONE,
             CASE
                 WHEN LENGTH(AL.HOME_PHONE) = 10 AND REGEXP_LIKE(AL.HOME_PHONE, '^\\d{10}$') THEN
                   '(' || SUBSTR(AL.HOME_PHONE, 1, 3) || ') ' ||
@@ -225,6 +331,18 @@ public final class ForestClientQueries {
                   SUBSTR(AL.HOME_PHONE, 7, 4)
                 ELSE AL.HOME_PHONE
             END AS HOME_PHONE,
+            LAG(
+                CASE
+                    WHEN LENGTH(AL.HOME_PHONE) = 10 AND REGEXP_LIKE(AL.HOME_PHONE, '^\\d{10}$') THEN
+                      '(' || SUBSTR(AL.HOME_PHONE, 1, 3) || ') ' ||
+                      SUBSTR(AL.HOME_PHONE, 4, 3) || '-' ||
+                      SUBSTR(AL.HOME_PHONE, 7, 4)
+                    ELSE AL.HOME_PHONE
+                END
+            ) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_HOME_PHONE,
             CASE
                 WHEN LENGTH(AL.FAX_NUMBER) = 10 AND REGEXP_LIKE(AL.FAX_NUMBER, '^\\d{10}$') THEN
                   '(' || SUBSTR(AL.FAX_NUMBER, 1, 3) || ') ' ||
@@ -232,13 +350,46 @@ public final class ForestClientQueries {
                   SUBSTR(AL.FAX_NUMBER, 7, 4)
                 ELSE AL.FAX_NUMBER
             END AS FAX_NUMBER,
+            LAG(
+                CASE
+                    WHEN LENGTH(AL.FAX_NUMBER) = 10 AND REGEXP_LIKE(AL.FAX_NUMBER, '^\\d{10}$') THEN
+                      '(' || SUBSTR(AL.FAX_NUMBER, 1, 3) || ') ' ||
+                      SUBSTR(AL.FAX_NUMBER, 4, 3) || '-' ||
+                      SUBSTR(AL.FAX_NUMBER, 7, 4)
+                    ELSE AL.FAX_NUMBER
+                END
+            ) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_FAX_NUMBER,
             AL.CLI_LOCN_COMMENT,
+            LAG(AL.CLI_LOCN_COMMENT) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_CLI_LOCN_COMMENT,
             AL.HDBS_COMPANY_CODE,
+            LAG(AL.HDBS_COMPANY_CODE) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_HDBS_COMPANY_CODE,
             TO_CHAR(AL.RETURNED_MAIL_DATE, 'YYYY-MM-DD') AS RETURNED_MAIL_DATE,
+            LAG(TO_CHAR(AL.RETURNED_MAIL_DATE, 'YYYY-MM-DD')) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_RETURNED_MAIL_DATE,
             CASE
                 WHEN AL.TRUST_LOCATION_IND = 'Y' THEN 'Yes'
                 WHEN AL.TRUST_LOCATION_IND = 'N' THEN 'No'
             END AS TRUST_LOCATION_IND,
+            LAG(
+                CASE
+                    WHEN AL.TRUST_LOCATION_IND = 'Y' THEN 'Yes'
+                    WHEN AL.TRUST_LOCATION_IND = 'N' THEN 'No'
+                END
+            ) OVER (
+                PARTITION BY AL.CLIENT_LOCN_CODE
+                ORDER BY AL.CLIENT_LOCATION_AUDIT_ID
+            ) AS OLD_TRUST_LOCATION_IND,
             AL.UPDATE_TIMESTAMP,
             AL.UPDATE_USERID,
             AL.CLIENT_AUDIT_CODE AS CHANGE_TYPE,
@@ -288,31 +439,26 @@ public final class ForestClientQueries {
                   WHEN 'returnedMailDate' THEN B.RETURNED_MAIL_DATE
                   WHEN 'trustLocationInd' THEN B.TRUST_LOCATION_IND
               END AS NEW_VALUE,
-              LAG(
-                  CASE COL.COLUMN_NAME
-                      WHEN 'locnExpiredInd' THEN B.LOCN_EXPIRED_IND
-                      WHEN 'locationName' THEN B.CLIENT_LOCN_NAME
-                      WHEN 'address' THEN B.ADDRESS
-                      WHEN 'city' THEN B.CITY
-                      WHEN 'provinceDesc' THEN B.PROVINCE_DESC
-                      WHEN 'stateDesc' THEN B.STATE_DESC
-                      WHEN 'countryDesc' THEN B.COUNTRY_DESC
-                      WHEN 'postalCode' THEN B.POSTAL_CODE
-                      WHEN 'zipCode' THEN B.ZIP_CODE
-                      WHEN 'emailAddress' THEN B.EMAIL_ADDRESS
-                      WHEN 'businessPhone' THEN B.BUSINESS_PHONE
-                      WHEN 'cellPhone' THEN B.CELL_PHONE
-                      WHEN 'homePhone' THEN B.HOME_PHONE
-                      WHEN 'faxNumber' THEN B.FAX_NUMBER
-                      WHEN 'cliLocnComment' THEN B.CLI_LOCN_COMMENT
-                      WHEN 'hdbsCompanyCode' THEN B.HDBS_COMPANY_CODE
-                      WHEN 'returnedMailDate' THEN B.RETURNED_MAIL_DATE
-                      WHEN 'trustLocationInd' THEN B.TRUST_LOCATION_IND
-                  END
-              ) OVER (
-                  PARTITION BY B.CLIENT_LOCN_CODE, COL.COLUMN_NAME
-                  ORDER BY B.CLIENT_LOCATION_AUDIT_ID
-              ) AS OLD_VALUE,
+              CASE COL.COLUMN_NAME
+                  WHEN 'locnExpiredInd' THEN B.OLD_LOCN_EXPIRED_IND
+                  WHEN 'locationName' THEN B.OLD_LOCATION_NAME
+                  WHEN 'address' THEN B.OLD_ADDRESS
+                  WHEN 'city' THEN B.OLD_CITY
+                  WHEN 'provinceDesc' THEN B.OLD_PROVINCE_DESC
+                  WHEN 'stateDesc' THEN B.OLD_STATE_DESC
+                  WHEN 'countryDesc' THEN B.OLD_COUNTRY_DESC
+                  WHEN 'postalCode' THEN B.OLD_POSTAL_CODE
+                  WHEN 'zipCode' THEN B.OLD_ZIP_CODE
+                  WHEN 'emailAddress' THEN B.OLD_EMAIL_ADDRESS
+                  WHEN 'businessPhone' THEN B.OLD_BUSINESS_PHONE
+                  WHEN 'cellPhone' THEN B.OLD_CELL_PHONE
+                  WHEN 'homePhone' THEN B.OLD_HOME_PHONE
+                  WHEN 'faxNumber' THEN B.OLD_FAX_NUMBER
+                  WHEN 'cliLocnComment' THEN B.OLD_CLI_LOCN_COMMENT
+                  WHEN 'hdbsCompanyCode' THEN B.OLD_HDBS_COMPANY_CODE
+                  WHEN 'returnedMailDate' THEN B.OLD_RETURNED_MAIL_DATE
+                  WHEN 'trustLocationInd' THEN B.OLD_TRUST_LOCATION_IND
+              END AS OLD_VALUE,
               B.UPDATE_TIMESTAMP,
               B.UPDATE_USERID,
               B.CHANGE_TYPE,
