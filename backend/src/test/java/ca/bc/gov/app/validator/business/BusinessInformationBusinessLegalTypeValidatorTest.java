@@ -37,7 +37,8 @@ class BusinessInformationBusinessLegalTypeValidatorTest {
             new CodeNameDto("FOR", "Foreign Registration"),
             new CodeNameDto("LIC", "Licensed (Extra-Pro)"),
             new CodeNameDto("REG", "Extraprovincial Company"),
-            new CodeNameDto("ULC", "Unlimited Liability Company")
+            new CodeNameDto("ULC", "Unlimited Liability Company"),
+            new CodeNameDto("LLC", "Limited Liability Company")
         ));
     when(clientLegacyService.findActiveRegistryTypeCodesByClientTypeCode("A"))
         .thenReturn(Flux.just(
@@ -115,6 +116,7 @@ class BusinessInformationBusinessLegalTypeValidatorTest {
             Arguments.of("J", StringUtils.EMPTY, StringUtils.EMPTY, "Legal type has an invalid value [J]"),
             Arguments.of("A", "U", StringUtils.EMPTY, StringUtils.EMPTY),
             Arguments.of("A", "R", "C", StringUtils.EMPTY),
+            Arguments.of("LLC", "R", "C", StringUtils.EMPTY),
             Arguments.of("CP", "R", "A", StringUtils.EMPTY),
             Arguments.of("CP", "R", "C", "C value for clientType does not match the expected value for legal type")
         );

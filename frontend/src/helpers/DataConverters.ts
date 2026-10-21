@@ -10,6 +10,7 @@ export const retrieveClientType = (legalType: string): string => {
       case "LIC":
       case "REG":
       case "ULC":
+      case "LLC":
         return "C";
       case "S":
       case "XS":
@@ -71,6 +72,8 @@ export const retrieveLegalTypeDesc = (legalType: string): string => {
       return "Extraprovincial Limited Partnership";
     case "ULC":
       return "Unlimited Liability Company";
+    case "LLC":
+      return "Limited Liability Company";
     default:
       return legalType + " (Unknown)";
   }

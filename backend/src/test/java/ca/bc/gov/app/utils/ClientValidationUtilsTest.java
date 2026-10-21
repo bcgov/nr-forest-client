@@ -118,6 +118,8 @@ class ClientValidationUtilsTest {
             Arguments.of(LegalTypeEnum.FOR, ClientTypeEnum.C),
             Arguments.of(LegalTypeEnum.LIC, ClientTypeEnum.C),
             Arguments.of(LegalTypeEnum.REG, ClientTypeEnum.C),
+            Arguments.of(LegalTypeEnum.ULC, ClientTypeEnum.C),
+            Arguments.of(LegalTypeEnum.LLC, ClientTypeEnum.C),
             Arguments.of(LegalTypeEnum.S, ClientTypeEnum.S),
             Arguments.of(LegalTypeEnum.XS, ClientTypeEnum.S),
             Arguments.of(LegalTypeEnum.XCP, ClientTypeEnum.A),

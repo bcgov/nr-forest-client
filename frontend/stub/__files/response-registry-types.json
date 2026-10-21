@@ -74,5 +74,9 @@
     {
         "code": "DINA",
         "name": "Federal First Nations ID"
+    },
+    {
+        "code": "LLC",
+        "name": "Limited Liability Company"
     }
 ]
