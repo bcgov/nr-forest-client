@@ -72,9 +72,23 @@ const uri = computed(() => {
 
 const { response, fetch, loading } = useFetchTo(uri, historyLogs);
 
-watch(uri, () => {
-  if (!loading.value) {
+let lastFetchedUri = uri.value;
+
+const triggerFetch = () => {
+  if (loading.value) return;
+  if (lastFetchedUri !== uri.value) {
+    lastFetchedUri = uri.value;
     fetch();
+  }
+};
+
+watch(uri, () => {
+  triggerFetch();
+});
+
+watch(loading, (isLoading) => {
+  if (!isLoading) {
+    triggerFetch();
   }
 });
 
