@@ -166,7 +166,8 @@ const userSearchSvg = useSvg(UserSearch);
 </script>
 
 <template>
-  <div class="card-02">
+  <div class="card-02 history-card">
+    <div class="history-content">
 
     <multiselect-input-component
       id="filterById"
@@ -310,22 +311,22 @@ const userSearchSvg = useSvg(UserSearch);
       </p>
       <p class="body-compact-01">Consider adjusting the filters and try again.</p>
     </div>
+    </div>
 
-  </div>
-
-  <div class="paginator" v-if="totalItems > 0">
-    <cds-pagination
-      items-per-page-text="Items per page:"
-      :key="`${totalItems}-${pageSize}`"
-      :page="pageNumber"
-      :page-size="pageSize"
-      :total-items="totalItems"
-      @cds-pagination-changed-current="paginate"
-    >
-      <cds-select-item :value="10">10</cds-select-item>
-      <cds-select-item :value="20" selected>20</cds-select-item>
-      <cds-select-item :value="50">50</cds-select-item>
-      <cds-select-item :value="100">100</cds-select-item>
-    </cds-pagination>
+    <div class="paginator" v-if="totalItems > 0">
+      <cds-pagination
+        items-per-page-text="Items per page:"
+        :key="`${totalItems}-${pageSize}`"
+        :page="pageNumber"
+        :page-size="pageSize"
+        :total-items="totalItems"
+        @cds-pagination-changed-current="paginate"
+      >
+        <cds-select-item :value="10">10</cds-select-item>
+        <cds-select-item :value="20" selected>20</cds-select-item>
+        <cds-select-item :value="50">50</cds-select-item>
+        <cds-select-item :value="100">100</cds-select-item>
+      </cds-pagination>
+    </div>
   </div>
 </template>

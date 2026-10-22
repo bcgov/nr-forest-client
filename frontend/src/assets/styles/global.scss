@@ -926,6 +926,31 @@ cds-actionable-notification * {
   border: 1px solid var(--light-theme-border-border-subtle-00, #dfdfe1);
   background: #fff;
   box-sizing: border-box;
+
+  &.history-card {
+    padding: 0;
+    overflow: hidden;
+
+    .history-content {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .paginator {
+      width: 100%;
+
+      cds-pagination {
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        border-top: 1px solid var(--light-theme-border-border-subtle-01, #dfdfe1);
+        border-radius: 0 0 0.5rem 0.5rem;
+        background: var(--light-theme-layer-layer-02, #ffffff);
+        --cds-layer: #ffffff;
+      }
+    }
+  }
 }
 
 .card-03 {
