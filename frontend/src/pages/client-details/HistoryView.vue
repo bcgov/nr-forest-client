@@ -112,12 +112,14 @@ const paginate = (event: any) => {
 watch(
   () => historyLogs.value,
   (newLogs) => {
-    showDetails.value = {};
-    if (newLogs) {
-      newLogs.forEach((_, index) => {
-        showDetails.value[index] = false;
-      });
+    if (!newLogs) {
+      historyLogs.value = [];
+      return;
     }
+    showDetails.value = {};
+    newLogs.forEach((_, index) => {
+      showDetails.value[index] = false;
+    });
   },
   { immediate: true }
 );
@@ -210,7 +212,7 @@ const userSearchSvg = useSvg(UserSearch);
 
     <div
       v-if="!loading"
-      v-for="(historyLog, index) in historyLogs"
+      v-for="(historyLog, index) in historyLogs || []"
       class="history-indicator-line"
       id="historyLogsId"
     >
@@ -316,7 +318,7 @@ const userSearchSvg = useSvg(UserSearch);
     </div>
 
     <div class="empty-table-list"
-      v-if="!loading && historyLogs.length === 0">
+      v-if="!loading && (!historyLogs || historyLogs.length === 0)">
       <user-search-svg alt="User search pictogram" class="standard-svg" />
       <p class="heading-02">
         No results for the selected 
