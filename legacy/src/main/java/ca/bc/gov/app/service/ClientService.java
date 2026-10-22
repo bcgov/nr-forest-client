@@ -268,7 +268,17 @@ public class ClientService {
                       .thenComparing(
                           (Pair<HistoryLogDto, Integer> pair) ->
                               pair.getLeft().updateTimestamp(),
-                          Comparator.reverseOrder()
+                          Comparator.nullsLast(Comparator.reverseOrder())
+                      )
+                      .thenComparing(
+                          (Pair<HistoryLogDto, Integer> pair) ->
+                              pair.getLeft().tableName(),
+                          Comparator.nullsLast(Comparator.naturalOrder())
+                      )
+                      .thenComparing(
+                          (Pair<HistoryLogDto, Integer> pair) ->
+                              pair.getLeft().idx(),
+                          Comparator.nullsLast(Comparator.naturalOrder())
                       )
               );
 
