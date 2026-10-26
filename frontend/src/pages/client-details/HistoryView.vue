@@ -101,12 +101,33 @@ watch(
   () => {
     const totalCount = Number.parseInt(response.value?.headers?.["x-total-count"] || "0");
     totalItems.value = totalCount;
-  }
+  },
+  { immediate: true }
 );
 
 const paginate = (event: any) => {
-  pageNumber.value = event.detail.page;
-  pageSize.value = event.detail.pageSize;
+  if (event.detail?.page !== undefined) {
+    pageNumber.value = event.detail.page;
+  }
+  if (event.detail?.pageSize !== undefined) {
+    pageSize.value = event.detail.pageSize;
+  }
+};
+
+const onPageSizeChange = (event: any) => {
+  const path = event.composedPath?.() || [];
+  const isPageSizeSelect =
+    path.some((el: any) => el?.id === 'page-size-select') ||
+    event.target?.id === 'page-size-select';
+
+  const newSize = isPageSizeSelect
+    ? Number.parseInt(event.detail?.value, 10)
+    : Number.parseInt(event.currentTarget?.pageSize, 10);
+
+  if (!Number.isNaN(newSize) && newSize > 0 && newSize !== pageSize.value) {
+    pageSize.value = newSize;
+    pageNumber.value = 1;
+  }
 };
 
 watch(
@@ -337,11 +358,16 @@ const userSearchSvg = useSvg(UserSearch);
         :page-size="pageSize"
         :total-items="totalItems"
         @cds-pagination-changed-current="paginate"
+        @cds-select-selected="onPageSizeChange"
       >
-        <cds-select-item :value="10">10</cds-select-item>
-        <cds-select-item :value="20" selected>20</cds-select-item>
-        <cds-select-item :value="50">50</cds-select-item>
-        <cds-select-item :value="100">100</cds-select-item>
+        <cds-select-item
+          v-for="size in [10, 20, 50, 100]"
+          :key="size"
+          :value="size"
+          :selected="pageSize === size"
+        >
+          {{ size }}
+        </cds-select-item>
       </cds-pagination>
     </div>
   </div>
