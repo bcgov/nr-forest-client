@@ -92,4 +92,36 @@ class HistoryLogControllerTest extends AbstractTestContainerIntegrationTest {
         .json(legacyResponse);
   }
 
+  @Test
+  @DisplayName("Get empty history logs page preserving x-total-count")
+  void shouldPreserveTotalCountOnEmptyPage() {
+    String clientNumber = "00000001";
+    int page = 5;
+    int size = 20;
+
+    legacyStub.stubFor(
+        get(urlPathMatching("/api/clients/history-logs/" + clientNumber))
+            .withQueryParam("page", equalTo(String.valueOf(page)))
+            .withQueryParam("size", equalTo(String.valueOf(size)))
+            .willReturn(okJson("[]")
+                .withHeader("X-TOTAL-COUNT", "20"))
+    );
+
+    client
+        .mutateWith(mockJwt())
+        .mutateWith(csrf())
+        .mutateWith(mockUser().roles(ApplicationConstant.ROLE_EDITOR))
+        .get()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/history-logs/{clientNumber}")
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .build(clientNumber))
+        .exchange()
+        .expectStatus().isOk()
+        .expectHeader().valueEquals("X-TOTAL-COUNT", "20")
+        .expectBody()
+        .json("[]");
+  }
+
 }

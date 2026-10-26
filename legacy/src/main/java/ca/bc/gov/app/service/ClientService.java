@@ -148,13 +148,13 @@ public class ClientService {
    *         source string is invalid
    * @throws NoValueFoundException if no history logs are found for the given client number
    */
-  public Flux<Pair<HistoryLogDto, Integer>> findHistoryLogsByClientNumber(
+  public Mono<Pair<Long, List<HistoryLogDto>>> findHistoryLogsByClientNumber(
       String clientNumber, Pageable page, List<String> sources) {
 
     log.info("Searching for client history with number {} and sources {}", clientNumber, sources);
 
     if (StringUtils.isBlank(clientNumber)) {
-      return Flux.error(new MissingRequiredParameterException("clientNumber"));
+      return Mono.error(new MissingRequiredParameterException("clientNumber"));
     }
 
     final List<HistorySourceEnum> selectedSources;
@@ -174,7 +174,7 @@ public class ClientService {
             .map(HistorySourceEnum::fromValue)
             .toList();
       } catch (IllegalArgumentException e) {
-        return Flux.error(new MissingRequiredParameterException(e.getMessage()));
+        return Mono.error(new MissingRequiredParameterException(e.getMessage()));
       }
     }
 
@@ -209,7 +209,7 @@ public class ClientService {
 
     return Flux.merge(selectedAuditTables)
         .collectList()
-        .flatMapMany(
+        .map(
             allRows -> {
               Map<String, List<HistoryLogDto>> groupedMap = allRows.stream()
                   .collect(Collectors.groupingBy(
@@ -282,19 +282,19 @@ public class ClientService {
                       )
               );
 
-              int totalCount = combinedList.size();
+              long totalCount = combinedList.size();
 
-              List<Pair<HistoryLogDto, Integer>> pagedList = combinedList.stream()
+              List<HistoryLogDto> pagedList = combinedList.stream()
                   .skip(page.getOffset())
                   .limit(page.getPageSize())
-                  .map(pair -> Pair.of(pair.getLeft(), totalCount))
+                  .map(Pair::getLeft)
                   .toList();
 
               log.info(
                   "Total history logs found for client {}: {}, returning page {} with size {} (actual: {})",
                   clientNumber, totalCount, page.getPageNumber(), page.getPageSize(), pagedList.size());
 
-              return Flux.fromIterable(pagedList);
+              return Pair.of(totalCount, pagedList);
             });
   }
 

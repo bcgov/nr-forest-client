@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,26 +45,21 @@ public class ClientController {
   }
 
   @GetMapping("/history-logs/{clientNumber}")
-  public Flux<HistoryLogDto> findHistoryLogsByClientNumber(
+  public Mono<ResponseEntity<List<HistoryLogDto>>> findHistoryLogsByClientNumber(
       @PathVariable String clientNumber,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer size,
-      @RequestParam(required = false) List<String> sources,
-      ServerHttpResponse serverResponse
+      @RequestParam(required = false) List<String> sources
   ) {
     log.info("Receiving request to search client history by client number {}", 
              clientNumber);
     return service
         .findHistoryLogsByClientNumber(clientNumber, PageRequest.of(page, size), sources)
-        .switchOnFirst((signal, flux) -> {
-          if (signal.hasValue()) {
-            int total = Optional.ofNullable(signal.get()).map(Pair::getValue).orElse(0);
-            serverResponse.getHeaders().add("x-total-count", String.valueOf(total));
-          } else {
-            serverResponse.getHeaders().add("x-total-count", "0");
-          }
-          return flux.map(Pair::getKey);
-        });
+        .map(pair -> ResponseEntity
+            .ok()
+            .header("x-total-count", String.valueOf(pair.getLeft()))
+            .body(pair.getRight())
+        );
   }
 
   @GetMapping("/{clientNumber}/related-clients")

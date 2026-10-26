@@ -684,7 +684,7 @@ public class ClientLegacyService {
    * @param sources      a list of source system codes to filter the history logs
    * @return a {@link Flux} emitting pairs of {@link HistoryLogDto} and the total count of records
    */
-  public Flux<Pair<HistoryLogDto, Long>> retrieveHistoryLogs(
+  public Mono<Pair<Long, List<HistoryLogDto>>> retrieveHistoryLogs(
       String clientNumber, int page, int size, List<String> sources) {
 
     log.info("Retrieving history log for client {} with page {} and size {} and sources {}",
@@ -709,20 +709,22 @@ public class ClientLegacyService {
               }
               return uriBuilder.build();
             })
-            .exchangeToFlux(response -> {
+            .exchangeToMono(response -> {
               List<String> totalCountHeader = response.headers().header(X_TOTAL_COUNT);
               Long count = totalCountHeader.isEmpty() ? 
                   0L : Long.valueOf(totalCountHeader.get(0));
 
               return response
                   .bodyToFlux(HistoryLogDto.class)
-                  .map(dto -> Pair.of(dto, count));
-             })
+                  .collectList()
+                  .map(list -> Pair.of(count, list));
+            })
           .name(REQUEST_LEGACY)
           .tag("kind", "historyLog")
             .doOnNext(
-                dto -> log.info(
-                    "Found audit data in legacy system for client number {}", clientNumber
+                pair -> log.info(
+                    "Found audit data in legacy system for client number {} (total: {}, returned: {})",
+                    clientNumber, pair.getFirst(), pair.getSecond().size()
                 )
             );
   }
