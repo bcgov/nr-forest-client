@@ -159,7 +159,6 @@ public final class ForestClientQueries {
   public static final String LOCATION_HISTORY = """
       WITH BASE_DATA AS (
         SELECT
-            AL.CLIENT_LOCATION_AUDIT_ID || '-' || CLIENT_LOCN_CODE AS IDX,
             AL.CLIENT_LOCATION_AUDIT_ID,
             AL.CLIENT_LOCN_CODE,
             CASE
@@ -182,14 +181,13 @@ public final class ForestClientQueries {
             AL.CITY,
             CASE
                 WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
-                    THEN PC.PROVINCE_STATE_NAME
+                    THEN AL.PROVINCE
                 ELSE NULL
             END AS STATE_DESC,
             CASE
                 WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
                     THEN NULL
-                WHEN PC.PROVINCE_STATE_NAME IS NULL THEN AL.PROVINCE
-                ELSE PC.PROVINCE_STATE_NAME
+                ELSE AL.PROVINCE
             END AS PROVINCE_DESC,
             AL.COUNTRY AS COUNTRY_DESC,
             CASE
@@ -197,7 +195,6 @@ public final class ForestClientQueries {
                 THEN AL.POSTAL_CODE
               ELSE NULL
             END AS ZIP_CODE,
-
             CASE
               WHEN UPPER(AL.COUNTRY) IN ('USA', 'US', 'UNITED STATES OF AMERICA')
                 THEN NULL
@@ -247,14 +244,12 @@ public final class ForestClientQueries {
         FROM THE.CLI_LOCN_AUDIT AL
         LEFT OUTER JOIN THE.CLIENT_UPDATE_REASON_CODE RC
             ON AL.CLIENT_UPDATE_REASON_CODE = RC.CLIENT_UPDATE_REASON_CODE
-        LEFT OUTER JOIN THE.MAILING_PROVINCE_STATE PC
-            ON AL.PROVINCE = PC.PROVINCE_STATE_CODE
         WHERE AL.CLIENT_NUMBER = :clientNumber
       ),
       AUDIT_DATA AS (
           SELECT
               'ClientLocation' AS TABLE_NAME,
-              B.IDX,
+              B.CLIENT_LOCATION_AUDIT_ID || '-' || B.CLIENT_LOCN_CODE AS IDX,
               CASE
                   WHEN B.CHANGE_TYPE = 'INS' THEN
                       CASE

@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -146,28 +148,33 @@ public class ClientService {
    *         source string is invalid
    * @throws NoValueFoundException if no history logs are found for the given client number
    */
-  public Flux<Pair<HistoryLogDto, Integer>> findHistoryLogsByClientNumber(
+  public Mono<Pair<Long, List<HistoryLogDto>>> findHistoryLogsByClientNumber(
       String clientNumber, Pageable page, List<String> sources) {
 
     log.info("Searching for client history with number {} and sources {}", clientNumber, sources);
 
     if (StringUtils.isBlank(clientNumber)) {
-      return Flux.error(new MissingRequiredParameterException("clientNumber"));
+      return Mono.error(new MissingRequiredParameterException("clientNumber"));
     }
 
     final List<HistorySourceEnum> selectedSources;
-    if (CollectionUtils.isEmpty(sources)) {
+    List<String> cleanedSources = CollectionUtils.isEmpty(sources)
+        ? List.of()
+        : sources.stream()
+            .flatMap(s -> Arrays.stream(s.split(",")))
+            .map(String::trim)
+            .filter(StringUtils::isNotBlank)
+            .toList();
+
+    if (cleanedSources.isEmpty()) {
       selectedSources = List.of(HistorySourceEnum.values());
     } else {
       try {
-        selectedSources =
-            sources.stream()
-                .flatMap(s -> Arrays.stream(s.split(",")))
-                .map(String::trim)
-                .map(HistorySourceEnum::fromValue)
-                .collect(Collectors.toList());
+        selectedSources = cleanedSources.stream()
+            .map(HistorySourceEnum::fromValue)
+            .toList();
       } catch (IllegalArgumentException e) {
-        return Flux.error(new MissingRequiredParameterException(e.getMessage()));
+        return Mono.error(new MissingRequiredParameterException(e.getMessage()));
       }
     }
 
@@ -201,52 +208,58 @@ public class ClientService {
     }
 
     return Flux.merge(selectedAuditTables)
-        .groupBy(dto -> dto.tableName() + dto.idx())
-        .flatMap(
-            groupedFlux ->
-                groupedFlux
-                    .collectList()
-                    .filter(group -> !group.isEmpty())
-                    .map(
-                        group -> {
-                          final Set<HistoryLogDetailsDto> details = new LinkedHashSet<>();
-                          final Set<HistoryLogReasonsDto> reasons = new LinkedHashSet<>();
-
-                          for (HistoryLogDto dto : group) {
-                            details.add(
-                                new HistoryLogDetailsDto(
-                                    dto.columnName(), 
-                                    dto.oldValue(), 
-                                    dto.newValue()));
-                            reasons.add(
-                                new HistoryLogReasonsDto(
-                                    dto.actionCode(), 
-                                    dto.reason()));
-                          }
-
-                          final HistoryLogDto baseDto = group.get(0);
-                          final HistoryLogDto combinedDto =
-                              new HistoryLogDto(
-                                  baseDto.tableName(),
-                                  baseDto.idx(),
-                                  baseDto.identifierLabel(),
-                                  null,
-                                  null,
-                                  null,
-                                  baseDto.updateTimestamp(),
-                                  baseDto.updateUserid(),
-                                  baseDto.changeType(),
-                                  null,
-                                  null,
-                                  new ArrayList<>(details),
-                                  new ArrayList<>(reasons));
-
-                          return Pair.of(combinedDto, group.size());
-                        }))
         .collectList()
-        .flatMapMany(
-            list -> {      
-              list.sort(
+        .map(
+            allRows -> {
+              Map<String, List<HistoryLogDto>> groupedMap = allRows.stream()
+                  .collect(Collectors.groupingBy(
+                      dto -> dto.tableName() + dto.idx(),
+                      LinkedHashMap::new,
+                      Collectors.toList()
+                  ));
+
+              List<Pair<HistoryLogDto, Integer>> combinedList = new ArrayList<>(groupedMap.size());
+              for (List<HistoryLogDto> group : groupedMap.values()) {
+                if (group.isEmpty()) {
+                  continue;
+                }
+
+                final Set<HistoryLogDetailsDto> details = new LinkedHashSet<>();
+                final Set<HistoryLogReasonsDto> reasons = new LinkedHashSet<>();
+
+                for (HistoryLogDto dto : group) {
+                  details.add(
+                      new HistoryLogDetailsDto(
+                          dto.columnName(), 
+                          dto.oldValue(), 
+                          dto.newValue()));
+                  reasons.add(
+                      new HistoryLogReasonsDto(
+                          dto.actionCode(), 
+                          dto.reason()));
+                }
+
+                final HistoryLogDto baseDto = group.get(0);
+                final HistoryLogDto combinedDto =
+                    new HistoryLogDto(
+                        baseDto.tableName(),
+                        baseDto.idx(),
+                        baseDto.identifierLabel(),
+                        null,
+                        null,
+                        null,
+                        baseDto.updateTimestamp(),
+                        baseDto.updateUserid(),
+                        baseDto.changeType(),
+                        null,
+                        null,
+                        new ArrayList<>(details),
+                        new ArrayList<>(reasons));
+
+                combinedList.add(Pair.of(combinedDto, group.size()));
+              }
+
+              combinedList.sort(
                   Comparator
                       .comparing(
                           (Pair<HistoryLogDto, Integer> pair) ->
@@ -255,12 +268,33 @@ public class ClientService {
                       .thenComparing(
                           (Pair<HistoryLogDto, Integer> pair) ->
                               pair.getLeft().updateTimestamp(),
-                          Comparator.reverseOrder()
+                          Comparator.nullsLast(Comparator.reverseOrder())
+                      )
+                      .thenComparing(
+                          (Pair<HistoryLogDto, Integer> pair) ->
+                              pair.getLeft().tableName(),
+                          Comparator.nullsLast(Comparator.naturalOrder())
+                      )
+                      .thenComparing(
+                          (Pair<HistoryLogDto, Integer> pair) ->
+                              pair.getLeft().idx(),
+                          Comparator.nullsLast(Comparator.naturalOrder())
                       )
               );
 
-              log.info("Total history logs found for client {}: {}", clientNumber, list.size());
-              return Flux.fromIterable(list);
+              long totalCount = combinedList.size();
+
+              List<HistoryLogDto> pagedList = combinedList.stream()
+                  .skip(page.getOffset())
+                  .limit(page.getPageSize())
+                  .map(Pair::getLeft)
+                  .toList();
+
+              log.info(
+                  "Total history logs found for client {}: {}, returning page {} with size {} (actual: {})",
+                  clientNumber, totalCount, page.getPageNumber(), page.getPageSize(), pagedList.size());
+
+              return Pair.of(totalCount, pagedList);
             });
   }
 

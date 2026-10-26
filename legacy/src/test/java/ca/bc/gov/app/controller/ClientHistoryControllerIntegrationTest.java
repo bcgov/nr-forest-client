@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -75,4 +76,25 @@ public class ClientHistoryControllerIntegrationTest extends
         Arguments.of(null, null, false, MissingRequiredParameterException.class));
   }
   
+  @Test
+  @DisplayName("Get empty history logs page beyond total count preserving x-total-count")
+  void shouldPreserveTotalCountOnOutOfRangePage() {
+    client
+        .get()
+        .uri(uriBuilder -> uriBuilder
+            .path("/api/clients/history-logs/{clientNumber}")
+            .queryParam("page", 100)
+            .queryParam("size", 20)
+            .queryParam("sources", "cli")
+            .build("00000138"))
+        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        .exchange()
+        .expectStatus().isOk()
+        .expectHeader().exists("x-total-count")
+        .expectHeader().value("x-total-count",
+            count -> assertThat(Integer.parseInt(count)).isGreaterThan(0))
+        .expectBodyList(HistoryLogDto.class)
+        .value(logs -> assertThat(logs).isEmpty());
+  }
+
 }
