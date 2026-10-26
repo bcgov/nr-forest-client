@@ -35,6 +35,8 @@ import {
   sortCodeNameByName,
   isNumeric,
   extractKeywords,
+  formatDate,
+  formatDatetime,
 } from "@/services/ForestClientService";
 import type { Contact, Address } from "@/dto/ApplyClientNumberDto";
 import type {
@@ -1191,5 +1193,25 @@ describe("extractKeywords", () => {
       const result = extractKeywords(input);
       expect(result).toHaveLength(0);
     });
+  });
+});
+
+describe("formatDate and formatDatetime", () => {
+  it("returns empty string when timestamp is null or undefined", () => {
+    expect(formatDate(null)).toBe("");
+    expect(formatDate(undefined)).toBe("");
+    expect(formatDatetime(null)).toBe("");
+    expect(formatDatetime(undefined)).toBe("");
+  });
+
+  it("returns empty string when timestamp is invalid", () => {
+    expect(formatDate("invalid-date")).toBe("");
+    expect(formatDatetime("invalid-date")).toBe("");
+  });
+
+  it("formats date and datetime consistently with local time", () => {
+    const testDate = new Date(2026, 9, 26, 20, 51, 5); // Oct 26, 2026, 20:51:05 local
+    expect(formatDate(testDate)).toBe("Oct 26, 2026");
+    expect(formatDatetime(testDate)).toContain("Oct 26, 2026");
   });
 });
