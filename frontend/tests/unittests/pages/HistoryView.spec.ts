@@ -101,14 +101,33 @@ describe("HistoryView.vue", () => {
     await flushPromises();
 
     expect(mockFetch).toHaveBeenCalled();
+    const uriRef = (useFetchTo as any).mock.calls[0][0];
+    expect(uriRef.value).toContain("page=1&size=20");
   });
 
   it("updates page size and resets page on cds-select-selected from page-size-select", async () => {
     const wrapper = await createComponent();
     const pagination = wrapper.find("cds-pagination");
 
-    const pageSizeSelect = document.createElement("div");
-    pageSizeSelect.id = "page-size-select";
+    // 1. Navigate to page 2 first
+    pagination.element.dispatchEvent(
+      new CustomEvent("cds-pagination-changed-current", {
+        detail: { page: 2, pageSize: 20 },
+        bubbles: true,
+        composed: true,
+      })
+    );
+    await flushPromises();
+
+    const uriRef = (useFetchTo as any).mock.calls[0][0];
+    expect(uriRef.value).toContain("page=1&size=20");
+
+    mockFetch.mockClear();
+
+    // 2. Change page size to 50 on the actual shadowRoot select
+    const pageSizeSelect =
+      (pagination.element as any).shadowRoot?.querySelector?.("#page-size-select") ||
+      (pagination.element as any)._pageSizeSelect;
 
     const event = new CustomEvent("cds-select-selected", {
       detail: { value: "50" },
@@ -122,6 +141,8 @@ describe("HistoryView.vue", () => {
     pagination.element.dispatchEvent(event);
     await flushPromises();
 
+    // 3. Verify fetch called and URI has reset page=0 and size=50
     expect(mockFetch).toHaveBeenCalled();
+    expect(uriRef.value).toContain("page=0&size=50");
   });
 });
