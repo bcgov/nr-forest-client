@@ -619,10 +619,42 @@ class ClientLegacyServiceIntegrationTest extends AbstractTestContainerIntegratio
           .retrieveHistoryLogs(clientNumber, page, size, sources)
           .as(StepVerifier::create)
           .expectNextMatches(pair -> {
-              HistoryLogDto dto = pair.getFirst();
-              return dto.tableName().equals("ClientInformation")
-                  && dto.details().get(0).columnName().equals("clientName");
+              Long total = pair.getFirst();
+              List<HistoryLogDto> list = pair.getSecond();
+              return total.equals(expectedTotalCount)
+                  && !list.isEmpty()
+                  && list.get(0).tableName().equals("ClientInformation")
+                  && list.get(0).details().get(0).columnName().equals("clientName");
           })
+          .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("Should preserve total count from legacy API when history logs page is empty")
+  void shouldPreserveTotalCountWhenPageIsEmpty() {
+      String clientNumber = "00000138";
+      int page = 1;
+      int size = 5;
+      List<String> sources = List.of("CLI");
+      Long expectedTotalCount = 5L;
+
+      legacyStub.stubFor(
+          get(urlPathEqualTo("/api/clients/history-logs/" + clientNumber))
+              .withQueryParam("page", equalTo(String.valueOf(page)))
+              .withQueryParam("size", equalTo(String.valueOf(size)))
+              .withQueryParam("sources", equalTo("CLI"))
+              .willReturn(
+                  aResponse()
+                      .withHeader("Content-Type", "application/json")
+                      .withHeader("x-total-count", expectedTotalCount.toString())
+                      .withBody("[]")
+              )
+      );
+
+      service
+          .retrieveHistoryLogs(clientNumber, page, size, sources)
+          .as(StepVerifier::create)
+          .expectNextMatches(pair -> pair.getFirst().equals(expectedTotalCount) && pair.getSecond().isEmpty())
           .verifyComplete();
   }
   

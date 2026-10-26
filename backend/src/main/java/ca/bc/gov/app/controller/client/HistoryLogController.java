@@ -32,14 +32,14 @@ public class HistoryLogController {
    *
    * @param clientNumber the unique identifier of the client
    * @param page the page number to retrieve (zero-based), defaults to 0 if not provided
-   * @param size the number of items per page, defaults to 5 if not provided
+   * @param size the number of items per page, defaults to 20 if not provided
    * @param sources optional list of source filters to apply; empty by default
    */
   @GetMapping("/{clientNumber}")
-  public Mono<ResponseEntity<Flux<HistoryLogDto>>> getHistoryLogsByClientNumber(
+  public Mono<ResponseEntity<List<HistoryLogDto>>> getHistoryLogsByClientNumber(
       @PathVariable String clientNumber,
       @RequestParam(required = false, defaultValue = "0") Integer page,
-      @RequestParam(required = false, defaultValue = "5") Integer size,
+      @RequestParam(required = false, defaultValue = "20") Integer size,
       @RequestParam(required = false, defaultValue = "") List<String> sources) {
 
     log.info(
@@ -48,14 +48,11 @@ public class HistoryLogController {
 
     return clientLegacyService
         .retrieveHistoryLogs(clientNumber, page, size, sources)
-        .collectList()
         .map(
-            pairs -> {
-              String totalCount = pairs.isEmpty() ? "0" : String.valueOf(pairs.get(0).getSecond());
-              return ResponseEntity
-                  .ok()
-                  .header(ApplicationConstant.X_TOTAL_COUNT, totalCount)
-                  .body(Flux.fromIterable(pairs).map(Pair::getFirst));
-            });
+            pair -> ResponseEntity
+                .ok()
+                .header(ApplicationConstant.X_TOTAL_COUNT, String.valueOf(pair.getFirst()))
+                .body(pair.getSecond())
+        );
   }
 }
