@@ -35,7 +35,7 @@ jobs:
           node-version: 24
 
       - name: Run Cypress End-to-End
-        uses: cypress-io/github-action@v7.4.6
+        uses: cypress-io/github-action@v7.4.8
         with:
           working-directory: cypress
         env:
