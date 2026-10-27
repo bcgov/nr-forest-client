@@ -124,11 +124,18 @@ const onPageSizeChange = (event: any) => {
     paginationEl?.shadowRoot?.querySelector?.('#pages-select') ||
     paginationEl?._pagesSelect;
 
+  const isPagesSelect =
+    path.some((el: any) => el?.id === 'pages-select' || el === pagesSelect) ||
+    event.target?.id === 'pages-select' ||
+    event.target === pagesSelect;
+
+  if (isPagesSelect) return;
+
   const isPageSizeSelect =
     path.some((el: any) => el?.id === 'page-size-select' || el === pageSizeSelect) ||
     event.target?.id === 'page-size-select' ||
     event.target === pageSizeSelect ||
-    (!path.includes(pagesSelect) && event.target !== pagesSelect && event.target?.id !== 'pages-select');
+    !isPagesSelect;
 
   if (!isPageSizeSelect) return;
 
