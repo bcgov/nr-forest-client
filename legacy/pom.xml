@@ -116,7 +116,7 @@
     <dependency>
       <groupId>io.github.vishwakarma</groupId>
       <artifactId>zjsonpatch</artifactId>
-      <version>0.6.3</version>
+      <version>0.6.4</version>
     </dependency>
 
     <dependency>
@@ -257,7 +257,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.15</version>
+        <version>0.8.16</version>
         <configuration>
           <skip>${jacoco.skip}</skip>
           <excludes>
