@@ -62,6 +62,10 @@ jobs:
     name: Analysis Results
     needs: [tests-java, tests-frontend] # Restore trivy when/if fixed
     if: always()
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: read
     runs-on: ubuntu-26.04
     timeout-minutes: 1
     steps:
