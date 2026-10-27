@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ref } from "vue";
 import { mount, flushPromises } from "@vue/test-utils";
 import HistoryView from "@/pages/client-details/HistoryView.vue";
@@ -72,18 +72,12 @@ describe("HistoryView.vue", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockResponse.value = { headers: { "x-total-count": "100" } };
-    mockLoading.value = false;
     (useFetchTo as any).mockImplementation(defaultFetchReturn);
-  });
-
-  afterEach(() => {
-    document.body.innerHTML = "";
   });
 
   it("renders history view and pagination", async () => {
     const wrapper = await createComponent();
-    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.find(".history-card").exists()).toBe(true);
     expect(wrapper.find("cds-pagination").exists()).toBe(true);
   });
 
@@ -144,5 +138,138 @@ describe("HistoryView.vue", () => {
     // 3. Verify fetch called and URI has reset page=0 and size=50
     expect(mockFetch).toHaveBeenCalled();
     expect(uriRef.value).toContain("page=0&size=50");
+  });
+
+  it("updates page size using internal select value fallback when detail.value is absent", async () => {
+    const wrapper = await createComponent();
+    const pagination = wrapper.find("cds-pagination");
+
+    // 1. Navigate to page 2 first
+    pagination.element.dispatchEvent(
+      new CustomEvent("cds-pagination-changed-current", {
+        detail: { page: 2, pageSize: 20 },
+        bubbles: true,
+        composed: true,
+      })
+    );
+    await flushPromises();
+
+    const uriRef = (useFetchTo as any).mock.calls[0][0];
+    expect(uriRef.value).toContain("page=1&size=20");
+
+    mockFetch.mockClear();
+
+    // 2. Fall back to internal select value
+    const pageSizeSelect =
+      (pagination.element as any).shadowRoot?.querySelector?.("#page-size-select") ||
+      (pagination.element as any)._pageSizeSelect;
+    if (pageSizeSelect) {
+      pageSizeSelect.value = "50";
+    }
+
+    const event = new CustomEvent("cds-select-selected", {
+      detail: {},
+      bubbles: true,
+      composed: true,
+    });
+    Object.defineProperty(event, "composedPath", {
+      value: () => [pageSizeSelect, pagination.element],
+    });
+
+    pagination.element.dispatchEvent(event);
+    await flushPromises();
+
+    // 3. Verify fetch called and URI has reset page=0 and size=50
+    expect(mockFetch).toHaveBeenCalled();
+    expect(uriRef.value).toContain("page=0&size=50");
+  });
+
+  it("updates page size using paginationEl.pageSize fallback when select and detail are absent", async () => {
+    const wrapper = await createComponent();
+    const pagination = wrapper.find("cds-pagination");
+
+    // 1. Navigate to page 2 first
+    pagination.element.dispatchEvent(
+      new CustomEvent("cds-pagination-changed-current", {
+        detail: { page: 2, pageSize: 20 },
+        bubbles: true,
+        composed: true,
+      })
+    );
+    await flushPromises();
+
+    const uriRef = (useFetchTo as any).mock.calls[0][0];
+    expect(uriRef.value).toContain("page=1&size=20");
+
+    mockFetch.mockClear();
+
+    // 2. Ensure internal select has no value and paginationEl has pageSize = 50
+    const pageSizeSelect =
+      (pagination.element as any).shadowRoot?.querySelector?.("#page-size-select") ||
+      (pagination.element as any)._pageSizeSelect;
+    if (pageSizeSelect) {
+      pageSizeSelect.value = undefined;
+    }
+    Object.defineProperty(pagination.element, "pageSize", { value: 50, configurable: true, writable: true });
+
+    const event = new CustomEvent("cds-select-selected", {
+      detail: {},
+      bubbles: true,
+      composed: true,
+    });
+    Object.defineProperty(event, "composedPath", {
+      value: () => [pageSizeSelect, pagination.element],
+    });
+
+    pagination.element.dispatchEvent(event);
+    await flushPromises();
+
+    // 3. Verify fetch called and URI has reset page=0 and size=50
+    expect(mockFetch).toHaveBeenCalled();
+    expect(uriRef.value).toContain("page=0&size=50");
+  });
+
+  it("ignores cds-select-selected event from pages-select", async () => {
+    const wrapper = await createComponent();
+    const pagination = wrapper.find("cds-pagination");
+
+    // 1. Navigate to page 2 first
+    pagination.element.dispatchEvent(
+      new CustomEvent("cds-pagination-changed-current", {
+        detail: { page: 2, pageSize: 20 },
+        bubbles: true,
+        composed: true,
+      })
+    );
+    await flushPromises();
+
+    const uriRef = (useFetchTo as any).mock.calls[0][0];
+    expect(uriRef.value).toContain("page=1&size=20");
+
+    mockFetch.mockClear();
+
+    // 2. Dispatch select-selected from pages-select (page selector)
+    const pagesSelect =
+      (pagination.element as any).shadowRoot?.querySelector?.("#pages-select") ||
+      (pagination.element as any)._pagesSelect ||
+      document.createElement("div");
+    pagesSelect.id = "pages-select";
+
+    const event = new CustomEvent("cds-select-selected", {
+      detail: { value: "3" },
+      bubbles: true,
+      composed: true,
+    });
+    Object.defineProperty(event, "target", { value: pagesSelect });
+    Object.defineProperty(event, "composedPath", {
+      value: () => [pagesSelect, pagination.element],
+    });
+
+    pagination.element.dispatchEvent(event);
+    await flushPromises();
+
+    // 3. Verify handler ignored it and page size is not overwritten with page number
+    expect(uriRef.value).toContain("size=20");
+    expect(uriRef.value).not.toContain("size=3");
   });
 });

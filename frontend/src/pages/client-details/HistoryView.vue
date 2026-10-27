@@ -116,13 +116,35 @@ const paginate = (event: any) => {
 
 const onPageSizeChange = (event: any) => {
   const path = event.composedPath?.() || [];
-  const isPageSizeSelect =
-    path.some((el: any) => el?.id === 'page-size-select') ||
-    event.target?.id === 'page-size-select';
+  const paginationEl = event.currentTarget as any;
+  const pageSizeSelect =
+    paginationEl?.shadowRoot?.querySelector?.('#page-size-select') ||
+    paginationEl?._pageSizeSelect;
+  const pagesSelect =
+    paginationEl?.shadowRoot?.querySelector?.('#pages-select') ||
+    paginationEl?._pagesSelect;
 
-  const newSize = isPageSizeSelect
-    ? Number.parseInt(event.detail?.value, 10)
-    : Number.parseInt(event.currentTarget?.pageSize, 10);
+  const isPagesSelect =
+    path.some((el: any) => el?.id === 'pages-select' || el === pagesSelect) ||
+    event.target?.id === 'pages-select' ||
+    event.target === pagesSelect;
+
+  if (isPagesSelect) return;
+
+  const isPageSizeSelect =
+    path.some((el: any) => el?.id === 'page-size-select' || el === pageSizeSelect) ||
+    event.target?.id === 'page-size-select' ||
+    event.target === pageSizeSelect ||
+    !isPagesSelect;
+
+  if (!isPageSizeSelect) return;
+
+  const rawValue =
+    event.detail?.value ??
+    pageSizeSelect?.value ??
+    paginationEl?.pageSize;
+
+  const newSize = Number.parseInt(rawValue, 10);
 
   if (!Number.isNaN(newSize) && newSize > 0 && newSize !== pageSize.value) {
     pageSize.value = newSize;
