@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
+import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +16,17 @@ import org.springframework.data.relational.core.query.Criteria;
 @DisplayName("Unit Test | Submission Predicates")
 class SubmissionPredicatesTest {
 
+  @ParameterizedTest
+  @MethodSource("orType")
+  @DisplayName("CASE 7: Should check orType")
+  void shouldCheckOrType(SubmissionTypeCodeEnum[] values, Criteria expected) {
+    assertTrue(
+        areCriteriaEqual(
+            expected,
+            SubmissionPredicates.orType(values)
+        )
+    );
+  }
   @ParameterizedTest
   @MethodSource("orStatus")
   @DisplayName("CASE 1: Should check orStatus")
@@ -87,6 +99,23 @@ class SubmissionPredicatesTest {
     );
   }
 
+  private static Stream<Arguments> orType() {
+    return Stream.of(
+        Arguments.of(
+            null, Criteria.empty()
+        ),
+        Arguments.of(
+            new SubmissionTypeCodeEnum[0], Criteria.empty()
+        ),
+        Arguments.of(
+            new SubmissionTypeCodeEnum[]{null}, Criteria.empty()
+        ),
+        Arguments.of(
+            new SubmissionTypeCodeEnum[]{SubmissionTypeCodeEnum.AAC},
+            Criteria.where("submissionType").is(SubmissionTypeCodeEnum.AAC)
+        )
+    );
+  }
   private static Stream<Arguments> orStatus() {
     return Stream.of(
         Arguments.of(

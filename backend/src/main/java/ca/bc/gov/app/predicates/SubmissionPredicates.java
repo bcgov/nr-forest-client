@@ -3,6 +3,7 @@ package ca.bc.gov.app.predicates;
 import static org.springframework.data.relational.core.query.Criteria.where;
 
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
+import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -14,6 +15,22 @@ import org.springframework.data.relational.core.query.Criteria;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SubmissionPredicates implements QueryPredicates {
+
+  public static Criteria orType(SubmissionTypeCodeEnum[] values) {
+    if (values != null) {
+      return
+          Stream
+              .of(values)
+              .filter(Objects::nonNull)
+              .map(value ->
+                  where("submissionType")
+                      .is(value)
+              )
+              .reduce(Criteria::or)
+              .orElse(Criteria.empty());
+    }
+    return Criteria.empty();
+  }
 
   public static Criteria orStatus(SubmissionStatusEnum[] values) {
     if (values != null) {
