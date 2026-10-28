@@ -38,7 +38,7 @@ public class RegistrationNumberPatchValidator implements PatchValidator {
     return node -> node.has("path")
                    &&
                    COMPANY_PARAMS
-                       .contains(node.get("path").asText());
+                       .contains(node.get("path").asString());
   }
 
   @Override
@@ -64,10 +64,10 @@ public class RegistrationNumberPatchValidator implements PatchValidator {
               // By filtering entries with path only (i.e., all of them)
               .filter(jsonNode -> jsonNode.has("path"))
               // And then filtering for the specific company parameters
-              .filter(jsonNode -> COMPANY_PARAMS.contains(jsonNode.get("path").asText()))
+              .filter(jsonNode -> COMPANY_PARAMS.contains(jsonNode.get("path").asString()))
               // We map the path and value to a Pair
-              .map(jsonNode -> Pair.of(jsonNode.get("path").asText(),
-                  jsonNode.get("value").asText()))
+              .map(jsonNode -> Pair.of(jsonNode.get("path").asString(),
+                  jsonNode.get("value").asString()))
               // Then we map it, where the key is the path without "/client/"
               // and the value is a List containing the value
               .map(pair -> Pair.of(pair.getLeft().replace("/client/", StringUtils.EMPTY),

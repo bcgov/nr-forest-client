@@ -181,15 +181,15 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
   private boolean isDeleteOperation(JsonNode patch) {
     if (patch.isArray() && patch.has(0)) {
       JsonNode opNode = patch.get(0);
-      String op = opNode.path("op").asText();
+      String op = opNode.path("op").asString();
       if ("remove".equalsIgnoreCase(op)
-          && opNode.path("path").asText().isEmpty()) {
+          && opNode.path("path").asString().isEmpty()) {
         return true;
       }
       if (opNode.has(PATCH_VALUE_FIELD)) {
         JsonNode valueNode = opNode.get(PATCH_VALUE_FIELD);
         return valueNode.isNull()
-            || (valueNode.isTextual() && StringUtils.isBlank(valueNode.asText()));
+            || (valueNode.isString() && StringUtils.isBlank(valueNode.asString()));
       }
     }
     return false;
@@ -204,7 +204,7 @@ public class PatchOperationDoingBusinessService implements ClientPatchOperation 
    */
   private String getDoingBusinessAsName(JsonNode patch) {
     if (patch.isArray() && patch.has(0) && patch.get(0).hasNonNull(PATCH_VALUE_FIELD)) {
-      String name = patch.get(0).get(PATCH_VALUE_FIELD).asText().trim().toUpperCase(Locale.ROOT);
+      String name = patch.get(0).get(PATCH_VALUE_FIELD).asString().trim().toUpperCase(Locale.ROOT);
       if (StringUtils.isNotBlank(name)) {
         return name;
       }

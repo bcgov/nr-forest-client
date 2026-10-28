@@ -115,11 +115,11 @@ class PatchUtilsTest {
         mapper
     );
     assertEquals(2, result.size());
-    assertEquals("remove", result.get(0).get("op").asText());
-    assertEquals("/26/emailAddress", result.get(0).get("path").asText());
-    assertEquals("replace", result.get(1).get("op").asText());
-    assertEquals("/26/emailAddress", result.get(1).get("path").asText());
-    assertEquals("test@example.com", result.get(1).get("value").asText());
+    assertEquals("remove", result.get(0).get("op").asString());
+    assertEquals("/26/emailAddress", result.get(0).get("path").asString());
+    assertEquals("replace", result.get(1).get("op").asString());
+    assertEquals("/26/emailAddress", result.get(1).get("path").asString());
+    assertEquals("test@example.com", result.get(1).get("value").asString());
   }
 
   @ParameterizedTest

@@ -37,8 +37,8 @@ public class ClientIdentificationPatchValidator implements PatchValidator {
   public Predicate<JsonNode> shouldValidate() {
     return node ->
         node.has("path")
-        && node.get("path").asText().equals("/roles")
-        && node.get("roles").asText(StringUtils.EMPTY).contains(ApplicationConstant.ROLE_EDITOR);
+        && node.get("path").asString().equals("/roles")
+        && node.get("roles").asString(StringUtils.EMPTY).contains(ApplicationConstant.ROLE_EDITOR);
   }
 
   @Override
@@ -56,7 +56,7 @@ public class ClientIdentificationPatchValidator implements PatchValidator {
         StreamSupport
             .stream(globalForestClient.spliterator(), false)
             .filter(jsonNode -> jsonNode.has("path"))
-            .map(jsonNode -> jsonNode.get("path").asText())
+            .map(jsonNode -> jsonNode.get("path").asString())
             .filter(onlyEmptyPaths::contains)
             .toList();
 

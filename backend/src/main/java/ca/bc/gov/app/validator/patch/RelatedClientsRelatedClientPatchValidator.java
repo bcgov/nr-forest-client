@@ -23,8 +23,8 @@ public class RelatedClientsRelatedClientPatchValidator implements PatchValidator
   @Override
   public Predicate<JsonNode> shouldValidate() {
     return node -> {
-      String op = node.path("op").asText();
-      String path = node.path("path").asText();
+      String op = node.path("op").asString();
+      String path = node.path("path").asString();
       return "replace".equals(op) && RELATED_CLIENT_PATTERN.matcher(path).matches();
     };
   }
@@ -34,7 +34,7 @@ public class RelatedClientsRelatedClientPatchValidator implements PatchValidator
     return (node) -> {
       JsonNode valueNode = node.get("value");
 
-      String path = node.get("path").asText();
+      String path = node.get("path").asString();
 
       if (valueNode == null || valueNode.isNull() || valueNode.isMissingNode()) {
         return Mono.error(
@@ -49,8 +49,8 @@ public class RelatedClientsRelatedClientPatchValidator implements PatchValidator
       JsonNode codeNode = valueNode.get("code");
       JsonNode nameNode = valueNode.get("name");
 
-      if (codeNode == null || StringUtils.isBlank(codeNode.asText())
-          || nameNode == null || StringUtils.isBlank(nameNode.asText())) {
+      if (codeNode == null || StringUtils.isBlank(codeNode.asString())
+          || nameNode == null || StringUtils.isBlank(nameNode.asString())) {
         return Mono.error(
             new ValidationException(
                 List.of(new ValidationError(
@@ -60,7 +60,7 @@ public class RelatedClientsRelatedClientPatchValidator implements PatchValidator
         );
       }
 
-      if (clientNumber.equals(codeNode.asText())) {
+      if (clientNumber.equals(codeNode.asString())) {
         return Mono.error(
             new ValidationException(
                 List.of(new ValidationError(

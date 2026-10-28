@@ -144,11 +144,11 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
       if (!op.has("path") || !op.has("op")) {
         return;
       }
-      String path = op.get("path").asText();
+      String path = op.get("path").asString();
       if (!path.startsWith("/" + getPrefix())) {
         return;
       }
-      String opName = op.get("op").asText();
+      String opName = op.get("op").asString();
       String newPath = PatchUtils.removePrefix(path, getPrefix());
       String idCandidate = newPath.startsWith("/") ? newPath.substring(1) : newPath;
 
@@ -185,7 +185,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
 
     tools.jackson.databind.node.ArrayNode nonDeleteNodeOps = mapper.createArrayNode();
     filteredNodeOps.forEach(op -> {
-      String path = op.path("path").asText();
+      String path = op.path("path").asString();
       String idCandidate = path.startsWith("/") ? path.substring(1) : path;
       if (identifierPattern.matcher(idCandidate).matches()) {
         JsonNode valueNode = op.get(PATCH_VALUE_FIELD);
@@ -267,7 +267,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
 
   private void convertSigningAuthority(Pair<RelatedClientEntity, JsonNode> pair) {
     pair.getValue().forEach(op -> {
-      String path = op.get("path").asText();
+      String path = op.get("path").asString();
 
       if (!path.endsWith("/hasSigningAuthority")) {
         return;
@@ -313,7 +313,7 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
                 processAdd(
                     clientNumber,
                     mapper,
-                    entry.get("path").asText().replace("/", StringUtils.EMPTY)
+                    entry.get("path").asString().replace("/", StringUtils.EMPTY)
                         .replace("null", StringUtils.EMPTY),
                     entry.get(PATCH_VALUE_FIELD),
                     userId
@@ -520,6 +520,6 @@ public class PatchOperationsRelatedClientService implements ClientPatchOperation
   private static boolean isExplicitNullOrBlank(JsonNode valueNode) {
     return valueNode != null
         && (valueNode.isNull()
-            || (valueNode.isTextual() && StringUtils.isBlank(valueNode.asText())));
+            || (valueNode.isString() && StringUtils.isBlank(valueNode.asString())));
   }
 }

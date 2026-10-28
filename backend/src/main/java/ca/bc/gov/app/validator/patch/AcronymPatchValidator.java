@@ -23,8 +23,8 @@ public class AcronymPatchValidator implements PatchValidator {
   public Predicate<JsonNode> shouldValidate() {
     return node ->
         node.has("path")
-        && node.get("path").asText().endsWith("/clientAcronym")
-        && node.get("op").asText().equals("replace");
+        && node.get("path").asString().endsWith("/clientAcronym")
+        && node.get("op").asString().equals("replace");
   }
 
   @Override
@@ -39,7 +39,7 @@ public class AcronymPatchValidator implements PatchValidator {
   }
 
   private Mono<JsonNode> validateSize(JsonNode node) {
-    String clientAcronym = node.get("value").asText();
+    String clientAcronym = node.get("value").asString();
     if (clientAcronym.length() > 8 || clientAcronym.length() < 3) {
       return Mono.error(getError("Client acronym must be between 3 and 8 characters", null));
     }
@@ -50,7 +50,7 @@ public class AcronymPatchValidator implements PatchValidator {
     return legacyService
         .searchGeneric(
             "acronym",
-            Map.of("acronym", List.of(node.get("value").asText()))
+            Map.of("acronym", List.of(node.get("value").asString()))
         )
         .next()
         .flatMap(

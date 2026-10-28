@@ -36,7 +36,7 @@ public class ReplacePatchUtils {
     if (patch != null && fieldMap != null) {
       for (JsonNode entry : patch) {
         if (entry.has("path")) {
-          String path = entry.get("path").asText();
+          String path = entry.get("path").asString();
           if (fieldMap.containsKey(path)) {
             updateMap.put(
                 SqlIdentifier.unquoted(fieldMap.get(path)),
@@ -67,8 +67,8 @@ public class ReplacePatchUtils {
       return null;
     }
     JsonNode valNode = node.get("value");
-    if (valNode.isTextual()) {
-      String text = valNode.asText();
+    if (valNode.isString()) {
+      String text = valNode.asString();
       return StringUtils.isBlank(text) ? null : text;
     }
     if (valNode.isBoolean()) {
@@ -80,10 +80,10 @@ public class ReplacePatchUtils {
     if (valNode.isArray()) {
       return StreamSupport
           .stream(valNode.spliterator(), false)
-          .map(JsonNode::asText)
+          .map(JsonNode::asString)
           .collect(Collectors.toList());
     }
-    String value = valNode.asText();
+    String value = valNode.asString();
     return value != null && !value.equals("null") ? value : null;
   }
 

@@ -41,8 +41,8 @@ public class AdminRolePatchValidator implements PatchValidator {
   public Predicate<JsonNode> shouldValidate() {
     return node ->
         node.has("path")
-        && node.get("path").asText().equals("/roles")
-        && !node.get("roles").asText(StringUtils.EMPTY).contains(ApplicationConstant.ROLE_ADMIN);
+        && node.get("path").asString().equals("/roles")
+        && !node.get("roles").asString(StringUtils.EMPTY).contains(ApplicationConstant.ROLE_ADMIN);
   }
 
   @Override
@@ -62,7 +62,7 @@ public class AdminRolePatchValidator implements PatchValidator {
                 )
             )
             .filter(jsonNode -> jsonNode.has("path"))
-            .map(jsonNode -> jsonNode.get("path").asText())
+            .map(jsonNode -> jsonNode.get("path").asString())
             .filter(adminOnlyPaths::contains)
             .flatMap(path -> Mono.error(
                     new ValidationException(
