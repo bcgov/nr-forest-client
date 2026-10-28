@@ -212,13 +212,15 @@ const iconForRow = (requestType: string) => {
   return Review16;
 };
 // Format the date to a friendly format
-const friendlyDate = (date: Date): string => {
+const friendlyDate = (date: Date | string): string => {
   if (!date) return "";
-  return `${formatDistanceToNow(new Date(date))} ago`;
+  const parsed = new Date(date);
+  return Number.isNaN(parsed.getTime()) ? "" : `${formatDistanceToNow(parsed)} ago`;
 };
-const formattedDate = (date: Date): string => {
+const formattedDate = (date: Date | string): string => {
   if (!date) return "";
-  return format(new Date(date), "MMM dd, yyyy");
+  const parsed = new Date(date);
+  return Number.isNaN(parsed.getTime()) ? "" : format(parsed, "MMM dd, yyyy");
 };
 
 const tagColor = (status: string) => {

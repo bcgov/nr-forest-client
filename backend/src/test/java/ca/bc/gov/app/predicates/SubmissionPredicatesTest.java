@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
+import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -87,6 +89,60 @@ class SubmissionPredicatesTest {
     );
   }
 
+  @ParameterizedTest
+  @MethodSource("orType")
+  @DisplayName("CASE 7: Should check orType")
+  void shouldCheckOrType(SubmissionTypeCodeEnum[] values, Criteria expected) {
+    assertTrue(
+        areCriteriaEqual(
+            expected,
+            SubmissionPredicates.orType(values)
+        )
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("isBeforeLocalDate")
+  @DisplayName("CASE 8: Should check isBefore with LocalDate")
+  void shouldCheckIsBeforeLocalDate(LocalDate value, Criteria expected) {
+    assertTrue(
+        areCriteriaEqual(
+            expected,
+            QueryPredicates.isBefore(value, "effectiveAt")
+        )
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("isAfterLocalDate")
+  @DisplayName("CASE 9: Should check isAfter with LocalDate")
+  void shouldCheckIsAfterLocalDate(LocalDate value, Criteria expected) {
+    assertTrue(
+        areCriteriaEqual(
+            expected,
+            QueryPredicates.isAfter(value, "expiredAt")
+        )
+    );
+  }
+
+  private static Stream<Arguments> orType() {
+    return Stream.of(
+        Arguments.of(
+            null, Criteria.empty()
+        ),
+        Arguments.of(
+            new SubmissionTypeCodeEnum[0], Criteria.empty()
+        ),
+        Arguments.of(
+            new SubmissionTypeCodeEnum[]{null}, Criteria.empty()
+        ),
+        Arguments.of(
+            new SubmissionTypeCodeEnum[]{SubmissionTypeCodeEnum.AAC},
+            Criteria.where("submissionType").is(SubmissionTypeCodeEnum.AAC)
+        )
+    );
+  }
+
   private static Stream<Arguments> orStatus() {
     return Stream.of(
         Arguments.of(
@@ -121,7 +177,6 @@ class SubmissionPredicatesTest {
             Criteria.where("submittedAt")
                 .lessThanOrEquals(LocalDateTime.of(2020, 1, 2, 0, 0))
         )
-
     );
   }
 
@@ -140,7 +195,6 @@ class SubmissionPredicatesTest {
             new String[]{"123"},
             Criteria.where("submissionId").like("123").ignoreCase(true)
         )
-
     );
   }
 
@@ -159,7 +213,6 @@ class SubmissionPredicatesTest {
             new String[]{"123"},
             Criteria.where("submissionId").is("123")
         )
-
     );
   }
 
@@ -173,7 +226,6 @@ class SubmissionPredicatesTest {
             Criteria.where("submittedAt")
                 .greaterThanOrEquals(LocalDateTime.of(2020, 1, 1, 0, 0))
         )
-
     );
   }
 
@@ -187,12 +239,36 @@ class SubmissionPredicatesTest {
             Criteria.where("submittedAt")
                 .lessThanOrEquals(LocalDateTime.of(2020, 1, 1, 0, 0))
         )
+    );
+  }
 
+  private static Stream<Arguments> isAfterLocalDate() {
+    return Stream.of(
+        Arguments.of(
+            null, Criteria.empty()
+        ),
+        Arguments.of(
+            LocalDate.of(2020, 1, 1),
+            Criteria.where("expiredAt")
+                .greaterThanOrEquals(LocalDate.of(2020, 1, 1))
+        )
+    );
+  }
+
+  private static Stream<Arguments> isBeforeLocalDate() {
+    return Stream.of(
+        Arguments.of(
+            null, Criteria.empty()
+        ),
+        Arguments.of(
+            LocalDate.of(2020, 1, 1),
+            Criteria.where("effectiveAt")
+                .lessThanOrEquals(LocalDate.of(2020, 1, 1))
+        )
     );
   }
 
   private static boolean areCriteriaEqual(Criteria target, Criteria result) {
-
     assertEquals(target.getColumn(), result.getColumn());
     assertEquals(target.getComparator(), result.getComparator());
     assertEquals(target.getValue(), result.getValue());
@@ -200,3 +276,4 @@ class SubmissionPredicatesTest {
   }
 
 }
+

@@ -1,5 +1,5 @@
 # Build static files
-FROM node:24.16-alpine3.22 AS build
+FROM node:26.3-alpine3.22 AS build
 
 WORKDIR /app
 COPY . .
