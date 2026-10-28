@@ -215,12 +215,12 @@ const iconForRow = (requestType: string) => {
 const friendlyDate = (date: Date | string): string => {
   if (!date) return "";
   const parsed = new Date(date);
-  return isNaN(parsed.getTime()) ? "" : `${formatDistanceToNow(parsed)} ago`;
+  return Number.isNaN(parsed.getTime()) ? "" : `${formatDistanceToNow(parsed)} ago`;
 };
 const formattedDate = (date: Date | string): string => {
   if (!date) return "";
   const parsed = new Date(date);
-  return isNaN(parsed.getTime()) ? "" : format(parsed, "MMM dd, yyyy");
+  return Number.isNaN(parsed.getTime()) ? "" : format(parsed, "MMM dd, yyyy");
 };
 
 const tagColor = (status: string) => {

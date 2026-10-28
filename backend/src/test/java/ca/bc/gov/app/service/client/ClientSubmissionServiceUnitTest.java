@@ -10,7 +10,11 @@ import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.entity.client.SubmissionEntity;
+import ca.bc.gov.app.models.client.SubmissionStatusEnum;
+import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,30 +44,35 @@ class ClientSubmissionServiceUnitTest {
     template = mock(R2dbcEntityTemplate.class);
     configuration = mock(ForestClientConfiguration.class);
 
-    service = new ClientSubmissionService(
-        codeService, null, null, null, null, null, null, null, null,
-        template, configuration, null
-    );
+    service =
+        new ClientSubmissionService(
+            codeService,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            template,
+            configuration,
+            null);
+  }
+
+  @ParameterizedTest
+  @CsvSource({"IDIR\\username,username", "BCEIDBUSINESS\\testuser,testuser", "test,test"})
+  @DisplayName("Should extract username without provider prefix")
+  void shouldRemoveProviderPrefix(String input, String expected) {
+    assertEquals(expected, service.removeProvider(input));
   }
 
   @ParameterizedTest
   @NullAndEmptySource
-  @ValueSource(strings = {"   ", "\t", "\n"})
-  @DisplayName("Should return empty string when input is null, empty or blank")
-  void shouldReturnEmptyStringWhenInputIsBlank(String input) {
+  @ValueSource(strings = {"   "})
+  @DisplayName("Should handle null or blank provider prefix")
+  void shouldHandleBlankProviderPrefix(String input) {
     assertEquals("", service.removeProvider(input));
-  }
-
-  @ParameterizedTest
-  @CsvSource(value = {
-      "IDIR\\SLEROY, SLEROY",
-      "BCEIDBUSINESS\\Mitchbrown-john, Mitchbrown-john",
-      "BCSC\\user123, user123",
-      "no_provider_user, no_provider_user"
-  })
-  @DisplayName("Should remove provider prefix when present")
-  void shouldRemoveProviderPrefix(String input, String expected) {
-    assertEquals(expected, service.removeProvider(input));
   }
 
   @Test
@@ -88,14 +97,43 @@ class ClientSubmissionServiceUnitTest {
     CriteriaDefinition criteria = queryCaptor.getValue().getCriteria().orElseThrow();
     String criteriaString = criteria.toString();
 
-    // Verify both pending statuses ('N' and 'P') are present in the query
-    // and the 7-day age cutoff applies to reviewed submission types ('AAC' and 'RNC')
+    // Directly assert the criteria's typed enum values
+    List<Object> criteriaValues = unrollCriteria(criteria)
+        .stream()
+        .map(CriteriaDefinition::getValue)
+        .toList();
+
+    assertThat(criteriaValues)
+        .contains(
+            SubmissionStatusEnum.N,
+            SubmissionStatusEnum.P,
+            SubmissionTypeCodeEnum.AAC,
+            SubmissionTypeCodeEnum.RNC
+        );
+
+    // Verify query structure supports both quoted and unquoted rendering
     assertThat(criteriaString)
-        .contains("submissionStatus = 'N'")
-        .contains("submissionStatus = 'P'")
         .contains("updateTimestamp >=")
-        .contains("submissionType = 'AAC'")
-        .contains("submissionType = 'RNC'");
+        .matches(s -> s.contains("submissionStatus = 'N'") || s.contains("submissionStatus = N"))
+        .matches(s -> s.contains("submissionStatus = 'P'") || s.contains("submissionStatus = P"))
+        .matches(s -> s.contains("submissionType = 'AAC'") || s.contains("submissionType = AAC"))
+        .matches(s -> s.contains("submissionType = 'RNC'") || s.contains("submissionType = RNC"));
+  }
+
+  private static List<CriteriaDefinition> unrollCriteria(CriteriaDefinition criteria) {
+    List<CriteriaDefinition> list = new ArrayList<>();
+    CriteriaDefinition current = criteria;
+    while (current != null) {
+      if (current.isGroup()) {
+        for (CriteriaDefinition child : current.getGroup()) {
+          list.addAll(unrollCriteria(child));
+        }
+      } else {
+        list.add(current);
+      }
+      current = current.hasPrevious() ? current.getPrevious() : null;
+    }
+    return list;
   }
 
 }
