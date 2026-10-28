@@ -12,7 +12,6 @@ import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.IdentificationTypeCodeRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,6 +23,10 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Service for loading and querying client codes such as client types, contact types,
+ * and identification types.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -57,7 +60,6 @@ public class ClientCodeService {
             );
   }
 
-
   /**
    * Retrieves a client type by its unique code. This method queries the clientTypeCodeRepository to
    * find a client type entity with the specified code. If a matching entity is found, it is
@@ -66,7 +68,7 @@ public class ClientCodeService {
    *
    * @param code The unique code of the client type to retrieve.
    * @return A Mono emitting a {@code CodeNameDto} if a matching client type is found, or an empty
-   * result if no match is found.
+   *     result if no match is found.
    * @see CodeNameDto
    */
   public Mono<CodeNameDto> getClientTypeByCode(String code) {
@@ -78,35 +80,34 @@ public class ClientCodeService {
   }
 
   /**
- * Retrieves a map of client types that are currently active.
- * This method queries the database for client type entities that are effective as of now and not expired.
- * The results are collected into a list and then converted into a map where the keys are the client type codes
- * and the values are the descriptions.
- *
- * @return A Mono emitting a map with client type codes as keys and their descriptions as values.
- */
-public Mono<Map<String, String>> getClientTypes() {
-  return template
-      .select(
-          query(
-              QueryPredicates.isBefore(LocalDateTime.now(), "effectiveAt")
-                  .and(
-                      QueryPredicates.isAfter(LocalDateTime.now(), "expiredAt")
-                          .or(QueryPredicates.isNull("expiredAt"))
-                  )
-          ),
-          ClientTypeCodeEntity.class
-      )
-      .collectList()
-      // Convert the list into a map using code as the key and description as value
-      .map(clientTypeCodeEntities ->
-          clientTypeCodeEntities
-              .stream()
-              .collect(Collectors.toMap(ClientTypeCodeEntity::getCode,
-                  ClientTypeCodeEntity::getDescription))
-      );
-}
-
+   * Retrieves a map of client types that are currently active.
+   * This method queries the database for client type entities that are effective as of now and
+   * not expired. The results are collected into a list and then converted into a map where the
+   * keys are the client type codes and the values are the descriptions.
+   *
+   * @return A Mono emitting a map with client type codes as keys and their descriptions as values.
+   */
+  public Mono<Map<String, String>> getClientTypes() {
+    return template
+        .select(
+            query(
+                QueryPredicates.isBefore(LocalDate.now(), "effectiveAt")
+                    .and(
+                        QueryPredicates.isAfter(LocalDate.now(), "expiredAt")
+                            .or(QueryPredicates.isNull("expiredAt"))
+                    )
+            ),
+            ClientTypeCodeEntity.class
+        )
+        .collectList()
+        // Convert the list into a map using code as the key and description as value
+        .map(clientTypeCodeEntities ->
+            clientTypeCodeEntities
+                .stream()
+                .collect(Collectors.toMap(ClientTypeCodeEntity::getCode,
+                    ClientTypeCodeEntity::getDescription))
+        );
+  }
 
   /**
    * <p><b>List contact types</b></p>
@@ -130,7 +131,7 @@ public Mono<Map<String, String>> getClientTypes() {
    *
    * @param targetDate the date to check for active identification types.
    * @return a Flux stream of IdentificationTypeDto containing the code, description, and country
-   * code of each active identification type.
+   *     code of each active identification type.
    */
   public Flux<IdentificationTypeDto> getAllActiveIdentificationTypes(LocalDate targetDate) {
     log.info("Loading active identification type codes by {}", targetDate);
@@ -147,7 +148,7 @@ public Mono<Map<String, String>> getClientTypes() {
    *
    * @param idCode the code of the identification type to retrieve.
    * @return a Mono containing a CodeNameDto with the code and description of the identification
-   * type, or an empty Mono if not found.
+   *     type, or an empty Mono if not found.
    */
   public Mono<CodeNameDto> getIdentificationTypeByCode(String idCode) {
     log.info("Loading identification type by {}", idCode);
@@ -157,7 +158,13 @@ public Mono<Map<String, String>> getClientTypes() {
             entity.getDescription()));
   }
 
-  public Mono<Map<String,String>> fetchContactTypesFromList(Set<String> contactTypes) {
+  /**
+   * Retrieves descriptions for a set of contact types.
+   *
+   * @param contactTypes set of contact type codes to look up
+   * @return a Mono emitting a map of code to description
+   */
+  public Mono<Map<String, String>> fetchContactTypesFromList(Set<String> contactTypes) {
 
     return contactTypeCodeRepository
         .findByContactTypeCodeIn(contactTypes)

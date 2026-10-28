@@ -1,5 +1,6 @@
 package ca.bc.gov.app.configuration;
 
+import ca.bc.gov.app.converters.DateTimeConverters;
 import ca.bc.gov.app.converters.SubmissionEnumConverters;
 import java.util.List;
 import java.util.Optional;
@@ -78,14 +79,16 @@ public class R2dbcConversionsConfiguration {
    */
   @Bean
   R2dbcCustomConversions r2dbcCustomConversions() {
-     return R2dbcCustomConversions.of(
-         PostgresDialect.INSTANCE,
-         List.of(
-             new SubmissionEnumConverters.SubmissionStatusEnumToString(),
-             new SubmissionEnumConverters.StringToSubmissionStatusEnum(),
-             new SubmissionEnumConverters.SubmissionTypeCodeEnumToString(),
-             new SubmissionEnumConverters.StringToSubmissionTypeCodeEnum()
-         ).toArray()
-     );
+    return R2dbcCustomConversions.of(
+        PostgresDialect.INSTANCE,
+        List.of(
+            new SubmissionEnumConverters.SubmissionStatusEnumToString(),
+            new SubmissionEnumConverters.StringToSubmissionStatusEnum(),
+            new SubmissionEnumConverters.SubmissionTypeCodeEnumToString(),
+            new SubmissionEnumConverters.StringToSubmissionTypeCodeEnum(),
+            new DateTimeConverters.LocalDateTimeToLocalDateConverter(),
+            new DateTimeConverters.LocalDateToLocalDateTimeConverter()
+        ).toArray()
+    );
   }
 }
