@@ -12,6 +12,7 @@ import ca.bc.gov.app.repository.client.ContactTypeCodeRepository;
 import ca.bc.gov.app.repository.client.IdentificationTypeCodeRepository;
 import io.micrometer.observation.annotation.Observed;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -88,12 +89,13 @@ public class ClientCodeService {
    * @return A Mono emitting a map with client type codes as keys and their descriptions as values.
    */
   public Mono<Map<String, String>> getClientTypes() {
+    LocalDate today = LocalDate.now(ZoneId.systemDefault());
     return template
         .select(
             query(
-                QueryPredicates.isBefore(LocalDate.now(), "effectiveAt")
+                QueryPredicates.isBefore(today, "effectiveAt")
                     .and(
-                        QueryPredicates.isAfter(LocalDate.now(), "expiredAt")
+                        QueryPredicates.isAfter(today, "expiredAt")
                             .or(QueryPredicates.isNull("expiredAt"))
                     )
             ),
