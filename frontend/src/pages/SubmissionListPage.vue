@@ -91,7 +91,9 @@ const selectEntry = (entry: SubmissionList) => {
 };
 
 const formattedDate = (date: string): string => {
-  return format(new Date(date), "MMM dd, yyyy");
+  if (!date) return "";
+  const parsed = new Date(date);
+  return isNaN(parsed.getTime()) ? "" : format(parsed, "MMM dd, yyyy");
 };
 
 // Get the icon for the row
