@@ -86,7 +86,7 @@ public class ClientSubmissionService {
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
   private final WebClient processorApi;
-  
+
   public ClientSubmissionService(
       ClientCodeService codeService,
       ClientDistrictService districtService,
@@ -120,7 +120,7 @@ public class ClientSubmissionService {
     String interval = days + " days";
     return submissionRepository.retrievePendingSubmissions(interval);
   }
-  
+
   public Flux<ClientListSubmissionDto> listSubmissions(
       int page,
       int size,
@@ -672,7 +672,7 @@ public class ClientSubmissionService {
                   )
                   .and(
                       SubmissionPredicates
-                          //When I said AAC and RNC, I meant AAC or RNC for query purpose
+                          // When I said AAC and RNC, I meant AAC or RNC for query purpose
                           .orType(new SubmissionTypeCodeEnum[]{
                               SubmissionTypeCodeEnum.AAC,
                               SubmissionTypeCodeEnum.RNC
