@@ -86,7 +86,7 @@ public class ClientSubmissionService {
   private final R2dbcEntityTemplate template;
   private final ForestClientConfiguration configuration;
   private final WebClient processorApi;
-  
+
   public ClientSubmissionService(
       ClientCodeService codeService,
       ClientDistrictService districtService,
@@ -120,7 +120,7 @@ public class ClientSubmissionService {
     String interval = days + " days";
     return submissionRepository.retrievePendingSubmissions(interval);
   }
-  
+
   public Flux<ClientListSubmissionDto> listSubmissions(
       int page,
       int size,
@@ -657,8 +657,8 @@ public class ClientSubmissionService {
     if (userQuery.isEmpty()) {
       // List all submission of status N or P, or submissions of type AAC and RNC
       // that were updated in the last X time
-      userQuery = QueryPredicates
-          .orEqualTo(new String[]{"N", "P"}, ApplicationConstant.SUBMISSION_STATUS)
+      userQuery = SubmissionPredicates
+          .orStatus(new SubmissionStatusEnum[]{SubmissionStatusEnum.N, SubmissionStatusEnum.P})
           .or(
               QueryPredicates
                   .isAfter(
@@ -671,10 +671,12 @@ public class ClientSubmissionService {
                       "updateTimestamp"
                   )
                   .and(
-                      QueryPredicates
-                          //When I said AAC and RNC, I meant AAC or RNC for query purpose
-                          .orEqualTo(new String[]{"AAC", "RNC"},
-                              ApplicationConstant.SUBMISSION_TYPE)
+                      SubmissionPredicates
+                          // When I said AAC and RNC, I meant AAC or RNC for query purpose
+                          .orType(new SubmissionTypeCodeEnum[]{
+                              SubmissionTypeCodeEnum.AAC,
+                              SubmissionTypeCodeEnum.RNC
+                          })
                   )
           );
     }
@@ -689,7 +691,7 @@ public class ClientSubmissionService {
                     .select(
                         query(finalUserQuery)
                             .with(PageRequest.of(page, size))
-                            .sort(Sort.by("submissionDate").descending()),
+                            .sort(Sort.by(Sort.Order.desc("submissionDate").nullsLast())),
                         SubmissionEntity.class
                     )
                     .map(submission -> Pair.of(count, submission))
