@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.bc.gov.app.models.client.SubmissionStatusEnum;
 import ca.bc.gov.app.models.client.SubmissionTypeCodeEnum;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -96,6 +97,30 @@ class SubmissionPredicatesTest {
         areCriteriaEqual(
             expected,
             SubmissionPredicates.orType(values)
+        )
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("isBeforeLocalDate")
+  @DisplayName("CASE 8: Should check isBefore with LocalDate")
+  void shouldCheckIsBeforeLocalDate(LocalDate value, Criteria expected) {
+    assertTrue(
+        areCriteriaEqual(
+            expected,
+            QueryPredicates.isBefore(value, "effectiveAt")
+        )
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("isAfterLocalDate")
+  @DisplayName("CASE 9: Should check isAfter with LocalDate")
+  void shouldCheckIsAfterLocalDate(LocalDate value, Criteria expected) {
+    assertTrue(
+        areCriteriaEqual(
+            expected,
+            QueryPredicates.isAfter(value, "expiredAt")
         )
     );
   }
@@ -213,6 +238,32 @@ class SubmissionPredicatesTest {
             LocalDateTime.of(2020, 1, 1, 0, 0),
             Criteria.where("submittedAt")
                 .lessThanOrEquals(LocalDateTime.of(2020, 1, 1, 0, 0))
+        )
+    );
+  }
+
+  private static Stream<Arguments> isAfterLocalDate() {
+    return Stream.of(
+        Arguments.of(
+            null, Criteria.empty()
+        ),
+        Arguments.of(
+            LocalDate.of(2020, 1, 1),
+            Criteria.where("expiredAt")
+                .greaterThanOrEquals(LocalDate.of(2020, 1, 1))
+        )
+    );
+  }
+
+  private static Stream<Arguments> isBeforeLocalDate() {
+    return Stream.of(
+        Arguments.of(
+            null, Criteria.empty()
+        ),
+        Arguments.of(
+            LocalDate.of(2020, 1, 1),
+            Criteria.where("effectiveAt")
+                .lessThanOrEquals(LocalDate.of(2020, 1, 1))
         )
     );
   }
