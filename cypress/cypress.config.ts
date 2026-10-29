@@ -53,6 +53,7 @@ async function setupNodeEvents(
 
 export default defineConfig({
   video: false,
+  numTestsKeptInMemory: 0,
   e2e: {
     reporter: require.resolve("@badeball/cypress-cucumber-preprocessor/pretty-reporter"),
     specPattern: "**/*.feature",

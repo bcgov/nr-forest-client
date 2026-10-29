@@ -169,7 +169,7 @@ interface FillFormEntry {
 const fillFormEntry: FillFormEntry = (
   field: string,
   value: string,
-  arg3: number | FillFormEntryOptions = 10,
+  arg3: number | FillFormEntryOptions = 0,
   arg4: boolean | never = false,
 ) => {
   const options =
