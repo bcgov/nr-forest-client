@@ -40,8 +40,8 @@ class PatchUtilsTest {
     assertInstanceOf(ArrayNode.class, result);
     ArrayNode arrayResult = (ArrayNode) result;
     assertEquals(2, arrayResult.size());
-    assertEquals("value1", arrayResult.get(0).get("key1").asText());
-    assertEquals("value2", arrayResult.get(1).get("key2").asText());
+    assertEquals("value1", arrayResult.get(0).get("key1").asString());
+    assertEquals("value2", arrayResult.get(1).get("key2").asString());
   }
 
   @Test
@@ -58,8 +58,8 @@ class PatchUtilsTest {
     assertInstanceOf(ArrayNode.class, result);
     ArrayNode arrayResult = (ArrayNode) result;
     assertEquals(2, arrayResult.size());
-    assertEquals("item", arrayResult.get(0).get("existing").asText());
-    assertEquals("item", arrayResult.get(1).get("new").asText());
+    assertEquals("item", arrayResult.get(0).get("existing").asString());
+    assertEquals("item", arrayResult.get(1).get("new").asString());
   }
 
   @Test
@@ -78,10 +78,10 @@ class PatchUtilsTest {
     assertInstanceOf(ArrayNode.class, result);
     ArrayNode arrayResult = (ArrayNode) result;
     assertEquals(4, arrayResult.size());
-    assertEquals("value1", arrayResult.get(0).get("key1").asText());
-    assertEquals("value2", arrayResult.get(1).get("key2").asText());
-    assertEquals("value3", arrayResult.get(2).get("key3").asText());
-    assertEquals("value4", arrayResult.get(3).get("key4").asText());
+    assertEquals("value1", arrayResult.get(0).get("key1").asString());
+    assertEquals("value2", arrayResult.get(1).get("key2").asString());
+    assertEquals("value3", arrayResult.get(2).get("key3").asString());
+    assertEquals("value4", arrayResult.get(3).get("key4").asString());
   }
 
   @Test
@@ -98,9 +98,9 @@ class PatchUtilsTest {
     assertInstanceOf(ArrayNode.class, result);
     ArrayNode arrayResult = (ArrayNode) result;
     assertEquals(3, arrayResult.size());
-    assertEquals("item1", arrayResult.get(0).asText());
-    assertEquals("item2", arrayResult.get(1).asText());
-    assertEquals("item3", arrayResult.get(2).asText());
+    assertEquals("item1", arrayResult.get(0).asString());
+    assertEquals("item2", arrayResult.get(1).asString());
+    assertEquals("item3", arrayResult.get(2).asString());
   }
 
   @Test
@@ -128,8 +128,8 @@ class PatchUtilsTest {
     assertInstanceOf(ArrayNode.class, result);
     ArrayNode arrayResult = (ArrayNode) result;
     assertEquals(2, arrayResult.size());
-    assertEquals("string1", arrayResult.get(0).asText());
-    assertEquals("string2", arrayResult.get(1).asText());
+    assertEquals("string1", arrayResult.get(0).asString());
+    assertEquals("string2", arrayResult.get(1).asString());
   }
 
   @Test

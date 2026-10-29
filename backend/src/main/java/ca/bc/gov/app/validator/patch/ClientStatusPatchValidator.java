@@ -30,11 +30,11 @@ public class ClientStatusPatchValidator implements PatchValidator {
   public Predicate<JsonNode> shouldValidate() {
     return node ->
         node.has("path")
-        && node.get("path").asText().endsWith("/clientStatusCode")
-        && node.get("op").asText().equals("replace")
+        && node.get("path").asString().endsWith("/clientStatusCode")
+        && node.get("op").asString().equals("replace")
         && (
-            node.get("value").asText().equals("DAC")
-            || node.get("value").asText().equals("ACT")
+            node.get("value").asString().equals("DAC")
+            || node.get("value").asString().equals("ACT")
         );
   }
 
@@ -47,7 +47,7 @@ public class ClientStatusPatchValidator implements PatchValidator {
   public Function<JsonNode, Mono<JsonNode>> globalValidator(JsonNode globalForestClient,
       String clientNumber) {
     return dto -> {
-      boolean deactivate = dto.get("value").asText().equals("DAC");
+      boolean deactivate = dto.get("value").asString().equals("DAC");
 
       Flux<String> locationStream = deactivate
           ? getActiveLocations(clientNumber)

@@ -92,7 +92,7 @@ public class PatchUtils {
           // A check if the path of the operation starts with the specified path prefix
           if (
               operation.has("path")
-                  && operation.get("path").asText().startsWith("/" + checkPath)
+                  && operation.get("path").asString().startsWith("/" + checkPath)
           ) {
             filteredNode.set(true);
           }
@@ -154,7 +154,7 @@ public class PatchUtils {
           }
 
           // Get the path of the operation
-          String path = operation.get("path").asText();
+          String path = operation.get("path").asString();
           // If the path starts with the prefixed path
           if (StringUtils.isNotBlank(prefix) && path.startsWith("/" + prefix)) {
             // We generate a new operation path without the prefix
@@ -276,7 +276,7 @@ public class PatchUtils {
             subIds.merge(id,
                 Optional
                     .ofNullable(node.get("path"))
-                    .map(JsonNode::asText)
+                    .map(JsonNode::asString)
                     .map(PatchUtils::extractPathInfo)
                     .map(Pair::getValue)
                     .map(PatchUtils::extractPathInfo)
@@ -303,14 +303,14 @@ public class PatchUtils {
   public static Map<String, Set<String>> loadNonNumericIds(JsonNode filteredNode) {
     Map<String, Set<String>> subIds = new LinkedHashMap<>();
     filteredNode.forEach(node -> {
-      var id = node.get("path").asText().split("/")[1];
+      var id = node.get("path").asString().split("/")[1];
       if (StringUtils.isNotBlank(id)) {
         subIds.putIfAbsent(id, new HashSet<>());
         subIds.merge(
             id,
             Optional
                 .ofNullable(node.get("path"))
-                .map(JsonNode::asText)
+                .map(JsonNode::asString)
                 .map(value -> value.replace("/" + id + "/", "/"))
                 .stream()
                 .filter(StringUtils::isNotBlank)
@@ -338,7 +338,7 @@ public class PatchUtils {
       return StringUtils.EMPTY;
     }
 
-    String id = PatchUtils.extractPathInfo(node.get("path").asText()).getLeft();
+    String id = PatchUtils.extractPathInfo(node.get("path").asString()).getLeft();
     if (StringUtils.isNotBlank(id)) {
       return id;
     }
@@ -454,12 +454,12 @@ public class PatchUtils {
           }
 
           // Get the path of the operation
-          String path = operation.get("path").asText();
+          String path = operation.get("path").asString();
           // If the path starts with the prefixed path
           if (
               StringUtils.isNotBlank(prefix)
               && path.startsWith("/" + prefix)
-              && operationNames.contains(operation.get("op").asText())
+              && operationNames.contains(operation.get("op").asString())
           ) {
             // We generate a new operation path without the prefix
             String newPath = removePrefix(path, prefix);
@@ -574,7 +574,7 @@ public class PatchUtils {
     if (op == null || !op.has("op")) {
       return false;
     }
-    String opName = op.get("op").asText();
+    String opName = op.get("op").asString();
     if ("remove".equalsIgnoreCase(opName)) {
       return true;
     }
@@ -583,7 +583,7 @@ public class PatchUtils {
         return true;
       }
       JsonNode valNode = op.get("value");
-      return valNode.isTextual() && StringUtils.isBlank(valNode.asText());
+      return valNode.isString() && StringUtils.isBlank(valNode.asString());
     }
     return false;
   }
@@ -603,7 +603,7 @@ public class PatchUtils {
     if (patchOps != null && mandatoryFields != null && !mandatoryFields.isEmpty()) {
       for (JsonNode op : patchOps) {
         if (op.has("path") && isClearingOperation(op)) {
-          String path = op.get("path").asText();
+          String path = op.get("path").asString();
           for (String mandatoryField : mandatoryFields) {
             if (path.endsWith(mandatoryField)) {
               return Mono.error(new ResponseStatusException(

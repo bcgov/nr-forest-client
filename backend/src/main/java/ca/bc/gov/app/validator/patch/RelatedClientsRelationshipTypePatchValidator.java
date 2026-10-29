@@ -23,8 +23,8 @@ public class RelatedClientsRelationshipTypePatchValidator implements PatchValida
   @Override
   public Predicate<JsonNode> shouldValidate() {
     return node -> {
-      String op = node.path("op").asText();
-      String path = node.path("path").asText();
+      String op = node.path("op").asString();
+      String path = node.path("path").asString();
       return "replace".equals(op) && RELATIONSHIP_TYPE_PATH_PATTERN.matcher(path).matches();
     };
   }
@@ -33,7 +33,7 @@ public class RelatedClientsRelationshipTypePatchValidator implements PatchValida
   public Function<JsonNode, Mono<JsonNode>> validate(String clientNumber) {
     return node -> {
       JsonNode valueNode = node.get("value");
-      String path = node.path("path").asText();
+      String path = node.path("path").asString();
 
       if (isMissing(valueNode)) {
         return error(path, "A related client must have a relationship type");
@@ -55,7 +55,7 @@ public class RelatedClientsRelationshipTypePatchValidator implements PatchValida
   }
 
   private boolean isBlank(JsonNode node) {
-    return node == null || StringUtils.isBlank(node.asText());
+    return node == null || StringUtils.isBlank(node.asString());
   }
   
   private Mono<JsonNode> error(String path, String message) {

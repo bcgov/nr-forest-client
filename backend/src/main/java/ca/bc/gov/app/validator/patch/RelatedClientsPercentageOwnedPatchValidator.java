@@ -22,8 +22,8 @@ public class RelatedClientsPercentageOwnedPatchValidator implements PatchValidat
   @Override
   public Predicate<JsonNode> shouldValidate() {
     return node -> {
-      String op = node.path("op").asText();
-      String path = node.path("path").asText();
+      String op = node.path("op").asString();
+      String path = node.path("path").asString();
       return "replace".equals(op) && PERCENTAGE_OWNED_TYPE_PATH_PATTERN.matcher(path).matches();
     };
   }
@@ -31,7 +31,7 @@ public class RelatedClientsPercentageOwnedPatchValidator implements PatchValidat
   @Override
   public Function<JsonNode, Mono<JsonNode>> validate(String clientNumber) {
     return (node) -> {
-      String path = node.path("path").asText();
+      String path = node.path("path").asString();
       JsonNode valueNode = node.get("value");
 
       if (valueNode != null && !valueNode.isMissingNode() && !valueNode.isNull()) {

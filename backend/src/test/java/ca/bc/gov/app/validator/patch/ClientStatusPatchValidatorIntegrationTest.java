@@ -155,16 +155,16 @@ class ClientStatusPatchValidatorIntegrationTest extends AbstractTestContainerInt
           boolean has01LocationPatch = false;
 
           for (JsonNode node : arrayResult) {
-            String path = node.get("path").asText();
+            String path = node.get("path").asString();
             if (path.equals("/addresses/00/locnExpiredInd")) {
               has00LocationPatch = true;
-              assertEquals("replace", node.get("op").asText());
-              assertEquals("Y", node.get("value").asText());
+              assertEquals("replace", node.get("op").asString());
+              assertEquals("Y", node.get("value").asString());
             }
             if (path.equals("/addresses/01/locnExpiredInd")) {
               has01LocationPatch = true;
-              assertEquals("replace", node.get("op").asText());
-              assertEquals("Y", node.get("value").asText());
+              assertEquals("replace", node.get("op").asString());
+              assertEquals("Y", node.get("value").asString());
             }
           }
 
@@ -205,16 +205,16 @@ class ClientStatusPatchValidatorIntegrationTest extends AbstractTestContainerInt
           boolean has01LocationPatch = false;
 
           for (JsonNode node : arrayResult) {
-            String path = node.get("path").asText();
+            String path = node.get("path").asString();
             if (path.equals("/addresses/00/locnExpiredInd")) {
               has00LocationPatch = true;
-              assertEquals("replace", node.get("op").asText());
-              assertEquals("N", node.get("value").asText());
+              assertEquals("replace", node.get("op").asString());
+              assertEquals("N", node.get("value").asString());
             }
             if (path.equals("/addresses/01/locnExpiredInd")) {
               has01LocationPatch = true;
-              assertEquals("replace", node.get("op").asText());
-              assertEquals("N", node.get("value").asText());
+              assertEquals("replace", node.get("op").asString());
+              assertEquals("N", node.get("value").asString());
             }
           }
 
@@ -323,15 +323,15 @@ class ClientStatusPatchValidatorIntegrationTest extends AbstractTestContainerInt
   void shouldCreateCorrectLocationUpdateNodeFormat() {
     JsonNode deactivateNode = validator.updateLocation("00", true);
 
-    assertEquals("replace", deactivateNode.get("op").asText());
-    assertEquals("/addresses/00/locnExpiredInd", deactivateNode.get("path").asText());
-    assertEquals("Y", deactivateNode.get("value").asText());
+    assertEquals("replace", deactivateNode.get("op").asString());
+    assertEquals("/addresses/00/locnExpiredInd", deactivateNode.get("path").asString());
+    assertEquals("Y", deactivateNode.get("value").asString());
 
     JsonNode activateNode = validator.updateLocation("01", false);
 
-    assertEquals("replace", activateNode.get("op").asText());
-    assertEquals("/addresses/01/locnExpiredInd", activateNode.get("path").asText());
-    assertEquals("N", activateNode.get("value").asText());
+    assertEquals("replace", activateNode.get("op").asString());
+    assertEquals("/addresses/01/locnExpiredInd", activateNode.get("path").asString());
+    assertEquals("N", activateNode.get("value").asString());
   }
 
   private static Stream<Arguments> validationAllowed() {

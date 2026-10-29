@@ -97,7 +97,7 @@ public class PatchOperationContactRemoveService implements ClientPatchOperation 
                     false
                 )
             )
-            .map(node -> ROOT_CONTACT_ID_PATTERN.matcher(node.path("path").asText()))
+            .map(node -> ROOT_CONTACT_ID_PATTERN.matcher(node.path("path").asString()))
             .filter(Matcher::matches)
             .map(matcher -> matcher.group(1))
             .map(PatchUtils::parseLongSafely)

@@ -144,7 +144,7 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
     return
         Flux.fromStream(StreamSupport.stream(patch.spliterator(), false))
             .filter(node -> node.has("path"))
-            .filter(node -> node.get("path").asText().contains("locationCodes"))
+            .filter(node -> node.get("path").asString().contains("locationCodes"))
             .filter(node -> PatchUtils.parseLongSafely(PatchUtils.loadId(node)).isPresent())
             .flatMap(node ->
                 getLocationCodeOrder(clientNumber, Long.parseLong(PatchUtils.loadId(node)))
@@ -162,34 +162,34 @@ public class PatchOperationContactAssociationService implements ClientPatchOpera
 
   private static Function<List<String>, ContactAssociationDto> convertToAction(JsonNode node) {
     return locations -> {
-      if (node.get("op").asText().equals("replace")) {
+      if (node.get("op").asString().equals("replace")) {
         return new ContactAssociationDto(
             Long.parseLong(PatchUtils.loadId(node)),
-            node.get("op").asText(),
+            node.get("op").asString(),
             locations.get(getIndex(node)),
-            node.get("value").asText()
+            node.get("value").asString()
         );
       }
-      if (node.get("op").asText().equals("remove")) {
+      if (node.get("op").asString().equals("remove")) {
         return new ContactAssociationDto(
             Long.parseLong(PatchUtils.loadId(node)),
-            node.get("op").asText(),
+            node.get("op").asString(),
             locations.get(getIndex(node)),
             StringUtils.EMPTY
         );
       }
       return new ContactAssociationDto(
           Long.parseLong(PatchUtils.loadId(node)),
-          node.get("op").asText(),
+          node.get("op").asString(),
           StringUtils.EMPTY,
-          node.get("value").asText()
+          node.get("value").asString()
       );
 
     };
   }
 
   private static int getIndex(JsonNode node) {
-    return Integer.parseInt(node.get("path").asText().split("locationCodes/")[1]);
+    return Integer.parseInt(node.get("path").asString().split("locationCodes/")[1]);
   }
 
   private Mono<List<String>> getLocationCodeOrder(String clientNumber, Long entityId) {

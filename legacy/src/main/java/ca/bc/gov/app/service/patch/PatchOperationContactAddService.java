@@ -62,7 +62,7 @@ public class PatchOperationContactAddService implements ClientPatchOperation {
 
     return
         Flux.fromStream(StreamSupport.stream(filteredNodeOps.spliterator(), false))
-            .filter(node -> !node.get("path").asText().contains("locationCodes"))
+            .filter(node -> !node.get("path").asString().contains("locationCodes"))
             .map(node -> PatchUtils.loadAddValue(node, ForestClientContactDetailsDto.class, mapper))
             .flatMap(dto ->
                 Flux.fromIterable(dto.locationCodes())

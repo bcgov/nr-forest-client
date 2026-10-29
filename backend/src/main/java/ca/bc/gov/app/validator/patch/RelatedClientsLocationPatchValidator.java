@@ -23,8 +23,8 @@ public class RelatedClientsLocationPatchValidator implements PatchValidator {
   @Override
   public Predicate<JsonNode> shouldValidate() {
     return node -> {
-      String op = node.path("op").asText();
-      String path = node.path("path").asText();
+      String op = node.path("op").asString();
+      String path = node.path("path").asString();
       return "replace".equals(op) && LOCATION_PATH_PATTERN.matcher(path).matches();
     };
   }
@@ -32,7 +32,7 @@ public class RelatedClientsLocationPatchValidator implements PatchValidator {
   @Override
   public Function<JsonNode, Mono<JsonNode>> validate(String clientNumber) {
     return node -> {
-      String path = node.get("path").asText();
+      String path = node.get("path").asString();
       JsonNode valueNode = node.get("value");
 
       if (isMissing(valueNode)) {
@@ -55,7 +55,7 @@ public class RelatedClientsLocationPatchValidator implements PatchValidator {
   }
 
   private boolean isBlank(JsonNode node) {
-    return node == null || StringUtils.isBlank(node.asText());
+    return node == null || StringUtils.isBlank(node.asString());
   }
 
   private Mono<JsonNode> error(String path, String message) {

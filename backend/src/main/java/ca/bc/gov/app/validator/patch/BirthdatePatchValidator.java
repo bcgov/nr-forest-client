@@ -17,7 +17,7 @@ public class BirthdatePatchValidator implements PatchValidator {
   @Override
   public Predicate<JsonNode> shouldValidate() {
     return node -> node.has("path")
-                   && node.get("path").asText().endsWith("/birthdate");
+                   && node.get("path").asString().endsWith("/birthdate");
   }
 
   @Override
@@ -27,12 +27,12 @@ public class BirthdatePatchValidator implements PatchValidator {
             .just(node)
             .filter(aNode -> aNode.has("value"))
             .filter(aNode ->
-                StringUtils.isNotBlank(aNode.get("value").asText())
-                && !"null".equals(aNode.get("value").asText())
+                StringUtils.isNotBlank(aNode.get("value").asString())
+                && !"null".equals(aNode.get("value").asString())
             )
             .map(aNode ->
                 ((ObjectNode) node.deepCopy())
-                    .put("value", aNode.get("value").asText() + " 00:00:00")
+                    .put("value", aNode.get("value").asString() + " 00:00:00")
             )
             .map(aNode -> (JsonNode) aNode)
             .defaultIfEmpty(node);
