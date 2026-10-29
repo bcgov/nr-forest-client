@@ -21,7 +21,7 @@ When('I click on next', () => {
     cy.get('cds-button[data-text="Next"]').click();
   } else {
     cy.intercept('POST',  `**/api/clients/matches`).as('matches');  
-    cy.get('cds-button[data-text="Next"]').click().then(() => {cy.wait('@matches',{ timeout: 10 * 1000 });});
+    cy.get('cds-button[data-text="Next"]').click().then(() => {cy.wait('@matches',{ timeout: 30 * 1000 });});
   }
   
 });

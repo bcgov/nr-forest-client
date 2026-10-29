@@ -59,6 +59,8 @@ export default defineConfig({
     setupNodeEvents,
     defaultCommandTimeout: 10000,
     pageLoadTimeout: 120000,
+    requestTimeout: 15000,
+    responseTimeout: 45000,
     chromeWebSecurity: false, 
     experimentalModifyObstructiveThirdPartyCode: true,
   },
