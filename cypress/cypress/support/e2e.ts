@@ -1,7 +1,7 @@
 import './commands'
 
 Cypress.Keyboard.defaults({
-  keystrokeDelay: 10,
+  keystrokeDelay: 0,
 });
 
 Cypress.on('window:before:load', (win) => {

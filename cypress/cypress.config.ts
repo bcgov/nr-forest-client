@@ -27,6 +27,9 @@ async function setupNodeEvents(
               use: [
                 {
                   loader: "ts-loader",
+                  options: {
+                    transpileOnly: true,
+                  },
                 },
               ],
             },
@@ -49,6 +52,7 @@ async function setupNodeEvents(
 }
 
 export default defineConfig({
+  video: false,
   e2e: {
     reporter: require.resolve("@badeball/cypress-cucumber-preprocessor/pretty-reporter"),
     specPattern: "**/*.feature",
@@ -62,7 +66,7 @@ export default defineConfig({
   viewportHeight: 1080,
   viewportWidth: 1920,
   retries: {    
-    runMode: 2,
+    runMode: 1,
     openMode: 0,
   },
 });

@@ -53,6 +53,7 @@ export default defineConfig({
     }
   },
 
+  video: false,
   retries: 0,
 
   includeShadowDom: true

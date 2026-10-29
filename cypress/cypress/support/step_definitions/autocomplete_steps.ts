@@ -23,7 +23,7 @@ Then('I type {string} and select {string} from the {string} form autocomplete', 
     const parentShadow = $label[0].getRootNode();
     cy.wrap(parentShadow)
       .find('input')
-      .type(search, { delay: 150 })
+      .type(search, { delay: 0 })
       .then(() => {
         cy.wait('@autocomplete');
         cy.wrap(parentShadow)
