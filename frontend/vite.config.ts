@@ -85,7 +85,7 @@ export default defineConfig(async ({ command, mode }) => {
       globals: true,
       reporters: ["verbose"],
       coverage: {
-        reportsDirectory: "reports/.vite_report",
+        reportsDirectory: "reports/unit",
         provider: "v8",
         reporter: ["text", "json", "lcov"],
         all: true,

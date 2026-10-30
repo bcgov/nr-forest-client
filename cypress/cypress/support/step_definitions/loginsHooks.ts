@@ -41,7 +41,6 @@ const doLogin = (kind: string, afterLoginLocation: string, extraLandingParam: st
       {
         validate: () => {
           cy.request(afterLoginLocation).its('status').should('eq', 200);
-          cy.visit(afterLoginLocation);
         },
       },
     );

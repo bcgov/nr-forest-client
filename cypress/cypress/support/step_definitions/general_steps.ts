@@ -1,5 +1,5 @@
-import { Given, Then, BeforeStep } from "@badeball/cypress-cucumber-preprocessor";
-BeforeStep(() => { cy.wait(10); });
+import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
+
 
 Given('I visit {string}', (url: string) => {
   cy.visit(url).then(() => {

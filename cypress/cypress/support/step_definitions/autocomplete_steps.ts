@@ -23,12 +23,12 @@ Then('I type {string} and select {string} from the {string} form autocomplete', 
     const parentShadow = $label[0].getRootNode();
     cy.wrap(parentShadow)
       .find('input')
-      .type(search, { delay: 150 })
+      .type(search, { delay: 30 })
       .then(() => {
-        cy.wait('@autocomplete');
+        cy.wait('@autocomplete', { timeout: 30000 });
         cy.wrap(parentShadow)
           .parent()
-          .find(`cds-combo-box-item[data-value="${value}"], cds-combo-box-item[data-value^="${value}"]`)
+          .find(`cds-combo-box-item[data-value="${value}"], cds-combo-box-item[data-value^="${value}"]`, { timeout: 15000 })
           .first()
           .then(($item) => {
             if ($item.length) {
@@ -38,7 +38,7 @@ Then('I type {string} and select {string} from the {string} form autocomplete', 
             }
           })
           .then(() => {
-            cy.wait('@autocomplete');
+            cy.wait('@autocomplete', { timeout: 30000 });
           });
       });
   });

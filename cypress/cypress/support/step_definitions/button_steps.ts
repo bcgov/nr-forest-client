@@ -18,10 +18,10 @@ When('I click on the {string} button', (name: string) => {
 When('I click on next', () => {  
   
   if (!idir) {
-    cy.get('cds-button[data-text="Next"]').click().then(() => {cy.wait(15);});
+    cy.get('cds-button[data-text="Next"]').click();
   } else {
     cy.intercept('POST',  `**/api/clients/matches`).as('matches');  
-    cy.get('cds-button[data-text="Next"]').click().then(() => {cy.wait('@matches',{ timeout: 10 * 1000 });});
+    cy.get('cds-button[data-text="Next"]').click().then(() => {cy.wait('@matches',{ timeout: 30 * 1000 });});
   }
   
 });
@@ -40,7 +40,7 @@ const buttonClick = (
   name: string, 
   kinds: string[], 
   waitForIntercept: string = null, 
-  waitForTime : number = 15,  
+  waitForTime : number = 0,  
   selector: string = 'body'
 ) => {
   if (kinds.length === 0) {

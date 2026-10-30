@@ -53,6 +53,8 @@ export default defineConfig({
     }
   },
 
+  video: false,
+  numTestsKeptInMemory: 0,
   retries: 0,
 
   includeShadowDom: true
