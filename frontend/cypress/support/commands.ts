@@ -16,6 +16,9 @@ const jwtfy = (jwtBody: any) => btoa(JSON.stringify(jwtBody))
       .replace(/\//g, "_")
       .replace(/=+$/, "");
 
+const jwtHeader = jwtfy({ alg: "HS256", typ: "JWT" });
+const createMockJwt = (payload: any) => `${jwtHeader}.${jwtfy(payload)}.`;
+
 const generateRandomUUID = (): string => {
   const parts = [
     generateRandomHex(8),
@@ -108,10 +111,11 @@ Cypress.Commands.add(
 
     const baseCookieName = `CognitoIdentityServiceProvider.${Cypress.expose('AWS_COGNITO_CLIENT_ID')}`;
     const baseUserCookieName = `${baseCookieName}.${userId}`;
+    const mockIdToken = createMockJwt(jwtBody);
     const cognitoResponse = {
-      "AccessToken": `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${jwtfy(accessToken)}.`,
+      "AccessToken": createMockJwt(accessToken),
       "ExpiresIn": 300,
-      "IdToken": `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${jwtfy(jwtBody)}.`,
+      "IdToken": mockIdToken,
       "TokenType": "Bearer"
     };
 
@@ -123,7 +127,7 @@ Cypress.Commands.add(
     ).as("cognitoPull");
 
     cy.addCookie(`${baseCookieName}.LastAuthUser`,userId);    
-    cy.addCookie(`${baseUserCookieName}.idToken`,`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${jwtfy(jwtBody)}.`);
+    cy.addCookie(`${baseUserCookieName}.idToken`, mockIdToken);
     
     cy.reload();
   }
