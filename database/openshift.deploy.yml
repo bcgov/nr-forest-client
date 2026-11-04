@@ -248,7 +248,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${BACKUP_COMPONENT}
-                  image: postgres:13
+                  image: postgres:18
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
@@ -343,7 +343,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${BACKUP_COMPONENT}-restore
-                  image: postgres:13
+                  image: postgres:18
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
@@ -356,6 +356,8 @@ objects:
                     - mountPath: "${RESTORE_DIR}"
                       name: ${NAME}-${ZONE}-${BACKUP_COMPONENT}
                   env:
+                    - name: TARGET_HOST
+                      value: "${NAME}-${ZONE}-${COMPONENT}"
                     - name: RESTORE_DIR
                       value: "${RESTORE_DIR}"
                     - name: POSTGRESQL_DATABASE

@@ -59,7 +59,7 @@ public abstract class AbstractTestContainerIntegrationTest {
   }
 
   static {
-    database = new PostgreSQLContainer("postgres:13")
+    database = new PostgreSQLContainer("postgres:18")
         .withDatabaseName("simple")
         .withUsername("simple")
         .withPassword(UUID.randomUUID().toString());

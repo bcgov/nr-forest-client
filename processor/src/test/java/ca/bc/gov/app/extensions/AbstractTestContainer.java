@@ -59,7 +59,7 @@ public abstract class AbstractTestContainer {
   static final PostgreSQLContainer postgres;
 
   static {
-    postgres = new PostgreSQLContainer("postgres:13")
+    postgres = new PostgreSQLContainer("postgres:18")
         .withDatabaseName("nfrc")
         .withUsername("nrfc")
         .withPassword(genPassword());
