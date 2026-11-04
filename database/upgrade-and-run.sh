@@ -18,14 +18,18 @@ if [ -s "/var/lib/postgresql/PG_VERSION" ]; then
     V=$(cat "/var/lib/postgresql/PG_VERSION")
     if [ "$V" != "18" ]; then
         echo "Detected PostgreSQL $V directly in /var/lib/postgresql."
-        # Relocate into a subfolder so that initdb/pg_upgrade can use the mount without conflicts
+        # Relocate all files into a subfolder except PG_VERSION first, so an interrupted
+        # relocation can safely resume through this root-directory branch on next startup
         OLD_DIR="/var/lib/postgresql/data.v${V}"
         mkdir -p "$OLD_DIR"
         find /var/lib/postgresql -maxdepth 1 -mindepth 1 \
             ! -name "data.v${V}" \
             ! -name "18" \
             ! -name "lost+found" \
+            ! -name "PG_VERSION" \
             -exec mv -t "$OLD_DIR" {} +
+        # Move PG_VERSION last only after all other entries have moved successfully
+        mv /var/lib/postgresql/PG_VERSION "$OLD_DIR/PG_VERSION"
         OLD_CLUSTER_DIR="$OLD_DIR"
         OLD_VERSION="$V"
     fi
@@ -95,6 +99,13 @@ if [ -n "$OLD_CLUSTER_DIR" ] && [ -n "$OLD_VERSION" ]; then
         -U "$SUPERUSER"
 
     echo "pg_upgrade completed successfully!"
+
+    # Restore authentication configuration from old cluster so external pod connections are accepted
+    if [ -f "$OLD_CLUSTER_DIR/pg_hba.conf" ]; then
+        echo "Restoring authentication configuration (pg_hba.conf, pg_ident.conf) from old cluster..."
+        cp -p "$OLD_CLUSTER_DIR/pg_hba.conf" "$NEW_PGDATA/pg_hba.conf"
+        [ -f "$OLD_CLUSTER_DIR/pg_ident.conf" ] && cp -p "$OLD_CLUSTER_DIR/pg_ident.conf" "$NEW_PGDATA/pg_ident.conf"
+    fi
 
     # Preserve old data cluster as backup so NO DATA IS EVER DELETED
     BACKUP_PATH="/var/lib/postgresql/data.v${OLD_VERSION}.bak"

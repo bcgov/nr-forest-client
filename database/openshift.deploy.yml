@@ -138,6 +138,17 @@ objects:
               ports:
                 - containerPort: 5432
                   protocol: TCP
+              startupProbe:
+                exec:
+                  command:
+                    - /usr/bin/env
+                    - bash
+                    - -c
+                    - psql -q -U $POSTGRES_USER -d $POSTGRES_DB -c 'SELECT 1'
+                failureThreshold: 30
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                timeoutSeconds: 2
               readinessProbe:
                 exec:
                   command:
