@@ -100,7 +100,7 @@ flowchart TD
     end
 
     subgraph DataStorage["Data Storage Layer"]
-        PG[("PostgreSQL 13 / 17\n(Primary Store)\nFlyway Migrated")]
+        PG[("PostgreSQL 18\n(Primary Store)\nFlyway Migrated")]
         ORACLE[("Legacy Oracle DB\n(THE Schema)\nFlyway Migrated")]
     end
 
@@ -145,7 +145,7 @@ flowchart TD
 | **Forest Client API** | Spring Boot, Java | 4.1.x / Java 17 | Public Forest Client API published via API Gateway |
 | **Background Processor** | Spring Integration, Java | 4.1.x / Java 17 | Async submission pipeline with queue channels |
 | **Legacy Connector** | Spring Boot (WebFlux), Java | 4.1.x / Java 21 | High-throughput reactive Oracle database interface |
-| **Primary Database** | PostgreSQL | 13.x (moving to 17) | Modern relational store with R2DBC |
+| **Primary Database** | PostgreSQL | 18.x | Modern relational store with R2DBC |
 | **Legacy Database** | Oracle Database Free | 23.x (compatible with 19c) | Ministry enterprise data store (`THE` schema) |
 | **Database Migrations**| Flyway | 10.x / 11.x | Versioned, reproducible SQL schema migrations |
 | **Testing: Frontend** | Vitest, Vue Test Utils | 5.x / 2.x | Fast, modern unit and component testing |

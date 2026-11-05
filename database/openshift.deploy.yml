@@ -138,6 +138,17 @@ objects:
               ports:
                 - containerPort: 5432
                   protocol: TCP
+              startupProbe:
+                exec:
+                  command:
+                    - /usr/bin/env
+                    - bash
+                    - -c
+                    - psql -q -U $POSTGRES_USER -d $POSTGRES_DB -c 'SELECT 1'
+                failureThreshold: 30
+                initialDelaySeconds: 10
+                periodSeconds: 10
+                timeoutSeconds: 2
               readinessProbe:
                 exec:
                   command:
@@ -248,7 +259,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${BACKUP_COMPONENT}
-                  image: postgres:13
+                  image: postgres:18
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
@@ -343,7 +354,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${BACKUP_COMPONENT}-restore
-                  image: postgres:13
+                  image: postgres:18
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
@@ -356,6 +367,8 @@ objects:
                     - mountPath: "${RESTORE_DIR}"
                       name: ${NAME}-${ZONE}-${BACKUP_COMPONENT}
                   env:
+                    - name: TARGET_HOST
+                      value: "${NAME}-${ZONE}-${COMPONENT}"
                     - name: RESTORE_DIR
                       value: "${RESTORE_DIR}"
                     - name: POSTGRESQL_DATABASE
