@@ -102,56 +102,60 @@ public class ClientSubmissionAutoProcessingService {
   }
 
   /**
-   * This method is used to load matching information for a given submission. It retrieves the
-   * submission details from the repository using the submission ID from the message parameters. If
-   * matching information is found, it is added to the message parameters under the key
-   * 'MATCHING_INFO'. If no matching information is found, the original message is returned as is.
+   * This method is used to load matching information for a given submission. It atomically claims
+   * the submission for processing by updating its processing timestamp. If the claim succeeds,
+   * matching information is loaded and added to the message parameters under 'MATCHING_INFO', and
+   * the message is marked HOT. If another process has already claimed or completed the submission,
+   * the message is marked COLD.
    *
    * @param message A MessagingWrapper object that contains the submission ID in its parameters.
-   * @return A Mono of MessagingWrapper. If matching information is found, the returned
-   * MessagingWrapper will have the matching information added to its parameters. If no matching
-   * information is found, the original MessagingWrapper is returned.
+   * @return A Mono of MessagingWrapper with MATCHING_KIND set to HOT if claimed, or COLD otherwise.
    */
   public <T> Mono<MessagingWrapper<T>> loadMatchingInfo(MessagingWrapper<T> message) {
+    int submissionId = (int) message.parameters().get(ApplicationConstant.SUBMISSION_ID);
+
     return
         submissionMatchDetailRepository
-            .findBySubmissionId((int) message.parameters().get(ApplicationConstant.SUBMISSION_ID))
-            .doOnNext(entity -> log.info(
-                    "Loaded submission {} with matching info {}",
-                    entity.getSubmissionId(),
-                    entity.getMatchingField()
-                )
-            )
-
-            .flatMap(entity ->
-                Mono
-                    .just(
-                        message.withParameter(
+            .claimSubmissionForProcessing(submissionId)
+            .flatMap(updatedCount -> {
+              if (updatedCount > 0) {
+                return submissionMatchDetailRepository
+                    .findBySubmissionId(submissionId)
+                    .doOnNext(entity -> log.info(
+                        "Claimed and loaded submission {} with matching info {}",
+                        entity.getSubmissionId(),
+                        entity.getMatchingField()
+                    ))
+                    .map(entity ->
+                        message
+                            .withParameter(
                                 ApplicationConstant.MATCHING_INFO,
-                                entity.getMatchers().get(ApplicationConstant.MATCHING_INFO)
+                                entity.getMatchers() != null
+                                    ? entity.getMatchers().get(ApplicationConstant.MATCHING_INFO)
+                                    : null
                             )
-                            // This checks if a submission is HOT or COLD
-                            // A HOT submission is one that can be processed
-                            // A COLD submission is one that is being processed already
                             .withParameter(
                                 ApplicationConstant.MATCHING_KIND,
-                                (entity.isBeingProcessed()) ?
-                                    SubmissionProcessKindEnum.COLD :
-                                    SubmissionProcessKindEnum.HOT
+                                SubmissionProcessKindEnum.HOT
                             )
+                    );
+              } else {
+                log.info(
+                    "Submission {} is already being processed or completed, marking as COLD",
+                    submissionId
+                );
+                return Mono.just(
+                    message.withParameter(
+                        ApplicationConstant.MATCHING_KIND,
+                        SubmissionProcessKindEnum.COLD
                     )
-                    //This will add the current date to the processing time to prevent concurrency
-                    .flatMap(msg ->
-                        submissionMatchDetailRepository
-                            .save(entity.withProcessingTime(LocalDateTime.now()))
-                            .thenReturn(msg)
-                    )
-            )
-            // Submissions without a match details are always HOT
+                );
+              }
+            })
             .defaultIfEmpty(
                 message.withParameter(
                     ApplicationConstant.MATCHING_KIND,
-                    SubmissionProcessKindEnum.HOT
+                    SubmissionProcessKindEnum.COLD
                 )
             );
   }

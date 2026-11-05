@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import ca.bc.gov.app.ApplicationConstant;
 import ca.bc.gov.app.dto.MatcherResult;
 import ca.bc.gov.app.dto.MessagingWrapper;
+import ca.bc.gov.app.dto.SubmissionProcessKindEnum;
 import ca.bc.gov.app.entity.SubmissionEntity;
 import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
 import ca.bc.gov.app.extensions.AbstractTestContainer;
@@ -300,5 +301,55 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         );
   }
 
+  @Test
+  @DisplayName("loadMatchingInfo claims submission atomically and returns HOT")
+  void shouldClaimSubmissionAtomicallyAndMarkHot() {
+    int submissionId = 365;
+
+    MessagingWrapper<Integer> message = new MessagingWrapper<>(
+        submissionId,
+        Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+    );
+
+    // First call claims the lock atomically: returns HOT
+    service
+        .loadMatchingInfo(message)
+        .as(StepVerifier::create)
+        .assertNext(result ->
+            assertThat(result.parameters().get(ApplicationConstant.MATCHING_KIND))
+                .isEqualTo(SubmissionProcessKindEnum.HOT)
+        )
+        .verifyComplete();
+
+    // Second immediate call cannot claim lock: returns COLD
+    service
+        .loadMatchingInfo(message)
+        .as(StepVerifier::create)
+        .assertNext(result ->
+            assertThat(result.parameters().get(ApplicationConstant.MATCHING_KIND))
+                .isEqualTo(SubmissionProcessKindEnum.COLD)
+        )
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("loadMatchingInfo returns COLD for already processed submission")
+  void shouldReturnColdForAlreadyProcessedSubmission() {
+    int submissionId = 366;
+
+    MessagingWrapper<Integer> message = new MessagingWrapper<>(
+        submissionId,
+        Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+    );
+
+    service
+        .loadMatchingInfo(message)
+        .as(StepVerifier::create)
+        .assertNext(result ->
+            assertThat(result.parameters().get(ApplicationConstant.MATCHING_KIND))
+                .isEqualTo(SubmissionProcessKindEnum.COLD)
+        )
+        .verifyComplete();
+  }
 
 }
