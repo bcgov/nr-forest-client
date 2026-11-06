@@ -28,4 +28,23 @@ public interface SubmissionMatchDetailRepository extends
       """)
   Mono<Long> claimSubmissionForProcessing(Integer submissionId);
 
+  @Modifying
+  @Query("""
+      INSERT INTO nrfc.submission_matching_detail (
+        submission_id,
+        matching_fields,
+        submission_matching_processed,
+        submission_matching_processed_time
+      )
+      SELECT
+        :submissionId,
+        '{}'::jsonb,
+        false,
+        now()
+      WHERE NOT EXISTS (
+        SELECT 1 FROM nrfc.submission_matching_detail WHERE submission_id = :submissionId
+      )
+      """)
+  Mono<Long> createAndClaimIfMissing(Integer submissionId);
+
 }

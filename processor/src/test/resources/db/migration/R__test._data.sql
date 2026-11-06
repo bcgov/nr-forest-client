@@ -79,3 +79,7 @@ INSERT INTO nrfc.submission_location
 VALUES(368, 368, '712 Canyon View Dr', 'US', 'AZ', 'Lansing', '66043-6271', 'Mailing address', '7894562486', NULL, NULL, 'This is the main office', 'In care of Julius', NULL, NULL) ON CONFLICT DO NOTHING;
 INSERT INTO nrfc.submission_location_contact_xref VALUES (368, 368) ON CONFLICT DO NOTHING;
 INSERT INTO nrfc.submission_matching_detail VALUES (368, 368, '{"info":{}}', 'N', null, '2024-04-16 16:00:06.678395', 'idir\\ottomated', true) ON CONFLICT DO NOTHING;
+
+SELECT setval('nrfc.submission_matching_detail_id_seq', (SELECT COALESCE(MAX(submission_matching_detail_id), 0) + 1 FROM nrfc.submission_matching_detail));
+SELECT setval('nrfc.submission_id_seq', (SELECT COALESCE(MAX(submission_id), 0) + 1 FROM nrfc.submission));
+SELECT setval('nrfc.submission_detail_id_seq', (SELECT COALESCE(MAX(submission_detail_id), 0) + 1 FROM nrfc.submission_detail));

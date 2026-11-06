@@ -103,10 +103,11 @@ public class ClientSubmissionAutoProcessingService {
 
   /**
    * This method is used to load matching information for a given submission. It atomically claims
-   * the submission for processing by updating its processing timestamp. If the claim succeeds,
-   * matching information is loaded and added to the message parameters under 'MATCHING_INFO', and
-   * the message is marked HOT. If another process has already claimed or completed the submission,
-   * the message is marked COLD.
+   * the submission for processing by updating its processing timestamp, or by atomically creating
+   * and claiming the matching detail row if missing. If the claim succeeds, matching information
+   * is loaded and added to the message parameters under 'MATCHING_INFO', and the message is marked
+   * HOT. If another process has already claimed or completed the submission, the message is marked
+   * COLD.
    *
    * @param message A MessagingWrapper object that contains the submission ID in its parameters.
    * @return A Mono of MessagingWrapper with MATCHING_KIND set to HOT if claimed, or COLD otherwise.
@@ -119,38 +120,29 @@ public class ClientSubmissionAutoProcessingService {
             .claimSubmissionForProcessing(submissionId)
             .flatMap(updatedCount -> {
               if (updatedCount > 0) {
-                return submissionMatchDetailRepository
-                    .findBySubmissionId(submissionId)
-                    .doOnNext(entity -> log.info(
-                        "Claimed and loaded submission {} with matching info {}",
-                        entity.getSubmissionId(),
-                        entity.getMatchingField()
-                    ))
-                    .map(entity ->
-                        message
-                            .withParameter(
-                                ApplicationConstant.MATCHING_INFO,
-                                entity.getMatchers() != null
-                                    ? entity.getMatchers().get(ApplicationConstant.MATCHING_INFO)
-                                    : null
-                            )
-                            .withParameter(
-                                ApplicationConstant.MATCHING_KIND,
-                                SubmissionProcessKindEnum.HOT
-                            )
-                    );
-              } else {
-                log.info(
-                    "Submission {} is already being processed or completed, marking as COLD",
-                    submissionId
-                );
-                return Mono.just(
-                    message.withParameter(
-                        ApplicationConstant.MATCHING_KIND,
-                        SubmissionProcessKindEnum.COLD
-                    )
-                );
+                return loadClaimedMatchingInfo(message, submissionId);
               }
+              return submissionMatchDetailRepository
+                  .createAndClaimIfMissing(submissionId)
+                  .flatMap(insertedCount -> {
+                    if (insertedCount > 0) {
+                      log.info(
+                          "Created missing matching detail and claimed submission {}",
+                          submissionId
+                      );
+                      return loadClaimedMatchingInfo(message, submissionId);
+                    }
+                    log.info(
+                        "Submission {} is already being processed or completed, marking as COLD",
+                        submissionId
+                    );
+                    return Mono.just(
+                        message.withParameter(
+                            ApplicationConstant.MATCHING_KIND,
+                            SubmissionProcessKindEnum.COLD
+                        )
+                    );
+                  });
             })
             .defaultIfEmpty(
                 message.withParameter(
@@ -158,6 +150,38 @@ public class ClientSubmissionAutoProcessingService {
                     SubmissionProcessKindEnum.COLD
                 )
             );
+  }
+
+  private <T> Mono<MessagingWrapper<T>> loadClaimedMatchingInfo(
+      MessagingWrapper<T> message,
+      int submissionId
+  ) {
+    return submissionMatchDetailRepository
+        .findBySubmissionId(submissionId)
+        .doOnNext(entity -> log.info(
+            "Claimed and loaded submission {} with matching info {}",
+            entity.getSubmissionId(),
+            entity.getMatchingField()
+        ))
+        .map(entity ->
+            message
+                .withParameter(
+                    ApplicationConstant.MATCHING_INFO,
+                    entity.getMatchers() != null
+                        ? entity.getMatchers().get(ApplicationConstant.MATCHING_INFO)
+                        : null
+                )
+                .withParameter(
+                    ApplicationConstant.MATCHING_KIND,
+                    SubmissionProcessKindEnum.HOT
+                )
+        )
+        .defaultIfEmpty(
+            message.withParameter(
+                ApplicationConstant.MATCHING_KIND,
+                SubmissionProcessKindEnum.HOT
+            )
+        );
   }
 
   private void updateEntityMatchers(

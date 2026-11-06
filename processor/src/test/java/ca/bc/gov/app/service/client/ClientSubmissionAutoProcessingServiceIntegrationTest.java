@@ -13,6 +13,8 @@ import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.dto.SubmissionProcessKindEnum;
 import ca.bc.gov.app.entity.SubmissionEntity;
 import ca.bc.gov.app.entity.SubmissionMatchDetailEntity;
+import ca.bc.gov.app.entity.SubmissionStatusEnum;
+import ca.bc.gov.app.entity.SubmissionTypeCodeEnum;
 import ca.bc.gov.app.extensions.AbstractTestContainer;
 import ca.bc.gov.app.repository.SubmissionMatchDetailRepository;
 import ca.bc.gov.app.repository.SubmissionRepository;
@@ -30,6 +32,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 @DisplayName("Integrated Test | Client Service")
@@ -302,34 +306,90 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
   }
 
   @Test
-  @DisplayName("loadMatchingInfo claims submission atomically and returns HOT")
-  void shouldClaimSubmissionAtomicallyAndMarkHot() {
+  @DisplayName("loadMatchingInfo claims submission concurrently with exactly one HOT winner")
+  void shouldClaimSubmissionConcurrentlyWithOnlyOneHotWinner() {
     int submissionId = 365;
 
-    MessagingWrapper<Integer> message = new MessagingWrapper<>(
+    // Reset timestamp and processed flag so submission 365 is claimable
+    submissionMatchDetailRepository
+        .findBySubmissionId(submissionId)
+        .flatMap(entity -> {
+          entity.setProcessingTime(null);
+          entity.setProcessed(false);
+          return submissionMatchDetailRepository.save(entity);
+        })
+        .block();
+
+    MessagingWrapper<Integer> message1 = new MessagingWrapper<>(
+        submissionId,
+        Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+    );
+    MessagingWrapper<Integer> message2 = new MessagingWrapper<>(
         submissionId,
         Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
     );
 
-    // First call claims the lock atomically: returns HOT
-    service
-        .loadMatchingInfo(message)
-        .as(StepVerifier::create)
-        .assertNext(result ->
-            assertThat(result.parameters().get(ApplicationConstant.MATCHING_KIND))
-                .isEqualTo(SubmissionProcessKindEnum.HOT)
-        )
-        .verifyComplete();
+    List<SubmissionProcessKindEnum> results = Flux.merge(
+        service.loadMatchingInfo(message1).subscribeOn(Schedulers.parallel()),
+        service.loadMatchingInfo(message2).subscribeOn(Schedulers.parallel())
+    )
+    .map(result -> (SubmissionProcessKindEnum) result.parameters().get(ApplicationConstant.MATCHING_KIND))
+    .collectList()
+    .block(Duration.ofSeconds(5));
 
-    // Second immediate call cannot claim lock: returns COLD
-    service
-        .loadMatchingInfo(message)
-        .as(StepVerifier::create)
-        .assertNext(result ->
-            assertThat(result.parameters().get(ApplicationConstant.MATCHING_KIND))
-                .isEqualTo(SubmissionProcessKindEnum.COLD)
+    AssertionsForInterfaceTypes.assertThat(results)
+        .containsExactlyInAnyOrder(
+            SubmissionProcessKindEnum.HOT,
+            SubmissionProcessKindEnum.COLD
+        );
+  }
+
+  @Test
+  @DisplayName("loadMatchingInfo creates and claims missing matching detail concurrently with one HOT winner")
+  void shouldCreateAndClaimMissingMatchingDetailConcurrently() {
+    // Create a submission without a matching detail row
+    SubmissionEntity savedSubmission = submissionRepository
+        .save(
+            SubmissionEntity.builder()
+                .submissionStatus(SubmissionStatusEnum.N)
+                .submissionType(SubmissionTypeCodeEnum.SSD)
+                .submissionDate(LocalDateTime.now())
+                .createdBy("test")
+                .build()
         )
-        .verifyComplete();
+        .block();
+    assertThat(savedSubmission).isNotNull();
+    int submissionId = savedSubmission.getSubmissionId();
+
+    MessagingWrapper<Integer> message1 = new MessagingWrapper<>(
+        submissionId,
+        Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+    );
+    MessagingWrapper<Integer> message2 = new MessagingWrapper<>(
+        submissionId,
+        Map.of(ApplicationConstant.SUBMISSION_ID, submissionId)
+    );
+
+    List<SubmissionProcessKindEnum> results = Flux.merge(
+        service.loadMatchingInfo(message1).subscribeOn(Schedulers.parallel()),
+        service.loadMatchingInfo(message2).subscribeOn(Schedulers.parallel())
+    )
+    .map(result -> (SubmissionProcessKindEnum) result.parameters().get(ApplicationConstant.MATCHING_KIND))
+    .collectList()
+    .block(Duration.ofSeconds(5));
+
+    AssertionsForInterfaceTypes.assertThat(results)
+        .containsExactlyInAnyOrder(
+            SubmissionProcessKindEnum.HOT,
+            SubmissionProcessKindEnum.COLD
+        );
+
+    SubmissionMatchDetailEntity createdDetail = submissionMatchDetailRepository
+        .findBySubmissionId(submissionId)
+        .block();
+    assertThat(createdDetail).isNotNull();
+    assertThat(createdDetail.getProcessingTime()).isNotNull();
+    assertThat(createdDetail.isProcessed()).isFalse();
   }
 
   @Test
