@@ -110,7 +110,8 @@ public class ClientSubmissionAutoProcessingService {
    * COLD.
    *
    * @param message A MessagingWrapper object that contains the submission ID in its parameters.
-   * @return A Mono of MessagingWrapper with MATCHING_KIND set to HOT if claimed, or COLD otherwise.
+   * @return A Mono of MessagingWrapper with MATCHING_KIND set to HOT if claimed, or COLD
+   *         otherwise.
    */
   public <T> Mono<MessagingWrapper<T>> loadMatchingInfo(MessagingWrapper<T> message) {
     int submissionId = (int) message.parameters().get(ApplicationConstant.SUBMISSION_ID);

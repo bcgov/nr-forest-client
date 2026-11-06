@@ -21,9 +21,9 @@ public interface SubmissionMatchDetailRepository extends
       UPDATE nrfc.submission_matching_detail
       SET submission_matching_processed_time = now()
       WHERE submission_id = :submissionId
-        AND (submission_matching_processed_time IS NULL 
+        AND (submission_matching_processed_time IS NULL
              OR submission_matching_processed_time < now() - interval '2 minutes')
-        AND (submission_matching_processed IS NULL 
+        AND (submission_matching_processed IS NULL
              OR submission_matching_processed = false)
       """)
   Mono<Long> claimSubmissionForProcessing(Integer submissionId);

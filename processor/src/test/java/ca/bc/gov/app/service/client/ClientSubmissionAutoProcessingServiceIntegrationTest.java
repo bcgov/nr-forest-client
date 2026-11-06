@@ -333,7 +333,8 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         service.loadMatchingInfo(message1).subscribeOn(Schedulers.parallel()),
         service.loadMatchingInfo(message2).subscribeOn(Schedulers.parallel())
     )
-    .map(result -> (SubmissionProcessKindEnum) result.parameters().get(ApplicationConstant.MATCHING_KIND))
+    .map(result -> (SubmissionProcessKindEnum) result.parameters()
+        .get(ApplicationConstant.MATCHING_KIND))
     .collectList()
     .block(Duration.ofSeconds(5));
 
@@ -345,7 +346,8 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
   }
 
   @Test
-  @DisplayName("loadMatchingInfo creates and claims missing matching detail concurrently with one HOT winner")
+  @DisplayName("loadMatchingInfo creates and claims missing matching detail "
+      + "concurrently with one HOT winner")
   void shouldCreateAndClaimMissingMatchingDetailConcurrently() {
     // Create a submission without a matching detail row
     SubmissionEntity savedSubmission = submissionRepository
@@ -374,7 +376,8 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         service.loadMatchingInfo(message1).subscribeOn(Schedulers.parallel()),
         service.loadMatchingInfo(message2).subscribeOn(Schedulers.parallel())
     )
-    .map(result -> (SubmissionProcessKindEnum) result.parameters().get(ApplicationConstant.MATCHING_KIND))
+    .map(result -> (SubmissionProcessKindEnum) result.parameters()
+        .get(ApplicationConstant.MATCHING_KIND))
     .collectList()
     .block(Duration.ofSeconds(5));
 
