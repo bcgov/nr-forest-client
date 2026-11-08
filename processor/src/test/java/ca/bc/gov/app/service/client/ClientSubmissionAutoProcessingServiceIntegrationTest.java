@@ -1,7 +1,7 @@
 package ca.bc.gov.app.service.client;
 
 import static org.assertj.core.api.Assertions.as;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -409,8 +409,8 @@ class ClientSubmissionAutoProcessingServiceIntegrationTest extends AbstractTestC
         .loadMatchingInfo(message)
         .as(StepVerifier::create)
         .assertNext(result ->
-            assertThat(result.parameters().get(ApplicationConstant.MATCHING_KIND))
-                .isEqualTo(SubmissionProcessKindEnum.COLD)
+            assertThat(result.parameters())
+                .containsEntry(ApplicationConstant.MATCHING_KIND, SubmissionProcessKindEnum.COLD)
         )
         .verifyComplete();
   }
