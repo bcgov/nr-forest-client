@@ -19,5 +19,26 @@ WHERE submission_matching_detail_id IN (
     WHERE rn > 1
 );
 
-ALTER TABLE nrfc.submission_matching_detail
-ADD CONSTRAINT submission_matching_detail_submission_id_uk UNIQUE (submission_id);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'submission_matching_detail_submission_id_uk'
+    ) THEN
+        IF NOT EXISTS (
+            SELECT 1
+            FROM pg_class c
+            JOIN pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relname = 'submission_matching_detail_submission_id_uk'
+              AND n.nspname = 'nrfc'
+        ) THEN
+            ALTER TABLE nrfc.submission_matching_detail
+            ADD CONSTRAINT submission_matching_detail_submission_id_uk UNIQUE (submission_id);
+        ELSE
+            ALTER TABLE nrfc.submission_matching_detail
+            ADD CONSTRAINT submission_matching_detail_submission_id_uk
+            UNIQUE USING INDEX submission_matching_detail_submission_id_uk;
+        END IF;
+    END IF;
+END $$;
