@@ -36,14 +36,13 @@ public interface SubmissionMatchDetailRepository extends
         submission_matching_processed,
         submission_matching_processed_time
       )
-      SELECT
+      VALUES (
         :submissionId,
         '{}'::jsonb,
         false,
         now()
-      WHERE NOT EXISTS (
-        SELECT 1 FROM nrfc.submission_matching_detail WHERE submission_id = :submissionId
       )
+      ON CONFLICT (submission_id) DO NOTHING
       """)
   Mono<Long> createAndClaimIfMissing(Integer submissionId);
 

@@ -1,0 +1,2 @@
+ALTER TABLE nrfc.submission_matching_detail
+ADD CONSTRAINT submission_matching_detail_submission_id_uk UNIQUE (submission_id);
