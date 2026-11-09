@@ -143,6 +143,19 @@ public class ClientSubmissionAutoProcessingService {
                             SubmissionProcessKindEnum.COLD
                         )
                     );
+                  })
+                  .onErrorResume(e -> {
+                    log.warn(
+                        "Failed to claim missing detail for submission {}, marking COLD: {}",
+                        submissionId,
+                        e.getMessage()
+                    );
+                    return Mono.just(
+                        message.withParameter(
+                            ApplicationConstant.MATCHING_KIND,
+                            SubmissionProcessKindEnum.COLD
+                        )
+                    );
                   });
             })
             .defaultIfEmpty(
