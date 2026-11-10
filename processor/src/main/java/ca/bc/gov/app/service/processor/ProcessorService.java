@@ -1,6 +1,7 @@
 package ca.bc.gov.app.service.processor;
 
 import ca.bc.gov.app.ApplicationConstant;
+import ca.bc.gov.app.configuration.ForestClientConfiguration;
 import ca.bc.gov.app.dto.MessagingWrapper;
 import ca.bc.gov.app.dto.SubmissionProcessKindEnum;
 import ca.bc.gov.app.dto.SubmissionProcessTypeEnum;
@@ -12,7 +13,9 @@ import ca.bc.gov.app.service.client.ClientSubmissionMailService;
 import ca.bc.gov.app.service.client.ClientSubmissionProcessingService;
 import ca.bc.gov.app.service.legacy.LegacyLoadingService;
 import ca.bc.gov.app.service.legacy.LegacyPersistenceService;
+import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,6 +34,7 @@ public class ProcessorService {
   private final ClientSubmissionProcessingService submissionProcessingService;
   private final ClientSubmissionMailService mailService;
   private final LegacyPersistenceService legacyPersistenceService;
+  private final ForestClientConfiguration configuration;
 
   /**
    * Process newly created submissions each 30 seconds
@@ -229,10 +233,28 @@ public class ProcessorService {
             .doOnNext(submission -> log.info("Submission post processed {}, building message",
                 submission))
             .onErrorContinue(
-                (throwable, o) -> log.error("Error processing submission {}", o, throwable))
+                e -> !(e instanceof TimeoutException),
+                (throwable, o) -> log.error("Error processing submission {}", o, throwable)
+            )
             .flatMap(submissionLoadingService::buildMailMessage)
             .doOnNext(message -> log.info("Post process email ready to be sent {}", message))
-            .flatMap(mailService::sendMail);
+            .flatMap(mailService::sendMail)
+            .timeout(getExecutionTimeout())
+            .doOnError(
+                TimeoutException.class,
+                e -> log.error(
+                    "Execution timed out processing submission {}",
+                    submissionWrapper.payload()
+                )
+            );
+  }
+
+  private Duration getExecutionTimeout() {
+    return configuration != null
+        && configuration.getProcessor() != null
+        && configuration.getProcessor().getExecutionTimeout() != null
+        ? configuration.getProcessor().getExecutionTimeout()
+        : Duration.ofSeconds(60);
   }
 
 }

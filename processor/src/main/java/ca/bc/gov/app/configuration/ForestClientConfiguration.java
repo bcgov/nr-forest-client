@@ -42,6 +42,9 @@ public class ForestClientConfiguration {
   @AllArgsConstructor
   public static class ProcessorConfiguration {
     private Duration poolTime;
+
+    @Builder.Default
+    private Duration executionTimeout = Duration.ofSeconds(60);
   }
 
   @Data

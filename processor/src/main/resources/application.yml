@@ -90,6 +90,7 @@ ca:
       nrs:
         processor:
           poolTime: ${TIMING:5M}
+          executionTimeout: ${PROCESSOR_EXECUTION_TIMEOUT:60s}
         backend:
           uri: ${CLIENT_URI:http://localhost:8080/api}
         legacy:

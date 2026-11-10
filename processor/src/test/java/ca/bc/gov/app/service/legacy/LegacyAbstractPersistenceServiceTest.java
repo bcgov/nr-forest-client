@@ -4,8 +4,10 @@ package ca.bc.gov.app.service.legacy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ca.bc.gov.app.ApplicationConstant;
@@ -425,6 +427,56 @@ class LegacyAbstractPersistenceServiceTest {
         })
         .verifyComplete();
 
+  }
+
+  @Test
+  @DisplayName("persist client number immediately even if subsequent step fails")
+  void shouldPersistClientNumberImmediatelyEvenIfSubsequentStepFails() {
+
+    SubmissionDetailEntity detailEntity = SubmissionDetailEntity
+        .builder()
+        .submissionId(2)
+        .registrationNumber("XX0000000")
+        .organizationName("Sample test")
+        .clientTypeCode("C")
+        .build();
+
+    when(submissionDetailRepository.findBySubmissionId(2))
+        .thenReturn(Mono.just(detailEntity));
+    when(submissionDetailRepository.save(any()))
+        .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+    when(legacyService.createClient(any()))
+        .thenReturn(Mono.just("00204616"));
+    when(legacyService.createDoingBusinessAs(any(), any(), any(), any()))
+        .thenReturn(Mono.error(new RuntimeException("DBA failed")));
+
+    ForestClientDto newClient = new ForestClientDto(
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null, null
+    );
+
+    service
+        .createForestClient(
+            new MessagingWrapper<>(
+                newClient,
+                Map.of(
+                    ApplicationConstant.SUBMISSION_ID, 2,
+                    ApplicationConstant.CREATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.UPDATED_BY, ApplicationConstant.PROCESSOR_USER_NAME,
+                    ApplicationConstant.CLIENT_TYPE_CODE, "C",
+                    ApplicationConstant.FOREST_CLIENT_NAME, "CHAMPAGNE SUPERNOVA",
+                    ApplicationConstant.IS_DOING_BUSINESS_AS, Boolean.TRUE,
+                    ApplicationConstant.DOING_BUSINESS_AS, "Some DBA"
+                )
+            )
+        )
+        .as(StepVerifier::create)
+        .expectErrorMatches(e -> e.getMessage().contains("DBA failed"))
+        .verify();
+
+    verify(legacyService).createClient(any());
+    verify(submissionDetailRepository)
+        .save(argThat(entity -> "00204616".equals(entity.getClientNumber())));
   }
 
   private static Stream<Arguments> clientData() {

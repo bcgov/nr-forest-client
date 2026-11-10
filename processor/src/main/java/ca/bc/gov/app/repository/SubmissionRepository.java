@@ -46,9 +46,15 @@ public interface SubmissionRepository extends ReactiveCrudRepository<SubmissionE
       AND nrfc.submission.submission_type_code = 'SSD'
       AND ( nrfc.submission_matching_detail.submission_matching_processed  is null or
       nrfc.submission_matching_detail.submission_matching_processed = false)
-      AND (nrfc.submission_matching_detail.submission_matching_processed_time is null or
-      nrfc.submission_matching_detail.submission_matching_processed_time
-      < now() - interval '2 minutes')"""
+      AND (
+        (nrfc.submission_matching_detail.submission_matching_processed_time is null
+         AND (nrfc.submission.submission_date is null
+              OR nrfc.submission.submission_date < now() - interval '2 minutes'))
+        OR
+        (nrfc.submission_matching_detail.submission_matching_processed_time is not null
+         AND nrfc.submission_matching_detail.submission_matching_processed_time
+             < now() - interval '2 minutes')
+      )"""
   )
   Flux<Integer> loadStaffSubmissions();
 
