@@ -15,7 +15,7 @@ digraph "twoDegreesRelationshipsDiagram" {
   "submission_location":"elipses":w -> "province_code":"country_code":e [arrowhead=none dir=back arrowtail=crowodot];
   "submission_location":"elipses":w -> "province_code":"province_code":e [arrowhead=none dir=back arrowtail=crowodot];
   "submission_location":"elipses":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "submission_matching_detail":"elipses":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "submission_matching_detail":"elipses":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=teeodot];
   "business_type_code" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">

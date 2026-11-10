@@ -5,7 +5,7 @@ digraph "twoDegreesRelationshipsDiagram" {
   "submission_contact":"elipses":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "submission_detail":"elipses":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "submission_location":"elipses":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "submission_matching_detail":"elipses":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "submission_matching_detail":"elipses":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=teeodot];
   "submission" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">

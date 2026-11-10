@@ -73,7 +73,7 @@ digraph "largeRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="168" HEIGHT="16"><B>submission_matching_detail</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="submission_matching_detail_id" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="227" HEIGHT="16">submission_matching_detail_id</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="submission_id" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="227" HEIGHT="16">submission_id</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="submission_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="227" HEIGHT="16">submission_id</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="matching_fields" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="227" HEIGHT="16">matching_fields</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="confirmed_match_status_ind" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="227" HEIGHT="16">confirmed_match_status_ind</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="confirmed_match_message" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="227" HEIGHT="16">confirmed_match_message</TD></TR></TABLE></TD></TR>
@@ -310,5 +310,5 @@ digraph "largeRelationshipsDiagram" {
   "submission_location":"submission_id":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "submission_location_contact_xref":"submission_contact_id":w -> "submission_contact":"submission_contact_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "submission_location_contact_xref":"submission_location_id":w -> "submission_location":"submission_location_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "submission_matching_detail":"submission_id":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "submission_matching_detail":"submission_id":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=teeodot];
 }

@@ -8,7 +8,7 @@ digraph "twoDegreesRelationshipsDiagram" {
   "submission_location":"elipses":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "submission_location_contact_xref":"submission_contact_id":w -> "submission_contact":"submission_contact_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "submission_location_contact_xref":"submission_location_id":w -> "submission_location":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "submission_matching_detail":"elipses":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "submission_matching_detail":"elipses":w -> "submission":"submission_id":e [arrowhead=none dir=back arrowtail=teeodot];
   "contact_type_code" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
