@@ -97,7 +97,7 @@
     "globals": "^17.12.0",
     "istanbul-lib-coverage": "^3.2.0",
     "istanbul-lib-instrument": "^6.0.0",
-    "jsdom": "^30.0.0",
+    "jsdom": "^31.0.0",
     "lcov-result-merger": "^6.0.0",
     "nyc": "^18.0.0",
     "prettier": "^3.9.8",
