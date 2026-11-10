@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 2
       - name: API Diff Triggers
         id: triggers
-        uses: bcgov/actions/diff-triggers@091f1da89c669d36bf4899830381e5b12d2c889a # v0.11.0
+        uses: bcgov/actions/diff-triggers@d209bb08aabe15e5e69aca53b24d338a7b2843d5 # v0.12.0
         with:
           triggers: |
             api/
@@ -145,7 +145,7 @@ jobs:
           git-push: "true"
 
       - name: Create Release
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3
         if: steps.changelog.outputs.tag != ''
         continue-on-error: true
         env:
