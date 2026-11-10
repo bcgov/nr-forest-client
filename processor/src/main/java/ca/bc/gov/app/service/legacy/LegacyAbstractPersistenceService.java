@@ -138,6 +138,8 @@ public abstract class LegacyAbstractPersistenceService {
         message.payload().clientNumber()
     );
 
+    int submissionId = (Integer) message.parameters().get(ApplicationConstant.SUBMISSION_ID);
+
     return
         // Create the client
         legacyService
@@ -149,14 +151,10 @@ public abstract class LegacyAbstractPersistenceService {
                     forestClientNumber
                 )
             )
-            // Create the doing business as IF exists
-            .flatMap(clientNumber -> createClientDoingBusinessAs(message, clientNumber))
-            // Updates the submission detail with the client number
+            // Immediately update submission detail with the client number to ensure idempotency
             .flatMap(clientNumber ->
                 submissionDetailRepository
-                    .findBySubmissionId(
-                        (Integer) message.parameters().get(ApplicationConstant.SUBMISSION_ID)
-                    )
+                    .findBySubmissionId(submissionId)
                     .map(submissionDetail -> submissionDetail.withClientNumber(clientNumber))
                     .doOnNext(submissionDetail ->
                         log.info(
@@ -169,6 +167,8 @@ public abstract class LegacyAbstractPersistenceService {
                     .flatMap(submissionDetailRepository::save)
                     .map(SubmissionDetailEntity::getClientNumber)
             )
+            // Create the doing business as IF exists
+            .flatMap(clientNumber -> createClientDoingBusinessAs(message, clientNumber))
             .doOnNext(forestClientNumber ->
                 log.info(
                     "Saved forest client {} {}",
@@ -178,7 +178,7 @@ public abstract class LegacyAbstractPersistenceService {
             )
             .map(forestClientNumber ->
                 new MessagingWrapper<>(
-                    (Integer) message.parameters().get(ApplicationConstant.SUBMISSION_ID),
+                    submissionId,
                     message.parameters()
                 )
                     .withParameter(ApplicationConstant.FOREST_CLIENT_NUMBER, forestClientNumber)
