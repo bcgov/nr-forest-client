@@ -3,5 +3,11 @@
   "description": "Presets from https://github.com/bcgov/renovate-config",
   "extends": [
     "github>bcgov/renovate-config#2026.10.29"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["eclipse-temurin"],
+      "allowedVersions": "<22"
+    }
   ]
 }

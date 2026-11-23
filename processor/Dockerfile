@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.20.1_1-jdk-jammy AS build
+FROM eclipse-temurin:21-jdk-jammy AS build
 
 # Install Maven
 RUN apt update -y && \
@@ -23,7 +23,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests -Dtests.skip=true -Dskip.unit.tests=true
 
 ### Deployer
-FROM eclipse-temurin:17.0.20.1_1-jre-jammy AS deploy
+FROM eclipse-temurin:21-jre-jammy AS deploy
 ARG PORT=3100
 
 # Copy
