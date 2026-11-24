@@ -38,8 +38,6 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
 
     <flyway.version>12.4.0</flyway.version>
-    <micrometer.version>1.17.2</micrometer.version>
-    <micrometer-tracing.version>1.7.2</micrometer-tracing.version>
     <mockito.version>5.24.0</mockito.version>
     <opentelemetry-bom.version>1.68.0</opentelemetry-bom.version>
     <oracle-driver.version>23.26.4.0.0</oracle-driver.version>
@@ -176,20 +174,6 @@
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-bom</artifactId>
         <version>${testcontainers.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>io.micrometer</groupId>
-        <artifactId>micrometer-bom</artifactId>
-        <version>${micrometer.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>io.micrometer</groupId>
-        <artifactId>micrometer-tracing-bom</artifactId>
-        <version>${micrometer-tracing.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
