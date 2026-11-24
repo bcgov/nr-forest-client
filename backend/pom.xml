@@ -134,13 +134,6 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-tracing-bridge-otel</artifactId>
         </dependency>
-        <!-- Spring Boot 4 moved the tracing auto-configuration out of spring-boot-actuator-autoconfigure
-             into dedicated modules. The OpenTelemetry module provides the OpenTelemetryTracingAutoConfiguration
-             that creates the Tracer/SdkTracerProvider beans and the OTLP exporter wiring. -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-micrometer-tracing-opentelemetry</artifactId>
-        </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-otlp</artifactId>
