@@ -88,6 +88,8 @@ management:
         enabled: true
   tracing:
     enabled: false
+    export:
+      enabled: false
     baggage:
       remote-fields:
         - X-TRACE-ID
