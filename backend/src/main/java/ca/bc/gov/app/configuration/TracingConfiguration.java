@@ -15,6 +15,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration for Micrometer observation and tracing aspects.
+ */
 @Configuration(proxyBeanMethods = false)
 @Slf4j
 public class TracingConfiguration {
@@ -28,13 +31,21 @@ public class TracingConfiguration {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "management.tracing.export.enabled", havingValue = "true", matchIfMissing = true)
+  @ConditionalOnProperty(
+      name = "management.tracing.export.enabled",
+      havingValue = "true",
+      matchIfMissing = true
+  )
   SpanAspect spanAspect(MethodInvocationProcessor methodInvocationProcessor) {
     return new SpanAspect(methodInvocationProcessor);
   }
 
   @Bean
-  @ConditionalOnProperty(name = "management.tracing.export.enabled", havingValue = "true", matchIfMissing = true)
+  @ConditionalOnProperty(
+      name = "management.tracing.export.enabled",
+      havingValue = "true",
+      matchIfMissing = true
+  )
   MethodInvocationProcessor methodInvocationProcessor(NewSpanParser newSpanParser, Tracer tracer,
       BeanFactory beanFactory) {
     return new ImperativeMethodInvocationProcessor(newSpanParser, tracer, beanFactory::getBean,
@@ -42,7 +53,11 @@ public class TracingConfiguration {
   }
 
   @Bean
-  @ConditionalOnProperty(name = "management.tracing.export.enabled", havingValue = "true", matchIfMissing = true)
+  @ConditionalOnProperty(
+      name = "management.tracing.export.enabled",
+      havingValue = "true",
+      matchIfMissing = true
+  )
   NewSpanParser newSpanParser() {
     return new DefaultNewSpanParser();
   }
