@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 2
       - name: API Diff Triggers
         id: triggers
-        uses: bcgov/actions/diff-triggers@d209bb08aabe15e5e69aca53b24d338a7b2843d5 # v0.12.0
+        uses: bcgov/actions/diff-triggers@acc058abf85bb183dad21b839a92a40a4ff47af3 # v0.14.0
         with:
           triggers: |
             api/
