@@ -1,4 +1,4 @@
-FROM postgres:18
+FROM postgres:19
 
 # Install postgresql-13 binaries to enable seamless in-place zero-data-loss upgrades from PostgreSQL 13
 RUN apt-get update \
