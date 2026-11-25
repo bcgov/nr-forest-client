@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.2</version>
+    <version>4.2.0</version>
     <relativePath />
     <!-- lookup parent from repository -->
   </parent>
@@ -91,14 +91,14 @@
     </dependency>
     <!-- Spring Boot 4 moved the tracing auto-configuration out of spring-boot-actuator-autoconfigure
          into dedicated modules. The OpenTelemetry module provides the OpenTelemetryTracingAutoConfiguration
-         that creates the Tracer/SdkTracerProvider beans and the Zipkin exporter wiring. -->
+         that creates the Tracer/SdkTracerProvider beans and the OTLP exporter wiring. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-micrometer-tracing-opentelemetry</artifactId>
     </dependency>
     <dependency>
       <groupId>io.opentelemetry</groupId>
-      <artifactId>opentelemetry-exporter-zipkin</artifactId>
+      <artifactId>opentelemetry-exporter-otlp</artifactId>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
