@@ -10,9 +10,17 @@ describe("DataConverters.ts", () => {
     const result = retrieveClientType("LLC");
     expect(result).toEqual("C");
   });
+  it("retrieveClientType should return C when legalType is ULC", () => {
+    const result = retrieveClientType("ULC");
+    expect(result).toEqual("C");
+  });
   it("retrieveLegalTypeDesc should return Limited Liability Company when legalType is LLC", () => {
     const result = retrieveLegalTypeDesc("LLC");
     expect(result).toEqual("Limited Liability Company");
+  });
+  it("retrieveLegalTypeDesc should return Unlimited Liability Company when legalType is ULC", () => {
+    const result = retrieveLegalTypeDesc("ULC");
+    expect(result).toEqual("Unlimited Liability Company");
   });
   it("retrieveClientType should return I when legalType is SP", () => {
     const result = retrieveClientType("SP");

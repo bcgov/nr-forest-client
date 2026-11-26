@@ -26,5 +26,13 @@
   {
     "code": "LIC",
     "name": "Extraprovincial Company"
+  },
+  {
+    "code": "LLC",
+    "name": "Limited Liability Company"
+  },
+  {
+    "code": "ULC",
+    "name": "Unlimited Liability Company"
   }
 ]
