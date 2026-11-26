@@ -7,7 +7,8 @@ if [ "$(id -u)" = '0' ]; then
     exec gosu postgres "$BASH_SOURCE" "$@"
 fi
 
-NEW_PGDATA="${PGDATA:-/var/lib/postgresql/18/docker}"
+TARGET_VERSION="19"
+NEW_PGDATA="${PGDATA:-/var/lib/postgresql/${TARGET_VERSION}/docker}"
 SUPERUSER="${POSTGRES_USER:-postgres}"
 
 OLD_CLUSTER_DIR=""
@@ -16,7 +17,7 @@ OLD_VERSION=""
 # Check if PG_VERSION exists directly in /var/lib/postgresql
 if [ -s "/var/lib/postgresql/PG_VERSION" ]; then
     V=$(cat "/var/lib/postgresql/PG_VERSION")
-    if [ "$V" != "18" ]; then
+    if [ "$V" != "$TARGET_VERSION" ]; then
         echo "Detected PostgreSQL $V directly in /var/lib/postgresql."
         # Relocate all files into a subfolder except PG_VERSION first, so an interrupted
         # relocation can safely resume through this root-directory branch on next startup
@@ -24,7 +25,7 @@ if [ -s "/var/lib/postgresql/PG_VERSION" ]; then
         mkdir -p "$OLD_DIR"
         find /var/lib/postgresql -maxdepth 1 -mindepth 1 \
             ! -name "data.v${V}" \
-            ! -name "18" \
+            ! -name "$TARGET_VERSION" \
             ! -name "lost+found" \
             ! -name "PG_VERSION" \
             -exec mv -t "$OLD_DIR" {} +
@@ -36,17 +37,32 @@ if [ -s "/var/lib/postgresql/PG_VERSION" ]; then
 # Check if PG_VERSION exists in /var/lib/postgresql/data (default in PostgreSQL 13 container)
 elif [ -s "/var/lib/postgresql/data/PG_VERSION" ]; then
     V=$(cat "/var/lib/postgresql/data/PG_VERSION")
-    if [ "$V" != "18" ]; then
+    if [ "$V" != "$TARGET_VERSION" ]; then
         echo "Detected PostgreSQL $V in /var/lib/postgresql/data."
         OLD_CLUSTER_DIR="/var/lib/postgresql/data"
         OLD_VERSION="$V"
     fi
-# Check if an earlier migration relocated old cluster to /var/lib/postgresql/data.v* (ignoring .bak)
+# Check if an earlier cluster exists in /var/lib/postgresql/<version>/docker (default in PostgreSQL 18+ containers)
 else
+    for d in /var/lib/postgresql/*/docker; do
+        if [ -d "$d" ] && [ -s "$d/PG_VERSION" ]; then
+            V=$(cat "$d/PG_VERSION")
+            if [ "$V" != "$TARGET_VERSION" ]; then
+                echo "Detected PostgreSQL $V in $d."
+                OLD_CLUSTER_DIR="$d"
+                OLD_VERSION="$V"
+                break
+            fi
+        fi
+    done
+fi
+
+# Check if an earlier migration relocated old cluster to /var/lib/postgresql/data.v* (ignoring .bak)
+if [ -z "$OLD_CLUSTER_DIR" ]; then
     for d in /var/lib/postgresql/data.v*; do
         if [ -d "$d" ] && [[ "$d" != *.bak* ]] && [ -s "$d/PG_VERSION" ]; then
             V=$(cat "$d/PG_VERSION")
-            if [ "$V" != "18" ]; then
+            if [ "$V" != "$TARGET_VERSION" ]; then
                 echo "Detected PostgreSQL $V in $d."
                 OLD_CLUSTER_DIR="$d"
                 OLD_VERSION="$V"
@@ -57,15 +73,23 @@ else
 fi
 
 if [ -n "$OLD_CLUSTER_DIR" ] && [ -n "$OLD_VERSION" ]; then
+    # If PGDATA points to the same directory as OLD_CLUSTER_DIR, relocate it first
+    if [ "$OLD_CLUSTER_DIR" = "$NEW_PGDATA" ]; then
+        RELOCATED_DIR="/var/lib/postgresql/data.v${OLD_VERSION}"
+        echo "Relocating $OLD_CLUSTER_DIR to $RELOCATED_DIR before upgrade..."
+        mv "$OLD_CLUSTER_DIR" "$RELOCATED_DIR"
+        OLD_CLUSTER_DIR="$RELOCATED_DIR"
+    fi
+
     echo "=========================================================="
-    echo "Initiating automated upgrade from PostgreSQL $OLD_VERSION to 18..."
+    echo "Initiating automated upgrade from PostgreSQL $OLD_VERSION to $TARGET_VERSION..."
     echo "Source: $OLD_CLUSTER_DIR"
     echo "Target: $NEW_PGDATA"
     echo "Superuser: $SUPERUSER"
     echo "=========================================================="
 
     OLD_BIN="/usr/lib/postgresql/${OLD_VERSION}/bin"
-    NEW_BIN="/usr/lib/postgresql/18/bin"
+    NEW_BIN="/usr/lib/postgresql/${TARGET_VERSION}/bin"
 
     if [ ! -x "$OLD_BIN/postgres" ]; then
         echo "ERROR: PostgreSQL $OLD_VERSION binaries not found at $OLD_BIN!" >&2
@@ -85,7 +109,7 @@ if [ -n "$OLD_CLUSTER_DIR" ] && [ -n "$OLD_VERSION" ]; then
     chmod 700 "$NEW_PGDATA"
     chmod 700 "$OLD_CLUSTER_DIR"
 
-    # Initialize PostgreSQL 18 cluster with matching superuser and checksums
+    # Initialize PostgreSQL target cluster with matching superuser and checksums
     "$NEW_BIN/initdb" -D "$NEW_PGDATA" $INITDB_CHECKSUM_ARG -U "$SUPERUSER"
 
     # Run pg_upgrade
@@ -109,11 +133,14 @@ if [ -n "$OLD_CLUSTER_DIR" ] && [ -n "$OLD_VERSION" ]; then
 
     # Preserve old data cluster as backup so NO DATA IS EVER DELETED
     BACKUP_PATH="/var/lib/postgresql/data.v${OLD_VERSION}.bak"
+    if [ -e "$BACKUP_PATH" ]; then
+        BACKUP_PATH="/var/lib/postgresql/data.v${OLD_VERSION}.bak.$(date +%Y%m%d%H%M%S)"
+    fi
     if [ "$OLD_CLUSTER_DIR" != "$BACKUP_PATH" ]; then
         echo "Safely retaining old cluster at $BACKUP_PATH..."
         mv "$OLD_CLUSTER_DIR" "$BACKUP_PATH"
     fi
-    echo "Upgrade to PostgreSQL 18 complete. Proceeding to startup."
+    echo "Upgrade to PostgreSQL $TARGET_VERSION complete. Proceeding to startup."
     echo "=========================================================="
 fi
 
