@@ -73,11 +73,11 @@ if [ -z "$OLD_CLUSTER_DIR" ]; then
 fi
 
 if [ -n "$OLD_CLUSTER_DIR" ] && [ -n "$OLD_VERSION" ]; then
-    # If PGDATA points to the same directory as OLD_CLUSTER_DIR, relocate it first
-    if [ "$OLD_CLUSTER_DIR" = "$NEW_PGDATA" ]; then
+    # If PGDATA refers to the same directory as OLD_CLUSTER_DIR, relocate it first
+    if [ "$OLD_CLUSTER_DIR" -ef "$NEW_PGDATA" ] || [ "$(realpath -m "$OLD_CLUSTER_DIR")" = "$(realpath -m "$NEW_PGDATA")" ]; then
         RELOCATED_DIR="/var/lib/postgresql/data.v${OLD_VERSION}"
         echo "Relocating $OLD_CLUSTER_DIR to $RELOCATED_DIR before upgrade..."
-        mv "$OLD_CLUSTER_DIR" "$RELOCATED_DIR"
+        mv -T "$OLD_CLUSTER_DIR" "$RELOCATED_DIR"
         OLD_CLUSTER_DIR="$RELOCATED_DIR"
     fi
 
@@ -138,7 +138,7 @@ if [ -n "$OLD_CLUSTER_DIR" ] && [ -n "$OLD_VERSION" ]; then
     fi
     if [ "$OLD_CLUSTER_DIR" != "$BACKUP_PATH" ]; then
         echo "Safely retaining old cluster at $BACKUP_PATH..."
-        mv "$OLD_CLUSTER_DIR" "$BACKUP_PATH"
+        mv -T "$OLD_CLUSTER_DIR" "$BACKUP_PATH"
     fi
     echo "Upgrade to PostgreSQL $TARGET_VERSION complete. Proceeding to startup."
     echo "=========================================================="
