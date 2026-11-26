@@ -27,10 +27,23 @@ jobs:
     needs: [vars]
     permissions:
       pull-requests: write
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@a11ad3d1b9288fb40757c4314a62eb86ff227931 # v1.2.1
-    with:
-      markdown_links: |
-        Any successful deployments (not always required) will be available [here](https://${{ github.event.repository.name }}-${{ needs.vars.outputs.url }}-frontend.apps.silver.devops.gov.bc.ca/)
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: bcgov/actions/pr-validate@acc058abf85bb183dad21b839a92a40a4ff47af3 # v0.14.0
+        with:
+          markdown: |
+            ---
+
+            Thanks for the PR!
+
+            Deployments, as required, will be available below:
+            Any successful deployments (not always required) will be available [here](https://${{ github.event.repository.name }}-${{ needs.vars.outputs.url }}-frontend.apps.silver.devops.gov.bc.ca/)
+
+            Please create PRs in draft mode.  Mark as ready to enable:
+            - [Analysis Workflow](https://github.com/${{ github.repository }}/actions/workflows/analysis.yml)
+
+            After merge, new images are deployed in:
+            - [Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge.yml)
 
   # ==========================================================================
   # WARNING: This job acts as the required merge gate for this workflow.

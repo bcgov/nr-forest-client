@@ -14,7 +14,7 @@ permissions: {}
 jobs:
   cleanup:
     name: Cleanup and Images
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-close.yml@a11ad3d1b9288fb40757c4314a62eb86ff227931 # v1.2.1
+    uses: bcgov/actions-openshift/.github/workflows/.pr-close.yml@47805d2fc4e919382757c1fbeb68d39313abe64f # v0.11.0
     permissions:
       packages: write
     secrets:
@@ -22,7 +22,13 @@ jobs:
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
       cleanup: label
-      packages: backend database frontend legacy processor api
+      packages: |
+        backend
+        database
+        frontend
+        legacy
+        processor
+        api
 
   remove-tools:
     name: Remove database and user
