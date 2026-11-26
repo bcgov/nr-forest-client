@@ -117,6 +117,7 @@ class BusinessInformationBusinessLegalTypeValidatorTest {
             Arguments.of("A", "U", StringUtils.EMPTY, StringUtils.EMPTY),
             Arguments.of("A", "R", "C", StringUtils.EMPTY),
             Arguments.of("LLC", "R", "C", StringUtils.EMPTY),
+            Arguments.of("ULC", "R", "C", StringUtils.EMPTY),
             Arguments.of("CP", "R", "A", StringUtils.EMPTY),
             Arguments.of("CP", "R", "C", "C value for clientType does not match the expected value for legal type")
         );
