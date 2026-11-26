@@ -259,7 +259,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${BACKUP_COMPONENT}
-                  image: postgres:18
+                  image: postgres:19
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
@@ -354,7 +354,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${BACKUP_COMPONENT}-restore
-                  image: postgres:18
+                  image: postgres:19
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
