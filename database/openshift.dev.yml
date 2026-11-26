@@ -30,7 +30,7 @@ objects:
         spec:          
           containers:
             - name: ${NAME}
-              image: "postgres:19"
+              image: "postgres:18"
               command: ["/bin/sh", "-c"]
               args:
               - |
