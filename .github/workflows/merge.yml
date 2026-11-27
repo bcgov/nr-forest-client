@@ -28,14 +28,14 @@ jobs:
           fetch-depth: 2
       - name: API Diff Triggers
         id: triggers
-        uses: bcgov/actions/diff-triggers@0ed2b82c50ba113304b3b879e1dc7b9ea087d0fe # v0.15.0
+        uses: bcgov/actions/diff-triggers@a25c5f02d20139f29c17c3ceaa41c314ffe92ec9 # v0.16.0
         with:
           triggers: |
             api/
       # Get PR number for squash merges to main
       - name: PR Number
         id: pr
-        uses: bcgov/actions/get-pr@0ed2b82c50ba113304b3b879e1dc7b9ea087d0fe # v0.15.0
+        uses: bcgov/actions/get-pr@a25c5f02d20139f29c17c3ceaa41c314ffe92ec9 # v0.16.0
 
   deploy-test:
     name: Deploy (TEST)
