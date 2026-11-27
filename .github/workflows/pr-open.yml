@@ -44,11 +44,12 @@ jobs:
         package: [backend, database, frontend, legacy, processor, api]
     steps:
       - name: Build
-        uses: bcgov/action-builder-ghcr@cb2629351c87dd1c2130073e4ebb7233a9653a63 # v4.4.1
+        uses: bcgov/actions/builder@01c3fa1c94c8ccea526ce718b40d8a93bb0a2279 # v0.16.0
         with:
           package: ${{ matrix.package }}
           tag_fallback: latest
-          triggers: ('${{ matrix.package }}/')
+          triggers: |
+            ${{ matrix.package }}/
 
   tools:
     name: Tools
@@ -63,25 +64,15 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
+      url: ${{ needs.vars.outputs.url }}
       oracledb-port: 1521
       oracledb-servicename: PR_${{ github.event.number }}
       oracledb-username: THE
       deploy-api: ${{ needs.vars.outputs.api-triggered == 'true' }}
-      configmap-backend: |-
-        features:
-          staff:
-            match: true
-        info:
-          app:
-            component: backend
-        ca:
-          bc:
-            gov:
-              nrs:
-                idirMaxSubmissions: 65535
-                otherMaxSubmissions: 65535
-      configmap-frontend: |-
-        window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{}');
+      # Single-line values: the monorepo deployer parses parameters with xargs,
+      # which rejects newlines and unescaped double quotes.
+      configmap-backend: "{features: {staff: {match: true}}, info: {app: {component: backend}}, ca: {bc: {gov: {nrs: {idirMaxSubmissions: 65535, otherMaxSubmissions: 65535}}}}}"
+      configmap-frontend: "window.localStorage.setItem('VITE_FEATURE_FLAGS','{}');"
 
   tests:
     name: Tests

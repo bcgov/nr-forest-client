@@ -59,7 +59,7 @@ jobs:
       # Get PR number for squash merges to main
       - name: PR Number
         id: pr
-        uses: bcgov/action-get-pr@28b0adf8e4d40720d41f9c87356ce24b0a4bd6af # v0.3.1
+        uses: bcgov/actions/get-pr@01c3fa1c94c8ccea526ce718b40d8a93bb0a2279 # v0.16.0
 
   init:
     name: Deploy (init)
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: Deployment Init
-        uses: bcgov/action-deployer-openshift@e2d60eb9cacceb89c3b97d8dcf0a2c460eea5eab # v4.2.3
+        uses: bcgov/actions-openshift/deployer@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           file: common/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
@@ -101,7 +101,7 @@ jobs:
       - name: Backup database before update
         continue-on-error: true
         if: github.event_name != 'pull_request'
-        uses: bcgov/action-oc-runner@111868d1fc50db0a40417ba321d865ef5c931bbd # v1.7.0
+        uses: bcgov/actions-openshift/oc-runner@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
@@ -132,7 +132,7 @@ jobs:
               -p CONFIG_MAP="${{ inputs.configmap-frontend }}"
               -p COGNITO_DOMAIN="${{ vars.COGNITO_DOMAIN }}"
     steps:
-      - uses: bcgov/action-deployer-openshift@e2d60eb9cacceb89c3b97d8dcf0a2c460eea5eab # v4.2.3
+      - uses: bcgov/actions-openshift/deployer@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         id: deploys
         with:
           file: ${{ matrix.name }}/openshift.deploy.yml
@@ -151,7 +151,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: Database Dev settings
-        uses: bcgov/action-deployer-openshift@e2d60eb9cacceb89c3b97d8dcf0a2c460eea5eab # v4.2.3
+        uses: bcgov/actions-openshift/deployer@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           file: database/openshift.dev.yml
           oc_namespace: ${{ secrets.oc_namespace }}
@@ -171,7 +171,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Deploy API
-        uses: bcgov/action-deployer-openshift@e2d60eb9cacceb89c3b97d8dcf0a2c460eea5eab # v4.2.3
+        uses: bcgov/actions-openshift/deployer@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           file: api/openshift.deploy.yml
           oc_namespace: ${{ secrets.oc_namespace }}
@@ -191,7 +191,7 @@ jobs:
 
       - name: Deploy API Dev Route
         if: inputs.environment == ''
-        uses: bcgov/action-deployer-openshift@e2d60eb9cacceb89c3b97d8dcf0a2c460eea5eab # v4.2.3
+        uses: bcgov/actions-openshift/deployer@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           file: api/openshift.dev.yml
           oc_namespace: ${{ secrets.oc_namespace }}
