@@ -72,7 +72,7 @@
 
         <!-- Do NOT override micrometer.version / micrometer-tracing.version or org.junit.version / junit-jupiter.version here:
              Spring Boot manages compatible versions for these libraries. -->
-        <mockito.version>5.24.0</mockito.version>
+        <mockito.version>5.25.0</mockito.version>
         <nimbus-jose-jwt.version>10.10</nimbus-jose-jwt.version>
         <testcontainers.version>2.0.5</testcontainers.version>
     </properties>
