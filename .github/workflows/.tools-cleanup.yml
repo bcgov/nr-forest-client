@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: Scale down services
-        uses: bcgov/actions-openshift/oc-runner@47805d2fc4e919382757c1fbeb68d39313abe64f # v0.11.0
+        uses: bcgov/actions-openshift/oc-runner@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           oc_namespace: d2723f-dev
           oc_token: ${{ secrets.oc_token }}
@@ -43,7 +43,7 @@ jobs:
 
       - name: Remove the PR database
         continue-on-error: true
-        uses: bcgov/actions-openshift/oc-runner@47805d2fc4e919382757c1fbeb68d39313abe64f # v0.11.0
+        uses: bcgov/actions-openshift/oc-runner@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           oc_namespace: d2723f-tools
           oc_token: ${{ secrets.oc_token_tools }}

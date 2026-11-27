@@ -18,7 +18,7 @@ jobs:
     permissions:
       contents: write
       pages: write
-    uses: bcgov/actions-openshift/.github/workflows/.schema-spy.yml@47805d2fc4e919382757c1fbeb68d39313abe64f # v0.11.0
+    uses: bcgov/actions-openshift/.github/workflows/.schema-spy.yml@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
     with:
       flyway_locations: 'filesystem:./backend/src/main/resources/db/migration'
       flyway_schema: 'nrfc'

@@ -13,7 +13,7 @@ jobs:
       packages: write
     steps:
       - name: Build (legacydb)
-        uses: bcgov/actions/builder@acc058abf85bb183dad21b839a92a40a4ff47af3 # v0.14.0
+        uses: bcgov/actions/builder@0ed2b82c50ba113304b3b879e1dc7b9ea087d0fe # v0.15.0
         with:
           package: legacydb
           tag_fallback: latest
@@ -21,7 +21,7 @@ jobs:
             legacydb/
 
       - name: Build (backend)
-        uses: bcgov/actions/builder@acc058abf85bb183dad21b839a92a40a4ff47af3 # v0.14.0
+        uses: bcgov/actions/builder@0ed2b82c50ba113304b3b879e1dc7b9ea087d0fe # v0.15.0
         with:
           package: backend
           tag_fallback: latest
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: Scale down services
-        uses: bcgov/actions-openshift/oc-runner@47805d2fc4e919382757c1fbeb68d39313abe64f # v0.11.0
+        uses: bcgov/actions-openshift/oc-runner@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: Initializing Deployment
-        uses: bcgov/actions-openshift/deployer@47805d2fc4e919382757c1fbeb68d39313abe64f # v0.11.0
+        uses: bcgov/actions-openshift/deployer@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           file: legacydb/openshift.deploy.yml
           oc_namespace: d2723f-tools
@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: Create the PR database
-        uses: bcgov/actions-openshift/oc-runner@47805d2fc4e919382757c1fbeb68d39313abe64f # v0.11.0
+        uses: bcgov/actions-openshift/oc-runner@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -120,7 +120,7 @@ jobs:
             fi
 
       - name: Create the PR user
-        uses: bcgov/actions-openshift/oc-runner@47805d2fc4e919382757c1fbeb68d39313abe64f # v0.11.0
+        uses: bcgov/actions-openshift/oc-runner@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -145,7 +145,7 @@ jobs:
             fi
 
       - name: Migrate the PR database
-        uses: bcgov/actions-openshift/oc-runner@47805d2fc4e919382757c1fbeb68d39313abe64f # v0.11.0
+        uses: bcgov/actions-openshift/oc-runner@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           oc_namespace: d2723f-tools
           oc_server: ${{ secrets.oc_server }}
@@ -163,7 +163,7 @@ jobs:
     steps:
       - name: Start the Legacy Service
         continue-on-error: true
-        uses: bcgov/actions-openshift/oc-runner@47805d2fc4e919382757c1fbeb68d39313abe64f # v0.11.0
+        uses: bcgov/actions-openshift/oc-runner@b2757e12d08b7d3bf2c5df7cd58b4cdaf6b3ea71 # v0.11.1
         with:
           oc_namespace: ${{ secrets.oc_namespace }}
           oc_token: ${{ secrets.oc_token }}
