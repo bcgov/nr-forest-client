@@ -169,7 +169,9 @@ jobs:
           oc_token: ${{ secrets.oc_token }}
           oc_server: ${{ secrets.oc_server }}
           commands: |
-            oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=1
+            if oc get deployment/nr-forest-client-${{ github.event.number }}-legacy >/dev/null 2>&1; then
+              oc scale deployment/nr-forest-client-${{ github.event.number }}-legacy --replicas=1
+            fi
             if oc get deployment/nr-forest-client-${{ github.event.number }}-api >/dev/null 2>&1; then
               echo "Restoring API service..."
               oc scale deployment/nr-forest-client-${{ github.event.number }}-api --replicas=1

@@ -69,21 +69,10 @@ jobs:
       oracledb-servicename: PR_${{ github.event.number }}
       oracledb-username: THE
       deploy-api: ${{ needs.vars.outputs.api-triggered == 'true' }}
-      configmap-backend: |-
-        features:
-          staff:
-            match: true
-        info:
-          app:
-            component: backend
-        ca:
-          bc:
-            gov:
-              nrs:
-                idirMaxSubmissions: 65535
-                otherMaxSubmissions: 65535
-      configmap-frontend: |-
-        window.localStorage.setItem(\"VITE_FEATURE_FLAGS\",'{}');
+      # Single-line values: the monorepo deployer parses parameters with xargs,
+      # which rejects newlines and unescaped double quotes.
+      configmap-backend: "{features: {staff: {match: true}}, info: {app: {component: backend}}, ca: {bc: {gov: {nrs: {idirMaxSubmissions: 65535, otherMaxSubmissions: 65535}}}}}"
+      configmap-frontend: "window.localStorage.setItem('VITE_FEATURE_FLAGS','{}');"
 
   tests:
     name: Tests
