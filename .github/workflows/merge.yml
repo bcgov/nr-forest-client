@@ -94,7 +94,7 @@ jobs:
 
   images-prod:
     name: Promote images to PROD
-    needs: [deploy-prod]
+    needs: [deploy-prod, vars]
     permissions:
       packages: write
     runs-on: ubuntu-26.04
@@ -106,7 +106,7 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
-          target: test
+          target: ${{ needs.vars.outputs.pr }}
           tags: prod
 
   images-api-prod:
@@ -121,7 +121,7 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/api
-          target: test
+          target: ${{ needs.vars.outputs.pr }}
           tags: prod
 
   release:
