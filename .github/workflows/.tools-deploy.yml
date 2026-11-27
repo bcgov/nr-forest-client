@@ -13,7 +13,7 @@ jobs:
       packages: write
     steps:
       - name: Build (legacydb)
-        uses: bcgov/actions/builder@a25c5f02d20139f29c17c3ceaa41c314ffe92ec9 # v0.16.0
+        uses: bcgov/actions/builder@01c3fa1c94c8ccea526ce718b40d8a93bb0a2279 # v0.16.0
         with:
           package: legacydb
           tag_fallback: latest
@@ -21,7 +21,7 @@ jobs:
             legacydb/
 
       - name: Build (backend)
-        uses: bcgov/actions/builder@a25c5f02d20139f29c17c3ceaa41c314ffe92ec9 # v0.16.0
+        uses: bcgov/actions/builder@01c3fa1c94c8ccea526ce718b40d8a93bb0a2279 # v0.16.0
         with:
           package: backend
           tag_fallback: latest

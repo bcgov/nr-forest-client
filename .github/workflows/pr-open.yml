@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v7
       - name: API Diff Triggers
         id: triggers
-        uses: bcgov/actions/diff-triggers@a25c5f02d20139f29c17c3ceaa41c314ffe92ec9 # v0.16.0
+        uses: bcgov/actions/diff-triggers@01c3fa1c94c8ccea526ce718b40d8a93bb0a2279 # v0.16.0
         with:
           triggers: |
             api/
@@ -44,7 +44,7 @@ jobs:
         package: [backend, database, frontend, legacy, processor, api]
     steps:
       - name: Build
-        uses: bcgov/actions/builder@a25c5f02d20139f29c17c3ceaa41c314ffe92ec9 # v0.16.0
+        uses: bcgov/actions/builder@01c3fa1c94c8ccea526ce718b40d8a93bb0a2279 # v0.16.0
         with:
           package: ${{ matrix.package }}
           tag_fallback: latest
@@ -100,6 +100,6 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 1
     steps:
-      - uses: bcgov/actions/workflow-results@a25c5f02d20139f29c17c3ceaa41c314ffe92ec9 # v0.16.0
+      - uses: bcgov/actions/workflow-results@01c3fa1c94c8ccea526ce718b40d8a93bb0a2279 # v0.16.0
         with:
           needs: ${{ toJson(needs) }}
